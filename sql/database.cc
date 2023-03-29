@@ -979,8 +979,6 @@ bool Database::Raze() {
       .exclusive_locking = true,
       .page_size = options_.page_size,
       .cache_size = 0,
-      .enable_foreign_keys_discouraged =
-          options_.enable_foreign_keys_discouraged,
       .enable_views_discouraged = options_.enable_views_discouraged,
       .enable_virtual_tables_discouraged =
           options_.enable_virtual_tables_discouraged,
@@ -2007,9 +2005,8 @@ void Database::ConfigureSqliteDatabaseObject() {
   DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_config(SQLITE_DBCONFIG_DQS_DML) should not fail";
 
-  sqlite_result_code = ToSqliteResultCode(sqlite3_db_config(
-      db_, SQLITE_DBCONFIG_ENABLE_FKEY,
-      options_.enable_foreign_keys_discouraged ? 1 : 0, nullptr));
+  sqlite_result_code = ToSqliteResultCode(
+      sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_FKEY, 0, nullptr));
   DCHECK_EQ(sqlite_result_code, SqliteResultCode::kOk)
       << "sqlite3_db_config(SQLITE_DBCONFIG_ENABLE_FKEY) should not fail";
 

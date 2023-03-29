@@ -176,17 +176,6 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // pre-compiled SQL statements.
   bool mmap_alt_status_discouraged = false;
 
-  // If true, enables the enforcement of foreign key constraints.
-  //
-  // The use of foreign key constraints is discouraged for Chrome code. See
-  // README.md for details and recommended replacements.
-  //
-  // If this option is false, foreign key schema operations succeed, but foreign
-  // keys are not enforced. Foreign key enforcement can still be enabled later
-  // by executing PRAGMA foreign_keys=true. sql::Database() will eventually
-  // disallow executing arbitrary PRAGMA statements.
-  bool enable_foreign_keys_discouraged = false;
-
   // If true, enables SQL views (a discouraged feature) for this database.
   //
   // The use of views is discouraged for Chrome code. See README.md for details

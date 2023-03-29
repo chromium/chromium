@@ -1877,8 +1877,6 @@ TEST_P(SQLDatabaseTest, DoubleQuotedStringLiteralsDisabledByDefault) {
 }
 
 TEST_P(SQLDatabaseTest, ForeignKeyEnforcementDisabledByDefault) {
-  EXPECT_FALSE(GetDBOptions().enable_foreign_keys_discouraged);
-
   ASSERT_TRUE(db_->Execute("CREATE TABLE targets(id INTEGER PRIMARY KEY)"));
   // sqlite3_db_config() currently only disables foreign key enforcement. Schema
   // operations on foreign keys are still allowed.
@@ -1892,30 +1890,6 @@ TEST_P(SQLDatabaseTest, ForeignKeyEnforcementDisabledByDefault) {
 
   EXPECT_TRUE(db_->Execute("DELETE FROM targets WHERE id=42"))
       << "Foreign key enforcement is not disabled";
-}
-
-TEST_P(SQLDatabaseTest, ForeignKeyEnforcementEnabled) {
-  DatabaseOptions options = GetDBOptions();
-  options.enable_foreign_keys_discouraged = true;
-  db_ = std::make_unique<Database>(options);
-  ASSERT_TRUE(db_->Open(db_path_));
-
-  ASSERT_TRUE(db_->Execute("CREATE TABLE targets(id INTEGER PRIMARY KEY)"));
-  ASSERT_TRUE(
-      db_->Execute("CREATE TABLE refs("
-                   "id INTEGER PRIMARY KEY,"
-                   "target_id INTEGER REFERENCES targets(id))"));
-
-  ASSERT_TRUE(db_->Execute("INSERT INTO targets(id) VALUES(42)"));
-  ASSERT_TRUE(db_->Execute("INSERT INTO refs(id, target_id) VALUES(42, 42)"));
-
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CONSTRAINT_FOREIGNKEY);
-    EXPECT_FALSE(db_->Execute("DELETE FROM targets WHERE id=42"))
-        << "Foreign key enforcement is disabled";
-    EXPECT_TRUE(expecter.SawExpectedErrors());
-  }
 }
 
 TEST_P(SQLDatabaseTest, TriggersDisabledByDefault) {
