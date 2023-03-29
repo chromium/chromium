@@ -320,8 +320,9 @@ void ServiceWorkerDevToolsAgentHost::UpdateProcessHost() {
 
 void ServiceWorkerDevToolsAgentHost::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
+  scoped_refptr<DevToolsAgentHost> retain_this;
   if (context_wrapper_->process_manager()->IsShutdown())
-    ForceDetachAllSessions();
+    retain_this = ForceDetachAllSessionsImpl();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
   process_observation_.Reset();
