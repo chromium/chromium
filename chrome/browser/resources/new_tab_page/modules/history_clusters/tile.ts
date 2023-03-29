@@ -8,10 +8,11 @@ import './page_favicon.js';
 
 import {ImageServiceBrowserProxy} from 'chrome://resources/cr_components/image_service/browser_proxy.js';
 import {ClientId as ImageServiceClientId} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {URLVisit} from '../../history_cluster_types.mojom-webui.js';
+import {Annotation, URLVisit} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin} from '../../i18n_setup.js';
 
 import {getTemplate} from './tile.html.js';
@@ -32,6 +33,13 @@ export class TileModuleElement extends I18nMixin
       visit: {
         type: Object,
         observer: 'onVisitUpdated_',
+      },
+
+      /* Annotations to show for the visit (e.g., whether page was bookmarked).
+       */
+      annotation_: {
+        type: String,
+        computed: 'computeAnnotation_(visit)',
       },
 
       /* The label to display. */
@@ -59,6 +67,13 @@ export class TileModuleElement extends I18nMixin
 
   hasImageUrl(): boolean {
     return !!this.imageUrl_;
+  }
+
+  private computeAnnotation_(_visit: URLVisit): string {
+    if (Annotation.kBookmarked in this.visit.annotations) {
+      return loadTimeData.getString('modulesJourneysBookmarked');
+    }
+    return '';
   }
 
   private computeLabel_(): string {

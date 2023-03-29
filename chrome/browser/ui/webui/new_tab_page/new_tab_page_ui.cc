@@ -486,6 +486,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
       {"modulesJourneysShowAllAcc", IDS_ACCNAME_SHOW_ALL},
       {"modulesJourneysSearchSuggAcc", IDS_ACCNAME_SEARCH_SUGG},
+      {"modulesJourneysBookmarked",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_BOOKMARKED},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},
