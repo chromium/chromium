@@ -546,7 +546,7 @@ void PasswordManager::DropFormManagers() {
   predictions_.clear();
 }
 
-bool PasswordManager::IsPasswordFieldDetectedOnPage() {
+bool PasswordManager::IsPasswordFieldDetectedOnPage() const {
   return !form_managers_.empty();
 }
 

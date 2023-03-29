@@ -177,7 +177,7 @@ class PasswordManager : public PasswordManagerInterface {
   void DropFormManagers();
 
   // Returns true if password element is detected on the current page.
-  bool IsPasswordFieldDetectedOnPage();
+  bool IsPasswordFieldDetectedOnPage() const;
 
 #if defined(UNIT_TEST)
   const std::vector<std::unique_ptr<PasswordFormManager>>& form_managers()

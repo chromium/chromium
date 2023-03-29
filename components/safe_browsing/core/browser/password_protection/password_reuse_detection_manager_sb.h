@@ -11,10 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -24,7 +22,7 @@ class Clock;
 namespace safe_browsing {
 
 // This is a placeholder class to compile the new client files.
-// TODO(https://crbug.com/1322599): Rename the class name back to
+// TODO(crbug.com/1322599): Rename the class name back to
 // PasswordReuseDetectionManager and delete the obsolete files in the password
 // manager directory.
 
@@ -37,7 +35,7 @@ class PasswordReuseDetectionManagerSB
     : public password_manager::PasswordReuseDetectorConsumer {
  public:
   explicit PasswordReuseDetectionManagerSB(
-      password_manager::PasswordManagerClient* client);
+      PasswordReuseDetectionManagerClient* client);
 
   PasswordReuseDetectionManagerSB(const PasswordReuseDetectionManagerSB&) =
       delete;
@@ -86,7 +84,7 @@ class PasswordReuseDetectionManagerSB
   void CheckStoresForReuse(const std::u16string& input);
 
   // A client to handle password reuse detection logic.
-  raw_ptr<password_manager::PasswordManagerClient> client_;
+  raw_ptr<PasswordReuseDetectionManagerClient> client_;
   // A buffer that stores keystrokes.
   std::u16string input_characters_;
   // The url of the current main frame.

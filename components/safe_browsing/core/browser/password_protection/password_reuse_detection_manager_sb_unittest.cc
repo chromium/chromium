@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
-#include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -25,16 +25,17 @@ namespace {
 
 constexpr size_t kMaxNumberOfCharactersToStore = 45;
 
-class MockPasswordManagerClient
-    : public password_manager::StubPasswordManagerClient {
+class MockPasswordReuseDetectionManagerClient
+    : public StubPasswordReuseDetectionManagerClient {
  public:
-  MockPasswordManagerClient() = default;
+  MockPasswordReuseDetectionManagerClient() = default;
 
-  MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
-  MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
-      delete;
+  MockPasswordReuseDetectionManagerClient(
+      const MockPasswordReuseDetectionManagerClient&) = delete;
+  MockPasswordReuseDetectionManagerClient& operator=(
+      const MockPasswordReuseDetectionManagerClient&) = delete;
 
-  ~MockPasswordManagerClient() override = default;
+  ~MockPasswordReuseDetectionManagerClient() override = default;
 
   MOCK_METHOD(password_manager::PasswordReuseManager*,
               GetPasswordReuseManager,
@@ -50,6 +51,13 @@ class MockPasswordManagerClient
                uint64_t,
                const std::string&),
               (override));
+
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              OnPasswordSelected,
+              (const std::u16string& text_str),
+              (override));
+#endif
 };
 
 class PasswordReuseDetectionManagerSBTest : public ::testing::Test {
@@ -63,7 +71,7 @@ class PasswordReuseDetectionManagerSBTest : public ::testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockPasswordManagerClient client_;
+  MockPasswordReuseDetectionManagerClient client_;
   password_manager::MockPasswordReuseManager reuse_manager_;
 };
 

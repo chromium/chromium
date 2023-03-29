@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 class ChromePasswordManagerClient;
+class ChromePasswordReuseDetectionManagerClient;
 
 namespace crosapi {
 
@@ -19,6 +20,7 @@ class COMPONENT_EXPORT(CROSAPI) ScopedAllowSyncCall {
  private:
   // Consumers of this class must be explicitly added as a friend.
   friend class ::ChromePasswordManagerClient;
+  friend class ::ChromePasswordReuseDetectionManagerClient;
 
   ScopedAllowSyncCall();
   ScopedAllowSyncCall(const ScopedAllowSyncCall&) = delete;

@@ -115,6 +115,8 @@ static_library("safe_browsing") {
       "chrome_password_protection_service.h",
       "chrome_password_protection_service_factory.cc",
       "chrome_password_protection_service_factory.h",
+      "chrome_password_reuse_detection_manager_client.cc",
+      "chrome_password_reuse_detection_manager_client.h",
       "chrome_ping_manager_factory.cc",
       "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.cc",
@@ -167,9 +169,11 @@ static_library("safe_browsing") {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/common/safe_browsing:proto",
+      "//components/autofill/core/browser",
       "//components/content_settings/core/browser",
       "//components/no_state_prefetch/browser",
       "//components/omnibox/browser",
+      "//components/password_manager/content/browser",
       "//components/password_manager/core/browser/form_parsing",
       "//components/permissions",
       "//components/safe_browsing/content/browser",
@@ -188,6 +192,7 @@ static_library("safe_browsing") {
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",
       "//components/safe_browsing/core/browser/db:metadata_proto",
+      "//components/safe_browsing/core/browser/password_protection",
       "//components/safe_browsing/core/browser/realtime:policy_engine",
       "//components/safe_browsing/core/browser/realtime:url_lookup_service",
       "//components/safe_browsing/core/browser/sync",
@@ -416,6 +421,12 @@ static_library("safe_browsing") {
       }
       if (is_chromeos_ash) {
         deps += [ "//ash/constants:constants" ]
+      }
+      if (is_chromeos_lacros) {
+        deps += [ "//chromeos/lacros:lacros" ]
+      }
+      if (is_chromeos) {
+        deps += [ "//chromeos/crosapi/cpp:cpp" ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {

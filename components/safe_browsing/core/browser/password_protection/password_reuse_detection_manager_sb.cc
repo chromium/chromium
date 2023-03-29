@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 using base::Time;
@@ -24,7 +25,7 @@ constexpr base::TimeDelta kMaxInactivityTime = base::Seconds(10);
 }  // namespace
 
 PasswordReuseDetectionManagerSB::PasswordReuseDetectionManagerSB(
-    password_manager::PasswordManagerClient* client)
+    PasswordReuseDetectionManagerClient* client)
     : client_(client), clock_(base::DefaultClock::GetInstance()) {
   CHECK(client_);
 }
@@ -156,18 +157,14 @@ void PasswordReuseDetectionManagerSB::OnReuseCheckDone(
     }
   }
 
-  // PasswordManager could be nullptr in tests.
-  bool password_field_detected =
-      client_->GetPasswordManager()
-          ? client_->GetPasswordManager()->IsPasswordFieldDetectedOnPage()
-          : false;
+  bool password_field_detected = client_->IsPasswordFieldDetectedOnPage();
 
   password_manager::metrics_util::LogPasswordReuse(
       saved_passwords, matching_reused_credentials.size(),
       password_field_detected, reused_password_type);
   if (reused_password_type ==
       password_manager::metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD) {
-    client_->LogPasswordReuseDetectedEvent();
+    client_->MaybeLogPasswordReuseDetectedEvent();
   }
 
   std::string username = reused_protected_password_hash.has_value()
@@ -189,7 +186,7 @@ PasswordReuseDetectionManagerSB::GetReusedPasswordType(
         reused_protected_password_hash,
     size_t matching_domain_count) {
   if (!reused_protected_password_hash.has_value()) {
-    CHECK_GT(matching_domain_count, 0u);
+    DCHECK_GT(matching_domain_count, 0u);
     return password_manager::metrics_util::PasswordType::SAVED_PASSWORD;
   }
 
@@ -197,7 +194,7 @@ PasswordReuseDetectionManagerSB::GetReusedPasswordType(
   if (!reused_protected_password_hash->is_gaia_password) {
     reused_password_type =
         password_manager::metrics_util::PasswordType::ENTERPRISE_PASSWORD;
-  } else if (client_->GetStoreResultFilter()->IsSyncAccountEmail(
+  } else if (client_->IsSyncAccountEmail(
                  reused_protected_password_hash->username)) {
     reused_password_type =
         password_manager::metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD;
