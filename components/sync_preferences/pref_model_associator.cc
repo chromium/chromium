@@ -196,28 +196,40 @@ void PrefModelAssociator::InitPrefAndAssociate(
 
     if (user_pref_value) {
       DVLOG(1) << "Found user pref value for " << pref_name;
-      // We have both server and local values. Merge them.
-      base::Value new_value(
-          MergePreference(pref_name, *user_pref_value, sync_value));
-
-      // Update the local preference based on what we got from the sync server.
-      if (new_value.is_none()) {
-        LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
-        user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
-      } else if (*user_pref_value != new_value) {
-        SetPrefWithTypeCheck(pref_name, new_value);
-      }
-
-      // If the merge resulted in an updated value, inform the syncer.
-      if (sync_value != new_value) {
-        syncer::SyncData sync_data;
-        if (!CreatePrefSyncData(pref_name, new_value, &sync_data)) {
-          LOG(ERROR) << "Failed to update preference.";
-          return;
+      if (base::FeatureList::IsEnabled(
+              syncer::kEnablePreferencesAccountStorage)) {
+        // Overwrite updates to the account store.
+        if (sync_value.is_none()) {
+          LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
+          user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+        } else if (*user_pref_value != sync_value) {
+          SetPrefWithTypeCheck(pref_name, sync_value);
+        }
+      } else {
+        // We have both server and local values. Merge them if account storage
+        // is not supported.
+        base::Value new_value(
+            MergePreference(pref_name, *user_pref_value, sync_value));
+        // Update the local preference based on what we got from the sync
+        // server.
+        if (new_value.is_none()) {
+          LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
+          user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+        } else if (*user_pref_value != new_value) {
+          SetPrefWithTypeCheck(pref_name, new_value);
         }
 
-        sync_changes->push_back(syncer::SyncChange(
-            FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
+        // If the merge resulted in an updated value, inform the syncer.
+        if (sync_value != new_value) {
+          syncer::SyncData sync_data;
+          if (!CreatePrefSyncData(pref_name, new_value, &sync_data)) {
+            LOG(ERROR) << "Failed to update preference.";
+            return;
+          }
+
+          sync_changes->push_back(syncer::SyncChange(
+              FROM_HERE, syncer::SyncChange::ACTION_UPDATE, sync_data));
+        }
       }
     } else if (!sync_value.is_none()) {
       // Only a server value exists. Just set the local user value.
