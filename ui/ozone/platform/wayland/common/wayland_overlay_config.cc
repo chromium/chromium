@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 
 namespace wl {
@@ -17,19 +18,24 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
                                            BufferId buffer_id,
                                            float scale_factor)
     : z_order(data.z_order),
-      color_space(data.color_space),
       transform(data.plane_transform),
+      enable_blend(data.enable_blend),
+      priority_hint(data.priority_hint),
       buffer_id(buffer_id),
       surface_scale_factor(scale_factor),
       bounds_rect(data.display_bounds),
       crop_rect(data.crop_rect),
       damage_region(data.damage_rect),
-      enable_blend(data.enable_blend),
       opacity(data.opacity),
       access_fence_handle(fence ? fence->GetGpuFenceHandle().Clone()
                                 : gfx::GpuFenceHandle()),
-      priority_hint(data.priority_hint),
-      rounded_clip_bounds(data.rounded_corners),
+      color_space(data.color_space == gfx::ColorSpace::CreateSRGB()
+                      ? absl::nullopt
+                      : absl::optional<gfx::ColorSpace>(data.color_space)),
+      rounded_clip_bounds(
+          data.rounded_corners.IsEmpty()
+              ? absl::nullopt
+              : absl::optional<gfx::RRectF>(data.rounded_corners)),
       // Solid color quads are created as wl_buffers. Though, some overlays may
       // have background data passed.
       background_color(data.is_solid_color ? absl::nullopt : data.color),

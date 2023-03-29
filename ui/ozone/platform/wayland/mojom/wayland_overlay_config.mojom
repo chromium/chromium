@@ -19,8 +19,8 @@ struct WaylandOverlayConfig {
   // plane.
   int32 z_order;
 
-  // Specifies the color space data of the wayland config.
-  gfx.mojom.ColorSpace color_space;
+  // Optional: specifies the color space data of the wayland config.
+  gfx.mojom.ColorSpace? color_space;
 
   // Specifies how the buffer is to be transformed during composition.
   gfx.mojom.OverlayTransform transform;
@@ -63,9 +63,9 @@ struct WaylandOverlayConfig {
   // and enabled.
   gfx.mojom.OverlayPriorityHint priority_hint;
 
-  // Specifies rounded clip bounds of the overlay if delegated composition is
-  // supported and enabled.
-  gfx.mojom.RRectF rounded_clip_bounds;
+  // Optional: specifies rounded clip bounds of the overlay if delegated
+  // composition is supported and enabled.
+  gfx.mojom.RRectF? rounded_clip_bounds;
 
   // Optional: background color of this overlay plane.
   skia.mojom.SkColor4f? background_color;

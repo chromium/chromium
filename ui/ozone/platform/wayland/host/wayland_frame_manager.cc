@@ -11,7 +11,9 @@
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/time/time.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
@@ -347,13 +349,15 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   surface->set_viewport_destination(config.bounds_rect.size());
   surface->set_opacity(config.opacity);
   surface->set_blending(config.enable_blend);
-  surface->set_rounded_clip_bounds(config.rounded_clip_bounds);
+  surface->set_rounded_clip_bounds(
+      config.rounded_clip_bounds.value_or(gfx::RRectF()));
   surface->set_overlay_priority(config.priority_hint);
   surface->set_background_color(config.background_color);
   surface->set_contains_video(
       config.priority_hint == gfx::OverlayPriorityHint::kHardwareProtection ||
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
-  surface->set_color_space(config.color_space);
+  surface->set_color_space(
+      config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
   if (set_opaque_region) {
     std::vector<gfx::Rect> region_px = {
         gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))};

@@ -23,7 +23,7 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.z_order;
   }
 
-  static const gfx::ColorSpace color_space(
+  static const absl::optional<gfx::ColorSpace>& color_space(
       const wl::WaylandOverlayConfig& input) {
     return input.color_space;
   }
@@ -71,7 +71,7 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.priority_hint;
   }
 
-  static const gfx::RRectF& rounded_clip_bounds(
+  static const absl::optional<gfx::RRectF>& rounded_clip_bounds(
       const wl::WaylandOverlayConfig& input) {
     return input.rounded_clip_bounds;
   }

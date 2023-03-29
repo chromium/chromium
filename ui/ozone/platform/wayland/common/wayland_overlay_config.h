@@ -33,12 +33,17 @@ struct WaylandOverlayConfig {
   // plane.
   int z_order = 0;
 
-  // Specifies the color space data of the wayland config.
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-
   // Specifies how the buffer is to be transformed during composition.
   gfx::OverlayTransform transform =
       gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
+
+  // Specifies if alpha blending, with premultiplied alpha should be applied at
+  // scanout.
+  bool enable_blend = false;
+
+  // Specifies priority of this overlay if delegated composition is supported
+  // and enabled.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
 
   // A unique id for the buffer, which is used to identify imported wl_buffers
   // on the browser process.
@@ -61,10 +66,6 @@ struct WaylandOverlayConfig {
   // swap.
   gfx::Rect damage_region;
 
-  // Specifies if alpha blending, with premultiplied alpha should be applied at
-  // scanout.
-  bool enable_blend = false;
-
   // Opacity of the overlay independent of buffer alpha.
   // Valid values are [0.0, 1.0f].
   float opacity = 1.f;
@@ -74,13 +75,12 @@ struct WaylandOverlayConfig {
   // compositing.
   gfx::GpuFenceHandle access_fence_handle;
 
-  // Specifies priority of this overlay if delegated composition is supported
-  // and enabled.
-  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+  // Specifies the color space data of the wayland config.
+  absl::optional<gfx::ColorSpace> color_space;
 
   // Specifies rounded clip bounds of the overlay if delegated composition is
   // supported and enabled.
-  gfx::RRectF rounded_clip_bounds;
+  absl::optional<gfx::RRectF> rounded_clip_bounds;
 
   // Optional: background color of this overlay plane.
   absl::optional<SkColor4f> background_color;

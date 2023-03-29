@@ -31,6 +31,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -942,7 +943,8 @@ bool WaylandWindow::CommitOverlays(
             gfx::RectF(visual_size), gfx::RectF(),
             root_surface()->use_blending(), gfx::Rect(),
             root_surface()->opacity(), gfx::OverlayPriorityHint::kNone,
-            rounded_clip_bounds, gfx::ColorSpace::CreateSRGB(), absl::nullopt),
+            rounded_clip_bounds.value_or(gfx::RRectF()),
+            gfx::ColorSpace::CreateSRGB(), absl::nullopt),
         nullptr, root_surface()->buffer_id(), buffer_scale);
   }
 
