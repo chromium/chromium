@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -306,7 +307,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
       mock_ntp_custom_background_service_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  NtpCustomBackgroundServiceObserver* ntp_custom_background_service_observer_;
+  RAW_PTR_EXCLUSION NtpCustomBackgroundServiceObserver*
+      ntp_custom_background_service_observer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -314,7 +316,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   testing::NiceMock<MockPage> mock_page_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  NtpBackgroundServiceObserver* ntp_background_service_observer_;
+  RAW_PTR_EXCLUSION NtpBackgroundServiceObserver*
+      ntp_background_service_observer_;
   raw_ptr<MockThemeService> mock_theme_service_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;

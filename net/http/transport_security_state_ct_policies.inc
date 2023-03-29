@@ -14,7 +14,8 @@ struct CTRequiredPolicy {
   // chains to or through one of the values contained in |roots|, which
   // contains the SHA-256 hash of the issuing CA's SubjectPublicKeyInfo,
   // the same format as HTTP Public Key Pinning.
-  const SHA256HashValue* roots;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for: #global-scope
+  RAW_PTR_EXCLUSION const SHA256HashValue* roots;
 
   // The number of entries in |roots|.
   size_t roots_length;
@@ -28,7 +29,8 @@ struct CTRequiredPolicy {
   // |exceptions|, which also contains the SHA-256 hashes of the
   // issuing CA's SubjectPublicKeyInfo, then even though it chained
   // through |roots|, it will be exempt from CT requirements.
-  const SHA256HashValue* exceptions;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for: #global-scope
+  RAW_PTR_EXCLUSION const SHA256HashValue* exceptions;
 
   // The number of entries in |exceptions|.
   size_t exceptions_length;

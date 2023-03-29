@@ -5,6 +5,7 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
@@ -92,7 +93,9 @@ class SerialTest : public RenderViewHostImplTestHarness {
   SerialTestContentBrowserClient test_client_;
   raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   device::FakeSerialPortManager port_manager_;
-  SerialDelegate::Observer* observer_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION SerialDelegate::Observer* observer_ = nullptr;
 };
 
 }  // namespace

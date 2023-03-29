@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/browser_task_queues.h"
@@ -40,7 +41,9 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
     void MoveFrom(UserInputActiveHandle* other);
     // Only this constructor actually creates a UserInputActiveHandle that will
     // inform scheduling decisions.
-    BrowserUIThreadScheduler* scheduler_ = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION BrowserUIThreadScheduler* scheduler_ = nullptr;
   };
 
   enum ScrollState { kGestureScrollActive, kFlingActive, kNone };

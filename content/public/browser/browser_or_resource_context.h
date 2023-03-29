@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -79,8 +80,12 @@ class BrowserOrResourceContext final {
 
  private:
   union Union {
-    BrowserContext* browser_context_;
-    ResourceContext* resource_context_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION BrowserContext* browser_context_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION ResourceContext* resource_context_;
   } union_;
 
   enum Flavour {

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -369,7 +370,9 @@ class TestBluetoothDelegate : public BluetoothDelegate {
       FramePermissionObserver* observer) override {}
 
  private:
-  FakeBluetoothScanningPrompt* prompt_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeBluetoothScanningPrompt* prompt_ = nullptr;
 };
 
 class TestContentBrowserClient : public ContentBrowserClient {

@@ -26,6 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
@@ -2640,7 +2641,9 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   // can stop iterating kSpecialHeaders.
   //
   static const struct {
-    const HeaderNameAndValue* search;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const HeaderNameAndValue* search;
     int load_flag;
   } kSpecialHeaders[] = {
     { kPassThroughHeaders, LOAD_DISABLE_CACHE },

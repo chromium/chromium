@@ -16,6 +16,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -220,7 +221,9 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
     callback_->OnCaptureResult(result, std::move(frame));
   }
 
-  Callback* callback_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION Callback* callback_ = nullptr;
   int captured_frames_ = 0;
   bool generate_inverted_frames_ = false;
   bool generate_cropped_frames_ = false;

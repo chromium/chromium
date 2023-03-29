@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
@@ -372,8 +373,9 @@ class MediaSessionImpl : public MediaSession,
     bool operator==(const PlayerIdentifier& other) const;
     bool operator!=(const PlayerIdentifier& other) const;
     bool operator<(const PlayerIdentifier& other) const;
-
-    MediaSessionPlayerObserver* observer;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer, #union
+    RAW_PTR_EXCLUSION MediaSessionPlayerObserver* observer;
     int player_id;
   };
 

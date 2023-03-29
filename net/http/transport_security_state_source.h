@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -17,8 +18,12 @@ NET_EXPORT_PRIVATE extern const char kNoReportURI[];
 
 struct TransportSecurityStateSource {
   struct Pinset {
-    const char* const* const accepted_pins;
-    const char* const* const rejected_pins;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const char* const* const accepted_pins;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const char* const* const rejected_pins;
     const char* const report_uri;
   };
 
@@ -27,7 +32,9 @@ struct TransportSecurityStateSource {
   const uint8_t* preloaded_data;
   size_t preloaded_bits;
   size_t root_position;
-  const Pinset* pinsets;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const Pinset* pinsets;
   size_t pinsets_count;
 };
 

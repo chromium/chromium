@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -577,7 +578,9 @@ class QuicStreamFactory::Job {
   bool host_resolution_finished_ = false;
   bool quic_session_created_ = false;
   bool connection_retried_ = false;
-  QuicChromiumClientSession* session_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION QuicChromiumClientSession* session_ = nullptr;
   HostResolverEndpointResult endpoint_result_;
   // If connection migraiton is supported, |network_| denotes the network on
   // which |session_| is created.

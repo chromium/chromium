@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -68,7 +69,9 @@ class EmbeddedTestServerHandle {
   friend class EmbeddedTestServer;
 
   explicit EmbeddedTestServerHandle(EmbeddedTestServer* test_server);
-  EmbeddedTestServer* test_server_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION EmbeddedTestServer* test_server_ = nullptr;
 };
 
 // Class providing an HTTP server for testing purpose. This is a basic server

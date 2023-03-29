@@ -22,6 +22,7 @@
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/safe_ref.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
@@ -1915,7 +1916,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The view of the RVHD. Usually this is our WebContentsView implementation,
   // but if an embedder uses a different WebContentsView, they'll need to
   // provide this.
-  RenderViewHostDelegateView* render_view_host_delegate_view_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION RenderViewHostDelegateView* render_view_host_delegate_view_;
 
   // Tracks CreatedWindow objects that have not been shown yet. They are
   // identified by the process ID and routing ID passed to CreateNewWindow.

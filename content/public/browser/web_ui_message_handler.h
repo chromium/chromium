@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -130,8 +131,9 @@ class CONTENT_EXPORT WebUIMessageHandler {
 
   // True if the page is for JavaScript calls from this handler.
   bool javascript_allowed_ = false;
-
-  WebUI* web_ui_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION WebUI* web_ui_ = nullptr;
 };
 
 }  // namespace content

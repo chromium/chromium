@@ -538,7 +538,9 @@ class ToRenderFrameHost {
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
 
  private:
-  RenderFrameHost* render_frame_host_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION RenderFrameHost* render_frame_host_;
 };
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_view_host);

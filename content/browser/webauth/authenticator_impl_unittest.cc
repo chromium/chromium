@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -4422,7 +4423,9 @@ TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
 
   static const struct {
     device::CoseAlgorithmIdentifier algo;
-    const EVP_MD* digest;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #global-scope
+    RAW_PTR_EXCLUSION const EVP_MD* digest;
   } kTests[] = {
       {device::CoseAlgorithmIdentifier::kEs256, EVP_sha256()},
       {device::CoseAlgorithmIdentifier::kRs256, EVP_sha256()},

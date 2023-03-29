@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -3048,7 +3049,9 @@ class TestRenderWidgetHostViewBaseObserver
 
  private:
   base::OnceClosure quit_closure_;
-  RenderWidgetHostViewBase* view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION RenderWidgetHostViewBase* view_ = nullptr;
 };
 
 // Tests that a RenderWidgetHostView for a fenced frame inside a portal should

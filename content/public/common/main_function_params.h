@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -42,7 +43,9 @@ struct CONTENT_EXPORT MainFunctionParams {
   MainFunctionParams(MainFunctionParams&&);
   MainFunctionParams& operator=(MainFunctionParams&&);
 
-  const base::CommandLine* command_line;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const base::CommandLine* command_line;
 
 #if BUILDFLAG(IS_WIN)
   sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;

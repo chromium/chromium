@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -239,8 +240,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       const BrowserAccessibility* operator*();
 
      private:
-      const BrowserAccessibility* const parent_;
-      const BrowserAccessibility* const child_tree_root_;
+      // This field is not a raw_ptr<> because it was filtered by the rewriter
+      // for: #constexpr-ctor-field-initializer
+      RAW_PTR_EXCLUSION const BrowserAccessibility* const parent_;
+      // This field is not a raw_ptr<> because it was filtered by the rewriter
+      // for: #constexpr-ctor-field-initializer
+      RAW_PTR_EXCLUSION const BrowserAccessibility* const child_tree_root_;
       unsigned int index_;
     };
 

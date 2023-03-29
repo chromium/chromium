@@ -5,6 +5,7 @@
 #ifndef CONTENT_TEST_PORTAL_PORTAL_ACTIVATED_OBSERVER_H_
 #define CONTENT_TEST_PORTAL_PORTAL_ACTIVATED_OBSERVER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "content/test/portal/portal_interceptor_for_testing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,7 +54,9 @@ class PortalActivatedObserver : public PortalInterceptorForTesting::Observer {
   const base::WeakPtr<PortalInterceptorForTesting> interceptor_;
   bool has_activated_ = false;
   absl::optional<blink::mojom::PortalActivateResult> result_;
-  base::RunLoop* run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of, #union
+  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 };
 
 }  // namespace content

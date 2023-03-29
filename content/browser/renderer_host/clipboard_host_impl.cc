@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
@@ -56,7 +57,9 @@ namespace {
 struct LastWriterInfo {
   // A pointer to the last ClipboardHostImpl that committed data to the
   // clipboard.
-  ClipboardHostImpl* writer = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION ClipboardHostImpl* writer = nullptr;
 
   // The sequence number of the last commit made by `writer`.
   ui::ClipboardSequenceNumberToken seqno;
