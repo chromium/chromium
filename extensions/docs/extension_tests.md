@@ -332,8 +332,8 @@ TEST_F(FrobulationApiUnitTest, CallingFrobulateKicksOffFrobulation) {
   Browser* browser = CreateTestBrowser();
   auto frobulate_function =
       base::MakeRefCounted<FrobulationFrobulateFunction>();
-  std::unique_ptr<base::Value> result(
-      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+  absl::optional<base::Value> result(
+      api_test_utils::RunFunctionAndReturnSingleResult(
           frobulate_function.get(), R"([{"speed": 10, "target": "foo"}])",
           browser));
   ASSERT_TRUE(result);
@@ -350,7 +350,7 @@ TEST_F(FrobulationApiUnitTest, CallingFrobulateFailsWithTooHighASpeed) {
   Browser* browser = CreateTestBrowser();
   auto frobulate_function =
       base::MakeRefCounted<FrobulationFrobulateFunction>();
-  std::string error = extension_function_test_utils::RunFunctionAndReturnError(
+  std::string error = api_test_utils::RunFunctionAndReturnError(
                           frobulate_function.get(),
                           R"([{"speed": 1000, "target": "foo"}])", browser));
   EXPECT_EQ("Speed too high!", error);
