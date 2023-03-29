@@ -19,8 +19,6 @@ per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.g
 per-file chromium.android.*=zhiyuans@google.com
 
 # For Lacros version skew tests related reviews
-per-file chromium.chromiumos.json=svenzheng@chromium.org
-per-file chromium.fyi.json=svenzheng@chromium.org
 per-file chromium.chromiumos.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.fyi.json=lacros-version-skew-roller@chops-service-accounts.iam.gserviceaccount.com
 # TODO(crbug.com/1234067) Remove the following 3 lines when the conversion is done.
@@ -31,11 +29,11 @@ per-file chromium.coverage.json=chrome-weblayer-builder@chops-service-accounts.i
 
 # For Lacros skylab tests cros image roller related reviews
 per-file chrome.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
+per-file chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
+per-file chromium.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file internal.chromeos.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
-# TODO(crbug.com/1245791): remove the following line after the roller is stable
-per-file chrome.json=svenzheng@chromium.org
-per-file internal.chromeos.fyi.json=svenzheng@chromium.org
 
+# Perf owners
 per-file *chromium.perf*.json=johnchen@chromium.org
 per-file *chromium.perf*.json=wenbinzhang@google.com
 per-file *chromium.perf*.json=hypan@google.com
