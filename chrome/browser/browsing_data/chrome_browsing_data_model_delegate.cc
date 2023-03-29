@@ -75,9 +75,8 @@ ChromeBrowsingDataModelDelegate::~ChromeBrowsingDataModelDelegate() = default;
 void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
     base::OnceCallback<void(std::vector<DelegateEntry>)> callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (storage_partition_->GetConfig().is_default()) {
-    auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
-    DCHECK(web_app_provider);
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (web_app_provider && storage_partition_->GetConfig().is_default()) {
     web_app_provider->scheduler().GetIsolatedWebAppBrowsingData(
         base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
             .Then(std::move(callback)));
