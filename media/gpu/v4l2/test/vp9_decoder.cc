@@ -213,7 +213,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
       gfx::Size(file_header.width, file_header.height), V4L2_MEMORY_MMAP,
-      /*num_buffers=*/1);
+      kNumberOfBuffersInOutputQueue);
 
   // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format

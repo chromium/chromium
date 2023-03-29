@@ -232,15 +232,10 @@ namespace media {
 namespace v4l2_test {
 
 constexpr uint32_t kNumberOfBuffersInCaptureQueue = 6;
-constexpr uint32_t kNumberOfBuffersInOutputQueue = 1;
 
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
               "buffers is currently assumed to be no larger than 16.");
-
-static_assert(kNumberOfBuffersInOutputQueue == 1,
-              "Too many buffers in OUTPUT queue. It is currently designed to "
-              "support only 1 request at a time.");
 
 Vp8Decoder::Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,

@@ -792,7 +792,7 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
   // https://buganizer.corp.google.com/issues/202214561#comment31
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc, coded_size.value(),
-      V4L2_MEMORY_MMAP, /*num_buffers=*/1);
+      V4L2_MEMORY_MMAP, kNumberOfBuffersInOutputQueue);
 
   // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format

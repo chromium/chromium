@@ -10,6 +10,11 @@
 namespace media {
 namespace v4l2_test {
 
+constexpr uint32_t kNumberOfBuffersInOutputQueue = 1;
+static_assert(kNumberOfBuffersInOutputQueue == 1,
+              "Too many buffers in OUTPUT queue. It is currently designed to "
+              "support only 1 request at a time.");
+
 // For stateless API, fourcc |VP9F| is needed instead of |VP90| for VP9 codec.
 // Fourcc |AV1F| is needed instead of |AV10| for AV1 codec.
 // https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-compressed.html
