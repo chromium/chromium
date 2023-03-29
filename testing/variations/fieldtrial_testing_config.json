@@ -211,21 +211,6 @@
             ]
         }
     ],
-    "AndroidMessagesPWAInstall": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InstallableAmbientBadgeMessage"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMessagesSaveCard": [
         {
             "platforms": [
@@ -6983,7 +6968,8 @@
                         "minimal_engagement": "5"
                     },
                     "enable_features": [
-                        "AmbientBadgeSiteEngagement"
+                        "AmbientBadgeSiteEngagement",
+                        "InstallableAmbientBadgeMessage"
                     ],
                     "disable_features": [
                         "AmbientBadgeSuppressFirstVisit"
