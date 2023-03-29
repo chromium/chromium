@@ -13,9 +13,9 @@
 namespace policy {
 // DlpFileDestination represents the destination for file transfer. It either
 // has a url or a component.
-// TODO(b/275302531): Change to a class.
-struct DlpFileDestination {
-  DlpFileDestination();
+class DlpFileDestination {
+ public:
+  DlpFileDestination() = delete;
   explicit DlpFileDestination(const std::string& url);
   explicit DlpFileDestination(const DlpRulesManager::Component component);
 
@@ -33,10 +33,15 @@ struct DlpFileDestination {
 
   ~DlpFileDestination();
 
+  absl::optional<std::string> url_or_path() const;
+
+  absl::optional<DlpRulesManager::Component> component() const;
+
+ private:
   // Destination url or destination path.
-  absl::optional<std::string> url_or_path;
+  absl::optional<std::string> url_or_path_;
   // Destination component.
-  absl::optional<DlpRulesManager::Component> component;
+  absl::optional<DlpRulesManager::Component> component_;
 };
 
 }  // namespace policy

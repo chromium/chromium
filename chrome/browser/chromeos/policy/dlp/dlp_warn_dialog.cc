@@ -88,9 +88,9 @@ constexpr int kConfidentialContentListMaxHeight = 240;
 // obtained, or the full value otherwise, converted to u16string. Fails if
 // |url_or_path| is empty.
 std::u16string GetDestinationURLForFiles(DlpFileDestination destination) {
-  DCHECK(destination.url_or_path.has_value());
-  DCHECK(!destination.url_or_path->empty());
-  std::string url = destination.url_or_path.value();
+  DCHECK(destination.url_or_path().has_value());
+  DCHECK(!destination.url_or_path()->empty());
+  std::string url = destination.url_or_path().value();
   GURL gurl(url);
   if (gurl.is_valid() && gurl.has_host()) {
     return base::UTF8ToUTF16(gurl.host());
@@ -102,8 +102,8 @@ std::u16string GetDestinationURLForFiles(DlpFileDestination destination) {
 // if |component| is empty.
 const std::u16string GetDestinationComponentForFiles(
     DlpFileDestination destination) {
-  DCHECK(destination.component.has_value());
-  switch (destination.component.value()) {
+  DCHECK(destination.component().has_value());
+  switch (destination.component().value()) {
     case DlpRulesManager::Component::kArc:
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
@@ -126,7 +126,7 @@ const std::u16string GetDestinationComponentForFiles(
 // Returns the u16string formatted |destination|. Fails if both |component| and
 // |url_or_path| are empty. Returns the |component| if both are non-empty.
 const std::u16string GetDestinationForFiles(DlpFileDestination destination) {
-  return destination.component.has_value()
+  return destination.component().has_value()
              ? GetDestinationComponentForFiles(destination)
              : GetDestinationURLForFiles(destination);
 }

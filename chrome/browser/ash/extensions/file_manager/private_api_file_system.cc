@@ -1194,12 +1194,12 @@ FileManagerPrivateGetDialogCallerFunction::Run() {
           GetSenderWebContents());
   base::Value::Dict info;
   if (caller.has_value()) {
-    if (caller->url_or_path.has_value()) {
-      info.Set("url", caller->url_or_path.value());
+    if (caller->url_or_path().has_value()) {
+      info.Set("url", caller->url_or_path().value());
     }
-    if (caller->component.has_value()) {
+    if (caller->component().has_value()) {
       info.Set("component",
-               DlpRulesManagerComponentToApiEnum(caller->component.value()));
+               DlpRulesManagerComponentToApiEnum(caller->component().value()));
     }
   }
 

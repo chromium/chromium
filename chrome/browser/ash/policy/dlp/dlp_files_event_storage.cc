@@ -48,10 +48,10 @@ bool DlpFilesEventStorage::StoreEventAndCheckIfItShouldBeReported(
     // Skip reporting if we don't know the destination (i.e., it is
     // kUnknownComponent) and at least an entry for `inode` is stored in
     // `events_`.
-    return (dst.component.has_value() &&
-            dst.component.value() !=
+    return (dst.component().has_value() &&
+            dst.component().value() !=
                 DlpRulesManager::Component::kUnknownComponent) ||
-           dst.url_or_path.has_value();
+           dst.url_or_path().has_value();
   }
 
   // Found existing (inode, dst) pair, update it

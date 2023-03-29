@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
 
   // Check that the caller field is set correctly.
   ASSERT_TRUE(dialog_->owner_.dialog_caller.has_value());
-  ASSERT_EQ(dialog_->owner_.dialog_caller->url_or_path.value(), url);
+  ASSERT_EQ(dialog_->owner_.dialog_caller->url_or_path().value(), url);
 
   // Click the "Cancel" button.
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
