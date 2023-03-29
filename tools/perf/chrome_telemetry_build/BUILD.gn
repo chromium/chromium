@@ -20,6 +20,8 @@ if (is_chromeos_device) {
     } else {
       deploy_lacros = true
       skip_generating_board_args = true
+    }
+    if (!is_chromeos_ash || also_build_lacros_chrome_for_architecture != "") {
       data = [
         # A script needed to launch Lacros in testing environment.
         "//build/lacros/mojo_connection_lacros_launcher.py",
