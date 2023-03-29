@@ -781,6 +781,7 @@ static_idl_files_in_core_for_testing = get_path_info(
           "//third_party/blink/renderer/core/testing/internals_delete_all_cookies.idl",
           "//third_party/blink/renderer/core/testing/internals_get_all_cookies.idl",
           "//third_party/blink/renderer/core/testing/internals_get_named_cookie.idl",
+          "//third_party/blink/renderer/core/testing/internals_ukm_recorder.idl",
           "//third_party/blink/renderer/core/testing/origin_trials_test.idl",
           "//third_party/blink/renderer/core/testing/origin_trials_test_dictionary.idl",
           "//third_party/blink/renderer/core/testing/origin_trials_test_partial.idl",

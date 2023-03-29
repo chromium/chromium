@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  const recorder = internals.initializeUKMRecorder();
+  await new Promise(resolve => requestAnimationFrame(() => {
+    document.querySelector("#log").innerHTML = "Update";
+    requestAnimationFrame(resolve);
+  }));
+  window.performance.getEntriesByType("resource");
+  const metrics = recorder.getMetrics("Blink.UpdateTime", ["Layout", "Paint"]);
+  assert_greater_than_equal(metrics.length, 1);
+  assert_array_equals(Object.keys(metrics[0]), ["Layout", "Paint"]);
+}, "UKM recorder should receive the Blink.UpdateTime entry");
+</script>
+<body>
+  <div id="log"></div>
+</body>

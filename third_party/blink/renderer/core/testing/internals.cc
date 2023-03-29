@@ -160,6 +160,7 @@
 #include "third_party/blink/renderer/core/testing/hit_test_layer_rect_list.h"
 #include "third_party/blink/renderer/core/testing/internal_runtime_flags.h"
 #include "third_party/blink/renderer/core/testing/internal_settings.h"
+#include "third_party/blink/renderer/core/testing/internals_ukm_recorder.h"
 #include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
 #include "third_party/blink/renderer/core/testing/origin_trials_test.h"
 #include "third_party/blink/renderer/core/testing/record_test.h"
@@ -2864,6 +2865,10 @@ SequenceTest* Internals::sequenceTest() const {
 
 UnionTypesTest* Internals::unionTypesTest() const {
   return MakeGarbageCollected<UnionTypesTest>();
+}
+
+InternalsUkmRecorder* Internals::initializeUKMRecorder() {
+  return MakeGarbageCollected<InternalsUkmRecorder>(document_);
 }
 
 OriginTrialsTest* Internals::originTrialsTest() const {

@@ -334,6 +334,7 @@
     RecordTest recordTest();
     SequenceTest sequenceTest();
     UnionTypesTest unionTypesTest();
+    InternalsUkmRecorder initializeUKMRecorder();
     CallbackFunctionTest callbackFunctionTest();
     [RaisesException] void setScrollChain(ScrollState scrollState, sequence<Element> elements);
 
@@ -446,5 +447,4 @@
     void setAllowPerChunkTransferring(ReadableStream stream);
 
     void setBackForwardCacheRestorationBufferSize(long maxSize);
-
 };

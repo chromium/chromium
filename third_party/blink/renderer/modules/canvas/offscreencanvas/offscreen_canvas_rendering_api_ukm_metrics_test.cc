@@ -26,7 +26,6 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp();
-    InstallTestUkmRecorder();
     GetDocument().documentElement()->setInnerHTML(
         "<body><canvas id='c'></canvas></body>");
     auto* canvas_element =
@@ -45,7 +44,7 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     offscreen_canvas_element_->GetCanvasRenderingContext(
         GetDocument().domWindow(), context_type, attributes);
 
-    auto entries = test_ukm_recorder_->GetEntriesByName(
+    auto entries = recorder_.GetEntriesByName(
         ukm::builders::ClientRenderingAPI::kEntryName);
     EXPECT_EQ(1ul, entries.size());
     auto* entry = entries[0];
@@ -57,15 +56,8 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
   }
 
  private:
-  void InstallTestUkmRecorder() {
-    DCHECK(!test_ukm_recorder_);  // Should be installed only once.
-    auto temp_recorder = std::make_unique<ukm::TestUkmRecorder>();
-    test_ukm_recorder_ = temp_recorder.get();
-    GetDocument().ukm_recorder_ = std::move(temp_recorder);
-  }
-
   Persistent<OffscreenCanvas> offscreen_canvas_element_;
-  ukm::TestUkmRecorder* test_ukm_recorder_ = nullptr;
+  ukm::TestAutoSetUkmRecorder recorder_;
 };
 
 OffscreenCanvasRenderingAPIUkmMetricsTest::

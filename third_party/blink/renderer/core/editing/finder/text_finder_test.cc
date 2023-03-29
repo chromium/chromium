@@ -761,13 +761,11 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUkm) {
     <!DOCTYPE html>
     <div id=hiddenid hidden=until-found>hidden</div>
   )HTML");
-  GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
-  auto* recorder =
-      static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+  ukm::TestAutoSetUkmRecorder recorder;
   GetDocument().View()->ResetUkmAggregatorForTesting();
 
   Compositor().BeginFrame();
-  EXPECT_EQ(recorder->entries_count(), 0u);
+  EXPECT_EQ(recorder.entries_count(), 0u);
 
   GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
                        *mojom::blink::FindOptions::New(),
@@ -775,7 +773,7 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUkm) {
 
   Compositor().BeginFrame();
 
-  auto entries = recorder->GetEntriesByName("Blink.FindInPage");
+  auto entries = recorder.GetEntriesByName("Blink.FindInPage");
   // There are two entries because
   // DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded followed by
   // DisplayLockContext::CommitForActivationWithSignal sets a

@@ -1009,19 +1009,15 @@ TEST_F(DocumentTest, PrefersColorSchemeChanged) {
 }
 
 TEST_F(DocumentTest, FindInPageUkm) {
-  // TODO(https://crbug.com/1380257): Find a better way than swapping the UKM
-  // recorder.
-  GetDocument().ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
-  auto* recorder =
-      static_cast<ukm::TestUkmRecorder*>(GetDocument().UkmRecorder());
+  ukm::TestAutoSetUkmRecorder recorder;
 
-  EXPECT_EQ(recorder->entries_count(), 0u);
+  EXPECT_EQ(recorder.entries_count(), 0u);
   GetDocument().MarkHasFindInPageRequest();
-  EXPECT_EQ(recorder->entries_count(), 1u);
+  EXPECT_EQ(recorder.entries_count(), 1u);
   GetDocument().MarkHasFindInPageRequest();
-  EXPECT_EQ(recorder->entries_count(), 1u);
+  EXPECT_EQ(recorder.entries_count(), 1u);
 
-  auto entries = recorder->GetEntriesByName("Blink.FindInPage");
+  auto entries = recorder.GetEntriesByName("Blink.FindInPage");
   EXPECT_EQ(entries.size(), 1u);
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "DidSearch"));
   EXPECT_EQ(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "DidSearch"), 1);
@@ -1029,10 +1025,10 @@ TEST_F(DocumentTest, FindInPageUkm) {
       entries[0], "DidHaveRenderSubtreeMatch"));
 
   GetDocument().MarkHasFindInPageContentVisibilityActiveMatch();
-  EXPECT_EQ(recorder->entries_count(), 2u);
+  EXPECT_EQ(recorder.entries_count(), 2u);
   GetDocument().MarkHasFindInPageContentVisibilityActiveMatch();
-  EXPECT_EQ(recorder->entries_count(), 2u);
-  entries = recorder->GetEntriesByName("Blink.FindInPage");
+  EXPECT_EQ(recorder.entries_count(), 2u);
+  entries = recorder.GetEntriesByName("Blink.FindInPage");
   EXPECT_EQ(entries.size(), 2u);
 
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "DidSearch"));
@@ -1071,19 +1067,14 @@ TEST_F(DocumentTest, FindInPageUkmInFrame) {
   ASSERT_TRUE(document);
   ASSERT_FALSE(document->IsInMainFrame());
 
-  // Save the old recorder and replace it with a test one.
-  auto old_recorder = std::move(document->ukm_recorder_);
-  document->ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
-
-  auto* recorder = static_cast<ukm::TestUkmRecorder*>(document->UkmRecorder());
-
-  EXPECT_EQ(recorder->entries_count(), 0u);
+  ukm::TestAutoSetUkmRecorder recorder;
+  EXPECT_EQ(recorder.entries_count(), 0u);
   document->MarkHasFindInPageRequest();
-  EXPECT_EQ(recorder->entries_count(), 1u);
+  EXPECT_EQ(recorder.entries_count(), 1u);
   document->MarkHasFindInPageRequest();
-  EXPECT_EQ(recorder->entries_count(), 1u);
+  EXPECT_EQ(recorder.entries_count(), 1u);
 
-  auto entries = recorder->GetEntriesByName("Blink.FindInPage");
+  auto entries = recorder.GetEntriesByName("Blink.FindInPage");
   EXPECT_EQ(entries.size(), 1u);
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "DidSearch"));
   EXPECT_EQ(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "DidSearch"), 1);
@@ -1091,10 +1082,10 @@ TEST_F(DocumentTest, FindInPageUkmInFrame) {
       entries[0], "DidHaveRenderSubtreeMatch"));
 
   document->MarkHasFindInPageContentVisibilityActiveMatch();
-  EXPECT_EQ(recorder->entries_count(), 2u);
+  EXPECT_EQ(recorder.entries_count(), 2u);
   document->MarkHasFindInPageContentVisibilityActiveMatch();
-  EXPECT_EQ(recorder->entries_count(), 2u);
-  entries = recorder->GetEntriesByName("Blink.FindInPage");
+  EXPECT_EQ(recorder.entries_count(), 2u);
+  entries = recorder.GetEntriesByName("Blink.FindInPage");
   EXPECT_EQ(entries.size(), 2u);
 
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "DidSearch"));
@@ -1108,9 +1099,6 @@ TEST_F(DocumentTest, FindInPageUkmInFrame) {
                                                   "DidHaveRenderSubtreeMatch"),
             1);
   EXPECT_FALSE(ukm::TestUkmRecorder::EntryHasMetric(entries[1], "DidSearch"));
-
-  // Restore the old recorder, since some ukm metrics are recorded at shutdown.
-  document->ukm_recorder_ = std::move(old_recorder);
 }
 
 TEST_F(DocumentTest, AtPageMarginWithDeviceScaleFactor) {

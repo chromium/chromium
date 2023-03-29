@@ -1909,6 +1909,8 @@ generated_interface_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internal_settings_generated.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internals.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internals.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internals_ukm_recorder.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_internals_ukm_recorder.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_origin_trials_test.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_origin_trials_test.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_record_test.cc",
