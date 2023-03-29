@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
@@ -1597,32 +1596,7 @@ LayoutUnit InlineFlowBox::ComputeOverAnnotationAdjustment(
         curr->GetLineLayoutItem().IsRubyRun() &&
         curr->GetLineLayoutItem().StyleRef().GetRubyPosition() ==
             RubyPosition::kBefore) {
-      LineLayoutRubyRun ruby_run = LineLayoutRubyRun(curr->GetLineLayoutItem());
-      LineLayoutRubyText ruby_text = ruby_run.RubyText();
-      if (!ruby_text)
-        continue;
-
-      if (!ruby_run.StyleRef().IsFlippedLinesWritingMode()) {
-        LayoutUnit top_of_first_ruby_text_line =
-            ruby_text.LogicalTop() + (ruby_text.FirstRootBox()
-                                          ? ruby_text.FirstRootBox()->LineTop()
-                                          : LayoutUnit());
-        if (top_of_first_ruby_text_line >= 0)
-          continue;
-        top_of_first_ruby_text_line += curr->LogicalTop();
-        result =
-            std::max(result, allowed_position - top_of_first_ruby_text_line);
-      } else {
-        LayoutUnit bottom_of_last_ruby_text_line =
-            ruby_text.LogicalTop() +
-            (ruby_text.LastRootBox() ? ruby_text.LastRootBox()->LineBottom()
-                                     : ruby_text.LogicalHeight());
-        if (bottom_of_last_ruby_text_line <= curr->LogicalHeight())
-          continue;
-        bottom_of_last_ruby_text_line += curr->LogicalTop();
-        result =
-            std::max(result, bottom_of_last_ruby_text_line - allowed_position);
-      }
+      continue;
     }
 
     if (curr->IsInlineTextBox()) {
@@ -1669,32 +1643,7 @@ LayoutUnit InlineFlowBox::ComputeUnderAnnotationAdjustment(
         curr->GetLineLayoutItem().IsRubyRun() &&
         curr->GetLineLayoutItem().StyleRef().GetRubyPosition() ==
             RubyPosition::kAfter) {
-      LineLayoutRubyRun ruby_run = LineLayoutRubyRun(curr->GetLineLayoutItem());
-      LineLayoutRubyText ruby_text = ruby_run.RubyText();
-      if (!ruby_text)
-        continue;
-
-      if (ruby_run.StyleRef().IsFlippedLinesWritingMode()) {
-        LayoutUnit top_of_first_ruby_text_line =
-            ruby_text.LogicalTop() + (ruby_text.FirstRootBox()
-                                          ? ruby_text.FirstRootBox()->LineTop()
-                                          : LayoutUnit());
-        if (top_of_first_ruby_text_line >= 0)
-          continue;
-        top_of_first_ruby_text_line += curr->LogicalTop();
-        result =
-            std::max(result, allowed_position - top_of_first_ruby_text_line);
-      } else {
-        LayoutUnit bottom_of_last_ruby_text_line =
-            ruby_text.LogicalTop() +
-            (ruby_text.LastRootBox() ? ruby_text.LastRootBox()->LineBottom()
-                                     : ruby_text.LogicalHeight());
-        if (bottom_of_last_ruby_text_line <= curr->LogicalHeight())
-          continue;
-        bottom_of_last_ruby_text_line += curr->LogicalTop();
-        result =
-            std::max(result, bottom_of_last_ruby_text_line - allowed_position);
-      }
+      continue;
     }
 
     if (curr->IsInlineTextBox()) {

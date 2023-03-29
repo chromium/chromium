@@ -6,18 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_RUBY_TEXT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyText>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyText>;
-
-// A LayoutNG version of LayoutRubyText.
-class CORE_EXPORT LayoutNGRubyText final
-    : public LayoutNGBlockFlowMixin<LayoutRubyText> {
+// LayoutNGRubyText represents a ruby annotation box.
+// https://drafts.csswg.org/css-ruby-1/#ruby-annotation-box
+class CORE_EXPORT LayoutNGRubyText final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGRubyText(Element* element);
   ~LayoutNGRubyText() override;
@@ -26,7 +21,18 @@ class CORE_EXPORT LayoutNGRubyText final
     NOT_DESTROYED();
     return "LayoutNGRubyText";
   }
-  void UpdateBlockLayout(bool relayout_children) override;
+  bool IsOfType(LayoutObjectType type) const override;
+  bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
+  void StyleDidChange(StyleDifference diff,
+                      const ComputedStyle* old_style) override;
+  bool CreatesNewFormattingContext() const override;
+};
+
+template <>
+struct DowncastTraits<LayoutNGRubyText> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRubyText();
+  }
 };
 
 }  // namespace blink

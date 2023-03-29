@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_br.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/ellipsis_box.h"
@@ -493,12 +492,7 @@ bool InlineTextBox::GetEmphasisMarkPosition(
   if (!containing_block.Parent().IsRubyRun())
     return true;
 
-  LineLayoutRubyText ruby_text =
-      LineLayoutRubyRun(containing_block.Parent()).RubyText();
-
-  // The emphasis marks over are suppressed only if there is a ruby text box and
-  // it not empty.
-  return !ruby_text || !ruby_text.FirstLineBox();
+  return true;
 }
 
 void InlineTextBox::Paint(const PaintInfo& paint_info,

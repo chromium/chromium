@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -391,7 +390,6 @@ template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutProgress>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyAsBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyBase>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyRun>;
-template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyText>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutView>;
 

@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -198,12 +197,6 @@ LayoutRubyAsBlock* LayoutObjectFactory::CreateRubyAsBlock(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   return CreateObject<LayoutRubyAsBlock, LayoutNGRubyAsBlock>(*node, legacy);
-}
-
-LayoutObject* LayoutObjectFactory::CreateRubyText(Node* node,
-                                                  const ComputedStyle& style,
-                                                  LegacyLayout legacy) {
-  return CreateObject<LayoutRubyText, LayoutNGRubyText>(*node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateBR(Node* node, LegacyLayout legacy) {

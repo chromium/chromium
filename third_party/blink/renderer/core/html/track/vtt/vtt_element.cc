@@ -27,8 +27,8 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -150,7 +150,7 @@ LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style,
     case kVTTNodeTypeRuby:
       return MakeGarbageCollected<LayoutRubyAsInline>(this);
     case kVTTNodeTypeRubyText:
-      return LayoutObjectFactory::CreateRubyText(this, style, legacy);
+      return MakeGarbageCollected<LayoutNGRubyText>(this);
   }
   return LayoutObject::CreateObject(this, style, legacy);
 }

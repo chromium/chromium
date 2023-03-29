@@ -33,9 +33,9 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 
 namespace blink {
 
@@ -63,14 +63,14 @@ bool LayoutRubyRun::HasRubyBase() const {
   return LastChild() && LastChild()->IsRubyBase();
 }
 
-LayoutRubyText* LayoutRubyRun::RubyText() const {
+LayoutNGRubyText* LayoutRubyRun::RubyText() const {
   NOT_DESTROYED();
   LayoutObject* child = FirstChild();
   // If in future it becomes necessary to support floating or positioned ruby
   // text, layout will have to be changed to handle them properly.
   DCHECK(!child || !child->IsRubyText() ||
          !child->IsFloatingOrOutOfFlowPositioned());
-  return DynamicTo<LayoutRubyText>(child);
+  return DynamicTo<LayoutNGRubyText>(child);
 }
 
 LayoutRubyBase* LayoutRubyRun::RubyBase() const {
@@ -228,7 +228,7 @@ LayoutObject* LayoutRubyRun::LayoutSpecialExcludedChild(
     SubtreeLayoutScope& layout_scope) {
   NOT_DESTROYED();
   // Don't bother positioning the LayoutRubyRun yet.
-  LayoutRubyText* rt = RubyText();
+  auto* rt = RubyText();
   if (!rt)
     return nullptr;
   if (relayout_children)
@@ -241,14 +241,14 @@ void LayoutRubyRun::UpdateLayout() {
   NOT_DESTROYED();
   LayoutBlockFlow::UpdateLayout();
 
-  LayoutRubyText* rt = RubyText();
+  auto* rt = RubyText();
   if (!rt)
     return;
 
   rt->SetLogicalLeft(LayoutUnit());
 
-  // Place the LayoutRubyText such that its bottom is flush with the lineTop of
-  // the first line of the LayoutRubyBase.
+  // Place the LayoutNGRubyText such that its bottom is flush with the lineTop
+  // of the first line of the LayoutRubyBase.
   LayoutUnit last_line_ruby_text_bottom = rt->LogicalHeight();
   LayoutUnit first_line_ruby_text_top;
   if (RootInlineBox* root_box = rt->LastRootBox()) {
@@ -282,7 +282,7 @@ void LayoutRubyRun::UpdateLayout() {
     rt->SetLogicalTop(-first_line_ruby_text_top + last_line_bottom);
   }
 
-  // Update our overflow to account for the new LayoutRubyText position.
+  // Update our overflow to account for the new LayoutNGRubyText position.
   ComputeLayoutOverflow(ClientLogicalBottom());
 }
 
@@ -298,7 +298,7 @@ void LayoutRubyRun::GetOverhang(bool first_line,
   end_overhang = 0;
 
   LayoutRubyBase* ruby_base = RubyBase();
-  LayoutRubyText* ruby_text = RubyText();
+  auto* ruby_text = RubyText();
 
   if (!ruby_base || !ruby_text)
     return;

@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_base.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 
 namespace blink {
@@ -34,10 +33,6 @@ class LineLayoutRubyRun : public LineLayoutBlockFlow {
     ToRubyRun()->GetOverhang(first_line, start_layout_item.GetLayoutObject(),
                              end_layout_item.GetLayoutObject(), start_overhang,
                              end_overhang);
-  }
-
-  LineLayoutRubyText RubyText() const {
-    return LineLayoutRubyText(ToRubyRun()->RubyText());
   }
 
   LineLayoutRubyBase RubyBase() const {

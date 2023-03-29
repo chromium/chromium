@@ -37,9 +37,9 @@
 namespace blink {
 
 class LayoutRubyBase;
-class LayoutRubyText;
 template <typename Base>
 class LayoutNGMixin;
+class LayoutNGRubyText;
 
 // LayoutRubyRun are 'inline-block/table' like objects,and wrap a single pairing
 // of a ruby base with its ruby text(s).
@@ -55,7 +55,7 @@ class LayoutRubyRun : public LayoutBlockFlow {
 
   bool HasRubyText() const;
   bool HasRubyBase() const;
-  LayoutRubyText* RubyText() const;
+  LayoutNGRubyText* RubyText() const;
   LayoutRubyBase* RubyBase() const;
   // Creates the base if it doesn't already exist
   LayoutRubyBase& EnsureRubyBase();
