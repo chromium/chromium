@@ -500,8 +500,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
   NOTREACHED();
 }
 
-void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
-                                      content::BrowserContext* context) {
+void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(profile_);
 
@@ -521,7 +520,7 @@ void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
       // We always load the uncompressed image to apply the icon effects or
       // resize the icon size, and then re-encode the image if the compressed
       // icon is requested.
-      extensions::ImageLoader::Get(context)->LoadImageAtEveryScaleFactorAsync(
+      extensions::ImageLoader::Get(profile_)->LoadImageAtEveryScaleFactorAsync(
           extension, gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
           ImageToImageSkia(
               base::BindOnce(&AppIconLoader::MaybeApplyEffectsAndComplete,
@@ -715,7 +714,6 @@ void AppIconLoader::GetWebAppCompressedIconData(
 
 void AppIconLoader::GetChromeAppCompressedIconData(
     const extensions::Extension* extension,
-    content::BrowserContext* context,
     ui::ResourceScaleFactor scale_factor) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(profile_);
@@ -726,7 +724,7 @@ void AppIconLoader::GetChromeAppCompressedIconData(
   }
 
   icon_scale_ = ui::GetScaleForResourceScaleFactor(scale_factor);
-  extensions::ImageLoader::Get(context)->LoadImageAtEveryScaleFactorAsync(
+  extensions::ImageLoader::Get(profile_)->LoadImageAtEveryScaleFactorAsync(
       extension, gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
       ImageToImageSkia(
           base::BindOnce(&AppIconLoader::OnReadChromeAppForCompressedIconData,

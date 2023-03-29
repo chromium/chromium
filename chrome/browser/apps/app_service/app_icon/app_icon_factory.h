@@ -24,14 +24,11 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace content {
-class BrowserContext;
-}
-
 namespace gfx {
 class ImageSkia;
 }
 
+class Profile;
 class SkBitmap;
 
 namespace apps {
@@ -129,13 +126,13 @@ void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
 // Loads an icon from an extension.
 void LoadIconFromExtension(IconType icon_type,
                            int size_hint_in_dip,
-                           content::BrowserContext* context,
+                           Profile* profile,
                            const std::string& extension_id,
                            IconEffects icon_effects,
                            LoadIconCallback callback);
 
 // Loads an icon from a web app.
-void LoadIconFromWebApp(content::BrowserContext* context,
+void LoadIconFromWebApp(Profile* profile,
                         IconType icon_type,
                         int size_hint_in_dip,
                         const std::string& web_app_id,
@@ -144,7 +141,7 @@ void LoadIconFromWebApp(content::BrowserContext* context,
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Requests a compressed icon data for an web app identified by `web_app_id`.
-void GetWebAppCompressedIconData(content::BrowserContext* context,
+void GetWebAppCompressedIconData(Profile* profile,
                                  const std::string& web_app_id,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,
@@ -152,7 +149,7 @@ void GetWebAppCompressedIconData(content::BrowserContext* context,
 
 // Requests a compressed icon data for a chrome app identified by
 // `extension_id`.
-void GetChromeAppCompressedIconData(content::BrowserContext* context,
+void GetChromeAppCompressedIconData(Profile* profile,
                                     const std::string& extension_id,
                                     int size_in_dip,
                                     ui::ResourceScaleFactor scale_factor,
@@ -161,14 +158,14 @@ void GetChromeAppCompressedIconData(content::BrowserContext* context,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Requests a compressed icon data for an ARC app identified by `app_id`.
-void GetArcAppCompressedIconData(content::BrowserContext* context,
+void GetArcAppCompressedIconData(Profile* profile,
                                  const std::string& app_id,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback);
 
 // Requests a compressed icon data for a Guest OS app identified by `app_id`.
-void GetGuestOSAppCompressedIconData(content::BrowserContext* context,
+void GetGuestOSAppCompressedIconData(Profile* profile,
                                      const std::string& app_id,
                                      int size_in_dip,
                                      ui::ResourceScaleFactor scale_factor,

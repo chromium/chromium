@@ -32,10 +32,6 @@ namespace arc {
 class IconDecodeRequest;
 }
 
-namespace content {
-class BrowserContext;
-}
-
 namespace extensions {
 class Extension;
 }
@@ -113,8 +109,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
                       const GURL& launch_url,
                       web_app::WebAppIconManager& icon_manager);
 
-  void LoadExtensionIcon(const extensions::Extension* extension,
-                         content::BrowserContext* context);
+  void LoadExtensionIcon(const extensions::Extension* extension);
 
   // The image file must be compressed using the default encoding.
   void LoadCompressedIconFromFile(const base::FilePath& path);
@@ -147,7 +142,6 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
   // Requests a compressed icon data with `scale_factor` for a chrome app
   // identified by `extension`.
   void GetChromeAppCompressedIconData(const extensions::Extension* extension,
-                                      content::BrowserContext* context,
                                       ui::ResourceScaleFactor scale_factor);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
