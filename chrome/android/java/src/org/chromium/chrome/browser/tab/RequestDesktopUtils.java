@@ -396,15 +396,7 @@ public class RequestDesktopUtils {
             return false;
         }
 
-        // If the smallest screen size in dp is below threshold, avoid default-enabling the setting.
-        if (context.getResources().getConfiguration().smallestScreenWidthDp
-                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
-                        PARAM_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH,
-                        DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP)) {
-            // TODO(shuyng): Add downgrade path support for smallestScreenWidthDp change.
-            return false;
-        }
-
+        // Check whether manufacturer is in allow list.
         if (sDefaultEnabledManufacturerAllowlist == null) {
             sDefaultEnabledManufacturerAllowlist = new HashSet<>();
             String allowListStr = ChromeFeatureList.getFieldTrialParamByFeature(
@@ -416,9 +408,17 @@ public class RequestDesktopUtils {
         if (!sDefaultEnabledManufacturerAllowlist.isEmpty()
                 && !sDefaultEnabledManufacturerAllowlist.contains(
                         Build.MANUFACTURER.toLowerCase(Locale.US))) {
+            updateNoLongerInCohort();
             return false;
         }
 
+        if (displaySizeInInches > MAX_RECORDED_SCREEN_SIZE_INCHES) {
+            silentlyReportingCrashes(
+                    context, displaySizeInInches, "Display size falls into overflow bucket");
+        }
+
+        // If it is not external display and the screen size in inches is below threshold, avoid
+        // default-enabling the setting.
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
         boolean isOnExternalDisplay =
                 !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -427,12 +427,23 @@ public class RequestDesktopUtils {
         double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
                 PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
-        if (displaySizeInInches < screenSizeThreshold && !isOnExternalDisplay
-                && sharedPreferencesManager.contains(
+        if (!isOnExternalDisplay && displaySizeInInches < screenSizeThreshold) {
+            if (sharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
-            // TODO(shuyng): Add downgrade path support for displaySizeInInches change.
-            silentlyReportingCrashes(
-                    context, displaySizeInInches, "Display size falls below threshold");
+                silentlyReportingCrashes(
+                        context, displaySizeInInches, "Display size falls below threshold");
+            }
+            updateNoLongerInCohort();
+            return false;
+        }
+
+        // If the smallest screen size in dp is below threshold, avoid default-enabling the setting.
+        if (context.getResources().getConfiguration().smallestScreenWidthDp
+                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
+                        PARAM_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH,
+                        DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP)) {
+            updateNoLongerInCohort();
+            return false;
         }
 
         boolean previouslyDefaultEnabled = sharedPreferencesManager.readBoolean(
@@ -441,8 +452,7 @@ public class RequestDesktopUtils {
                 SingleCategorySettingsConstants
                         .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
 
-        boolean inCohort = !previouslyUpdatedByUser && displaySizeInInches >= screenSizeThreshold
-                && !isOnExternalDisplay;
+        boolean inCohort = !previouslyUpdatedByUser && !isOnExternalDisplay;
         boolean wouldEnable = !previouslyDefaultEnabled && inCohort;
         if (wouldEnable) {
             // Store a SharedPreferences key to tag the device as qualified for the feature
@@ -450,11 +460,6 @@ public class RequestDesktopUtils {
             sharedPreferencesManager.writeBoolean(
                     ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT, true);
             captureDisplaySpec(context, displaySizeInInches);
-        }
-
-        if (displaySizeInInches > MAX_RECORDED_SCREEN_SIZE_INCHES) {
-            silentlyReportingCrashes(
-                    context, displaySizeInInches, "Display size falls into overflow bucket");
         }
 
         if (inCohort
