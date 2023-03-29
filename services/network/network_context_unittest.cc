@@ -7143,6 +7143,27 @@ TEST_F(NetworkContextTest, EnableTrustTokens) {
   EXPECT_TRUE(success);
 }
 
+TEST_F(NetworkContextTest, EnableTrustTokensForFledge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kFledgePst},
+                                       {features::kPrivateStateTokens});
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  EXPECT_TRUE(network_context->trust_token_store());
+
+  base::RunLoop run_loop;
+  bool success = false;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        success = !!store;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(success);
+}
+
 TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
