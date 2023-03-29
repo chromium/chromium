@@ -132,6 +132,29 @@ class DeskTemplateClientLacrosBrowserTest : public InProcessBrowserTest {
     return state;
   }
 
+  // Returns a DeskTemplateStatePtr where all tabs are pinned.  This tests for
+  // regressions wherein all tabs become unpinned on launch.
+  crosapi::mojom::DeskTemplateStatePtr MakeTestMojomWithOnlyPinnedTabs() {
+    crosapi::mojom::DeskTemplateStatePtr state =
+        MakeTestStateWithoutPinnedTabsOrTabGroup();
+
+    state->first_non_pinned_index = 5;
+
+    return state;
+  }
+
+  // Returns a DeskTemplateStatePtr where some tabs are pinned and the rest are
+  // normal. This tests for regressions wherein all tabs become unpinned on
+  // launch.
+  crosapi::mojom::DeskTemplateStatePtr MakeTestMojomWithSomePinnedTabs() {
+    crosapi::mojom::DeskTemplateStatePtr state =
+        MakeTestStateWithoutPinnedTabsOrTabGroup();
+
+    state->first_non_pinned_index = 3;
+
+    return state;
+  }
+
   // Returns a maximal `DeskTemplateStatePtr` mojom for testing.
   crosapi::mojom::DeskTemplateStatePtr MakeTestMojom() {
     crosapi::mojom::DeskTemplateStatePtr state =
@@ -208,7 +231,7 @@ class DeskTemplateClientLacrosBrowserTest : public InProcessBrowserTest {
 
     // first non pinned index in this case will be larger than the count of
     // tabs./
-    state->first_non_pinned_index = 5;
+    state->first_non_pinned_index = 6;
 
     return state;
   }
@@ -370,6 +393,54 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
   // two semantically identical states to test against.
   crosapi::mojom::DeskTemplateStatePtr expected_state = MakeTestMojom();
   crosapi::mojom::DeskTemplateStatePtr launch_parameters = MakeTestMojom();
+  gfx::Rect expected_bounds(0, 0, 256, 256);
+
+  DeskTemplateClientLacros client;
+
+  client.CreateBrowserWithRestoredData(
+      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
+      std::move(launch_parameters));
+
+  // Close default test browser, we will set browser to the browser created
+  // by the method under test.
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+
+  AssertBrowserCreatedCorrectly(browser(), expected_state, expected_bounds);
+}
+
+IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
+                       LaunchesBrowserWithOnlyPinnedTabsCorrectly) {
+  // State pointers don't supply a Clone operation.  Therefore we will create
+  // two semantically identical states to test against.
+  crosapi::mojom::DeskTemplateStatePtr expected_state =
+      MakeTestMojomWithOnlyPinnedTabs();
+  crosapi::mojom::DeskTemplateStatePtr launch_parameters =
+      MakeTestMojomWithOnlyPinnedTabs();
+  gfx::Rect expected_bounds(0, 0, 256, 256);
+
+  DeskTemplateClientLacros client;
+
+  client.CreateBrowserWithRestoredData(
+      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
+      std::move(launch_parameters));
+
+  // Close default test browser, we will set browser to the browser created
+  // by the method under test.
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+
+  AssertBrowserCreatedCorrectly(browser(), expected_state, expected_bounds);
+}
+
+IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
+                       LaunchesBrowserWithSomePinnedTabsCorrectly) {
+  // State pointers don't supply a Clone operation.  Therefore we will create
+  // two semantically identical states to test against.
+  crosapi::mojom::DeskTemplateStatePtr expected_state =
+      MakeTestMojomWithSomePinnedTabs();
+  crosapi::mojom::DeskTemplateStatePtr launch_parameters =
+      MakeTestMojomWithSomePinnedTabs();
   gfx::Rect expected_bounds(0, 0, 256, 256);
 
   DeskTemplateClientLacros client;

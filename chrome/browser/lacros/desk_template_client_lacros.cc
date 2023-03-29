@@ -112,7 +112,7 @@ void SetPinnedTabs(const int first_non_pinned_tab_index, Browser* out_browser) {
   DCHECK(browser_tab_model);
 
   if (first_non_pinned_tab_index < 0 ||
-      first_non_pinned_tab_index >= out_browser->tab_strip_model()->count()) {
+      first_non_pinned_tab_index > out_browser->tab_strip_model()->count()) {
     LOG(WARNING) << "Pinned tab outside of tab bounds!";
     return;
   }
