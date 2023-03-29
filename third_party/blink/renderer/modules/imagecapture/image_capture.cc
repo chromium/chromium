@@ -1761,8 +1761,10 @@ void ImageCapture::SetMediaTrackConstraints(
     if (constraint_set->hasTorch()) {
       UseCounter::Count(context, WebFeature::kImageCaptureTorch);
     }
-    // TODO(eero.hakkinen@intel.com): count how many times backgroundBlur is
-    // used.
+    if (RuntimeEnabledFeatures::MediaCaptureBackgroundBlurEnabled(context) &&
+        constraint_set->hasBackgroundBlur()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureBackgroundBlur);
+    }
   }
 
   if (!service_.is_bound()) {
