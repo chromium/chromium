@@ -10,12 +10,13 @@
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 
@@ -456,9 +457,11 @@ class CrossTouchPoint : public TouchPoint {
     // Put the inside stroke on top purposely because the thickness is only 1
     // and it doesn't show up obviously probably due to the round issue.
     touch_inside_stroke_ = AddChildView(std::make_unique<CrossInsideStroke>());
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
-    GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
-        IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_CROSS));
+    SetAccessibilityProperties(
+        ax::mojom::Role::kGroup,
+        l10n_util::GetStringUTF16(
+            IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_CROSS));
+
     TouchPoint::Init();
   }
 
@@ -483,9 +486,11 @@ class DotTouchPoint : public TouchPoint {
     // Put the inside stroke on top purposely because the thickness is only 1
     // and it doesn't show up obviously probably due to the round issue.
     touch_inside_stroke_ = AddChildView(std::make_unique<DotInsideStroke>());
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
-    GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
-        IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_DOT));
+    SetAccessibilityProperties(
+        ax::mojom::Role::kGroup,
+        l10n_util::GetStringUTF16(
+            IDS_INPUT_OVERLAY_KEYMAPPING_TOUCH_POINT_DOT));
+
     TouchPoint::Init();
   }
 
@@ -655,5 +660,7 @@ void TouchPoint::OnFocus() {
 void TouchPoint::OnBlur() {
   static_cast<ActionView*>(parent())->RemoveMessage();
 }
+BEGIN_METADATA(TouchPoint, views::View)
+END_METADATA
 
 }  // namespace arc::input_overlay

@@ -82,15 +82,14 @@ gfx::Size ProgressBarDialogView::CalculatePreferredSize() const {
 }
 
 void ProgressBarDialogView::AddedToWidget() {
-  auto& view_ax = GetWidget()->GetRootView()->GetViewAccessibility();
-  view_ax.OverrideRole(ax::mojom::Role::kDialog);
   const std::u16string view_name =
       is_multiple_files_
           ? l10n_util::GetStringUTF16(
                 IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS)
           : l10n_util::GetStringUTF16(
                 IDS_ASH_ARC_NEARBY_SHARE_FILE_PREPARATION_PROGRESS);
-  view_ax.OverrideName(view_name);
+  GetWidget()->GetRootView()->SetAccessibleRole(ax::mojom::Role::kDialog);
+  GetWidget()->GetRootView()->SetAccessibleName(view_name);
 }
 
 void ProgressBarDialogView::OnThemeChanged() {

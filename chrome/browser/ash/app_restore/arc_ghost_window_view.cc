@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -24,7 +25,6 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -80,6 +80,9 @@ class Throbber : public views::View {
         FROM_HERE, base::Milliseconds(30),
         base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
     SchedulePaint();  // paint right away
+    SetAccessibilityProperties(
+        ax::mojom::Role::kProgressIndicator,
+        l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER));
   }
   Throbber(const Throbber&) = delete;
   Throbber operator=(const Throbber&) = delete;
@@ -89,13 +92,6 @@ class Throbber : public views::View {
     base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
     gfx::PaintThrobberSpinning(canvas, GetContentsBounds(), color_,
                                elapsed_time);
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // A valid role must be set prior to setting the name.
-    node_data->role = ax::mojom::Role::kProgressIndicator;
-    node_data->SetName(
-        l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER));
   }
 
  private:
@@ -162,7 +158,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
         color_utils::GetColorWithMaxContrast(theme_color_)));
     throbber->SetPreferredSize(gfx::Size(kThrobberDiameterOriginalStyle,
                                          kThrobberDiameterOriginalStyle));
-    throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
+    throbber->SetAccessibleRole(ax::mojom::Role::kImage);
     throbber->SetID(ContentID::ID_THROBBER);
     // TODO(sstan): Set window title and accessible name from saved data.
   } else {

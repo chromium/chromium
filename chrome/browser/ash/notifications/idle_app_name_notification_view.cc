@@ -15,7 +15,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -118,7 +117,6 @@ class IdleAppNameNotificationDelegateView
     // Add the application name label to the message.
     AddLabel(app_name, rb->GetFontList(ui::ResourceBundle::BoldFont),
              error ? kErrorTextColor : kTextColor);
-    spoken_text_ = app_name;
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     // Set a timer which will trigger to remove the message after the given
@@ -126,6 +124,8 @@ class IdleAppNameNotificationDelegateView
     hide_timer_.Start(FROM_HERE,
                       base::Milliseconds(message_visibility_time_in_ms), this,
                       &IdleAppNameNotificationDelegateView::RemoveMessage);
+
+    SetAccessibilityProperties(ax::mojom::Role::kAlert, app_name);
   }
 
   IdleAppNameNotificationDelegateView(
@@ -177,11 +177,6 @@ class IdleAppNameNotificationDelegateView
     views::WidgetDelegateView::OnPaint(canvas);
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kAlert;
-    node_data->SetName(spoken_text_);
-  }
-
   // ImplicitAnimationObserver overrides
   void OnImplicitAnimationsCompleted() override { Close(); }
 
@@ -205,9 +200,6 @@ class IdleAppNameNotificationDelegateView
   // The owner of this message which needs to get notified when the message
   // closes.
   IdleAppNameNotificationView* owner_;
-
-  // The spoken text.
-  std::u16string spoken_text_;
 
   // True if the widget got already closed.
   bool widget_closed_;

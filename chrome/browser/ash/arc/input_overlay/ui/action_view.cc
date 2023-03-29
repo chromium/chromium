@@ -138,8 +138,7 @@ void ActionView::ShowErrorMsg(const base::StringPiece& message,
   if (ax_annouce) {
     GetViewAccessibility().AnnounceText(base::UTF8ToUTF16(message));
   } else {
-    editing_label->GetViewAccessibility().OverrideDescription(
-        base::UTF8ToUTF16(message));
+    editing_label->SetAccessibleDescription(base::UTF8ToUTF16(message));
   }
 }
 
@@ -152,7 +151,7 @@ void ActionView::ShowFocusInfoMsg(const base::StringPiece& message,
                                   views::View* view) {
   display_overlay_controller_->AddEditMessage(message,
                                               MessageType::kInfoLabelFocus);
-  view->GetViewAccessibility().OverrideDescription(base::UTF8ToUTF16(message));
+  view->SetAccessibleDescription(base::UTF8ToUTF16(message));
 }
 
 void ActionView::RemoveMessage() {

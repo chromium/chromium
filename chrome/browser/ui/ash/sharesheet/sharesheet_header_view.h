@@ -44,9 +44,6 @@ class SharesheetHeaderView : public views::View {
     kLink,
   };
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // Adds the view for text preview.
   void ShowTextPreview();
 

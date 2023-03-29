@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace arc::input_overlay {
@@ -23,6 +24,7 @@ std::string GetDisplayText(const ui::DomCode code);
 // ActionLabel shows text mapping hint for each action.
 class ActionLabel : public views::LabelButton {
  public:
+  METADATA_HEADER(ActionLabel);
   static std::vector<ActionLabel*> Show(
       views::View* parent,
       ActionType action_type,
@@ -106,8 +108,8 @@ class ActionLabel : public views::LabelButton {
   void SetBackgroundForEdit();
 
   bool IsInputUnbound();
-  // Customize a11y name.
-  void CustomizeAccessibilityName();
+  // Calculate the accessible name.
+  std::u16string CalculateAccessibleName();
 
   bool allow_reposition_;
 };

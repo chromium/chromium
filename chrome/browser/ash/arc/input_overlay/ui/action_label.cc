@@ -15,14 +15,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -461,13 +462,15 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
 void ActionLabel::Init() {
   SetRequestFocusOnPress(true);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  ax::mojom::Role role = GetAccessibleRole();
   if (allow_reposition_) {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kLabelText);
+    role = ax::mojom::Role::kLabelText;
   } else {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInsetAlpha)));
   }
-  CustomizeAccessibilityName();
+
+  SetAccessibilityProperties(role, CalculateAccessibleName());
 }
 
 ActionLabel::ActionLabel(int radius,
@@ -501,12 +504,12 @@ ActionLabel::~ActionLabel() = default;
 
 void ActionLabel::SetTextActionLabel(const std::string& text) {
   label()->SetText(base::UTF8ToUTF16(text));
-  CustomizeAccessibilityName();
+  SetAccessibleName(CalculateAccessibleName());
 }
 
 void ActionLabel::SetImageActionLabel(MouseAction mouse_action) {
   set_mouse_action(mouse_action);
-  CustomizeAccessibilityName();
+  SetAccessibleName(CalculateAccessibleName());
 }
 
 void ActionLabel::SetDisplayMode(DisplayMode mode) {
@@ -763,15 +766,15 @@ bool ActionLabel::IsInputUnbound() {
   return base::UTF16ToUTF8(GetText()) == kUnknownBind;
 }
 
-void ActionLabel::CustomizeAccessibilityName() {
+std::u16string ActionLabel::CalculateAccessibleName() {
   if (mouse_action_ != MouseAction::NONE) {
-    SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
-    return;
+    // TODO(accessibility): The accessible name is expected to be end-user
+    // consumable.
+    return base::UTF8ToUTF16(GetClassName());
   }
 
   if (!allow_reposition_) {
-    SetAccessibleName(label()->GetText());
-    return;
+    return label()->GetText();
   }
 
   std::u16string name =
@@ -787,7 +790,10 @@ void ActionLabel::CustomizeAccessibilityName() {
   } else {
     name.append(label()->GetText());
   }
-  SetAccessibleName(name);
+  return name;
 }
+
+BEGIN_METADATA(ActionLabel, views::LabelButton)
+END_METADATA
 
 }  // namespace arc::input_overlay

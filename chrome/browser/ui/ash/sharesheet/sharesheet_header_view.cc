@@ -39,7 +39,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -275,6 +274,11 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetAccessibilityProperties(ax::mojom::Role::kGenericContainer,
+                             /*name=*/std::u16string(),
+                             /*description=*/absl::nullopt,
+                             /*role_description=*/absl::nullopt,
+                             ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   const bool has_files = !intent_->files.empty();
   // The image view is initialised first to ensure its left most placement.
@@ -316,11 +320,6 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
 }
 
 SharesheetHeaderView::~SharesheetHeaderView() = default;
-
-void SharesheetHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
-  node_data->SetNameExplicitlyEmpty();
-}
 
 void SharesheetHeaderView::ShowTextPreview() {
   std::vector<std::unique_ptr<views::Label>> preview_labels =
