@@ -32,6 +32,7 @@ from typing import Dict, List, NamedTuple, Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.layout_package import json_results_generator
+from blinkpy.web_tests.models.test_failures import FailureImage
 from blinkpy.web_tests.models.typ_types import ResultType
 
 
@@ -41,25 +42,27 @@ class Artifact(NamedTuple):
 
 
 class WebTestResult:
-    def __init__(self, test_name, result_dict):
+    def __init__(self, test_name, result_dict,
+                 artifacts: Dict[str, List[Artifact]]):
         self._test_name = test_name
         self._result_dict = result_dict
+        self._artifacts = artifacts
 
     def __repr__(self):
         return "WebTestResult(test_name=%s, result_dict=%s)" % \
             (repr(self._test_name), repr(self._result_dict))
 
     def baselines_by_suffix(self) -> Dict[str, List[Artifact]]:
-        artifacts = self._result_dict.get('artifacts', {})
-        baselines = collections.defaultdict(list)
+        baselines = {}
         # Add extensions for mismatches.
         for artifact_name, suffix in [
             ('actual_text', 'txt'),
             ('actual_image', 'png'),
             ('actual_audio', 'wav'),
         ]:
-            for url in artifacts.get(artifact_name, []):
-                baselines[suffix].append(Artifact(url))
+            artifacts = self._artifacts.get(artifact_name)
+            if artifacts:
+                baselines[suffix] = artifacts
         return baselines
 
     def test_name(self):
@@ -100,10 +103,9 @@ class WebTestResult:
         baseline, including an implicit all-PASS testharness baseline (i.e. a
         previously all-PASS testharness test starts to fail)."""
         actual_results = self.actual_results()
-        artifact_names = self._result_dict.get('artifacts', {}).keys()
         return ('FAIL' in actual_results and any(
             artifact_name.startswith('actual')
-            for artifact_name in artifact_names))
+            for artifact_name in self._artifacts))
 
     def is_missing_baseline(self):
         return (self.is_missing_image() or self.is_missing_text()
@@ -143,10 +145,15 @@ class WebTestResults:
     @classmethod
     def from_json(cls, json_dict, **kwargs) -> 'WebTestResults':
         sep = json_dict.get('sep', '/')
-        results = [
-            WebTestResult(test_name, fields) for test_name, fields in
-            _flatten_test_results_trie(json_dict['tests'], sep=sep)
-        ]
+        results = []
+        for test_name, fields in _flatten_test_results_trie(json_dict['tests'],
+                                                            sep=sep):
+            artifacts = {
+                artifact_name: [Artifact(path) for path in paths]
+                for artifact_name, paths in fields.get('artifacts',
+                                                       {}).items()
+            }
+            results.append(WebTestResult(test_name, fields, artifacts))
         kwargs.setdefault('interrupted', json_dict.get('interrupted', False))
         kwargs.setdefault('builder_name', json_dict.get('builder_name'))
         kwargs.setdefault('chromium_revision',
@@ -156,11 +163,11 @@ class WebTestResults:
     @classmethod
     def from_rdb_responses(cls,
                            test_results_by_name,
-                           artifacts_by_name=None,
+                           artifacts_by_run=None,
                            **kwargs):
         """Creates a WebTestResults object from raw ResultDB RPC response data.
         """
-        artifacts_by_name = artifacts_by_name or collections.defaultdict(list)
+        artifacts_by_run = artifacts_by_run or collections.defaultdict(list)
         results = []
         for test_name, raw_results in test_results_by_name.items():
             actual = ' '.join(
@@ -168,15 +175,9 @@ class WebTestResults:
                 for raw_result in raw_results)
             is_unexpected = any(not raw_result.get('expected')
                                 for raw_result in raw_results)
-            artifacts = collections.defaultdict(list)
-            for artifact in artifacts_by_name[test_name]:
-                artifacts[artifact['artifactId']].append(artifact['fetchUrl'])
-            trie_leaf = {
-                'actual': actual,
-                'is_unexpected': is_unexpected,
-                'artifacts': dict(artifacts),
-            }
-            results.append(WebTestResult(test_name, trie_leaf))
+            trie_leaf = {'actual': actual, 'is_unexpected': is_unexpected}
+            artifacts = _make_artifacts(raw_results, artifacts_by_run)
+            results.append(WebTestResult(test_name, trie_leaf, artifacts))
         return cls(results, **kwargs)
 
     _rdb_to_web_test_statuses = {
@@ -228,3 +229,25 @@ class WebTestResults:
             result for result in self._results_by_name.values()
             if not result.did_run_as_expected()
         ]
+
+
+def _make_artifacts(raw_results, artifacts_by_run):
+    artifacts = collections.defaultdict(list)
+    for raw_result in raw_results:
+        test_run = raw_result.get('name')
+        if not test_run:
+            continue
+        for raw_artifact in artifacts_by_run.get(test_run, []):
+            artifact_id, digest = raw_artifact['artifactId'], None
+            if artifact_id == 'actual_image':
+                digest = _image_hash(raw_result)
+            artifacts[artifact_id].append(
+                Artifact(raw_artifact['fetchUrl'], digest))
+    return dict(artifacts)
+
+
+def _image_hash(raw_result) -> Optional[str]:
+    for tag in raw_result.get('tags', []):
+        if tag['key'] == FailureImage.ACTUAL_HASH_RDB_TAG:
+            return tag['value']
+    return None

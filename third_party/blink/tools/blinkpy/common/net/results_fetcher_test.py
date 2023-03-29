@@ -188,6 +188,10 @@ class BuilderTest(LoggingTestCase):
                 'ninja://:blink_web_tests/should-pass.html',
                 'status':
                 'FAIL',
+                'tags': [{
+                    'key': 'web_tests_actual_image_hash',
+                    'value': '3f765a7',
+                }],
             }, {
                 'name':
                 ('invocations/task-chromium-swarm.appspot.com-6139bb/'
@@ -218,23 +222,25 @@ class BuilderTest(LoggingTestCase):
                 ('invocations/task-chromium-swarm.appspot.com-6139bb/'
                  'tests/ninja:%2F%2F:blink_web_tests%2Fshould-pass.html/'
                  'results/033e-aaaa/'
-                 'artifacts/actual_text'),
+                 'artifacts/actual_image'),
                 'artifactId':
-                'actual_text',
+                'actual_image',
                 'fetchUrl':
-                'https://results.usercontent.cr.dev/actual_text',
+                'https://results.usercontent.cr.dev/actual_image',
             }],
         })
         results = self.fetcher.gather_results(Build('linux-rel', 9000, '1234'),
-                                              'blink_web_tests (with patch)')
+                                              'blink_web_tests (with patch)',
+                                              True, False)
 
         result = results.result_for_test('should-pass.html')
         self.assertEqual(result.actual_results(), ['FAIL', 'PASS'])
         self.assertFalse(result.did_run_as_expected())
         self.assertEqual(
             result.baselines_by_suffix(), {
-                'txt': [
-                    Artifact('https://results.usercontent.cr.dev/actual_text'),
+                'png': [
+                    Artifact('https://results.usercontent.cr.dev/actual_image',
+                             '3f765a7'),
                 ],
             })
 

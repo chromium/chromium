@@ -88,7 +88,8 @@ class TestResultsFetcher:
     def gather_results(self,
                        build: Build,
                        step_name: str,
-                       exclude_exonerated: bool = True) -> WebTestResults:
+                       exclude_exonerated: bool = True,
+                       only_unexpected: bool = True) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
         assert build.build_id, '%s must set a build ID' % build
         suite = step_name
@@ -96,7 +97,11 @@ class TestResultsFetcher:
             suite = suite[:-len('(with patch)')].strip()
 
         test_result_predicate = {
-            'expectancy': 'VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS',
+            # TODO(crbug.com/1428727): Using `read_mask` with
+            # `VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS` throws an internal server
+            # error. Use `VARIANTS_WITH_UNEXPECTED_RESULTS` for now and filter
+            # results client-side.
+            'expectancy': 'VARIANTS_WITH_UNEXPECTED_RESULTS',
             'excludeExonerated': exclude_exonerated,
             'variant': {
                 'contains': {
@@ -106,19 +111,28 @@ class TestResultsFetcher:
                 },
             },
         }
+        read_mask = ['name', 'testId', 'tags', 'status', 'expected']
         test_results = self._resultdb_client.query_test_results(
-            [build.build_id], test_result_predicate)
+            [build.build_id], test_result_predicate, read_mask)
         test_results_by_name = self._group_test_results_by_test_name(
             test_results)
+        # TODO(crbug.com/1428727): Once the bug is fixed, use `expectancy` to
+        # filter results server-side instead.
+        if only_unexpected:
+            test_results_by_name = {
+                test: raw_results
+                for test, raw_results in test_results_by_name.items()
+                if not any(result.get('expected') for result in raw_results)
+            }
         artifacts = self._resultdb_client.query_artifacts(
             [build.build_id], {
                 'testResultPredicate': test_result_predicate,
                 'artifactIdRegexp': 'actual_.*'
             })
-        artifacts_by_name = self._group_artifacts_by_test_name(artifacts)
+        artifacts_by_run = self._group_artifacts_by_test_run(artifacts)
         return WebTestResults.from_rdb_responses(
             test_results_by_name,
-            artifacts_by_name,
+            artifacts_by_run,
             step_name=step_name,
             builder_name=build.builder_name)
 
@@ -132,20 +146,16 @@ class TestResultsFetcher:
             test_results_by_name[test_id_match['name']].append(test_result)
         return test_results_by_name
 
-    def _group_artifacts_by_test_name(self, artifacts):
-        artifact_name_pattern = re.compile(
-            r'invocations/[^/\s]+/tests/(?P<test_id>[^/\s]+)')
-        artifacts_by_name = collections.defaultdict(list)
+    def _group_artifacts_by_test_run(self, artifacts):
+        test_run_pattern = re.compile(
+            r'invocations/[^/\s]+/tests/[^/\s]+/results/[^/\s]+')
+        artifacts_by_run = collections.defaultdict(list)
         for artifact in artifacts:
-            artifact_name_match = artifact_name_pattern.match(artifact['name'])
-            if not artifact_name_match:
+            test_run_match = test_run_pattern.match(artifact['name'])
+            if not test_run_match:
                 continue
-            test_id = urllib.parse.unquote(artifact_name_match['test_id'])
-            test_id_match = self._test_id_pattern.fullmatch(test_id)
-            if not test_id_match:
-                continue
-            artifacts_by_name[test_id_match['name']].append(artifact)
-        return artifacts_by_name
+            artifacts_by_run[test_run_match[0]].append(artifact)
+        return artifacts_by_run
 
     def get_full_builder_url(self, url_base, builder_name):
         """ Returns the url for a builder directory in google storage.

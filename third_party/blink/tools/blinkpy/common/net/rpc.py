@@ -29,7 +29,7 @@
 import functools
 import logging
 import json
-from typing import Literal, NamedTuple, Optional
+from typing import List, Literal, NamedTuple, Optional
 from urllib.parse import urlunsplit
 
 import six
@@ -172,9 +172,7 @@ class BaseRPC:
             https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/proto/v1/resultdb.proto
         """
         entities = []
-        # Using 1e5 instead of 1000 max to reduce the rpc number
-        # Check https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/internal/pagination/pagination.go
-        data['pageSize'] = count if count > 0 else 1e5
+        data['pageSize'] = count if count > 0 else 1000
         while data.get('pageToken', True) and (count == 0
                                                or count - len(entities) > 0):
             response = self._luci_rpc(method, data)
@@ -296,11 +294,17 @@ class ResultDBClient(BaseRPC):
     def _get_invocations(self, build_ids):
         return ['invocations/build-%s' % build_id for build_id in build_ids]
 
-    def query_test_results(self, build_ids, predicate, count=0):
+    def query_test_results(self,
+                           build_ids,
+                           predicate,
+                           read_mask: Optional[List[str]] = None,
+                           count=0):
         request = {
             'invocations': self._get_invocations(build_ids),
             'predicate': predicate,
         }
+        if read_mask:
+            request['readMask'] = ','.join(read_mask)
         return self._luci_rpc_paginated('QueryTestResults',
                                         request,
                                         'testResults',
