@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,7 +56,13 @@ const CGFloat kPriceChipHorizontalSpacing = 4.0;
                        constant:kPriceChipVerticalIndent],
   ]];
 
+  self.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_CHIP);
   if (currentPrice) {
+    self.accessibilityValue = l10n_util::GetNSStringF(
+        IDS_IOS_TAB_SWITCHER_PRICE_CARD,
+        base::SysNSStringToUTF16(self.currentPriceLabel.text),
+        base::SysNSStringToUTF16(self.previousPriceLabel.text));
     [self addSubview:self.currentPriceLabel];
     [NSLayoutConstraint activateConstraints:@[
       [self.previousPriceLabel.leadingAnchor
@@ -73,6 +82,7 @@ const CGFloat kPriceChipHorizontalSpacing = 4.0;
     ]];
     self.backgroundColor = [UIColor colorNamed:kGreen100Color];
   } else {
+    self.accessibilityValue = self.previousPriceLabel.text;
     self.backgroundColor = [UIColor colorNamed:kGrey100Color];
     [self.previousPriceLabel.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
