@@ -16,11 +16,14 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -58,9 +61,8 @@ void ConsumerKioskAutoLaunchStatusCheck(
   std::move(runner_quit_task).Run();
 }
 
-// Helper function for WaitForNetworkTimeOut.
-void OnNetworkWaitTimedOut(base::OnceClosure runner_quit_task) {
-  std::move(runner_quit_task).Run();
+void WaitForNetworkConfigureLink() {
+  test::OobeJS().CreateVisibilityWaiter(true, kConfigNetwork)->Wait();
 }
 
 }  // namespace
@@ -185,7 +187,6 @@ void KioskBaseTest::SetUpOnMainThread() {
 void KioskBaseTest::TearDownOnMainThread() {
   owner_settings_service_.reset();
   settings_helper_.RestoreRealDeviceSettingsProvider();
-  KioskLaunchController::SetNetworkTimeoutCallbackForTesting(nullptr);
 
   OobeBaseTest::TearDownOnMainThread();
 }
@@ -322,19 +323,6 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
                               true /* terminate_app */);
 }
 
-void KioskBaseTest::WaitForAppLaunchNetworkTimeout() {
-  if (GetKioskLaunchController()->network_wait_timedout()) {
-    return;
-  }
-
-  base::RunLoop loop;
-  base::OnceClosure callback =
-      base::BindOnce(&OnNetworkWaitTimedOut, loop.QuitClosure());
-  KioskLaunchController::SetNetworkTimeoutCallbackForTesting(&callback);
-  loop.Run();
-  ASSERT_TRUE(GetKioskLaunchController()->network_wait_timedout());
-}
-
 void KioskBaseTest::RunAppLaunchNetworkDownTest() {
   // Mock network could be configured with owner's password.
   ScopedCanConfigureNetwork can_configure_network(true, true);
@@ -344,13 +332,12 @@ void KioskBaseTest::RunAppLaunchNetworkDownTest() {
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
   splash_waiter.Wait();
-  WaitForAppLaunchNetworkTimeout();
 
-  // Configure network link should be visible.
-  test::OobeJS().ExpectVisiblePath(kConfigNetwork);
+  WaitForNetworkConfigureLink();
 
   // Configure network should bring up lock screen for owner.
-  static_cast<AppLaunchSplashScreenView::Delegate*>(GetKioskLaunchController())
+  GetKioskLaunchController()
+      ->GetNetworkUiControllerForTesting()
       ->OnConfigureNetwork();
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   // There should be only one owner pod on this screen.

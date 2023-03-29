@@ -9,14 +9,17 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check_is_test.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -32,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -64,12 +68,6 @@ bool g_block_exit_on_failure_for_testing = false;
 // Whether we should disable any operations using KioskProfileLoader. Used in
 // tests.
 bool g_disable_login_operations = false;
-
-base::OnceClosure* network_timeout_callback = nullptr;
-KioskLaunchController::ReturnBoolCallback* can_configure_network_callback =
-    nullptr;
-KioskLaunchController::ReturnBoolCallback*
-    need_owner_auth_to_configure_network_callback = nullptr;
 
 // Enum types for Kiosk.LaunchType UMA so don't change its values.
 // KioskLaunchType in histogram.xml must be updated when making changes here.
@@ -205,7 +203,15 @@ base::TimeDelta GetSplashScreenMinTime() {
   return base::Seconds(min_time_in_seconds);
 }
 
+template <class T>
+void DeleteSoon(std::unique_ptr<T> pointer) {
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(pointer));
+}
+
 }  // namespace
+
+using NetworkUIState = NetworkUiController::NetworkUIState;
 
 const char kKioskLaunchStateCrashKey[] = "kiosk-launch-state";
 const base::TimeDelta kDefaultKioskSplashScreenMinTime = base::Seconds(10);
@@ -242,7 +248,9 @@ KioskLaunchController::KioskLaunchController(
     KioskAppLauncherFactory app_launcher_factory)
     : host_(host),
       splash_screen_view_(splash_screen),
-      app_launcher_factory_(std::move(app_launcher_factory)) {}
+      app_launcher_factory_(std::move(app_launcher_factory)),
+      network_ui_controller_(
+          std::make_unique<NetworkUiController>(*this, host, splash_screen)) {}
 
 KioskLaunchController::~KioskLaunchController() {
   if (splash_screen_view_) {
@@ -275,7 +283,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     }
   }
 
-  splash_screen_view_->SetDelegate(this);
+  splash_screen_view_->SetDelegate(network_ui_controller_.get());
   splash_screen_view_->Show(GetAppData());
 
   splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
@@ -349,15 +357,12 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
 
   // This is needed to trigger input method extensions being loaded.
   profile->InitChromeOSPreferences();
+  network_ui_controller_->SetProfile(profile);
 
   InitializeKeyboard();
 
-  // We have loaded the profile, so we can create and start the
-  // `KioskAppLauncher`. However, if the user has requested to configure the
-  // network beforehand, we will show the dialog instead and create the launcher
-  // when that's done.
-  if (network_ui_state_ == NetworkUIState::kNeedToShow) {
-    ShowNetworkConfigureUI();
+  if (network_ui_controller_->ShouldShowNetworkConfig()) {
+    network_ui_controller_->UserRequestedNetworkConfig();
   } else {
     InitializeLauncher();
   }
@@ -377,29 +382,10 @@ void KioskLaunchController::InitializeLauncher() {
   DCHECK(!app_launcher_);
 
   app_state_ = kInitLauncher;
-  app_launcher_ = app_launcher_factory_.Run(profile_, kiosk_app_id_, this);
+  app_launcher_ = app_launcher_factory_.Run(profile_, kiosk_app_id_,
+                                            network_ui_controller_.get());
   app_launcher_observation_.Observe(app_launcher_.get());
   app_launcher_->Initialize();
-}
-
-void KioskLaunchController::OnConfigureNetwork() {
-  DCHECK(profile_);
-  if (network_ui_state_ == NetworkUIState::kShowing) {
-    return;
-  }
-
-  network_ui_state_ = NetworkUIState::kShowing;
-  if (CanConfigureNetwork() && NeedOwnerAuthToConfigureNetwork()) {
-    host_->VerifyOwnerForKiosk(
-        base::BindOnce(&KioskLaunchController::ShowNetworkConfigureUI,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // If kiosk mode was configured through enterprise policy, we may
-    // not have an owner user.
-    // TODO(tengs): We need to figure out the appropriate security meausres
-    // for this case.
-    NOTREACHED();
-  }
 }
 
 void KioskLaunchController::OnCancelAppLaunch() {
@@ -462,9 +448,15 @@ void KioskLaunchController::CleanUp() {
   splash_wait_timer_.Stop();
 
   splash_screen_view_ = nullptr;
-  force_install_observer_.reset();
 
-  kiosk_profile_loader_.reset();
+  app_launcher_observation_.Reset();
+
+  // Deleting the local objects later so they
+  DeleteSoon(std::move(kiosk_profile_loader_));
+  DeleteSoon(std::move(force_install_observer_));
+  DeleteSoon(std::move(app_launcher_));
+  DeleteSoon(std::move(network_ui_controller_));
+
   // Can be null in tests.
   if (host_) {
     host_->Finalize(base::OnceClosure());
@@ -515,7 +507,7 @@ void KioskLaunchController::OnAppPrepared() {
     return;
   }
 
-  if (network_ui_state_ != NetworkUIState::kNotShowing) {
+  if (network_ui_controller_->IsShowingNetworkConfigScreen()) {
     return;
   }
 
@@ -536,55 +528,6 @@ void KioskLaunchController::OnAppPrepared() {
       profile_,
       base::BindOnce(&KioskLaunchController::FinishForcedExtensionsInstall,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void KioskLaunchController::InitializeNetwork() {
-  if (!splash_screen_view_) {
-    return;
-  }
-
-  network_ui_state_ = NetworkUIState::kWaitingForNetwork;
-  network_wait_timer_.Start(FROM_HERE, g_network_wait_time, this,
-                            &KioskLaunchController::OnNetworkWaitTimedOut);
-
-  // When we are asked to initialize network, we should remember that this app
-  // requires network.
-  network_required_ = true;
-  splash_screen_view_->SetNetworkRequired();
-
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
-
-  if (splash_screen_view_->IsNetworkReady()) {
-    OnNetworkStateChanged(true);
-  }
-}
-
-void KioskLaunchController::OnNetworkWaitTimedOut() {
-  DCHECK(network_ui_state_ == NetworkUIState::kNotShowing ||
-         network_ui_state_ == NetworkUIState::kWaitingForNetwork);
-
-  auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-  content::GetNetworkConnectionTracker()->GetConnectionType(&connection_type,
-                                                            base::DoNothing());
-  SYSLOG(WARNING) << "OnNetworkWaitTimedout... connection = "
-                  << connection_type;
-  network_wait_timedout_ = true;
-
-  MaybeShowNetworkConfigureUI();
-
-  if (network_timeout_callback) {
-    std::move(*network_timeout_callback).Run();
-    network_timeout_callback = nullptr;
-  }
-}
-
-bool KioskLaunchController::IsNetworkReady() const {
-  return splash_screen_view_ && splash_screen_view_->IsNetworkReady();
-}
-
-bool KioskLaunchController::IsShowingNetworkConfigScreen() const {
-  return network_ui_state_ == NetworkUIState::kShowing;
 }
 
 void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
@@ -737,104 +680,24 @@ void KioskLaunchController::OnOldEncryptionDetected(
   migration_screen->SetupInitialView();
 }
 
-bool KioskLaunchController::CanConfigureNetwork() {
-  if (can_configure_network_callback) {
-    return can_configure_network_callback->Run();
-  }
-
-  if (IsDeviceEnterpriseManaged()) {
-    bool should_prompt;
-    if (CrosSettings::Get()->GetBoolean(
-            kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline,
-            &should_prompt)) {
-      return should_prompt;
-    }
-    // Default to true to allow network configuration if the policy is
-    // missing.
-    return true;
-  }
-
-  return user_manager::UserManager::Get()->GetOwnerAccountId().is_valid();
-}
-
-bool KioskLaunchController::NeedOwnerAuthToConfigureNetwork() {
-  if (need_owner_auth_to_configure_network_callback) {
-    return need_owner_auth_to_configure_network_callback->Run();
-  }
-
-  return !IsDeviceEnterpriseManaged();
-}
-
-void KioskLaunchController::MaybeShowNetworkConfigureUI() {
-  SYSLOG(INFO) << "Network configure UI was requested to be shown.";
-  if (!splash_screen_view_) {
-    return;
-  }
-
-  if (!profile_) {
-    SYSLOG(INFO)
-        << "Postponing configure network dialog till profile is loaded.";
-    splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::AppLaunchState::kShowingNetworkConfigureUI);
-    network_ui_state_ = kNeedToShow;
-    return;
-  }
-
-  if (CanConfigureNetwork()) {
-    if (NeedOwnerAuthToConfigureNetwork()) {
-      if (!network_wait_timedout_) {
-        OnConfigureNetwork();
-      } else {
-        splash_screen_view_->ToggleNetworkConfig(true);
-      }
-    } else {
-      ShowNetworkConfigureUI();
-    }
-  } else {
-    splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::AppLaunchState::kNetworkWaitTimeout);
-  }
-}
-
-void KioskLaunchController::ShowNetworkConfigureUI() {
-  DCHECK(profile_);
-
-  // We're about to show the network configure UI, so we destroy the
-  // app_launcher_ and effectively reset the installation state. A new launcher
-  // will be created in `OnNetworkConfigFinished`.
-  app_launcher_observation_.Reset();
-  app_launcher_.reset();
-  // We should stop timers since they may fire during network
-  // configure UI.
-  splash_wait_timer_.Stop();
-  network_wait_timer_.Stop();
-  launch_on_install_ = true;
-  app_state_ = kInitNetwork;
-  network_ui_state_ = NetworkUIState::kShowing;
-  splash_screen_view_->ShowNetworkConfigureUI();
-}
-
-void KioskLaunchController::CloseNetworkConfigureScreenIfOnline() {
-  if (network_ui_state_ == NetworkUIState::kShowing && network_wait_timedout_) {
-    SYSLOG(INFO) << "We are back online, closing network configure screen.";
-    splash_screen_view_->ToggleNetworkConfig(false);
-    splash_screen_view_->ContinueAppLaunch();
-    network_ui_state_ = NetworkUIState::kNotShowing;
-  }
-}
-
 void KioskLaunchController::OnNetworkConfigRequested() {
-  if (app_state_ == kLaunched) {
+  if (app_state_ == AppState::kLaunched) {
     // We do nothing since the splash screen is soon to be destroyed.
     return;
   }
 
-  MaybeShowNetworkConfigureUI();
+  network_ui_controller_->UserRequestedNetworkConfig();
 }
 
-void KioskLaunchController::OnNetworkConfigFinished() {
-  network_ui_state_ = NetworkUIState::kNotShowing;
+void KioskLaunchController::OnNetworkConfigureUiShowing() {
+  splash_wait_timer_.Stop();
+  app_state_ = kInitNetwork;
+  launch_on_install_ = true;
+  app_launcher_observation_.Reset();
+  app_launcher_.reset();
+}
 
+void KioskLaunchController::OnNetworkConfigureUiFinished() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
@@ -844,40 +707,13 @@ void KioskLaunchController::OnNetworkConfigFinished() {
   InitializeLauncher();
 }
 
-void KioskLaunchController::OnNetworkStateChanged(bool online) {
-  if (online) {
-    OnNetworkOnline();
-  } else {
-    OnNetworkOffline();
-  }
+void KioskLaunchController::OnNetworkReady() {
+  app_launcher_->ContinueWithNetworkReady();
 }
 
-void KioskLaunchController::OnNetworkOnline() {
-  bool network_showing_after_timeout =
-      network_wait_timedout_ && network_ui_state_ == NetworkUIState::kShowing;
-
-  if (!network_showing_after_timeout &&
-      network_ui_state_ != NetworkUIState::kWaitingForNetwork) {
-    // The UI is not showing at all, or was requested by the user so we do
-    // nothing
-    return;
-  }
-
-  // Close the network UI and continue the app launch
-  network_wait_timer_.Stop();
-  CloseNetworkConfigureScreenIfOnline();
-  network_ui_state_ = kNotShowing;
-  if (app_launcher_) {
-    app_launcher_->ContinueWithNetworkReady();
-  }
-}
-
-void KioskLaunchController::OnNetworkOffline() {
-  if (network_required_ && (app_state_ == AppState::kInstallingApp ||
-                            app_state_ == AppState::kInstallingExtensions)) {
-    SYSLOG(WARNING)
-        << "Connection lost during installation, restarting launcher.";
-    OnNetworkWaitTimedOut();
+void KioskLaunchController::OnNetworkLost() {
+  if (app_state_ == kInstallingApp || app_state_ == kInstallingExtensions) {
+    network_ui_controller_->OnNetworkLostDuringInstallation();
   }
 }
 
@@ -893,6 +729,10 @@ void KioskLaunchController::LaunchApp() {
       session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
   splash_wait_timer_.Stop();
   app_launcher_->LaunchApp();
+}
+
+NetworkUiController* KioskLaunchController::GetNetworkUiControllerForTesting() {
+  return network_ui_controller_.get();
 }
 
 // static
@@ -926,25 +766,6 @@ KioskLaunchController::BlockAppLaunchForTesting() {
 // static
 base::AutoReset<bool> KioskLaunchController::BlockExitOnFailureForTesting() {
   return base::AutoReset<bool>(&g_block_exit_on_failure_for_testing, true);
-}
-
-// static
-void KioskLaunchController::SetNetworkTimeoutCallbackForTesting(
-    base::OnceClosure* callback) {
-  network_timeout_callback = callback;
-}
-
-// static
-void KioskLaunchController::SetCanConfigureNetworkCallbackForTesting(
-    ReturnBoolCallback* callback) {
-  can_configure_network_callback = callback;
-}
-
-// static
-void KioskLaunchController::
-    SetNeedOwnerAuthToConfigureNetworkCallbackForTesting(
-        ReturnBoolCallback* callback) {
-  need_owner_auth_to_configure_network_callback = callback;
 }
 
 }  // namespace ash

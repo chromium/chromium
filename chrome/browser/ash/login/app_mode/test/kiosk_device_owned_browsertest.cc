@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "base/barrier_closure.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -54,6 +57,7 @@
 #include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -65,6 +69,8 @@ namespace {
 
 const test::UIPath kErrorMessageContinueButton = {"error-message",
                                                   "continueButton"};
+const test::UIPath kSplashScreenLaunchText = {"app-launch-splash",
+                                              "launchText"};
 
 // An app to test local access to file systems via the
 // chrome.fileSystem.requestFileSystem API.
@@ -89,6 +95,15 @@ NavigateParams OpenBrowserWithUrl(
   Navigate(&params);
 
   return params;
+}
+
+void WaitForNetworkTimeoutMessage() {
+  test::TestPredicateWaiter(base::BindRepeating([]() {
+    return test::OobeJS().GetString(
+               ash::test::GetOobeElementPath(kSplashScreenLaunchText) +
+               ".textContent") ==
+           l10n_util::GetStringUTF8(IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE);
+  })).Wait();
 }
 
 // Helper class to replace settings urls for KioskSettingsNavigationThrottle.
@@ -386,7 +401,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
   splash_waiter.Wait();
-  WaitForAppLaunchNetworkTimeout();
+
+  WaitForNetworkTimeoutMessage();
 
   // Configure network link should not be visible.
   test::OobeJS().ExpectHiddenPath(kConfigNetwork);
@@ -407,8 +423,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, LaunchAppNetworkPortal) {
   OobeScreenWaiter app_splash_waiter(AppLaunchSplashScreenView::kScreenId);
   app_splash_waiter.set_no_assert_last_screen();
   app_splash_waiter.Wait();
-
-  WaitForAppLaunchNetworkTimeout();
 
   // Network error should show up automatically since this test does not
   // require owner auth to configure network.
