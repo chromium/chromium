@@ -35,6 +35,7 @@ struct WaylandSeat;
 struct WaylandTextInputExtension;
 struct WaylandTextInputManager;
 struct WaylandXdgShell;
+struct WaylandZxdgShell;
 struct WaylandRemoteShellData;
 class WaylandDmabufFeedbackManager;
 class WestonTest;
@@ -142,6 +143,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandKeyboardExtension> zcr_keyboard_extension_data_;
   std::unique_ptr<WaylandTextInputManager> zwp_text_manager_data_;
   std::unique_ptr<WaylandTextInputExtension> zcr_text_input_extension_data_;
+  std::unique_ptr<WaylandZxdgShell> zxdg_shell_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<WestonTest> weston_test_holder_;
