@@ -8,7 +8,7 @@
     // component, it's a useful way to be able to launch the component from a
     // host tool and have it run somewhere it can get the capabilities it needs
     // to function correctly.
-    // TODO(crbug.com/1410937: Run as a non-test component.
+    // TODO(crbug.com/1410937): Run as a non-test component.
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
     "sys/component/realm_builder_absolute.shard.cml",

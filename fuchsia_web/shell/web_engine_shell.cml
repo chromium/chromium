@@ -8,7 +8,7 @@
     // component, it's a useful way to be able to launch the component from a
     // host tool and have it run somewhere it can get the capabilities it needs
     // to function correctly.
-    // TODO(crbug.com/1410937: Run as a non-test component.
+    // TODO(crbug.com/1410937): Run as a non-test component.
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
 
@@ -19,8 +19,7 @@
     binary: "web_engine_shell_exec",
   },
   use: [
-    // Used conditionally based on the absence of `--use-web-instance` on the
-    // command line at runtime.
+    // Used only when run with `--use-context-provider`.
     {
       protocol: "fuchsia.web.ContextProvider",
       availability: "optional",
@@ -40,8 +39,6 @@
     },
 
     // Uses below this line are for web_instance.cmx.
-    // TODO(crbug.com/1280703): Revise as needed when context_provider is
-    // migrated to launch web_instance.cm.
     {
       protocol: [
         "fuchsia.buildinfo.Provider",
@@ -106,6 +103,7 @@
       to: "#realm_builder",
     },
     {
+      // ContextFeatureFlags::NETWORK is always specified.
       directory: "root-ssl-certificates",
       from: "parent",
       to: "#realm_builder",
@@ -124,11 +122,18 @@
       availability: "optional",
     },
     {
+      // Required capabilities for WebInstanceHost in a child Component.
+      protocol: [
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
+      ],
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
       protocol: [
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
-        "fuchsia.feedback.ComponentDataRegister",
-        "fuchsia.feedback.CrashReportingProductRegister",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.input.virtualkeyboard.ControllerCreator",
