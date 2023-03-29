@@ -69,13 +69,13 @@ async function testCanvasCapture(drawFunction) {
   canvas.width = canvas.height = 64;
 
   var stream = canvas.captureStream();
-  assertTrueSync(stream, 'Error creating MediaStream');
-  assertEqualsSync(1, stream.getVideoTracks().length);
-  assertEqualsSync(0, stream.getAudioTracks().length);
+  assertTrue(stream, 'Error creating MediaStream');
+  assertEquals(1, stream.getVideoTracks().length);
+  assertEquals(0, stream.getAudioTracks().length);
 
   var recorded_events = 0;
   const recorder = new MediaRecorder(stream);
-  assertTrueSync(recorder, 'Error creating recorder out of the MediaStream');
+  assertTrue(recorder, 'Error creating recorder out of the MediaStream');
 
   const completePromise = new Promise(resolve => {
     recorder.ondataavailable = function(event) {

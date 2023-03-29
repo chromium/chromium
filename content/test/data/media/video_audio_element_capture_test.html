@@ -21,7 +21,7 @@ function testCaptureFromMediaElement(filename,
                                      use_audio_tag) {
   const element = use_audio_tag ? document.getElementById('audio')
                                 : document.getElementById('video');
-  assertTrueSync(element, 'Error resolving tag');
+  assertTrue(element, 'Error resolving tag');
 
   return new Promise(resolve => {
     element.onerror = function(e) {
@@ -34,12 +34,12 @@ function testCaptureFromMediaElement(filename,
     var recorded_events = 0;
     element.onloadedmetadata = function() {
       const stream = element.captureStream();
-      assertTrueSync(stream, 'Error creating MediaStream');
-      assertEqualsSync(has_video, stream.getVideoTracks().length);
-      assertEqualsSync(has_audio, stream.getAudioTracks().length);
+      assertTrue(stream, 'Error creating MediaStream');
+      assertEquals(has_video, stream.getVideoTracks().length);
+      assertEquals(has_audio, stream.getAudioTracks().length);
 
       const recorder = new MediaRecorder(stream);
-      assertTrueSync(recorder, 'Error creating recorder out of the MediaStream');
+      assertTrue(recorder, 'Error creating recorder out of the MediaStream');
 
       recorder.onerror = function(e) {
         resolve(toStackTrace("error recording [" + filename + "] " + e));

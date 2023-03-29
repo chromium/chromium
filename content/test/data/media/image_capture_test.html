@@ -237,7 +237,7 @@ function testManipulateZoom() {
           });
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
@@ -290,7 +290,7 @@ function testManipulateExposureTime() {
             });
         })
         .catch(err => {
-            return failTest(err.toString());
+            return toStackTrace(err.toString());
         });
 }
 

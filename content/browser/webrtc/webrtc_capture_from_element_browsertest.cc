@@ -85,19 +85,19 @@ class WebRtcCaptureFromElementBrowserTest
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        VerifyCanvas2DCaptureColor) {
   MakeTypicalCall("testCanvas2DCaptureColors(true);",
-                  kCanvasCaptureColorTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureColorTestHtmlFile);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        VerifyCanvasWebGLCaptureOpaqueColor) {
   MakeTypicalCall("testCanvasWebGLCaptureOpaqueColors(true);",
-                  kCanvasCaptureColorTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureColorTestHtmlFile);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        VerifyCanvasWebGLCaptureAlphaColor) {
   MakeTypicalCall("testCanvasWebGLCaptureAlphaColors(true);",
-                  kCanvasCaptureColorTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureColorTestHtmlFile);
 }
 
 // TODO(https://crbug.com/1350300): Flaky.
@@ -108,8 +108,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        MAYBE_VerifyCanvasCapture2DFrames) {
-  MakeTypicalCall("testCanvasCapture(draw2d);", kCanvasCaptureTestHtmlFile,
-                  /*use_manual_reply=*/false);
+  MakeTypicalCall("testCanvasCapture(draw2d);", kCanvasCaptureTestHtmlFile);
 }
 
 // TODO(https://crbug.com/1335032): Flaky.
@@ -121,8 +120,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        MAYBE_VerifyCanvasCaptureWebGLFrames) {
-  MakeTypicalCall("testCanvasCapture(drawWebGL);", kCanvasCaptureTestHtmlFile,
-                  /*use_manual_reply=*/false);
+  MakeTypicalCall("testCanvasCapture(drawWebGL);", kCanvasCaptureTestHtmlFile);
 }
 
 // https://crbug.com/869723
@@ -132,14 +130,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        DISABLED_VerifyCanvasCaptureOffscreenCanvasFrames) {
   MakeTypicalCall("testCanvasCapture(drawOffscreenCanvas);",
-                  kCanvasCaptureTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureTestHtmlFile);
 }
 
 // TODO(crbug.com/1334909): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        DISABLED_VerifyCanvasCaptureBitmapRendererFrames) {
   MakeTypicalCall("testCanvasCapture(drawBitmapRenderer);",
-                  kCanvasCaptureTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureTestHtmlFile);
 }
 
 IN_PROC_BROWSER_TEST_P(WebRtcCaptureFromElementBrowserTest,
@@ -147,14 +145,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcCaptureFromElementBrowserTest,
   MakeTypicalCall(JsReplace("testCaptureFromMediaElement($1, $2, $3, $4)",
                             GetParam().filename, GetParam().has_video,
                             GetParam().has_audio, GetParam().use_audio_tag),
-                  kVideoAudioHtmlFile, /*use_manual_reply=*/false);
+                  kVideoAudioHtmlFile);
 }
 
 // https://crbug.com/986020.
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        DISABLED_CaptureFromCanvas2DHandlesContextLoss) {
   MakeTypicalCall("testCanvas2DContextLoss(true);",
-                  kCanvasCaptureColorTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureColorTestHtmlFile);
 }
 
 // Not supported on android https://crbug.com/898286.
@@ -162,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebRtcCaptureFromElementBrowserTest,
                        DISABLED_CaptureFromOpaqueCanvas2DHandlesContextLoss) {
   MakeTypicalCall("testCanvas2DContextLoss(false);",
-                  kCanvasCaptureColorTestHtmlFile, /*use_manual_reply=*/false);
+                  kCanvasCaptureColorTestHtmlFile);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

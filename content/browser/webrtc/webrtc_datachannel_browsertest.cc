@@ -35,8 +35,7 @@ class WebRtcDataChannelTest : public WebRtcContentBrowserTestBase {
 
 // Flaky on all platforms: https://crbug.com/734567
 IN_PROC_BROWSER_TEST_F(WebRtcDataChannelTest, DISABLED_DataChannelGC) {
-  MakeTypicalCall("testDataChannelGC();", kDataChannelHtmlFile,
-                  /*use_manual_reply=*/false);
+  MakeTypicalCall("testDataChannelGC();", kDataChannelHtmlFile);
 }
 
 }  // namespace content

@@ -65,7 +65,7 @@
       navigator.mediaDevices.getUserMedia(constraints)
         .then(addStreamToBothConnectionsAndNegotiate),
       detectVideoPlaying('remote-view-1').then(() => {
-        assertEqualsSync(gLocalStream.getVideoTracks().length, 1);
+        assertEquals(gLocalStream.getVideoTracks().length, 1);
         gLocalStream.getVideoTracks()[0].enabled = false;
 
         return detectBlackVideo('remote-view-1');
@@ -226,7 +226,7 @@
           (error) => {
           var expectedMsg = "Failed to set local offer sdp: Failed to set local " +
               "video description recv parameters for m-section with mid='1'.";
-          assertEqualsSync(expectedMsg, error.message);
+          assertEquals(expectedMsg, error.message);
           return logSuccess();
         })
         .catch(toStackTrace);
@@ -244,7 +244,7 @@
           // Note: Per spec, error should be 'IllegalModificationError'
           // https://crbug.com/823036
           var expectedError = 'OperationError';
-          assertEqualsSync(expectedError, error.name);
+          assertEquals(expectedError, error.name);
           return logSuccess();
         })
         .catch(toStackTrace);

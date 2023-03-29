@@ -53,8 +53,8 @@ class MAYBE_WebRtcStressSourceSwitchBrowserTest
 
  protected:
   void MakeTypicalPeerConnectionCall(const std::string& javascript) {
-    MakeTypicalCall(javascript, "/media/peerconnection-source-feed-switch.html",
-                    /*use_manual_reply=*/false);
+    MakeTypicalCall(javascript,
+                    "/media/peerconnection-source-feed-switch.html");
   }
 };
 

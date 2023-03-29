@@ -51,7 +51,7 @@ async function onOfferCreated_(offer, caller, callee) {
   await new Promise((resolve, reject) => {
     caller.setLocalDescription(offer, resolve, reject);
   });
-  assertEqualsSync('have-local-offer', caller.signalingState);
+  assertEquals('have-local-offer', caller.signalingState);
   return receiveOffer_(offer.sdp, caller, callee);
 }
 
@@ -67,7 +67,7 @@ async function receiveOffer_(offerSdp, caller, callee) {
   await new Promise((resolve, reject) => {
     callee.setRemoteDescription(parsedOffer, resolve, reject);
   });
-  assertEqualsSync('have-remote-offer', callee.signalingState);
+  assertEquals('have-remote-offer', callee.signalingState);
   const answer = await new Promise((resolve, reject) => {
     callee.createAnswer(resolve, reject);
   });
@@ -83,7 +83,7 @@ async function onAnswerCreated_(answer, caller, callee) {
   await new Promise((resolve, reject) => {
     callee.setLocalDescription(answer, resolve, reject);
   });
-  assertEqualsSync('stable', callee.signalingState);
+  assertEquals('stable', callee.signalingState);
   return receiveAnswer_(answer.sdp, caller);
 }
 
@@ -98,7 +98,7 @@ async function receiveAnswer_(answerSdp, caller) {
   await new Promise((resolve, reject) => {
     caller.setRemoteDescription(parsedAnswer, resolve, reject);
   });
-  assertEqualsSync('stable', caller.signalingState);
+  assertEquals('stable', caller.signalingState);
 }
 
 /**
@@ -123,6 +123,6 @@ async function onIceCandidate_(event, originator, target) {
   } else {
     // The spec guarantees that the special "null" candidate will be fired
     // *after* changing the gathering state to "complete".
-    assertEqualsSync('complete', originator.iceGatheringState);
+    assertEquals('complete', originator.iceGatheringState);
   }
 }

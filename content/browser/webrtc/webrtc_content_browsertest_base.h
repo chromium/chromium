@@ -30,8 +30,7 @@ class WebRtcContentBrowserTestBase : public ContentBrowserTest {
 
   // Execute a typical javascript call after having started the webserver.
   void MakeTypicalCall(const std::string& javascript,
-                       const std::string& html_file,
-                       bool use_manual_reply = true);
+                       const std::string& html_file);
 
   // Generates javascript code for a getUserMedia call.
   std::string GenerateGetUserMediaCall(const char* function_name,

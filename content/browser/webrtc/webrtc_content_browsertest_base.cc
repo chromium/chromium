@@ -72,20 +72,14 @@ std::string WebRtcContentBrowserTestBase::EvalJsInShell(
 
 void WebRtcContentBrowserTestBase::MakeTypicalCall(
     const std::string& javascript,
-    const std::string& html_file,
-    bool use_manual_reply) {
+    const std::string& html_file) {
   if (!embedded_test_server()->Started())
     ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL(html_file));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS;
-  if (use_manual_reply) {
-    options |= EXECUTE_SCRIPT_USE_MANUAL_REPLY;
-  }
-
-  std::string result = EvalJs(shell(), javascript, options).ExtractString();
+  std::string result = EvalJs(shell(), javascript).ExtractString();
   if (result != "OK") {
     if (result.empty())
       result = "(nothing)";

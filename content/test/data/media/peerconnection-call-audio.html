@@ -153,12 +153,12 @@
     const peerConnection = gSecondConnection;
 
     const receivers = peerConnection.getReceivers();
-    assertEqualsSync(receivers.length, 1);
+    assertEquals(receivers.length, 1);
     const receiver = receivers[0];
-    assertEqualsSync(receiver.track.kind, 'audio');
+    assertEquals(receiver.track.kind, 'audio');
 
     const results = receiver.getSynchronizationSources();
-    assertEqualsSync(results.length, 1);
+    assertEquals(results.length, 1);
     const result = results[0];
 
     const endTime = performance.timeOrigin + performance.now();
@@ -166,28 +166,28 @@
     console.log('getSynchronizationSources() = ' + JSON.stringify(result));
 
     // timestamp
-    assertEqualsSync(typeof result.timestamp, 'number');
-    assertTrueSync(result.timestamp >= startTime);
-    assertTrueSync(result.timestamp <= endTime);
+    assertEquals(typeof result.timestamp, 'number');
+    assertTrue(result.timestamp >= startTime);
+    assertTrue(result.timestamp <= endTime);
 
     // source
-    assertEqualsSync(typeof result.source, 'number');
-    assertTrueSync(result.source >= 0);
-    assertTrueSync(result.source <= 0xffffffff);
+    assertEquals(typeof result.source, 'number');
+    assertTrue(result.source >= 0);
+    assertTrue(result.source <= 0xffffffff);
 
     // rtpTimestamp
-    assertEqualsSync(typeof result.rtpTimestamp, 'number');
-    assertTrueSync(result.rtpTimestamp >= 0);
-    assertTrueSync(result.rtpTimestamp <= 0xffffffff);
+    assertEquals(typeof result.rtpTimestamp, 'number');
+    assertTrue(result.rtpTimestamp >= 0);
+    assertTrue(result.rtpTimestamp <= 0xffffffff);
 
     // audioLevel
-    assertEqualsSync(typeof result.audioLevel, 'number');
-    assertTrueSync(result.audioLevel >= 0);
-    assertTrueSync(result.audioLevel <= 1);
+    assertEquals(typeof result.audioLevel, 'number');
+    assertTrue(result.audioLevel >= 0);
+    assertTrue(result.audioLevel <= 1);
 
     // voiceActivityFlag
     if (result.voiceActivityFlag != undefined) {
-      assertEqualsSync(typeof result.voiceActivityFlag, 'boolean');
+      assertEquals(typeof result.voiceActivityFlag, 'boolean');
     }
 
     return logSuccess();
@@ -195,10 +195,10 @@
 
   function createConnections(constraints) {
     gFirstConnection = createConnection(constraints, 'remote-view-1');
-    assertEqualsSync('stable', gFirstConnection.signalingState);
+    assertEquals('stable', gFirstConnection.signalingState);
 
     gSecondConnection = createConnection(constraints, 'remote-view-2');
-    assertEqualsSync('stable', gSecondConnection.signalingState);
+    assertEquals('stable', gSecondConnection.signalingState);
   }
 
   function createConnection(constraints, remoteView) {

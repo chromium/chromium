@@ -116,7 +116,7 @@ function testStartAndRecorderState() {
         recorder = recorder;
         recorder.onstart = function(event) {
           startEventReceived = true;
-          assertEqualsSync('recording', recorder.state);
+          assertEquals('recording', recorder.state);
         };
         recorder.start(0);
       })
@@ -143,7 +143,7 @@ function testStartStopAndRecorderState() {
       .then(function(recorder) {
         recorder.onstop = function(event) {
           stopEventReceived = true;
-          assertEqualsSync('inactive', recorder.state);
+          assertEquals('inactive', recorder.state);
         };
         recorder.stop();
       })
@@ -179,7 +179,7 @@ function testStartAndDataAvailable(mimeType) {
             emptyBlobs += 1;
 
           if (!isNaN(lastTimecode))
-            assertTrueSync(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode > lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
       })
@@ -190,7 +190,7 @@ function testStartAndDataAvailable(mimeType) {
             });
       })
       .then(function() {
-        assertTrueSync(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
+        assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
             ' empty blobs, there should be no such empty blobs.');
       })
       .then(logSuccess)
@@ -220,7 +220,7 @@ function testStartWithTimeSlice(mimeType) {
             emptyBlobs += 1;
 
           if (!isNaN(lastTimecode))
-            assertTrueSync(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode > lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
       })
@@ -231,7 +231,7 @@ function testStartWithTimeSlice(mimeType) {
             });
       })
       .then(function() {
-        assertTrueSync(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
+        assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
             ' empty blobs, there should be no such empty blobs.');
       })
       .then(logSuccess)
@@ -255,7 +255,7 @@ function testResumeAndRecorderState() {
       .then(function() {
         theRecorder.onresume = function(event) {
           resumeEventReceived = true;
-          assertEqualsSync('recording', theRecorder.state);
+          assertEquals('recording', theRecorder.state);
         };
         theRecorder.resume();
       })
@@ -305,7 +305,7 @@ function testResumeAndDataAvailable(mimeType) {
           }
 
           if (!isNaN(lastTimecode))
-            assertTrueSync(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode > lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
         recorder.resume();
@@ -318,7 +318,7 @@ function testResumeAndDataAvailable(mimeType) {
       })
       .then(function() {
         // There should be no empty blob while recording.
-        assertTrueSync(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
+        assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
             ' empty blobs, there should be no such empty blobs.');
       })
       .then(logSuccess)
@@ -338,7 +338,7 @@ function testPauseAndRecorderState() {
       .then(function(recorder) {
         recorder.onpause = function(event) {
           pauseEventReceived = true;
-          assertEqualsSync('paused', recorder.state);
+          assertEquals('paused', recorder.state);
         };
         recorder.pause();
       })
@@ -364,7 +364,7 @@ function testPauseStopAndRecorderState() {
       .then(function(recorder) {
         recorder.pause();
         recorder.stop();
-        assertEqualsSync('inactive', recorder.state);
+        assertEquals('inactive', recorder.state);
       })
       .then(logSuccess)
       .catch(function(err) {
@@ -429,7 +429,7 @@ function testRecordRemotePeerConnection(mimeType) {
           videoSize += event.data.size;
 
           if (!isNaN(lastTimecode))
-            assertTrueSync(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode > lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
         recorder.start(0);
@@ -493,7 +493,7 @@ function testTwoChannelAudio() {
         recorder.ondataavailable = function(event) {
           audioSize += event.data.size;
           if (!isNaN(lastTimecode))
-            assertTrueSync(event.timecode > lastTimecode, 'timecodes');
+            assertTrue(event.timecode > lastTimecode, 'timecodes');
           lastTimecode = event.timecode;
         };
         recorder.start(0);
@@ -522,9 +522,9 @@ function testRecordWithTransparency(mimeType) {
   var canvas = document.createElement('canvas');
   canvas.width = canvas.height = 64;
   var stream = canvas.captureStream();
-  assertTrueSync(stream, 'Error creating MediaStream');
-  assertEqualsSync(1, stream.getVideoTracks().length);
-  assertEqualsSync(0, stream.getAudioTracks().length);
+  assertTrue(stream, 'Error creating MediaStream');
+  assertEquals(1, stream.getVideoTracks().length);
+  assertEquals(0, stream.getAudioTracks().length);
   var recordedEvents = 0;
 
   function drawOnCanvas(canvas) {
