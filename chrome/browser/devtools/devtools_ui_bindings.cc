@@ -356,6 +356,10 @@ std::string SanitizeFrontendQueryParam(
   if (key == "targetType" && value == "tab")
     return value;
 
+  if (key == "consolePaste" && value == "blockwebui") {
+    return value;
+  }
+
   return std::string();
 }
 
