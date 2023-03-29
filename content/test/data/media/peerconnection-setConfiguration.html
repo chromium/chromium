@@ -7,19 +7,13 @@
     return document.getElementById(id);
   };
 
-  window.onerror = function(errorMsg, url, lineNumber, column, errorObj) {
-    failTest('Error: ' + errorMsg + '\nScript: ' + url +
-             '\nLine: ' + lineNumber + '\nColumn: ' + column +
-             '\nStackTrace: ' + errorObj);
-  }
-
   var gPeerConnection = null;
   var gCertificate = null;
 
   // This test creates and sets three offers, calling setConfiguration in
   // between each offer, expecting an ICE restart to be triggered by the next
   // offer.
-  function testSetConfiguration() {
+  async function testSetConfiguration() {
     gPeerConnection = new RTCPeerConnection(
         {iceServers:[], iceTransportPolicy:'all', bundlePolicy:'balanced',
          rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:0});
@@ -31,57 +25,60 @@
     // Now test successful cases of setConfiguration. Changes should trigger an
     // ICE restart in the next offer. To do this, first we need to trigger an
     // initial ICE gathering phase and wait until it completes.
-    gPeerConnection.onicegatheringstatechange = iceGatheringCallback1;
-    createOfferAndSetLocalDescription();
-  }
 
-  function iceGatheringCallback1(candidate) {
-    if (gPeerConnection.iceGatheringState === 'complete') {
-      gPeerConnection.onicegatheringstatechange = iceGatheringCallback2;
+    function waitForState(state) {
+      return new Promise((resolve) => {
+        gPeerConnection.onicegatheringstatechange = (candidate) => {
+          if (gPeerConnection.iceGatheringState === state) {
+            resolve();
+          }
+        };
+      });
+    }
+
+    try {
+      let onCompletePromise = waitForState('complete');
+      await createOfferAndSetLocalDescription();
+      await onCompletePromise;
+      onCompletePromise = waitForState('complete');
       // Policy changed.
       gPeerConnection.setConfiguration(
           {iceServers:[], iceTransportPolicy:'relay', bundlePolicy:'balanced',
-           rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:1});
-      createOfferAndSetLocalDescription();
-    }
-  }
-
-  function iceGatheringCallback2(candidate) {
-    if (gPeerConnection.iceGatheringState === 'complete') {
-      gPeerConnection.onicegatheringstatechange = iceGatheringCallback3;
+            rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:1});
+      await createOfferAndSetLocalDescription();
+      await onCompletePromise;
+      // Only wait for 'gathering', since it will take a while for the requests to
+      // 'foo.invalid' to time out.
+      const onGatheringPromise = waitForState('gathering');
       // Servers changed.
       gPeerConnection.setConfiguration(
           {iceServers:[{urls:'stun:foo.invalid'}], iceTransportPolicy:'all',
-           bundlePolicy:'balanced', rtcpMuxPolicy:'require', certificates:[],
-           iceCandidatePoolSize:1});
-      createOfferAndSetLocalDescription();
+            bundlePolicy:'balanced', rtcpMuxPolicy:'require', certificates:[],
+            iceCandidatePoolSize:1});
+      await createOfferAndSetLocalDescription();
+      await onGatheringPromise;
+      return logSuccess();
+    } catch (err) {
+      return toStackTrace(err);
     }
   }
 
-  function iceGatheringCallback3(candidate) {
-    // Only wait for 'gathering', since it will take a while for the requests to
-    // 'foo.invalid' to time out.
-    if (gPeerConnection.iceGatheringState === 'gathering') {
-      reportTestSuccess();
-    }
-  }
-
-  function testSetConfigurationErrors() {
+  async function testSetConfigurationErrors() {
     // Generate certificate so we can test the InvalidModificationError from
     // attempting to change certificates.
-    RTCPeerConnection.generateCertificate({ name:'ECDSA', namedCurve:'P-256' })
-        .then(function(certificate) {
-          gCertificate = certificate;
-          continueTestSetConfigurationErrors();
-        },
-        function() {
-          failTest('Failed to generate certificate.');
-        }
-    );
+    let certificate;
+    try {
+      certificate = await RTCPeerConnection.generateCertificate(
+        { name:'ECDSA', namedCurve:'P-256' });
+    } catch {
+      throw new Error('Failed to generate certificate.');
+    }
+    gCertificate = certificate;
+    return continueTestSetConfigurationErrors();
   }
 
   // Continued after certificate generated.
-  function continueTestSetConfigurationErrors() {
+  async function continueTestSetConfigurationErrors() {
     gPeerConnection = new RTCPeerConnection(
         {iceServers:[], iceTransportPolicy:'all', bundlePolicy:'balanced',
          rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:1});
@@ -118,50 +115,54 @@
          rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:1});
     // Lastly: only after applying a local description, changing the candidate
     // pool size is not allowed.
-    gPeerConnection.createOffer({offerToReceiveAudio:1})
-      .then(function(offer) {
-        console.log("Setting offer:\n" + offer.sdp);
-        gPeerConnection.setLocalDescription(offer).then(
-          function() {
-            // Pool size absent, which means it should default to 0, which is
-            // different than its current value of 1.
-            assertThrows(gPeerConnection.setConfiguration,
-                         {iceServers:[], iceTransportPolicy:'all',
-                          bundlePolicy:'balanced', rtcpMuxPolicy:'require',
-                          certificates:[]});
-            reportTestSuccess();
-          },
-          function() { failTest('Failed to set local description.') }
-        );
-        },
-        function() {
-          failTest('Failed to generate offer.')
-        }
-      );
+    let offer;
+    try {
+      offer = await gPeerConnection.createOffer({offerToReceiveAudio:1});
+    } catch {
+      throw new Error('Failed to generate offer.');
+    }
+
+    console.log("Setting offer:\n" + offer.sdp);
+    try {
+      await gPeerConnection.setLocalDescription(offer);
+    } catch {
+      throw new Error('Failed to set local description.');
+    }
+
+    // Pool size absent, which means it should default to 0, which is
+    // different than its current value of 1.
+    assertThrows(gPeerConnection.setConfiguration,
+                  {iceServers:[], iceTransportPolicy:'all',
+                  bundlePolicy:'balanced', rtcpMuxPolicy:'require',
+                  certificates:[]});
+    return logSuccess();
   }
 
   function assertThrows(func) {
     try {
       func.apply(arguments.slice(start=1));
-      failTest('Expected exception to be thrown by: ' + code);
     } catch (e) {
+      return;
     }
+    throw new Error('Expected exception to be thrown by: ' + func);
   }
 
   // Helper function to create and apply offer.
-  function createOfferAndSetLocalDescription() {
-    gPeerConnection.createOffer({offerToReceiveAudio:1})
-      .then(function(offer) {
-        console.log("Setting offer:\n" + offer.sdp);
-        gPeerConnection.setLocalDescription(offer).then(
-          function() {},
-          function() { failTest('Failed to set local description.') }
-        );
-        },
-        function() {
-          failTest('Failed to generate offer.')
-        }
-      );
+  async function createOfferAndSetLocalDescription() {
+    let offer;
+    try {
+    offer = await gPeerConnection.createOffer({offerToReceiveAudio:1});
+    } catch {
+      throw new Error('Failed to generate offer.');
+    }
+
+    console.log("Setting offer:\n" + offer.sdp);
+
+    try {
+      return gPeerConnection.setLocalDescription(offer);
+    } catch {
+      throw new Error('Failed to set local description.');
+    }
   }
 
   </script>

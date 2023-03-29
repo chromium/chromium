@@ -57,7 +57,8 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
   void SetConfigurationTest(const std::string& javascript) {
     // This doesn't actually "make a call", it just loads the page, executes
     // the javascript and waits for "OK".
-    MakeTypicalCall(javascript, "/media/peerconnection-setConfiguration.html");
+    MakeTypicalCall(javascript, "/media/peerconnection-setConfiguration.html",
+                    /*use_manual_reply=*/false);
   }
 };
 
