@@ -118,15 +118,6 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
 }
 
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
-  auto* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
   const auto& impression = navigation_handle->GetImpression();
 
   // TODO(crbug.com/1428315): Consider checking for navigations taking place in
@@ -193,7 +184,12 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   DCHECK(inserted);
 
   const NavigationInfo& navigation_info = it->second;
-  data_host_manager->NotifyNavigationStartedForDataHost(
+
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  attribution_manager->GetDataHostManager()->NotifyNavigationStartedForDataHost(
       impression->attribution_src_token, navigation_info.source_origin,
       impression->nav_type, navigation_info.is_within_fenced_frame,
       navigation_info.initiator_root_frame_id);
@@ -208,15 +204,6 @@ void AttributionHost::DidRedirectNavigation(
 
   const auto& impression = navigation_handle->GetImpression();
   DCHECK(impression.has_value());
-
-  auto* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
 
   const std::vector<GURL>& redirect_chain =
       navigation_handle->GetRedirectChain();
@@ -234,11 +221,17 @@ void AttributionHost::DidRedirectNavigation(
     return;
   }
 
-  data_host_manager->NotifyNavigationRedirectRegistration(
-      impression->attribution_src_token,
-      navigation_handle->GetResponseHeaders(), std::move(*reporting_origin),
-      it->second.source_origin, it->second.input_event, impression->nav_type,
-      it->second.is_within_fenced_frame, it->second.initiator_root_frame_id);
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  attribution_manager->GetDataHostManager()
+      ->NotifyNavigationRedirectRegistration(
+          impression->attribution_src_token,
+          navigation_handle->GetResponseHeaders(), std::move(*reporting_origin),
+          it->second.source_origin, it->second.input_event,
+          impression->nav_type, it->second.is_within_fenced_frame,
+          it->second.initiator_root_frame_id);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -253,22 +246,17 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     DCHECK(!navigation_source_origin_it);
   }
 
-  auto* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  auto* data_host_manager = attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
   const absl::optional<blink::Impression>& impression =
       navigation_handle->GetImpression();
   if (!impression) {
     return;
   }
 
-  data_host_manager->NotifyNavigationFinished(
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  attribution_manager->GetDataHostManager()->NotifyNavigationFinished(
       impression->attribution_src_token);
 }
 
@@ -321,18 +309,6 @@ AttributionHost::TopFrameOriginForSecureContext() {
 void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     attribution_reporting::mojom::RegistrationType registration_type) {
-  AttributionManager* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  // If there is no attribution data host manager available, ignore any
-  // registrations.
-  AttributionDataHostManager* data_host_manager =
-      attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
   absl::optional<SuitableOrigin> top_frame_origin =
       TopFrameOriginForSecureContext();
   if (!top_frame_origin) {
@@ -347,7 +323,11 @@ void AttributionHost::RegisterDataHost(
       render_frame_host->GetOutermostMainFrame();
   DCHECK(root_frame_host);
 
-  data_host_manager->RegisterDataHost(
+  AttributionManager* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  attribution_manager->GetDataHostManager()->RegisterDataHost(
       std::move(data_host), std::move(*top_frame_origin),
       render_frame_host->IsNestedWithinFencedFrame(), registration_type,
       root_frame_host->GetGlobalId());
@@ -356,21 +336,15 @@ void AttributionHost::RegisterDataHost(
 void AttributionHost::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     const blink::AttributionSrcToken& attribution_src_token) {
-  AttributionManager* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  AttributionDataHostManager* data_host_manager =
-      attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
   if (!TopFrameOriginForSecureContext()) {
     return;
   }
 
-  if (!data_host_manager->RegisterNavigationDataHost(
+  AttributionManager* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  if (!attribution_manager->GetDataHostManager()->RegisterNavigationDataHost(
           std::move(data_host), attribution_src_token,
           GetMostRecentNavigationInputEvent())) {
     mojo::ReportBadMessage(
@@ -412,16 +386,6 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     return;
   }
 
-  AttributionManager* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
-
-  AttributionDataHostManager* data_host_manager =
-      attribution_manager->GetDataHostManager();
-  if (!data_host_manager) {
-    return;
-  }
-
   RenderFrameHostImpl* initiator_root_frame =
       initiator_frame_host->GetOutermostMainFrame();
   DCHECK(initiator_root_frame);
@@ -440,10 +404,15 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
                       ->GetMostRecentNavigationInputEvent();
   }
 
-  data_host_manager->NotifyFencedFrameReportingBeaconStarted(
-      beacon_id, navigation_id, std::move(*initiator_root_frame_origin),
-      initiator_frame_host->IsNestedWithinFencedFrame(), input_event,
-      initiator_root_frame->GetGlobalId());
+  AttributionManager* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+  DCHECK(attribution_manager);
+
+  attribution_manager->GetDataHostManager()
+      ->NotifyFencedFrameReportingBeaconStarted(
+          beacon_id, navigation_id, std::move(*initiator_root_frame_origin),
+          initiator_frame_host->IsNestedWithinFencedFrame(), input_event,
+          initiator_root_frame->GetGlobalId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);

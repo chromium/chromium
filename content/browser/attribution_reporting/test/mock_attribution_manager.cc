@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
@@ -39,6 +40,7 @@ void MockAttributionManager::RemoveObserver(AttributionObserver* observer) {
 }
 
 AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
+  DCHECK(data_host_manager_);
   return data_host_manager_.get();
 }
 
@@ -116,6 +118,7 @@ void MockAttributionManager::NotifyOsRegistration(
 
 void MockAttributionManager::SetDataHostManager(
     std::unique_ptr<AttributionDataHostManager> manager) {
+  DCHECK(manager);
   data_host_manager_ = std::move(manager);
 }
 

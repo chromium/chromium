@@ -442,7 +442,7 @@ AttributionManagerImpl::CreateForTesting(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(storage_delegate),
       std::move(cookie_checker), std::move(report_sender),
-      /*data_host_manager=*/nullptr, std::move(storage_task_runner)));
+      std::move(storage_task_runner)));
 }
 
 // static
@@ -467,7 +467,6 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
-          std::make_unique<AttributionDataHostManagerImpl>(this),
           // This uses BLOCK_SHUTDOWN as some data deletion operations may be
           // running when the browser is closed, and we want to ensure all data
           // is deleted correctly. Additionally, we use MUST_USE_FOREGROUND to
@@ -488,7 +487,6 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
-    std::unique_ptr<AttributionDataHostManager> data_host_manager,
     scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
     : storage_partition_(storage_partition),
       max_pending_events_(max_pending_events),
@@ -504,7 +502,8 @@ AttributionManagerImpl::AttributionManagerImpl(
               &AttributionManagerImpl::RecordPendingAggregatableReportsTimings,
               base::Unretained(this)),
           attribution_storage_)),
-      data_host_manager_(std::move(data_host_manager)),
+      data_host_manager_(
+          std::make_unique<AttributionDataHostManagerImpl>(this)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)) {
@@ -552,6 +551,7 @@ void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
 }
 
 AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
+  DCHECK(data_host_manager_);
   return data_host_manager_.get();
 }
 

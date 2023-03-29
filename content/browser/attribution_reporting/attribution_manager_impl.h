@@ -185,7 +185,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
-      std::unique_ptr<AttributionDataHostManager> data_host_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   void MaybeEnqueueEvent(SourceOrTrigger);
