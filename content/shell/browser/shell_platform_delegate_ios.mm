@@ -18,6 +18,19 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "ui/display/screen.h"
 
+namespace {
+
+static const char kGraphicsTracingCategories[] =
+    "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
+    "input,benchmark";
+
+static const char kDetailedGraphicsTracingCategories[] =
+    "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
+    "input,benchmark,disabled-by-default-skia,disabled-by-default-skia.gpu,"
+    "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders";
+
+}  // namespace
+
 @interface TracingHandler : NSObject {
  @private
   std::unique_ptr<perfetto::TracingSession> _tracingSession;
@@ -25,7 +38,8 @@
 }
 
 - (void)startWithHandler:(void (^)())startHandler
-          andStopHandler:(void (^)())stopHandler;
+             stopHandler:(void (^)())stopHandler
+              categories:(const char*)categories;
 - (void)stop;
 - (BOOL)isTracing;
 
@@ -65,7 +79,8 @@
 - (void)reloadOrStop;
 - (void)setURL:(NSString*)url;
 - (void)setContents:(UIView*)content;
-- (void)toggleTracing;
+- (void)stopTracing;
+- (void)startTracingWithCategories:(const char*)categories;
 - (UIAlertController*)actionSheetWithTitle:(nullable NSString*)title
                                    message:(nullable NSString*)message;
 @end
@@ -295,17 +310,34 @@
                                          style:UIAlertActionStyleCancel
                                        handler:nil]];
 
-  NSString* traceActionTitle =
-      [_tracingHandler isTracing] ? @"End tracing" : @"Begin tracing";
-
   __weak ContentShellWindowDelegate* weakSelf = self;
 
-  [alertController
-      addAction:[UIAlertAction actionWithTitle:traceActionTitle
-                                         style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction* action) {
-                                         [weakSelf toggleTracing];
-                                       }]];
+  if ([_tracingHandler isTracing]) {
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"End Tracing"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf stopTracing];
+                                         }]];
+  } else {
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Begin Graphics Tracing"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf
+                                               startTracingWithCategories:
+                                                   kGraphicsTracingCategories];
+                                         }]];
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:@"Begin Detailed Graphics Tracing"
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction* action) {
+                                [weakSelf
+                                    startTracingWithCategories:
+                                        kDetailedGraphicsTracingCategories];
+                              }]];
+  }
 
   [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -317,19 +349,20 @@
           : [ContentShellWindowDelegate backgroundColorDefault];
 }
 
-- (void)toggleTracing {
+- (void)stopTracing {
+  [_tracingHandler stop];
+}
+
+- (void)startTracingWithCategories:(const char*)categories {
   __weak ContentShellWindowDelegate* weakSelf = self;
-  if ([_tracingHandler isTracing]) {
-    [_tracingHandler stop];
-  } else {
-    [_tracingHandler
-        startWithHandler:^{
-          [weakSelf updateBackground];
-        }
-        andStopHandler:^{
-          [weakSelf updateBackground];
-        }];
-  }
+  [_tracingHandler
+      startWithHandler:^{
+        [weakSelf updateBackground];
+      }
+      stopHandler:^{
+        [weakSelf updateBackground];
+      }
+      categories:categories];
 }
 
 - (void)setURL:(NSString*)url {
@@ -370,7 +403,8 @@
 @implementation TracingHandler
 
 - (void)startWithHandler:(void (^)())startHandler
-          andStopHandler:(void (^)())stopHandler {
+             stopHandler:(void (^)())stopHandler
+              categories:(const char*)categories {
   int i = 0;
   NSString* filename;
   NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -397,10 +431,7 @@
   NSLog(@"Will trace to file: %@", filename);
 
   perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-      base::trace_event::TraceConfig("-*,blink,cc,gpu,renderer.scheduler,"
-                                     "sequence_manager,v8,toplevel,viz,evdev,"
-                                     "input,benchmark",
-                                     ""),
+      base::trace_event::TraceConfig(categories, ""),
       /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/true);
 
