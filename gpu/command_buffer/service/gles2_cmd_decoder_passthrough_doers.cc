@@ -2666,6 +2666,10 @@ error::Error GLES2DecoderPassthroughImpl::DoShaderBinary(GLsizei n,
                                                          GLenum binaryformat,
                                                          const void* binary,
                                                          GLsizei length) {
+#if 1  // No binary shader support.
+  InsertError(GL_INVALID_ENUM, "Invalid enum.");
+  return error::kNoError;
+#else
   std::vector<GLuint> service_shaders(n, 0);
   for (GLsizei i = 0; i < n; i++) {
     service_shaders[i] = GetShaderServiceID(shaders[i], resources_);
@@ -2673,6 +2677,7 @@ error::Error GLES2DecoderPassthroughImpl::DoShaderBinary(GLsizei n,
   api()->glShaderBinaryFn(n, service_shaders.data(), binaryformat, binary,
                           length);
   return error::kNoError;
+#endif
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoShaderSource(GLuint shader,
