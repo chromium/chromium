@@ -20,11 +20,8 @@ public class OmniboxPedal extends OmniboxAction {
     public final @OmniboxPedalType int pedalId;
 
     @CalledByNative
-    public OmniboxPedal(@OmniboxPedalType int pedalId, @NonNull String hint,
-            @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
-            @NonNull String accessibilityHint) {
-        super(OmniboxActionType.PEDAL, hint, suggestionContents, accessibilitySuffix,
-                accessibilityHint);
+    public OmniboxPedal(@NonNull String hint, @OmniboxPedalType int pedalId) {
+        super(OmniboxActionType.PEDAL, hint);
         this.pedalId = pedalId;
     }
 

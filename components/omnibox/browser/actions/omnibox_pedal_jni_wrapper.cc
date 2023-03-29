@@ -29,35 +29,21 @@ inline jclass org_chromium_components_omnibox_action_OmniboxAction_clazz(
 }  // namespace
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
-    OmniboxPedalId pedal_id,
     std::u16string hint,
-    std::u16string suggestion_contents,
-    std::u16string accessibility_suffix,
-    std::u16string accessibility_hint,
-    GURL url) {
+    OmniboxPedalId pedal_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(Java_OmniboxPedal_Constructor(
-      env, static_cast<int32_t>(pedal_id),
-      base::android::ConvertUTF16ToJavaString(env, hint),
-      base::android::ConvertUTF16ToJavaString(env, suggestion_contents),
-      base::android::ConvertUTF16ToJavaString(env, accessibility_suffix),
-      base::android::ConvertUTF16ToJavaString(env, accessibility_hint)));
+      env, base::android::ConvertUTF16ToJavaString(env, hint),
+      static_cast<int32_t>(pedal_id)));
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     std::u16string hint,
-    std::u16string suggestion_contents,
-    std::u16string accessibility_suffix,
-    std::u16string accessibility_hint,
-    GURL url,
     std::string query) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(
       Java_HistoryClustersAction_Constructor(
           env, base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ConvertUTF16ToJavaString(env, suggestion_contents),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_suffix),
-          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
           base::android::ConvertUTF8ToJavaString(env, query)));
 }
 

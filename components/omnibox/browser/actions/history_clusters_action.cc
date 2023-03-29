@@ -185,9 +185,7 @@ HistoryClustersAction::GetJavaObject() const {
 }
 
 void HistoryClustersAction::CreateOrUpdateJavaObject(const std::string& query) {
-  j_omnibox_action_.Reset(BuildHistoryClustersAction(
-      strings_.hint, strings_.suggestion_contents,
-      strings_.accessibility_suffix, strings_.accessibility_hint, url_, query));
+  j_omnibox_action_.Reset(BuildHistoryClustersAction(strings_.hint, query));
 }
 #endif
 

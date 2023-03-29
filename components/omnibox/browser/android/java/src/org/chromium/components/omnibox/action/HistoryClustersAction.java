@@ -21,11 +21,8 @@ public class HistoryClustersAction extends OmniboxAction {
     public final @NonNull String query;
 
     @CalledByNative
-    public HistoryClustersAction(@NonNull String hint, @NonNull String suggestionContents,
-            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
-            @NonNull String query) {
-        super(OmniboxActionType.HISTORY_CLUSTERS, hint, suggestionContents, accessibilitySuffix,
-                accessibilityHint);
+    public HistoryClustersAction(@NonNull String hint, @NonNull String query) {
+        super(OmniboxActionType.HISTORY_CLUSTERS, hint);
         assert !TextUtils.isEmpty(query);
         this.query = query;
     }

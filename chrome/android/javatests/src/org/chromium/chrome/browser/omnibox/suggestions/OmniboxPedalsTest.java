@@ -263,16 +263,14 @@ public class OmniboxPedalsTest {
     private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(List.of(new OmniboxPedal(id, "hints", "suggestionContents",
-                        "accessibilitySuffix", "accessibilityHint")))
+                .setActions(List.of(new OmniboxPedal("hint", id)))
                 .build();
     }
 
     private AutocompleteMatch createDummyHistoryClustersAction(String name) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(List.of(new HistoryClustersAction("hints", "suggestionContents",
-                        "accessibilitySuffix", "accessibilityHint", name)))
+                .setActions(List.of(new HistoryClustersAction("hint", name)))
                 .build();
     }
 

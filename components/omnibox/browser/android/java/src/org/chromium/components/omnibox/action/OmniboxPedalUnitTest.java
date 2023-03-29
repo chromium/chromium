@@ -34,7 +34,7 @@ public class OmniboxPedalUnitTest {
                 OmniboxPedalType.PLAY_CHROME_DINO_GAME, new ChipIcon(R.drawable.ic_dino, true));
 
         for (int type = OmniboxPedalType.NONE; type < OmniboxPedalType.TOTAL_COUNT; type++) {
-            var icon = new OmniboxPedal(type, "", "", "", "").getIcon();
+            var icon = new OmniboxPedal("", type).getIcon();
             var expectedIcon = customResourceMap.getOrDefault(type, defaultIcon);
             assertEquals(
                     String.format(
@@ -54,7 +54,7 @@ public class OmniboxPedalUnitTest {
     @Test
     public void safeCasting_assertsWithWrongClassType() {
         assertThrows(AssertionError.class,
-                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionType.PEDAL, "", "", "", "") {
+                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionType.PEDAL, "") {
                     @Override
                     public ChipIcon getIcon() {
                         return null;
@@ -64,6 +64,6 @@ public class OmniboxPedalUnitTest {
 
     @Test
     public void safeCasting_successWithPedal() {
-        OmniboxPedal.from(new OmniboxPedal(OmniboxPedalType.NONE, "", "", "", ""));
+        OmniboxPedal.from(new OmniboxPedal("", OmniboxPedalType.NONE));
     }
 }

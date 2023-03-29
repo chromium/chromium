@@ -33,18 +33,10 @@ public abstract class OmniboxAction {
     public final @OmniboxActionType int actionId;
     /** The string to present/announce to the user when the action is shown. */
     public final @NonNull String hint;
-    public final @NonNull String suggestionContents;
-    public final @NonNull String accessibilitySuffix;
-    public final @NonNull String accessibilityHint;
 
-    public OmniboxAction(@OmniboxActionType int type, @NonNull String hint,
-            @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
-            @NonNull String accessibilityHint) {
+    public OmniboxAction(@OmniboxActionType int type, @NonNull String hint) {
         this.actionId = type;
         this.hint = hint;
-        this.suggestionContents = suggestionContents;
-        this.accessibilitySuffix = accessibilitySuffix;
-        this.accessibilityHint = accessibilityHint;
     }
 
     /** Returns the icon to present beside the action chip. */

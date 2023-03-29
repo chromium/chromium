@@ -331,9 +331,7 @@ base::android::ScopedJavaGlobalRef<jobject> OmniboxPedal::GetJavaObject()
 }
 
 void OmniboxPedal::CreateOrUpdateJavaObject() {
-  j_omnibox_action_.Reset(BuildOmniboxPedal(
-      PedalId(), strings_.hint, strings_.suggestion_contents,
-      strings_.accessibility_suffix, strings_.accessibility_hint, url_));
+  j_omnibox_action_.Reset(BuildOmniboxPedal(strings_.hint, PedalId()));
 }
 #endif
 

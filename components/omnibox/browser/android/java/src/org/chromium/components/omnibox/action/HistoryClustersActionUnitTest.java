@@ -24,8 +24,7 @@ import org.chromium.components.browser_ui.styles.R;
 public class HistoryClustersActionUnitTest {
     @Test
     public void verifyDecorations_supportedPedalTypes() {
-        var action = new HistoryClustersAction(
-                "hint", "contents", "accessibility suffix", "accessibility hint", "query");
+        var action = new HistoryClustersAction("hint", "query");
         assertEquals(R.drawable.ic_journeys, action.getIcon().iconRes);
         assertTrue(action.getIcon().tintWithTextColor);
     }
@@ -39,17 +38,17 @@ public class HistoryClustersActionUnitTest {
     public void safeCasting_assertsWithWrongClassType() {
         assertThrows(AssertionError.class,
                 ()
-                        -> HistoryClustersAction.from(new OmniboxAction(
-                                OmniboxActionType.HISTORY_CLUSTERS, "", "", "", "") {
-                    @Override
-                    public ChipIcon getIcon() {
-                        return null;
-                    }
-                }));
+                        -> HistoryClustersAction.from(
+                                new OmniboxAction(OmniboxActionType.HISTORY_CLUSTERS, "") {
+                                    @Override
+                                    public ChipIcon getIcon() {
+                                        return null;
+                                    }
+                                }));
     }
 
     @Test
     public void safeCasting_successWithHistoryClusters() {
-        HistoryClustersAction.from(new HistoryClustersAction("", "", "", "", "query"));
+        HistoryClustersAction.from(new HistoryClustersAction("hint", "query"));
     }
 }

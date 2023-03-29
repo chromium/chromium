@@ -162,16 +162,14 @@ public class ActionChipsDelegateImplUnitTest {
      * Create Omnibox Pedal action of a given type.
      */
     private OmniboxAction buildPedal(@OmniboxPedalType int type) {
-        return new OmniboxPedal(
-                type, "hint", "contents", "accessibility suffix", "accessibility hint");
+        return new OmniboxPedal("hint", type);
     }
 
     /**
      * Create HistoryCluster Action with a supplied query.
      */
     private OmniboxAction buildHistoryClustersAction(String query) {
-        return new HistoryClustersAction(
-                "hint", "contents", "accessibility suffix", "accessibility hint", query);
+        return new HistoryClustersAction("hint", query);
     }
 
     @Test
