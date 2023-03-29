@@ -69,7 +69,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -125,7 +124,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -188,12 +186,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     private Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private TabSwitcher.TabListDelegate mTabListDelegate;
-
-    @BeforeClass
-    public static void beforeClass() {
-        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
 
     @Before
     public void setUp() throws ExecutionException {

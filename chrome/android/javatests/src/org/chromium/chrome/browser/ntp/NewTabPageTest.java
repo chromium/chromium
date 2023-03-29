@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,7 +91,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -188,14 +186,6 @@ public class NewTabPageTest {
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, isScrollableMVTEnabled);
         FeatureList.setTestValues(testValuesOverride);
-    }
-
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        // Only needs to be loaded once and needs to be loaded before HistogramTestRule.
-        // TODO(https://crbug.com/1211884): Revise after HistogramTestRule is revised to not require
-        // native loading.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
     @Before
