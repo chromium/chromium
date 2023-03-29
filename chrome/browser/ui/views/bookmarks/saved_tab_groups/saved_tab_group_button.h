@@ -76,6 +76,9 @@ class SavedTabGroupButton : public views::MenuButton,
 
   const base::GUID guid() const { return guid_; }
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
+
  private:
   void TabMenuItemPressed(const GURL& url, int event_flags);
   void MoveGroupToNewWindowPressed(int event_flags);

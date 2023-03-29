@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -25,6 +26,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
@@ -80,3 +82,28 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
       MoveMouseTo(kTabGroupEditorBubbleSaveToggleId), ClickMouse(),
       WaitForShow(kSavedTabGroupButtonElementId));
 }
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       UnsaveGroupFromTabGroupHeader) {
+  RunTestSequence(
+      ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      // Right click anywhere on the tab to open the context menu.
+      HoverTabAt(0), ClickMouse(ui_controls::RIGHT),
+      // Select option to create a new tab group and wait for the tab group
+      // editor bubble to appear.
+      SelectMenuItem(TabMenuModel::kAddToNewGroupItemIdentifier),
+      WaitForShow(kTabGroupEditorBubbleId),
+      // Click the save toggle and make sure the saved tab group appears in the
+      // bookmarks bar.
+      MoveMouseTo(kTabGroupEditorBubbleSaveToggleId), ClickMouse(),
+      WaitForShow(kSavedTabGroupButtonElementId),
+      // Click the save toggle again and make sure the saved tab group
+      // disappears from the bookmarks bar.
+      MoveMouseTo(kTabGroupEditorBubbleSaveToggleId), ClickMouse(),
+      WaitForHide(kSavedTabGroupButtonElementId));
+}
+
+// TODO(dljames): Write a test to unsave a group from a saved group button's
+// context menu in the bookmarks bar.
