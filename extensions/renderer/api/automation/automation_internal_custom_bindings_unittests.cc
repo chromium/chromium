@@ -62,7 +62,7 @@ TEST_F(AutomationInternalCustomBindingsTest, ActionStringMapping) {
        action <= static_cast<uint32_t>(ax::mojom::Action::kMaxValue);
        ++action) {
     const char* val = ui::ToString(static_cast<ax::mojom::Action>(action));
-    EXPECT_NE(api::automation::ACTION_TYPE_NONE,
+    EXPECT_NE(api::automation::ActionType::kNone,
               api::automation::ParseActionType(val))
         << "No automation mapping found for ax::mojom::Action::" << val;
   }

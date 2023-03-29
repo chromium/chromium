@@ -243,11 +243,11 @@ std::string AutomationInternalCustomBindings::GetMarkerTypeString(
 }
 
 std::string AutomationInternalCustomBindings::GetFocusedStateString() const {
-  return api::automation::ToString(api::automation::STATE_TYPE_FOCUSED);
+  return api::automation::ToString(api::automation::StateType::kFocused);
 }
 
 std::string AutomationInternalCustomBindings::GetOffscreenStateString() const {
-  return api::automation::ToString(api::automation::STATE_TYPE_OFFSCREEN);
+  return api::automation::ToString(api::automation::StateType::kOffscreen);
 }
 
 void AutomationInternalCustomBindings::DispatchEvent(

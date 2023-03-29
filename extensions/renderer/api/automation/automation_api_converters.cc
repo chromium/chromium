@@ -13,19 +13,19 @@ api::automation::MarkerType ConvertMarkerTypeFromAXToAutomation(
     ax::mojom::MarkerType ax) {
   switch (ax) {
     case ax::mojom::MarkerType::kNone:
-      return api::automation::MARKER_TYPE_NONE;
+      return api::automation::MarkerType::kNone;
     case ax::mojom::MarkerType::kSpelling:
-      return api::automation::MARKER_TYPE_SPELLING;
+      return api::automation::MarkerType::kSpelling;
     case ax::mojom::MarkerType::kGrammar:
-      return api::automation::MARKER_TYPE_GRAMMAR;
+      return api::automation::MarkerType::kGrammar;
     case ax::mojom::MarkerType::kTextMatch:
-      return api::automation::MARKER_TYPE_TEXTMATCH;
+      return api::automation::MarkerType::kTextMatch;
     case ax::mojom::MarkerType::kActiveSuggestion:
-      return api::automation::MARKER_TYPE_ACTIVESUGGESTION;
+      return api::automation::MarkerType::kActiveSuggestion;
     case ax::mojom::MarkerType::kSuggestion:
-      return api::automation::MARKER_TYPE_SUGGESTION;
+      return api::automation::MarkerType::kSuggestion;
     case ax::mojom::MarkerType::kHighlight:
-      return api::automation::MARKER_TYPE_HIGHLIGHT;
+      return api::automation::MarkerType::kHighlight;
   }
 }
 
@@ -33,19 +33,19 @@ api::automation::TreeChangeType ConvertToAutomationTreeChangeType(
     ax::mojom::Mutation change_type) {
   switch (change_type) {
     case ax::mojom::Mutation::kNone:
-      return api::automation::TREE_CHANGE_TYPE_NONE;
+      return api::automation::TreeChangeType::kNone;
     case ax::mojom::Mutation::kNodeCreated:
-      return api::automation::TREE_CHANGE_TYPE_NODECREATED;
+      return api::automation::TreeChangeType::kNodeCreated;
     case ax::mojom::Mutation::kSubtreeCreated:
-      return api::automation::TREE_CHANGE_TYPE_SUBTREECREATED;
+      return api::automation::TreeChangeType::kSubtreeCreated;
     case ax::mojom::Mutation::kNodeChanged:
-      return api::automation::TREE_CHANGE_TYPE_NODECHANGED;
+      return api::automation::TreeChangeType::kNodeChanged;
     case ax::mojom::Mutation::kTextChanged:
-      return api::automation::TREE_CHANGE_TYPE_TEXTCHANGED;
+      return api::automation::TreeChangeType::kTextChanged;
     case ax::mojom::Mutation::kNodeRemoved:
-      return api::automation::TREE_CHANGE_TYPE_NODEREMOVED;
+      return api::automation::TreeChangeType::kNodeRemoved;
     case ax::mojom::Mutation::kSubtreeUpdateEnd:
-      return api::automation::TREE_CHANGE_TYPE_SUBTREEUPDATEEND;
+      return api::automation::TreeChangeType::kSubtreeUpdateEnd;
   }
 }
 
@@ -53,15 +53,15 @@ using AutomationFilter = api::automation::TreeChangeObserverFilter;
 ui::TreeChangeObserverFilter ConvertAutomationTreeChangeObserverFilter(
     AutomationFilter filter) {
   switch (filter) {
-    case AutomationFilter::TREE_CHANGE_OBSERVER_FILTER_NONE:
+    case AutomationFilter::kNone:
       return ui::TreeChangeObserverFilter::kNone;
-    case AutomationFilter::TREE_CHANGE_OBSERVER_FILTER_NOTREECHANGES:
+    case AutomationFilter::kNoTreeChanges:
       return ui::TreeChangeObserverFilter::kNoTreeChanges;
-    case AutomationFilter::TREE_CHANGE_OBSERVER_FILTER_LIVEREGIONTREECHANGES:
+    case AutomationFilter::kLiveRegionTreeChanges:
       return ui::TreeChangeObserverFilter::kLiveRegionTreeChanges;
-    case AutomationFilter::TREE_CHANGE_OBSERVER_FILTER_TEXTMARKERCHANGES:
+    case AutomationFilter::kTextMarkerChanges:
       return ui::TreeChangeObserverFilter::kTextMarkerChanges;
-    case AutomationFilter::TREE_CHANGE_OBSERVER_FILTER_ALLTREECHANGES:
+    case AutomationFilter::kAllTreeChanges:
       return ui::TreeChangeObserverFilter::kAllTreeChanges;
   }
 }
@@ -79,15 +79,16 @@ api::automation::EventType AXEventToAutomationEventType(
       auto ax_event_type = static_cast<ax::mojom::Event>(i);
       if (ui::ShouldIgnoreAXEventForAutomation(ax_event_type) ||
           ax_event_type == ax::mojom::Event::kNone) {
-        enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
+        enum_map->emplace_back(api::automation::EventType::kNone);
         continue;
       }
 
       const char* val = ui::ToString(ax_event_type);
       api::automation::EventType automation_event_type =
           api::automation::ParseEventType(val);
-      if (automation_event_type == api::automation::EVENT_TYPE_NONE)
+      if (automation_event_type == api::automation::EventType::kNone) {
         NOTREACHED() << "Missing mapping from ax::mojom::Event: " << val;
+      }
 
       enum_map->emplace_back(automation_event_type);
     }
@@ -104,16 +105,17 @@ api::automation::EventType AXGeneratedEventToAutomationEventType(
          i <= static_cast<int>(ui::AXEventGenerator::Event::MAX_VALUE); i++) {
       auto ax_event_type = static_cast<ui::AXEventGenerator::Event>(i);
       if (ui::ShouldIgnoreGeneratedEventForAutomation(ax_event_type)) {
-        enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
+        enum_map->emplace_back(api::automation::EventType::kNone);
         continue;
       }
 
       const char* val = ui::ToString(ax_event_type);
       api::automation::EventType automation_event_type =
           api::automation::ParseEventType(val);
-      if (automation_event_type == api::automation::EVENT_TYPE_NONE)
+      if (automation_event_type == api::automation::EventType::kNone) {
         NOTREACHED() << "Missing mapping from ui::AXEventGenerator::Event: "
                      << val;
+      }
 
       enum_map->emplace_back(automation_event_type);
     }

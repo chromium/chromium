@@ -7,7 +7,7 @@
 // tree, but only exposes the <em>semantic</em> structure of a page. It can be
 // used to programmatically interact with a page by examining names, roles, and
 // states, listening for events, and performing actions on nodes.
-[nocompile] namespace automation {
+[nocompile, modernised_enums] namespace automation {
   // Keep the following enums in sync with 'ui/accessibility/ax_enums.mojom'.
   // They are kept here purely for extension docs generation.
 
