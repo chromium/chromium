@@ -68,31 +68,6 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
 };
 
 template <>
-struct MapTraits<base::Value> {
-  using Key = std::string;
-  using Value = base::Value;
-  using Iterator = base::Value::const_dict_iterator_proxy::const_iterator;
-
-  static size_t GetSize(const base::Value& input) {
-    DCHECK(input.is_dict());
-    return input.GetDict().size();
-  }
-
-  static Iterator GetBegin(const base::Value& input) {
-    DCHECK(input.is_dict());
-    return input.DictItems().cbegin();
-  }
-
-  static void AdvanceIterator(Iterator& iterator) { ++iterator; }
-
-  static const Key& GetKey(const Iterator& iterator) { return iterator->first; }
-
-  static const Value& GetValue(const Iterator& iterator) {
-    return iterator->second;
-  }
-};
-
-template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     UnionTraits<mojo_base::mojom::ValueDataView, base::Value> {
   static mojo_base::mojom::ValueDataView::Tag GetTag(const base::Value& data) {

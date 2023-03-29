@@ -495,7 +495,7 @@ std::string ShortcutIdFromContainerId(Profile* profile,
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
     const base::Value& shortcut) {
   base::flat_map<std::string, std::string> extras;
-  for (const auto it : shortcut.DictItems()) {
+  for (const auto it : shortcut.GetDict()) {
     if (it.second.is_string()) {
       extras[it.first] = it.second.GetString();
     }

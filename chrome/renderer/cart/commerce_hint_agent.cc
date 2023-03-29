@@ -384,7 +384,7 @@ const std::map<std::string, std::string>& GetPurchaseURLPatternMapping() {
             .value());
     DCHECK(json.is_dict());
     std::map<std::string, std::string> map;
-    for (auto&& item : json.DictItems()) {
+    for (auto&& item : json.GetDict()) {
       map.insert({std::move(item.first), std::move(item.second).TakeString()});
     }
     return map;
@@ -398,7 +398,7 @@ const std::map<std::string, std::string>& GetPurchaseButtonPatternMapping() {
         base::JSONReader::Read(kPurchaseButtonPatternMapping.Get()).value());
     DCHECK(json.is_dict());
     std::map<std::string, std::string> map;
-    for (auto&& item : json.DictItems()) {
+    for (auto&& item : json.GetDict()) {
       map.insert({std::move(item.first), std::move(item.second).TakeString()});
     }
     return map;
@@ -502,7 +502,7 @@ const std::map<std::string, std::string>& GetSkipAddToCartMapping() {
             .value());
     DCHECK(json.is_dict());
     std::map<std::string, std::string> map;
-    for (auto&& item : json.DictItems()) {
+    for (auto&& item : json.GetDict()) {
       map.insert({std::move(item.first), std::move(item.second).TakeString()});
     }
     return map;

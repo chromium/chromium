@@ -1281,14 +1281,6 @@ Value* Value::FindListPath(StringPiece path) {
   return const_cast<Value*>(std::as_const(*this).FindListPath(path));
 }
 
-Value::dict_iterator_proxy Value::DictItems() {
-  return dict_iterator_proxy(&GetDict().storage_);
-}
-
-Value::const_dict_iterator_proxy Value::DictItems() const {
-  return const_dict_iterator_proxy(&GetDict().storage_);
-}
-
 size_t Value::DictSize() const {
   return GetDict().size();
 }

@@ -48,7 +48,7 @@ ParseInitializeClientHintsStroage() {
     return {};
   }
 
-  for (auto entry : maybe_value->DictItems()) {
+  for (auto entry : maybe_value->GetDict()) {
     url::Origin origin = url::Origin::Create(GURL(entry.first));
     if (origin.opaque() || origin.scheme() != url::kHttpsScheme) {
       LOG(WARNING)

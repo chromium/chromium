@@ -195,7 +195,7 @@ TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
 
   std::vector<Entry> parsed_entries;
 
-  for (auto kv : maybe_value->DictItems()) {
+  for (auto kv : maybe_value->GetDict()) {
     const std::string& raw_key_from_json = kv.first;
     absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(raw_key_from_json));

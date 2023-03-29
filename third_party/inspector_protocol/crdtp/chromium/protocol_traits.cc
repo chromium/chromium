@@ -262,7 +262,7 @@ void ProtocolTypeTraits<base::Value>::Serialize(const base::Value& value,
       NOTREACHED();
       return;
     case base::Value::Type::DICT:
-      SerializeDict(value.DictItems(), bytes);
+      SerializeDict(value.GetDict(), bytes);
       return;
     case base::Value::Type::LIST: {
       ContainerSerializer serializer(bytes,

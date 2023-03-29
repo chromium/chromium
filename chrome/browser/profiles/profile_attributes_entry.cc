@@ -575,7 +575,7 @@ base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
     return base::flat_set<std::string>();
 
   return base::MakeFlatSet<std::string>(
-      accounts->DictItems(), {}, [](const auto& it) { return it.first; });
+      accounts->GetDict(), {}, [](const auto& it) { return it.first; });
 }
 
 void ProfileAttributesEntry::SetGaiaIds(

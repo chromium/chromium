@@ -445,7 +445,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
 }
 
 base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
-  for (const auto pair : timeouts.DictItems()) {
+  for (const auto pair : timeouts.GetDict()) {
     if (!pair.second.is_int() || pair.second.GetInt() < 0) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverInvalidTimeoutMessage);

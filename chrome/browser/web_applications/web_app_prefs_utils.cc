@@ -216,7 +216,7 @@ std::map<AppId, int> TakeAllWebAppInstallSources(PrefService* pref_service) {
     return {};
 
   std::map<AppId, int> return_value;
-  for (auto item : web_apps_prefs->DictItems()) {
+  for (auto item : web_apps_prefs->GetDict()) {
     const AppId& app_id = item.first;
     absl::optional<int> install_source =
         item.second.FindIntPath(kLatestWebAppInstallSource);

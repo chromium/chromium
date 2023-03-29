@@ -145,7 +145,7 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!parsed_value->is_dict() || parsed_value->DictSize() != 1) {
     return false;
   }
-  auto iter = parsed_value->DictItems().begin();
+  auto iter = parsed_value->GetDict().begin();
   const std::string& ip_addr = iter->first;
   const base::Value& info = iter->second;
   if (!info.is_dict()) {

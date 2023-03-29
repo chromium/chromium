@@ -153,7 +153,7 @@ void EnumerateAndTrimIncompatibleApplications(UnaryFunction function) {
   for (const auto item : g_browser_process->local_state()
                              ->FindPreference(prefs::kIncompatibleApplications)
                              ->GetValue()
-                             ->DictItems()) {
+                             ->GetDict()) {
     auto application =
         ConvertToIncompatibleApplication(item.first, item.second);
 

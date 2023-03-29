@@ -118,7 +118,7 @@ bool ParsePolicy(const std::string& policy_fetch_response_blob,
 
   // Search for "Policy" and "Recommended" keys in dict, perform some type
   // conversions on the sub-dicts and put them into |policy|.
-  for (const auto it : dict.value().DictItems()) {
+  for (const auto it : dict.value().GetDict()) {
     const Level* level = FindMatchingLevel(it.first);
     if (!level) {
       LOG(WARNING) << "Unknown key '" << it.first

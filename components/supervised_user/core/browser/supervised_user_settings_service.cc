@@ -379,7 +379,7 @@ SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(
   for (const auto it : *GetSplitSettings()) {
     const base::Value& split_setting = it.second;
     DCHECK(split_setting.is_dict());
-    for (const auto jt : split_setting.DictItems()) {
+    for (const auto jt : split_setting.GetDict()) {
       data.push_back(CreateSyncDataForSetting(
           MakeSplitSettingKey(it.first, jt.first), jt.second));
     }

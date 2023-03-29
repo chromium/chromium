@@ -87,7 +87,7 @@ void InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
     const std::string& sender_id = sender_to_topics.first;
 
     base::flat_set<std::string> topics_to_cleanup;
-    for (auto topic_to_handler : sender_to_topics.second.DictItems()) {
+    for (auto topic_to_handler : sender_to_topics.second.GetDict()) {
       const std::string& topic_name = topic_to_handler.first;
       std::string handler_name;
 

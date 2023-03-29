@@ -268,7 +268,7 @@ void InitializeFeatureList(const base::Value::Dict& dcs_features,
         // Build a map of the FieldTrial parameters and associate it to the
         // FieldTrial.
         base::FieldTrialParams params;
-        for (const auto params_kv : kv.second.DictItems()) {
+        for (const auto params_kv : kv.second.GetDict()) {
           if (params_kv.second.is_string()) {
             params[params_kv.first] = params_kv.second.GetString();
           } else {

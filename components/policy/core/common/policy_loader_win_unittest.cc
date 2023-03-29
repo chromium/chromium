@@ -98,7 +98,7 @@ bool InstallValue(const base::Value& value,
     case base::Value::Type::DICT: {
       if (!value.is_dict())
         return false;
-      for (auto key_value : value.DictItems()) {
+      for (auto key_value : value.GetDict()) {
         if (!InstallValue(key_value.second, hive, path + kPathSep + name,
                           base::UTF8ToWide(key_value.first))) {
           return false;
@@ -356,7 +356,7 @@ void RegistryTestHarness::Install3rdPartyPolicy(
       ADD_FAILURE();
       continue;
     }
-    for (auto component : components.DictItems()) {
+    for (auto component : components.GetDict()) {
       const std::wstring path = kPathPrefix + base::UTF8ToWide(domain.first) +
                                 kPathSep + base::UTF8ToWide(component.first);
       InstallValue(component.second, hive_, path, kMandatory);

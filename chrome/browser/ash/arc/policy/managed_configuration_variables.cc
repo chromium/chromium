@@ -252,7 +252,7 @@ void RecursivelySearchAndReplaceVariables(const VariableResolver& resolver,
                                           base::Value* managedConfiguration) {
   // Recursive call for dictionary values.
   if (managedConfiguration->is_dict()) {
-    for (auto kv : managedConfiguration->DictItems()) {
+    for (auto kv : managedConfiguration->GetDict()) {
       RecursivelySearchAndReplaceVariables(resolver, &kv.second);
     }
     return;

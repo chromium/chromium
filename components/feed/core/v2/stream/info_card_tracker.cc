@@ -80,7 +80,7 @@ std::vector<InfoCardTrackingState> InfoCardTracker::GetAllStates(
   const base::Value& dict = profile_prefs_->GetValue(prefs::kInfoCardStates);
   if (dict.is_dict()) {
     int64_t timestamp_adjustment = server_timestamp - client_timestamp;
-    for (const auto pair : dict.DictItems()) {
+    for (const auto pair : dict.GetDict()) {
       int info_card_type = 0;
       if (!base::StringToInt(pair.first, &info_card_type))
         continue;

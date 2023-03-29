@@ -82,10 +82,10 @@ PendingWriteStore::GetPendingWrites() {
     return list;
   }
 
-  const base::Value& result =
-      pref_service->GetValue(kFastPairPendingWritesPref);
+  const base::Value::Dict& result =
+      pref_service->GetDict(kFastPairPendingWritesPref);
 
-  for (const auto item : result.DictItems()) {
+  for (const auto item : result) {
     // PendingWrite member variable |fast_pair_info| is
     // stored in |result| as a hex encoded string. This need to be parsed into
     // type nearby::fastpair::FastPairInfo before initializing a new
@@ -167,10 +167,10 @@ PendingWriteStore::GetPendingDeletes() {
     return list;
   }
 
-  const base::Value& result =
-      pref_service->GetValue(kFastPairPendingDeletesPref);
+  const base::Value::Dict& result =
+      pref_service->GetDict(kFastPairPendingDeletesPref);
 
-  for (const auto item : result.DictItems()) {
+  for (const auto item : result) {
     list.emplace_back(item.first, item.second.GetString());
   }
 

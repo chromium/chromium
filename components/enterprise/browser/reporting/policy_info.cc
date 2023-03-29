@@ -138,7 +138,7 @@ void AppendExtensionPolicyInfoIntoProfileReport(
       continue;
     auto* extension = profile_info->add_extension_policies();
     extension->set_extension_id(extension_iter.first);
-    for (auto policy_iter : policies_value.DictItems()) {
+    for (auto policy_iter : policies_value.GetDict()) {
       UpdatePolicyInfo(extension->add_policies(), policy_iter.first,
                        policy_iter.second);
     }

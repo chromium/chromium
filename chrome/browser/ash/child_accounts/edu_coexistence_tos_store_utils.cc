@@ -65,14 +65,12 @@ void SetUserConsentInfoListForProfile(
 
 std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
     Profile* profile) {
-  const base::Value& user_consent_info_dict_value =
-      profile->GetPrefs()->GetValue(prefs::kEduCoexistenceToSAcceptedVersion);
-
-  DCHECK(user_consent_info_dict_value.is_dict());
+  const base::Value::Dict& user_consent_info_dict =
+      profile->GetPrefs()->GetDict(prefs::kEduCoexistenceToSAcceptedVersion);
 
   std::vector<UserConsentInfo> info_list;
 
-  for (const auto entry : user_consent_info_dict_value.DictItems()) {
+  for (const auto entry : user_consent_info_dict) {
     const std::string& gaia_id = entry.first;
     const std::string& accepted_tos_version = entry.second.GetString();
     info_list.push_back(UserConsentInfo(gaia_id, accepted_tos_version));

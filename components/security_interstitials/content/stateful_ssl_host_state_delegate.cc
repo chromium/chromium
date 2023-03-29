@@ -524,7 +524,7 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
   if (!value.is_dict())
     return false;
 
-  for (const auto pair : value.DictItems()) {
+  for (const auto pair : value.GetDict()) {
     if (!pair.second.is_int())
       continue;
 

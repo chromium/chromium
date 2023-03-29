@@ -104,8 +104,9 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
   ASSERT_TRUE(statuses.has_value() && statuses->is_dict());
   const base::Value* actual_entries = statuses->FindDictKey(policy_legend);
   ASSERT_TRUE(actual_entries && actual_entries->is_dict());
-  for (const auto entry : actual_entries->DictItems())
+  for (const auto entry : actual_entries->GetDict()) {
     policy_status->insert_or_assign(entry.first, entry.second.GetString());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUiLacrosBrowserTest, ShowManagedByField) {

@@ -71,7 +71,7 @@ void RecordPolicyMetrics(const std::string& arc_policy) {
     return;
   }
 
-  for (const auto it : dict.value().DictItems()) {
+  for (const auto it : dict.value().GetDict()) {
     UMA_HISTOGRAM_ENUMERATION("Arc.Policy.Keys",
                               GetPolicyKeyFromString(it.first));
   }

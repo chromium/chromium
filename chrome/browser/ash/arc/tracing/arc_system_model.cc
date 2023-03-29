@@ -26,7 +26,7 @@ bool LoadThreads(const base::Value* value,
   if (!value || !value->is_dict())
     return false;
 
-  for (const auto it : value->DictItems()) {
+  for (const auto it : value->GetDict()) {
     int tid;
     if (sscanf(it.first.c_str(), "%d", &tid) != 1)
       return false;

@@ -253,7 +253,6 @@ TEST(ValuesTest, HardenTests) {
   EXPECT_DEATH_IF_SUPPORTED(value.GetDouble(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.GetString(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.GetBlob(), "");
-  EXPECT_DEATH_IF_SUPPORTED(value.DictItems(), "");
 }
 
 // Group of tests for the copy constructors and copy-assigmnent. For equality
@@ -2030,7 +2029,7 @@ TEST(ValuesTest, DictionaryIterator) {
   EXPECT_TRUE(seen2);
 }
 
-TEST(ValuesTest, MutatingCopiedPairsInDictItemsMutatesUnderlyingValues) {
+TEST(ValuesTest, MutatingCopiedPairsInDictMutatesUnderlyingValues) {
   Value::Dict dict;
   dict.Set("key", Value("initial value"));
 

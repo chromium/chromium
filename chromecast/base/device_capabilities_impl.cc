@@ -279,7 +279,7 @@ void DeviceCapabilitiesImpl::SetCapability(const std::string& path,
 
 void DeviceCapabilitiesImpl::MergeDictionary(const base::Value& dict_value) {
   DCHECK(dict_value.is_dict());
-  for (const auto kv : dict_value.DictItems()) {
+  for (const auto kv : dict_value.GetDict()) {
     SetCapability(kv.first, kv.second.Clone());
   }
 }
