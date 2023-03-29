@@ -37,6 +37,11 @@ message AppPreloadListResponse {
 
     // An app installed for an OEM.
     INSTALL_REASON_OEM = 2;
+
+    // An app which is being returned by the server for testing purposes.
+    // This generally will be ignored by the client unless it is configured
+    // in some sort of test mode.
+    INSTALL_REASON_TEST = 3;
   }
 
   message Icon {

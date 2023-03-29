@@ -94,6 +94,22 @@ TEST_F(PreloadAppDefinitionTest, IsNotOemApp) {
   ASSERT_FALSE(app_def.IsOemApp());
 }
 
+TEST_F(PreloadAppDefinitionTest, IsTestApp) {
+  proto::AppPreloadListResponse_App app;
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_TEST);
+
+  PreloadAppDefinition app_def(app);
+  ASSERT_TRUE(app_def.IsTestApp());
+}
+
+TEST_F(PreloadAppDefinitionTest, IsNotTestApp) {
+  proto::AppPreloadListResponse_App app;
+  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
+
+  PreloadAppDefinition app_def(app);
+  ASSERT_FALSE(app_def.IsTestApp());
+}
+
 TEST_F(PreloadAppDefinitionTest, GetWebAppManifestUrlWebsite) {
   proto::AppPreloadListResponse_App app = CreateTestWebApp();
   app.mutable_web_extras()->set_manifest_url(

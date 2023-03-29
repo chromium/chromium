@@ -52,6 +52,10 @@ static constexpr char kFirstLoginFlowHistogramSuccessName[] =
 static constexpr char kFirstLoginFlowHistogramFailureName[] =
     "AppPreloadService.FirstLoginFlowTime.Failure";
 
+bool AreTestAppsEnabled() {
+  return base::FeatureList::IsEnabled(apps::kAppPreloadServiceEnableTestApps);
+}
+
 }  // namespace
 
 namespace apps {
@@ -63,6 +67,10 @@ static constexpr char kApsStateManager[] =
 
 BASE_FEATURE(kAppPreloadServiceForceRun,
              "AppPreloadServiceForceRun",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAppPreloadServiceEnableTestApps,
+             "AppPreloadServiceEnableTestApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 AppPreloadService::AppPreloadService(Profile* profile)
@@ -189,8 +197,11 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
     return false;
   }
 
-  // We currently only install apps which were requested by the device OEM.
-  if (!app.IsOemApp()) {
+  // We currently only install apps which were requested by the device OEM. If
+  // the testing feature is enabled, also install test apps.
+  bool install_reason_allowed =
+      app.IsOemApp() || (app.IsTestApp() && AreTestAppsEnabled());
+  if (!install_reason_allowed) {
     return false;
   }
 

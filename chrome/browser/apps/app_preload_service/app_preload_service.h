@@ -38,6 +38,10 @@ struct DeviceInfo;
 // the Profile would not normally be eligible.
 BASE_DECLARE_FEATURE(kAppPreloadServiceForceRun);
 
+// Debugging/testing feature to install test apps returned by the server, which
+// are normally silently ignored.
+BASE_DECLARE_FEATURE(kAppPreloadServiceEnableTestApps);
+
 class AppPreloadService : public KeyedService {
  public:
   explicit AppPreloadService(Profile* profile);

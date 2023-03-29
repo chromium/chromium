@@ -28,6 +28,7 @@ class PreloadAppDefinition {
   std::string GetName() const;
   AppType GetPlatform() const;
   bool IsOemApp() const;
+  bool IsTestApp() const;
 
   // Returns the Web App manifest URL for the app, which hosts the manifest of
   // the app in a JSON format. The URL could point to a local file, or a web
