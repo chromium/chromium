@@ -102,7 +102,9 @@ def CreateTestResults(test_status, timestamp):
   results = {
       'tests': {},
       'interrupted': False,
-      'path_delimiter': '.',
+      'metadata': {
+          'test_name_prefix': 'build/fuchsia/'
+      },
       'version': 3,
       'seconds_since_epoch': timestamp,
   }
