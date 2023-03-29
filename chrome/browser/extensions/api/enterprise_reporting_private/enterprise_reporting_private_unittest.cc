@@ -19,7 +19,6 @@
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -38,6 +37,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_function_dispatcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,8 +131,8 @@ TEST_F(EnterpriseReportingPrivateGetDeviceIdTest, GetDeviceId) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceIdFunction>();
   SetClientId(kFakeClientId);
-  std::unique_ptr<base::Value> id =
-      RunFunctionAndReturnValue(function.get(), "[]");
+  absl::optional<base::Value> id =
+      RunFunctionAndReturnSingleValue(function.get(), "[]");
   ASSERT_TRUE(id);
   ASSERT_TRUE(id->is_string());
   EXPECT_EQ(kFakeClientId, id->GetString());
@@ -173,9 +173,10 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
   base::Value::List values;
   values.Append("a");
   values.Append(base::Value::BlobStorage({1, 2, 3}));
-  extension_function_test_utils::RunFunction(function.get(), std::move(values),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function.get(), std::move(values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(function->GetResultListForTest());
   EXPECT_EQ(0u, function->GetResultListForTest()->size());
   EXPECT_TRUE(function->GetError().empty());
@@ -186,9 +187,10 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   base::Value::List values;
   values.Append("b");
-  extension_function_test_utils::RunFunction(function.get(), std::move(values),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function.get(), std::move(values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(function->GetResultListForTest());
   EXPECT_EQ(1u, function->GetResultListForTest()->size());
   EXPECT_TRUE(function->GetError().empty());
@@ -204,9 +206,10 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   base::Value::List set_values;
   set_values.Append("a/b");
   set_values.Append(base::Value::BlobStorage({1, 2, 3}));
-  extension_function_test_utils::RunFunction(set_function.get(),
-                                             std::move(set_values), browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      set_function.get(), std::move(set_values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(set_function->GetError().empty());
 
   // Try to read the directory as a file and should fail.
@@ -214,9 +217,10 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   base::Value::List values;
   values.Append("a");
-  extension_function_test_utils::RunFunction(function.get(), std::move(values),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function.get(), std::move(values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(function->GetResultListForTest());
   EXPECT_EQ(0u, function->GetResultListForTest()->size());
   EXPECT_FALSE(function->GetError().empty());
@@ -228,18 +232,20 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   base::Value::List set_values;
   set_values.Append("c");
   set_values.Append(base::Value::BlobStorage({1, 2, 3}));
-  extension_function_test_utils::RunFunction(set_function.get(),
-                                             std::move(set_values), browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      set_function.get(), std::move(set_values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(set_function->GetError().empty());
 
   auto get_function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   base::Value::List values;
   values.Append("c");
-  extension_function_test_utils::RunFunction(get_function.get(),
-                                             std::move(values), browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      get_function.get(), std::move(values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(get_function->GetResultListForTest());
   const base::Value& single_result = (*get_function->GetResultListForTest())[0];
   EXPECT_TRUE(get_function->GetError().empty());
@@ -251,18 +257,20 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
   base::Value::List reset_values;
   reset_values.Append("c");
-  extension_function_test_utils::RunFunction(set_function2.get(),
-                                             std::move(reset_values), browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      set_function2.get(), std::move(reset_values),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(set_function2->GetError().empty());
 
   auto get_function2 =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
   base::Value::List values2;
   values2.Append("c");
-  extension_function_test_utils::RunFunction(get_function2.get(),
-                                             std::move(values2), browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      get_function2.get(), std::move(values2),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   ASSERT_TRUE(get_function2->GetResultListForTest());
   EXPECT_EQ(1u, get_function2->GetResultListForTest()->size());
   EXPECT_TRUE(get_function2->GetError().empty());
@@ -306,8 +314,8 @@ class EnterpriseReportingPrivateGetPersistentSecretFunctionTest
 TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   auto function = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
-  std::unique_ptr<base::Value> result1 =
-      RunFunctionAndReturnValue(function.get(), "[]");
+  absl::optional<base::Value> result1 =
+      RunFunctionAndReturnSingleValue(function.get(), "[]");
   ASSERT_TRUE(result1);
   ASSERT_TRUE(result1->is_blob());
   auto generated_blob = result1->GetBlob();
@@ -315,8 +323,8 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   // Re-running should not change the secret.
   auto function2 = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
-  std::unique_ptr<base::Value> result2 =
-      RunFunctionAndReturnValue(function2.get(), "[]");
+  absl::optional<base::Value> result2 =
+      RunFunctionAndReturnSingleValue(function2.get(), "[]");
   ASSERT_TRUE(result2);
   ASSERT_TRUE(result2->is_blob());
   ASSERT_EQ(generated_blob, result2->GetBlob());
@@ -324,8 +332,8 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   // Re-running should not change the secret even when force recreate is set.
   auto function3 = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
-  std::unique_ptr<base::Value> result3 =
-      RunFunctionAndReturnValue(function3.get(), "[true]");
+  absl::optional<base::Value> result3 =
+      RunFunctionAndReturnSingleValue(function3.get(), "[true]");
   ASSERT_TRUE(result3);
   ASSERT_TRUE(result3->is_blob());
   ASSERT_EQ(generated_blob, result3->GetBlob());
@@ -349,8 +357,8 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   // Re=running should not change the secret even when force recreate is set.
   auto function5 = base::MakeRefCounted<
       EnterpriseReportingPrivateGetPersistentSecretFunction>();
-  std::unique_ptr<base::Value> result5 =
-      RunFunctionAndReturnValue(function5.get(), "[true]");
+  absl::optional<base::Value> result5 =
+      RunFunctionAndReturnSingleValue(function5.get(), "[true]");
   ASSERT_TRUE(result5);
   ASSERT_TRUE(result5->is_blob());
   ASSERT_NE(generated_blob, result5->GetBlob());
@@ -363,9 +371,9 @@ using EnterpriseReportingPrivateGetDeviceInfoTest = ExtensionApiUnittest;
 TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceInfoFunction>();
-  std::unique_ptr<base::Value> device_info_value =
-      RunFunctionAndReturnValue(function.get(), "[]");
-  ASSERT_TRUE(device_info_value.get());
+  absl::optional<base::Value> device_info_value =
+      RunFunctionAndReturnSingleValue(function.get(), "[]");
+  ASSERT_TRUE(device_info_value);
   ASSERT_TRUE(device_info_value->is_dict());
   enterprise_reporting_private::DeviceInfo info;
   ASSERT_TRUE(enterprise_reporting_private::DeviceInfo::Populate(
@@ -437,15 +445,15 @@ class EnterpriseReportingPrivateGetContextInfoTest
     StubResolverConfigReader stub_resolver_config_reader(
         g_browser_process->local_state());
     enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(), base::BindRepeating(&CreateProfileIDService));
+        profile(), base::BindRepeating(&CreateProfileIDService));
   }
 
   enterprise_reporting_private::ContextInfo GetContextInfo() {
     auto function = base::MakeRefCounted<
         EnterpriseReportingPrivateGetContextInfoFunction>();
-    std::unique_ptr<base::Value> context_info_value =
-        RunFunctionAndReturnValue(function.get(), "[]");
-    EXPECT_TRUE(context_info_value.get());
+    absl::optional<base::Value> context_info_value =
+        RunFunctionAndReturnSingleValue(function.get(), "[]");
+    EXPECT_TRUE(context_info_value);
     EXPECT_TRUE(context_info_value->is_dict());
 
     enterprise_reporting_private::ContextInfo info;
@@ -1104,9 +1112,10 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue);
   policy::SetDMTokenForTesting(dm_token);
 
-  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function_.get(), std::move(params),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(function_->GetError(), kNoError);
 
   ::chromeos::MissiveClient::TestInterface* const missive_test_interface =
@@ -1145,9 +1154,10 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
 
-  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function_.get(), std::move(params),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
 
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
@@ -1175,9 +1185,10 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
 
-  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function_.get(), std::move(params),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
 
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
@@ -1202,9 +1213,10 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   // Set up invalid DM token
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
 
-  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function_.get(), std::move(params),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
 
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
@@ -1237,9 +1249,10 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
 
-  extension_function_test_utils::RunFunction(function_.get(), std::move(params),
-                                             browser(),
-                                             extensions::api_test_utils::NONE);
+  api_test_utils::RunFunction(
+      function_.get(), std::move(params),
+      std::make_unique<ExtensionFunctionDispatcher>(profile()),
+      extensions::api_test_utils::FunctionMode::kNone);
 
   EXPECT_EQ(function_->GetError(),
             EnterpriseReportingPrivateEnqueueRecordFunction::
