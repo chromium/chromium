@@ -41,7 +41,18 @@ class NET_EXPORT_PRIVATE DnsUdpTracker {
   static constexpr size_t kRecognizedIdMismatchThreshold = 128;
 
   // Number of reuses of the same port required to set the |low_entropy_| flag.
-  static constexpr int kPortReuseThreshold = 2;
+  // Note: The original value of this parameter was 2, but it caused a problem
+  // on Windows (crbug.com/1413620). The low entropy checker in DnsUdpTracker
+  // was too sensitive and caused many TCP fallbacks. This happened because the
+  // dynamic port range for UDP on Windows is too small (only 16384 ports). This
+  // meant that there was a high probability (about 1%) of reusing the same port
+  // number three or more times out of 256 records. To avoid these unnecessary
+  // TCP fallbacks, the value was changed to 3. The probability of reusing the
+  // same port number to 4 or more times out of 256 records is 3.92566e-05. And
+  // if the available port count is 2048, the probability: 0.0182851. So it is
+  // likely to activate when getting into the low entropy.
+  // (See crrev.com/c/4374511 for the calculation).
+  static constexpr int kPortReuseThreshold = 3;
 
   DnsUdpTracker();
   ~DnsUdpTracker();
