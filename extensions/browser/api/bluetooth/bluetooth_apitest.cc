@@ -5,12 +5,10 @@
 #include <string.h>
 
 #include <memory>
-#include <tuple>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -20,6 +18,7 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "extensions/browser/api/bluetooth/bluetooth_api.h"
 #include "extensions/browser/api/bluetooth/bluetooth_event_router.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -35,7 +34,7 @@ using device::MockBluetoothDevice;
 using extensions::Extension;
 using extensions::ResultCatcher;
 
-namespace utils = extension_function_test_utils;
+namespace utils = extensions::api_test_utils;
 namespace api = extensions::api;
 
 namespace {
@@ -151,9 +150,9 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
   scoped_refptr<api::BluetoothGetAdapterStateFunction> get_adapter_state;
   get_adapter_state = setupFunction(new api::BluetoothGetAdapterStateFunction);
 
-  std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
-      get_adapter_state.get(), "[]", browser()));
-  ASSERT_TRUE(result.get() != nullptr);
+  absl::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
+      get_adapter_state.get(), "[]", browser()->profile());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
   api::bluetooth::AdapterState state;
   ASSERT_TRUE(api::bluetooth::AdapterState::Populate(result->GetDict(), state));
@@ -199,16 +198,16 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, Discovery) {
   FailNextCall();
   scoped_refptr<api::BluetoothStartDiscoveryFunction> start_function;
   start_function = setupFunction(new api::BluetoothStartDiscoveryFunction);
-  std::string error(
-      utils::RunFunctionAndReturnError(start_function.get(), "[]", browser()));
+  std::string error(utils::RunFunctionAndReturnError(start_function.get(), "[]",
+                                                     browser()->profile()));
 
   testing::Mock::VerifyAndClearExpectations(mock_adapter_);
   // Simulate successful start discovery
   EXPECT_CALL(*mock_adapter_, StartScanWithFilter_(_, _))
       .WillOnce(Invoke(this, &BluetoothApiTest::StartScanOverride));
   start_function = setupFunction(new api::BluetoothStartDiscoveryFunction);
-  utils::RunFunction(start_function.get(), "[]", browser(),
-                     extensions::api_test_utils::NONE);
+  utils::RunFunction(start_function.get(), "[]", browser()->profile(),
+                     extensions::api_test_utils::FunctionMode::kNone);
 
   testing::Mock::VerifyAndClearExpectations(mock_adapter_);
   // Simulate stop discovery with a failure
@@ -217,8 +216,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, Discovery) {
   FailNextCall();
   scoped_refptr<api::BluetoothStopDiscoveryFunction> stop_function;
   stop_function = setupFunction(new api::BluetoothStopDiscoveryFunction);
-  std::ignore = utils::RunFunctionAndReturnSingleResult(stop_function.get(),
-                                                        "[]", browser());
+  [[maybe_unused]] auto result = utils::RunFunctionAndReturnSingleResult(
+      stop_function.get(), "[]", browser()->profile());
   SetUpMockAdapter();
 }
 
