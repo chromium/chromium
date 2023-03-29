@@ -10433,6 +10433,8 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/themes_helper.h",
       "../browser/sync/test/integration/user_events_helper.cc",
       "../browser/sync/test/integration/user_events_helper.h",
+      "../browser/sync/test/integration/webauthn_credentials_helper.cc",
+      "../browser/sync/test/integration/webauthn_credentials_helper.h",
     ]
   } else {
     sources += [
@@ -10512,6 +10514,7 @@ source_set("sync_integration_test_support") {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/send_tab_to_self",
       "//components/webapps/browser",
+      "//components/webauthn/core/browser",
     ]
   }
 }
@@ -10567,6 +10570,7 @@ if (!is_android) {
       "//components/sync_preferences:common_syncable_prefs_database",
       "//components/undo",
       "//components/webapps/browser",
+      "//components/webauthn/core/browser",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",

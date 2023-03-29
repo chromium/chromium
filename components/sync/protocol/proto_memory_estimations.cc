@@ -42,6 +42,15 @@ class MemoryUsageVisitor {
   }
 
   template <class P>
+  void VisitBytes(
+      const P& parent_proto,
+      const char* field_name,
+      const google::protobuf::RepeatedPtrField<std::string>& fields) {
+    // Delegate to Visit(..., const std::string&) below.
+    Visit(parent_proto, field_name, fields);
+  }
+
+  template <class P>
   void VisitSecret(const P& parent_proto,
                    const char* field_name,
                    const std::string& field) {

@@ -142,6 +142,20 @@ class ToValueVisitor {
   }
 
   template <class P>
+  void VisitBytes(
+      const P& parent_proto,
+      const char* field_name,
+      const google::protobuf::RepeatedPtrField<std::string>& repeated_field) {
+    if (!repeated_field.empty()) {
+      base::Value::List list;
+      for (const auto& field : repeated_field) {
+        list.Append(base::Base64Encode(base::as_bytes(base::make_span(field))));
+      }
+      value_->Set(field_name, std::move(list));
+    }
+  }
+
+  template <class P>
   void VisitSecret(const P& parent_proto,
                    const char* field_name,
                    const std::string& field) {
@@ -376,6 +390,7 @@ IMPLEMENT_PROTO_TO_VALUE(WalletMaskedCreditCard)
 IMPLEMENT_PROTO_TO_VALUE(WalletMetadataSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(WalletPostalAddress)
 IMPLEMENT_PROTO_TO_VALUE(WebAppSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(WebauthnCredentialSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(WifiConfigurationSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(WorkspaceDeskSpecifics)
 

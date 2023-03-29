@@ -4,12 +4,20 @@
 
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -18,7 +26,43 @@
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
+constexpr size_t kSyncIdLength = 16u;
+
+// The byte length of the WebauthnCredentialSpecifics `credential_id` field.
+constexpr size_t kCredentialIdLength = 16u;
+
+// The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
+constexpr size_t kUserIdMaxLength = 64u;
+
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    const sync_pb::WebauthnCredentialSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  // Name must be UTF-8 decodable.
+  entity_data->name =
+      base::HexEncode(base::as_bytes(base::make_span(specifics.sync_id())));
+  *entity_data->specifics.mutable_webauthn_credential() = specifics;
+  return entity_data;
+}
+
+std::string RandomSyncId() {
+  return base::RandBytesAsString(kSyncIdLength);
+}
+
+bool WebauthnCredentialSpecificsValid(
+    const sync_pb::WebauthnCredentialSpecifics& specifics) {
+  return specifics.sync_id().size() == kSyncIdLength &&
+         specifics.credential_id().size() == kCredentialIdLength &&
+         !specifics.rp_id().empty() &&
+         specifics.user_id().length() <= kUserIdMaxLength;
+}
+
+}  // namespace
 
 PasskeySyncBridge::PasskeySyncBridge(
     syncer::OnceModelTypeStoreFactory store_factory)
@@ -27,7 +71,10 @@ PasskeySyncBridge::PasskeySyncBridge(
               syncer::WEBAUTHN_CREDENTIAL,
               /*dump_stack=*/base::DoNothing())) {
   DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
-  NOTIMPLEMENTED();  // Run `store_factory`.
+  std::move(store_factory)
+      .Run(syncer::WEBAUTHN_CREDENTIAL,
+           base::BindOnce(&PasskeySyncBridge::OnCreateStore,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasskeySyncBridge::~PasskeySyncBridge() = default;
@@ -40,24 +87,89 @@ PasskeySyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> PasskeySyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes,
     syncer::EntityChangeList entity_changes) {
-  NOTIMPLEMENTED();
+  // Passkeys are read-only for now.
+  CHECK(data_.empty());
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  // Merge sync to local data. Since passkeys are read-only for now, we don't
+  // actually need to merge anything yet. If we do merge, we need to feed the
+  // changes back to `change_processor()`.
+  for (const auto& entity_change : entity_changes) {
+    const sync_pb::WebauthnCredentialSpecifics& specifics =
+        entity_change->data().specifics.webauthn_credential();
+    data_[entity_change->storage_key()] = specifics;
+    write_batch->WriteData(entity_change->storage_key(),
+                           specifics.SerializeAsString());
+  }
+
+  // All data is read-only for now. No need to write local entries back to sync.
+
+  write_batch->TakeMetadataChangesFrom(std::move(metadata_changes));
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
   return absl::nullopt;
 }
 
 absl::optional<syncer::ModelError> PasskeySyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  NOTIMPLEMENTED();
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  for (const auto& entity_change : entity_changes) {
+    switch (entity_change->type()) {
+      case syncer::EntityChange::ACTION_DELETE: {
+        data_.erase(entity_change->storage_key());
+        write_batch->DeleteData(entity_change->storage_key());
+        break;
+      }
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        const sync_pb::WebauthnCredentialSpecifics& specifics =
+            entity_change->data().specifics.webauthn_credential();
+        data_[entity_change->storage_key()] = specifics;
+        write_batch->WriteData(entity_change->storage_key(),
+                               specifics.SerializeAsString());
+        break;
+      }
+    }
+  }
+
+  write_batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
   return absl::nullopt;
 }
 
 void PasskeySyncBridge::GetData(StorageKeyList storage_keys,
                                 DataCallback callback) {
-  NOTIMPLEMENTED();
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::string& sync_id : storage_keys) {
+    if (auto it = data_.find(sync_id); it != data_.end()) {
+      batch->Put(sync_id, CreateEntityData(it->second));
+    }
+  }
+  std::move(callback).Run(std::move(batch));
 }
 
 void PasskeySyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  NOTIMPLEMENTED();
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& [sync_id, specifics] : data_) {
+    batch->Put(sync_id, CreateEntityData(specifics));
+  }
+  std::move(callback).Run(std::move(batch));
+}
+
+bool PasskeySyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return WebauthnCredentialSpecificsValid(
+      entity_data.specifics.webauthn_credential());
 }
 
 std::string PasskeySyncBridge::GetClientTag(
@@ -71,7 +183,117 @@ std::string PasskeySyncBridge::GetStorageKey(
   return entity_data.specifics.webauthn_credential().sync_id();
 }
 
+void PasskeySyncBridge::ApplyStopSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  // If |delete_metadata_change_list| is null, it indicates that sync metadata
+  // shouldn't be deleted, for example chrome is shutting down.
+  if (!delete_metadata_change_list) {
+    return;
+  }
+  CHECK(store_);
+  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  data_.clear();
+}
+
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PasskeySyncBridge::GetModelTypeControllerDelegate() {
   return change_processor()->GetControllerDelegate();
+}
+
+base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() {
+  std::vector<std::string> sync_ids;
+  std::transform(data_.begin(), data_.end(), std::back_inserter(sync_ids),
+                 [](const auto& pair) { return pair.first; });
+  return base::flat_set<std::string>(std::move(sync_ids));
+}
+
+std::string PasskeySyncBridge::AddNewPasskeyForTesting(
+    sync_pb::WebauthnCredentialSpecifics specifics) {
+  DCHECK(!specifics.has_sync_id());
+  std::string sync_id = RandomSyncId();
+  DCHECK(!base::Contains(data_, sync_id));
+  specifics.set_sync_id(sync_id);
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  change_processor()->Put(sync_id, CreateEntityData(specifics),
+                          write_batch->GetMetadataChangeList());
+  write_batch->WriteData(sync_id, specifics.SerializeAsString());
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+  data_[sync_id] = std::move(specifics);
+  return sync_id;
+}
+
+bool PasskeySyncBridge::DeletePasskeyForTesting(std::string sync_id) {
+  auto it = data_.find(sync_id);
+  if (it == data_.end()) {
+    return false;
+  }
+  data_.erase(it);
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
+  write_batch->DeleteData(sync_id);
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+  return true;
+}
+
+void PasskeySyncBridge::OnCreateStore(
+    const absl::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore> store) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+  DCHECK(store);
+  store_ = std::move(store);
+  store_->ReadAllData(base::BindOnce(&PasskeySyncBridge::OnStoreReadAllData,
+                                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasskeySyncBridge::OnStoreReadAllData(
+    const absl::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+  store_->ReadAllMetadata(
+      base::BindOnce(&PasskeySyncBridge::OnStoreReadAllMetadata,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(entries)));
+}
+
+void PasskeySyncBridge::OnStoreReadAllMetadata(
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
+    const absl::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  for (const syncer::ModelTypeStore::Record& r : *entries) {
+    sync_pb::WebauthnCredentialSpecifics specifics;
+    if (!specifics.ParseFromString(r.value) || !specifics.has_sync_id()) {
+      DVLOG(1) << "Invalid stored record: " << r.value;
+      continue;
+    }
+    std::string storage_key = specifics.sync_id();
+    data_[std::move(storage_key)] = std::move(specifics);
+  }
+}
+
+void PasskeySyncBridge::OnStoreCommitWriteBatch(
+    const absl::optional<syncer::ModelError>& error) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
 }

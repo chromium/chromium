@@ -75,6 +75,7 @@ class WalletMaskedCreditCard;
 class WalletMetadataSpecifics;
 class WalletPostalAddress;
 class WebAppSpecifics;
+class WebauthnCredentialSpecifics;
 class WifiConfigurationSpecifics;
 class WorkspaceDeskSpecifics;
 }  // namespace sync_pb
@@ -264,6 +265,9 @@ base::Value WalletPostalAddressToValue(
 
 base::Value WebAppSpecificsToValue(
     const sync_pb::WebAppSpecifics& web_app_specifics);
+
+base::Value WebAuthnCredentialSpecificsToValue(
+    const sync_pb::WebauthnCredentialSpecifics& webauthn_credential_specifics);
 
 base::Value WifiConfigurationSpecificsToValue(
     const sync_pb::WifiConfigurationSpecifics& wifi_configuration_specifics);

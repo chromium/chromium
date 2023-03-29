@@ -97,6 +97,10 @@
 // This macro unconditionally calls visitor.Visit().
 #define VISIT_REP(field) visitor.Visit(proto, #field, proto.field());
 
+// Repeated fields are always present, so there are no 'has_<field>' methods.
+// This macro unconditionally calls visitor.VisitBytes().
+#define VISIT_REP_BYTES(field) visitor.VisitBytes(proto, #field, proto.field());
+
 // Values that are secrets do not have their contents reported in debugging
 // output, only their lengths, but are still counted for things like memory
 // estimation.
@@ -591,6 +595,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(user_event);
   VISIT(wallet_metadata);
   VISIT(web_app);
+  VISIT(webauthn_credential);
   VISIT(wifi_configuration);
   VISIT(workspace_desk);
   VISIT(webauthn_credential);
@@ -775,7 +780,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT_BYTES(credential_id);
   VISIT(rp_id);
   VISIT_BYTES(user_id);
-  VISIT_REP(newly_shadowed_credential_ids);
+  VISIT_REP_BYTES(newly_shadowed_credential_ids);
   VISIT(creation_time);
   VISIT(user_name);
   VISIT(user_display_name);

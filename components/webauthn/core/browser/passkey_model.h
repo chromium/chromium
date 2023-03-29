@@ -5,9 +5,17 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_store.h"
+
+namespace sync_pb {
+class WebauthnCredentialSpecifics;
+}
 
 namespace syncer {
 class ModelTypeControllerDelegate;
@@ -31,6 +39,11 @@ class PasskeyModel : public KeyedService {
   // data type.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() = 0;
+
+  virtual base::flat_set<std::string> GetAllSyncIds() = 0;
+  virtual std::string AddNewPasskeyForTesting(
+      sync_pb::WebauthnCredentialSpecifics passkey) = 0;
+  virtual bool DeletePasskeyForTesting(std::string sync_id) = 0;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_

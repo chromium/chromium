@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 
 namespace syncer {
@@ -39,12 +41,39 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                delete_metadata_change_list) override;
 
   // PasskeyModel:
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() override;
+  base::flat_set<std::string> GetAllSyncIds() override;
+  std::string AddNewPasskeyForTesting(
+      sync_pb::WebauthnCredentialSpecifics passkey) override;
+  bool DeletePasskeyForTesting(std::string sync_id) override;
+
+ private:
+  void OnCreateStore(const absl::optional<syncer::ModelError>& error,
+                     std::unique_ptr<syncer::ModelTypeStore> store);
+  void OnStoreReadAllData(
+      const absl::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
+  void OnStoreReadAllMetadata(
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
+      const absl::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnStoreCommitWriteBatch(const absl::optional<syncer::ModelError>& error);
+
+  // Local view of the stored data. Indexes specifics protos by storage key.
+  std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;
+
+  // Passkeys are stored locally in leveldb.
+  std::unique_ptr<syncer::ModelTypeStore> store_;
+
+  base::WeakPtrFactory<PasskeySyncBridge> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_SYNC_BRIDGE_H_
