@@ -26,6 +26,7 @@ typedef EGLContext(EGLAPIENTRYP PFNEGLGETCURRENTCONTEXTPROC)(void);
 PFNEGLGETPROCADDRESSPROC eglGetProcAddressFn = nullptr;
 PFNGLGETBOOLEANVPROC glGetBooleanvFn = nullptr;
 PFNGLGETINTEGERVPROC glGetIntegervFn = nullptr;
+PFNGLGETERRORPROC glGetErrorFn = nullptr;
 
 #if DCHECK_IS_ON()
 PFNEGLGETCURRENTCONTEXTPROC eglGetCurrentContextFn = nullptr;
@@ -54,13 +55,29 @@ void InitializeGLBindings() {
 
   AssignProc(glGetBooleanvFn, "glGetBooleanv");
   AssignProc(glGetIntegervFn, "glGetIntegerv");
+  AssignProc(glGetErrorFn, "glGetError");
 
 #if DCHECK_IS_ON()
   AssignProc(eglGetCurrentContextFn, "eglGetCurrentContext");
 #endif
 }
 
+bool ClearGLErrors(bool warn, const char* msg) {
+  bool no_error = true;
+  GLenum error;
+#if DCHECK_IS_ON()
+  DCHECK(eglGetCurrentContextFn());
+#endif
+  while ((error = glGetErrorFn()) != GL_NO_ERROR) {
+    DLOG_IF(WARNING, warn) << error << " " << msg;
+    no_error = false;
+  }
+
+  return no_error;
+}
+
 }  // namespace os
+
 }  // namespace
 
 namespace internal {
@@ -76,6 +93,8 @@ ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
       base::TimeTicks::Now()));
 
   os::InitializeGLBindings();
+
+  os::ClearGLErrors(true, "Incoming GLError");
 
 #if DCHECK_IS_ON()
   egl_context_ = os::eglGetCurrentContextFn();
@@ -132,6 +151,8 @@ ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
 
   // There should be no gl::GLContext current.
   DCHECK(!gl::GLContext::GetCurrent());
+
+  os::ClearGLErrors(false, nullptr);
 }
 
 ScopedAppGLStateRestoreImplAngle::~ScopedAppGLStateRestoreImplAngle() {
@@ -142,6 +163,9 @@ ScopedAppGLStateRestoreImplAngle::~ScopedAppGLStateRestoreImplAngle() {
   DCHECK_EQ(egl_context_, os::eglGetCurrentContextFn())
       << " the native context is changed.";
 #endif
+
+  // Do not leak GLError out of chromium.
+  os::ClearGLErrors(true, "Chromium GLError");
 }
 
 }  // namespace internal
