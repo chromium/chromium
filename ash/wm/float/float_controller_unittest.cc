@@ -59,6 +59,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -1812,6 +1813,31 @@ TEST_F(TabletWindowFloatTest, FlingVertical) {
   ASSERT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopRight);
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kTuckUserAction));
+}
+
+// Tests that the tuck education nudge appears when the window is first floated.
+TEST_F(TabletWindowFloatTest, BasicTuckNudge) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+
+  // Add observer to check that the tuck education nudge was created.
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "TuckEducationNudgeWidget");
+
+  // Float window using accelerator.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // If waiter never sees the tuck education nudge, it will hang forever, and
+  // the test will fail.
+  widget_waiter.WaitIfNeededAndGet();
+
+  // Nudge should dismiss properly after animations end.
+  EXPECT_TRUE(window->children().empty());
+
+  // TODO(hewer): Add a callback to check that the nudge has properly dismissed
+  // after the bounce animations and timer have ended.
 }
 
 using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;

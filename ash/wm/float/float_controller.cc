@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/scoped_window_tucker.h"
+#include "ash/wm/float/tablet_mode_tuck_education.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
@@ -150,6 +151,11 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
     if (desk->is_active())
       float_start_time_ = base::TimeTicks::Now();
+
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      tuck_education_ =
+          std::make_unique<TabletModeTuckEducation>(floated_window);
+    }
   }
 
   FloatedWindowInfo(const FloatedWindowInfo&) = delete;
@@ -259,6 +265,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // Scoped object that handles the special tucked window state, which is not
   // a normal window state. Null when `floated_window_` is currently not tucked.
   std::unique_ptr<ScopedWindowTucker> scoped_window_tucker_;
+
+  // An object responsible for managing the tuck education nudge and animations.
+  std::unique_ptr<TabletModeTuckEducation> tuck_education_;
 
   // Used to get the tucked window bounds (as opposed to normal floated). False
   // during `scoped_window_tucker_` construction.
@@ -750,8 +759,9 @@ void FloatController::FloatForTablet(aura::Window* window,
 
   FloatImpl(window);
 
-  if (!chromeos::IsSnappedWindowStateType(old_state_type))
+  if (!chromeos::IsSnappedWindowStateType(old_state_type)) {
     return;
+  }
 
   // Update magnetism so that the float window is roughly in the same location
   // as it was when it was snapped.

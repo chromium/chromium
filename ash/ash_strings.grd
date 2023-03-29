@@ -6462,6 +6462,11 @@ New install
 
 To shut down the device, press and hold the power button on the device again.
       </message>
-    </messages>
-  </release>
+
+       <!-- Tuck Education -->
+      <message name="IDS_ASH_TUCK_EDUCATIONAL_NUDGE_LABEL" desc="The text shown to users when a window is floated in tablet mode to indicate the tuck gesture." >
+        Swipe to hide your floating window
+      </message>
+     </messages>
+    </release>
 </grit>

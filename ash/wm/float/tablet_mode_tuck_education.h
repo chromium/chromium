@@ -1,0 +1,55 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
+#define ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
+
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/views/widget/unique_widget_ptr.h"
+
+namespace ash {
+
+// This class is responsible for educating users about the tuck gesture when
+// a window is floated in tablet mode. It shows a nudge with text indicating the
+// gesture to tuck, and bounces the floated window twice.
+class TabletModeTuckEducation : public aura::WindowObserver {
+ public:
+  explicit TabletModeTuckEducation(aura::Window* floated_window);
+  TabletModeTuckEducation(const TabletModeTuckEducation&) = delete;
+  TabletModeTuckEducation& operator=(const TabletModeTuckEducation&) = delete;
+  ~TabletModeTuckEducation() override;
+
+  // aura::WindowObserver:
+  void OnWindowTransformed(aura::Window* window,
+                           ui::PropertyChangeReason reason) override;
+
+ private:
+  // Activates the tuck education nudge and bounce animations for
+  // `floated_window`.
+  void ActivateTuckEducation();
+
+  // Dismisses the nudge if it is still active, and cleans up all related
+  // pointers.
+  void DismissNudge();
+
+  // The widget that contains the `RoundedLabel`.
+  views::UniqueWidgetPtr nudge_widget_;
+
+  // The floated window that `nudge_widget_` is a child of. Guaranteed to be
+  // alive for the lifetime of `this` since the owner of `this` observes
+  // `OnWindowDestroying()`.
+  aura::Window* window_ = nullptr;
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+
+  // Chrome's compiler toolchain enforces that any `WeakPtrFactory`
+  // fields are declared last, to avoid destruction ordering issues.
+  base::WeakPtrFactory<TabletModeTuckEducation> weak_factory_{this};
+};
+
+}  // namespace ash
+
+#endif  // ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
