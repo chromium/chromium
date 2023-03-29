@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<title>CSS Test: -webkit-box-reflect doesn't leave empty pixel at edges</title>
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+
+<style>
+
+body {
+  font-size: 10px;
+  line-height: 15px;
+}
+
+div.item {
+  margin: 0 1px 1px 0;
+  height: 3px;
+  width: 3px;
+  background: blue;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+div:is(.above, .below) > div.item { height: 6px; }
+div:is(.left, .right) > div.item { width: 6px; margin-right: 2px; }
+div.below > div.item { margin-bottom: -2px; }
+
+/* these are blocks, so use padding rather than margin to avoid margin
+ * collapsing */
+div.no-offset { padding: 0 0 1px 0; }
+div.offset { padding: 1px 0 0 1px; }
+
+</style>
+
+<div class="below"
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+></div>
+
+<div class="above"
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+></div>
+
+<div class="left"
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+></div>
+
+<div class="right"
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+  ><div class="item"></div
+></div>
+
+<div class="no-offset">
+  <div class="below"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="above"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="left"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="right"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+</div>
+
+<div class="offset">
+  <div class="below"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="above"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="left"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="right"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+</div>
+
+<div class="offset">
+  <div class="below"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="above"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="left"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+
+  <div class="right"
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+    ><div class="item"></div
+  ></div>
+</div>

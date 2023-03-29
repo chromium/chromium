@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<title>CSS Test: -webkit-box-reflect doesn't leave empty pixel at edges</title>
+<link rel="author" title="L. David Baron" href="https://dbaron.org/">
+<link rel="author" title="Google" href="http://www.google.com/">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1174354">
+<link rel="match" href="box-reflect-edge-ref.html">
+<meta name="assert" content="-webkit-box-reflect does not leave a blank line of pixels at the edge due to rounding errors.  (The blank line of pixels has very poor interactions with blur since the pixel at the edge is very significant in large blurs.)">
+
+<style>
+
+body {
+  font-size: 10px;
+  line-height: 15px;
+}
+
+div.item {
+  --adjust-left: 0px;
+  --adjust-right: 0px;
+  --adjust-top: 0px;
+  --adjust-bottom: 0px;
+  --extra-right: 0px;
+
+  margin-top: calc(0px + var(--adjust-top));
+  margin-right: calc(1px - var(--adjust-right) + var(--extra-right));
+  margin-bottom: calc(1px - var(--adjust-bottom));
+  margin-left: calc(0px + var(--adjust-left));
+  height: calc(3px + var(--adjust-bottom) - var(--adjust-top));
+  width: calc(3px + var(--adjust-right) - var(--adjust-left));
+  background: blue;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+div.below > div.item { -webkit-box-reflect: below; }
+div.above > div.item { -webkit-box-reflect: above; }
+div.left > div.item { -webkit-box-reflect: left; }
+div.right > div.item { -webkit-box-reflect: right; }
+
+div.left { margin-left: 3px; }
+
+/* right at one-quarter-, half-, and three-quarter-pixel alignment */
+div.item.right-oq { --adjust-right: 0.25px; }
+div.item.right-hf { --adjust-right: -0.5px; }
+div.item.right-tq { --adjust-right: -0.25px; }
+/* same for bottom */
+div.item.bottom-oq { --adjust-bottom: 0.25px; }
+div.item.bottom-hf { --adjust-bottom: -0.5px; }
+div.item.bottom-tq { --adjust-bottom: -0.25px; }
+/* same for x position */
+div.item.left-oq { --adjust-left: 0.25px; }
+div.item.left-hf { --adjust-left: -0.50px; }
+div.item.left-tq { --adjust-left: -0.25px; }
+/* same for y position */
+div.item.top-oq { --adjust-top: 0.25px; }
+div.item.top-hf { --adjust-top: -0.50px; }
+div.item.top-tq { --adjust-top: -0.25px; }
+
+div:is(.left, .right) > div.item { --extra-right: 4px; }
+
+/* these are blocks, so use padding rather than margin to avoid margin
+ * collapsing */
+div.offset-oq { padding: 0.25px 0 0.75px 0.25px; }
+div.offset-hf { padding: 0.50px 0 0.50px 0.50px; }
+div.offset-tq { padding: 0.75px 0 0.25px 0.75px; }
+
+/* adjustments for snapping that goes different ways when inside of
+ * a container with an offset (defined above), explained by snapping
+ * of all edges based on standard rounding (round 0.5 or higher up,
+ * round less than 0.5 down) */
+div.offset-oq > div > div.item.right-oq { --adjust-right: -0.75px; }
+div.offset-oq > div > div.item.bottom-oq { --adjust-bottom: -0.75px; }
+div:is(.offset-hf, .offset-tq) > div > div.item.right-hf { --adjust-right: 0.5px; }
+div:is(.offset-hf, .offset-tq) > div > div.item.bottom-hf { --adjust-bottom: 0.5px; }
+div.offset-hf > div > div.item.right-tq { --adjust-right: 0.75px; }
+div.offset-hf > div > div.item.bottom-tq { --adjust-bottom: 0.75px; }
+
+div.offset-oq > div > div.item.left-oq { --adjust-left: -0.75px; }
+div.offset-oq > div > div.item.top-oq { --adjust-top: -0.75px; }
+div:is(.offset-hf,.offset-tq) > div > div.item.left-hf { --adjust-left: 0.50px; }
+div:is(.offset-hf,.offset-tq) > div > div.item.top-hf { --adjust-top: 0.50px; }
+div.offset-hf > div > div.item.left-tq { --adjust-left: 0.75px; }
+div.offset-hf > div > div.item.top-tq { --adjust-top: 0.75px; }
+
+</style>
+
+<div class="below"
+  ><div class="item"></div
+  ><div class="item right-oq"></div
+  ><div class="item right-hf"></div
+  ><div class="item right-tq"></div
+  ><div class="item left-oq"></div
+  ><div class="item left-oq right-oq"></div
+  ><div class="item left-oq right-hf"></div
+  ><div class="item left-oq right-tq"></div
+  ><div class="item left-hf"></div
+  ><div class="item left-hf right-oq"></div
+  ><div class="item left-hf right-hf"></div
+  ><div class="item left-hf right-tq"></div
+  ><div class="item left-tq"></div
+  ><div class="item left-tq right-oq"></div
+  ><div class="item left-tq right-hf"></div
+  ><div class="item left-tq right-tq"></div
+
+  ><div class="item"></div
+  ><div class="item bottom-oq"></div
+  ><div class="item bottom-hf"></div
+  ><div class="item bottom-tq"></div
+  ><div class="item top-oq"></div
+  ><div class="item top-oq bottom-oq"></div
+  ><div class="item top-oq bottom-hf"></div
+  ><div class="item top-oq bottom-tq"></div
+  ><div class="item top-hf"></div
+  ><div class="item top-hf bottom-oq"></div
+  ><div class="item top-hf bottom-hf"></div
+  ><div class="item top-hf bottom-tq"></div
+  ><div class="item top-tq"></div
+  ><div class="item top-tq bottom-oq"></div
+  ><div class="item top-tq bottom-hf"></div
+  ><div class="item top-tq bottom-tq"></div
+></div>
+
+<div class="above"
+  ><div class="item"></div
+  ><div class="item right-oq"></div
+  ><div class="item right-hf"></div
+  ><div class="item right-tq"></div
+  ><div class="item left-oq"></div
+  ><div class="item left-oq right-oq"></div
+  ><div class="item left-oq right-hf"></div
+  ><div class="item left-oq right-tq"></div
+  ><div class="item left-hf"></div
+  ><div class="item left-hf right-oq"></div
+  ><div class="item left-hf right-hf"></div
+  ><div class="item left-hf right-tq"></div
+  ><div class="item left-tq"></div
+  ><div class="item left-tq right-oq"></div
+  ><div class="item left-tq right-hf"></div
+  ><div class="item left-tq right-tq"></div
+
+  ><div class="item"></div
+  ><div class="item bottom-oq"></div
+  ><div class="item bottom-hf"></div
+  ><div class="item bottom-tq"></div
+  ><div class="item top-oq"></div
+  ><div class="item top-oq bottom-oq"></div
+  ><div class="item top-oq bottom-hf"></div
+  ><div class="item top-oq bottom-tq"></div
+  ><div class="item top-hf"></div
+  ><div class="item top-hf bottom-oq"></div
+  ><div class="item top-hf bottom-hf"></div
+  ><div class="item top-hf bottom-tq"></div
+  ><div class="item top-tq"></div
+  ><div class="item top-tq bottom-oq"></div
+  ><div class="item top-tq bottom-hf"></div
+  ><div class="item top-tq bottom-tq"></div
+></div>
+
+<div class="left"
+  ><div class="item"></div
+  ><div class="item right-oq"></div
+  ><div class="item right-hf"></div
+  ><div class="item right-tq"></div
+  ><div class="item left-oq"></div
+  ><div class="item left-oq right-oq"></div
+  ><div class="item left-oq right-hf"></div
+  ><div class="item left-oq right-tq"></div
+  ><div class="item left-hf"></div
+  ><div class="item left-hf right-oq"></div
+  ><div class="item left-hf right-hf"></div
+  ><div class="item left-hf right-tq"></div
+  ><div class="item left-tq"></div
+  ><div class="item left-tq right-oq"></div
+  ><div class="item left-tq right-hf"></div
+  ><div class="item left-tq right-tq"></div
+
+  ><div class="item"></div
+  ><div class="item bottom-oq"></div
+  ><div class="item bottom-hf"></div
+  ><div class="item bottom-tq"></div
+  ><div class="item top-oq"></div
+  ><div class="item top-oq bottom-oq"></div
+  ><div class="item top-oq bottom-hf"></div
+  ><div class="item top-oq bottom-tq"></div
+  ><div class="item top-hf"></div
+  ><div class="item top-hf bottom-oq"></div
+  ><div class="item top-hf bottom-hf"></div
+  ><div class="item top-hf bottom-tq"></div
+  ><div class="item top-tq"></div
+  ><div class="item top-tq bottom-oq"></div
+  ><div class="item top-tq bottom-hf"></div
+  ><div class="item top-tq bottom-tq"></div
+></div>
+
+<div class="right"
+  ><div class="item"></div
+  ><div class="item right-oq"></div
+  ><div class="item right-hf"></div
+  ><div class="item right-tq"></div
+  ><div class="item left-oq"></div
+  ><div class="item left-oq right-oq"></div
+  ><div class="item left-oq right-hf"></div
+  ><div class="item left-oq right-tq"></div
+  ><div class="item left-hf"></div
+  ><div class="item left-hf right-oq"></div
+  ><div class="item left-hf right-hf"></div
+  ><div class="item left-hf right-tq"></div
+  ><div class="item left-tq"></div
+  ><div class="item left-tq right-oq"></div
+  ><div class="item left-tq right-hf"></div
+  ><div class="item left-tq right-tq"></div
+
+  ><div class="item"></div
+  ><div class="item bottom-oq"></div
+  ><div class="item bottom-hf"></div
+  ><div class="item bottom-tq"></div
+  ><div class="item top-oq"></div
+  ><div class="item top-oq bottom-oq"></div
+  ><div class="item top-oq bottom-hf"></div
+  ><div class="item top-oq bottom-tq"></div
+  ><div class="item top-hf"></div
+  ><div class="item top-hf bottom-oq"></div
+  ><div class="item top-hf bottom-hf"></div
+  ><div class="item top-hf bottom-tq"></div
+  ><div class="item top-tq"></div
+  ><div class="item top-tq bottom-oq"></div
+  ><div class="item top-tq bottom-hf"></div
+  ><div class="item top-tq bottom-tq"></div
+></div>
+
+<div class="offset-oq">
+
+  <div class="below"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="above"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="left"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="right"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+</div>
+
+<div class="offset-hf">
+
+  <div class="below"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="above"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="left"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="right"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+</div>
+
+<div class="offset-tq">
+
+  <div class="below"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="above"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="left"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+  <div class="right"
+    ><div class="item"></div
+    ><div class="item right-oq"></div
+    ><div class="item right-hf"></div
+    ><div class="item right-tq"></div
+    ><div class="item left-oq"></div
+    ><div class="item left-oq right-oq"></div
+    ><div class="item left-oq right-hf"></div
+    ><div class="item left-oq right-tq"></div
+    ><div class="item left-hf"></div
+    ><div class="item left-hf right-oq"></div
+    ><div class="item left-hf right-hf"></div
+    ><div class="item left-hf right-tq"></div
+    ><div class="item left-tq"></div
+    ><div class="item left-tq right-oq"></div
+    ><div class="item left-tq right-hf"></div
+    ><div class="item left-tq right-tq"></div
+
+    ><div class="item"></div
+    ><div class="item bottom-oq"></div
+    ><div class="item bottom-hf"></div
+    ><div class="item bottom-tq"></div
+    ><div class="item top-oq"></div
+    ><div class="item top-oq bottom-oq"></div
+    ><div class="item top-oq bottom-hf"></div
+    ><div class="item top-oq bottom-tq"></div
+    ><div class="item top-hf"></div
+    ><div class="item top-hf bottom-oq"></div
+    ><div class="item top-hf bottom-hf"></div
+    ><div class="item top-hf bottom-tq"></div
+    ><div class="item top-tq"></div
+    ><div class="item top-tq bottom-oq"></div
+    ><div class="item top-tq bottom-hf"></div
+    ><div class="item top-tq bottom-tq"></div
+  ></div>
+
+</div>

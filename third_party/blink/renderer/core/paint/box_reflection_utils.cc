@@ -18,8 +18,9 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
                                          const ComputedStyle& style) {
   const StyleReflection* reflect_style = style.BoxReflect();
 
-  LayoutRect frame_layout_rect = layer.GetLayoutBox()->FrameRect();
-  gfx::RectF frame_rect(frame_layout_rect);
+  LayoutBox* layout_box = layer.GetLayoutBox();
+  gfx::Size frame_size = layout_box->PixelSnappedBorderBoxSize(
+      layout_box->FirstFragment().PaintOffset());
   BoxReflection::ReflectionDirection direction =
       BoxReflection::kVerticalReflection;
   float offset = 0;
@@ -27,23 +28,23 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
     case kReflectionAbove:
       direction = BoxReflection::kVerticalReflection;
       offset =
-          -FloatValueForLength(reflect_style->Offset(), frame_rect.height());
+          -FloatValueForLength(reflect_style->Offset(), frame_size.height());
       break;
     case kReflectionBelow:
       direction = BoxReflection::kVerticalReflection;
       offset =
-          2 * frame_rect.height() +
-          FloatValueForLength(reflect_style->Offset(), frame_rect.height());
+          2 * frame_size.height() +
+          FloatValueForLength(reflect_style->Offset(), frame_size.height());
       break;
     case kReflectionLeft:
       direction = BoxReflection::kHorizontalReflection;
       offset =
-          -FloatValueForLength(reflect_style->Offset(), frame_rect.width());
+          -FloatValueForLength(reflect_style->Offset(), frame_size.width());
       break;
     case kReflectionRight:
       direction = BoxReflection::kHorizontalReflection;
-      offset = 2 * frame_rect.width() +
-               FloatValueForLength(reflect_style->Offset(), frame_rect.width());
+      offset = 2 * frame_size.width() +
+               FloatValueForLength(reflect_style->Offset(), frame_size.width());
       break;
   }
 
@@ -51,7 +52,8 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   if (!mask_nine_piece.HasImage())
     return BoxReflection(direction, offset, PaintRecord(), gfx::RectF());
 
-  PhysicalRect mask_rect(PhysicalOffset(), frame_layout_rect.Size());
+  PhysicalRect mask_rect(PhysicalOffset(),
+                         layer.GetLayoutBox()->FrameRect().Size());
   PhysicalRect mask_bounding_rect(mask_rect);
   mask_bounding_rect.Expand(style.ImageOutsets(mask_nine_piece));
 
