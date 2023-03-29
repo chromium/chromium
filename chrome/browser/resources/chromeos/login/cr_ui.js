@@ -25,26 +25,6 @@ import {loadTimeData} from './i18n_setup.js';
  */
 export class Oobe extends DisplayManager {
   /**
-   * OOBE initialization coordination. Used by tests to wait for OOBE
-   * to fully load when using the HTLImports polyfill.
-   * TODO(crbug.com/1111387) - Remove once migrated to JS modules.
-   * Remove spammy logging when closer to M89 branch point.
-   */
-  static waitForOobeToLoad() {
-    return new Promise((resolve, reject) => {
-      if (this.initializationComplete) {
-        // TODO(crbug.com/1111387) - Remove excessive logging.
-        console.warn('OOBE is already initialized. Continuing...');
-        resolve();
-      } else {
-        // TODO(crbug.com/1111387) - Remove excessive logging.
-        console.warn('OOBE not loaded yet. Waiting...');
-        this.initCallbacks.push(resolve);
-      }
-    });
-  }
-
-  /**
    * Handle the cancel accelerator.
    */
   static handleCancel() {
@@ -279,8 +259,6 @@ export class Oobe extends DisplayManager {
 
 }  // class Oobe
 
-Oobe.initializationComplete = false;
-Oobe.initCallbacks = [];
 /**
  * Some ForTesting APIs directly access to DOM. Because this script is loaded
  * in header, DOM tree may not be available at beginning.

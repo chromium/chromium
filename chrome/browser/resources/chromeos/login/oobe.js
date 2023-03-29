@@ -15,7 +15,6 @@ import {startColorChangeUpdater} from '//resources/cr_components/color_change_li
 
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
-import {invokePolymerMethod} from './display_manager.js';
 import {loadTimeData} from './i18n_setup.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
 import {TraceEvent, traceExecution} from './oobe_trace.js';
@@ -59,7 +58,7 @@ function addScreensToMainContainer(screenList) {
 
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
-function prepareGlobalValues(globalValue) {
+function prepareGlobalValues() {
   // '$(id)' is an alias for 'document.getElementById(id)'. It is defined
   // in //resources/ash/common/util.js. If this function is not exposed
   // via the global object, it would not be available to tests that inject
@@ -70,19 +69,19 @@ function prepareGlobalValues(globalValue) {
   window.MultiTapDetector = MultiTapDetector;
 
   // TODO(crbug.com/1229130) - Remove the necessity for these global objects.
-  if (globalValue.cr == undefined) {
-    globalValue.cr = {};
+  if (window.cr == undefined) {
+    window.cr = {};
   }
-  if (globalValue.cr.ui == undefined) {
-    globalValue.cr.ui = {};
+  if (window.cr.ui == undefined) {
+    window.cr.ui = {};
   }
-  if (globalValue.cr.ui.login == undefined) {
-    globalValue.cr.ui.login = {};
+  if (window.cr.ui.login == undefined) {
+    window.cr.ui.login = {};
   }
 
   // Expose some values in the global object that are needed by OOBE.
-  globalValue.cr.ui.Oobe = Oobe;
-  globalValue.Oobe = Oobe;
+  window.cr.ui.Oobe = Oobe;
+  window.Oobe = Oobe;
 }
 
 function initializeOobe() {
@@ -102,23 +101,9 @@ function initializeOobe() {
     OobeDebugger.DebuggerUI.getInstance().register(document.body);
   }
 
-  try {
-    Oobe.initialize();
-  } finally {
-    // TODO(crbug.com/712078): Do not set readyForTesting in case of that
-    // initialize() is failed. Currently, in some situation, initialize()
-    // raises an exception unexpectedly. It means testing APIs should not
-    // be called then. However, checking it here now causes bots failures
-    // unfortunately. So, as a short term workaround, here set
-    // readyForTesting even on failures, just to make test bots happy.
-    Oobe.readyForTesting = true;
-  }
+  Oobe.initialize();
+  Oobe.readyForTesting = true;
   traceExecution(TraceEvent.OOBE_INITIALIZED);
-
-  // Mark initialization complete and wake any callers that might be waiting
-  // for OOBE to load.
-  cr.ui.Oobe.initializationComplete = true;
-  cr.ui.Oobe.initCallbacks.forEach(resolvePromise => resolvePromise());
 }
 
 /**
@@ -132,7 +117,7 @@ function startOobe() {
   // Update localized strings at the document level.
   Oobe.updateDocumentLocalizedStrings();
 
-  prepareGlobalValues(window);
+  prepareGlobalValues();
 
   // Add common screens to the document.
   addScreensToMainContainer(commonScreensList);
