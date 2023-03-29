@@ -327,7 +327,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
   std::map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;
-  scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_legacy_mailbox_;
 
   std::unique_ptr<gl::GLFence> last_write_gl_fence_;
 

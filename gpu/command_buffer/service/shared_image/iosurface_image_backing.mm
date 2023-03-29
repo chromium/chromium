@@ -136,8 +136,8 @@ GLuint IOSurfaceBackingEGLState::GetGLServiceId(int plane_index) const {
 
 bool IOSurfaceBackingEGLState::BeginAccess(bool readonly) {
   gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
-  if (!display || display->GetDisplay() != egl_display_)
-    LOG(FATAL) << "Expected GLDisplayEGL not current.";
+  CHECK(display);
+  CHECK(display->GetDisplay() == egl_display_);
   return client_->IOSurfaceBackingEGLStateBeginAccess(this, readonly);
 }
 
@@ -608,20 +608,9 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
   // https://crbug.com/1251724
   if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)
     return;
-
-// iOS uses Metal and doesn't need to retain the GL texture.
-#if !BUILDFLAG(IS_IOS)
-  // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
-  // best approach as it can lead to issues with context losses.
-  egl_state_for_legacy_mailbox_ = RetainGLTexture();
-#endif
 }
 
 IOSurfaceImageBacking::~IOSurfaceImageBacking() {
-  if (egl_state_for_legacy_mailbox_) {
-    egl_state_for_legacy_mailbox_->WillRelease(have_context());
-    egl_state_for_legacy_mailbox_ = nullptr;
-  }
   DCHECK(egl_state_map_.empty());
 }
 
@@ -978,7 +967,9 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     // is that this was done by the Dawn representation), wait on
     // them.
     gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
-    if (display && display->IsANGLEMetalSharedEventSyncSupported()) {
+    CHECK(display);
+    CHECK(display->GetDisplay() == egl_state->egl_display_);
+    if (display->IsANGLEMetalSharedEventSyncSupported()) {
       std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
           TakeSharedEvents();
       for (const auto& signal : signals) {
@@ -1104,14 +1095,14 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
         if (!egl_state->egl_surfaces_.empty()) {
           gl::GLDisplayEGL* display =
               gl::GLDisplayEGL::GetDisplayForCurrentContext();
-          if (display) {
-            metal::MTLSharedEventPtr shared_event = nullptr;
-            uint64_t signal_value = 0;
-            if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
-              AddSharedEventAndSignalValue(shared_event, signal_value);
-            } else {
-              LOG(DFATAL) << "Failed to create Metal shared event";
-            }
+          CHECK(display);
+          CHECK(display->GetDisplay() == egl_state->egl_display_);
+          metal::MTLSharedEventPtr shared_event = nullptr;
+          uint64_t signal_value = 0;
+          if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
+            AddSharedEventAndSignalValue(shared_event, signal_value);
+          } else {
+            LOG(DFATAL) << "Failed to create Metal shared event";
           }
         }
       }
