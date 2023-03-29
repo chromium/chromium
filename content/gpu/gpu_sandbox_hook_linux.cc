@@ -335,18 +335,28 @@ void AddVirtIOGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       // to use kms_swrast.
       "/sys",
       "/sys/dev",
+      "/usr/lib64/libdrm_amdgpu.so.1",
+      "/usr/lib64/libdrm_radeon.so.1",
+      "/usr/lib64/libdrm_nouveau.so.2",
+      "/usr/lib64/libelf.so.1",
       "/usr/lib64/libEGL.so.1",
       "/usr/lib64/libGLESv2.so.2",
+      "/usr/lib64/libEGL_mesa.so.0",
+      "/usr/lib64/libGLdispatch.so.0",
       "/usr/lib64/libglapi.so.0",
       "/usr/lib64/libc++.so.1",
       // If kms_swrast_dri is not usable, swrast_dri is used instead.
       "/usr/lib64/dri/swrast_dri.so",
       "/usr/lib64/dri/kms_swrast_dri.so",
       "/usr/lib64/dri/virtio_gpu_dri.so",
+      "/usr/share/glvnd/egl_vendor.d",
+      "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
   };
+
   for (const char* item : kReadOnlyList) {
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
   }
+
   static const char* kDevices[] = {"/sys/dev/char", "/sys/devices"};
   for (const char* item : kDevices) {
     std::string path(item);
