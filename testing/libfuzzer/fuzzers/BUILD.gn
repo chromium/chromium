@@ -337,7 +337,10 @@ fuzzer_test("skia_path_fuzzer") {
     "skia_path_common.h",
     "skia_path_fuzzer.cc",
   ]
-  deps = [ "//skia" ]
+  deps = [
+    "//base",
+    "//skia",
+  ]
   libfuzzer_options = [ "max_len=256" ]
   if (is_debug) {
     # Disabled due to crashing on SkASSERT (crbug.com/642750, crbug.com/643275).
