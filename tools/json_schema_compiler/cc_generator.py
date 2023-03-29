@@ -190,13 +190,7 @@ class _Generator(object):
 
       real_t = self._type_helper.FollowRef(t)
       if real_t.property_type == PropertyType.ENUM:
-        namespace_prefix = ('%s::' % real_t.namespace.unix_name
-                            if real_t.namespace != self._namespace
-                            else '')
-        items.append('{var_name}({namespace}{inti_value})'.format(
-                      var_name=prop.unix_name,
-                      namespace=namespace_prefix,
-                      inti_value=self._type_helper.GetEnumNoneValue(real_t)))
+        items.append('{var_name}()'.format(var_name=prop.unix_name))
       elif prop.optional:
         continue
       elif t.property_type == PropertyType.INTEGER:
@@ -402,13 +396,10 @@ class _Generator(object):
             prop, '(*%s)' % value_var, dst, 'false')))
       underlying_type = self._type_helper.FollowRef(prop.type_)
       if underlying_type.property_type == PropertyType.ENUM:
-        namespace_prefix = ('%s::' % underlying_type.namespace.unix_name
-                            if underlying_type.namespace != self._namespace
-                            else '')
         (c.Append('} else {')
-          .Append('%%(dst)s.%%(name)s = %s%s;' %
-             (namespace_prefix,
-              self._type_helper.GetEnumNoneValue(underlying_type))))
+          .Append('%%(dst)s.%%(name)s = %s;' %
+            self._type_helper.GetEnumDefaultValue(underlying_type,
+                                                  self._namespace)))
       c.Eblock('}')
     else:
       (c.Sblock(
@@ -695,8 +686,8 @@ class _Generator(object):
       if include_optional_param:
         params.append('true' if property.optional else 'false')
       params += [
-        '%s%s' % (cpp_type_namespace,
-                  self._type_helper.GetEnumNoneValue(enum_type)),
+        '%s' % self._type_helper.GetEnumDefaultValue(enum_type,
+                                                     self._namespace),
         '%s' % out_expression,
         'error',
         'error_path_reversed'
@@ -751,15 +742,12 @@ class _Generator(object):
       if prop.optional:
         underlying_type = self._type_helper.FollowRef(prop.type_)
         if underlying_type.property_type == PropertyType.ENUM:
-          # Optional enum values are generated with a NONE enum value,
-          # potentially from another namespace.
-          maybe_namespace = ''
-          if underlying_type.namespace != self._namespace:
-            maybe_namespace = '%s::' % underlying_type.namespace.unix_name
-          c.Sblock('if (%s != %s%s) {' %
+          # Optional enum values are generated with default initialisation (e.g.
+          # kNone), potentially from another namespace.
+          c.Sblock('if (%s != %s) {' %
               (prop_var,
-               maybe_namespace,
-               self._type_helper.GetEnumNoneValue(underlying_type)))
+               self._type_helper.GetEnumDefaultValue(underlying_type,
+                                                     self._namespace)))
         else:
           c.Sblock('if (%s) {' % prop_var)
 
@@ -808,7 +796,8 @@ class _Generator(object):
                                             PropertyType.ENUM):
         comparison_expr = '{enum_var} != {default_value}'.format(
           enum_var=choice_var,
-          default_value=self._type_helper.GetEnumNoneValue(choice))
+          default_value=self._type_helper.GetEnumDefaultValue(choice,
+                                                              self._namespace))
       else:
         comparison_expr = choice_var
 
@@ -1277,9 +1266,9 @@ class _Generator(object):
                                        cpp_type_namespace,
                                        cpp_util.Classname(type_.name),
                                        enum_as_string))
-      .Sblock('if (%s == %s%s) {' % (dst_var,
-                                     cpp_type_namespace,
-                                     self._type_helper.GetEnumNoneValue(type_)))
+      .Sblock('if (%s == %s) {' % (dst_var,
+                        self._type_helper.GetEnumDefaultValue(type_,
+                          self._namespace)))
       .Concat(self._AppendError16(
         'u\"\'%%(key)s\': expected \\"' +
         '\\" or \\"'.join(
@@ -1415,14 +1404,11 @@ class _Generator(object):
     underlying_type = self._type_helper.FollowRef(prop.type_)
     if (underlying_type.property_type == PropertyType.ENUM and
         prop.optional):
-      namespace_prefix = ('%s::' % underlying_type.namespace.unix_name
-                          if underlying_type.namespace != self._namespace
-                          else '')
-      c.Append('%s.%s = %s%s;' % (
+      c.Append('%s.%s = %s;' % (
         dst,
         prop.unix_name,
-        namespace_prefix,
-        self._type_helper.GetEnumNoneValue(underlying_type)))
+        self._type_helper.GetEnumDefaultValue(underlying_type,
+                                              self._namespace)))
     return c
 
   def _AppendError16(self, error16):

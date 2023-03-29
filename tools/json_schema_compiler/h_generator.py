@@ -153,7 +153,12 @@ class _Generator(object):
     c.Sblock('enum {enum_type} {name} {{'.format(
       enum_type=('class' if self._modernised_enums else ''),
       name=enum_name))
-    c.Append(self._type_helper.GetEnumNoneValue(type_, full_name=False) + ',')
+
+    # Explicitly initialize kNone to 0, since we rely on default initialization
+    # for enum members. Otherwise, default initialization will always set a
+    # value to 0, even if it's not a valid enum entry.
+    c.Append(
+      self._type_helper.GetEnumNoneValue(type_, full_name=False) + ' = 0,')
 
     for value in type_.enum_values:
       current_enum_string = (
