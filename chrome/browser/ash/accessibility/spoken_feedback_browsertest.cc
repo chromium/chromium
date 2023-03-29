@@ -663,8 +663,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSpeechMenu) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/262699576): Re-enable this test. Flaky since 2022-12-14.
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_OpenContextMenu) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenContextMenu) {
   EnableChromeVox();
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
   sm_.ExpectSpeech("menu opened");
