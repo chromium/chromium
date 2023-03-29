@@ -328,8 +328,13 @@ crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/r
 # The "Slow" expectations in this section are expected to stick around, i.e.
 # they are not attributed to some known issue that needs resolving.
 
+# Single tests doing large amounts of work (i.e. does not send heartbeats
+# throughout the test). This is fine with the passthrough decoder on non-debug
+# builds, but the validating decoder/debug builds slow them down significantly.
+crbug.com/1426593 [ no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+
 # Seems to do enough JavaScript work that heartbeats are not reliably sent.
-crbug.com/1426593 conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/misc/uninitialized-test-2.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-half-float-linear.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
