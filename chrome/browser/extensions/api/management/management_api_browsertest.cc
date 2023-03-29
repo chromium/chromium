@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +24,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -40,9 +40,10 @@
 #endif
 
 namespace keys = extension_management_api_constants;
-namespace test_utils = extension_function_test_utils;
 
 namespace extensions {
+
+namespace test_utils = api_test_utils;
 
 class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
  public:
@@ -258,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(true);
   test_utils::RunFunctionAndReturnSingleResult(
       create_shortcut_function.get(),
-      base::StringPrintf("[\"%s\"]", app_id.c_str()), browser());
+      base::StringPrintf("[\"%s\"]", app_id.c_str()), browser()->profile());
 
   create_shortcut_function = new ManagementCreateAppShortcutFunction();
   create_shortcut_function->set_user_gesture(true);
@@ -266,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   EXPECT_TRUE(base::MatchPattern(
       test_utils::RunFunctionAndReturnError(
           create_shortcut_function.get(),
-          base::StringPrintf("[\"%s\"]", app_id.c_str()), browser()),
+          base::StringPrintf("[\"%s\"]", app_id.c_str()), browser()->profile()),
       keys::kCreateShortcutCanceledError));
 }
 
@@ -283,9 +284,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   // The management API should list this extension.
   scoped_refptr<ManagementGetAllFunction> function =
       base::MakeRefCounted<ManagementGetAllFunction>();
-  std::unique_ptr<base::Value> result(
+  absl::optional<base::Value> result =
       test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
-                                                   browser()));
+                                                   browser()->profile());
   ASSERT_TRUE(result->is_list());
   EXPECT_EQ(1U, result->GetList().size());
 
@@ -294,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
 
   function = base::MakeRefCounted<ManagementGetAllFunction>();
   result = test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
-                                                        browser());
+                                                        browser()->profile());
   ASSERT_TRUE(result->is_list());
   EXPECT_EQ(1U, result->GetList().size());
 }
@@ -347,7 +348,7 @@ class ExtensionManagementApiEscalationTest :
                                      ->GetPrimaryMainFrame());
     bool response = test_utils::RunFunction(
         function.get(), base::StringPrintf("[\"%s\", %s]", kId, enabled_string),
-        browser(), api_test_utils::NONE);
+        browser()->profile(), api_test_utils::FunctionMode::kNone);
     if (expected_error.empty()) {
       EXPECT_EQ(true, response);
     } else {
@@ -369,8 +370,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
   scoped_refptr<ManagementGetFunction> function =
       new ManagementGetFunction();
   base::Value::Dict dict =
-      test_utils::ToDictionary(test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), base::StringPrintf("[\"%s\"]", kId), browser()));
+      test_utils::ToDict(test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf("[\"%s\"]", kId),
+          browser()->profile()));
   std::string reason =
       api_test_utils::GetString(dict, keys::kDisabledReasonKey);
   EXPECT_TRUE(base::IsStringASCII(reason));
