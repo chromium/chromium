@@ -24,14 +24,14 @@ test(() => {
   assert_not_equals(document.requestStorageAccess, undefined);
 }, "[" + testPrefix + "] document.requestStorageAccess() should exist on the document interface");
 
-// Promise tests should all start with the feature in "prompt" state.
-promise_setup(async () => {
-  await test_driver.set_permission(
-    { name: 'storage-access' }, 'prompt');
-});
+// Most tests need to start with the feature in "prompt" state.
+async function CommonSetup() {
+  await test_driver.set_permission({ name: 'storage-access' }, 'prompt');
+}
 
 promise_test(
     async t => {
+      await CommonSetup();
       if (topLevelDocument || !testPrefix.includes('cross-site') ||
           testPrefix.includes('ABA')) {
         await document.requestStorageAccess().catch(t.unreached_func(
@@ -50,6 +50,7 @@ promise_test(
 
 promise_test(
     async (t) => {
+      await CommonSetup();
       await MaybeSetStorageAccess("*", "*", "blocked");
       await test_driver.set_permission({name: 'storage-access'}, 'granted');
       t.add_cleanup(async () => {
@@ -68,6 +69,7 @@ promise_test(
 if (testPrefix.includes('cross-site')) {
   promise_test(
       async t => {
+        await CommonSetup();
         await RunCallbackWithGesture(() => {
           return promise_rejects_dom(t, "NotAllowedError", document.requestStorageAccess(),
             "document.requestStorageAccess() call without permission");
@@ -91,6 +93,7 @@ if (testPrefix.includes('cross-site')) {
 } else {
   promise_test(
       async () => {
+        await CommonSetup();
         await document.requestStorageAccess();
 
         assert_true(await CanAccessCookiesViaHTTP(), 'After obtaining storage access, subresource requests from the frame should send and set cookies.');
