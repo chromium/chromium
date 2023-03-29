@@ -16,11 +16,14 @@
 # limitations under the License.
 
 import asyncio
+import itertools
 import logging
 import webbrowser
 from pathlib import Path
 
 from _helpers import get_websocket, run_and_wait_command
+
+ID = itertools.count(1000)
 
 logging.basicConfig(
     format="%(message)s",
@@ -31,16 +34,17 @@ logging.basicConfig(
 async def main():
     # Open browser
     websocket = await get_websocket()
-    await run_and_wait_command({
-        "id": 0,
-        "method": "session.new",
-        "params": {}
-    }, websocket)
+    await run_and_wait_command(
+        {
+            "id": next(ID),
+            "method": "session.new",
+            "params": {}
+        }, websocket)
 
     # Open tab
     command_result = await run_and_wait_command(
         {
-            "id": 1000,
+            "id": next(ID),
             "method": "browsingContext.create",
             "params": {
                 "type": "tab"
@@ -53,7 +57,7 @@ async def main():
     pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
     await run_and_wait_command(
         {
-            "id": 1001,
+            "id": next(ID),
             "method": "browsingContext.navigate",
             "params": {
                 "url": pageUrl,
@@ -65,7 +69,7 @@ async def main():
     # Take screenshot
     command_result = await run_and_wait_command(
         {
-            "id": 1002,
+            "id": next(ID),
             "method": "browsingContext.captureScreenshot",
             "params": {
                 "context": context_id,

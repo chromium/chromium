@@ -16,10 +16,13 @@
 # limitations under the License.
 
 import asyncio
+import itertools
 import logging
 
 from _helpers import (get_websocket, read_JSON_message, run_and_wait_command,
                       send_JSON_command)
+
+ID = itertools.count(1000)
 
 logging.basicConfig(
     format="%(message)s",
@@ -32,16 +35,17 @@ async def main():
 
     # Open browser
     websocket = await get_websocket()
-    await run_and_wait_command({
-        "id": 0,
-        "method": "session.new",
-        "params": {}
-    }, websocket)
+    await run_and_wait_command(
+        {
+            "id": next(ID),
+            "method": "session.new",
+            "params": {}
+        }, websocket)
 
     # Open tab
     command_result = await run_and_wait_command(
         {
-            "id": 1000,
+            "id": next(ID),
             "method": "browsingContext.create",
             "params": {
                 "type": "tab"
@@ -49,7 +53,7 @@ async def main():
         }, websocket)
     # `command_result` should be like this:
     # {
-    #     "id": 1000,
+    #     "id": __SOME_ID__,
     #     "result": {
     #         "context": "__SOME_CONTEXT_ID__",
     #         "url": "",
@@ -62,7 +66,7 @@ async def main():
     pageUrl = 'about:blank'
     await run_and_wait_command(
         {
-            "id": 1001,
+            "id": next(ID),
             "method": "browsingContext.navigate",
             "params": {
                 "url": pageUrl,
@@ -76,7 +80,7 @@ async def main():
     # Subscribe to log.entryAdded
     command_result = await run_and_wait_command(
         {
-            "id": 1002,
+            "id": next(ID),
             "method": "session.subscribe",
             "params": {
                 "events": ["log.entryAdded"]
@@ -88,7 +92,7 @@ async def main():
     # Run console.log with script.evaluate
     await send_JSON_command(
         {
-            "id": 1003,
+            "id": next(ID),
             "method": "script.evaluate",
             "params": {
                 "expression": "console.log(`Hello, world!`);",

@@ -13,11 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
 import json
 import os
 
 import requests
 import websockets
+
+ID = itertools.count(1000)
 
 
 async def get_webdriver_session():
@@ -48,7 +51,7 @@ async def get_websocket():
         # Init BiDi session.
         await run_and_wait_command(
             {
-                "id": 0,
+                "id": next(ID),
                 "method": "session.new",
                 "params": {}
             }, websocket)

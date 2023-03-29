@@ -18,12 +18,15 @@
 # This script shows how to interoperate WebDriver Classic and WebDriver BiDi.
 
 import asyncio
+import itertools
 import logging
 import os
 from pathlib import Path
 
 import requests
 from _helpers import get_webdriver_session, run_and_wait_command, websockets
+
+ID = itertools.count(1000)
 
 logging.basicConfig(
     format="%(message)s",
@@ -78,7 +81,7 @@ async def main():
     # Pass BiDi shared references to BiDi sctipt.
     command_result = await run_and_wait_command(
         {
-            "id": 1000,
+            "id": next(ID),
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": """(...anchors) => {
