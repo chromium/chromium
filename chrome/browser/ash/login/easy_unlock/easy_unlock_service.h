@@ -63,10 +63,11 @@ class EasyUnlockService : public KeyedService,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Registers Easy Unlock local state entries.
-  // TODO(b/227674947): Delete
+  // TODO(b/227674947): Delete this method and deprecate hardlock pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Removes the hardlock state for the given user.
+  // TODO(b/227674947): Delete this method and deprecate hardlock pref.
   static void ResetLocalStateForUser(const AccountId& account_id);
 
   // Returns the ProximityAuthPrefManager, responsible for managing all
@@ -90,6 +91,8 @@ class EasyUnlockService : public KeyedService,
   virtual bool IsEnabled() const;
 
   // Returns true if ChromeOS login is enabled by the user.
+  // TODO(b/227674947): Delete this method and deprecate related pref now that
+  // sign in with Smart Lock is deprecated.
   virtual bool IsChromeOSLoginEnabled() const;
 
   // To be called when EasyUnlockService is "warming up", for example, on screen
@@ -103,21 +106,6 @@ class EasyUnlockService : public KeyedService,
   //     and has kicked off a scan/connection.
   //   * SmartLockState::kDisabled: if any values above can't be confirmed.
   virtual SmartLockState GetInitialSmartLockState() const;
-
-  // Sets the hardlock state for the associated user.
-  // TODO(b/227674947): Delete any hardlock logic and deprecate its
-  // corresponding pref. Now that Sign in with Smart Lock is deprecated and the
-  // UI revamp is launched, we can remove it.
-  void SetHardlockState(SmartLockStateHandler::HardlockState state);
-
-  // Returns the hardlock state for the associated user.
-  SmartLockStateHandler::HardlockState GetHardlockState() const;
-
-  // Gets the persisted hardlock state. Return true if there is persisted
-  // hardlock state and the value would be set to `state`. Otherwise,
-  // returns false and `state` is unchanged.
-  bool GetPersistedHardlockState(
-      SmartLockStateHandler::HardlockState* state) const;
 
   // Updates the user pod on the signin/lock screen for the user associated with
   // the service to reflect the provided Smart Lock state.
@@ -197,17 +185,9 @@ class EasyUnlockService : public KeyedService,
   // Resets the Smart Lock state set by this service.
   void ResetSmartLockState();
 
-  // Updates `smartlock_state_handler_`'s hardlocked state.
-  void SetSmartLockHardlockedState(SmartLockStateHandler::HardlockState state);
-
   const SmartLockStateHandler* smartlock_state_handler() const {
     return smartlock_state_handler_.get();
   }
-
-  // Saves hardlock state for the given user. Update UI if the currently
-  // associated user is the same.
-  void SetHardlockStateForUser(const AccountId& account_id,
-                               SmartLockStateHandler::HardlockState state);
 
   // Returns the authentication event for a recent password sign-in or unlock,
   // according to the current state of the service.

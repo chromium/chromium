@@ -199,57 +199,6 @@ SmartLockState EasyUnlockService::GetInitialSmartLockState() const {
   return SmartLockState::kDisabled;
 }
 
-void EasyUnlockService::SetHardlockState(
-    SmartLockStateHandler::HardlockState state) {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-    return;
-
-  const AccountId& account_id = GetAccountId();
-  if (!account_id.is_valid())
-    return;
-
-  if (state == GetHardlockState())
-    return;
-
-  SetHardlockStateForUser(account_id, state);
-}
-
-SmartLockStateHandler::HardlockState EasyUnlockService::GetHardlockState()
-    const {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-    return SmartLockStateHandler::NO_HARDLOCK;
-
-  SmartLockStateHandler::HardlockState state;
-  if (GetPersistedHardlockState(&state))
-    return state;
-
-  return SmartLockStateHandler::NO_HARDLOCK;
-}
-
-bool EasyUnlockService::GetPersistedHardlockState(
-    SmartLockStateHandler::HardlockState* state) const {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-    return false;
-
-  const AccountId& account_id = GetAccountId();
-  if (!account_id.is_valid())
-    return false;
-
-  PrefService* local_state = GetLocalState();
-  if (!local_state)
-    return false;
-
-  const base::Value::Dict& dict =
-      local_state->GetDict(prefs::kEasyUnlockHardlockState);
-
-  absl::optional<int> state_int = dict.FindInt(account_id.GetUserEmail());
-  if (!state_int.has_value())
-    return false;
-
-  *state = static_cast<SmartLockStateHandler::HardlockState>(state_int.value());
-  return true;
-}
-
 SmartLockStateHandler* EasyUnlockService::GetSmartLockStateHandler() {
   if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
     return nullptr;
@@ -258,8 +207,7 @@ SmartLockStateHandler* EasyUnlockService::GetSmartLockStateHandler() {
     return nullptr;
   if (!smartlock_state_handler_) {
     smartlock_state_handler_ = std::make_unique<SmartLockStateHandler>(
-        GetAccountId(), GetHardlockState(),
-        proximity_auth::ScreenlockBridge::Get());
+        GetAccountId(), proximity_auth::ScreenlockBridge::Get());
   }
   return smartlock_state_handler_.get();
 }
@@ -413,9 +361,6 @@ void EasyUnlockService::HandleAuthFailure(const AccountId& account_id) {
 
   if (!smartlock_state_handler_.get())
     return;
-
-  smartlock_state_handler_->SetHardlockState(
-      SmartLockStateHandler::LOGIN_FAILED);
 }
 
 void EasyUnlockService::Shutdown() {
@@ -478,76 +423,12 @@ void EasyUnlockService::ResetSmartLockState() {
   auth_attempt_.reset();
 }
 
-void EasyUnlockService::SetSmartLockHardlockedState(
-    SmartLockStateHandler::HardlockState state) {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-    return;
-
-  if (GetSmartLockStateHandler()) {
-    smartlock_state_handler_->SetHardlockState(state);
-  }
-  if (state != SmartLockStateHandler::NO_HARDLOCK)
-    auth_attempt_.reset();
-}
-
-void EasyUnlockService::SetHardlockStateForUser(
-    const AccountId& account_id,
-    SmartLockStateHandler::HardlockState state) {
-  if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp))
-    return;
-
-  DCHECK(account_id.is_valid());
-
-  PrefService* local_state = GetLocalState();
-  if (!local_state)
-    return;
-
-  // Disallow setting the hardlock state if the password is currently being
-  // forced.
-  if (GetSmartLockStateHandler() &&
-      GetSmartLockStateHandler()->state() ==
-          SmartLockState::kPasswordReentryRequired) {
-    return;
-  }
-
-  ScopedDictPrefUpdate update(local_state, prefs::kEasyUnlockHardlockState);
-  update->Set(account_id.GetUserEmail(), static_cast<int>(state));
-
-  if (GetAccountId() == account_id)
-    SetSmartLockHardlockedState(state);
-}
-
 SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
 EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
   DCHECK(IsEnabled());
 
-  if (GetHardlockState() != SmartLockStateHandler::NO_HARDLOCK) {
-    switch (GetHardlockState()) {
-      case SmartLockStateHandler::NO_PAIRING:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kNoPairing;
-      case SmartLockStateHandler::USER_HARDLOCK:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kUserHardlock;
-      case SmartLockStateHandler::PAIRING_CHANGED:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kPairingChanged;
-      case SmartLockStateHandler::LOGIN_FAILED:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kLoginFailed;
-      case SmartLockStateHandler::PAIRING_ADDED:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kPairingAdded;
-      case SmartLockStateHandler::LOGIN_DISABLED:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kLoginWithSmartLockDisabled;
-      default:
-        NOTREACHED();
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kUnknownState;
-    }
-  } else if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
-             !smartlock_state_handler()) {
+  if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
+      !smartlock_state_handler()) {
     return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
         kUnknownState;
   } else if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
@@ -612,26 +493,8 @@ EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
 EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
   DCHECK(IsEnabled());
 
-  if (GetHardlockState() != SmartLockStateHandler::NO_HARDLOCK) {
-    switch (GetHardlockState()) {
-      case SmartLockStateHandler::NO_HARDLOCK:
-        NOTREACHED();
-        return EASY_UNLOCK_AUTH_EVENT_COUNT;
-      case SmartLockStateHandler::NO_PAIRING:
-        return PASSWORD_ENTRY_NO_PAIRING;
-      case SmartLockStateHandler::USER_HARDLOCK:
-        return PASSWORD_ENTRY_USER_HARDLOCK;
-      case SmartLockStateHandler::PAIRING_CHANGED:
-        return PASSWORD_ENTRY_PAIRING_CHANGED;
-      case SmartLockStateHandler::LOGIN_FAILED:
-        return PASSWORD_ENTRY_LOGIN_FAILED;
-      case SmartLockStateHandler::PAIRING_ADDED:
-        return PASSWORD_ENTRY_PAIRING_ADDED;
-      case SmartLockStateHandler::LOGIN_DISABLED:
-        return PASSWORD_ENTRY_LOGIN_DISABLED;
-    }
-  } else if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
-             !smartlock_state_handler()) {
+  if (!base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
+      !smartlock_state_handler()) {
     return PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER;
   } else if (base::FeatureList::IsEnabled(features::kSmartLockUIRevamp) &&
              !smart_lock_state_) {

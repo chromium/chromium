@@ -19,27 +19,11 @@ enum class SmartLockState;
 class SmartLockStateHandler
     : public proximity_auth::ScreenlockBridge::Observer {
  public:
-  // Hard lock states.
-  enum HardlockState {
-    NO_HARDLOCK = 0,           // Hard lock is not enforced. This is default.
-    USER_HARDLOCK = 1 << 0,    // Hard lock is requested by user.
-    PAIRING_CHANGED = 1 << 1,  // Hard lock because pairing data is changed.
-    NO_PAIRING = 1 << 2,       // Hard lock because there is no pairing data.
-    LOGIN_FAILED = 1 << 3,     // Transient hard lock caused by login attempt
-                               // failure. Reset when screen is unlocked.
-    PAIRING_ADDED = 1 << 4,    // Similar to PAIRING_CHANGED when it happens
-                               // on a new Chromebook.
-    LOGIN_DISABLED = 1 << 5,   // Sign-in via Smart Lock is disabled in
-                               // Settings.
-  };
-
   // `account_id`: The account id of the user associated with the profile to
   //     which this class is attached.
-  // `initial_hardlock_state`: The initial hardlock state.
   // `screenlock_bridge`: The screenlock bridge used to update the Smart Lock
   //     state.
   SmartLockStateHandler(const AccountId& account_id,
-                        HardlockState initial_hardlock_state,
                         proximity_auth::ScreenlockBridge* screenlock_bridge);
 
   SmartLockStateHandler(const SmartLockStateHandler&) = delete;
@@ -58,9 +42,6 @@ class SmartLockStateHandler
   // Changes internal state to `new_state` and updates the user's Smart Lock
   // state accordingly.
   void ChangeState(SmartLockState new_state);
-
-  // Updates the hardlock state.
-  void SetHardlockState(HardlockState new_state);
 
   SmartLockState state() const { return state_; }
 
@@ -90,9 +71,6 @@ class SmartLockStateHandler
   SmartLockState state_;
   const AccountId account_id_;
   proximity_auth::ScreenlockBridge* screenlock_bridge_ = nullptr;
-
-  // State of hardlock.
-  HardlockState hardlock_state_;
 
   // Whether the user's phone was ever locked while on the current lock screen.
   bool did_see_locked_phone_ = false;

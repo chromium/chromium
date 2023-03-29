@@ -114,12 +114,10 @@ bool IsLockedState(SmartLockState state) {
 
 SmartLockStateHandler::SmartLockStateHandler(
     const AccountId& account_id,
-    HardlockState initial_hardlock_state,
     proximity_auth::ScreenlockBridge* screenlock_bridge)
     : state_(SmartLockState::kInactive),
       account_id_(account_id),
-      screenlock_bridge_(screenlock_bridge),
-      hardlock_state_(initial_hardlock_state) {
+      screenlock_bridge_(screenlock_bridge) {
   DCHECK(screenlock_bridge_);
   screenlock_bridge_->AddObserver(this);
 }
@@ -168,13 +166,6 @@ void SmartLockStateHandler::ChangeState(SmartLockState new_state) {
 
   // TODO(crbug.com/1233614): Return early if kSmartLockUIRevamp is enabled.
 
-  if (hardlock_state_ != NO_HARDLOCK) {
-    // TODO(b/227674947): Hardlock is no longer used due to the deprecation of
-    // Sign in with Smart Lock. Eventually delete hardlock_state_ and remove
-    // this if-block.
-    return;
-  }
-
   proximity_auth::ScreenlockBridge::UserPodCustomIcon icon =
       GetIconForState(state_);
 
@@ -205,22 +196,6 @@ void SmartLockStateHandler::ChangeState(SmartLockState new_state) {
                                                             icon_info);
 }
 
-void SmartLockStateHandler::SetHardlockState(HardlockState new_state) {
-  if (hardlock_state_ == new_state)
-    return;
-
-  if (new_state == LOGIN_FAILED && hardlock_state_ != NO_HARDLOCK)
-    return;
-
-  hardlock_state_ = new_state;
-
-  // If hardlock_state_ was set to NO_HARDLOCK, this means the screen is about
-  // to get unlocked. No need to update it in this case.
-  if (hardlock_state_ != NO_HARDLOCK) {
-    RefreshSmartLockState();
-  }
-}
-
 void SmartLockStateHandler::OnScreenDidLock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
   did_see_locked_phone_ = IsLockedState(state_);
@@ -229,9 +204,6 @@ void SmartLockStateHandler::OnScreenDidLock(
 
 void SmartLockStateHandler::OnScreenDidUnlock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
-  if (hardlock_state_ == LOGIN_FAILED)
-    hardlock_state_ = NO_HARDLOCK;
-
   // Upon a successful unlock event, record whether the user's phone was locked
   // at any point while the lock screen was up.
   if (state_ == SmartLockState::kPhoneAuthenticated)
@@ -278,9 +250,6 @@ std::u16string SmartLockStateHandler::GetDeviceName() {
 }
 
 void SmartLockStateHandler::UpdateScreenlockAuthType() {
-  if (hardlock_state_ != NO_HARDLOCK)
-    return;
-
   // Do not override online signin.
   const proximity_auth::mojom::AuthType existing_auth_type =
       screenlock_bridge_->lock_handler()->GetAuthType(account_id_);
