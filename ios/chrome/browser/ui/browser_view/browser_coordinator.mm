@@ -2488,8 +2488,15 @@ enum class ToolbarKind {
 - (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
          baseViewForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive())
-    return _NTPCoordinator.viewController.view;
+  if (NTPHelper && NTPHelper->IsActive()) {
+    // NTPCoordinator should be started at this point. If for some reason it is
+    // not, the DCHECK will let us know and we will fall back to using the
+    // webState's view.
+    DCHECK(_NTPCoordinator.started);
+    if (_NTPCoordinator.started) {
+      return _NTPCoordinator.viewController.view;
+    }
+  }
   return webState->GetView();
 }
 
