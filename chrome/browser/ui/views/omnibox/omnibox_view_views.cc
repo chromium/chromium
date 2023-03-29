@@ -90,6 +90,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -617,8 +618,12 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  set_placeholder_text_color(
-      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
+  bool gm3_text_color_enabled =
+      features::IsChromeRefresh2023() ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
+
+  set_placeholder_text_color(GetColorProvider()->GetColor(
+      gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));
 
   EmphasizeURLComponents();
 }

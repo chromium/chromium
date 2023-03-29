@@ -5314,6 +5314,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-gm3-steady-state-text-color",
+    "owners": [ "khalidpeer", "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-gm3-steady-state-text-style",
     "owners": [ "khalidpeer", "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

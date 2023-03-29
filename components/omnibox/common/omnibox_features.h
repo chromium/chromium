@@ -117,6 +117,15 @@ extern const base::FeatureParam<std::string>
 
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateHeight);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
+
+BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextColor);
+// These feature params are located here, as opposed to omnibox_field_trial.h,
+// in order to permit inclusion into (non-Omnibox) color mixer code.
+extern const base::FeatureParam<std::string> kOmniboxTextColorDarkMode;
+extern const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode;
+extern const base::FeatureParam<std::string> kOmniboxTextColorLightMode;
+extern const base::FeatureParam<std::string> kOmniboxTextColorDimmedLightMode;
+
 BASE_DECLARE_FEATURE(kDiscardTemporaryInputOnTabSwitch);
 BASE_DECLARE_FEATURE(kRedoCurrentMatch);
 BASE_DECLARE_FEATURE(kRevertModelBeforeClosingPopup);

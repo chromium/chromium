@@ -5728,6 +5728,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGM3SteadyStateHeightDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateHeight)},
 
+    {"omnibox-gm3-steady-state-text-color",
+     flag_descriptions::kOmniboxGM3SteadyStateTextColorName,
+     flag_descriptions::kOmniboxGM3SteadyStateTextColorDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateTextColor)},
+
     {"omnibox-gm3-steady-state-text-style",
      flag_descriptions::kOmniboxGM3SteadyStateTextStyleName,
      flag_descriptions::kOmniboxGM3SteadyStateTextStyleDescription, kOsAll,

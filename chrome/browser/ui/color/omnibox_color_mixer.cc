@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 
+#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -19,6 +23,75 @@ namespace {
 
 // The contrast for omnibox colors in high contrast mode.
 constexpr float kOmniboxHighContrastRatio = 6.0f;
+
+// Apply updates to the Omnibox text color tokens per GM3 spec.
+void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
+                              const ui::ColorProviderManager::Key& key) {
+  const bool gm3_text_color_enabled =
+      features::IsChromeRefresh2023() ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
+
+  // Apply omnibox text color updates only to non-themed clients.
+  if (!gm3_text_color_enabled || key.custom_theme) {
+    return;
+  }
+
+  // Retrieve GM3 omnibox text color params (Dark Mode).
+  const std::string dark_text_color_param =
+      omnibox::kOmniboxTextColorDarkMode.Get();
+  const std::string dark_text_color_dimmed_param =
+      omnibox::kOmniboxTextColorDimmedDarkMode.Get();
+
+  // Retrieve GM3 omnibox text color params (Light Mode).
+  const std::string light_text_color_param =
+      omnibox::kOmniboxTextColorLightMode.Get();
+  const std::string light_text_color_dimmed_param =
+      omnibox::kOmniboxTextColorDimmedLightMode.Get();
+
+  const auto string_to_skcolor = [](const std::string& rgb_str,
+                                    SkColor* result) {
+    // Valid color strings are of the form 0xRRGGBB or 0xAARRGGBB.
+    const bool valid = result && (rgb_str.size() == 8 || rgb_str.size() == 10);
+    if (!valid) {
+      return false;
+    }
+
+    uint32_t parsed = 0;
+    const bool success = base::HexStringToUInt(rgb_str, &parsed);
+    if (success) {
+      *result = SkColorSetA(static_cast<SkColor>(parsed), SK_AlphaOPAQUE);
+    }
+    return success;
+  };
+
+  SkColor dark_text_color = 0;
+  SkColor dark_text_color_dimmed = 0;
+
+  SkColor light_text_color = 0;
+  SkColor light_text_color_dimmed = 0;
+
+  const bool success =
+      string_to_skcolor(dark_text_color_param, &dark_text_color) &&
+      string_to_skcolor(dark_text_color_dimmed_param,
+                        &dark_text_color_dimmed) &&
+      string_to_skcolor(light_text_color_param, &light_text_color) &&
+      string_to_skcolor(light_text_color_dimmed_param,
+                        &light_text_color_dimmed);
+
+  if (!success) {
+    return;
+  }
+
+  const auto selected_text_color = ui::SelectBasedOnDarkInput(
+      kColorToolbar, dark_text_color, light_text_color);
+
+  mixer[kColorOmniboxText] = {selected_text_color};
+
+  const auto selected_text_color_dimmed = ui::SelectBasedOnDarkInput(
+      kColorToolbar, dark_text_color_dimmed, light_text_color_dimmed);
+
+  mixer[kColorOmniboxTextDimmed] = {selected_text_color_dimmed};
+}
 
 }  // namespace
 
@@ -217,4 +290,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       kColorToolbar, SkColorSetRGB(0, 74, 119), SkColorSetRGB(211, 227, 253));
   mixer[kColorOmniboxAnswerIconGM3Foreground] = ui::SelectBasedOnDarkInput(
       kColorToolbar, SkColorSetRGB(194, 231, 255), SkColorSetRGB(4, 30, 73));
+
+  // Override omnibox text color per GM3 spec.
+  ApplyGM3OmniboxTextColor(mixer, key);
 }
