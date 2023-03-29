@@ -11,7 +11,6 @@
 
 namespace extensions {
 
-using api_test_utils::ParseDictionary;
 using DeclarativeManifestTest = ManifestTest;
 
 TEST_F(DeclarativeManifestTest, Valid) {
@@ -22,7 +21,7 @@ TEST_F(DeclarativeManifestTest, Valid) {
   std::vector<DeclarativeManifestData::Rule> rules =
       manifest_data->RulesForEvent("foo");
   EXPECT_EQ(1u, rules.size());
-  absl::optional<base::Value::Dict> expected_rule = ParseDictionary(
+  base::Value::Dict expected_rule = base::test::ParseJsonDict(
       "{"
       "  \"actions\": [{"
       "    \"instanceType\": \"action_type\""
@@ -31,7 +30,7 @@ TEST_F(DeclarativeManifestTest, Valid) {
       "    \"instanceType\" : \"condition_type\""
       "  }]"
       "}");
-  EXPECT_EQ(*expected_rule, rules[0].ToValue());
+  EXPECT_EQ(expected_rule, rules[0].ToValue());
 }
 
 TEST_F(DeclarativeManifestTest, ConditionMissingType) {
