@@ -10,7 +10,6 @@ file://third_party/OWNERS
 # Security reviews
 file://build/fuchsia/SECURITY_OWNERS
 file://chromeos/SECURITY_OWNERS
-file://content/browser/SITE_ISOLATION_OWNERS
 file://ipc/SECURITY_OWNERS
 file://net/base/SECURITY_OWNERS
 file://sandbox/linux/OWNERS
