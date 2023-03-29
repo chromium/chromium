@@ -63,27 +63,66 @@ namespace {
 
 // Create a testing profile according to |params|.
 std::unique_ptr<TestingProfile> BuildTestingProfile(
-    const ExtensionServiceTestBase::ExtensionServiceInitParams& params) {
+    const ExtensionServiceTestBase::ExtensionServiceInitParams& params,
+    base::ScopedTempDir& temp_dir,
+    policy::PolicyService* policy_service) {
   TestingProfile::Builder profile_builder;
-  // Create a PrefService that only contains user defined preference values and
-  // policies.
-  sync_preferences::PrefServiceMockFactory factory;
+
+  if (!temp_dir.CreateUniqueTempDir()) {
+    return nullptr;
+  }
+
+  base::FilePath profile_dir =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("TestingExtensionsPath"));
+  if (base::File::Error error = base::File::FILE_OK;
+      !base::CreateDirectoryAndGetError(profile_dir, &error)) {
+    LOG(ERROR) << "Failed to create profile directory: " << error;
+    return nullptr;
+  }
+
   // If pref_file is empty, TestingProfile automatically creates
   // sync_preferences::TestingPrefServiceSyncable instance.
-  if (!params.pref_file.empty()) {
-    factory.SetUserPrefsFile(
-        params.pref_file,
-        base::SingleThreadTaskRunner::GetCurrentDefault().get());
-    if (params.policy_service) {
-      factory.SetManagedPolicies(params.policy_service,
-                                 g_browser_process->browser_policy_connector());
+  if (params.prefs_content.has_value()) {
+    base::FilePath prefs_path =
+        profile_dir.Append(chrome::kPreferencesFilename);
+    if (!base::WriteFile(prefs_path, params.prefs_content.value())) {
+      LOG(ERROR) << "Failed to write a prefs file";
+      return nullptr;
     }
+
+    // Create a PrefService that only contains user defined preference values
+    // and policies.
+    sync_preferences::PrefServiceMockFactory factory;
+    factory.SetUserPrefsFile(
+        prefs_path, base::SingleThreadTaskRunner::GetCurrentDefault().get());
+    factory.SetManagedPolicies(policy_service,
+                               g_browser_process->browser_policy_connector());
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
         new user_prefs::PrefRegistrySyncable);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
     RegisterUserProfilePrefs(registry.get());
     profile_builder.SetPrefService(std::move(prefs));
+  }
+
+  base::FilePath extensions_install_dir =
+      profile_dir.AppendASCII(extensions::kInstallDirectoryName);
+  if (!base::DeletePathRecursively(extensions_install_dir)) {
+    LOG(ERROR) << "Failed to clean extensions directory";
+    return nullptr;
+  }
+  if (params.extensions_dir.empty()) {
+    if (base::File::Error error = base::File::FILE_OK;
+        !base::CreateDirectoryAndGetError(extensions_install_dir, &error)) {
+      LOG(ERROR) << "Failed to create extensions directory: " << error;
+      return nullptr;
+    }
+  } else {
+    if (!base::CopyDirectory(params.extensions_dir, extensions_install_dir,
+                             true)) {
+      LOG(ERROR) << "Failed to copy extensions directory";
+      return nullptr;
+    }
   }
 
   if (params.profile_is_supervised) {
@@ -116,18 +155,40 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                                     SyncServiceFactory::GetDefaultFactory());
 
-  profile_builder.SetPath(params.profile_path);
+  profile_builder.SetPath(profile_dir);
   return profile_builder.Build();
 }
 
 }  // namespace
 
 ExtensionServiceTestBase::ExtensionServiceInitParams::
-    ExtensionServiceInitParams() {}
+    ExtensionServiceInitParams() = default;
 
 ExtensionServiceTestBase::ExtensionServiceInitParams::
     ExtensionServiceInitParams(const ExtensionServiceInitParams& other) =
         default;
+
+ExtensionServiceTestBase::ExtensionServiceInitParams::
+    ~ExtensionServiceInitParams() = default;
+
+bool ExtensionServiceTestBase::ExtensionServiceInitParams::
+    SetPrefsContentFromFile(const base::FilePath& filepath) {
+  std::string content;
+  if (!base::ReadFileToString(filepath, &content)) {
+    return false;
+  }
+  prefs_content.emplace(std::move(content));
+  return true;
+}
+
+bool ExtensionServiceTestBase::ExtensionServiceInitParams::
+    ConfigureByTestDataDirectory(const base::FilePath& filepath) {
+  if (!SetPrefsContentFromFile(filepath.Append(chrome::kPreferencesFilename))) {
+    return false;
+  }
+  extensions_dir = filepath.AppendASCII(extensions::kInstallDirectoryName);
+  return true;
+}
 
 ExtensionServiceTestBase::ExtensionServiceTestBase()
     : ExtensionServiceTestBase(
@@ -160,37 +221,13 @@ ExtensionServiceTestBase::~ExtensionServiceTestBase() {
   profile_.reset();
 }
 
-ExtensionServiceTestBase::ExtensionServiceInitParams
-ExtensionServiceTestBase::CreateDefaultInitParams() {
-  ExtensionServiceInitParams params;
-  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-  base::FilePath path = temp_dir_.GetPath();
-  path = path.Append(FILE_PATH_LITERAL("TestingExtensionsPath"));
-  EXPECT_TRUE(base::DeletePathRecursively(path));
-  base::File::Error error = base::File::FILE_OK;
-  EXPECT_TRUE(base::CreateDirectoryAndGetError(path, &error)) << error;
-  base::FilePath prefs_filename =
-      path.Append(FILE_PATH_LITERAL("TestPreferences"));
-  base::FilePath extensions_install_dir =
-      path.Append(FILE_PATH_LITERAL("Extensions"));
-  EXPECT_TRUE(base::DeletePathRecursively(extensions_install_dir));
-  EXPECT_TRUE(base::CreateDirectoryAndGetError(extensions_install_dir, &error))
-      << error;
-
-  params.profile_path = path;
-  params.pref_file = prefs_filename;
-  params.extensions_install_dir = extensions_install_dir;
-
-  params.policy_service = policy_service_.get();
-  return params;
-}
-
 void ExtensionServiceTestBase::InitializeExtensionService(
     const ExtensionServiceTestBase::ExtensionServiceInitParams& params) {
-  profile_ = BuildTestingProfile(params);
-  CreateExtensionService(params);
+  profile_ = BuildTestingProfile(params, temp_dir_, policy_service_.get());
+  extensions_install_dir_ =
+      profile_->GetPath().AppendASCII(extensions::kInstallDirectoryName);
 
-  extensions_install_dir_ = params.extensions_install_dir;
+  CreateExtensionService(params);
   registry_ = ExtensionRegistry::Get(profile());
 
   // Garbage collector is typically NULL during tests, so give it a build.
@@ -200,48 +237,20 @@ void ExtensionServiceTestBase::InitializeExtensionService(
 }
 
 void ExtensionServiceTestBase::InitializeEmptyExtensionService() {
-  InitializeExtensionService(CreateDefaultInitParams());
-}
-
-void ExtensionServiceTestBase::InitializeInstalledExtensionService(
-    const base::FilePath& prefs_file,
-    const base::FilePath& source_install_dir,
-    const ExtensionServiceInitParams& additional_params) {
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  base::FilePath path = temp_dir_.GetPath();
-
-  path = path.Append(FILE_PATH_LITERAL("TestingExtensionsPath"));
-  ASSERT_TRUE(base::DeletePathRecursively(path));
-
-  base::File::Error error = base::File::FILE_OK;
-  ASSERT_TRUE(base::CreateDirectoryAndGetError(path, &error)) << error;
-
-  base::FilePath temp_prefs = path.Append(chrome::kPreferencesFilename);
-  ASSERT_TRUE(base::CopyFile(prefs_file, temp_prefs));
-
-  base::FilePath extensions_install_dir =
-      path.Append(FILE_PATH_LITERAL("Extensions"));
-  ASSERT_TRUE(base::DeletePathRecursively(extensions_install_dir));
-  ASSERT_TRUE(
-      base::CopyDirectory(source_install_dir, extensions_install_dir, true));
-
-  ExtensionServiceInitParams params = additional_params;
-  params.profile_path = path;
-  params.pref_file = temp_prefs;
-  params.extensions_install_dir = extensions_install_dir;
+  ExtensionServiceInitParams params;
+  params.prefs_content = "";
   InitializeExtensionService(params);
 }
 
 void ExtensionServiceTestBase::InitializeGoodInstalledExtensionService() {
-  base::FilePath source_install_dir =
-      data_dir_.AppendASCII("good").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(
+      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
+  InitializeExtensionService(params);
 }
 
 void ExtensionServiceTestBase::InitializeExtensionServiceWithUpdater() {
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.autoupdate_enabled = true;
   InitializeExtensionService(params);
   service_->updater()->Start();
@@ -249,7 +258,7 @@ void ExtensionServiceTestBase::InitializeExtensionServiceWithUpdater() {
 
 void ExtensionServiceTestBase::
     InitializeExtensionServiceWithExtensionsDisabled() {
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.extensions_enabled = false;
   InitializeExtensionService(params);
 }
@@ -393,7 +402,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
     ExtensionPrefs::Get(profile())->SetAlertSystemFirstRun();
 
   service_ = system->CreateExtensionService(
-      base::CommandLine::ForCurrentProcess(), params.extensions_install_dir,
+      base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
       params.autoupdate_enabled, params.extensions_enabled);
 
   service_->component_loader()->set_ignore_allowlist_for_testing(true);

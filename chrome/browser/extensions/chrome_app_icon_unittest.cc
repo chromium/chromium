@@ -201,11 +201,10 @@ class ChromeAppIconTest : public ExtensionServiceTestBase {
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
 
-    const base::FilePath source_install_dir =
-        data_dir().AppendASCII("app_list").AppendASCII("Extensions");
-    const base::FilePath pref_path =
-        source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-    InitializeInstalledExtensionService(pref_path, source_install_dir);
+    ExtensionServiceInitParams params;
+    ASSERT_TRUE(params.ConfigureByTestDataDirectory(
+        data_dir().AppendASCII("app_list")));
+    InitializeExtensionService(params);
     service_->Init();
   }
 };

@@ -169,11 +169,10 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   }
 
   void InitializeExtensionServiceWithUpdaterAndPrefs() {
-    ExtensionServiceInitParams params = CreateDefaultInitParams();
-    params.autoupdate_enabled = true;
+    ExtensionServiceInitParams params;
     // Create prefs file to make the profile not new.
-    const char prefs[] = "{}";
-    EXPECT_TRUE(base::WriteFile(params.pref_file, prefs));
+    params.prefs_content = "{}";
+    params.autoupdate_enabled = true;
     InitializeExtensionService(params);
     service_->updater()->Start();
     content::RunAllTasksUntilIdle();

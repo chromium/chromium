@@ -316,12 +316,10 @@ TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupOnInstall) {
 
 TEST_F(ExtensionServiceSyncTest, DisableExtensionFromSync) {
   // Start the extensions service with one external extension already installed.
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("good").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(
+      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
+  InitializeExtensionService(params);
 
   // The user has enabled sync.
   syncer::SyncService* sync_service =
@@ -497,12 +495,10 @@ TEST_F(ExtensionServiceSyncTest,
 
 TEST_F(ExtensionServiceSyncTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
   // Start the extension service with three extensions already installed.
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("good").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(
+      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
+  InitializeExtensionService(params);
 
   // The user has enabled sync.
   syncer::SyncService* sync_service =
@@ -558,12 +554,10 @@ TEST_F(ExtensionServiceSyncTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
 
 TEST_F(ExtensionServiceSyncTest, DontSelfNotify) {
   // Start the extension service with three extensions already installed.
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("good").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(
+      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
+  InitializeExtensionService(params);
 
   // The user has enabled sync.
   SyncServiceFactory::GetForProfile(profile())

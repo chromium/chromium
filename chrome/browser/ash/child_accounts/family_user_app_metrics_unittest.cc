@@ -88,7 +88,7 @@ class FamilyUserAppMetricsTest
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_environment()->AdvanceClock(forward_by);
 
-    ExtensionServiceInitParams params = CreateDefaultInitParams();
+    ExtensionServiceInitParams params;
     params.profile_is_supervised = IsFamilyLink();
     InitializeExtensionService(params);
 

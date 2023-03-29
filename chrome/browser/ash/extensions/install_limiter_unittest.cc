@@ -117,8 +117,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
 
-    extensions::ExtensionServiceTestBase::ExtensionServiceInitParams params =
-        CreateDefaultInitParams();
+    ExtensionServiceInitParams params;
     params.enable_install_limiter = true;
     InitializeExtensionService(params);
 

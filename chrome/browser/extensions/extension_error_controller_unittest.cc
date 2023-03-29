@@ -122,7 +122,7 @@ void ExtensionErrorControllerUnitTest::SetUp() {
 
   // We don't want a first-run ExtensionService, since we ignore warnings
   // for new profiles.
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.is_first_run = false;
   InitializeExtensionService(params);
 }

@@ -38,13 +38,8 @@ class SupervisedUserExtensionTest : public ExtensionServiceTestWithInstall {
 
  protected:
   void InitServices(bool profile_is_supervised) {
-    ExtensionServiceInitParams params = CreateDefaultInitParams();
+    ExtensionServiceInitParams params;
     params.profile_is_supervised = profile_is_supervised;
-    // If profile is supervised, don't pass a pref file such that the testing
-    // profile creates a pref service that uses SupervisedUserPrefStore.
-    if (profile_is_supervised) {
-      params.pref_file = base::FilePath();
-    }
     InitializeExtensionService(params);
 
     supervised_user_service()->Init();

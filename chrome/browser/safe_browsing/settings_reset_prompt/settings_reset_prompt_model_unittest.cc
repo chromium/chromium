@@ -74,13 +74,7 @@ class SettingsResetPromptModelTest
 
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
-
-    // By not specifying a pref_file filepath, we get a
-    // sync_preferences::TestingPrefServiceSyncable, which in turn provides us
-    // with a convient way of registring preferences.
-    ExtensionServiceInitParams init_params = CreateDefaultInitParams();
-    init_params.pref_file.clear();
-    InitializeExtensionService(init_params);
+    InitializeExtensionService(ExtensionServiceInitParams());
 
 #if !BUILDFLAG(IS_WIN)
     // In production code, the settings reset prompt profile preferences are

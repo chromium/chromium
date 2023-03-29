@@ -23,7 +23,7 @@ class WindowsUtilUnitTest : public extensions::ExtensionServiceTestBase {
  public:
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
-    InitializeExtensionService(CreateDefaultInitParams());
+    InitializeExtensionService(ExtensionServiceInitParams());
   }
 };
 

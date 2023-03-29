@@ -244,8 +244,7 @@ class SupervisedUserServiceExtensionTestBase
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
-    ExtensionServiceTestBase::ExtensionServiceInitParams params =
-        CreateDefaultInitParams();
+    ExtensionServiceInitParams params;
     params.profile_is_supervised = is_supervised_;
     InitializeExtensionService(params);
     // Flush the message loop, to ensure that credentials have been loaded in

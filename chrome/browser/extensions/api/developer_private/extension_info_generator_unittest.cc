@@ -124,7 +124,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
 
   // Returns the initialization parameters for the extension service.
   virtual ExtensionServiceInitParams GetExtensionServiceInitParams() {
-    return CreateDefaultInitParams();
+    return {};
   }
 
   void OnInfoGenerated(std::unique_ptr<developer::ExtensionInfo>* info_out,
@@ -968,8 +968,6 @@ class ExtensionInfoGeneratorUnitTestSupervised
   ExtensionServiceInitParams GetExtensionServiceInitParams() override {
     ExtensionServiceInitParams params =
         ExtensionInfoGeneratorUnitTest::GetExtensionServiceInitParams();
-    // Force a TestingPrefServiceSyncable to be created.
-    params.pref_file.clear();
     params.profile_is_supervised = true;
     return params;
   }

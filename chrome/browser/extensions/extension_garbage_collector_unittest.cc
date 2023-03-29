@@ -118,12 +118,10 @@ TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
 TEST_F(ExtensionGarbageCollectorUnitTest, GarbageCollectWithPendingUpdates) {
   InitPluginService();
 
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("pending_updates").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(params.ConfigureByTestDataDirectory(
+      data_dir().AppendASCII("pending_updates")));
+  InitializeExtensionService(params);
 
   // This is the directory that is going to be deleted, so make sure it actually
   // is there before the garbage collection.
@@ -148,12 +146,10 @@ TEST_F(ExtensionGarbageCollectorUnitTest, GarbageCollectWithPendingUpdates) {
 TEST_F(ExtensionGarbageCollectorUnitTest, UpdateOnStartup) {
   InitPluginService();
 
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("pending_updates").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(params.ConfigureByTestDataDirectory(
+      data_dir().AppendASCII("pending_updates")));
+  InitializeExtensionService(params);
 
   // This is the directory that is going to be deleted, so make sure it actually
   // is there before the garbage collection.

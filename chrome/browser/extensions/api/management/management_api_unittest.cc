@@ -103,7 +103,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 
   // Returns the initialization parameters for the extension service.
   virtual ExtensionServiceInitParams GetExtensionServiceInitParams() {
-    return CreateDefaultInitParams();
+    return ExtensionServiceInitParams();
   }
 
   // ExtensionServiceTestBase:
@@ -1061,9 +1061,7 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
 
   // ManagementApiUnitTest:
   ExtensionServiceInitParams GetExtensionServiceInitParams() override {
-    ExtensionServiceInitParams params = CreateDefaultInitParams();
-    // Force a TestingPrefServiceSyncable to be created.
-    params.pref_file.clear();
+    ExtensionServiceInitParams params;
     params.profile_is_supervised = true;
     return params;
   }

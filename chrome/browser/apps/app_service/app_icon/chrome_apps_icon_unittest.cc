@@ -53,12 +53,10 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     // - 1 dummy extension (which should not be visible in the launcher)
     // - 2 packaged extension apps
     // - 1 hosted extension app
-    base::FilePath source_install_dir =
-        data_dir().AppendASCII("app_list").AppendASCII("Extensions");
-    base::FilePath pref_path =
-        source_install_dir.DirName().Append(chrome::kPreferencesFilename);
     ExtensionServiceInitParams params;
-    InitializeInstalledExtensionService(pref_path, source_install_dir, params);
+    ASSERT_TRUE(params.ConfigureByTestDataDirectory(
+        data_dir().AppendASCII("app_list")));
+    InitializeExtensionService(params);
     service_->Init();
 
     // Let any async services complete their set-up.

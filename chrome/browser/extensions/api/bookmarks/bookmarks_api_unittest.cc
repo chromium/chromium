@@ -26,7 +26,7 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
 
-    ExtensionServiceInitParams params = CreateDefaultInitParams();
+    ExtensionServiceInitParams params;
     params.enable_bookmark_model = true;
     InitializeExtensionService(params);
 

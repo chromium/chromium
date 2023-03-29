@@ -42,11 +42,10 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
 
  protected:
   void InitWithExistingProfile() {
-    ExtensionServiceInitParams params = CreateDefaultInitParams();
-    params.is_first_run = false;
+    ExtensionServiceInitParams params;
     // Create prefs file to make the profile not new.
-    const char prefs[] = "{}";
-    EXPECT_TRUE(base::WriteFile(params.pref_file, prefs));
+    params.prefs_content = "{}";
+    params.is_first_run = false;
     InitializeExtensionService(params);
     service()->Init();
     AddMigratorProvider();

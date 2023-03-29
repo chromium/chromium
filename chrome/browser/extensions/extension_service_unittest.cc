@@ -870,10 +870,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   }
 
   void InitializeEmptyExtensionServiceWithTestingPrefs() {
-    ExtensionServiceTestBase::ExtensionServiceInitParams params =
-        CreateDefaultInitParams();
-    params.pref_file = base::FilePath();
-    InitializeExtensionService(params);
+    InitializeExtensionService(ExtensionServiceInitParams());
   }
 
   ManagementPolicy* GetManagementPolicy() {
@@ -1041,12 +1038,10 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
 // Test loading bad extensions from the profile directory.
 TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectoryFail) {
   // Initialize the test dir with a bad Preferences/extensions.
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("bad").AppendASCII("Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(
+      params.ConfigureByTestDataDirectory(data_dir().AppendASCII("bad")));
+  InitializeExtensionService(params);
 
   service()->Init();
 
@@ -1082,13 +1077,10 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectoryFail) {
 TEST_F(ExtensionServiceTest, PendingImports) {
   InitPluginService();
 
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("pending_updates_with_imports").AppendASCII(
-          "Extensions");
-  base::FilePath pref_path =
-      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(params.ConfigureByTestDataDirectory(
+      data_dir().AppendASCII("pending_updates_with_imports")));
+  InitializeExtensionService(params);
 
   // Verify there are no pending extensions initially.
   EXPECT_FALSE(service()->pending_extension_manager()->HasPendingExtensions());
@@ -1498,17 +1490,16 @@ TEST_F(ExtensionServiceTest,
 // This extension shown in preferences file requires an experimental permission.
 // It could not be loaded without such permission.
 TEST_F(ExtensionServiceTest, UninstallingNotLoadedExtension) {
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("good").AppendASCII("Extensions");
+  base::FilePath test_data_dir = data_dir().AppendASCII("good");
+  ExtensionServiceInitParams params;
   // The preference contains an external extension
   // that requires 'experimental' permission.
-  base::FilePath pref_path = source_install_dir
-      .DirName()
-      .AppendASCII("PreferencesExperimental");
-
+  ASSERT_TRUE(params.SetPrefsContentFromFile(
+      test_data_dir.AppendASCII("PreferencesExperimental")));
+  params.extensions_dir = test_data_dir.AppendASCII("Extensions");
   // Aforementioned extension will not be loaded if
   // there is no '--enable-experimental-extension-apis' command line flag.
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  InitializeExtensionService(params);
 
   service()->Init();
 
@@ -5848,13 +5839,12 @@ TEST_F(ExtensionServiceTest, ExternalInstallPolicyUpdateUrl) {
 // providers can't account for them.
 TEST_F(ExtensionServiceTest, ExternalUninstall) {
   // Start the extensions service with one external extension already installed.
-  base::FilePath source_install_dir =
-      data_dir().AppendASCII("good").AppendASCII("Extensions");
-  base::FilePath pref_path = source_install_dir
-      .DirName()
-      .AppendASCII("PreferencesExternal");
-
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  base::FilePath test_data_dir = data_dir().AppendASCII("good");
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(params.SetPrefsContentFromFile(
+      test_data_dir.AppendASCII("PreferencesExternal")));
+  params.extensions_dir = test_data_dir.AppendASCII("Extensions");
+  InitializeExtensionService(params);
   service()->Init();
 
   ASSERT_EQ(0u, GetErrors().size());
@@ -6310,10 +6300,12 @@ TEST_F(ExtensionServiceTest, LoadAndRelocalizeExtensions) {
   extension_l10n_util::ScopedLocaleForTest testLocale("en");
 
   // Initialize the test dir with a good Preferences/extensions.
-  base::FilePath source_install_dir = data_dir().AppendASCII("l10n");
-  base::FilePath pref_path =
-      source_install_dir.Append(chrome::kPreferencesFilename);
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  base::FilePath test_data_dir = data_dir().AppendASCII("l10n");
+  ExtensionServiceInitParams params;
+  ASSERT_TRUE(params.SetPrefsContentFromFile(
+      test_data_dir.Append(chrome::kPreferencesFilename)));
+  params.extensions_dir = test_data_dir;
+  InitializeExtensionService(params);
 
   service()->Init();
 
@@ -7256,7 +7248,7 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
       FeatureSwitch::prompt_for_external_extensions(), true);
   // This sets up the ExtensionPrefs used by our ExtensionService to be
   // post-first run.
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.is_first_run = false;
   InitializeExtensionService(params);
 
@@ -7363,7 +7355,7 @@ TEST_F(ExtensionServiceTest, BubbleAlertDoesNotHideAnotherAlertFromMenu) {
       FeatureSwitch::prompt_for_external_extensions(), true);
   // This sets up the ExtensionPrefs used by our ExtensionService to be
   // post-first run.
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.is_first_run = false;
   InitializeExtensionService(params);
 
@@ -7449,7 +7441,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallUpdatesFromWebstoreOldProfile) {
 
   // This sets up the ExtensionPrefs used by our ExtensionService to be
   // post-first run.
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.is_first_run = false;
   InitializeExtensionService(params);
 
@@ -7500,7 +7492,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallClickToRemove) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
 
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.is_first_run = false;
   InitializeExtensionService(params);
 
@@ -7539,7 +7531,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallClickToKeep) {
   FeatureSwitch::ScopedOverride prompt(
       FeatureSwitch::prompt_for_external_extensions(), true);
 
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.is_first_run = false;
   InitializeExtensionService(params);
 
@@ -8120,7 +8112,7 @@ class ExternalExtensionPriorityTest
 // https://crbug.com/917700.
 TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
-  ExtensionServiceInitParams params = CreateDefaultInitParams();
+  ExtensionServiceInitParams params;
   params.autoupdate_enabled = true;
   InitializeExtensionService(params);
 

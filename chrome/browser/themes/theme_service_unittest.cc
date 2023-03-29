@@ -135,10 +135,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
-    extensions::ExtensionServiceTestBase::ExtensionServiceInitParams params =
-        CreateDefaultInitParams();
-    params.pref_file = base::FilePath();
-    InitializeExtensionService(params);
+    InitializeExtensionService(ExtensionServiceInitParams());
     service_->Init();
     registry_ = extensions::ExtensionRegistry::Get(profile());
     ASSERT_TRUE(registry_);

@@ -42,7 +42,10 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
  protected:
   // Creates a test extension service with 3 installed extensions.
   void CreateExtensionService(bool enhanced_protection_enabled) {
-    InitializeGoodInstalledExtensionService();
+    ExtensionServiceInitParams params;
+    ASSERT_TRUE(
+        params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
+    InitializeExtensionService(params);
     extension_prefs_ = ExtensionPrefs::Get(profile());
 
     if (enhanced_protection_enabled) {
@@ -53,10 +56,7 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
   }
 
   void CreateEmptyExtensionService() {
-    ExtensionServiceTestBase::ExtensionServiceInitParams params =
-        CreateDefaultInitParams();
-    params.pref_file = base::FilePath();
-    InitializeExtensionService(params);
+    InitializeExtensionService(ExtensionServiceInitParams());
     extension_prefs_ = ExtensionPrefs::Get(profile());
     safe_browsing::SetSafeBrowsingState(
         profile()->GetPrefs(),

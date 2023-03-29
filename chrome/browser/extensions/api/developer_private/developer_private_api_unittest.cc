@@ -504,11 +504,7 @@ void DeveloperPrivateApiUnitTest::RunUpdateHostAccess(
 void DeveloperPrivateApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
 
-  // By not specifying a pref_file filepath, we get a
-  // sync_preferences::TestingPrefServiceSyncable
-  // - see BuildTestingProfile in extension_service_test_base.cc.
-  ExtensionServiceInitParams init_params = CreateDefaultInitParams();
-  init_params.pref_file.clear();
+  ExtensionServiceInitParams init_params;
   init_params.profile_is_supervised = ProfileIsSupervised();
   InitializeExtensionService(init_params);
 
