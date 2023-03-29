@@ -115,18 +115,6 @@
       'mac_retina_nvidia_gpu_stable',
     ],
   },
-  'SIM_IPAD_AIR_2_14_5': {
-    'args': [
-      '--platform',
-      'iPad Air 2',
-      '--version',
-      '14.5'
-    ],
-    'identifier': 'iPad Air 2 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
-    ],
-  },
   'SIM_IPAD_AIR_2_15_5': {
     'args': [
       '--platform',
@@ -222,18 +210,6 @@
       'ios_runtime_cache_16_2',
     ],
   },
-  'SIM_IPHONE_6S_14_5': {
-    'args': [
-      '--platform',
-      'iPhone 6s',
-      '--version',
-      '14.5',
-    ],
-    'identifier': 'iPhone 6s 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
-    ],
-  },
   'SIM_IPHONE_6S_15_5': {
     'args': [
       '--platform',
@@ -246,18 +222,6 @@
       'ios_runtime_cache_15_5',
     ],
   },
-  'SIM_IPHONE_6S_PLUS_14_5': {
-    'args': [
-      '--platform',
-      'iPhone 6s Plus',
-      '--version',
-      '14.5',
-    ],
-    'identifier': 'iPhone 6s Plus 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
-    ],
-  },
   'SIM_IPHONE_6S_PLUS_15_5': {
     'args': [
       '--platform',
@@ -268,18 +232,6 @@
     'identifier': 'iPhone 6s Plus 15.5',
     'mixins': [
       'ios_runtime_cache_15_5',
-    ],
-  },
-  'SIM_IPHONE_7_14_5': {
-    'args': [
-      '--platform',
-      'iPhone 7',
-      '--version',
-      '14.5',
-    ],
-    'identifier': 'iPhone 7 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
     ],
   },
   'SIM_IPHONE_7_15_5': {
@@ -316,18 +268,6 @@
     'identifier': 'iPhone 8 Plus 16.2',
     'mixins': [
       'ios_runtime_cache_16_2',
-    ],
-  },
-  'SIM_IPHONE_SE_1ST_GEN_14_5': {
-    'args': [
-      '--platform',
-      'iPhone SE (1st generation)',
-      '--version',
-      '14.5',
-    ],
-    'identifier': 'iPhone SE (1st generation) 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
     ],
   },
   'SIM_IPHONE_SE_1ST_GEN_15_5': {
