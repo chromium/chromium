@@ -1205,7 +1205,7 @@ int main(int argc, const char* argv[]) {
                                exclude_fields_param.ArgStr.str());
 
   std::unique_ptr<FilterFile> paths_to_exclude;
-  if (override_exclude_paths_param.ValueStr.empty()) {
+  if (override_exclude_paths_param == "") {
     std::vector<std::string> paths_to_exclude_lines;
     for (auto* const line : kRawPtrManualPathsToIgnore) {
       paths_to_exclude_lines.push_back(line);
