@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
@@ -36,22 +37,24 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
 EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
                                  gfx::NativeWindow target_native_window,
                                  const std::set<ui::EventType>& types)
-    : factory_(this), types_(types) {
+    : types_(types) {
   DCHECK(event_observer);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
 
-  // Capture a WeakPtr via NSObject. This allows the block to detect another
-  // event monitor for the same event deleting |this|.
-  WeakPtrNSObject* handle = factory_.handle();
+  // Capture a WeakPtr. This allows the block to detect another event monitor
+  // for the same event deleting |this|.
+  base::WeakPtr<EventMonitorMac> weak_ptr = factory_.GetWeakPtr();
 
   auto block = ^NSEvent*(NSEvent* event) {
-    if (!ui::WeakPtrNSObjectFactory<EventMonitorMac>::Get(handle))
+    if (!weak_ptr) {
       return event;
+    }
 
     if (!target_window || [event window] == target_window) {
       std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
-      if (ui_event && types_.find(ui_event->type()) != types_.end())
+      if (ui_event && types_.find(ui_event->type()) != types_.end()) {
         event_observer->OnEvent(*ui_event);
+      }
     }
     return event;
   };

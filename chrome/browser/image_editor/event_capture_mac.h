@@ -7,9 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
-#include "ui/base/cocoa/weak_ptr_nsobject.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -44,13 +44,15 @@ class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
   // for keydown events and detect ESC to close the capture scrim.
   void CreateKeyDownLocalMonitor(ui::EventHandler* event_handler,
                                  gfx::NativeWindow target_native_window);
+
   base::OnceClosure capture_lost_callback_;
   NSView* web_contents_view_;
   NSWindow* window_;
   raw_ptr<ui::EventHandler> event_handler_;
-  ui::WeakPtrNSObjectFactory<EventCaptureMac> factory_;
   std::unique_ptr<remote_cocoa::CocoaMouseCapture> mouse_capture_;
-  id local_keyboard_monitor_ = 0;
+  id local_keyboard_monitor_ = nil;
+
+  base::WeakPtrFactory<EventCaptureMac> factory_{this};
 };
 
 }  // namespace image_editor

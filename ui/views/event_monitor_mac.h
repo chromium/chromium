@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "ui/base/cocoa/weak_ptr_nsobject.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/event_monitor.h"
 
@@ -28,9 +28,10 @@ class EventMonitorMac : public EventMonitor {
   gfx::Point GetLastMouseLocation() override;
 
  private:
-  id monitor_;
-  ui::WeakPtrNSObjectFactory<EventMonitorMac> factory_;
+  id monitor_ = nil;
   const std::set<ui::EventType> types_;
+
+  base::WeakPtrFactory<EventMonitorMac> factory_{this};
 };
 
 }  // namespace views

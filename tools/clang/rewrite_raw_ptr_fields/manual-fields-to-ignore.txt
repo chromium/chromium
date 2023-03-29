@@ -251,7 +251,6 @@ content::ThemeHelperMac::theme_observer_
 content::PopupMenuHelper::menu_runner_
 content::ShellJavaScriptDialog::helper_
 ui::ClipboardFormatType::data_
-ui::WeakPtrNSObjectFactory::handle_
 content::NativeEventProcessorObserver::event_
 image_editor::EventCaptureMac::web_contents_view_
 image_editor::EventCaptureMac::window_

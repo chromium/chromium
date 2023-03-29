@@ -6,17 +6,18 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/memory/weak_ptr.h"
+
 namespace ui {
 
 BubbleCloser::BubbleCloser(NSWindow* window,
                            base::RepeatingClosure on_click_outside)
-    : on_click_outside_(std::move(on_click_outside)), factory_(this) {
-  // Capture a WeakPtr via NSObject. This allows the block to detect another
-  // event monitor for the same event deleting |this|.
-  WeakPtrNSObject* handle = factory_.handle();
+    : on_click_outside_(std::move(on_click_outside)) {
+  // Capture a WeakPtr. This allows the block to detect another event monitor
+  // for the same event deleting |this|.
+  base::WeakPtr<BubbleCloser> weak_ptr = factory_.GetWeakPtr();
 
   // Note that |window| will be retained when captured by the block below.
-  // |this| is captured, but not retained.
   auto block = ^NSEvent*(NSEvent* event) {
     NSWindow* event_window = [event window];
     if ([event_window isSheet])
@@ -38,8 +39,10 @@ BubbleCloser::BubbleCloser(NSWindow* window,
       ancestor = [ancestor parentWindow];
     }
 
-    if (BubbleCloser* owner = WeakPtrNSObjectFactory<BubbleCloser>::Get(handle))
-      owner->OnClickOutside();
+    if (weak_ptr) {
+      weak_ptr->OnClickOutside();
+    }
+
     return event;
   };
   event_tap_ =

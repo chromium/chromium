@@ -17,6 +17,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
@@ -309,8 +310,7 @@ NativeWidgetNSWindowBridge::NativeWidgetNSWindowBridge(
     : id_(bridged_native_widget_id),
       host_(host),
       host_helper_(host_helper),
-      text_input_host_(text_input_host),
-      ns_weak_factory_(this) {
+      text_input_host_(text_input_host) {
   DCHECK(GetIdToWidgetImplMap().find(id_) == GetIdToWidgetImplMap().end());
   GetIdToWidgetImplMap().insert(std::make_pair(id_, this));
 }
@@ -678,13 +678,12 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
-              [](WeakPtrNSObject* handle) {
-                if (auto* bridge = ui::WeakPtrNSObjectFactory<
-                        NativeWidgetNSWindowBridge>::Get(handle)) {
-                  bridge->OnWindowKeyStatusChangedTo(/*is_key*/ true);
+              [](const base::WeakPtr<NativeWidgetNSWindowBridge>& bridge) {
+                if (bridge) {
+                  bridge->OnWindowKeyStatusChangedTo(/*is_key=*/true);
                 }
               },
-              ns_weak_factory_.handle()));
+              factory_.GetWeakPtr()));
     }
     return;
   }
@@ -846,21 +845,22 @@ bool NativeWidgetNSWindowBridge::HasCapture() {
 
 void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
   if (enabled) {
-    // Create the event montitor if it does not exist yet.
-    if (key_down_event_monitor_)
+    // Create the event monitor if it does not exist yet.
+    if (key_down_event_monitor_) {
       return;
+    }
 
-    // Capture a WeakPtr via NSObject. This allows the block to detect another
-    // event monitor for the same event deleting `this`.
-    WeakPtrNSObject* handle = ns_weak_factory_.handle();
+    base::WeakPtr<NativeWidgetNSWindowBridge> weak_ptr = factory_.GetWeakPtr();
+
     auto block = ^NSEvent*(NSEvent* event) {
-      auto* bridge =
-          ui::WeakPtrNSObjectFactory<NativeWidgetNSWindowBridge>::Get(handle);
-      if (!bridge)
+      if (!weak_ptr) {
         return event;
+      }
+
       std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
       bool event_handled = false;
-      bridge->host_->DispatchMonitorEvent(std::move(ui_event), &event_handled);
+      weak_ptr->host_->DispatchMonitorEvent(std::move(ui_event),
+                                            &event_handled);
       return event_handled ? nil : event;
     };
     key_down_event_monitor_ =

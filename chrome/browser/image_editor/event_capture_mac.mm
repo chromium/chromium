@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 
@@ -18,7 +19,7 @@ EventCaptureMac::EventCaptureMac(ui::EventHandler* event_handler,
                                  base::OnceClosure capture_lost_callback,
                                  gfx::NativeView web_contents_view,
                                  gfx::NativeWindow target_native_window)
-    : capture_lost_callback_(std::move(capture_lost_callback)), factory_(this) {
+    : capture_lost_callback_(std::move(capture_lost_callback)) {
   event_handler_ = event_handler;
   web_contents_view_ = web_contents_view.GetNativeNSView();
   window_ = target_native_window.GetNativeNSWindow();
@@ -33,13 +34,14 @@ void EventCaptureMac::CreateKeyDownLocalMonitor(
   DCHECK(event_handler);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
 
-  // Capture a WeakPtr via NSObject. This allows the block to detect another
-  // event monitor for the same event deleting |this|.
-  WeakPtrNSObject* handle = factory_.handle();
+  // Capture a WeakPtr. This allows the block to detect another event monitor
+  // for the same event deleting |this|.
+  base::WeakPtr<EventCaptureMac> weak_ptr = factory_.GetWeakPtr();
 
   auto block = ^NSEvent*(NSEvent* event) {
-    if (!ui::WeakPtrNSObjectFactory<EventCaptureMac>::Get(handle))
+    if (!weak_ptr) {
       return event;
+    }
 
     if (!target_window || [event window] == target_window) {
       std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
