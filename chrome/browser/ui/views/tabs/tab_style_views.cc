@@ -453,7 +453,7 @@ float GM2TabStyle::GetActiveOpacity() const {
   if (tab_->IsActive())
     return 1.0f;
   if (tab_->IsSelected())
-    return kSelectedTabOpacity;
+    return GetSelectedTabOpacity();
   if (tab_->mouse_hovered())
     return GetHoverOpacity();
   return 0.0f;
@@ -720,10 +720,10 @@ float GM2TabStyle::GetHoverOpacity() const {
 
 float GM2TabStyle::GetThrobValue() const {
   const bool is_selected = tab_->IsSelected();
-  double val = is_selected ? kSelectedTabOpacity : 0;
+  double val = is_selected ? GetSelectedTabOpacity() : 0;
 
   if (IsHoverActive()) {
-    constexpr float kSelectedTabThrobScale = 0.95f - kSelectedTabOpacity;
+    const float kSelectedTabThrobScale = 0.95f - GetSelectedTabOpacity();
     const float opacity = GetHoverOpacity();
     const float offset =
         is_selected ? (kSelectedTabThrobScale * opacity) : opacity;

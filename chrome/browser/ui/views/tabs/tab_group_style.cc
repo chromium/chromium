@@ -106,6 +106,10 @@ float TabGroupStyle::GetSyncIconWidth() const {
   return kSyncIconWidth;
 }
 
+float TabGroupStyle::GetSelectedTabOpacity() const {
+  return TabStyle::kDefaultSelectedTabOpacity;
+}
+
 // static
 int TabGroupStyle::GetChipCornerRadius() {
   return TabStyle::GetCornerRadius() - TabGroupUnderline::kStrokeThickness;

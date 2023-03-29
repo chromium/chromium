@@ -22,6 +22,10 @@ int GetSeparatorHeight() {
 
 TabStyle::~TabStyle() = default;
 
+float TabStyle::GetSelectedTabOpacity() const {
+  return kDefaultSelectedTabOpacity;
+}
+
 // static
 int TabStyle::GetStandardWidth() {
   // The standard tab width is 240 DIP including both separators.

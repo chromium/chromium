@@ -149,7 +149,7 @@ class TabStyle {
   virtual void HideHover(HideHoverStyle style) = 0;
 
   // Opacity of the active tab background painted over inactive selected tabs.
-  static constexpr float kSelectedTabOpacity = 0.75f;
+  virtual float GetSelectedTabOpacity() const;
 
   // Returns the preferred width of a single Tab, assuming space is
   // available.
@@ -185,6 +185,8 @@ class TabStyle {
   // GM2TabStyle::GetZValue is the only implementation, and it can't return
   // values larger than 7.
   static constexpr float kMaximumZValue = 7.0f;
+
+  static constexpr float kDefaultSelectedTabOpacity = 0.75f;
 
  protected:
   // Avoid implicitly-deleted constructor.
