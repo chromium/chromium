@@ -673,6 +673,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebFrameWidget overrides.
   cc::LayerTreeHost* LayerTreeHost() override;
 
+  // Determines whether the drag source is currently dragging.
   bool doing_drag_and_drop_ = false;
 
  private:
@@ -860,11 +861,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Consolidate some common code between starting a drag over a target and
   // updating a drag over a target. If we're starting a drag, |isEntering|
   // should be true.
-  ui::mojom::blink::DragOperation DragTargetDragEnterOrOver(
-      const gfx::PointF& point_in_viewport,
-      const gfx::PointF& screen_point,
-      DragAction,
-      uint32_t key_modifiers);
+  void DragTargetDragEnterOrOver(const gfx::PointF& point_in_viewport,
+                                 const gfx::PointF& screen_point,
+                                 DragAction,
+                                 uint32_t key_modifiers);
 
   // Helper function to call VisualViewport::viewportToRootFrame().
   gfx::PointF ViewportToRootFrame(const gfx::PointF& point_in_viewport) const;

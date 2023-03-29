@@ -36,6 +36,7 @@
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -132,6 +133,7 @@
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -142,6 +144,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -448,14 +451,16 @@ void WebFrameWidgetImpl::DragTargetDragEnter(
     DragOperationsMask operations_allowed,
     uint32_t key_modifiers,
     DragTargetDragEnterCallback callback) {
-  DCHECK(!current_drag_data_);
+  // Nothing must be dragging.
+  CHECK(!current_drag_data_);
 
   current_drag_data_ = DataObject::Create(web_drag_data);
   operations_allowed_ = operations_allowed;
 
-  DragOperation operation = DragTargetDragEnterOrOver(
-      point_in_viewport, screen_point, kDragEnter, key_modifiers);
-  std::move(callback).Run(operation);
+  DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragEnter,
+                            key_modifiers);
+
+  std::move(callback).Run(drag_operation_);
 }
 
 void WebFrameWidgetImpl::DragTargetDragOver(
@@ -464,23 +469,27 @@ void WebFrameWidgetImpl::DragTargetDragOver(
     DragOperationsMask operations_allowed,
     uint32_t key_modifiers,
     DragTargetDragOverCallback callback) {
+  // Must occur after dragenter.
+  CHECK(current_drag_data_);
+
   operations_allowed_ = operations_allowed;
 
-  DragOperation operation = DragTargetDragEnterOrOver(
-      point_in_viewport, screen_point, kDragOver, key_modifiers);
-  std::move(callback).Run(operation);
+  DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragOver,
+                            key_modifiers);
+
+  std::move(callback).Run(drag_operation_);
 }
 
 void WebFrameWidgetImpl::DragTargetDragLeave(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point) {
-  // TODO(paulmeyer): It shouldn't be possible for |current_drag_data_| to be
-  // null here, but this is somehow happening (rarely). This suggests that in
-  // some cases drag-leave is happening before drag-enter, which should be
-  // impossible. This needs to be investigated further. Once fixed, the extra
-  // check for |!current_drag_data_| should be removed. (crbug.com/671152)
-  if (IgnoreInputEvents() || !current_drag_data_) {
-    CancelDrag();
+  // Must occur after dragenter.
+  CHECK(current_drag_data_);
+
+  base::ScopedClosureRunner runner(
+      WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
+
+  if (IgnoreInputEvents()) {
     return;
   }
 
@@ -492,9 +501,6 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
                                             *local_root_->GetFrame());
 
   // FIXME: why is the drag scroll timer not stopped here?
-
-  drag_operation_ = DragOperation::kNone;
-  current_drag_data_ = nullptr;
 }
 
 void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
@@ -502,10 +508,17 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
                                         const gfx::PointF& screen_point,
                                         uint32_t key_modifiers,
                                         base::OnceClosure callback) {
-  base::ScopedClosureRunner calllback_runner(std::move(callback));
-  gfx::PointF point_in_root_frame(ViewportToRootFrame(point_in_viewport));
+  // Must occur after dragenter.
+  CHECK(current_drag_data_);
 
-  DCHECK(current_drag_data_);
+  base::ScopedClosureRunner callback_runner(std::move(callback));
+  base::ScopedClosureRunner runner(
+      WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
+
+  if (IgnoreInputEvents()) {
+    return;
+  }
+
   current_drag_data_ = DataObject::Create(web_drag_data);
 
   // If this webview transitions from the "drop accepting" state to the "not
@@ -521,40 +534,32 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
     return;
   }
 
-  if (!IgnoreInputEvents()) {
-    current_drag_data_->SetModifiers(key_modifiers);
-    DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
-                       screen_point, operations_allowed_);
-
-    GetPage()->GetDragController().PerformDrag(&drag_data,
-                                               *local_root_->GetFrame());
-  }
-  drag_operation_ = DragOperation::kNone;
-  current_drag_data_ = nullptr;
+  current_drag_data_->SetModifiers(key_modifiers);
+  DragData drag_data(current_drag_data_.Get(),
+                     ViewportToRootFrame(point_in_viewport), screen_point,
+                     operations_allowed_);
+  GetPage()->GetDragController().PerformDrag(&drag_data,
+                                             *local_root_->GetFrame());
 }
 
 void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                            const gfx::PointF& screen_point,
                                            DragOperation operation,
                                            base::OnceClosure callback) {
-  base::ScopedClosureRunner calllback_runner(std::move(callback));
-  if (!local_root_) {
-    // We should figure out why |local_root_| could be nullptr
-    // (https://crbug.com/792345).
-    return;
-  }
+  base::ScopedClosureRunner callback_runner(std::move(callback));
+  base::ScopedClosureRunner runner(
+      WTF::BindOnce(&WebFrameWidgetImpl::DragSourceSystemDragEnded,
+                    WrapWeakPersistent(this)));
 
   if (IgnoreInputEvents()) {
-    CancelDrag();
     return;
   }
-  gfx::PointF point_in_root_frame =
-      GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport);
 
   WebMouseEvent fake_mouse_move(
-      WebInputEvent::Type::kMouseMove, point_in_root_frame, screen_point,
-      WebPointerProperties::Button::kLeft, 0, WebInputEvent::kNoModifiers,
-      base::TimeTicks::Now());
+      WebInputEvent::Type::kMouseMove,
+      GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport),
+      screen_point, WebPointerProperties::Button::kLeft, 0,
+      WebInputEvent::kNoModifiers, base::TimeTicks::Now());
   fake_mouse_move.SetFrameScale(1);
   local_root_->GetFrame()->GetEventHandler().DragSourceEndedAt(fake_mouse_move,
                                                                operation);
@@ -562,6 +567,14 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
 
 void WebFrameWidgetImpl::DragSourceSystemDragEnded() {
   CancelDrag();
+
+  // It's possible for this to be false if the source stopped dragging at a
+  // previous page.
+  if (!doing_drag_and_drop_) {
+    return;
+  }
+  GetPage()->GetDragController().DragEnded();
+  doing_drag_and_drop_ = false;
 }
 
 gfx::Rect WebFrameWidgetImpl::GetAbsoluteCaretBounds() {
@@ -1190,13 +1203,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleCharEvent(
 }
 
 void WebFrameWidgetImpl::CancelDrag() {
-  // It's possible for this to be called while we're not doing a drag if
-  // it's from a previous page that got unloaded.
-  if (!doing_drag_and_drop_)
-    return;
-  GetPage()->GetDragController().DragEnded();
+  drag_operation_ = DragOperation::kNone;
   current_drag_data_ = nullptr;
-  doing_drag_and_drop_ = false;
 }
 
 void WebFrameWidgetImpl::StartDragging(const WebDragData& drag_data,
@@ -1221,20 +1229,14 @@ void WebFrameWidgetImpl::StartDragging(const WebDragData& drag_data,
       drag_obj_rect_in_dips, possible_drag_event_info_.Clone());
 }
 
-DragOperation WebFrameWidgetImpl::DragTargetDragEnterOrOver(
+void WebFrameWidgetImpl::DragTargetDragEnterOrOver(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point,
     DragAction drag_action,
     uint32_t key_modifiers) {
-  DCHECK(current_drag_data_);
-  // TODO(paulmeyer): It shouldn't be possible for |m_currentDragData| to be
-  // null here, but this is somehow happening (rarely). This suggests that in
-  // some cases drag-over is happening before drag-enter, which should be
-  // impossible. This needs to be investigated further. Once fixed, the extra
-  // check for |!m_currentDragData| should be removed. (crbug.com/671504)
-  if (IgnoreInputEvents() || !current_drag_data_) {
+  if (IgnoreInputEvents()) {
     CancelDrag();
-    return DragOperation::kNone;
+    return;
   }
 
   gfx::PointF point_in_root_frame = ViewportToRootFrame(point_in_viewport);
@@ -1243,19 +1245,15 @@ DragOperation WebFrameWidgetImpl::DragTargetDragEnterOrOver(
   DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
                      screen_point, operations_allowed_);
 
-  DragOperation drag_operation =
-      GetPage()->GetDragController().DragEnteredOrUpdated(
-          &drag_data, *local_root_->GetFrame());
+  drag_operation_ = GetPage()->GetDragController().DragEnteredOrUpdated(
+      &drag_data, *local_root_->GetFrame());
 
   // Mask the drag operation against the drag source's allowed
   // operations.
-  if (!(static_cast<int>(drag_operation) &
-        drag_data.DraggingSourceOperationMask()))
-    drag_operation = DragOperation::kNone;
-
-  drag_operation_ = drag_operation;
-
-  return drag_operation_;
+  if (!(static_cast<int>(drag_operation_) &
+        drag_data.DraggingSourceOperationMask())) {
+    drag_operation_ = DragOperation::kNone;
+  }
 }
 
 void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
