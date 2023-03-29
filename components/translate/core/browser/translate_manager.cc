@@ -319,9 +319,11 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
                                      bool triggered_from_menu,
                                      TranslationType translation_type) {
   const GURL& page_url = translate_driver_->GetVisibleURL();
-  // TODO(crbug.com/1407479): This call should be changed to
-  // CHECK(translate_client_->IsTranslatableURL(page_url)) once it is verified
-  // that it is not reachable.
+  // TODO(crbug.com/1424183): Very rarely, users can reach a state where this
+  // Translate code is called on a page ineligible for translation. It is
+  // unclear how this state is reached, but the crash rate is very low
+  // (<0.1CPM) and this state is not breaking for the user. This crash rate
+  // should be monitored and investigated if it increases.
   if (!translate_client_->IsTranslatableURL(page_url)) {
     base::debug::DumpWithoutCrashing();
     return;
