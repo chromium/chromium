@@ -60,10 +60,6 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
  private:
   class Core;
 
-  // Calls straight to ThreadLocalStorage::HasBeenDestroyed(). Exposed purely
-  // for 'friend' to work.
-  static bool HasThreadLocalStorageBeenDestroyed();
-
   mutable Lock lock_;
   mutable std::unique_ptr<Core> core_ GUARDED_BY(lock_);
 };

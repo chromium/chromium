@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_token.h"
@@ -29,19 +30,37 @@ class SequenceCheckerImpl::Core {
 
   bool CalledOnValidSequence(
       std::unique_ptr<debug::StackTrace>* out_bound_at) const {
-    // SequenceToken::GetForCurrentThread() accesses thread-local storage.
-    // During destruction the state of thread-local storage is not guaranteed to
-    // be in a consistent state. Further, task-runner only installs the
-    // SequenceToken when running a task. For this reason, |sequence_token_| is
-    // not checked during thread destruction.
-    if (!SequenceCheckerImpl::HasThreadLocalStorageBeenDestroyed() &&
-        sequence_token_.IsValid()) {
-      if (sequence_token_ != SequenceToken::GetForCurrentThread()) {
-        if (out_bound_at)
+    // When `sequence_token_` or SequenceToken::GetForCurrentThread() are
+    // invalid fall back on ThreadChecker. We assume that SequenceChecker things
+    // are mostly run on a sequence and that that is the correct sequence (hence
+    // using LIKELY annotation).
+    if (LIKELY(sequence_token_.IsValid())) {
+      if (LIKELY(sequence_token_ == SequenceToken::GetForCurrentThread())) {
+        return true;
+      }
+
+      // TODO(pbos): This preserves existing behavior that `sequence_token_` is
+      // ignored after TLS shutdown. It should either be documented here why
+      // that is necessary (shouldn't this destroy on sequence?) or
+      // SequenceCheckerTest.CalledOnValidSequenceFromThreadDestruction should
+      // be updated to reflect the expected behavior.
+      //
+      // crrev.com/682023 added this TLS-check to solve an edge case but that
+      // edge case was probably only a problem before TLS-destruction order was
+      // fixed in crrev.com/1119244. crrev.com/1117059 further improved
+      // TLS-destruction order of tokens by using `thread_local` and making it
+      // deterministic.
+      // See https://timsong-cpp.github.io/cppwp/n4140/basic.start.term: "If the
+      // completion of the constructor or dynamic initialization of an object
+      // with thread storage duration is sequenced before that of another, the
+      // completion of the destructor of the second is sequenced before the
+      // initiation of the destructor of the first."
+      if (!ThreadLocalStorage::HasBeenDestroyed()) {
+        if (out_bound_at) {
           *out_bound_at = thread_checker_.GetBoundAt();
+        }
         return false;
       }
-      return true;
     }
 
     // SequenceChecker behaves as a ThreadChecker when it is not bound to a
@@ -50,7 +69,7 @@ class SequenceCheckerImpl::Core {
   }
 
  private:
-  SequenceToken sequence_token_{SequenceToken::GetForCurrentThread()};
+  const SequenceToken sequence_token_{SequenceToken::GetForCurrentThread()};
 
   // Used when |sequence_token_| is invalid, or during thread destruction.
   ThreadCheckerImpl thread_checker_;
@@ -97,11 +116,6 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
 void SequenceCheckerImpl::DetachFromSequence() {
   AutoLock auto_lock(lock_);
   core_.reset();
-}
-
-// static
-bool SequenceCheckerImpl::HasThreadLocalStorageBeenDestroyed() {
-  return ThreadLocalStorage::HasBeenDestroyed();
 }
 
 }  // namespace base
