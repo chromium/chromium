@@ -292,8 +292,8 @@ class CopyOrMoveOperationTestHelper {
 
   ~CopyOrMoveOperationTestHelper() {
     file_system_context_ = nullptr;
-    quota_manager_ = nullptr;
     quota_manager_proxy_ = nullptr;
+    quota_manager_ = nullptr;
     task_environment_.RunUntilIdle();
   }
 
@@ -653,8 +653,8 @@ class CopyOrMoveOperationTestHelper {
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<FileSystemContext> file_system_context_;
-  scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<MockQuotaManager> quota_manager_;
+  scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
 };
 
 }  // namespace
