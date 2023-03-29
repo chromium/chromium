@@ -309,26 +309,13 @@ void SidePanelCoordinator::Close() {
 }
 
 void SidePanelCoordinator::Toggle() {
-  auto* side_panel_container = browser_view_->toolbar()->side_panel_container();
-  if (IsSidePanelShowing() &&
-      (!side_panel_container ||
-       !side_panel_container->IsActiveEntryPinnedAndVisible())) {
+  if (IsSidePanelShowing()) {
     Close();
   } else {
     absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt;
     if (browser_view_->browser()->window()->IsFeaturePromoActive(
             feature_engagement::kIPHPowerBookmarksSidePanelFeature)) {
       entry_id = absl::make_optional(SidePanelEntry::Id::kBookmarks);
-    } else if (side_panel_container &&
-               side_panel_container->IsActiveEntryPinnedAndVisible()) {
-      // Update entry_id here since otherwise the entry triggered in 'Show' will
-      // be the CSC entry when instead this should toggle away from the CSC
-      // entry and show the last active global entry or the default entry if
-      // there is no last active global entry.
-      entry_id = absl::make_optional(
-          GetLastActiveGlobalEntryKey()
-              .value_or(SidePanelEntry::Key(GetDefaultEntry()))
-              .id());
     }
     Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
