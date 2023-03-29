@@ -21,11 +21,14 @@ public class WebEngineParams {
 
     private boolean mIsIncognito;
 
+    private boolean mIsExternalIntentsEnabled = true;
+
     IWebEngineParams getParcelable() {
         IWebEngineParams params = new IWebEngineParams();
         params.profileName = mProfileName;
         params.persistenceId = mPersistenceId;
         params.isIncognito = mIsIncognito;
+        params.isExternalIntentsEnabled = mIsExternalIntentsEnabled;
         return params;
     }
 
@@ -44,7 +47,7 @@ public class WebEngineParams {
          * profile. If {@code profile} must only contain alphanumeric and underscore characters
          * since it will be used as a directory name in the file system.
          *
-         * @param name The name of the profile.
+         * @param profileName The name of the profile.
          */
         @NonNull
         public Builder setProfileName(@Nullable String profileName) {
@@ -68,11 +71,22 @@ public class WebEngineParams {
 
         /**
          * Sets whether the profile is incognito.
-         * @param incognito Whether the profile should be incognito.
+         * @param isIncognito Whether the profile should be incognito.
          */
         @NonNull
         public Builder setIsIncognito(boolean isIncognito) {
             mParams.mIsIncognito = isIncognito;
+            return this;
+        }
+
+        /**
+         * Sets whether pages will be able to open native intents.
+         * @param isExternalIntentsEnabled Whether all pages will have the ability to open intent
+         *         urls.
+         */
+        @NonNull
+        public Builder setIsExternalIntentsEnabled(boolean isExternalIntentsEnabled) {
+            mParams.mIsExternalIntentsEnabled = isExternalIntentsEnabled;
             return this;
         }
     }

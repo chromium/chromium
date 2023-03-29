@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <a id="button">
+            launch state activity
+        </a>
+        <script type="text/javascript">
+            document.getElementById('button').href = 'intent://state.app?return_to=' + window.location.href.split('#')[1]  + '#Intent;scheme=webenginetest;action=android.intent.action.VIEW;package=org.chromium.webengine.test.external.intents;end;';
+        </script>
+    </body>
+</html>

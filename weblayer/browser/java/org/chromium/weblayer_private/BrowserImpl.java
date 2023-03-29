@@ -46,6 +46,7 @@ public class BrowserImpl extends IBrowser.Stub {
 
     private long mNativeBrowser;
     private final ProfileImpl mProfile;
+    private final boolean mIsExternalIntentsEnabled;
     private Context mServiceContext;
 
     private IBrowserClient mClient;
@@ -96,6 +97,9 @@ public class BrowserImpl extends IBrowser.Stub {
         mProfile = profileManager.getProfile(name, isIncognito);
 
         mProfile.checkNotDestroyed(); // TODO(swestphal): or mProfile != null
+
+        mIsExternalIntentsEnabled =
+                fragmentArgs.getBoolean(BrowserFragmentArgs.IS_EXTERNAL_INTENTS_ENABLED);
 
         if (!isIncognito && !TextUtils.isEmpty(persistenceId)) {
             mFullPersistenceInfo = new FullPersistenceInfo();
@@ -289,6 +293,10 @@ public class BrowserImpl extends IBrowser.Stub {
 
     void notifyFragmentPause() {
         BrowserImplJni.get().onFragmentPause(mNativeBrowser);
+    }
+
+    boolean isExternalIntentsEnabled() {
+        return mIsExternalIntentsEnabled;
     }
 
     public boolean isWindowOnSmallDevice() {

@@ -4,6 +4,7 @@
 
 package org.chromium.webengine.shell;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -24,6 +25,18 @@ import java.util.List;
 public class InstrumentationActivity extends AppCompatActivity {
     private ListenableFuture<WebSandbox> mWebSandboxFuture;
     private ListenableFuture<String> mWebSandboxVersionFuture;
+    private LifeCycleListener mLifeCycleListener;
+
+    /**
+     * Use this to listen for life cycle events in tests.
+     */
+    public interface LifeCycleListener {
+        void onNewIntent(Intent intent);
+    }
+
+    public void setLifeCycleListener(LifeCycleListener lifeCycleListener) {
+        mLifeCycleListener = lifeCycleListener;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -63,5 +76,13 @@ public class InstrumentationActivity extends AppCompatActivity {
         }
 
         return (WebFragment) fragments.get(0);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (mLifeCycleListener != null) {
+            mLifeCycleListener.onNewIntent(intent);
+        }
+        super.onNewIntent(intent);
     }
 }

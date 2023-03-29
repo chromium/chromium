@@ -63,6 +63,7 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
     private static Bundle bundleParams(IWebEngineParams params) {
         String profileName = Profile.sanitizeProfileName(params.profileName);
         boolean isIncognito = params.isIncognito || "".equals(profileName);
+        boolean isExternalIntentsEnabled = params.isExternalIntentsEnabled;
         // Support for named incognito profiles was added in 87. Checking is done in
         // WebFragment, as this code should not trigger loading WebLayer.
         Bundle args = new Bundle();
@@ -71,6 +72,7 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
             args.putString(BrowserFragmentArgs.PERSISTENCE_ID, params.persistenceId);
         }
         args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
+        args.putBoolean(BrowserFragmentArgs.IS_EXTERNAL_INTENTS_ENABLED, isExternalIntentsEnabled);
         args.putBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, false);
 
         return args;

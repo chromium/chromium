@@ -49,10 +49,13 @@ public class InstrumentationActivityTestRule
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setComponent(
-                new ComponentName(InstrumentationRegistry.getInstrumentation().getTargetContext(),
-                        InstrumentationActivity.class));
+        intent.setComponent(getShellComponentName());
         launchActivity(intent);
+    }
+
+    public ComponentName getShellComponentName() {
+        return new ComponentName(InstrumentationRegistry.getInstrumentation().getTargetContext(),
+                InstrumentationActivity.class);
     }
 
     public void finish() {

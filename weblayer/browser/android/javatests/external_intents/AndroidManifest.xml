@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- External intents need to target a separate application otherwise
+chromium the external intents component will not launch an intent. So we need to
+test this with a different activity. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.chromium.webengine.test.external.intents">
+
+    <application android:label="ExternalIntents test app">
+        <activity
+            android:name="ExternalIntentsTestActivity"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="webenginetest" android:host="state.app" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

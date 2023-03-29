@@ -11,6 +11,7 @@ android_library("webengine_java_tests") {
   sources = [
     "src/org/chromium/webengine/test/CookieManagerTest.java",
     "src/org/chromium/webengine/test/ExecuteScriptTest.java",
+    "src/org/chromium/webengine/test/ExternalIntentsTest.java",
     "src/org/chromium/webengine/test/FullscreenCallbackTest.java",
     "src/org/chromium/webengine/test/PostMessageTest.java",
     "src/org/chromium/webengine/test/StatePersistenceTest.java",
@@ -76,6 +77,20 @@ android_library("webengine_java_test_support") {
   ]
 }
 
+android_library("external_intents_apk_java") {
+  sources = [ "external_intents/src/org/chromium/webengine/test/external/intents/ExternalIntentsTestActivity.java" ]
+}
+
+android_apk("external_intents_apk") {
+  apk_name = "external_intents_apk"
+  android_manifest = "external_intents/AndroidManifest.xml"
+
+  deps = [
+    ":external_intents_apk_java",
+    "//weblayer/public/java:webengine_java",
+  ]
+}
+
 template("webengine_instrumentation") {
   instrumentation_test_apk(target_name) {
     forward_variables_from(invoker, "*")
@@ -101,7 +116,10 @@ template("webengine_instrumentation") {
 webengine_instrumentation("webengine_support_instrumentation_test_apk") {
   apk_name = "WebEngineSupportInstrumentationTest"
   apk_under_test = "//weblayer/shell/android:webengine_shell_local_apk"
-  additional_apks = [ "//weblayer/shell/android:weblayer_support_apk" ]
+  additional_apks = [
+    "//weblayer/shell/android:weblayer_support_apk",
+    ":external_intents_apk",
+  ]
 
   deps = [ ":webengine_java_tests" ]
 }
