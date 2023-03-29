@@ -46,7 +46,7 @@ class WebTestResult:
                  artifacts: Dict[str, List[Artifact]]):
         self._test_name = test_name
         self._result_dict = result_dict
-        self._artifacts = artifacts
+        self.artifacts = artifacts
 
     def __repr__(self):
         return "WebTestResult(test_name=%s, result_dict=%s)" % \
@@ -60,7 +60,7 @@ class WebTestResult:
             ('actual_image', 'png'),
             ('actual_audio', 'wav'),
         ]:
-            artifacts = self._artifacts.get(artifact_name)
+            artifacts = self.artifacts.get(artifact_name)
             if artifacts:
                 baselines[suffix] = artifacts
         return baselines
@@ -105,7 +105,7 @@ class WebTestResult:
         actual_results = self.actual_results()
         return ('FAIL' in actual_results and any(
             artifact_name.startswith('actual')
-            for artifact_name in self._artifacts))
+            for artifact_name in self.artifacts))
 
     def is_missing_baseline(self):
         return (self.is_missing_image() or self.is_missing_text()

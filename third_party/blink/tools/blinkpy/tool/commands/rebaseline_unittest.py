@@ -11,7 +11,11 @@ from unittest import mock
 
 from blinkpy.common.checkout.baseline_copier import BaselineCopier
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.common.net.web_test_results import WebTestResults
+from blinkpy.common.net.web_test_results import (
+    Artifact,
+    WebTestResult,
+    WebTestResults,
+)
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.tool.commands.rebaseline import (
@@ -484,6 +488,41 @@ class TestRebaseline(BaseTestCase):
             '--verbose',
             'userscripts/first-test.html',
         ])
+
+    def test_rebaseline_with_cache_hit(self):
+        results = WebTestResults([
+            WebTestResult('userscripts/first-test.html', {
+                'actual': 'FAIL',
+                'is_unexpected': True,
+            }, {
+                'actual_image': [
+                    Artifact('https://results.usercontent.cr.dev/actual_image',
+                             '3a778bf'),
+                ],
+            }),
+        ],
+                                 step_name='blink_web_tests (with patch)')
+        self.tool.web.get_binary.side_effect = lambda _: b'actual image'
+        self.tool.results_fetcher.set_results(Build('MOCK Win7'), results)
+        self.tool.results_fetcher.set_results(Build('MOCK Mac10.11'), results)
+        test_baseline_set = TestBaselineSet(self.tool.builders)
+        test_baseline_set.add('userscripts/first-test.html',
+                              Build('MOCK Win7'),
+                              'blink_web_tests (with patch)')
+        test_baseline_set.add('userscripts/first-test.html',
+                              Build('MOCK Mac10.11'),
+                              'blink_web_tests (with patch)')
+        self.command.rebaseline(self.options(), test_baseline_set)
+
+        self.tool.web.get_binary.assert_called_once_with(
+            'https://results.usercontent.cr.dev/actual_image')
+        self.assertEqual(
+            self._read(
+                'platform/test-win-win7/userscripts/first-test-expected.png'),
+            'actual image')
+        self.assertEqual(
+            self._read('platform/test-mac-mac10.11/'
+                       'userscripts/first-test-expected.png'), 'actual image')
 
     def test_no_optimize(self):
         test_baseline_set = TestBaselineSet(self.tool.builders)

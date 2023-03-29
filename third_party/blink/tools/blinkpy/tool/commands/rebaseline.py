@@ -38,12 +38,13 @@ from typing import (
     Dict,
     List,
     NamedTuple,
-    Optional,
     Set,
 )
+from urllib.parse import urlparse
 
 from blinkpy.common import message_pool
 from blinkpy.common.checkout.baseline_copier import BaselineCopier
+from blinkpy.common.host import Host
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
@@ -118,7 +119,7 @@ class AbstractRebaseliningCommand(Command):
         port = self._tool.port_factory.get_from_builder_name(builder_name)
         return port.baseline_version_dir()
 
-    @property
+    @functools.cached_property
     def _host_port(self):
         return self._tool.port_factory.get()
 
@@ -285,12 +286,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         build_steps_to_fetch_from = self.build_steps_to_fetch_from(
             test_baseline_set.all_build_steps())
         rebaselinable_set = TestBaselineSet(self._tool.builders)
-        port = self._tool.port_factory.get()
         for test, build, step_name, port_name in test_baseline_set:
             if (build.builder_name,
                     step_name) not in build_steps_to_fetch_from:
                 continue
-            if port.reference_files(test):
+            if self._host_port.reference_files(test):
                 # TODO(crbug.com/1149035): Add a `[ Failure ]` line here
                 # instead.
                 continue
@@ -385,10 +385,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         """
         groups = collections.defaultdict(
             functools.partial(TestBaselineSet, self._tool.builders))
-        port = self._tool.port_factory.get()
         tests = set(test_baseline_set.all_tests())
         for test, build, step_name, port_name in test_baseline_set:
-            nonvirtual_test = port.lookup_virtual_test_base(test) or test
+            nonvirtual_test = self._host_port.lookup_virtual_test_base(
+                test) or test
             test_for_group = (nonvirtual_test
                               if nonvirtual_test in tests else test)
             groups[test_for_group].add(test, build, step_name, port_name)
@@ -439,8 +439,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         tests = list(lines_to_remove.keys())
         to_remove = collections.defaultdict(set)
         all_versions = frozenset([
-            config.version.lower() for config in self._tool.port_factory.get().
-            all_test_configurations()
+            config.version.lower()
+            for config in self._host_port.all_test_configurations()
         ])
         # This is so we remove lines for builders that skip this test.
         # For example, Android skips most tests and we don't want to leave
@@ -468,10 +468,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                            ', '.join(sorted(versions)))
             return
 
-        port = self._tool.port_factory.get()
         path = port.path_to_generic_test_expectations_file()
         test_expectations = TestExpectations(
-            port,
+            self._host_port,
             expectations_dict={
                 path: self._tool.filesystem.read_text_file(path)
             })
@@ -486,7 +485,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
     def _worker_factory(self, worker_connection):
         return Worker(worker_connection,
-                      self._results_dir,
                       dry_run=self._dry_run)
 
     def handle(self, name: str, source: str, *args):
@@ -552,7 +550,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                       if re.match(baseline_re, path))
 
     def _web_tests_dir(self):
-        return self._tool.port_factory.get().web_tests_dir()
+        return self._host_port.web_tests_dir()
 
     def _suffixes_for_actual_failures(self, test, build, step_name=None):
         """Gets the baseline suffixes for actual mismatch failures in some results.
@@ -580,6 +578,15 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         if not test_result:
             _log.info('No test result for test %s in build %s', test, build)
             return None
+        if self._results_dir:
+            for artifact_name, suffix in [
+                ('actual_text', 'txt'),
+                ('actual_image', 'png'),
+                ('actual_audio', 'wav'),
+            ]:
+                filename = self._file_name_for_actual_result(test, suffix)
+                path = self._tool.filesystem.join(self._results_dir, filename)
+                test_result.artifacts[artifact_name] = [Artifact(path)]
         return test_result
 
 
@@ -625,7 +632,7 @@ class Rebaseline(AbstractParallelRebaselineCommand):
             builders_to_check = self._builders_to_pull_from()
 
         test_baseline_set = TestBaselineSet(tool.builders)
-        tests = self._tool.port_factory.get().tests(args)
+        tests = self._host_port.tests(args)
         for builder in builders_to_check:
             build = Build(builder)
             step_names = self._tool.results_fetcher.get_layout_test_step_names(
@@ -642,12 +649,44 @@ class RebaselineCancellation(Exception):
     """Represents a cancelled rebaseline attempt."""
 
 
+class BaselineCache:
+    """An in-memory cache keyed on a baseline's hash digest.
+
+    Baselines likely to be identical (e.g., for a virtual and its base test) are
+    downloaded together. The cache takes advantage of this temporal locality.
+
+    For simplicity, the cache is not bounded. It's the caller's responsibility
+    to `clear()` the cache as needed.
+    """
+    def __init__(self, host: Host):
+        self._host, self._digests_to_contents = host, {}
+
+    def _fetch_contents(self, url: str) -> bytes:
+        # Assume this is a local file.
+        if not urlparse(url).scheme:
+            return self._host.filesystem.read_binary_file(url)
+        return self._host.web.get_binary(url)
+
+    def load(self, artifact: Artifact) -> bytes:
+        if not artifact.digest:
+            return self._fetch_contents(artifact.url)
+        contents = self._digests_to_contents.get(artifact.digest)
+        if contents is None:
+            contents = self._fetch_contents(artifact.url)
+            self._digests_to_contents[artifact.digest] = contents
+        return contents
+
+    def clear(self):
+        self._digests_to_contents.clear()
+
+
 class Worker:
     """A worker delegate for running rebaseline tasks in parallel.
 
     The purpose of this worker is to persist resources across tasks:
       * HTTP(S) connections to ResultDB
-      * TestExpectations caches
+      * TestExpectations cache
+      * Baseline cache
 
     See Also:
         crbug.com/1213998#c50
@@ -655,10 +694,8 @@ class Worker:
 
     def __init__(self,
                  connection,
-                 results_dir: Optional[str] = None,
                  dry_run: bool = False):
         self._connection = connection
-        self._results_dir = results_dir
         self._dry_run = dry_run
         self._commands = {
             'find_baselines_to_copy': self._find_baselines_to_copy,
@@ -670,6 +707,7 @@ class Worker:
         self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
         self._fs = self._connection.host.filesystem
+        self._baseline_cache = BaselineCache(self._host)
 
     def handle(self, name: str, source: str, *args):
         response = self._commands[name](*args)
@@ -691,6 +729,7 @@ class Worker:
             self._copier.write_copies([(source, dest)])
 
     def _download_baselines(self, group: RebaselineGroup):
+        self._baseline_cache.clear()
         for task, result in group.items():
             for suffix, artifacts in result.baselines_by_suffix().items():
                 with contextlib.suppress(FileNotFoundError):
@@ -702,25 +741,12 @@ class Worker:
         # the managing process. For tests without hashes (e.g., text baselines),
         # the logic here should gracefully degrade to fetching each retry's
         # baseline.
-        #
-        # TODO(crbug.com/1411891): Plumb `web_tests_actual_image_hash`, through
-        # `WebTestResult`, and into `Artifact`. Use this hash as a key to a
-        # disk-based baseline cache where we copy files locally when possible
-        # instead of going to the network.
         port = self._host.port_factory.get(task.port_name)
         flag_spec_option = self._host.builders.flag_specific_option(
             task.build.builder_name, task.step_name)
         port.set_option_default('flag_specific', flag_spec_option)
-        if self._results_dir:
-            source = self._fs.join(
-                self._results_dir,
-                port.output_filename(task.test,
-                                     test_failures.FILENAME_SUFFIX_ACTUAL,
-                                     '.' + suffix))
-            data = self._fs.read_binary_file(source)
-        else:
-            source = artifacts[0].url
-            data = self._host.web.get_binary(source)
+        source = artifacts[0].url
+        data = self._baseline_cache.load(artifacts[0])
         dest = self._fs.join(
             port.baseline_version_dir(),
             port.output_filename(task.test,
