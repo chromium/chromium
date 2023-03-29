@@ -101,9 +101,9 @@ public class TestClass {
 1.  Add required libraries to your target dependencies in BUILD.gn
     -   JUnit 4 library: `//third_party/junit`
     -   Android Testing Support Rules:
-        -   `//third_party/android_support_test_runner:runner_java`
+        -   `//third_party/androidx:androidx_test_runner_java`
             (for `AndroidJUnitRunner`, etc)
-        -   `//third_party/android_support_test_runner:rules_java`
+        -   `//third_party/androidx:androidx_test_rules_java`
             (for `ActivityTestRule`, etc)
 1.  Add class runner to your test apk manifest.
     ([example][2])
@@ -182,7 +182,7 @@ The CommandLineFlags annonations are more fully documented in the [CommandLineFl
 1.  Use `@UiThreadTest` with caution!!
     -   Currently, **@UiThreadTest is only effective when UiThreadTestRule or
         ActivityTestRule is declared** in the test class.
-    -   Please use **`android.support.test.annotation.UiThreadTest`, NOT
+    -   Please use **`androidx.test.annotation.UiThreadTest`, NOT
         `android.test.UiThreadTest`**.
     -   When using @UiThreadTest, **it would cause `setUp` and `tearDown` to
         run in Ui Thread** as well. Avoid that by calling [`runOnUiThread`][9]
@@ -275,13 +275,13 @@ If you have any other questions, feel free to report in [this bug][7].
 [1]: https://developer.android.com/topic/libraries/testing-support-library/index.html
 [2]: https://cs.chromium.org/chromium/src/android_webview/tools/system_webview_shell/layout_tests/AndroidManifest.xml?l=36
 [3]: http://junit.org/junit4/javadoc/4.12/org/junit/rules/TestRule.html
-[4]: https://developer.android.com/reference/android/support/test/rule/ActivityTestRule.html
+[4]: https://developer.android.com/reference/androidx/test/rule/ActivityTestRule.html
 [5]: https://github.com/yoland68/chromium-junit-auto-migrate
 [6]: http://github.com/skyisle/android-test-kit/issues/121
 [7]: https://bugs.chromium.org/p/chromium/issues/detail?id=640116
 [8]: http://junit.org/junit4/javadoc/4.12/org/junit/rules/RuleChain.html
 [9]: https://developer.android.com/reference/android/app/Instrumentation.html#runOnMainSync(java.lang.Runnable)
-[10]: https://developer.android.com/reference/android/support/test/rule/UiThreadTestRule.html#runOnUiThread(java.lang.Runnable)
+[10]: https://developer.android.com/reference/androidx/test/rule/UiThreadTestRule.html#runOnUiThread(java.lang.Runnable)
 [11]: /chrome/test/android/javatests/src/org/chromium/chrome/test/BottomSheetTestRule.java
 [12]: https://bugs.chromium.org/p/chromium/issues/detail?id=734553
 [13]: /base/test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java

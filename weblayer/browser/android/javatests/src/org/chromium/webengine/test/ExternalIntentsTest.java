@@ -8,8 +8,8 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.app.Instrumentation;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import com.google.common.util.concurrent.SettableFuture;
