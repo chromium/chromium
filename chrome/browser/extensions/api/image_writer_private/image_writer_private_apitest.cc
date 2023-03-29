@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -21,7 +20,6 @@
 namespace extensions {
 
 using api::image_writer_private::RemovableStorageDevice;
-using extension_function_test_utils::RunFunctionAndReturnError;
 using extensions::image_writer::FakeImageWriterClient;
 
 class ImageWriterPrivateApiTest : public ExtensionApiTest {
