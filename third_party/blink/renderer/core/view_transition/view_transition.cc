@@ -808,8 +808,9 @@ bool ViewTransition::NeedsViewTransitionEffectNode(
     return !IsTerminalState(state_);
 
   // Otherwise check if the layout object has an active transition element.
-  return style_tracker_ &&
-         style_tracker_->IsTransitionElement(object.GetNode());
+  auto* element = DynamicTo<Element>(object.GetNode());
+  return style_tracker_ && element &&
+         style_tracker_->IsTransitionElement(*element);
 }
 
 bool ViewTransition::NeedsViewTransitionClipNode(
@@ -827,13 +828,26 @@ bool ViewTransition::NeedsViewTransitionClipNode(
 
 bool ViewTransition::IsRepresentedViaPseudoElements(
     const LayoutObject& object) const {
-  if (IsTerminalState(state_))
+  if (IsTerminalState(state_)) {
     return false;
+  }
 
-  if (IsA<LayoutView>(object))
+  if (IsA<LayoutView>(object)) {
     return style_tracker_->IsRootTransitioning();
+  }
 
-  return style_tracker_->IsTransitionElement(object.GetNode());
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+    return IsRepresentedViaPseudoElements(*element);
+  }
+  return false;
+}
+
+bool ViewTransition::IsRepresentedViaPseudoElements(
+    const Element& element) const {
+  if (IsTerminalState(state_)) {
+    return false;
+  }
+  return style_tracker_->IsTransitionElement(element);
 }
 
 PaintPropertyChangeType ViewTransition::UpdateEffect(

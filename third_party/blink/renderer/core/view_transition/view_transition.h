@@ -118,6 +118,9 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   // be a transitioning element, but require an effect node.
   bool IsRepresentedViaPseudoElements(const LayoutObject& object) const;
 
+  // Returns true if this element is painted via pseudo elements.
+  bool IsRepresentedViaPseudoElements(const Element& element) const;
+
   // Updates an effect node. This effect populates the view transition element
   // id and the shared element resource id. The return value is a result of
   // updating the effect node.

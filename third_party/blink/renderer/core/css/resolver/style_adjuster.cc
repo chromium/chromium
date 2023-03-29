@@ -1098,6 +1098,11 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   if (element && element->HasCustomStyleCallbacks()) {
     element->AdjustStyle(base::PassKey<StyleAdjuster>(), builder);
   }
+
+  if (element && ViewTransitionUtils::IsViewTransitionParticipantFromSupplement(
+                     *element)) {
+    builder.SetElementIsViewTransitionParticipant();
+  }
 }
 
 }  // namespace blink

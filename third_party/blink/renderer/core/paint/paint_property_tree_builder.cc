@@ -1405,7 +1405,7 @@ static bool NeedsEffectIgnoringClipPath(
   // This is not required for the root element since its snapshot comes from the
   // root stacking context which is already a backdrop filter root.
   if ((style.ViewTransitionName() ||
-       ViewTransitionUtils::IsRepresentedViaPseudoElements(object)) &&
+       ViewTransitionUtils::IsViewTransitionParticipant(object)) &&
       !object.IsDocumentElement()) {
     return true;
   }

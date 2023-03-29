@@ -1198,5 +1198,12 @@
       field_group: "*",
       default_value: "false",
     },
+    {
+      // https://drafts.csswg.org/css-view-transitions-1/
+      name: "ElementIsViewTransitionParticipant",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+    },
   ],
 }

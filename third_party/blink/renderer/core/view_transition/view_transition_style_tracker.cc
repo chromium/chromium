@@ -412,7 +412,9 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   }
 }
 
-ViewTransitionStyleTracker::~ViewTransitionStyleTracker() = default;
+ViewTransitionStyleTracker::~ViewTransitionStyleTracker() {
+  CHECK_EQ(state_, State::kFinished);
+}
 
 void ViewTransitionStyleTracker::AddConsoleError(
     String message,
@@ -716,6 +718,7 @@ void ViewTransitionStyleTracker::CaptureResolved() {
 
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
+
     element_data->target_element = nullptr;
     element_data->effect_node = nullptr;
   }
@@ -787,6 +790,7 @@ bool ViewTransitionStyleTracker::Start() {
       snapshot_id = viz::ViewTransitionElementResourceId::Generate();
 
     auto& element_data = element_data_map_.find(name)->value;
+    DCHECK(!element_data->target_element);
     element_data->target_element = element;
     element_data->new_snapshot_id = snapshot_id;
     DCHECK_LT(element_data->element_index, next_index);
@@ -856,6 +860,8 @@ void ViewTransitionStyleTracker::Abort() {
 }
 
 void ViewTransitionStyleTracker::EndTransition() {
+  CHECK_NE(state_, State::kFinished);
+
   state_ = State::kFinished;
   InvalidateHitTestingCache();
 
@@ -1324,14 +1330,16 @@ const ClipPaintPropertyNode* ViewTransitionStyleTracker::GetCaptureClip(
   return nullptr;
 }
 
-bool ViewTransitionStyleTracker::IsTransitionElement(const Node* node) const {
+bool ViewTransitionStyleTracker::IsTransitionElement(
+    const Element& element) const {
   // In stable states, we don't have transition elements.
   if (state_ == State::kIdle || state_ == State::kCaptured)
     return false;
 
   for (auto& entry : element_data_map_) {
-    if (entry.value->target_element == node)
+    if (entry.value->target_element == &element) {
       return true;
+    }
   }
   return false;
 }
@@ -1354,12 +1362,12 @@ bool ViewTransitionStyleTracker::NeedsCaptureClipNode(
 bool ViewTransitionStyleTracker::IsRootTransitioning() const {
   switch (state_) {
     case State::kIdle:
+    case State::kCaptured:
+    case State::kFinished:
       return false;
     case State::kCapturing:
-    case State::kCaptured:
       return !!old_root_data_;
     case State::kStarted:
-    case State::kFinished:
       return !!new_root_data_;
   }
   NOTREACHED();
@@ -1554,6 +1562,15 @@ void ViewTransitionStyleTracker::InvalidateStyle() {
   for (auto& entry : element_data_map_) {
     if (!entry.value->target_element)
       continue;
+
+    // We need to recalc style on each of the target elements, because we store
+    // whether the element is a view transition participant on the computed
+    // style. InvalidateStyle() is an indication that this state may have
+    // changed.
+    entry.value->target_element->SetNeedsStyleRecalc(
+        kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                               style_change_reason::kViewTransition));
+
     auto* object = entry.value->target_element->GetLayoutObject();
     if (!object)
       continue;
@@ -1802,8 +1819,11 @@ void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
 PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     LayoutBoxModelObject& box,
     LayoutBoxModelObject* ancestor) {
-  if (ancestor && IsTransitionElement(box.GetNode())) {
-    return {};
+  if (ancestor) {
+    if (auto* element = DynamicTo<Element>(box.GetNode());
+        element && IsTransitionElement(*element)) {
+      return {};
+    }
   }
 
   if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
