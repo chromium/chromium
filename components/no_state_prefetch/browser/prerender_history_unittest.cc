@@ -23,27 +23,30 @@ bool ListEntryMatches(const base::Value::List& list,
                       const std::string& expected_end_time) {
   if (index >= list.size())
     return false;
-  const base::Value& dict = list[index];
-  if (!dict.is_dict())
+  const base::Value& value = list[index];
+  if (!value.is_dict()) {
     return false;
-  if (dict.DictSize() != 4u)
+  }
+  const base::Value::Dict& dict = value.GetDict();
+  if (dict.size() != 4u) {
     return false;
-  const std::string* url = dict.FindStringPath("url");
+  }
+  const std::string* url = dict.FindString("url");
   if (!url)
     return false;
   if (*url != expected_url)
     return false;
-  const std::string* final_status = dict.FindStringPath("final_status");
+  const std::string* final_status = dict.FindString("final_status");
   if (!final_status)
     return false;
   if (*final_status != NameFromFinalStatus(expected_final_status))
     return false;
-  const std::string* origin = dict.FindStringPath("origin");
+  const std::string* origin = dict.FindString("origin");
   if (!origin)
     return false;
   if (*origin != NameFromOrigin(expected_origin))
     return false;
-  const std::string* end_time = dict.FindStringPath("end_time");
+  const std::string* end_time = dict.FindString("end_time");
   if (!end_time)
     return false;
   if (*end_time != expected_end_time)
