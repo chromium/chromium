@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 
 #import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -62,6 +67,15 @@
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
+  base::FilePath path = self.browser->GetBrowserState()->GetStatePath();
+  BrowserStateInfoCache* infoCache = GetApplicationContext()
+                                         ->GetChromeBrowserStateManager()
+                                         ->GetBrowserStateInfoCache();
+  size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithPath(path);
+  NSString* gaiaID = base::SysUTF8ToNSString(
+      infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
+  PushNotificationService* pushNotificationService =
+      GetApplicationContext()->GetPushNotificationService();
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -77,13 +91,16 @@
       initWithShoppingService:shoppingService
                 bookmarkModel:bookmarkModel
                  imageFetcher:std::move(imageFetcher)
-                     webState:webState];
+                     webState:webState
+      pushNotificationService:pushNotificationService];
   self.mediator.consumer = self.tableViewController;
   self.mediator.presenter = self;
   self.mediator.handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PriceNotificationsCommands);
   self.mediator.bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
+  self.mediator.gaiaID = gaiaID;
+
   self.tableViewController.mutator = self.mediator;
   self.tableViewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);

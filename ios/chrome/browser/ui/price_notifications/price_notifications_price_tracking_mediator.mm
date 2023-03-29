@@ -15,6 +15,8 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -47,6 +49,9 @@ using PriceNotificationItems =
 // viewing.
 @property(nonatomic, assign) absl::optional<commerce::ProductInfo>
     currentSiteProductInfo;
+// The service responsible for updating the user's chrome-level push
+// notification permissions for Price Tracking.
+@property(nonatomic, assign) PushNotificationService* pushNotificationService;
 
 @end
 
@@ -57,17 +62,20 @@ using PriceNotificationItems =
               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
-                   webState:(web::WebState*)webState {
+                   webState:(web::WebState*)webState
+    pushNotificationService:(PushNotificationService*)pushNotificationService {
   self = [super init];
   if (self) {
     DCHECK(service);
     DCHECK(bookmarkModel);
     DCHECK(fetcher);
     DCHECK(webState);
+    DCHECK(pushNotificationService);
     _shoppingService = service;
     _bookmarkModel = bookmarkModel;
     _imageFetcher = std::move(fetcher);
     _webState = webState;
+    _pushNotificationService = pushNotificationService;
   }
 
   return self;
@@ -97,6 +105,14 @@ using PriceNotificationItems =
       // is displayed on the main thread.
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf.presenter presentPushNotificationPermissionAlert];
+      });
+    } else if (!error && promptShown && granted) {
+      // This callback can be executed on a background thread causing this
+      // function to fail. Thus, the invocation is scheduled to run on the main
+      // thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        weakSelf.pushNotificationService->SetPreference(
+            weakSelf.gaiaID, PushNotificationClientId::kCommerce, true);
       });
     }
   }];
