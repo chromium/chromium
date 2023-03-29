@@ -89,12 +89,21 @@
   #toggleSpacer {
     padding-top: 33px;  /* Part of a 48px spacer (33px + 12px + 3px). */
   }
+
+  iron-icon {
+    margin-inline-start: 16px;
+  }
+
+  eol-offer-section {
+    margin-top: 20px;
+  }
 </style>
 <template is="dom-if" if="[[showBasicPage_(
     currentRoute_, hasExpandedSection_)]]">
   <div id="basicPage">
     <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
-        hasExpandedSection_, showUpdateRequiredEolBanner_)]]">
+        hasExpandedSection_, showUpdateRequiredEolBanner_,
+        showEOLIncentive_)]]">
       <div id="updateRequiredEolBanner"
           class="settings-box two-line banner">
         <div class="eol-warning-icon">
@@ -108,6 +117,11 @@
             aria-describedby="bannerText">
         </cr-icon-button>
       </div>
+    </template>
+    <template is="dom-if" if="[[computeShowEolIncentive_(hasExpandedSection_,
+        showEolIncentive_)]]">
+      <eol-offer-section should-show-offer-text="[[shouldShowOfferText_]]">
+      </eol-offer-section>
     </template>
     <div id="secondaryUserBanner" class="settings-box two-line banner"
         hidden="[[!showSecondaryUserBanner_]]">

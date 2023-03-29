@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './settings_idle_load.js';
+import '../os_about_page/eol_offer_section.js';
 import '../os_apps_page/os_apps_page.js';
 import '../os_people_page/os_people_page.js';
 import '../os_privacy_page/os_privacy_page.js';
@@ -35,6 +36,7 @@ import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/po
 
 import {castExists} from '../assert_extras.js';
 import {MainPageMixin} from '../main_page_mixin.js';
+import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OsPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_settings_routes.js';
@@ -138,6 +140,16 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
       },
 
       currentRoute_: Object,
+
+      showEolIncentive_: {
+        type: Boolean,
+        value: false,
+      },
+
+      shouldShowOfferText_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -154,6 +166,8 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
    * Used to avoid handling a new toggle while currently toggling.
    */
   private advancedTogglingInProgress_: boolean;
+  private showEolIncentive_: boolean;
+  private shouldShowOfferText_: boolean;
 
   constructor() {
     super();
@@ -178,6 +192,12 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
     this.addWebUiListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
     AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
+
+    AboutPageBrowserProxyImpl.getInstance().pageReady();
+    AboutPageBrowserProxyImpl.getInstance().getEndOfLifeInfo().then(result => {
+      this.showEolIncentive_ = !!result.shouldShowEndOfLifeIncentive;
+      this.shouldShowOfferText_ = !!result.shouldShowOfferText;
+    });
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -216,7 +236,12 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
   }
 
   private computeShowUpdateRequiredEolBanner_(): boolean {
-    return !this.hasExpandedSection_ && this.showUpdateRequiredEolBanner_;
+    return !this.hasExpandedSection_ && this.showUpdateRequiredEolBanner_ &&
+        !this.showEolIncentive_;
+  }
+
+  private computeShowEolIncentive_(): boolean {
+    return !this.hasExpandedSection_ && this.showEolIncentive_;
   }
 
   private androidAppsInfoUpdate_(info: AndroidAppsInfo) {

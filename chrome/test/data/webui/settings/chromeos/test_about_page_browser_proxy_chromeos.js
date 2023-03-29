@@ -21,6 +21,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       'getRegulatoryInfo',
       'checkInternetConnection',
       'getEndOfLifeInfo',
+      'endOfLifeIncentiveButtonClicked',
       'launchReleaseNotes',
       'openOsHelpPage',
       'openDiagnostics',
@@ -67,6 +68,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
     this.endOfLifeInfo_ = {
       hasEndOfLife: false,
       aboutPageEndOfLifeMessage: '',
+      shouldShowEndOfLifeIncentive: false,
     };
 
     /** @private {!boolean} */
@@ -201,6 +203,10 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   getEndOfLifeInfo() {
     this.methodCalled('getEndOfLifeInfo');
     return Promise.resolve(this.endOfLifeInfo_);
+  }
+
+  endOfLifeIncentiveButtonClicked() {
+    this.methodCalled('endOfLifeIncentiveButtonClicked');
   }
 
   /** @override */

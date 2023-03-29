@@ -71,6 +71,10 @@
     min-height: unset;
     padding-bottom: 10px;
   }
+
+  eol-offer-section {
+    margin: 6px 3px 16px 3px;
+  }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
@@ -114,6 +118,11 @@
               $i18n{learnMore}
             </a>
           </div>
+          <template is="dom-if" if="[[showEolIncentive_]]">
+            <eol-offer-section id="endOfLifeOfferContainer"
+                should-show-offer-text="[[shouldShowOfferText_]]">
+            </eol-offer-section>
+          </template>
           <localized-link
               id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]"
               localized-string="$i18n{endOfLifeMessage}">

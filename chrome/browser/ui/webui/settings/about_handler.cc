@@ -58,6 +58,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/eol_incentive_util.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -334,6 +335,10 @@ void AboutHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getEndOfLifeInfo",
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openEndOfLifeIncentive",
+      base::BindRepeating(&AboutHandler::HandleOpenEndOfLifeIncentive,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "launchReleaseNotes",
@@ -672,11 +677,39 @@ void AboutHandler::OnGetEndOfLifeInfo(
                                                     icu::TimeZone::getGMT()),
             base::ASCIIToUTF16(has_eol_passed ? chrome::kEolNotificationURL
                                               : chrome::kAutoUpdatePolicyURL)));
+    const ash::eol_incentive_util::EolIncentiveType eolIncentiveType =
+        ash::eol_incentive_util::ShouldShowEolIncentive(
+            profile_, eol_info.eol_date, clock_->Now());
+    response.Set(
+        "shouldShowEndOfLifeIncentive",
+        (eolIncentiveType ==
+             ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently ||
+         eolIncentiveType ==
+             ash::eol_incentive_util::EolIncentiveType::kEolPassed) &&
+            has_eol_passed);
+    eol_incentive_shows_offer_ =
+        (ash::features::kEolIncentiveParam.Get() !=
+             ash::features::EolIncentiveParam::kNoOffer &&
+         eolIncentiveType ==
+             ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently);
+    response.Set("shouldShowOfferText", eol_incentive_shows_offer_);
   } else {
     response.Set("hasEndOfLife", false);
     response.Set("aboutPageEndOfLifeMessage", "");
+    response.Set("shouldShowEndOfLifeIncentive", false);
+    response.Set("shouldShowOfferText", false);
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
+}
+
+void AboutHandler::HandleOpenEndOfLifeIncentive(const base::Value::List& args) {
+  DCHECK(args.empty());
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(eol_incentive_shows_offer_
+               ? chrome::kEolIncentiveNotificationOfferURL
+               : chrome::kEolIncentiveNotificationNoOfferURL),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void AboutHandler::HandleIsManagedAutoUpdateEnabled(

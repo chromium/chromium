@@ -544,6 +544,37 @@ suite('AboutPageTest', function() {
     await checkHasEndOfLife(false);
   });
 
+  test('DeviceEndOfLifeIncentive', async () => {
+    async function checkEndOfLifeIncentive(isShowing) {
+      await aboutBrowserProxy.whenCalled('getEndOfLifeInfo');
+      const eolSection = page.shadowRoot.querySelector('eol-offer-section');
+      assertEquals(isShowing, !!eolSection);
+
+      if (isShowing) {
+        eolSection.$.eolIncentiveButton.click();
+        await aboutBrowserProxy.whenCalled('endOfLifeIncentiveButtonClicked');
+      }
+    }
+
+    aboutBrowserProxy.setEndOfLifeInfo({
+      hasEndOfLife: false,
+      endOfLifeAboutMessage: '',
+      shouldShowEndOfLifeIncentive: false,
+      shouldShowOfferText: false,
+    });
+    await initNewPage();
+    await checkEndOfLifeIncentive(false);
+
+    aboutBrowserProxy.setEndOfLifeInfo({
+      hasEndOfLife: false,
+      endOfLifeAboutMessage: '',
+      shouldShowEndOfLifeIncentive: true,
+      shouldShowOfferText: false,
+    });
+    await initNewPage();
+    await checkEndOfLifeIncentive(true);
+  });
+
   test('managed detailed build info page', async () => {
     loadTimeData.overrideValues({
       isManaged: true,

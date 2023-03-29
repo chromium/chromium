@@ -1,0 +1,49 @@
+<style>
+  :host {
+    background-color: var(--cr-card-background-color);
+    border-radius: 8px;
+    box-shadow: var(--cr-card-shadow);
+    display: flex;
+    padding: 16px;
+  }
+
+  .image-container {
+    background-color: var(--cros-illustration-color-1-shade-2);
+    border-radius: 50%;
+    display: inline-block;
+    height: 40px;
+    margin-inline-end: 16px;
+    width: 40px;
+  }
+
+  .inner-image {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    padding: 8px;
+  }
+
+  .side-content {
+    flex: 1;
+  }
+
+  .eol-offer-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .eol-offer-text {
+    margin-bottom: 8px;
+  }
+</style>
+<div class="image-container">
+  <iron-icon class="inner-image" icon="os-settings:end-of-life-offer">
+  </iron-icon>
+</div>
+<div class="side-content">
+  <div class="eol-offer-title">[[getEolTitleText_(shouldShowOfferText)]]</div>
+  <div class="eol-offer-text">[[getEolMessageText_(shouldShowOfferText)]]</div>
+  <cr-button id="eolIncentiveButton"
+      class="action-button"
+      on-click="onIncentiveButtonClick_">
+    [[getEolButtonText_(shouldShowOfferText)]]
+  </cr-button>
+</div>

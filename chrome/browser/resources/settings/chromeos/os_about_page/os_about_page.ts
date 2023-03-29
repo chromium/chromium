@@ -23,6 +23,7 @@ import '../os_settings_page_styles.css.js';
 import '../../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
+import './eol_offer_section.js';
 import './update_warning_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -127,6 +128,16 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
       regulatoryInfo_: Object,
 
       hasEndOfLife_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showEolIncentive_: {
+        type: Boolean,
+        value: false,
+      },
+
+      shouldShowOfferText_: {
         type: Boolean,
         value: false,
       },
@@ -250,6 +261,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   private isLts_: boolean;
   private regulatoryInfo_: RegulatoryInfo|null;
   private hasEndOfLife_: boolean;
+  private showEolIncentive_: boolean;
+  private shouldShowOfferText_: boolean;
   private hasDeferredUpdate_: boolean;
   private eolMessageWithMonthAndYear_: string;
   private hasInternetConnection_: boolean;
@@ -299,6 +312,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     this.aboutBrowserProxy_.getEndOfLifeInfo().then(result => {
       this.hasEndOfLife_ = !!result.hasEndOfLife;
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
+      this.showEolIncentive_ = !!result.shouldShowEndOfLifeIncentive;
+      this.shouldShowOfferText_ = !!result.shouldShowOfferText;
     });
 
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {

@@ -445,6 +445,24 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                              ui::GetChromeOSDeviceName(),
                              base::ASCIIToUTF16(chrome::kEolNotificationURL)));
 
+  html_source->AddString("eolIncentiveOfferTitle",
+                         l10n_util::GetStringUTF16(
+                             IDS_SETTINGS_END_OF_LIFE_INCENTIVE_OFFER_TITLE));
+  html_source->AddString("eolIncentiveOfferMessage",
+                         l10n_util::GetStringUTF16(
+                             IDS_SETTINGS_END_OF_LIFE_INCENTIVE_OFFER_MESSAGE));
+  html_source->AddString("eolIncentiveButtonOfferText",
+                         l10n_util::GetStringUTF16(
+                             IDS_SETTINGS_END_OF_LIFE_INCENTIVE_OFFER_BUTTON));
+  html_source->AddString(
+      "eolIncentiveNoOfferTitle",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_END_OF_LIFE_INCENTIVE_NO_OFFER_TITLE));
+  html_source->AddString(
+      "eolIncentiveNoOfferMessage",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_END_OF_LIFE_INCENTIVE_NO_OFFER_MESSAGE));
+
   std::string safetyInfoLink = GetSafetyInfoLink();
   html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());
 
