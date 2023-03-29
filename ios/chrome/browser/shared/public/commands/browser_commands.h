@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-
 @class ReadingListAddCommand;
 
 // Protocol for commands that will generally be handled by the "current tab",
