@@ -5,7 +5,10 @@
 // Include test fixture.
 GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 
-GEN_INCLUDE(['../testing/fake_objects.js']);
+GEN_INCLUDE([
+  '../../common/testing/documents.js',
+  '../testing/fake_objects.js',
+]);
 
 /**
  * Test fixture for Background.
@@ -50,6 +53,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
         '/chromevox/background/page_load_sound_handler.js');
     await importModule(
         'PointerHandler', '/chromevox/background/pointer_handler.js');
+    await importModule(
+        'TtsBackground', '/chromevox/background/tts_background.js');
     await importModule(
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
@@ -4155,3 +4160,19 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NestedImages', async function() {
       .expectSpeech('end');
   await mockFeedback.replay();
 });
+
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'ToggleSpeechWithAnnouncement',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const root =
+          await this.runWithLoadedTree(Documents.autofocus + Documents.button);
+
+      // The test will not finish unless this method is called.
+      this.addCallbackPostMethod(
+          TtsBackground, 'toggleSpeechWithAnnouncement', this.newCallback(),
+          () => true /** remove callback */);
+
+      mockFeedback.call(doCmd('toggleSpeechOnOrOff')).expectSpeech(/.*off.*/);
+      await mockFeedback.replay();
+    });

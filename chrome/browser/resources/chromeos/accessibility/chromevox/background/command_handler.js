@@ -167,8 +167,7 @@ export class CommandHandler extends CommandHandlerInterface {
         this.toggleScreen_();
         return false;
       case Command.TOGGLE_SPEECH_ON_OR_OFF:
-        const state = ChromeVox.tts.toggleSpeechOnOrOff();
-        new Output().format(state ? '@speech_on' : '@speech_off').go();
+        TtsBackground.toggleSpeechWithAnnouncement();
         return false;
       case Command.ENABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP:
         this.enableChromeVoxArcSupportForCurrentApp_();

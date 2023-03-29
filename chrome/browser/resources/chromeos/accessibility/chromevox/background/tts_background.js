@@ -17,6 +17,7 @@ import {Personality, QueueMode, TtsSpeechProperties} from '../common/tts_types.j
 import {ChromeVox} from './chromevox.js';
 import {CompositeTts} from './composite_tts.js';
 import {ConsoleTts} from './console_tts.js';
+import {Output} from './output/output.js';
 import {PrimaryTts} from './primary_tts.js';
 
 const Action = BridgeConstants.TtsBackground.Action;
@@ -95,5 +96,11 @@ export class TtsBackground {
           Msgs.getMsg('announce_tts_default_settings'), QueueMode.FLUSH,
           new TtsSpeechProperties(speechProperties));
     });
+  }
+
+  /** Toggles speech on or off and announces the change. */
+  static toggleSpeechWithAnnouncement() {
+    const state = ChromeVox.tts.toggleSpeechOnOrOff();
+    new Output().format(state ? '@speech_on' : '@speech_off').go();
   }
 }
