@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/web_authentication_proxy/value_conversions.h"
+#include "components/webauthn/json/value_conversions.h"
 
 #include <cstdint>
 #include <string>
@@ -10,6 +10,7 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
@@ -21,10 +22,11 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
-namespace extensions::webauthn_proxy {
+namespace webauthn {
 namespace {
 
 using blink::mojom::CommonCredentialInfo;
@@ -74,7 +76,7 @@ std::vector<device::PublicKeyCredentialDescriptor> GetCredentialList() {
               device::CredentialType::kPublicKey, {30, 31, 32}, {})};
 }
 
-TEST(WebAuthenticationProxyValueConversionsTest,
+TEST(WebAuthenticationJSONConversionTest,
      PublicKeyCredentialCreationOptionsToValue) {
   // Exercise all supported fields.
   auto options = PublicKeyCredentialCreationOptions::New(
@@ -111,7 +113,7 @@ TEST(WebAuthenticationProxyValueConversionsTest,
       R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
 }
 
-TEST(WebAuthenticationProxyValueConversionsTest,
+TEST(WebAuthenticationJSONConversionTest,
      PublicKeyCredentialRequestOptionsToValue) {
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
@@ -121,6 +123,9 @@ TEST(WebAuthenticationProxyValueConversionsTest,
       std::vector<device::CableDiscoveryData>{
           {device::CableDiscoveryData::Version::V1, device::CableEidArray{},
            device::CableEidArray{}, device::CableSessionPreKeyArray{}}},
+#if BUILDFLAG(IS_ANDROID)
+      /*user_verification_methods=*/false,
+#endif
       /*prf=*/false, std::vector<blink::mojom::PRFValuesPtr>(),
       /*large_blob_read=*/true,
       /*large_blob_write=*/std::vector<uint8_t>{8, 9, 10},
@@ -140,7 +145,7 @@ TEST(WebAuthenticationProxyValueConversionsTest,
       R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"rpId":"example.test","userVerification":"required"})");
 }
 
-TEST(WebAuthenticationProxyValueConversionsTest,
+TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAttestationResponseFromValue) {
   // The following values appear Base64URL-encoded in `json`.
   static const std::vector<uint8_t> kAttestationObject =
@@ -224,7 +229,7 @@ TEST(WebAuthenticationProxyValueConversionsTest,
   EXPECT_EQ(response, expected);
 }
 
-TEST(WebAuthenticationProxyValueConversionsTest,
+TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAssertionResponseFromValue) {
   // The following values appear Base64URL-encoded in `json`.
   static const std::vector<uint8_t> kAuthenticatorData =
@@ -276,6 +281,10 @@ TEST(WebAuthenticationProxyValueConversionsTest,
                                 kAuthenticatorData),
       device::AuthenticatorAttachment::kCrossPlatform, kSignature, kUserHandle,
       /*echo_appid_extension=*/true, /*appid_extension=*/true,
+#if BUILDFLAG(IS_ANDROID)
+      /*echo_user_verification_methods=*/false,
+      /*user_verification_methods=*/absl::nullopt,
+#endif
       /*echo_prf=*/false, /*prf_results=*/nullptr, /*prf_not_evaluated=*/false,
       /*echo_large_blob=*/true,
       /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
@@ -306,4 +315,4 @@ TEST(WebAuthenticationProxyValueConversionsTest,
 }
 
 }  // namespace
-}  // namespace extensions::webauthn_proxy
+}  // namespace webauthn

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/web_authentication_proxy/value_conversions.h"
+#include "components/webauthn/json/value_conversions.h"
 
 #include "base/base64url.h"
 #include "base/strings/string_piece.h"
@@ -18,9 +18,8 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
-#include "url/gurl.h"
 
-namespace extensions::webauthn_proxy {
+namespace webauthn {
 
 namespace {
 
@@ -677,4 +676,4 @@ GetAssertionResponseFromValue(const base::Value& value) {
   return {std::move(response), ""};
 }
 
-}  // namespace extensions::webauthn_proxy
+}  // namespace webauthn

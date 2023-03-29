@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_VALUE_CONVERSIONS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_VALUE_CONVERSIONS_H_
+#ifndef COMPONENTS_WEBAUTHN_JSON_VALUE_CONVERSIONS_H_
+#define COMPONENTS_WEBAUTHN_JSON_VALUE_CONVERSIONS_H_
 
 #include "base/values.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
-namespace extensions::webauthn_proxy {
+namespace webauthn {
 
-// Converts a `PublicKeyCredentialCreationOptions` into a `base::Value`, which
-// can be JSON serialized and included in an
-// `webAuthenticationProxy.onCreateRequest` event.
+// Converts a `PublicKeyCredentialCreationOptions` into a `base::Value`.
 //
 // The output conforms to the WebAuthn `PublicKeyCredentialCreationOptions`
 // dictionary IDL, but with all ArrayBuffer and BufferSource attributes
@@ -25,9 +23,7 @@ namespace extensions::webauthn_proxy {
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options);
 
-// Converts a `PublicKeyCredentialRequestOptions` into a `base::Value`, which
-// can be JSON serialized and included in an
-// `webAuthenticationProxy.onGetRequest` event.
+// Converts a `PublicKeyCredentialRequestOptions` into a `base::Value`.
 //
 // The output conforms to the WebAuthn `PublicKeyCredentialRequestOptions`
 // dictionary IDL, but with all ArrayBuffer and BufferSource attributes
@@ -68,6 +64,6 @@ MakeCredentialResponseFromValue(const base::Value& value);
 std::pair<blink::mojom::GetAssertionAuthenticatorResponsePtr, std::string>
 GetAssertionResponseFromValue(const base::Value& value);
 
-}  // namespace extensions::webauthn_proxy
+}  // namespace webauthn
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_VALUE_CONVERSIONS_H_
+#endif  // COMPONENTS_WEBAUTHN_JSON_VALUE_CONVERSIONS_H_

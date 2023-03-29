@@ -2,6 +2,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/sync",
   "+content/public/browser",
+  "+device/fido",
   "+mojo/public/cpp/bindings",
   "+third_party/blink/public/mojom/webauthn",
 ]

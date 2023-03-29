@@ -390,8 +390,6 @@ static_library("extensions") {
     "api/top_sites/top_sites_api.h",
     "api/web_authentication_proxy/remote_session_state_change.cc",
     "api/web_authentication_proxy/remote_session_state_change.h",
-    "api/web_authentication_proxy/value_conversions.cc",
-    "api/web_authentication_proxy/value_conversions.h",
     "api/web_authentication_proxy/web_authentication_proxy_api.cc",
     "api/web_authentication_proxy/web_authentication_proxy_api.h",
     "api/web_authentication_proxy/web_authentication_proxy_service.cc",
@@ -820,6 +818,7 @@ static_library("extensions") {
     "//components/supervised_user/core/common:buildflags",
     "//components/supervised_user/core/common:common",
     "//components/webapps/browser",
+    "//components/webauthn/json",
 
     # TODO(crbug.com/1065748): Remove this dependency:
     "//chrome/browser/web_applications/extensions",

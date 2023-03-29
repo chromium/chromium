@@ -11,9 +11,9 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/extensions/api/web_authentication_proxy/value_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
+#include "components/webauthn/json/value_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "extensions/browser/event_router.h"
@@ -452,7 +452,7 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
     return;
   }
   auto [response, error] =
-      webauthn_proxy::MakeCredentialResponseFromValue(*value_or_error);
+      webauthn::MakeCredentialResponseFromValue(*value_or_error);
   if (!response) {
     std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;
@@ -485,7 +485,7 @@ void WebAuthenticationProxyService::OnParseGetResponse(
     return;
   }
   auto [response, error] =
-      webauthn_proxy::GetAssertionResponseFromValue(*value_or_error);
+      webauthn::GetAssertionResponseFromValue(*value_or_error);
   if (!response) {
     std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;
@@ -527,7 +527,7 @@ WebAuthenticationProxyService::SignalCreateRequest(
   api::web_authentication_proxy::CreateRequest request;
   request.request_id = request_id;
 
-  base::Value options_value = webauthn_proxy::ToValue(options_ptr);
+  base::Value options_value = webauthn::ToValue(options_ptr);
   std::string request_json;
   JSONStringValueSerializer serializer(&request.request_details_json);
   CHECK(serializer.Serialize(options_value));
@@ -557,7 +557,7 @@ WebAuthenticationProxyService::SignalGetRequest(
   api::web_authentication_proxy::GetRequest request;
   request.request_id = request_id;
 
-  base::Value options_value = webauthn_proxy::ToValue(options_ptr);
+  base::Value options_value = webauthn::ToValue(options_ptr);
   std::string request_json;
   JSONStringValueSerializer serializer(&request.request_details_json);
   CHECK(serializer.Serialize(options_value));

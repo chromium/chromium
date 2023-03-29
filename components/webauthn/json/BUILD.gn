@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+static_library("json") {
+  sources = [
+    "value_conversions.cc",
+    "value_conversions.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+  ]
+  deps = [ "//device/fido" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "value_conversions_unittest.cc" ]
+  deps = [
+    ":json",
+    "//base/test:test_support",
+    "//device/fido",
+  ]
+}

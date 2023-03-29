@@ -8050,7 +8050,6 @@ test("unit_tests") {
       "../browser/extensions/api/tab_groups/tab_groups_api_unittest.cc",
       "../browser/extensions/api/tabs/tabs_api_unittest.cc",
       "../browser/extensions/api/tabs/windows_util_unittest.cc",
-      "../browser/extensions/api/web_authentication_proxy/value_conversions_unittest.cc",
       "../browser/extensions/api/web_navigation/frame_navigation_state_unittest.cc",
       "../browser/extensions/api/web_request/web_request_api_unittest.cc",
       "../browser/extensions/api/web_request/web_request_event_details_unittest.cc",

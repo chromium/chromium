@@ -259,7 +259,10 @@ test("components_unittests") {
   }
 
   if (!is_ios) {
-    deps += [ "//components/file_access:unit_tests" ]
+    deps += [
+      "//components/file_access:unit_tests",
+      "//components/webauthn/json:unit_tests",
+    ]
   }
 
   if (enable_screen_ai_service) {
