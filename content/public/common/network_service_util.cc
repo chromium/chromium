@@ -41,19 +41,22 @@ bool IsOutOfProcessNetworkService() {
 }
 
 bool IsInProcessNetworkService() {
+#if BUILDFLAG(IS_ANDROID)
+  // Check RAM size before looking at kNetworkServiceInProcess flag
+  // so that we can throttle the finch groups including control.
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
+      kNetworkServiceOutOfProcessThresholdMb.Get()) {
+    return true;
+  }
+#endif
+
   if (g_force_in_process_network_service ||
       base::FeatureList::IsEnabled(features::kNetworkServiceInProcess) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
     return true;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  return base::SysInfo::AmountOfPhysicalMemoryMB() <=
-         kNetworkServiceOutOfProcessThresholdMb.Get();
-#else
   return false;
-#endif
 }
 
 void ForceInProcessNetworkService(bool is_forced) {
