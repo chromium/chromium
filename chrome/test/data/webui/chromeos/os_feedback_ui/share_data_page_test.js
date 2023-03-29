@@ -871,11 +871,15 @@ export function shareDataPageTestSuite() {
    */
   test('openAutofillDialog', async () => {
     await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.feedbackContext.fromAutofill = true;
+    page.feedbackContext.autofillMetadata = '{}';
 
     assertEquals(0, feedbackServiceProvider.getOpenAutofillDialogCallCount());
     verifyRecordPreSubmitActionCallCount(
         0, FeedbackAppPreSubmitAction.kViewedAutofillMetadata);
 
+    assertTrue(isVisible(getElement('#autofillCheckboxContainer')));
     getElement('#autofillMetadataUrl').click();
 
     assertEquals(1, feedbackServiceProvider.getOpenAutofillDialogCallCount());

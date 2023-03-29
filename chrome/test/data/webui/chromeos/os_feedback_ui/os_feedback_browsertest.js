@@ -50,15 +50,14 @@ const debug_suites_list = [
   'shareDataPageTest',
 ];
 
-// TODO(crbug.com/1401615): Flaky.
-TEST_F(
-    'OSFeedbackBrowserTest', 'DISABLED_All', function() {
-      assertDeepEquals(
-          debug_suites_list, test_suites_list,
-          'List of registered tests suites and debug suites do not match.\n' +
-              'Did you forget to add your test in debug_suites_list?');
-      mocha.run();
-    });
+
+TEST_F('OSFeedbackBrowserTest', 'All', function() {
+  assertDeepEquals(
+      debug_suites_list, test_suites_list,
+      'List of registered tests suites and debug suites do not match.\n' +
+          'Did you forget to add your test in debug_suites_list?');
+  mocha.run();
+});
 
 // Register each suite listed as individual tests for debugging purposes.
 for (const suiteName of debug_suites_list) {
