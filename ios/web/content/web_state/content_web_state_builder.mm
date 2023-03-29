@@ -79,6 +79,11 @@ void ExtractContentSessionStorage(ContentWebState* web_state,
       new_entry->SetVirtualURL(virtual_url);
     }
 
+    // Content doesn't allow about://newtab
+    if (url.possibly_invalid_spec() == "about://newtab/") {
+      new_entry->SetURL(GURL("chrome://newtab"));
+    }
+
     items[index] = std::move(new_entry);
   }
   controller->Restore(session_storage.lastCommittedItemIndex,

@@ -161,6 +161,7 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
 
  private:
   UIScrollView* web_view_;
+  CRWSessionStorage* session_storage_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;
   id<CRWWebViewProxy> web_view_proxy_;
@@ -170,6 +171,8 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
   std::unique_ptr<ContentNavigationManager> navigation_manager_;
   std::unique_ptr<ContentWebFramesManager> web_frames_manager_;
   FaviconStatus favicon_status_;
+
+  base::WeakPtrFactory<ContentWebState> weak_factory_{this};
 };
 
 }  // namespace web

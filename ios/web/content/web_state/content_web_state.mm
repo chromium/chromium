@@ -15,6 +15,7 @@
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
@@ -105,9 +106,8 @@ ContentWebState::ContentWebState(const CreateParams& params,
   web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
   web::TextFragmentsManagerImpl::CreateForWebState(this);
 
+  session_storage_ = session_storage;
   if (session_storage) {
-    ExtractContentSessionStorage(this, controller, params.browser_state,
-                                 session_storage);
     UUID_ = [session_storage.stableIdentifier copy];
   } else {
     UUID_ = [[[NSUUID UUID] UUIDString] copy];
@@ -134,10 +134,18 @@ WebStateDelegate* ContentWebState::GetDelegate() {
 void ContentWebState::SetDelegate(WebStateDelegate* delegate) {}
 
 bool ContentWebState::IsRealized() const {
-  return true;
+  return session_storage_ == nil;
 }
 
 WebState* ContentWebState::ForceRealized() {
+  if (session_storage_) {
+    ExtractContentSessionStorage(this, &web_contents_->GetController(),
+                                 GetBrowserState(), session_storage_);
+    session_storage_ = nil;
+    for (auto& observer : observers_) {
+      observer.WebStateRealized(this);
+    }
+  }
   return this;
 }
 
@@ -148,7 +156,7 @@ bool ContentWebState::IsWebUsageEnabled() const {
 void ContentWebState::SetWebUsageEnabled(bool enabled) {}
 
 UIView* ContentWebState::GetView() {
-  return web_contents_->GetNativeView();
+  return session_storage_ ? nil : web_contents_->GetNativeView();
 }
 
 void ContentWebState::DidCoverWebContent() {}
@@ -163,9 +171,19 @@ base::Time ContentWebState::GetCreationTime() const {
   return base::Time::Now();
 }
 
-void ContentWebState::WasShown() {}
+void ContentWebState::WasShown() {
+  ForceRealized();
+  for (auto& observer : observers_) {
+    observer.WasShown(this);
+  }
+}
 
-void ContentWebState::WasHidden() {}
+void ContentWebState::WasHidden() {
+  ForceRealized();
+  for (auto& observer : observers_) {
+    observer.WasHidden(this);
+  }
+}
 
 void ContentWebState::SetKeepRenderProcessAlive(bool keep_alive) {}
 
@@ -174,7 +192,7 @@ BrowserState* ContentWebState::GetBrowserState() const {
 }
 
 base::WeakPtr<WebState> ContentWebState::GetWeakPtr() {
-  return nullptr;
+  return weak_factory_.GetWeakPtr();
 }
 
 void ContentWebState::OpenURL(const OpenURLParams& params) {}
@@ -211,6 +229,9 @@ ContentWebState::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* ContentWebState::BuildSessionStorage() {
+  if (session_storage_) {
+    return session_storage_;
+  }
   return BuildContentSessionStorage(this, navigation_manager_.get());
 }
 
@@ -234,16 +255,21 @@ bool ContentWebState::ContentIsHTML() const {
 }
 
 const std::u16string& ContentWebState::GetTitle() const {
-  static std::u16string title = u"";
-  return web_contents_ ? web_contents_->GetTitle() : title;
+  if (session_storage_) {
+    const NSUInteger index = session_storage_.lastCommittedItemIndex;
+    if (index > 0u && index <= session_storage_.itemStorages.count) {
+      return session_storage_.itemStorages[index].title;
+    }
+  }
+  return web_contents_->GetTitle();
 }
 
 bool ContentWebState::IsLoading() const {
-  return web_contents_ ? web_contents_->IsLoading() : false;
+  return session_storage_ ? false : web_contents_->IsLoading();
 }
 
 double ContentWebState::GetLoadingProgress() const {
-  return web_contents_ ? web_contents_->GetLoadProgress() : 0.0;
+  return session_storage_ ? 0.0 : web_contents_->GetLoadProgress();
 }
 
 bool ContentWebState::IsVisible() const {
@@ -279,6 +305,10 @@ void ContentWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
 }
 
 int ContentWebState::GetNavigationItemCount() const {
+  if (session_storage_) {
+    return session_storage_.itemStorages.count;
+  }
+
   return navigation_manager_->GetItemCount();
 }
 
