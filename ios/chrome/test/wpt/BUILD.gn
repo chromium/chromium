@@ -18,6 +18,11 @@ script_test("wpt_tests_ios") {
     "--target",
     "Release",
     "--webdriver-arg=--os=16.0",
+    "--no-restart-on-unexpected",
+    "--retry-unexpected=0",
+
+    # TODO(crbug.com/1351820): Enable more tests to run.
+    "/css/css-transforms/",
   ]
   deps = [ ":all_tests" ]
   data = [
@@ -42,7 +47,11 @@ script_test("wpt_tests_ios") {
 }
 
 group("tools") {
-  data = [ "tools/" ]
+  data = [
+    "tools/",
+    "//ios/build/bots/scripts/",
+    "//ios/testing/plugin",
+  ]
 }
 
 group("all_tests") {
