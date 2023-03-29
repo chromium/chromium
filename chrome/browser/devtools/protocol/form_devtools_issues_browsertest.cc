@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -75,6 +76,9 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")
                   .has_value());
+  base::ExpectDictStringValue(
+      "id", notification,
+      "issue.details.genericIssueDetails.violatingNodeAttribute");
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
@@ -86,6 +90,9 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")
                   .has_value());
+  base::ExpectDictStringValue(
+      "autocomplete", notification,
+      "issue.details.genericIssueDetails.violatingNodeAttribute");
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
@@ -121,6 +128,9 @@ IN_PROC_BROWSER_TEST_F(
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")
                   .has_value());
+  base::ExpectDictStringValue(
+      "id", notification,
+      "issue.details.genericIssueDetails.violatingNodeAttribute");
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
@@ -143,6 +153,9 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")
                   .has_value());
+  base::ExpectDictStringValue(
+      "for", notification,
+      "issue.details.genericIssueDetails.violatingNodeAttribute");
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
@@ -154,6 +167,9 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                   .FindIntByDottedPath(
                       "issue.details.genericIssueDetails.violatingNodeId")
                   .has_value());
+  base::ExpectDictStringValue(
+      "autocomplete", notification,
+      "issue.details.genericIssueDetails.violatingNodeAttribute");
 }
 
 }  // namespace autofill

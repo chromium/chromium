@@ -169,6 +169,10 @@ class CORE_EXPORT AuditsIssue {
   static void ReportGenericIssue(LocalFrame* frame,
                                  mojom::blink::GenericIssueErrorType error_type,
                                  int violating_node_id);
+  static void ReportGenericIssue(LocalFrame* frame,
+                                 mojom::blink::GenericIssueErrorType error_type,
+                                 int violating_node_id,
+                                 const String& violating_node_attribute);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

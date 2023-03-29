@@ -1390,7 +1390,7 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     // should be linked to element ids.
     label.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
-        label.GetDevToolsNodeId());
+        label.GetDevToolsNodeId(), WebString("for"));
   } else {
     // Add a DevTools issue informing the developer that the `label`'s for-
     // attribute is pointing to the name of a field, even though the ID should
@@ -1398,7 +1398,7 @@ void EmitDevtoolsIssueForLabelWithoutControl(
     // TODO(crbug.com/1339277): Use `root` once the feature is launched.
     label.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::kFormLabelForNameError,
-        label.GetDevToolsNodeId());
+        label.GetDevToolsNodeId(), WebString("for"));
   }
 }
 
@@ -1503,7 +1503,7 @@ void MaybeEmitDuplicateIdForInputIssue(
         id_count[element.GetIdAttribute()] > 1) {
       element.GetDocument().GetFrame()->AddGenericIssue(
           GenericIssueErrorType::kFormDuplicateIdForInputError,
-          element.GetDevToolsNodeId());
+          element.GetDevToolsNodeId(), WebString("id"));
     }
   }
 }
@@ -1548,14 +1548,20 @@ void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
       };
 
   static base::NoDestructor<WebString> kName("name");
-  if (ParsedHtmlAttributeValueToAutocompleteHasFieldType(
-          element.GetAttribute(*kName).Utf8()) ||
+  bool name_attr_matches_autocomplete =
       ParsedHtmlAttributeValueToAutocompleteHasFieldType(
-          element.GetIdAttribute().Utf8())) {
+          element.GetAttribute(*kName).Utf8());
+  bool id_attr_matches_autocomplete =
+      ParsedHtmlAttributeValueToAutocompleteHasFieldType(
+          element.GetIdAttribute().Utf8());
+
+  if (name_attr_matches_autocomplete || id_attr_matches_autocomplete) {
+    WebString violatingAttr =
+        id_attr_matches_autocomplete ? WebString("id") : WebString("name");
     element.GetDocument().GetFrame()->AddGenericIssue(
         GenericIssueErrorType::
             kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-        element.GetDevToolsNodeId());
+        element.GetDevToolsNodeId(), violatingAttr);
     return;
   }
 }
@@ -1832,7 +1838,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormAutocompleteAttributeEmptyError,
-        element.GetDevToolsNodeId());
+        element.GetDevToolsNodeId(), WebString("autocomplete"));
   }
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
@@ -1841,7 +1847,7 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::
             kFormInputHasWrongButWellIntendedAutocompleteValueError,
-        element.GetDevToolsNodeId());
+        element.GetDevToolsNodeId(), WebString("autocomplete"));
   }
 }
 
@@ -2815,7 +2821,7 @@ void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
           [](const WebElement& node) { return node.IsNull(); })) {
     element.GetDocument().GetFrame()->AddGenericIssue(
         blink::mojom::GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
-        element.GetDevToolsNodeId());
+        element.GetDevToolsNodeId(), WebString("aria-labelledby"));
   }
 }
 

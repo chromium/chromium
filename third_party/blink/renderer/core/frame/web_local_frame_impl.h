@@ -568,6 +568,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void AddInspectorIssueImpl(mojom::blink::InspectorIssueCode code) override;
   void AddGenericIssueImpl(mojom::blink::GenericIssueErrorType error_type,
                            int violating_node_id) override;
+  void AddGenericIssueImpl(mojom::blink::GenericIssueErrorType error_type,
+                           int violating_node_id,
+                           const WebString& violating_node_attribute) override;
 
  private:
   friend LocalFrameClientImpl;

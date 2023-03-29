@@ -239,6 +239,7 @@ struct GenericIssueDetails {
   string? frame_id;
   // 0 is not a valid node id and is used to indicate absence.
   int32 violating_node_id = 0;
+  string? violating_node_attribute;
 };
 
 enum DeprecationIssueType {

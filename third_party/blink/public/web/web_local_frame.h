@@ -453,6 +453,13 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   }
 
   void AddGenericIssue(mojom::GenericIssueErrorType error_type,
+                       int violating_node_id,
+                       const WebString& violating_node_attribute) {
+    AddGenericIssueImpl(error_type, violating_node_id,
+                        violating_node_attribute);
+  }
+
+  void AddGenericIssue(mojom::GenericIssueErrorType error_type,
                        int violating_node_id) {
     AddGenericIssueImpl(error_type, violating_node_id);
   }
@@ -945,7 +952,10 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void AddGenericIssueImpl(
       blink::mojom::GenericIssueErrorType error_type,
       int violating_node_id) = 0;
-
+  virtual void AddGenericIssueImpl(
+      blink::mojom::GenericIssueErrorType error_type,
+      int violating_node_id,
+      const WebString& violating_node_attribute) = 0;
   virtual void CreateFrameWidgetInternal(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>

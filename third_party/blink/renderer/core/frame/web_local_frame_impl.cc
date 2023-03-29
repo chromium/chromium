@@ -3080,6 +3080,15 @@ void WebLocalFrameImpl::AddGenericIssueImpl(
   AuditsIssue::ReportGenericIssue(GetFrame(), error_type, violating_node_id);
 }
 
+void WebLocalFrameImpl::AddGenericIssueImpl(
+    mojom::blink::GenericIssueErrorType error_type,
+    int violating_node_id,
+    const WebString& violating_node_attribute) {
+  DCHECK(GetFrame());
+  AuditsIssue::ReportGenericIssue(GetFrame(), error_type, violating_node_id,
+                                  violating_node_attribute);
+}
+
 void WebLocalFrameImpl::SetTextCheckClient(
     WebTextCheckClient* text_check_client) {
   text_check_client_ = text_check_client;
