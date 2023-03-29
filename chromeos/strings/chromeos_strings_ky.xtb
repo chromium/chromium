@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> түзмөктүн ичинен <ph name="NAME" /> деп аталган <ph name="INDEX" />-түзмөк.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
+<translation id="7131634559772719176">Алдын ала коюлган параметрлерди ырастоо</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Авто түс режимин иштетүү</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="8045012663542226664">Микрофондун үнүн басуу</translation>
+<translation id="8050091914317269817">Бул тушкагазды тандасаңыз, автоматтык караңгы тема жана тушкагаздардын түсүн окшоштуруп тандоо күйгүзүлөт.</translation>
 <translation id="8075838845814659848">Батареянын кубаты</translation>
 <translation id="8076492880354921740">Өтмөктөр</translation>
 <translation id="8082366717211101304">Android колдонмолорунан DNS чечилбей жатат</translation>

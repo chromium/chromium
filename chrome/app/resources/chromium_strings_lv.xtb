@@ -94,6 +94,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3258596308407688501">Chromium nevar nolasīt savu datu direktoriju un ierakstīt tajā:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Šis ceļvedis palīdzēs labāk izprast jums pieejamās iespējas, lai pārlūks Chromium atbilstu jūsu vajadzībām</translation>
 <translation id="3283186697780795848">Ir instalēta Chromium versija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
 <translation id="328888136576916638">Trūkst Google API atslēgu. Tiks atspējotas dažas Chromium funkcijas.</translation>
@@ -379,6 +380,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="924957577793602335">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="93478295209880648">Iespējams, Chromium nedarbosies pareizi, jo tas vairs netiek atbalstīts operētājsistēmās Windows XP un Windows Vista.</translation>
 <translation id="942598560705308788">Chromium pārvaldītie sertifikāti</translation>
+<translation id="959579472876010517">Pilnvērtīga Chromium izmantošana</translation>
 <translation id="965162752251293939">Kas izmanto pārlūku Chromium?</translation>
 <translation id="967427899662692980">Visaugstākais Chromium drošības līmenis</translation>
 <translation id="9792300276217204">Vienmēr notīrīt vietnes datus no ierīces, kad tiek aizvērts pārlūks Chrome</translation>

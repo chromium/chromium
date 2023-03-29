@@ -479,6 +479,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4342946437867096381">Jūs jau esat saglabājis paroli šai vietnei savā Google kontā. Google var izvēlēties jaunāko paroli jūsu vietā.</translation>
 <translation id="4343046787186034850">Piekļuve kamerai un mikrofonam ir atļauta</translation>
 <translation id="4359125752503270327">Šī lapa tiks atvērta citā lietojumprogrammā.</translation>
+<translation id="4371526908359194219">E-pasta paziņojumi</translation>
 <translation id="4375040482473363939">Meklēšana ar kvadrātkodu</translation>
 <translation id="4378154925671717803">Tālrunis</translation>
 <translation id="4389019817280890563">Pieskarieties, lai mainītu valodu.</translation>
@@ -580,6 +581,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4986678885919050584">Noņemt no šīs ierīces</translation>
 <translation id="498985224078955265">Lai nosūtītu šo cilni uz citu ierīci, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
+<translation id="5016420433031926653">Nosūtīt uz e-pasta adresi <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Atgādināt vēlāk</translation>
 <translation id="5037676449506322593">Atlasīt visu</translation>
 <translation id="5039804452771397117">Atļaut</translation>
@@ -755,6 +757,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6219550825416862075">Laipni lūdzam atpakaļ!</translation>
 <translation id="6219688215832490856">Nekad netulkot</translation>
 <translation id="6223816392543092032">Iegūstiet savas grāmatzīmes, vēsturi, paroles un citus iestatījumus visās savās ierīcēs.</translation>
+<translation id="6224759905509595045">Apstiprināt identitāti…</translation>
 <translation id="6229318421047648685">Pieprasīt vietni datoriem</translation>
 <translation id="6231782223312638214">Ieteikts</translation>
 <translation id="6232329973559504466">Meklēt inkognito režīmā</translation>
@@ -915,6 +918,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7108762695052995889">Apmeklēt vietni</translation>
 <translation id="7133798577887235672">Vārds, uzvārds</translation>
 <translation id="7136892417564438900">Kamera nav pieejama.</translation>
+<translation id="7161230316646448869">Sinhronizējiet grāmatzīmes, vēsturi un citu informāciju visās savās ierīcēs</translation>
 <translation id="7162168282402939716">Atbloķēt inkognito cilnes, izmantojot šo autentifikācijas veidu: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Aizsargājiet savas paroles pret drošības apdraudējumiem.</translation>
 <translation id="7173114856073700355">Atvērt iestatījumus</translation>
@@ -1170,6 +1174,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8978059030508051916">{count,plural, =0{Nav uzlauztu paroļu}=1{{count} uzlauzta parole}zero{{count} uzlauztu paroļu}one{{count} uzlauzta parole}other{{count} uzlauztas paroles}}</translation>
 <translation id="8981454092730389528">Google aktivitātes vadīklas</translation>
 <translation id="8985320356172329008">Pierakstījies Google kontā kā</translation>
+<translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
 <translation id="9000089900434778519">Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
 <translation id="9034759925968272072">Jūs netiksiet izrakstīts no sava Google konta. Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> var būt citu veidu pārlūkošanas vēstures dati.</translation>

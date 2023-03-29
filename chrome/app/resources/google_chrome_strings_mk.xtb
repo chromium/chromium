@@ -27,6 +27,7 @@
 <translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Водичов ви ги објаснува опциите што може да ги изберете за Chrome да функционира како што сакате</translation>
 <translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
 <translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -69,6 +70,7 @@
 <translation id="2131230230468101642">Заради заштита на вашата приватност, автоматски ги бришеме вашите интереси што се постари од 4 седмици. Додека прелистувате, може да се појави интерес на списокот повторно. Или можете да ги отстраните интересите што не сакате Chrome да ги зема предвид.</translation>
 <translation id="2139300032719313227">Рестартирајте го Chrome OS</translation>
 <translation id="2151406531797534936">Рестартирајте го Chrome сега</translation>
+<translation id="2163996651553460171">Извлечете го максимумот од Chrome</translation>
 <translation id="2174917724755363426">Инсталирањето не е завршено. Дали сигурно сакате да го откажете?</translation>
 <translation id="223889379102603431">Информации за тоа како Chrome управува со своите сертификати за администраторски права</translation>
 <translation id="2258103955319320201">За да пристапувате до вашите работи на прелистувачот Chrome на сите уреди, најавете се и вклучете ја синхронизацијата</translation>

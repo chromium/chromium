@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">మీరు ఇప్పటికే మీ Google ఖాతాలో ఈ సైట్ కోసం పాస్‌వర్డ్‌ను సేవ్ చేశారు. Google మీ కోసం అత్యంత ఇటీవలి పాస్‌వర్డ్‌ను ఎంపిక చేయగలదు.</translation>
 <translation id="4343046787186034850">కెమెరా, మైక్రోఫోన్ యాక్సెస్ అనుమతించబడ్డాయి</translation>
 <translation id="4359125752503270327">ఈ పేజీ మరొక అప్లికేషన్‌లో తెరవబడుతుంది.</translation>
+<translation id="4371526908359194219">ఈమెయిల్ నోటిఫికేషన్‌లు</translation>
 <translation id="4375040482473363939">QR కోడ్ శోధన</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4389019817280890563">భాషను మార్చడానికి నొక్కండి.</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">ఈ పరికరం నుండి తీసివేయండి</translation>
 <translation id="498985224078955265">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, రెండు పరికరాల్లోనూ Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
+<translation id="5016420433031926653"><ph name="USER_EMAIL" />‌కు పంపండి</translation>
 <translation id="5017828934289857214">నాకు తర్వాత గుర్తు చేయి</translation>
 <translation id="5037676449506322593">అన్నీ ఎంచుకోండి</translation>
 <translation id="5039804452771397117">అనుమతించండి</translation>
@@ -755,6 +757,7 @@
 <translation id="6219550825416862075">పునఃస్వాగతం</translation>
 <translation id="6219688215832490856">ఎన్నటికీ అనువదించవద్దు</translation>
 <translation id="6223816392543092032">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, అలాగే ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాల్లో పొందండి.</translation>
+<translation id="6224759905509595045">ఇది మీరేనని వెరిఫై చేయండి…</translation>
 <translation id="6229318421047648685">డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
 <translation id="6231782223312638214">సూచించబడింది</translation>
 <translation id="6232329973559504466">అజ్ఞాత సెర్చ్</translation>
@@ -915,6 +918,7 @@
 <translation id="7108762695052995889">సైట్‌ను సందర్శించండి</translation>
 <translation id="7133798577887235672">పూర్తి పేరు</translation>
 <translation id="7136892417564438900">కెమెరా అందుబాటులో లేదు</translation>
+<translation id="7161230316646448869">పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లను, హిస్టరీని, ఇంకా మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="7162168282402939716">అజ్ఞాత ట్యాబ్‌లను <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
 <translation id="7172852049901402487">సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
@@ -1170,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{count} చోరీకి గురైన పాస్‌వర్డ్}other{{count} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="8981454092730389528">Google కార్య‌క‌లాపాల నియంత్రణలు</translation>
 <translation id="8985320356172329008">Googleకు ఇలా సైన్ ఇన్ చేశారు</translation>
+<translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
 <translation id="9000089900434778519">మీ సెర్చ్ ఇంజిన్ <ph name="DSE_NAME" />. వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి దాని సూచనలను చూడండి.</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>
 <translation id="9034759925968272072">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />లో మీ Google ఖాతా ఇతర రకాల బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>

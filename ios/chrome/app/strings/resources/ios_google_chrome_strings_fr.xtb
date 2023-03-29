@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
 <translation id="3173834708294760622">Page Google Chrome</translation>
 <translation id="3196546062792660320">Chrome vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>
+<translation id="322254490661677575">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète.</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3345341804167540816">Utilisez Chrome où que vous soyez</translation>
 <translation id="3503014945441706099">Profitez aussi sous ce profil Chrome de la navigation sécurisée avec protection renforcée</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chrome actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Votre organisation vous demande de rester déconnecté de Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
+<translation id="4064699917955374540">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité.</translation>
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> utilisait Chrome et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>

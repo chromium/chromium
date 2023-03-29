@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Chromium'dan maksimum yararlanmaq üçün Google Hesabınızla Chromium'a daxil olun.</translation>
 <translation id="3639997914391704523">Google Hesabınız ilə daxil olduqda Chromium parollarınızı yoxlaya bilər.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> bu cihazda Chromium istifadə edirdi və əlfəcinlər, parollar və digər ayarlar qalıb.</translation>
+<translation id="372658070733623520">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün kimliyinizi təsdiq edin.</translation>
 <translation id="3805899903892079518">Chromium məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
 <translation id="4043291146360695975">Parollar yalnız bu cihazda Parol Menecerində saxlanılır.</translation>
 <translation id="4099085513035183040">Chromium Beta'da dəstəklənmir</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chromium datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chromium'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
 <translation id="5983312940147103417">Chromium'u yaxşılaşdırın</translation>
 <translation id="6062449165341879460">Təşkilatınızın (<ph name="DOMAIN" />) bu hesabda saxladığınız Chromium datası, əlfəcinlər, tarixçələr, parollar və digər ayarlara girişi olacaq. Hesabdan çıxdığınız zaman datanız bu cihazdan silinəcək.  Bununla belə, datanız idarə olunan Google Hesabınızda saxlanacaq və təşkilatınız üçün əlçatan olacaq. Təşkilatınız həmçinin Chromium'un davranışını dəyişə bilən hesab üçün xüsusi istifadəçi siyasətləri təyin edə bilər.</translation>
+<translation id="61109258320235597">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün parol ifadəsi daxil edin.</translation>
 <translation id="6119647025869519954">Chromium'u defolt etmək üçün:
 1. Ayarları açın
 2. Defolt Brauzer Tətbiqinə toxunun

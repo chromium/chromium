@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">ለዚህ ጣቢያ የይለፍ ቃል አስቀድመው በGoogle መለያዎ ውስጥ አስቀምጠዋል። Google በጣም የቅርብ ጊዜውን የይለፍ ቃል ለእርስዎ መምረጥ ይችላል።</translation>
 <translation id="4343046787186034850">የካሜራ እና የማይክሮፎን መዳረሻ ተፈቅዷል</translation>
 <translation id="4359125752503270327">ይህ ገጽ በሌላ መተግበሪያ ውስጥ ይከፈታል።</translation>
+<translation id="4371526908359194219">የኢሜይል ማሳወቂያዎች</translation>
 <translation id="4375040482473363939">የQR ኮድ ፍለጋ</translation>
 <translation id="4378154925671717803">ስልክ</translation>
 <translation id="4389019817280890563">ቋንቋን ለመለወጥ መታ ያድርጉ።</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">ከዚህ መሣሪያ አስወግድ</translation>
 <translation id="498985224078955265">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ በሁለቱም መሣሪያዎች ላይ ወደ Chrome ይግቡ።</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
+<translation id="5016420433031926653">ወደ <ph name="USER_EMAIL" /> ላክ</translation>
 <translation id="5017828934289857214">በኋላ አስታውሰኝ</translation>
 <translation id="5037676449506322593">ሁሉንም ምረጥ</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
@@ -755,6 +757,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6219550825416862075">እንኳን በደህና ተመልሰው መጡ</translation>
 <translation id="6219688215832490856">በጭራሽ አትተርጉም</translation>
 <translation id="6223816392543092032">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ያግኙ።</translation>
+<translation id="6224759905509595045">እርስዎ መሆንዎን ያረጋግጡ…</translation>
 <translation id="6229318421047648685">የዴስክቶፕ ጣቢያን ጠይቅ</translation>
 <translation id="6231782223312638214">በአስተያየት የተጠቆሙ</translation>
 <translation id="6232329973559504466">ማንነት የማያሳውቅ ፍለጋ</translation>
@@ -915,6 +918,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7108762695052995889">ጣቢያ ይጎብኙ</translation>
 <translation id="7133798577887235672">ሙሉ ስም</translation>
 <translation id="7136892417564438900">ካሜራ አይገኝም</translation>
+<translation id="7161230316646448869">የእርስዎን እልባቶች፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="7162168282402939716">ማንነት የማያሳውቁ ትሮችን በ<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይክፈቱ</translation>
 <translation id="7172852049901402487">የእርስዎን የይለፍ ቃላት ከደህንነት ችግሮች በጥንቃቄ ይጠብቁ</translation>
 <translation id="7173114856073700355">ቅንብሮችን ክፈት</translation>
@@ -1170,6 +1174,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8978059030508051916">{count,plural, =0{ምንም የተጠለፈ የይለፍ ቃል የለም}=1{{count} የተጠለፈ የይለፍ ቃል}one{{count} የተጠለፈ የይለፍ ቃል}other{{count} የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="8981454092730389528">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="8985320356172329008">እንደሚከተለው ሆነው ወደ Google በመለያ ገብተዋል፦</translation>
+<translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
 <translation id="9000089900434778519">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="9008201768610948239">ችላ በል</translation>
 <translation id="9034759925968272072">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። የእርስዎ Google መለያ በ<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ውስጥ ሌሎች ዓይነቶች የአሰሳ ታሪኮች ሊኖሩት ይችላል።</translation>

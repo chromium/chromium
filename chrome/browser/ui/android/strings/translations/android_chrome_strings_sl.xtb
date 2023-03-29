@@ -1320,6 +1320,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8058746566562539958">Odpiranje na novem zavihku v Chromu</translation>
 <translation id="8062594758852531064">Razširjeno vnaprejšnje nalaganje:</translation>
 <translation id="8063895661287329888">Zaznamka ni bilo mogoče dodati.</translation>
+<translation id="8066816452984416180">Hitro shranite to stran med zaznamke. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="806745655614357130">Podatki naj bodo ločeni</translation>
 <translation id="8073388330009372546">Odpri sliko na novem zavihku</translation>
 <translation id="8076492880354921740">Zavihki</translation>
@@ -1351,6 +1352,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8216351761227087153">Glejte</translation>
 <translation id="8218622182176210845">Upravljanje računa</translation>
 <translation id="8223642481677794647">Meni kartice vira</translation>
+<translation id="8236097722223016103">Dodajanje med zaznamke</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8255617931166444521">Spletna mesta smejo uporabljati piškotke samo za ogled dejavnosti brskanja samo na danem spletnem mestu.</translation>
 <translation id="8259179246279078674">Ker so vnaprej naložene strani šifrirane, Google ne bo izvedel ničesar o vsebini vnaprej naložene strani. Googlovi strežniki bodo izvedeli, katera spletna mesta so zasebno vnaprej naložena. Ti podatki so uporabljeni samo za vnaprejšnje nalaganje strani in niso povezani z nobenimi podatki v vašem računu Google.</translation>
@@ -1498,6 +1500,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8993760627012879038">Odpiranje novega anonimnega zavihka</translation>
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
+<translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
 <translation id="8998729206196772491">Prijavljate se z računom, ki ga upravlja <ph name="MANAGED_DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
 <translation id="9022871169049522985">Spletna mesta in oglaševalci lahko merijo uspešnost svojih oglasov.</translation>

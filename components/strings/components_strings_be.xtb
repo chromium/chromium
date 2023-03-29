@@ -630,6 +630,7 @@
 <translation id="2469153820345007638">Парадак "ад 1 да N"</translation>
 <translation id="2470767536994572628">Калі вы будзеце змяняць анатацыі, гэты дакумент вернецца ў аднастаронкавы выгляд і прыме першапачатковую пазіцыю</translation>
 <translation id="2479410451996844060">Няправільны URL-адрас пошуку.</translation>
+<translation id="2480300195898055381">Ва Уліковым запісе Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="248348093745724435">Палітыкі прылады</translation>
 <translation id="2491120439723279231">Ёсць памылкі ў сертыфікаце сервера.</translation>
@@ -843,6 +844,7 @@
 <translation id="3029752078111257850">Навіны свету</translation>
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
+<translation id="3041450980936463495">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас будзе захаваны ў вашым Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Інфармацыя аб сертыфікаце</translation>
 <translation id="305162504811187366">Гісторыю Аддаленага працоўнага стала Chrome, у тым ліку меткі часу, хосты і ідэнтыфікатары сеансаў кліентаў</translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
@@ -1794,6 +1796,7 @@
 <translation id="5324080437450482387">Выбраць кантактныя звесткі</translation>
 <translation id="5329858041417644019">Ваш браўзер не знаходзіцца пад кіраваннем</translation>
 <translation id="5332219387342487447">Спосаб дастаўкі</translation>
+<translation id="5332769172018416402">Папрасіць у паведамленні</translation>
 <translation id="5333022057423422993">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем вам абараніць свае ўліковыя запісы, праверыўшы захаваныя паролі.</translation>
 <translation id="5334013548165032829">Падрабязныя сістэмныя журналы</translation>
 <translation id="5334145288572353250">Захаваць адрас?</translation>
@@ -1934,6 +1937,7 @@
 <translation id="5695542892312572833">Пацвердзіць і завяршыць куплю з дапамогай Windows Hello?</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="570530837424789914">Кіраваць...</translation>
+<translation id="5706906618852913030">Захаваць ва ўліковым запісе?</translation>
 <translation id="5707154300732650394">Працягнуць пошук</translation>
 <translation id="57094364128775171">Прапанаваць надзейны пароль…</translation>
 <translation id="571403275720188526">(arm64)</translation>

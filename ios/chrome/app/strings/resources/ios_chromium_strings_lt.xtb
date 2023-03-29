@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Jei norite išnaudoti visas „Chromium“ galimybes, prisijunkite prie „Chromium“ naudodami „Google“ paskyrą.</translation>
 <translation id="3639997914391704523">„Chromium“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> naudojo „Chromium“ ir paliko žymes, slaptažodžius bei kitus nustatymus šiame įrenginyje.</translation>
+<translation id="372658070733623520">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="3805899903892079518">„Chromium“ nepasiekia nuotraukų ar vaizdo įr. Įgalinkite prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="4043291146360695975">Slaptažodžiai saugomi Slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chromium“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chromium“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="5983312940147103417">„Chromium“ tobulinimas</translation>
 <translation id="6062449165341879460">Organizacija „<ph name="DOMAIN" />“ galės pasiekti „Chromium“ duomenis, žymes, istoriją, slaptažodžius ir kitus nustatymus, kuriuos saugote šioje paskyroje. Kai atsijungsite, šio įrenginio duomenys bus išvalyti.  Tačiau duomenys bus toliau saugomi jūsų valdomoje „Google“ paskyroje ir bus pasiekiami jūsų organizacijai. Jūsų organizacija taip pat gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chromium“ veikimą.</translation>
+<translation id="61109258320235597">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, įveskite slaptafrazę.</translation>
 <translation id="6119647025869519954">Jei norite nustatyti „Chromium“ kaip numatytąją naršyklę, atlikite toliau nurodytus veiksmus.
 1. Atidarykite skiltį „Nustatymai“.
 2. Palieskite „Numatytoji naršyklės programa“.

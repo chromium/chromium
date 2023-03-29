@@ -93,6 +93,7 @@
 <translation id="3190315855212034486">‏اوه! Chromium خراب شده است. دوباره راه‌اندازی شود؟</translation>
 <translation id="3258596308407688501">‏Chromium نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد:
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">‏این راهنما به شما کمک می‌کند انتخاب‌هایتان را درک کنید تا Chromium آن‌طور که می‌خواهید برایتان کار کند</translation>
 <translation id="3283186697780795848">‏Chromium نسخه <ph name="PRODUCT_VERSION" /> نصب شده است</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
 <translation id="328888136576916638">‏کلیدهای Google API وجود ندارند. برخی از عملکردهای Chromium از کار خواهند افتاد.</translation>
@@ -380,6 +381,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="924957577793602335">‏شخصی‌سازی کردن Chromium</translation>
 <translation id="93478295209880648">‏Chromium ممکن است درست کار نکند زیرا دیگر در Windows XP یا Windows Vista پشتیبانی نمی‌شود</translation>
 <translation id="942598560705308788">‏گواهینامه‌های تحت‌مدیریت Chromium</translation>
+<translation id="959579472876010517">‏بیشترین استفاده را از Chromium ببرید</translation>
 <translation id="965162752251293939">‏چه‌کسی از Chromium استفاده می‌کند؟</translation>
 <translation id="967427899662692980">‏دریافت قوی‌ترین امنیت Chromium</translation>
 <translation id="9792300276217204">‏داده‌های سایت همواره بعداز بستن Chromium از دستگاه پاک شود</translation>

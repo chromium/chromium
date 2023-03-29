@@ -24,6 +24,7 @@
 <translation id="1434626383986940139">Applicazioni Chrome Canary</translation>
 <translation id="1507198376417198979">Personalizza il tuo nuovo profilo Chrome</translation>
 <translation id="1516530951338665275">Google Chrome richiede l'accesso al Bluetooth per continuare l'accoppiamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Questa guida ti aiuta a comprendere le tue scelte, per fare in modo che Chrome funzioni come vuoi</translation>
 <translation id="1547295885616600893">La realizzazione di ChromeOS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -64,6 +65,7 @@
 <translation id="2131230230468101642">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chrome prenda in considerazione.</translation>
 <translation id="2139300032719313227">Riavvia ChromeOS</translation>
 <translation id="2151406531797534936">Riavvia subito Chrome</translation>
+<translation id="2163996651553460171">Sfrutta al massimo il potenziale di Chrome</translation>
 <translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>
 <translation id="223889379102603431">Informazioni su come Chrome gestisce i suoi certificati radice</translation>
 <translation id="2258103955319320201">Per accedere ai tuoi contenuti del browser Chrome su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione</translation>

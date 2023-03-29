@@ -755,6 +755,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6219550825416862075">Кайтып келишиңиз менен</translation>
 <translation id="6219688215832490856">Эч качан которулбасын</translation>
 <translation id="6223816392543092032">Бардык түзмөктөрүңүздөн кыстармаларды, таржымалды, сырсөздөрдү жана башка параметрлериңизди алыңыз.</translation>
+<translation id="6224759905509595045">Өзүңүздү ырастаңыз…</translation>
 <translation id="6229318421047648685">Компьютердик версия талап кылынат</translation>
 <translation id="6231782223312638214">Сунушталат</translation>
 <translation id="6232329973559504466">Жашыруун издөө</translation>
@@ -915,6 +916,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7108762695052995889">Сайтка баш багуу</translation>
 <translation id="7133798577887235672">Толук аты-жөнү</translation>
 <translation id="7136892417564438900">Камера жеткиликсиз</translation>
+<translation id="7161230316646448869">Бардык түзмөктөрдөгү кыстармаларды, таржымалды жана башкаларды шайкештириңиз</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен жашыруун өтмөктөрдүн кулпусун ачуу</translation>
 <translation id="7172852049901402487">Сырсөздөрүңүздү коопсуз сактаңыз</translation>
 <translation id="7173114856073700355">Жөндөөлөрдү ачуу</translation>
@@ -1170,6 +1172,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8978059030508051916">{count,plural, =0{Уурдалган сырсөздөр жок}=1{{count} уурдалган сырсөз бар}other{{count} уурдалган сырсөз бар}}</translation>
 <translation id="8981454092730389528">Google'дагы аракеттерди башкаруу каражаттары</translation>
 <translation id="8985320356172329008">Google'га төмөнкү ат менен кирдиңиз</translation>
+<translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
 <translation id="9000089900434778519">Издөө каражатыңыз: <ph name="DSE_NAME" />. Издөө таржымалын өчүрүү үчүн, бар болсо, издөө каражатындагы нускамаларды караңыз.</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>
 <translation id="9034759925968272072">Google Каттоо эсебиңизден чыкпайсыз. Google Аккаунтуңуздун серептөө таржымалынын башка түрлөрү <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>

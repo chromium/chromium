@@ -1253,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}many{Осталось # цифр}other{Осталось # цифры}}</translation>
 <translation id="6867938213751067702">Скачивание файла <ph name="FILENAME" /> приостановлено</translation>
 <translation id="6878400149835617132">Быстрые клавиши отключены</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="6884665277231944629">Вернуться к сегодняшней дате</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
 <translation id="688631446150864480">Чтобы перейти к другому окну, нажмите клавишу со стрелкой вниз</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
+<translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
 <translation id="7780094051999721182">ярлыки</translation>
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7796735576426975947">Новые уведомления скрыты</translation>

@@ -468,7 +468,7 @@
 <translation id="4272631900155121838">如要掃描 QR 圖碼，請在設定中啟用相機</translation>
 <translation id="4277990410970811858">安全瀏覽</translation>
 <translation id="4281844954008187215">服務條款</translation>
-<translation id="4304713468139749426">密碼管理員</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="430793432425771671">同步處理所有資料</translation>
 <translation id="4309403553630140242">輕觸兩下即可查看更多資訊</translation>
 <translation id="430967081421617822">不限時間</translation>
@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">你已在 Google 帳戶中儲存這個網站的密碼，Google 可幫你保留最新的密碼。</translation>
 <translation id="4343046787186034850">已允許存取相機和麥克風</translation>
 <translation id="4359125752503270327">這個網頁會在其他應用程式中開啟。</translation>
+<translation id="4371526908359194219">電子郵件通知</translation>
 <translation id="4375040482473363939">QR 圖碼搜尋</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4389019817280890563">輕觸即可變更語言。</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">從這部裝置移除</translation>
 <translation id="498985224078955265">如要將這個分頁傳送到另一部裝置，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="5005498671520578047">複製密碼</translation>
+<translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍後提醒我</translation>
 <translation id="5037676449506322593">全選</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -1172,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{沒有任何密碼外洩}=1{{count} 組密碼外洩}other{{count} 組密碼外洩}}</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
+<translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="9000089900434778519">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>

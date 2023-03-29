@@ -757,7 +757,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6219550825416862075">Dobro došli nazad</translation>
 <translation id="6219688215832490856">Nikada ne prevodi</translation>
 <translation id="6223816392543092032">Preuzmite oznake, historiju, lozinke i druge postavke na svim svojim uređajima.</translation>
-<translation id="6224759905509595045">Potvrdite da ste to vi…</translation>
+<translation id="6224759905509595045">Potvrdite identitet…</translation>
 <translation id="6229318421047648685">Zatraži web lokaciju za računar</translation>
 <translation id="6231782223312638214">Predloženo</translation>
 <translation id="6232329973559504466">Pretraživanje u anonimnom načinu rada</translation>
@@ -918,7 +918,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7108762695052995889">Posjeti web lokaciju</translation>
 <translation id="7133798577887235672">Puno ime i prezime</translation>
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
-<translation id="7161230316646448869">Sinkronizirajte svoje oznake, povijest i drugo na svim uređajima</translation>
+<translation id="7161230316646448869">Sinhronizirajte oznake, historiju i drugo na svim uređajima</translation>
 <translation id="7162168282402939716">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje anonimnih kartica</translation>
 <translation id="7172852049901402487">Zaštitite lozinke od sigurnosnih problema</translation>
 <translation id="7173114856073700355">Otvori postavke</translation>
@@ -1174,6 +1174,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8978059030508051916">{count,plural, =0{Nema ugroženih lozinki}=1{{count} ugrožena lozinka}one{{count} ugrožena lozinka}few{{count} ugrožene lozinke}other{{count} ugroženih lozinki}}</translation>
 <translation id="8981454092730389528">Kontrole aktivnosti na Googleu</translation>
 <translation id="8985320356172329008">Prijavljeni ste na Google kao</translation>
+<translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9000089900434778519">Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
 <translation id="9034759925968272072">Nećete biti odjavljeni s Google računa. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

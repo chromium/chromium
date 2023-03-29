@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">‏قبلاً گذرواژه‌ای برای این سایت در «حساب Google» خود ذخیره کرده‌اید. Google می‌تواند جدیدترین گذرواژه را برای شما انتخاب کند.</translation>
 <translation id="4343046787186034850">دسترسی به دوربین و میکروفون مجاز است</translation>
 <translation id="4359125752503270327">این صفحه در برنامه دیگری باز می‌شود.</translation>
+<translation id="4371526908359194219">اعلان‌های ایمیلی</translation>
 <translation id="4375040482473363939">جستجوی رمزینه پاسخ‌سریع</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4389019817280890563">برای تغییر زبان، ضربه بزنید.</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">حذف از این دستگاه</translation>
 <translation id="498985224078955265">‏برای ارسال این برگه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
+<translation id="5016420433031926653">ارسال به <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">بعداً به من یادآوری شود</translation>
 <translation id="5037676449506322593">انتخاب همه</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
@@ -1172,6 +1174,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8978059030508051916">{count,plural, =0{گذرواژه لورفته‌ای ندارید}=1{{count} گذرواژه لورفته}one{{count} گذرواژه لورفته}other{{count} گذرواژه لورفته}}</translation>
 <translation id="8981454092730389528">‏کنترل‌های فعالیت Google</translation>
 <translation id="8985320356172329008">‏ورود به سیستم Google به‌عنوان</translation>
+<translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9000089900434778519">موتور جستجوی شما <ph name="DSE_NAME" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9034759925968272072">‏از حساب Google خود خارج نمی‌شوید. حساب Google شما ممکن است ممکن است اشکال دیگری از سابقه مرورتان در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> وجود داشته باشد.</translation>

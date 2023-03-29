@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">ତଳ ଡାହାଣ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="2122719317867821810">ଏହି ନୀତି ଆଶାନୁରୂପ ଭାବେ କାର୍ଯ୍ୟ କରୁଛି କିନ୍ତୁ ଏକ ଦ୍ୱନ୍ଦ୍ୱ ସୃଷ୍ଟି କରୁଥିବା ମୂଲ୍ୟ ଅନ୍ୟ କୌଣସି ସ୍ଥାନରେ ସେଟ୍ କରାଯାଇଛି ଏବଂ ଏହି ନୀତି ଦ୍ୱାରା ଓଭରରାଇଡ୍ ହୋଇଛି।</translation>
 <translation id="2126374524350484896">PDF ପ୍ରଯୋଜକ:</translation>
+<translation id="2128262927290305126">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT" />ରେ</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ନୀତି ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ, ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ ଲାଗୁ ହୋଇନପାରେ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">ପୁରୁଷମାନଙ୍କର ପୋଷାକ</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">ଡିଭାଇସକୁ ରିସେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="2224337661447660594">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ନାହିଁ</translation>
 <translation id="2225927550500503913">ଭର୍ଚୁଆଲ କାର୍ଡକୁ ଚାଲୁ କରାଯାଇଛି</translation>
+<translation id="2226636330183131181">ୱାଇଫାଇ ନେଟୱାର୍କରେ <ph name="BEGIN_LINK" />ସାଇନ ଇନ କରିବା<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">ବର୍ତ୍ତମାନ ପଠାନ୍ତୁ</translation>
 <translation id="2241693394036365668">ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="2246264294482514010">10 x 12 ଇଞ୍ଚ</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3631244953324577188">ବାୟୋମେଟ୍ରିକ୍ସ</translation>
 <translation id="3632503704576938756">ସ୍କ୍ରିନ ସେୟାରିଂ ପୁଣି ଆରମ୍ଭ କରାଯାଇଛି</translation>
 <translation id="3632892046558972264">ସ୍କ୍ରିନ ସେୟାରିଂ ବିରତ କରାଯାଇଛି</translation>
+<translation id="3633035844150606508">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="ACCOUNT" />ରେ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="3633738897356909127">"Chrome ଅପଡେଟ୍ କରନ୍ତୁ" ବଟନ୍, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chrome ଅପଡେଟ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="3634530185120165534">ଟ୍ରେ 5</translation>
 <translation id="3634567936866541746">ଆପଣ ଏବେ ଏକ ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଲେଖିଛନ୍ତି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରିବା ପାଇଁ, Chrome ଆପଣଙ୍କ ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
@@ -1985,6 +1988,7 @@
 <translation id="5830698870816298009">କ୍ୟାମେରାର ବ୍ୟବହାର ଓ ଗତିବିଧି</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5838278095973806738">ଏହି ସାଇଟ୍‌ରେ କୌଣସି ସମ୍ବେଦନଶୀଳ ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସ୍‌ୱର୍ଡ କିମ୍ବା କ୍ରେଡିଟ୍‌ କାର୍ଡ) ଲେଖିବା ଉଚିତ ନୁହେଁ କାରଣ ଏହା ଆକ୍ରମଣକାରୀମାନଙ୍କ ଦ୍ୱାରା ଚୋରୀ ହୋ‍ଇଯାଇପାରେ।</translation>
+<translation id="5841338463993781099">ଆକାଉଣ୍ଟରେ ସେଭ କରିବେ?</translation>
 <translation id="5851548754964597211">ଟାବ୍‍ର ତାଲିକା</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>

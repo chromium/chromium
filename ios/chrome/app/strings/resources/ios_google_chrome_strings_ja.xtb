@@ -68,6 +68,7 @@
 <translation id="5119391094379141756">[Chrome] を選択する</translation>
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
 <translation id="5389212809648216794">カメラは別のアプリが使用中のため、Google Chrome では使用できません</translation>
+<translation id="5395376160638294582">Google アカウントの Chrome データを常に使用できるようにしてください</translation>
 <translation id="5460571915754665838">4. [Chrome] を選択する</translation>
 <translation id="5492504007368565877">現在、Google パスワード マネージャーではパスワードをチェックできません。</translation>
 <translation id="5552137475244467770">Chrome では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
@@ -122,6 +123,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">アドオンが原因でChromeがクラッシュしました。アドオンをアンインストールしてみてください。</translation>
 <translation id="8414886616817913619">組織が、Chrome を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Google アカウントの Chrome データを引き続き使用してください</translation>
 <translation id="8459495907675268833">選択したデータが Chrome から削除され、同期されたデバイスからも削除されました。他の Google サービスでの検索や操作など、Google アカウントの他の形式の閲覧履歴が history.google.com に残ることがあります。</translation>
 <translation id="850555388806794946">Chrome を既定のブラウザにするには:
   1. [設定] を開きます。

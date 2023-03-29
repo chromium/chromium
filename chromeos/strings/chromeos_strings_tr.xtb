@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> cihazdan <ph name="INDEX" />. sıradakinin adı <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Erişim noktası adı (APN)</translation>
+<translation id="7131634559772719176">Hazır ayarı onaylayın</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Otomatik renk modunu etkinleştir</translation>
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8045012663542226664">Mikrofonun sesini kapatma</translation>
+<translation id="8050091914317269817">Bu duvar kağıdını seçtiğinizde otomatik koyu mod ve duvar kağıdı renk uyumu etkinleştirilir.</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>

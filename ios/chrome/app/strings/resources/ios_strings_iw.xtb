@@ -470,6 +470,7 @@
 <translation id="4342054591427973606">{count,plural, =1{הכתובת הזו תימחק מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון.}one{הכתובות האלו יימחקו מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון.}two{הכתובות האלו יימחקו מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון.}other{הכתובות האלו יימחקו מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון.}}</translation>
 <translation id="4343046787186034850">יש הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="4359125752503270327">הדף הזה ייפתח באפליקציה אחרת.</translation>
+<translation id="4371526908359194219">התראות באימייל</translation>
 <translation id="4375040482473363939">‏חיפוש של קוד QR</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4389019817280890563">צריך להקיש לשינוי שפה</translation>
@@ -570,6 +571,7 @@
 <translation id="4986678885919050584">הסרה מהמכשיר הזה</translation>
 <translation id="498985224078955265">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chrome בשני המכשירים.</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
+<translation id="5016420433031926653">שליחה לכתובת <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">אני רוצה תזכורת מאוחר יותר</translation>
 <translation id="5037676449506322593">הכול</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
@@ -1149,6 +1151,7 @@
 <translation id="8976414606286374109">‏הכרטיסים נשמרים בחשבון Google.</translation>
 <translation id="8981454092730389528">‏בחירת הפעילויות ב-Google</translation>
 <translation id="8985320356172329008">‏התחברת ל-Google בשם</translation>
+<translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
 <translation id="9000089900434778519">מנוע החיפוש שלך הוא <ph name="DSE_NAME" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="9008201768610948239">סגירה</translation>
 <translation id="9034759925968272072">‏לא תבוצע יציאה מחשבון Google שלך. ייתכן שיהיה באפשרותך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

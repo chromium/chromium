@@ -500,6 +500,7 @@
 <translation id="2119867082804433120">కుడివైపు దిగువ భాగంలో రంధ్రాలు</translation>
 <translation id="2122719317867821810">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ వైరుధ్య విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా ఓవర్‌రైడ్ అయ్యింది.</translation>
 <translation id="2126374524350484896">PDF ప్రొడ్యూసర్:</translation>
+<translation id="2128262927290305126">మీ Google ఖాతా <ph name="ACCOUNT" />‌లో</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">పురుషుల దుస్తులు</translation>
@@ -545,6 +546,7 @@
 <translation id="2219735899272417925">పరికరాన్ని రీసెట్ చేయాల్సిన అవసరం ఉంది</translation>
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2225927550500503913">వర్చువల్ కార్డ్ ఆన్ చేయబడింది</translation>
+<translation id="2226636330183131181">WiFi నెట్‌వర్క్‌కు <ph name="BEGIN_LINK" />సైన్ ఇన్ చేస్తోంది<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
 <translation id="2246264294482514010">10 x 12 అంగుళాలు</translation>
@@ -1086,6 +1088,7 @@
 <translation id="3631244953324577188">బయోమెట్రిక్స్</translation>
 <translation id="3632503704576938756">స్క్రీన్ షేరింగ్ కొనసాగించబడింది</translation>
 <translation id="3632892046558972264">స్క్రీన్ షేరింగ్ పాజ్ చేయబడింది</translation>
+<translation id="3633035844150606508">మీ Google ఖాతా <ph name="ACCOUNT" />‌లో అడ్రస్‌ను సేవ్ చేయండి</translation>
 <translation id="3633738897356909127">'Chromeను అప్‌డేట్ చేయి' బటన్, మీ Chrome సెట్టింగ్‌ల నుండి Chromeను అప్‌డేట్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="3634530185120165534">ట్రే 5</translation>
 <translation id="3634567936866541746">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీ ఖాతాలను సురక్షితంగా ఉంచడానికి, Chrome మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయాలని సిఫార్సు చేస్తోంది.</translation>
@@ -1796,6 +1799,7 @@
 <translation id="5324080437450482387">సంప్రదింపు సమాచారాన్ని ఎంచుకోండి</translation>
 <translation id="5329858041417644019">మీ బ్రౌజర్ నిర్వహించబడటం లేదు</translation>
 <translation id="5332219387342487447">షిప్పింగ్ పద్ధతి</translation>
+<translation id="5332769172018416402">మెసేజ్‌లో అడగండి</translation>
 <translation id="5333022057423422993">డేటా ఉల్లంఘనలో మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్‌ను Chrome కనుగొనింది. మీ ఖాతాలను సురక్షించడానికి, మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను చెక్ చేయమని మేము సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="5334013548165032829">వివరణాత్మక సిస్టమ్ లాగ్‌లు</translation>
 <translation id="5334145288572353250">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
@@ -1989,6 +1993,7 @@
 <translation id="5830698870816298009">కెమెరా ఉపయోగం &amp; తరలింపు</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5838278095973806738">మీరు ఈ సైట్‌లో ఎలాంటి గోప్యమైన సమాచారాన్ని నమోదు చేయకూడదు (ఉదాహరణకు, పాస్‌వర్డ్‌లు లేదా క్రెడిట్ కార్డ్‌లు), దాడికి పాల్పడేవారు ఆ సమాచారం దొంగిలించే అవకాశం ఉంటుంది.</translation>
+<translation id="5841338463993781099">ఖాతాలో సేవ్ చేయాలా?</translation>
 <translation id="5851548754964597211">ట్యాబ్ లిస్ట్‌</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>

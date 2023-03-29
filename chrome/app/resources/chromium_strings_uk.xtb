@@ -94,6 +94,7 @@
 <translation id="3258596308407688501">Chromium не може читати та писати дані у свій каталог даних:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Цей посібник допоможе зробити роботу Chromium ефективнішою відповідно до ваших налаштувань</translation>
 <translation id="3283186697780795848">Chromium версії <ph name="PRODUCT_VERSION" /> встановлено</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="328888136576916638">Ключі API Google відсутні. Деякі функції Chromium буде вимкнено.</translation>
@@ -382,6 +383,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="924957577793602335">Персоналізуйте Chromium</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>
 <translation id="942598560705308788">Сертифікати, якими керує Chromium</translation>
+<translation id="959579472876010517">Користуйтеся всіма можливостями Chromium</translation>
 <translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="967427899662692980">Отримайте найвищий рівень безпеки в Chromium</translation>
 <translation id="9792300276217204">Завжди очищати дані сайтів із пристрою, коли ви закриваєте Chromium</translation>

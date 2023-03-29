@@ -24,7 +24,7 @@
 <translation id="1087110696012418426">မင်္ဂလာ နေ့လယ်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242">သင့် <ph name="CATEGORY" />၊ ဖိုင်၊ အက်ပ်နှင့် အခြားအရာများကို ရှာပါ။ သင့်အက်ပ်များသို့ သွားရန် မြားခလုတ်များကို သုံးပါ။</translation>
 <translation id="109942774857561566">ပျင်းနေတယ်</translation>
-<translation id="1104084341931202936">အများသုံးစွဲနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
+<translation id="1104084341931202936">အများသုံးနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
 <translation id="1111021433905331574">သင့်ကီးဘုတ်နောက်ခံမီးရောင်ကို ဆက်တင်များ &gt; <ph name="APP_TITLE" /> တွင် ပြောင်းနိုင်သည်</translation>
 <translation id="112308213915226829">အလိုအလျောက် ဝှက်သည့် စင်</translation>
@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1182225749592316782">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="1183863904939664422">ဤအကြံပြုချက်ကို စိတ်မဝင်စားပါ</translation>
+<translation id="1184126796192815024">ဤကွန်ရက်သည် သင့်ဖုန်းမှ တိုက်ရိုက်လွှင့်သည့်အက်ပ်များကို မပံ့ပိုးပါ။ သင့်ဖုန်း၏ ဟော့စပေါ့ကို သုံးကြည့်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">နောက်ထပ် လုံခြုံရေးအတွက် စကားဝှက် (သို့) ပင်နံပါတ် ထည့်ပါ</translation>
 <translation id="118532027333893379">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို တို့ပါ</translation>
 <translation id="1190609913194133056">အသိပေးချက် စင်တာ</translation>
@@ -110,7 +111,7 @@
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="146902737843070955">သင့်စီမံခန့်ခွဲသူက ဤပြောင်းလဲမှုအတွက် တောင်းဆိုထားသည်</translation>
 <translation id="147310119694673958">ဖုန်းဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1479909375538722835">မျောနေသော အများသုံးစွဲနိုင်မှု မီနူး</translation>
+<translation id="1479909375538722835">မျောနေသော အများသုံးနိုင်မှု မီနူး</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />၊ Calendar ပြသမှုဖွင့်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ကို <ph name="SECOND_ITEM_TITLE" /> ဖြင့် လှဲလှယ်ထားသည်</translation>
@@ -138,7 +139,7 @@
 <translation id="1611993646327628135">ဖွင့်ထားသည်</translation>
 <translation id="1618835956950524778">စင်ပေါ်တွင် Launcher ခလုတ်ကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
-<translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
+<translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
 <translation id="163517899691012366">‘မနှောင့်ယှက်ရ’ ဖွင့်သောအခါ အကြောင်းကြားချက်များကို အသံပိတ်သည်</translation>
 <translation id="1637505162081889933">စက် <ph name="NUM_DEVICES" /> ခု</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -284,7 +285,7 @@
 <translation id="2339073806695260576">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန်၊ လေဆာပွိုင်တာ သို့မဟုတ် မှန်ဘီလူးကိုသုံးရန် ခုံးနေသည့် စတိုင်လပ်စ်ခလုတ်ကို တို့ပါ။</translation>
 <translation id="2341729377289034582">ထောင်လိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
 <translation id="2345226652884463045">ပြင်ဆင်ရန်အတွက် စာသားရွေးရန် enter နှိပ်ပါ (သို့) search + space နှိပ်ပါ။</translation>
-<translation id="2350794187831162545"><ph name="LANGUAGE" /> စကားပြောကို အခု စက်အတွင်းမှာပင် လုပ်ဆောင်နေပြီး အော့ဖ်လိုင်းသုံးနိုင်ပါပြီ။ 'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် နှုတ်တိုက်ချပေးခြင်းဘာသာစကားကို ပြောင်းနိုင်သည်။</translation>
+<translation id="2350794187831162545"><ph name="LANGUAGE" /> စကားပြောကို အခု စက်အတွင်းမှာပင် လုပ်ဆောင်နေပြီး အော့ဖ်လိုင်းသုံးနိုင်ပါပြီ။ 'ဆက်တင်များ' &gt; 'အများသုံးနိုင်မှု' တွင် နှုတ်တိုက်ချပေးခြင်းဘာသာစကားကို ပြောင်းနိုင်သည်။</translation>
 <translation id="2352467521400612932">စတိုင်လပ်စ်ခဲတံ ဆက်တင်များ</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ကို ဖွင့်သုံးနေ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
@@ -1252,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ဂဏန်းတစ်လုံး ကျန်သည်}other{ဂဏန်း # လုံး ကျန်သည်}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ခြင်း ခဏရပ်ထားသည်</translation>
 <translation id="6878400149835617132">ဖြတ်လမ်းလင့်ခ်ကို ပိတ်ထားသည်</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{အက်ပ် ၁ ခု}other{အက်ပ် # ခု}}</translation>
 <translation id="6884665277231944629">ယနေ့သို့ ပြန်သွားရန်</translation>
 <translation id="6886172995547742638">သင့် <ph name="DEVICE_TYPE" /> သည် စွမ်းဆောင်ရည် နိမ့်နေနိုင်သည်။ အသိအမှတ်ပြုထားသော <ph name="PREFERRED_MINIMUM_POWER" />W သို့မဟုတ် ပိုမြင့်သော USB-C ပါဝါ ကြားခံကိရိယာ အသုံးပြုပါ။</translation>
 <translation id="688631446150864480">ဝင်းဒိုးများပြောင်းရန် 'အောက်ညွှန်မြား' နှိပ်ပါ</translation>
@@ -1432,6 +1434,7 @@
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="776344839111254542">အပ်ဒိတ်အသေးစိတ် အချက်အလက်များကို ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
+<translation id="7769299611924763557">သင်၏ GIF မကြာမီ အသင့်ဖြစ်ပါမည်</translation>
 <translation id="7780094051999721182">ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
 <translation id="7796735576426975947">အကြောင်းကြားချက်အသစ် ဖျောက်ထားသည်</translation>
@@ -1490,7 +1493,7 @@
 <translation id="8029629653277878342">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် ပင်နံပါတ် သို့မဟုတ် စကားဝှက်လိုအပ်သည်</translation>
 <translation id="8030169304546394654">ချိတ်ဆက်မှု ဖြုတ်ထား</translation>
 <translation id="8036504271468642248">ယခင် ဝါကျ</translation>
-<translation id="8042893070933512245">အများသုံးစွဲနိုင်မှုဆက်တင်များ မီနူးကို ဖွင့်ရန်</translation>
+<translation id="8042893070933512245">အများသုံးနိုင်မှုဆက်တင်များ မီနူးကို ဖွင့်ရန်</translation>
 <translation id="8044457332620420407">ကီးဘုတ်နောက်ခံမီး ပိတ်ပြီးပြီ</translation>
 <translation id="8048077032188362328">သင့်စီမံခန့်ခွဲသူက ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
 <translation id="8048123526339889627">ဘလူးတုသ် ဆက်တင်များ</translation>
@@ -1609,7 +1612,7 @@
 <translation id="8619138598101195078">အသံတိုးရန်</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8630991711272431708">ကင်မရာသုံးခွင့် ပိတ်ရန်</translation>
-<translation id="8631727435199967028">အများသုံးစွဲနိုင်မှု ဆက်တင်များ</translation>
+<translation id="8631727435199967028">အများသုံးနိုင်မှု ဆက်တင်များ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="8638637208069328956">မိုက်ခရိုဖုန်း ဖွင့်/ပိတ် လုပ်ရန်</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ကျန်ပါသည်</translation>

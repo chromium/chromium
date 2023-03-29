@@ -40,6 +40,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1182225749592316782">Tādējādi piekļuve tiek atļauta visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
 <translation id="1183863904939664422">Neinteresē šis ieteikums</translation>
+<translation id="1184126796192815024">Šajā tīklā netiek atbalstīta lietotņu straumēšana no jūsu tālruņa. Mēģiniet izmantot tālruņa tīklāju. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Papildu drošībai ievadiet paroli vai PIN</translation>
 <translation id="118532027333893379">Pieskarieties jebkurā vietā, lai tvertu visu ekrānu</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
@@ -1252,6 +1253,7 @@ Jauna instalācija</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
 <translation id="6867938213751067702">Faila <ph name="FILENAME" /> lejupielāde ir pārtraukta</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 lietotne}zero{# lietotņu}one{# lietotne}other{# lietotnes}}</translation>
 <translation id="6884665277231944629">Atgriezties uz šodienu</translation>
 <translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="688631446150864480">Lai pārslēgtu logus, nospiediet lejupvērsto bulttaustiņu.</translation>
@@ -1432,6 +1434,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="776344839111254542">Noklikšķiniet, lai skatītu atjauninājuma datus.</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
+<translation id="7769299611924763557">Jūsu GIF attēls drīz būs gatavs</translation>
 <translation id="7780094051999721182">saīsnes</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
 <translation id="7796735576426975947">Paslēpts jauns paziņojums</translation>

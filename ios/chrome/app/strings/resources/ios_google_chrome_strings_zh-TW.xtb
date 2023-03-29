@@ -93,7 +93,7 @@
 <translation id="6634107063912726160">登出帳戶後，Chrome 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
-<translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理員建議你立即變更這組密碼。</translation>
+<translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>

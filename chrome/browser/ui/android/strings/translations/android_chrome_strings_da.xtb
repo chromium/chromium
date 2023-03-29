@@ -1320,6 +1320,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8058746566562539958">Åbn på ny fane i Chrome</translation>
 <translation id="8062594758852531064">Udvidet forudindlæsning:</translation>
 <translation id="8063895661287329888">Bogmærket kunne ikke tilføjes.</translation>
+<translation id="8066816452984416180">Tilføj hurtigt denne side som bogmærke. Hold fingeren på denne genvej for at redigere den.</translation>
 <translation id="806745655614357130">Hold mine data adskilt</translation>
 <translation id="8073388330009372546">Åbn billede på ny fane</translation>
 <translation id="8076492880354921740">Faner</translation>
@@ -1351,6 +1352,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8216351761227087153">Se</translation>
 <translation id="8218622182176210845">Administrer din konto</translation>
 <translation id="8223642481677794647">Feedkortmenu</translation>
+<translation id="8236097722223016103">Føj til bogmærker</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8255617931166444521">Websites kan kun bruge dine cookies til at se din browseraktivitet på deres eget website</translation>
 <translation id="8259179246279078674">Fordi de forudindlæste sider er krypterede, vil Google ikke få nogle oplysninger om det forudindlæste sideindhold. Googles servere vil få oplysninger om, hvilke websites der forudindlæses privat. Disse oplysninger bruges udelukkende til at forudindlæse siderne og knyttes ikke til andre oplysninger på din Google-konto.</translation>
@@ -1498,6 +1500,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
+<translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
 <translation id="9022871169049522985">Websites og annoncører kan måle effektiviteten af deres annoncer</translation>

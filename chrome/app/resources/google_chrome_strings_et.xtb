@@ -24,6 +24,7 @@
 <translation id="1434626383986940139">Chrome Canary rakendused</translation>
 <translation id="1507198376417198979">Kohandage oma uut Chrome'i profiili</translation>
 <translation id="1516530951338665275">Google Chrome vajab sidumise jätkamiseks juurdepääsu Bluetoothile. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">See juhend aitab teil oma valikuid mõista, et Chrome töötaks teie soovitud moel</translation>
 <translation id="1547295885616600893">Chrome OS on võimalik tänu <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvarale<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> on juba sellele Chrome'i profiilile sisse logitud. See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chrome'i profiili.</translation>
@@ -66,6 +67,7 @@
 <translation id="2131230230468101642">Teie privaatsuse kaitsmiseks kustutame automaatselt teie huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chrome'il arvesse võtta.</translation>
 <translation id="2139300032719313227">Taaskäivitage Chrome OS</translation>
 <translation id="2151406531797534936">Käivitage Chrome kohe uuesti</translation>
+<translation id="2163996651553460171">Chrome'i kasutamine parimal moel</translation>
 <translation id="2174917724755363426">Installimine ei ole lõpetatud. Kas soovite kindlasti tühistada?</translation>
 <translation id="223889379102603431">Teave selle kohta, kuidas Chrome oma juursertifikaate haldab</translation>
 <translation id="2258103955319320201">Selleks et oma Chrome'i brauseri sisule kõigis oma seadmetes juurde pääseda, logige sisse ja lülitage siis sisse sünkroonimine</translation>

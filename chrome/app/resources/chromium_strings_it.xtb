@@ -94,6 +94,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3258596308407688501">Chromium non è in grado di leggere e scrivere nella directory dei dati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Questa guida ti aiuta a comprendere le tue scelte, per fare in modo che Chromium funzioni come vuoi</translation>
 <translation id="3283186697780795848">La versione di Chromium <ph name="PRODUCT_VERSION" /> è installata</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="328888136576916638">Mancano le chiavi dell'API di Google. Alcune funzionalità di Chromium verranno disattivate.</translation>
@@ -381,6 +382,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="924957577793602335">Personalizza Chromium</translation>
 <translation id="93478295209880648">Chromium potrebbe non funzionare correttamente perché non è più supportato su Windows XP o Windows Vista</translation>
 <translation id="942598560705308788">Certificati gestiti da Chromium</translation>
+<translation id="959579472876010517">Sfrutta al massimo il potenziale di Chromium</translation>
 <translation id="965162752251293939">Chi usa Chromium?</translation>
 <translation id="967427899662692980">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
 <translation id="9792300276217204">Cancella sempre i dati dei siti dal dispositivo alla chiusura di Chromium</translation>

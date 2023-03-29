@@ -479,6 +479,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4342946437867096381">Jy het reeds ’n wagwoord vir hierdie werf in jou Google-rekening gestoor. Google kan die mees onlangse wagwoord vir jou kies.</translation>
 <translation id="4343046787186034850">Kamera- en mikrofoontoegang word toegelaat</translation>
 <translation id="4359125752503270327">Hierdie bladsy sal in 'n ander program oopmaak.</translation>
+<translation id="4371526908359194219">E-poskennisgewings</translation>
 <translation id="4375040482473363939">QR-kodesoektog</translation>
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4389019817280890563">Tik om taal te verander.</translation>
@@ -580,6 +581,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4986678885919050584">Verwyder van hierdie toestel af</translation>
 <translation id="498985224078955265">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy op albei toestelle by Chrome aanmeld.</translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
+<translation id="5016420433031926653">Stuur na <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Herinner my later</translation>
 <translation id="5037676449506322593">Kies alles</translation>
 <translation id="5039804452771397117">Laat toe</translation>
@@ -1172,6 +1174,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8978059030508051916">{count,plural, =0{Geen gekompromitteerde wagwoorde nie}=1{{count} gekompromitteerde wagwoord}other{{count} gekompromitteerde wagwoorde}}</translation>
 <translation id="8981454092730389528">Google-aktiwiteitkontroles</translation>
 <translation id="8985320356172329008">By Google aangemeld as</translation>
+<translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
 <translation id="9000089900434778519">Jou soekenjin is <ph name="DSE_NAME" />. Sien hulle instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="9008201768610948239">Ignoreer</translation>
 <translation id="9034759925968272072">Jy sal nie uit jou Google-rekening afgemeld word nie. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>

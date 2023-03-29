@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">ievadīt</translation>
 <translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
+<translation id="7131634559772719176">Pirmsiestatījuma apstiprināšana</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Parole ir sekmīgi nomainīta. Lūdzu, turpmāk izmantojiet jauno paroli.</translation>
 <translation id="7763470514545477072">Domēna sufiksa atbilstība</translation>
 <translation id="7769672763586021400">Modeļa ID</translation>
+<translation id="7770834998503326261">Ar jūsu atlasi saistītā papildu informācija</translation>
 <translation id="7778717409420828014">Jūsu atsauksmes palīdz mums uzlabot Chromebook datora lietošanas iespējas, un mūsu komanda tās pārskatīs. Tā kā mēs saņemam ļoti daudz ziņojumu, nevarēsim atbildēt uz tiem visiem.</translation>
 <translation id="7784116172884276937">Neviens DNS serveris nav iestatīts</translation>
 <translation id="7791543448312431591">Pievienot</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="8045012663542226664">Mikrofona izslēgšana</translation>
+<translation id="8050091914317269817">Atlasot šo fona tapeti, tiks ieslēgts automātiskais tumšais režīms un fona tapetes krāsu saskaņošana.</translation>
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>

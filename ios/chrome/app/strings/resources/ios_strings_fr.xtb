@@ -479,6 +479,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4342946437867096381">Vous avez déjà enregistré un mot de passe pour ce site dans votre compte Google. Google peut choisir pour vous le mot de passe le plus récent.</translation>
 <translation id="4343046787186034850">Accès à la caméra et au micro autorisé</translation>
 <translation id="4359125752503270327">Cette page va s'ouvrir dans une autre application.</translation>
+<translation id="4371526908359194219">Notifications par e-mail</translation>
 <translation id="4375040482473363939">Rechercher via un code QR</translation>
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="4389019817280890563">Appuyez pour modifier la langue.</translation>
@@ -580,6 +581,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4986678885919050584">Supprimer de cet appareil</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
+<translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5039804452771397117">Autoriser</translation>
@@ -755,6 +757,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6219550825416862075">Bon retour parmi nous</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6223816392543092032">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils.</translation>
+<translation id="6224759905509595045">Confirmer votre identité</translation>
 <translation id="6229318421047648685">Demander la version pour ordinateur</translation>
 <translation id="6231782223312638214">Suggestions</translation>
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
@@ -915,6 +918,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7108762695052995889">Visiter le site</translation>
 <translation id="7133798577887235672">Nom complet</translation>
 <translation id="7136892417564438900">Appareil photo non disponible</translation>
+<translation id="7161230316646448869">Synchronisez vos favoris, votre historique et plus encore sur tous les appareils</translation>
 <translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="7172852049901402487">Protéger vos mots de passe</translation>
 <translation id="7173114856073700355">Paramètres</translation>
@@ -1171,6 +1175,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8978059030508051916">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
 <translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
 <translation id="8985320356172329008">Connecté à Google en tant que</translation>
+<translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

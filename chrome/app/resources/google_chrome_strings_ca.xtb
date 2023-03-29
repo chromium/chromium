@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">Personalitza el teu perfil de Chrome nou</translation>
 <translation id="1516530951338665275">Google Chrome necessita accedir al Bluetooth per continuar 
  amb la vinculació. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Aquesta guia t'ajuda a entendre les opcions que has triat perquè Chrome funcioni com vulguis</translation>
 <translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chrome. Es crearà un perfil de Chrome nou per a <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -65,6 +66,7 @@
 <translation id="2131230230468101642">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. També pots suprimir els interessos que no vulguis que Chrome tingui en compte.</translation>
 <translation id="2139300032719313227">Reinicia Chrome OS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ara</translation>
+<translation id="2163996651553460171">Treu el màxim profit de Chrome</translation>
 <translation id="2174917724755363426">La instal·lació no s'ha completat. Confirmes que vols cancel·lar-la?</translation>
 <translation id="223889379102603431">Informació sobre com gestiona Chrome els seus certificats arrel</translation>
 <translation id="2258103955319320201">Per accedir al teu contingut del navegador Chrome des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>

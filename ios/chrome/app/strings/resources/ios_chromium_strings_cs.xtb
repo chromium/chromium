@@ -46,6 +46,7 @@
 <translation id="3567399274263440288">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se do něj pomocí účtu Google.</translation>
 <translation id="3639997914391704523">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla.</translation>
 <translation id="3650632991272923014">Uživatel <ph name="USER_EMAIL1" /> používal Chromium a ponechal v tomto zařízení záložky, hesla a další nastavení.</translation>
+<translation id="372658070733623520">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, ověřte svou totožnost.</translation>
 <translation id="3805899903892079518">Chromium nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
 <translation id="4043291146360695975">Hesla se ukládají pouze do Správce hesel na tomto zařízení.</translation>
 <translation id="4099085513035183040">V beta verzi prohlížeče Chromium není podporováno</translation>
@@ -75,6 +76,7 @@
 <translation id="5945387852661427312">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chromium. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z prohlížeče Chromium svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="5983312940147103417">Pomozte s vylepšováním prohlížeče Chromium</translation>
 <translation id="6062449165341879460">Vaše organizace <ph name="DOMAIN" /> bude mít přístup k datům, záložkám, historii, heslům a dalším nastavením prohlížeče Chromium, která uložíte do tohoto účtu. Když se odhlásíte, vaše data budou z tohoto zařízení vymazána.  Ve spravovaném účtu Google nicméně vaše data zůstanou uložena a vaše organizace k nim bude mít přístup. Vaše organizace také může v tomto konkrétním účtu nastavit zásady pro uživatele, které mohou chování prohlížeče Chromium změnit.</translation>
+<translation id="61109258320235597">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, zadejte svou heslovou frázi.</translation>
 <translation id="6119647025869519954">Postup nastavení Chromia jako výchozího prohlížeče:
 1. Otevřete nastavení.
 2. Klepněte na Výchozí prohlížeč.

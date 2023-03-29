@@ -95,6 +95,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="3258596308407688501">Chromium ne peut ni lire, ni écrire dans son répertoire de données :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Ce guide vous aide à comprendre vos choix afin que Chromium fonctionne comme vous le souhaitez</translation>
 <translation id="3283186697780795848">La version <ph name="PRODUCT_VERSION" /> de Chromium est installée</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés API Google sont manquantes. Certaines fonctionnalités de Chromium vont être désactivées.</translation>
@@ -383,6 +384,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="924957577793602335">Personnaliser Chromium</translation>
 <translation id="93478295209880648">Chromium risque de ne pas fonctionner correctement, car la compatibilité n'est plus assurée sur Windows XP et Windows Vista</translation>
 <translation id="942598560705308788">Certificats gérés par Chromium</translation>
+<translation id="959579472876010517">Exploitez tout le potentiel de Chromium</translation>
 <translation id="965162752251293939">Qui utilise Chromium ?</translation>
 <translation id="967427899662692980">Renforcer la sécurité de Chromium</translation>
 <translation id="9792300276217204">Toujours effacer les données des sites de votre appareil lorsque vous fermez Chromium</translation>

@@ -1320,6 +1320,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8058746566562539958">Ouvrir dans nouvel onglet Chrome</translation>
 <translation id="8062594758852531064">Préchargement avancé :</translation>
 <translation id="8063895661287329888">Échec de l'ajout du favori</translation>
+<translation id="8066816452984416180">Ajoutez rapidement cette page à vos favoris. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
 <translation id="8073388330009372546">Ouvrir image dans autre onglet</translation>
 <translation id="8076492880354921740">Onglets</translation>
@@ -1351,6 +1352,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8216351761227087153">Regarder</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8223642481677794647">Menu de la carte de flux</translation>
+<translation id="8236097722223016103">Ajouter aux favoris</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8255617931166444521">Les sites ne peuvent utiliser vos cookies que pour voir votre activité de navigation sur ces sites</translation>
 <translation id="8259179246279078674">Les pages préchargées étant chiffrées, Google n'analyse pas leur contenu. Les serveurs de Google voient quels sites sont préchargés en mode privé. Ces informations ne servent qu'à précharger les pages et ne sont liées à aucune autre information de votre compte Google.</translation>
@@ -1498,6 +1500,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode navigation privée</translation>
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>
+<translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="9022774213089566801">Consultés régulièrement</translation>
 <translation id="9022871169049522985">Les sites et les annonceurs peuvent mesurer les performances de leurs annonces</translation>

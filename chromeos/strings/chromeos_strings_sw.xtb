@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Kifaa cha <ph name="INDEX" /> kati ya <ph name="COUNT" /> kinaitwa <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">ingiza</translation>
 <translation id="7130438335435247835">Jina la lango la mtandao (APN) (APN)</translation>
+<translation id="7131634559772719176">Thibitisha mipangilio iliyowekwa mapema</translation>
 <translation id="7134436342991564651">{0,plural, =1{Seva ya jina}other{Seva za majina}}</translation>
 <translation id="7143207342074048698">Inaunganisha</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Nenosiri lako limebadilishwa. Tafadhali tumia nenosiri jipya kuanzia sasa.</translation>
 <translation id="7763470514545477072">Kiambishi cha kikoa kinacholingana</translation>
 <translation id="7769672763586021400">Aina ya Kitambulisho</translation>
+<translation id="7770834998503326261">Maelezo ya ziada kuhusiana na uteuzi wako</translation>
 <translation id="7778717409420828014">Maoni yako hutusaidia kuboresha hali ya Chromebook na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kukujibu.</translation>
 <translation id="7784116172884276937">Hakuna seva za DNS zilizowekwa mipangilio</translation>
 <translation id="7791543448312431591">Ongeza</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Washa hali ya kubadilisha rangi kiotomatiki</translation>
 <translation id="8041089156583427627">Tuma Maoni</translation>
 <translation id="8045012663542226664">Maikrofoni imezimwa</translation>
+<translation id="8050091914317269817">Hatua ya kuchagua mandhari hii itawasha hali nyeusi ya kiotomatiki na ulinganishaji wa rangi ya mandhari.</translation>
 <translation id="8075838845814659848">Chaji iliyosalia</translation>
 <translation id="8076492880354921740">Vichupo</translation>
 <translation id="8082366717211101304">Imeshindwa kusuluhisha DNS kutoka kwenye programu za Android</translation>

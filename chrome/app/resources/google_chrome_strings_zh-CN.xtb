@@ -24,6 +24,7 @@
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
 <translation id="1507198376417198979">自定义您的新 Chrome 个人资料</translation>
 <translation id="1516530951338665275">Google Chrome 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">您可以通过本指南了解您的选择，以便让 Chrome 以您期望的方式运行</translation>
 <translation id="1547295885616600893">Chrome 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chrome 个人资料</translation>
@@ -64,6 +65,7 @@
 <translation id="2131230230468101642">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chrome 考虑范围的兴趣。</translation>
 <translation id="2139300032719313227">重启 Chrome 操作系统</translation>
 <translation id="2151406531797534936">请立即重启 Chrome</translation>
+<translation id="2163996651553460171">充分利用 Chrome</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
 <translation id="223889379102603431">与 Chrome 如何管理其根证书有关的信息</translation>
 <translation id="2258103955319320201">如需在您的所有设备上访问自己的 Chrome 浏览器信息，请登录您的帐号，然后开启同步功能</translation>

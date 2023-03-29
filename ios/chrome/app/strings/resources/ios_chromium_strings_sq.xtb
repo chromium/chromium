@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Për të marrë maksimumin nga Chromium, identifikohu në Chromium me "Llogarinë tënde të Google".</translation>
 <translation id="3639997914391704523">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> po përdorte Chromium dhe ka lënë faqeshënues, fjalëkalime dhe cilësime të tjera në këtë pajisje.</translation>
+<translation id="372658070733623520">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti.</translation>
 <translation id="3805899903892079518">Chromium nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
 <translation id="4043291146360695975">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve" vetëm në këtë pajisje.</translation>
 <translation id="4099085513035183040">Nuk mbështetet në Chromium Beta</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chromium. Të dhënat e tua do të lidhen përgjithmonë me këtë llogari. Dalja nga Chromium do të bëjë që të fshihen të dhënat e tua nga kjo pajisje, por ato do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="5983312940147103417">Përmirëso Chromium</translation>
 <translation id="6062449165341879460">Organizata jote <ph name="DOMAIN" /> do të ketë qasje te të dhënat, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tua të tjera të Chromium që ti ruan në këtë llogari. Kur të dalësh nga llogaria, të dhënat e tua do të pastrohen nga kjo pajisje.  Sidoqoftë, të dhënat e tua do të qëndrojnë të ruajtura në "Llogarinë tënde të menaxhuar të Google" dhe do të jenë të disponueshme për organizatën tënde. Organizata jote mund të caktojë po ashtu politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chromium.</translation>
+<translation id="61109258320235597">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", fut frazën tënde të kalimit.</translation>
 <translation id="6119647025869519954">Për ta bërë Chromium shfletuesin e parazgjedhur:
 1. Hap "Cilësimet"
 2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"

@@ -40,6 +40,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1182225749592316782">L'accès est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
 <translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
+<translation id="1184126796192815024">Ce réseau n'est pas compatible avec les applis de streaming de votre téléphone. Essayez d'utiliser le point d'accès de votre téléphone. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Veuillez saisir votre mot de passe ou votre code d'accès pour renforcer la sécurité</translation>
 <translation id="118532027333893379">Appuyez n'importe où pour capturer tout l'écran</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
@@ -1251,6 +1252,7 @@ Nouvelle installation</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
 <translation id="6867938213751067702">Téléchargement du fichier <ph name="FILENAME" /> suspendu</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 appli}one{# appli}other{# applis}}</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
@@ -1431,6 +1433,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>
 <translation id="7768784765476638775">Sélectionner pour prononcer</translation>
+<translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Rotation d'écran</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>

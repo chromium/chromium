@@ -96,6 +96,7 @@
 <translation id="3258596308407688501">Chromium не може да чита и да пишува во директориумот за податоци:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Водичов ви ги објаснува опциите што може да ги изберете за Chromium да функционира како што сакате</translation>
 <translation id="3283186697780795848">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chromium</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
 <translation id="328888136576916638">Клучевите Google API недостасуваат. Некои функции на Chromium ќе бидат оневозможени.</translation>
@@ -384,6 +385,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="924957577793602335">Направете го Chromium свој</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно затоа што веќе не е поддржан на Windows XP или Windows Vista</translation>
 <translation id="942598560705308788">Сертификати управувани од Chromium</translation>
+<translation id="959579472876010517">Извлечете го максимумот од Chromium</translation>
 <translation id="965162752251293939">Кој користи Chromium?</translation>
 <translation id="967427899662692980">Добијте ја најсилната безбедност на Chromium</translation>
 <translation id="9792300276217204">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>

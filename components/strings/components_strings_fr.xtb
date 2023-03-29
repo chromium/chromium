@@ -498,6 +498,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2119867082804433120">Perforation en bas à droite</translation>
 <translation id="2122719317867821810">Cette règle fonctionne comme prévu, mais notez qu'une valeur conflictuelle a été définie ailleurs et que cette règle la remplace.</translation>
 <translation id="2126374524350484896">Outil de conversion PDF :</translation>
+<translation id="2128262927290305126">Dans votre compte Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Les modèles que vous avez spécifiés risquent de ne pas être appliqués, car la règle DnsOverHttpsMode n'est pas configurée.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Mode hommes</translation>
@@ -543,6 +544,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2219735899272417925">Réinitialisation de l'appareil requise</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Se connecter<ph name="END_LINK" /> au réseau Wi-Fi</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
 <translation id="2241693394036365668">Fichier téléchargé</translation>
 <translation id="2246264294482514010">10 x 12 pouces</translation>
@@ -1084,6 +1086,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3631244953324577188">Biométrie</translation>
 <translation id="3632503704576938756">Partage d'écran réactivé</translation>
 <translation id="3632892046558972264">Partage d'écran suspendu</translation>
+<translation id="3633035844150606508">Enregistrer l'adresse dans votre compte Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Bouton "Mise à jour de Chrome" : appuyer sur Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez de saisir votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
@@ -1794,6 +1797,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5324080437450482387">Sélectionner les coordonnées</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
+<translation id="5332769172018416402">Demander dans un message</translation>
 <translation id="5333022057423422993">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Pour la sécurité de vos comptes, nous vous recommandons de vérifier immédiatement vos mots de passe enregistrés.</translation>
 <translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
@@ -1987,6 +1991,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5830698870816298009">Utiliser et bouger la caméra</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838278095973806738">Nous vous conseillons de ne pas saisir d'informations sensibles sur ce site (par exemple, vos mots de passe ou les informations de votre carte de paiement), car elles pourraient être dérobées par des pirates informatiques.</translation>
+<translation id="5841338463993781099">Enregistrer dans le compte ?</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Désactivé</translation>

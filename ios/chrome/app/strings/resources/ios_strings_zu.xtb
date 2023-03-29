@@ -479,6 +479,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4342946437867096381">Usuvele ulondoloze iphasiwedi yaleli sayithi ku-Google Account yakho. I-Google ingakukhethela iphasiwedi yakamuva.</translation>
 <translation id="4343046787186034850">Ukufinyelela Kwemakhera Nemakrofoni Kuvunyelwe</translation>
 <translation id="4359125752503270327">Leli khasi lizovuleka kolunye uhlelo lokusebenza.</translation>
+<translation id="4371526908359194219">Izaziso Ze-imeyili</translation>
 <translation id="4375040482473363939">Usesho lwekhodi ye-QR</translation>
 <translation id="4378154925671717803">Ifoni</translation>
 <translation id="4389019817280890563">Thepha ukuze ushintshe ulimi.</translation>
@@ -580,6 +581,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="4986678885919050584">Susa kule Divayisi</translation>
 <translation id="498985224078955265">Ukuze uthumele le thebhu kwenye idivayisi, ngena ngemvume ku-Chrome kuwo womabili amadivayisi.</translation>
 <translation id="5005498671520578047">Kopisha iphasiwedi</translation>
+<translation id="5016420433031926653">Thumela ku-<ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Ngikhumbuze ngemuva kwesikhathi</translation>
 <translation id="5037676449506322593">Khetha konke</translation>
 <translation id="5039804452771397117">Vumela</translation>
@@ -1172,6 +1174,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8978059030508051916">{count,plural, =0{Awekho amaphasiwedi Onakalisiwe}=1{Iphasiwedi Eyonakalisiwe e-{count}}one{Amaphasiwedi Onakalisiwe angu-{count}}other{Amaphasiwedi Onakalisiwe angu-{count}}}</translation>
 <translation id="8981454092730389528">Izilawuli zomsebenzi we-Google</translation>
 <translation id="8985320356172329008">Ingene ngemvume ku-Google njengo-</translation>
+<translation id="8998289560386111590">Ayitholakali kudivayisi yakho</translation>
 <translation id="9000089900434778519">Injini yakho yokusesha iyi-<ph name="DSE_NAME" />. Bona imiyalelo yabo yokusula umlando wakho wosesho, uma kusebenza.</translation>
 <translation id="9008201768610948239">Ziba</translation>
 <translation id="9034759925968272072">Ngeke uze ukhishwe ngemvume ku-Akhawunti yakho ye-Google. I-Akhawunti yakho ye-Google ingase ibe nezinye izinhlobo zomlando wokuphequlula ku-<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

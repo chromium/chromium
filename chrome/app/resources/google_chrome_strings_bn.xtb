@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">আপনার নতুন Chrome প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="1516530951338665275">অন্য ডিভাইসের সাথে কানেক্ট করার জন্য Google Chrome-কে ব্লুটুথের অ্যাক্সেস দিতে 
 হবে। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">এই গাইড আপনাকে নিজের পছন্দ বুঝতে সাহায্য করবে, যাতে আপনি যেভাবে চান Chrome সেভাবে কাজ করতে পারে</translation>
 <translation id="1547295885616600893">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। <ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chrome প্রোফাইল তৈরি করবে</translation>
@@ -67,6 +68,7 @@
 <translation id="2131230230468101642">আপনার গোপনীয়তা রক্ষা করতে, আমরা ৪ সপ্তাহের বেশি পুরনো আপনার আগ্রহগুলি অটোমেটিক মুছে ফেলি। আপনি ব্রাউজিং চালিয়ে যাওয়ার সাথে সাথে তালিকায় আবার আগ্রহগুলি দেখা যেতে পারে। অথবা, আপনি যে আগ্রহগুলি Chrome বিবেচনা করুক বলে চান না সেগুলি সরিয়ে দিতে পারেন।</translation>
 <translation id="2139300032719313227">ChromeOS রিস্টার্ট করুন</translation>
 <translation id="2151406531797534936">এখনই Chrome রিস্টার্ট করুন</translation>
+<translation id="2163996651553460171">Chrome থেকে সবচেয়ে বেশি সুবিধা পান</translation>
 <translation id="2174917724755363426">ইনস্টলেশন শেষ হয়নি। আপনি কি সত্যিই বাতিল করতে চান?</translation>
 <translation id="223889379102603431">Chrome কীভাবে মূল সার্টিফিকেট ম্যানেজ করে সেই বিষয়ে তথ্য</translation>
 <translation id="2258103955319320201">সব ডিভাইস জুড়ে Chrome ব্রাউজারে থাকা ডেটা অ্যাক্সেস করতে, প্রথমে সাইন-ইন করে সিঙ্ক চালু করুন।</translation>

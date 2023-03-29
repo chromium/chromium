@@ -256,7 +256,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="277771892408211951">Seleziona lingua</translation>
 <translation id="2780046210906776326">Nessun account email</translation>
 <translation id="2781325423985810933">ANNULLA</translation>
-<translation id="2781331604911854368">On</translation>
+<translation id="2781331604911854368">Attiva</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Impossibile creare il link</translation>
 <translation id="2786701870377699570">Cerca tra le schede sui dispositivi sincronizzati</translation>
@@ -479,6 +479,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4342946437867096381">Hai già salvato una password per questo sito nel tuo Account Google. Google può scegliere automaticamente la password più recente.</translation>
 <translation id="4343046787186034850">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4359125752503270327">Questa pagina verrà aperta con un'altra applicazione.</translation>
+<translation id="4371526908359194219">Notifiche email</translation>
 <translation id="4375040482473363939">Ricerca di codici QR</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4389019817280890563">Tocca per modificare la lingua.</translation>
@@ -580,6 +581,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4986678885919050584">Rimuovi da questo dispositivo</translation>
 <translation id="498985224078955265">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi.</translation>
 <translation id="5005498671520578047">Copia password</translation>
+<translation id="5016420433031926653">Invia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5039804452771397117">Consenti</translation>
@@ -590,7 +592,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
 <translation id="5118713593561876160">Interessi</translation>
-<translation id="5118764316110575523">Off</translation>
+<translation id="5118764316110575523">Non attiva</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
 <translation id="5121618895923301719">Stai già monitorando questo prodotto. Questa pagina viene salvata nella sezione <ph name="BEGIN_LINK" />Preferiti su disp. mobili<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
@@ -1172,6 +1174,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8978059030508051916">{count,plural, =0{Nessuna password compromessa}=1{{count} password compromessa}other{{count} password compromesse}}</translation>
 <translation id="8981454092730389528">Gestione attività di Google</translation>
 <translation id="8985320356172329008">Accesso effettuato a Google come</translation>
+<translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
 <translation id="9000089900434778519">Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9034759925968272072">Non verrai disconnesso dal tuo Account Google. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione alla pagina <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

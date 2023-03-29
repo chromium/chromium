@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> от <ph name="COUNT" /> на име <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Име на точката за достъп (APN)</translation>
+<translation id="7131634559772719176">Потвърждаване на предварително зададеното</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8045012663542226664">Заглушаване на микрофона</translation>
+<translation id="8050091914317269817">Избирането на този тапет ще включи автоматичния тъмен режим и задаването на съответстващ цвят за тапета.</translation>
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>

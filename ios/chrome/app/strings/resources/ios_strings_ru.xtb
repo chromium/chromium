@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">Для этого сайта уже сохранен пароль в аккаунте. Google может выбрать последний использованный пароль.</translation>
 <translation id="4343046787186034850">Доступ к камере и микрофону разрешен</translation>
 <translation id="4359125752503270327">Страница откроется в другом приложении.</translation>
+<translation id="4371526908359194219">Уведомления по электронной почте</translation>
 <translation id="4375040482473363939">Поиск по QR-коду</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4389019817280890563">Нажмите, чтобы изменить язык.</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">Удалить с устройства</translation>
 <translation id="498985224078955265">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chrome.</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
+<translation id="5016420433031926653">Отправляются на адрес <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Напомнить позже</translation>
 <translation id="5037676449506322593">Выделить все</translation>
 <translation id="5039804452771397117">Разрешить</translation>
@@ -1172,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
 <translation id="8981454092730389528">Отслеживание действий в Google</translation>
 <translation id="8985320356172329008">Вы вошли в аккаунт</translation>
+<translation id="8998289560386111590">Недоступно на вашем устройстве</translation>
 <translation id="9000089900434778519">Вы используете "<ph name="DSE_NAME" />". Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
 <translation id="9034759925968272072">Вы не выйдете из аккаунта Google. Остальная история ваших действий в Интернете доступна на странице <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

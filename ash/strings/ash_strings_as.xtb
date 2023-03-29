@@ -1253,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{এটা অংক বাকী আছে}one{# টা অংক বাকী আছে}other{# টা অংক বাকী আছে}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" />ৰ ডাউনল’ড পজ কৰা হৈছে</translation>
 <translation id="6878400149835617132">শ্বৰ্টকাট অফ কৰা হৈছে</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{১টা এপ্‌}one{# টা এপ্‌}other{# টা এপ্‌}}</translation>
 <translation id="6884665277231944629">আজিলৈ উভতি যাওক</translation>
 <translation id="6886172995547742638">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ কাৰ্যদক্ষতা কমিব পাৰে। এটা প্ৰমাণীকৃত <ph name="PREFERRED_MINIMUM_POWER" /> ৱাট অথবা তাতকৈ উচ্চখাপৰ ইউএছবি-চি পাৱাৰ এডাপ্টৰ ব্যৱহাৰ কৰক।</translation>
 <translation id="688631446150864480">অন্য ৱিণ্ড’ ব্যৱহাৰ কৰিবলৈ ডাউন এৰ' কীটো টিপক</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
 <translation id="776344839111254542">আপডে'টৰ সবিশেষ চাবলৈ ক্লিক কৰক</translation>
 <translation id="7768784765476638775">কথা ক’বলৈ বাছনি কৰক</translation>
+<translation id="7769299611924763557">আপোনাৰ GIF সোনকালেই সাজু হ’ব</translation>
 <translation id="7780094051999721182">শ্বৰ্টকাট</translation>
 <translation id="7780159184141939021">স্ক্ৰীন ঘূৰাওক</translation>
 <translation id="7796735576426975947">নতুন জাননী লুকুওৱা হৈছে</translation>

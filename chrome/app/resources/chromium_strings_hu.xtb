@@ -94,6 +94,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="3258596308407688501">A Chromium nem tudja olvasni és írni az adatkönyvtárát:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Ez az útmutató segít megérteni a választható lehetőségeket, hogy a Chromium az Ön által kívánt módon működhessen</translation>
 <translation id="3283186697780795848">A Chromium <ph name="PRODUCT_VERSION" /> verziója telepítve van</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
 <translation id="328888136576916638">Hiányoznak Google API-kulcsok. A Chromium egyes funkciói kikapcsolnak.</translation>
@@ -380,6 +381,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="924957577793602335">Tegye sajátjává a Chromiumot</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
 <translation id="942598560705308788">A Chromium által kezelt tanúsítványok</translation>
+<translation id="959579472876010517">Hozza ki a legtöbbet a Chromiumból</translation>
 <translation id="965162752251293939">Ki használja a Chromiumot?</translation>
 <translation id="967427899662692980">Állítsa be a Chromium legerősebb védelmét</translation>
 <translation id="9792300276217204">Mindig törölje a webhelyadatokat az eszközről a Chromium bezárásakor</translation>

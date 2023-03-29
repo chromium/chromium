@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Дупка долу десно</translation>
 <translation id="2122719317867821810">Правилово работи како што е предвидено, но конфликтна вредност е поставена некаде на друго место и е отфрлена од правилово.</translation>
 <translation id="2126374524350484896">Приказ во PDF:</translation>
+<translation id="2128262927290305126">Во вашата сметка на Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Облека за мажи</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Треба да се ресетира уредот</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2225927550500503913">Вклучена е виртуелна картичка</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Најавување<ph name="END_LINK" /> на Wi-Fi мрежата.</translation>
 <translation id="2239100178324503013">Испрати сега</translation>
 <translation id="2241693394036365668">Преземена е датотека</translation>
 <translation id="2246264294482514010">10 x 12 инчи</translation>
@@ -1084,6 +1086,7 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Споделувањето екран продолжи</translation>
 <translation id="3632892046558972264">Споделувањето екран е паузирано</translation>
+<translation id="3633035844150606508">Адресата ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Копче „Ажурирај го Chrome“, притиснете Enter за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
@@ -1794,6 +1797,7 @@
 <translation id="5324080437450482387">Изберете информации за контакт</translation>
 <translation id="5329858041417644019">Прелистувачот не е управуван</translation>
 <translation id="5332219387342487447">Метод на испорака</translation>
+<translation id="5332769172018416402">Побарајте со порака</translation>
 <translation id="5333022057423422993">Chrome ја најде лозинката која штотуку ја употребивте меѓу лозинките откриени при упад во податоците. За да ги заштитите сметките, препорачуваме да ги проверите зачуваните лозинки.</translation>
 <translation id="5334013548165032829">Детални системски дневници</translation>
 <translation id="5334145288572353250">Да се зачува адресата?</translation>
@@ -1987,6 +1991,7 @@
 <translation id="5830698870816298009">користење и движење на камерата</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5838278095973806738">Не треба да внесувате чувствителни информации на овој сајт (на пример, лозинки или кредитни картички), затоа што може да ги украдат напаѓачи.</translation>
+<translation id="5841338463993781099">Дали да се зачува во сметката?</translation>
 <translation id="5851548754964597211">Список со картички</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Исклучено</translation>

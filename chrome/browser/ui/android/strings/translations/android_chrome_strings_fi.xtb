@@ -1320,6 +1320,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8058746566562539958">Avaa, uusi Chrome-välilehti</translation>
 <translation id="8062594758852531064">Laajennettu esilataus:</translation>
 <translation id="8063895661287329888">Kirjanmerkin lisääminen epäonnistui.</translation>
+<translation id="8066816452984416180">Lisää sivu kirjanmerkkeihin nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
 <translation id="806745655614357130">Pidä tiedot erillään</translation>
 <translation id="8073388330009372546">Avaa kuva uudessa välilehdessä</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
@@ -1351,6 +1352,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8216351761227087153">Katso</translation>
 <translation id="8218622182176210845">Ylläpidä tiliäsi</translation>
 <translation id="8223642481677794647">Fiidikottien valikko</translation>
+<translation id="8236097722223016103">Lisää kirjanmerkkeihin</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8255617931166444521">Sivustot voivat nähdä selaustoimintaasi evästeiden kautta vain omalla sivustollaan</translation>
 <translation id="8259179246279078674">Google ei saa mitään tietoja esiladattujen sivujen sisällöstä, sillä nämä sivut ovat salattuja. Googlen palvelimet saavat tietää, mitkä sivustot on esiladattu yksityisesti. Tietoja käytetään vain sivujen esilataamiseen, eikä niitä linkitetä muihin Google-tilisi tietoihin.</translation>
@@ -1498,6 +1500,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
+<translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9022871169049522985">Sivustot ja mainostajat voivat mitata mainostensa tuloksia</translation>

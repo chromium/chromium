@@ -1320,6 +1320,7 @@
 <translation id="8058746566562539958">새 Chrome 탭에서 열기</translation>
 <translation id="8062594758852531064">확장된 미리 로드:</translation>
 <translation id="8063895661287329888">북마크를 추가하지 못했습니다.</translation>
+<translation id="8066816452984416180">이 페이지를 빠르게 북마크에 추가합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="806745655614357130">내 데이터 별도로 유지</translation>
 <translation id="8073388330009372546">새 탭에서 이미지 열기</translation>
 <translation id="8076492880354921740">탭</translation>
@@ -1351,6 +1352,7 @@
 <translation id="8216351761227087153">보기</translation>
 <translation id="8218622182176210845">계정 관리</translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
+<translation id="8236097722223016103">북마크에 추가</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8255617931166444521">사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8259179246279078674">미리 로드된 페이지는 암호화되어 있으므로 Google에서는 미리 로드된 페이지의 콘텐츠에 관해 어떠한 정보도 알 수 없습니다. Google 서버는 어떤 사이트가 비공개로 미리 로드되었는지 파악하게 됩니다. 이 정보는 페이지를 미리 로드하는 데에만 사용되며, Google 계정의 다른 정보와 연결되지 않습니다.</translation>
@@ -1498,6 +1500,7 @@
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>
+<translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 이 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>
 <translation id="9022871169049522985">사이트 및 광고주가 광고 실적을 측정할 수 있습니다.</translation>

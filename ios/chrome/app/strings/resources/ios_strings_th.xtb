@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">คุณบันทึกรหัสผ่านสำหรับเว็บไซต์นี้ในบัญชี Google แล้ว Google จะเลือกรหัสผ่านล่าสุดให้คุณได้</translation>
 <translation id="4343046787186034850">อนุญาตให้เข้าถึงกล้องและไมโครโฟน</translation>
 <translation id="4359125752503270327">หน้านี้จะเปิดในแอปพลิเคชันอื่น</translation>
+<translation id="4371526908359194219">การแจ้งเตือนทางอีเมล</translation>
 <translation id="4375040482473363939">ค้นหาโค้ด QR</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4389019817280890563">แตะเพื่อเปลี่ยนภาษา</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">นำออกจากอุปกรณ์นี้</translation>
 <translation id="498985224078955265">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
+<translation id="5016420433031926653">ส่งไปยัง <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">เตือนฉันภายหลัง</translation>
 <translation id="5037676449506322593">เลือก&amp;ทั้งหมด</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
@@ -1172,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {count} รหัส}other{มีรหัสผ่านที่ถูกละเมิด {count} รหัส}}</translation>
 <translation id="8981454092730389528">ส่วนควบคุมกิจกรรมของ Google</translation>
 <translation id="8985320356172329008">ลงชื่อเข้าใช้ Google ด้วย</translation>
+<translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
 <translation id="9000089900434778519">เครื่องมือค้นหาของคุณคือ <ph name="DSE_NAME" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9034759925968272072">คุณจะไม่ออกจากระบบบัญชี Google บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>

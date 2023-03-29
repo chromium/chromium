@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Untuk mengoptimalkan Chromium, login ke Chromium dengan Akun Google Anda.</translation>
 <translation id="3639997914391704523">Chromium dapat memeriksa sandi saat Anda login dengan Akun Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> menggunakan Chromium dan meninggalkan bookmark, sandi, serta setelan lainnya di perangkat ini.</translation>
+<translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium di Akun Google Anda, verifikasi diri Anda.</translation>
 <translation id="3805899903892079518">Chromium tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4043291146360695975">Sandi hanya disimpan ke Pengelola Sandi di perangkat ini.</translation>
 <translation id="4099085513035183040">Tidak didukung di Chromium Beta</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Anda masuk dengan akun yang dikelola oleh <ph name="DOMAIN" /> dan memberikan kontrol data Chromium kepada administrator. Data Anda akan terikat dengan akun ini secara permanen. Bila Anda keluar dari Chromium, data akan dihapus dari perangkat ini, namun tetap disimpan di Akun Google.</translation>
 <translation id="5983312940147103417">Buat Chromium Menjadi Lebih Baik</translation>
 <translation id="6062449165341879460">Organisasi Anda <ph name="DOMAIN" /> akan memiliki akses ke data, bookmark, histori, sandi, dan setelan Chromium lainnya yang Anda simpan di akun ini. Jika logout, data Anda akan dihapus dari perangkat ini.  Namun, data akan tetap disimpan di Akun Google terkelola Anda dan tersedia untuk organisasi Anda. Organisasi juga dapat menetapkan kebijakan pengguna khusus untuk akun tersebut yang dapat mengubah perilaku Chromium.</translation>
+<translation id="61109258320235597">Untuk menggunakan dan menyimpan data Chromium di Akun Google Anda, masukkan frasa sandi.</translation>
 <translation id="6119647025869519954">Untuk menjadikan Chromium sebagai default:
 1. Buka Setelan
 2. Ketuk Aplikasi Browser Default

@@ -1254,6 +1254,7 @@ Frissen telepítve</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 számjegy maradt}other{# számjegy maradt}}</translation>
 <translation id="6867938213751067702">A következő letöltése szünetel: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">A billentyűparancs ki van kapcsolva</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 alkalmazás}other{# alkalmazás}}</translation>
 <translation id="6884665277231944629">Vissza a mai napra</translation>
 <translation id="6886172995547742638">A(z) <ph name="DEVICE_TYPE" /> eszközön a teljesítmény csökkenése észlelhető. Használjon tanúsítvánnyal rendelkező, <ph name="PREFERRED_MINIMUM_POWER" /> W-os vagy nagyobb teljesítményű USB-C tápcsatlakozót.</translation>
 <translation id="688631446150864480">Ablakváltáshoz nyomja le a lefelé mutató nyilat</translation>
@@ -1434,6 +1435,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="776344839111254542">Kattintson a frissítés részleteinek megtekintéséhez</translation>
 <translation id="7768784765476638775">Felolvasás</translation>
+<translation id="7769299611924763557">A GIF hamarosan elkészül.</translation>
 <translation id="7780094051999721182">billentyűparancsok</translation>
 <translation id="7780159184141939021">Képernyő elforgatása</translation>
 <translation id="7796735576426975947">Új értesítés elrejtve</translation>

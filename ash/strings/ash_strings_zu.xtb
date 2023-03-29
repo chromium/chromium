@@ -1253,6 +1253,7 @@ Ukufaka okusha</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Kusele idijithi elilodwa}one{kusele amadijithi angu-#}other{kusele amadijithi angu-#}}</translation>
 <translation id="6867938213751067702">Ukudawunilodwa kuphunyuziwe ku-<ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Isinqamuleli sivaliwe</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{i-app e-1}one{ama-app angu-#}other{ama-app angu-#}}</translation>
 <translation id="6884665277231944629">Buyela emuva kunamuhla</translation>
 <translation id="6886172995547742638">I-<ph name="DEVICE_TYPE" /> yakho ingahlangabezana nokusebenza okuphansi. Sebenzisa I-<ph name="PREFERRED_MINIMUM_POWER" />W noma i-adaptha yamandla ephezulu ye-USB-C.</translation>
 <translation id="688631446150864480">Cindezela ukhiye womcibisholo Waphansi ukushintsha amawindi</translation>
@@ -1433,6 +1434,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7749443890790263709">Inombolo enkulu yamadeski ifinyelelwe.</translation>
 <translation id="776344839111254542">Chofoza ukuze ubuke imininingwane yokubuyekeza</translation>
 <translation id="7768784765476638775">Khetha ukuze ukhulume</translation>
+<translation id="7769299611924763557">I-GIF yakho izolunga maduze</translation>
 <translation id="7780094051999721182">izinqamuleli</translation>
 <translation id="7780159184141939021">Zungezisa isikrini</translation>
 <translation id="7796735576426975947">Isaziso esisha sifihliwe</translation>

@@ -24,6 +24,7 @@
 <translation id="1434626383986940139">แอป Chrome Canary</translation>
 <translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1516530951338665275">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">คำแนะนำนี้ช่วยให้คุณเข้าใจตัวเลือกต่างๆ เพื่อให้ Chrome ทำงานได้ตามที่ต้องการ</translation>
 <translation id="1547295885616600893">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chrome นี้แล้ว การดำเนินการนี้จะสร้างโปรไฟล์ Chrome ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -64,6 +65,7 @@
 <translation id="2131230230468101642">เราลบความสนใจที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ ความสนใจอาจกลับมาปรากฏในรายการอีกเมื่อคุณท่องเว็บต่อ หรือคุณจะนำความสนใจที่ไม่ต้องการให้ Chrome พิจารณาออกก็ได้</translation>
 <translation id="2139300032719313227">รีสตาร์ท Chrome OS</translation>
 <translation id="2151406531797534936">โปรดรีสตาร์ท Chrome ตอนนี้เลย</translation>
+<translation id="2163996651553460171">ใช้ประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="2174917724755363426">การติดตั้งไม่สมบูรณ์ คุณแน่ใจไหมว่าต้องการยกเลิก</translation>
 <translation id="223889379102603431">ข้อมูลเกี่ยวกับวิธีที่ Chrome จัดการใบรับรองรูท</translation>
 <translation id="2258103955319320201">หากต้องการเข้าถึงข้อมูลของคุณในเบราว์เซอร์ Chrome ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>

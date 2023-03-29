@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1182225749592316782">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="1183863904939664422">ఈ సూచనపై ఆసక్తి లేదు</translation>
+<translation id="1184126796192815024">ఈ నెట్‌వర్క్ మీ ఫోన్ నుండి స్ట్రీమింగ్ యాప్‌లను సపోర్ట్ చేయదు. మీ ఫోన్ హాట్‌స్పాట్‌ను ఉపయోగించడానికి ట్రై చేయండి. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్ లేదా PINను ఎంటర్ చేయండి</translation>
 <translation id="118532027333893379">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
@@ -1253,6 +1254,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ఒక అంకె మిగిలింది}other{# అంకెలు మిగిలాయి}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
 <translation id="6878400149835617132">షార్ట్‌కట్ ఆఫ్ చేయబడింది</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 యాప్}other{# యాప్‌లు}}</translation>
 <translation id="6884665277231944629">ఈరోజుకు తిరిగి వెళ్లండి</translation>
 <translation id="6886172995547742638">మీ <ph name="DEVICE_TYPE" /> తక్కువ పనితీరుకు లోనవ్వొచ్చు. సర్టిఫై చేయబడిన <ph name="PREFERRED_MINIMUM_POWER" />W లేదా అంతకంటే ఎక్కువ USB-C పవర్ అడాప్టర్‌ను ఉపయోగించండి.</translation>
 <translation id="688631446150864480">విండోలను మధ్య మారడానికి కింది వైపు బాణాన్ని నొక్కండి</translation>
@@ -1433,6 +1435,7 @@
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
 <translation id="776344839111254542">అప్‌డేట్ వివరాలను చూడటం కోసం క్లిక్ చేయండి</translation>
 <translation id="7768784765476638775">వినడానికి ఎంచుకోండి</translation>
+<translation id="7769299611924763557">మీ GIF త్వరలో సిద్ధంగా ఉంటుంది</translation>
 <translation id="7780094051999721182">షార్ట్‌కట్‌లు</translation>
 <translation id="7780159184141939021">స్క్రీన్‌ను తిప్పండి</translation>
 <translation id="7796735576426975947">కొత్త నోటిఫికేషన్ దాచబడింది</translation>

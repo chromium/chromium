@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Pajisja <ph name="INDEX" /> nga <ph name="COUNT" /> me emrin <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">hyr</translation>
 <translation id="7130438335435247835">Emri i pikës së qasjes (APN)</translation>
+<translation id="7131634559772719176">Konfirmo paravendosjen</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8045012663542226664">Heqja e zërit të mikrofonit</translation>
+<translation id="8050091914317269817">Zgjedhja e këtij imazhi të sfondit do të aktivizojë modalitetin automatik të errët dhe përputhjen e ngjyrës së imazhit të sfondit.</translation>
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>

@@ -94,6 +94,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3258596308407688501">Chromium kan ikke læse og skrive til sin datamappe:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Denne vejledning hjælper dig med at forstå dine valg, så Chromium kan fungere på den måde, der passer dig bedst</translation>
 <translation id="3283186697780795848">Chromium version <ph name="PRODUCT_VERSION" /> er installeret</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
 <translation id="328888136576916638">Der mangler Google API-nøgler. Nogle funktioner i Chromium deaktiveres.</translation>
@@ -382,6 +383,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="924957577793602335">Tilpas Chromium</translation>
 <translation id="93478295209880648">Chromium fungerer muligvis ikke korrekt på grund af manglende understøttelse i Windows XP og Windows Vista</translation>
 <translation id="942598560705308788">Certifikater, der administreres af Chromium</translation>
+<translation id="959579472876010517">Få mest muligt ud af Chromium</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>
 <translation id="9792300276217204">Ryd altid websitedata fra din enhed, når du lukker Chromium</translation>

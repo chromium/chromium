@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">intro</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
+<translation id="7131634559772719176">Confirmar a configuración predeterminada</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Cambiaches o contrasinal correctamente. A partir de agora, utiliza o novo.</translation>
 <translation id="7763470514545477072">Coincidencia do sufixo de dominio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
+<translation id="7770834998503326261">Información adicional relacionada coa túa selección</translation>
 <translation id="7778717409420828014">O noso equipo revisará os teus comentarios, que nos axudan a mellorar a experiencia que ofrecemos cos Chromebooks. Non imos poder enviar unha resposta debido ao gran número de informes que recibimos.</translation>
 <translation id="7784116172884276937">Non hai ningún servidor DNS configurado</translation>
 <translation id="7791543448312431591">Engadir</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Activar modo de cores automáticas</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8045012663542226664">Desactivar micrófono</translation>
+<translation id="8050091914317269817">Se seleccionas este fondo de pantalla, activaranse o modo escuro automático e o padrón de cores a xogo co fondo de pantalla.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>

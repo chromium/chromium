@@ -92,6 +92,7 @@
 <translation id="3185330573522821672">‏התאמה אישית של פרופיל Chromium החדש</translation>
 <translation id="3190315855212034486">‏וואו! Chromium קרס. להפעיל מחדש עכשיו?</translation>
 <translation id="3258596308407688501">‏Chromium אינו יכול לקרוא ולכתוב בספריית הנתונים שלו: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">‏המדריך הזה יעזור לך להבין את הבחירות שלך, כדי ש-Chromium יפעל באופן הרצוי לך</translation>
 <translation id="3283186697780795848">‏מותקנת גרסה <ph name="PRODUCT_VERSION" /> של Chromium</translation>
 <translation id="3286538390144397061">הפעל מחדש כעת</translation>
 <translation id="328888136576916638">‏המפתחות של Google API חסרים. פונקציונליות מסוימת של Chromium תהיה מושבתת.</translation>
@@ -380,6 +381,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="924957577793602335">‏אפשר להתאים אישית את Chromium בדרך שנוחה לך</translation>
 <translation id="93478295209880648">‏ייתכן ש-Chromium לא יפעל כראוי כי הוא כבר לא נתמך ב-Windows XP וב-Windows Vista</translation>
 <translation id="942598560705308788">‏אישורים שמנוהלים על ידי Chromium</translation>
+<translation id="959579472876010517">‏רוצה להפיק את המירב מ-Chromium?</translation>
 <translation id="965162752251293939">‏מי משתמש/ת ב-Chromium?</translation>
 <translation id="967427899662692980">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
 <translation id="9792300276217204">‏ניקוי נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chromium</translation>

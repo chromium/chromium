@@ -498,6 +498,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2119867082804433120">Punch bottom right</translation>
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
+<translation id="2128262927290305126">In your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Men's clothing</translation>
@@ -543,6 +544,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2219735899272417925">Device reset required</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2225927550500503913">Virtual card turned on</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Signing in<ph name="END_LINK" /> to the Wi-Fi network</translation>
 <translation id="2239100178324503013">Send now</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
@@ -1084,6 +1086,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3631244953324577188">Biometrics</translation>
 <translation id="3632503704576938756">Screen share resumed</translation>
 <translation id="3632892046558972264">Screen share paused</translation>
+<translation id="3633035844150606508">Save address in your Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Update Chrome button; press enter to update Chrome from your Chrome settings</translation>
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.</translation>
@@ -1988,6 +1991,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5830698870816298009">camera use and movement</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5838278095973806738">You should not enter any sensitive information on this site (for example, passwords or credit cards) because it could be stolen by attackers.</translation>
+<translation id="5841338463993781099">Save in account?</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Off</translation>

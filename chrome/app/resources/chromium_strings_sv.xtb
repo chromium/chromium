@@ -96,6 +96,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3258596308407688501">Chromium kan inte läsa och skriva till datakatalogen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Med den här guiden får du hjälp att förstå dina val, så att Chromium fungerar som du vill</translation>
 <translation id="3283186697780795848">Chromium-version <ph name="PRODUCT_VERSION" /> har installerats</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="328888136576916638">Googles API-nycklar saknas. Vissa funktioner i Google Chromium kommer att vara inaktiverade.</translation>
@@ -384,6 +385,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="924957577793602335">Anpassa Chromium</translation>
 <translation id="93478295209880648">Chromium kanske inte fungerar ordentligt eftersom den inte längre stöds på Windows XP och Windows Vista</translation>
 <translation id="942598560705308788">Certifikat som hanteras av Chromium</translation>
+<translation id="959579472876010517">Få ut mesta möjliga av Chromium</translation>
 <translation id="965162752251293939">Vem ska använda Chromium?</translation>
 <translation id="967427899662692980">Få det bästa skyddet i Chromium</translation>
 <translation id="9792300276217204">Rensa alltid webbplatsdata från enheten när du stänger Chromium</translation>

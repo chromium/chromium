@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">መሣሪያ <ph name="INDEX" /> ከ<ph name="COUNT" /> <ph name="NAME" /> ተብሎ ተሰይሟል</translation>
 <translation id="7108668606237948702">ያስገቡ</translation>
 <translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
+<translation id="7131634559772719176">ቅድመ-ቅምጥን ያረጋግጡ</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">የይለፍ ቃልዎ ለውጥ ተሳክቷል። እባክዎ ከአሁን በኋላ አዲሱን የይለፍ ቃል ይጠቀሙ።</translation>
 <translation id="7763470514545477072">የጎራ ድኅረ ቅጥያ ዝምድና</translation>
 <translation id="7769672763586021400">የሞዴል መታወቂያ</translation>
+<translation id="7770834998503326261">ከምርጫዎ ጋር የተያያዘ ተጨማሪ መረጃ</translation>
 <translation id="7778717409420828014">የእርስዎ ግብረመልስ የChromebook ተሞክሮን እንድናሻሽል ያግዘናል እና በቡድናችን የሚገመገም ይሆናል። ብዙ ቁጥር ባላቸው ሪፖርቶች ምክንያት መልስ መላክ አንችልም።</translation>
 <translation id="7784116172884276937">ምንም የዲኤንኤስ አገልጋዮች አልተዋቀሩም</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">ራስ-ሰር ቀለም ሁነታን አንቃ</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
 <translation id="8045012663542226664">የማይክሮፎን ድምጸ-ከል ማድረጊያ</translation>
+<translation id="8050091914317269817">ይህን ልጣፍ መምረጥ ራስ-ሰር የጨለማ ሁነታን እና የልጣፍ ቀለም መመሳሰልን ያበራል።</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8076492880354921740">ትሮች</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>

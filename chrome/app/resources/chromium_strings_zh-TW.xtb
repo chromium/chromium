@@ -94,6 +94,7 @@
 <translation id="3258596308407688501">Chromium 無法讀取及寫入資料目錄：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">你可以透過這份指南瞭解各項選擇，讓 Chromium 依照所需方式運作</translation>
 <translation id="3283186697780795848">已安裝 Chromium <ph name="PRODUCT_VERSION" /> 版</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
@@ -143,7 +144,7 @@
 <translation id="4230135487732243613">要將你的 Chromium 資料連結至這個帳戶嗎？</translation>
 <translation id="4271805377592243930">前往 Chromium 說明頁面</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
-<translation id="4304713468139749426">密碼管理員</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334294535648607276">下載完成。</translation>
 <translation id="439358628917130594">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Chromium OS 條款》。</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
@@ -382,6 +383,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="924957577793602335">享有個人化的 Chromium 體驗</translation>
 <translation id="93478295209880648">Chromium 已不適用於 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="942598560705308788">由 Chromium 管理的憑證</translation>
+<translation id="959579472876010517">充分發揮 Chromium 的效用</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="967427899662692980">獲得 Chromium 最強大的安全防護</translation>
 <translation id="9792300276217204">在 Chromium 關閉後一律清除裝置上的網站資料</translation>

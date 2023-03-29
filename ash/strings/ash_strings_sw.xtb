@@ -40,6 +40,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1182225749592316782">Hatua hii huruhusu ufikiaji wa programu na tovuti zote zilizo na ruhusa za kamera na maikrofoni</translation>
 <translation id="1183863904939664422">Sijavutiwa na pendekezo hili</translation>
+<translation id="1184126796192815024">Mtandao huu hautumii programu za kutiririsha kwenye simu yako. Jaribu kutumia mtandao pepe wa simu yako. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Weka nenosiri au PIN kwa ajili ya usalama zaidi</translation>
 <translation id="118532027333893379">Gusa popote ili unase skrini nzima</translation>
 <translation id="1190609913194133056">Kituo cha Arifa</translation>
@@ -1252,6 +1253,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Imesalia tarakimu moja}other{Zimesalia tarakimu #}}</translation>
 <translation id="6867938213751067702">Imesitisha kupakua <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Njia ya mkato imezimwa</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{Programu 1}other{Programu #}}</translation>
 <translation id="6884665277231944629">Rudi kwenye tarehe ya leo</translation>
 <translation id="6886172995547742638">Huenda <ph name="DEVICE_TYPE" /> yako ikafanya kazi polepole. Tumia adapta ya nishati ya USB-C ya Wati <ph name="PREFERRED_MINIMUM_POWER" /> au zaidi.</translation>
 <translation id="688631446150864480">Bonyeza kitufe cha kishale cha Chini ili ubadilishe madirisha</translation>
@@ -1433,6 +1435,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
 <translation id="776344839111254542">Bofya ili uone maelezo ya masasisho</translation>
 <translation id="7768784765476638775">Chagua ili izungumze</translation>
+<translation id="7769299611924763557">GIF yako itakuwa tayari hivi punde</translation>
 <translation id="7780094051999721182">Njia za mkato</translation>
 <translation id="7780159184141939021">Zungusha Skrini</translation>
 <translation id="7796735576426975947">Arifa mpya imefichwa</translation>

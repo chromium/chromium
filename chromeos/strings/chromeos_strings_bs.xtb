@@ -632,7 +632,7 @@
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
 <translation id="6494974875566443634">Prilagođavanje</translation>
-<translation id="6500818810472529210">Pogledajte rezultat na Google Pretraživanju</translation>
+<translation id="6500818810472529210">Pogledajte rezultat u Google Pretraživanju</translation>
 <translation id="650266656685499220">Da kreirate albume, idite u Google Fotografije</translation>
 <translation id="6516990319416533844">Da testirate brzinu punjenja baterije, pustite da se baterija nakratko isprazni</translation>
 <translation id="6517239166834772319">Istražite</translation>
@@ -698,7 +698,7 @@
 <translation id="7103252855940681301">Uređaj <ph name="INDEX" /> od <ph name="COUNT" /> pod nazivom <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
-<translation id="7131634559772719176">Potvrda unaprijed definirane postavke</translation>
+<translation id="7131634559772719176">Potvrdite zadane postavke</translation>
 <translation id="7134436342991564651">{0,plural, =1{Postavite naziv servera}one{Postavite naziv servera}few{Postavite naziv servera}other{Postavite naziv servera}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
@@ -803,7 +803,7 @@
 <translation id="80398733265834479">Omogućavanje načina rada automatske boje</translation>
 <translation id="8041089156583427627">Pošaljite povratne informacije</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
-<translation id="8050091914317269817">Ako odaberete tu pozadinu, uključit ćete automatski tamni način rada i podudaranje boje pozadine.</translation>
+<translation id="8050091914317269817">Odabir ove pozadinske slike će uključiti automatski tamni način rada i podudaranje boja pozadinske slike.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>

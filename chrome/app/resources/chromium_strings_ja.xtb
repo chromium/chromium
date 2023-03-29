@@ -94,6 +94,7 @@
 <translation id="3258596308407688501">Chromium はこのデータ ディレクトリへの読み書きを実行できません:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">このガイドでは、Chromium をカスタマイズして使用するのに役立つさまざまな設定について説明します</translation>
 <translation id="3283186697780795848">Chromium のバージョン <ph name="PRODUCT_VERSION" /> がインストールされています</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="328888136576916638">Google API キーが欠落しています。Chromium の一部の機能は無効になります。</translation>
@@ -381,6 +382,7 @@
 <translation id="924957577793602335">Chromium を独自にカスタマイズ</translation>
 <translation id="93478295209880648">Windows XP と Windows Vista はサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="942598560705308788">Chromium で管理されている証明書</translation>
+<translation id="959579472876010517">Chromium を最大限に活用しましょう</translation>
 <translation id="965162752251293939">Chromium はどなたが使用しますか？</translation>
 <translation id="967427899662692980">Chromium の最高のセキュリティ強度で保護</translation>
 <translation id="9792300276217204">Chromium を閉じるとき、常にデバイスからサイトデータを削除する</translation>

@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Chromium-i etekinik handiena ateratzeko, hasi saioa Chromium-en Google-ko kontuarekin.</translation>
 <translation id="3639997914391704523">Saioa Google-ko kontu batekin hasten baduzu, Chromium-ek pasahitzak egiazta ditzake.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium-en erabiltzailea zenez, laster-markak, pasahitzak eta beste ezarpena batzuk utzi ditu gailuan.</translation>
+<translation id="372658070733623520">Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela.</translation>
 <translation id="3805899903892079518">Chromium-ek ez du argazki eta bideoetarako sarbiderik. Gaitu sarbidea iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="4043291146360695975">Pasahitzak gailu honetan soilik gordetzen dira Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin hasi duzu saioa eta administratzaileari eman diozu Chromium datuen kontrola. Datuak betiko lotuko dira kontu honekin. Saioa amaitzen baduzu, Chromium datuak ezabatu egingo dira gailutik, baina Google-ko kontuan izango dituzu gordeta.</translation>
 <translation id="5983312940147103417">Hobetu Chromium</translation>
 <translation id="6062449165341879460">Chromium-eko datuak, laster-markak, historia, pasahitzak eta kontu honetan gordetzen dituzun bestelako ezarpenak atzitu ahalko ditu zure erakundeak (<ph name="DOMAIN" />). Saioa amaitzen duzunean, datuak garbitu egingo dira gailu honetatik.  Hala ere, Google-ko kontu kudeatuan jarraituko dute, eta erakundea haiek atzitzeko gai izango da. Halaber, erabiltzaile-gidalerro jakin batzuk ezar ditzake erakundeak kontu horretarako, eta gidalerro horiek Chromium-en portaera alda dezakete.</translation>
+<translation id="61109258320235597">Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatzi pasaesaldia.</translation>
 <translation id="6119647025869519954">Chromium arakatzaile lehenetsi bihurtzeko:
 1. Ireki Ezarpenak.
 2. Sakatu Arakatzaile lehenetsia.

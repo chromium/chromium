@@ -1249,6 +1249,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>
 <translation id="6867938213751067702">หยุดดาวน์โหลด <ph name="FILENAME" /> ไว้ชั่วคราว</translation>
 <translation id="6878400149835617132">ทางลัดปิดอยู่</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 แอป}other{# แอป}}</translation>
 <translation id="6884665277231944629">กลับไปที่วันนี้</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> อาจมีประสิทธิภาพลดลง ใช้อะแดปเตอร์ USB-C <ph name="PREFERRED_MINIMUM_POWER" /> วัตต์ขึ้นไปที่ได้รับการรับรอง</translation>
 <translation id="688631446150864480">กดปุ่มลูกศรลงเพื่อเปลี่ยนหน้าต่าง</translation>
@@ -1429,6 +1430,7 @@
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="776344839111254542">คลิกเพื่อดูรายละเอียดการอัปเดต</translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
+<translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7796735576426975947">การแจ้งเตือนใหม่ซ่อนอยู่</translation>

@@ -1253,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ಒಂದು ಅಂಕಿ ಬಾಕಿಯಿದೆ}one{# ಅಂಕಿಗಳು ಬಾಕಿಯಿವೆ}other{# ಅಂಕಿಗಳು ಬಾಕಿಯಿವೆ}}</translation>
 <translation id="6867938213751067702">ಡೌನ್‌ಲೋಡ್ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">ಶಾರ್ಟ್‌ಕಟ್ ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ಆ್ಯಪ್}one{# ಆ್ಯಪ್‌ಗಳು}other{# ಆ್ಯಪ್‌ಗಳು}}</translation>
 <translation id="6884665277231944629">ಈ ದಿನಕ್ಕೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="6886172995547742638">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಕಾರ್ಯಕ್ಷಮತೆಯು ಕಡಿಮೆಯಾಗಬಹುದು. ಪ್ರಮಾಣೀಕೃತ <ph name="PREFERRED_MINIMUM_POWER" />W ಅಥವಾ ಹೆಚ್ಚುವರಿ USB-C ಪವರ್ ಅಡಾಪ್ಟರ್ ಬಳಸಿ.</translation>
 <translation id="688631446150864480">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಲು ಡೌನ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7749443890790263709">ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಡೆಸ್ಕ್‌ಗಳನ್ನು ತಲುಪಲಾಗಿದೆ.</translation>
 <translation id="776344839111254542">ಅಪ್‌ಡೇಟ್‌ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
+<translation id="7769299611924763557">ನಿಮ್ಮ GIF ಶೀಘ್ರದಲ್ಲೇ ಸಿದ್ಧವಾಗಲಿದೆ</translation>
 <translation id="7780094051999721182">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="7780159184141939021">ಪರದೆಯನ್ನು ತಿರುಗಿಸಿ</translation>
 <translation id="7796735576426975947">ಹೊಸ ಅಧಿಸೂಚನೆಯನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>

@@ -27,6 +27,7 @@
 <translation id="1507198376417198979">새로운 Chrome 프로필 맞춤설정</translation>
 <translation id="1516530951338665275">페어링을 계속하려면 Chrome에서 블루투스 액세스 권한이
 필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">이 가이드는 Chrome이 원하는 방식으로 작동하도록 선택사항을 이해하는 데 도움이 됩니다</translation>
 <translation id="1547295885616600893">ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />님이 이미 Chrome 프로필에 로그인되어 있습니다. <ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chrome 프로필이 생성됩니다.</translation>
@@ -69,6 +70,7 @@
 <translation id="2131230230468101642">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="2139300032719313227">ChromeOS 다시 시작</translation>
 <translation id="2151406531797534936">지금 Chrome을 다시 시작하세요</translation>
+<translation id="2163996651553460171">Chrome 최대한 활용하기</translation>
 <translation id="2174917724755363426">설치가 완료되지 않았습니다. 취소하시겠습니까?</translation>
 <translation id="223889379102603431">Chrome의 루트 인증서 관리 방식에 관한 정보</translation>
 <translation id="2258103955319320201">모든 기기에서 Chrome 브라우저 데이터에 액세스하려면 로그인한 후 동기화를 사용 설정하세요</translation>

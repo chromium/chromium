@@ -498,6 +498,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2119867082804433120">Hål nere till höger</translation>
 <translation id="2122719317867821810">Den här principen fungerar som avsett, men den har även ställts in på annan plats med ett annat värde och detta andra värde åsidosätts av denna princip.</translation>
 <translation id="2126374524350484896">PDF-källa:</translation>
+<translation id="2128262927290305126">I Google-kontot <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Det går inte att tillämpa de angivna mallarna eftersom principen DnsOverHttpsMode inte har ställts in.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Herrkläder</translation>
@@ -543,6 +544,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2219735899272417925">Enheten måste återställas</translation>
 <translation id="2224337661447660594">Inget internet</translation>
 <translation id="2225927550500503913">Aktiverat virtuellt kort</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Logga in<ph name="END_LINK" /> på wifi-nätverket</translation>
 <translation id="2239100178324503013">Skicka nu</translation>
 <translation id="2241693394036365668">Fil laddas ned</translation>
 <translation id="2246264294482514010">10 x 12 tum</translation>
@@ -1084,6 +1086,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3631244953324577188">Biometri</translation>
 <translation id="3632503704576938756">Skärmdelningen återupptogs</translation>
 <translation id="3632892046558972264">Skärmdelningen pausades</translation>
+<translation id="3633035844150606508">Spara adressen i ditt Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Knappen Uppdatera Chrome, tryck på retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>
 <translation id="3634530185120165534">Fack 5</translation>
 <translation id="3634567936866541746">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chrome nu för att skydda dina konton.</translation>
@@ -1794,6 +1797,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5324080437450482387">Välj kontaktuppgifter</translation>
 <translation id="5329858041417644019">Din webbläsare är inte hanterad</translation>
 <translation id="5332219387342487447">Fraktmetod</translation>
+<translation id="5332769172018416402">Ställ frågan i ett meddelande</translation>
 <translation id="5333022057423422993">Chrome upptäckte att lösenordet som du precis använde har läckt ut vid ett dataintrång. Vi rekommenderar att du kontrollerar dina sparade lösenord för att skydda dina konton.</translation>
 <translation id="5334013548165032829">Detaljerade systemloggar</translation>
 <translation id="5334145288572353250">Vill du spara adressen?</translation>
@@ -1987,6 +1991,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5830698870816298009">använda och röra kameran</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5838278095973806738">Du bör inte ange några känsliga uppgifter på den här webbplatsen (till exempel lösenord eller kreditkortsuppgifter) eftersom hackare kan stjäla dem.</translation>
+<translation id="5841338463993781099">Vill du spara i kontot?</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Av</translation>

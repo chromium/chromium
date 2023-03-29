@@ -24,6 +24,7 @@
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
 <translation id="1507198376417198979">自訂新的 Chrome 設定檔</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">你可以透過這份指南瞭解各項選擇，讓 Chrome 依照所需方式運作</translation>
 <translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
@@ -65,6 +66,7 @@
 <translation id="2131230230468101642">為保護個人隱私，我們會自動刪除 4 週以上的興趣喜好。視瀏覽內容而定，某個主題可能會再次顯示在你的興趣喜好清單中。或者，你可以移除不希望 Chrome 列在興趣喜好清單中的項目。</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
+<translation id="2163996651553460171">充分發揮 Chrome 的效用</translation>
 <translation id="2174917724755363426">安裝作業尚未完成，確定要取消安裝嗎？</translation>
 <translation id="223889379102603431">瞭解 Chrome 如何管理根憑證</translation>
 <translation id="2258103955319320201">如要透過所有裝置存取你的 Chrome 瀏覽器資料，請登入並開啟同步功能</translation>

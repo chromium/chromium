@@ -96,6 +96,7 @@
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">此指南助您瞭解各項選擇，讓 Chromium 按照您想要的方式運作</translation>
 <translation id="3283186697780795848">已安裝 Chromium 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
@@ -383,6 +384,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="924957577793602335">自訂屬於您的 Chromium</translation>
 <translation id="93478295209880648">由於 Chromium 將不再支援 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="942598560705308788">由 Chromium 管理的憑證</translation>
+<translation id="959579472876010517">充分運用 Chromium 的所有功能</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="967427899662692980">取得 Chromium 最強大的安全防護功能</translation>
 <translation id="9792300276217204">在 Chromium 關閉後一律清除裝置上的網站資料</translation>

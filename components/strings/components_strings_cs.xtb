@@ -498,6 +498,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2119867082804433120">Děrování vpravo dole</translation>
 <translation id="2122719317867821810">Zásada funguje podle očekávání, ale jinde je nastavena konfliktní hodnota, kterou tato zásada přepisuje.</translation>
 <translation id="2126374524350484896">Původ souboru PDF:</translation>
+<translation id="2128262927290305126">Ve vašem účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Pánské oděvy</translation>
@@ -543,6 +544,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2219735899272417925">Je nutné resetovat zařízení</translation>
 <translation id="2224337661447660594">Nejste připojeni k internetu</translation>
 <translation id="2225927550500503913">Virtuální karta je zapnutá</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Přihlášení<ph name="END_LINK" /> k síti Wi-Fi</translation>
 <translation id="2239100178324503013">Odeslat</translation>
 <translation id="2241693394036365668">Stažení souboru</translation>
 <translation id="2246264294482514010">10 × 12″</translation>
@@ -1080,6 +1082,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3631244953324577188">Biometrické systémy</translation>
 <translation id="3632503704576938756">Sdílení obrazovky bylo obnoveno</translation>
 <translation id="3632892046558972264">Sdílení obrazovky je pozastaveno</translation>
+<translation id="3633035844150606508">Adresa se uloží do vašeho účtu Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Tlačítko Aktualizovat Chrome, stisknutím klávesy Enter aktualizujete Chrome v nastavení Chromu</translation>
 <translation id="3634530185120165534">Přihrádka 5</translation>
 <translation id="3634567936866541746">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chrome vám doporučuje zkontrolovat uložená hesla.</translation>
@@ -1983,6 +1986,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5830698870816298009">používání a natáčení kamery</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5838278095973806738">Na tento web byste neměli zadávat citlivé údaje (například hesla nebo čísla platebních karet), protože by je mohli odcizit útočníci.</translation>
+<translation id="5841338463993781099">Uložit do účtu?</translation>
 <translation id="5851548754964597211">Seznam karet</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Vypnuto</translation>

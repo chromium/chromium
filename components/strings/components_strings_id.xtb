@@ -18,7 +18,7 @@
           <ph name="LIST_ITEM" />Perusahaan atau sekolah dapat melacak aktivitas penjelajahan<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internet service provider dapat memantau traffic web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
-<translation id="1036348656032585052">Matikan</translation>
+<translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1036982837258183574">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari mode layar penuh</translation>
 <translation id="1038106730571050514">Tampilkan saran</translation>
@@ -349,7 +349,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1736420071277903564">Komputer</translation>
 <translation id="1740951997222943430">Masukkan bulan habis masa berlaku yang valid</translation>
 <translation id="1741613555002899862">Harus ditentukan dan menjadi string yang valid saat DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mencatat topik minat saat Anda melakukan penjelajahan. Label topik sudah ditentukan sebelumnya dan mencakup hal-hal seperti, Seni &amp; Hiburan, Belanja, dan Olahraga. Kemudian, situs yang Anda buka dapat meminta beberapa topik Anda (tetapi bukan histori penjelajahan) kepada Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome mencatat topik minat saat Anda melakukan penjelajahan. Label topik sudah ditentukan sebelumnya dan mencakup hal-hal seperti Seni &amp; Hiburan, Belanja, dan Olahraga. Kemudian, situs yang Anda buka dapat meminta beberapa topik Anda (tetapi bukan histori penjelajahan) kepada Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="1745880797583122200">Browser Anda dikelola</translation>
 <translation id="1746113442205726301">Perpindahan image Y</translation>
 <translation id="1746531169546376413">0 derajat</translation>
@@ -498,6 +498,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2119867082804433120">Lubang di kanan bawah</translation>
 <translation id="2122719317867821810">Kebijakan ini berfungsi sebagaimana mestinya, tetapi nilai yang bertentangan disetel di sumber lain dan digantikan oleh kebijakan ini.</translation>
 <translation id="2126374524350484896">Pembuat PDF:</translation>
+<translation id="2128262927290305126">Di Akun Google Anda <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Template yang telah Anda tentukan mungkin tidak diterapkan karena kebijakan DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Pakaian pria</translation>
@@ -543,6 +544,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2219735899272417925">Perangkat perlu direset</translation>
 <translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2225927550500503913">Kartu virtual diaktifkan</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> ke jaringan Wi-Fi</translation>
 <translation id="2239100178324503013">Kirim sekarang</translation>
 <translation id="2241693394036365668">File didownload</translation>
 <translation id="2246264294482514010">10 x 12 inci (25 x 30 cm)</translation>
@@ -1083,6 +1085,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3631244953324577188">Biometrik</translation>
 <translation id="3632503704576938756">Berbagi layar dilanjutkan</translation>
 <translation id="3632892046558972264">Berbagi layar dijeda</translation>
+<translation id="3633035844150606508">Simpan alamat di Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Tombol Update Chrome, tekan Enter untuk mengupdate Chrome dari setelan Chrome</translation>
 <translation id="3634530185120165534">Baki 5</translation>
 <translation id="3634567936866541746">Anda baru saja memasukkan sandi ke situs penipuan. Untuk mengamankan akun Anda, Chrome merekomendasikan pemeriksaan sandi tersimpan Anda.</translation>
@@ -1986,6 +1989,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5830698870816298009">penggunaan &amp; gerakan kamera</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5838278095973806738">Jangan masukkan informasi sensitif apa pun di situs ini (misalnya, sandi atau kartu kredit), karena penyerang dapat mencurinya.</translation>
+<translation id="5841338463993781099">Simpan di akun?</translation>
 <translation id="5851548754964597211">Daftar tab</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Nonaktif</translation>

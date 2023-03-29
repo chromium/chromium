@@ -94,6 +94,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3258596308407688501">Chromium ei voi lukea tietohakemistoaan ja kirjoittaa siihen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Tämä opas auttaa sinua ymmärtämään valintojasi, jotta Chromium toimii haluamallasi tavalla</translation>
 <translation id="3283186697780795848">Chromiumin versio <ph name="PRODUCT_VERSION" /> asennettu</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="328888136576916638">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Chromiumin toiminnoista poistetaan käytöstä.</translation>
@@ -382,6 +383,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="924957577793602335">Tee Chromiumista näköisesi</translation>
 <translation id="93478295209880648">Chromium ei välttämättä toimi oikein, koska se ei enää tue Windows XP:tä tai Windows Vistaa.</translation>
 <translation id="942598560705308788">Chromiumin hallinnoimat varmenteet</translation>
+<translation id="959579472876010517">Kaikkien Chromiumin ominaisuuksien hyödyntäminen</translation>
 <translation id="965162752251293939">Kuka käyttää Chromiumia?</translation>
 <translation id="967427899662692980">Ota Chromiumin tehokkain suojaus käyttöön</translation>
 <translation id="9792300276217204">Tyhjennä sivustodata aina laitteelta, kun suljet Chromiumin</translation>

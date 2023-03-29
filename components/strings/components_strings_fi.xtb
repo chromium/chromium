@@ -498,6 +498,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2119867082804433120">Reikä oikeassa alakulmassa</translation>
 <translation id="2122719317867821810">Tämä käytäntö toimii odotetusti, mutta muualla on asetettu ristiriitainen arvo, jonka tämä käytäntö ohittaa.</translation>
 <translation id="2126374524350484896">PDF-luontiohjelma:</translation>
+<translation id="2128262927290305126">Google-tilillesi: <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Määrittämiäsi malleja ei välttämättä käytetä, sillä DnsOverHttpsMode-käytäntöä ei ole määritetty.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Miesten vaatteet</translation>
@@ -543,6 +544,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2219735899272417925">Laitteen nollaaminen vaaditaan</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2225927550500503913">Virtuaalinen kortti on päällä</translation>
+<translation id="2226636330183131181">Wi-Fi-verkkoon <ph name="BEGIN_LINK" />kirjautuminen<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Lähetä nyt</translation>
 <translation id="2241693394036365668">Tiedosto on ladattu</translation>
 <translation id="2246264294482514010">10 x 12 tuumaa</translation>
@@ -1085,6 +1087,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3631244953324577188">Biometriikka</translation>
 <translation id="3632503704576938756">Näytön jakamista jatkettu</translation>
 <translation id="3632892046558972264">Näytön jakaminen keskeytetty</translation>
+<translation id="3633035844150606508">Tallenna osoite Google-tilillesi, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Päivitä Chrome ‑painike, päivitä Chrome sen asetuksista painamalla Enter</translation>
 <translation id="3634530185120165534">Lokero 5</translation>
 <translation id="3634567936866541746">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome suosittelee tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
@@ -1795,6 +1798,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5324080437450482387">Valitse yhteystiedot</translation>
 <translation id="5329858041417644019">Selainta ei ylläpidetä</translation>
 <translation id="5332219387342487447">Toimitustapa</translation>
+<translation id="5332769172018416402">Kysy viestillä</translation>
 <translation id="5333022057423422993">Chrome löysi juuri käyttämäsi salasanan tietosuojaloukkauksesta. Suosittelemme tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
 <translation id="5334013548165032829">Yksityiskohtaiset järjestelmälokit</translation>
 <translation id="5334145288572353250">Tallennetaanko osoite?</translation>
@@ -1988,6 +1992,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5830698870816298009">kameran käyttö ja liike</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5838278095973806738">Älä anna tälle sivustolle salasanoja, luottokorttinumeroita tai muita arkaluonteisia tietoja, sillä hyökkääjät saattavat varastaa ne.</translation>
+<translation id="5841338463993781099">Tallennetaanko osoite tilille?</translation>
 <translation id="5851548754964597211">Välilehtiluettelo</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Pois päältä</translation>

@@ -1320,6 +1320,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8058746566562539958">Megnyitás új Chrome-lapon</translation>
 <translation id="8062594758852531064">Kiterjesztett előtöltés:</translation>
 <translation id="8063895661287329888">A könyvjelző hozzáadása sikertelen volt.</translation>
+<translation id="8066816452984416180">Az oldal gyors felvétele a könyvjelzők közé. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
 <translation id="806745655614357130">Maradjanak elkülönítve az adataim</translation>
 <translation id="8073388330009372546">Kép megnyitása új lapon</translation>
 <translation id="8076492880354921740">Lapok</translation>
@@ -1351,6 +1352,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8216351761227087153">Megtekintés</translation>
 <translation id="8218622182176210845">Fiók kezelése</translation>
 <translation id="8223642481677794647">A hírcsatornakártya menüje</translation>
+<translation id="8236097722223016103">Hozzáadás a könyvjelzőkhöz</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
 <translation id="8255617931166444521">A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék az Ön, csak a saját webhelyükön végzett böngészési tevékenységeit</translation>
 <translation id="8259179246279078674">Mivel az előre betöltött oldalak titkosítottak, a Google semmilyen információt nem tud meg az előre betöltött oldal tartalmával kapcsolatban. A Google-szerverek csak annyit tudnak majd meg, hogy mely webhelyek töltődnek be előre privát módon. Ez az információ csak az oldalak előtöltésére szolgálnak, és a rendszer nem kapcsolja össze őket az Ön Google-fiókjából származó egyéb információkkal.</translation>
@@ -1498,6 +1500,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8993760627012879038">Új lap megnyitása inkognitó módban</translation>
 <translation id="8996847606757455498">Másik szolgáltató választása</translation>
+<translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
 <translation id="8998729206196772491">Egy <ph name="MANAGED_DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="9022774213089566801">Gyakran látogatott webhelyek</translation>
 <translation id="9022871169049522985">A webhelyek és a hirdetők mérhetik a hirdetéseik teljesítményét.</translation>

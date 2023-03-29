@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Jūsu konts nedarbojas pārlūkā Google Chrome. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
 <translation id="3173834708294760622">Google Chrome lapa</translation>
 <translation id="3196546062792660320">Chrome ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
+<translation id="322254490661677575">Lai izmantotu un saglabātu Chrome datus savā Google kontā, ievadiet ieejas frāzi.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3345341804167540816">Izmantojiet Chrome visur</translation>
 <translation id="3503014945441706099">Iegūstiet šim Chrome profilam arī drošu pārlūkošanu ar papildu aizsardzību</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Jūs pārslēdzat sinhronizējamos kontus no konta <ph name="USER_EMAIL1" /> uz kontu <ph name="USER_EMAIL2" />. Jūsu esošie Chrome dati tiek pārvaldīti domēnā <ph name="DOMAIN" />. Pārslēdzot kontus, jūsu dati tiks dzēsti no šīs ierīces, taču tie paliks kontā <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nevar piekļūt jūsu fotoattēliem vai videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="4064699917955374540">Lai izmantotu un saglabātu Chrome datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="417201473131094001">Netiek atbalstīta pārlūkā Chrome Canary.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chrome un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
 <translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>

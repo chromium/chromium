@@ -1319,6 +1319,7 @@
 <translation id="8058746566562539958">在新的 Chrome 分頁中開啟</translation>
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
+<translation id="8066816452984416180">快速將這個頁面加入書籤，按住即可編輯這個捷徑。</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -1350,6 +1351,7 @@
 <translation id="8216351761227087153">觀看</translation>
 <translation id="8218622182176210845">管理你的帳戶</translation>
 <translation id="8223642481677794647">動態消息資訊卡選單</translation>
+<translation id="8236097722223016103">加入書籤</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已經過加密，Google 不會得知預先載入網頁內容的相關資訊。Google 伺服器會知道哪些網站已透過私密方式預先載入。這項資訊僅用於預先載入網頁，不會與你 Google 帳戶的其他資訊連結。</translation>
@@ -1497,6 +1499,7 @@
 <translation id="8989968390305463310">你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會自動刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="8993760627012879038">在無痕模式下開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
+<translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="8998729206196772491">您即將使用由 <ph name="MANAGED_DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="9022774213089566801">經常造訪</translation>
 <translation id="9022871169049522985">網站和廣告商可評估廣告成效</translation>

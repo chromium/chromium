@@ -1320,6 +1320,7 @@
 <translation id="8058746566562539958">在新的 Chrome 标签页中打开</translation>
 <translation id="8062594758852531064">扩展型预加载：</translation>
 <translation id="8063895661287329888">无法添加书签。</translation>
+<translation id="8066816452984416180">快速为此页添加书签。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="806745655614357130">单独保存我的数据</translation>
 <translation id="8073388330009372546">在新标签页中打开图片</translation>
 <translation id="8076492880354921740">标签页</translation>
@@ -1351,6 +1352,7 @@
 <translation id="8216351761227087153">观看</translation>
 <translation id="8218622182176210845">管理您的帐号</translation>
 <translation id="8223642481677794647">动态卡片上的菜单</translation>
+<translation id="8236097722223016103">添加到书签</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8255617931166444521">网站只能使用 Cookie 查看您在此网站上的浏览活动</translation>
 <translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 帐号中的其他信息。</translation>
@@ -1498,6 +1500,7 @@
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8993760627012879038">在无痕模式下打开新标签页</translation>
 <translation id="8996847606757455498">另选一个提供商</translation>
+<translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="8998729206196772491">您正要登录由 <ph name="MANAGED_DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此帐号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>

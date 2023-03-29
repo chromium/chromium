@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Пробити отвір унизу праворуч</translation>
 <translation id="2122719317867821810">Це правило працює належним чином, але в іншому місці встановлюється конфліктне значення й замінюється цим правилом.</translation>
 <translation id="2126374524350484896">Додаток, у якому створено PDF:</translation>
+<translation id="2128262927290305126">У вашому обліковому записі Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Вибрані шаблони можуть не застосовуватися, оскільки правило DnsOverHttpsMode не налаштовано.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Чоловічий одяг</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Потрібно скинути налаштування пристрою</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вхід<ph name="END_LINK" /> у мережу Wi-Fi</translation>
 <translation id="2239100178324503013">Надіслати</translation>
 <translation id="2241693394036365668">Завантажено файл</translation>
 <translation id="2246264294482514010">10 x 12 дюйм.</translation>
@@ -1084,6 +1086,7 @@
 <translation id="3631244953324577188">Біометрія</translation>
 <translation id="3632503704576938756">Показ екрана відновлено</translation>
 <translation id="3632892046558972264">Показ екрана призупинено</translation>
+<translation id="3633035844150606508">Зберегти адресу у вашому обліковому записі Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Кнопка "Оновити Chrome"; натисніть Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chrome радить перевірити збережені паролі.</translation>
@@ -1794,6 +1797,7 @@
 <translation id="5324080437450482387">Вибрати контактну інформацію</translation>
 <translation id="5329858041417644019">Веб-переглядачем не керує адміністратор</translation>
 <translation id="5332219387342487447">Спосіб доставки</translation>
+<translation id="5332769172018416402">Запитати в повідомленні</translation>
 <translation id="5333022057423422993">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, радимо перевірити надійність збережених паролів.</translation>
 <translation id="5334013548165032829">Докладні журнали системи</translation>
 <translation id="5334145288572353250">Зберегти адресу?</translation>
@@ -1987,6 +1991,7 @@
 <translation id="5830698870816298009">використання й переміщення камери</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5838278095973806738">Не вводьте конфіденційну інформацію на цьому сайті (як-от паролі й дані кредитних карток). Зловмисники можуть викрасти її.</translation>
+<translation id="5841338463993781099">Зберегти в обліковому записі?</translation>
 <translation id="5851548754964597211">Список вкладок</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Вимк.</translation>

@@ -578,6 +578,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
 <translation id="1547424904796464052">Hash SHA-256 con codificación hexadecimal de la imagen de firmware.</translation>
+<translation id="1550295162561011575">Si estableces esta política, los administradores podrán configurar la automatización de la ejecución de apps en dispositivos <ph name="PRODUCT_NAME" />. Estas apps se pueden ejecutar con el acceso del usuario, o los usuarios pueden ejecutarlas juntas desde el selector.</translation>
 <translation id="1552418937045050762">Si habilitas esta configuración, los usuarios podrán activar la función Compartir con Nearby, lo que les permitirá enviar archivos a personas cercanas y recibirlos.
 
       Si inhabilitas esta configuración, los usuarios no podrán habilitar la función Compartir con Nearby.
@@ -1046,6 +1047,7 @@ Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (1), se inhabi
 <translation id="1980777339173013601">Si estableces la política como verdadera, los usuarios podrán usar ARC, a menos que esta tecnología esté desactivada por otros motivos. Si la estableces como falsa, los usuarios no afiliados no podrán usar ARC.
 
       Los cambios que se realicen en la política solo se aplicarán cuando ARC no se ejecute, por ejemplo, mientras se inicia Chrome OS.</translation>
+<translation id="1984934843478301531">Automatización de la ejecución de apps</translation>
 <translation id="1985598967415986700">Se podrá controlar la reducción de usuario-agente mediante las pruebas de campo y de origen</translation>
 <translation id="1987789058026551147">Habilitar los informes de las sesiones de kiosco del dispositivo</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
@@ -2122,6 +2124,7 @@ Es posible que la política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> anul
       Si inhabilitas la política o no la estableces, se ignorará la clave del manifiesto de <ph name="REQUIRED_PLATFORM_VERSION" /> y la actualización automática se realizará con normalidad.
 
       Advertencia: No delegues el control de la versión de <ph name="PRODUCT_OS_NAME" /> a una aplicación de kiosco, ya que hacerlo podría impedir que el dispositivo reciba actualizaciones de software y correcciones de seguridad importantes. La delegación del control de la versión de <ph name="PRODUCT_OS_NAME" />podría poner en riesgo a los usuarios.</translation>
+<translation id="2989404644164421834">Volver a cargar páginas</translation>
 <translation id="299446489108785864">Se trata de una lista que incluye las URLs en las que se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta los valores abiertos automáticamente que configuran los usuarios.
 
       Si la configuras, se abrirán los archivos automáticamente solo cuando la URL forme parte de este conjunto y se incluya el tipo de archivo en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si no se cumple alguna de las dos condiciones, no se abrirá automáticamente la descarga.
@@ -4166,6 +4169,25 @@ Esta política es temporal y se quitará ni bien se inicie la cancelación del e
 <translation id="4860900625632464759">Permitir que los usuarios sincronicen mensajes SMS entre su teléfono y su Chromebook</translation>
 <translation id="486146220825734683">No permitir que los usuarios recuerden las contraseñas de Kerberos</translation>
 <translation id="4861767323695239729">Configurar los métodos de entrada permitidos en una sesión de usuario</translation>
+<translation id="4870120523614402392">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Si no estableces la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, esta política no tendrá efecto.
+
+      Cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecuta las acciones configuradas en esta política.
+
+      Si la dejas vacía o no la estableces, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
+
+      Se admiten las siguientes acciones:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": cierra todas las ventanas del navegador y las AWP de este perfil. No es compatible con Android.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": muestra la ventana del Selector de perfiles. No es compatible con Android.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": borran los datos de navegación correspondientes. Para obtener más información, consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
+
+      "<ph name="RELOAD_PAGES_ACTION" />": vuelve a cargar todas las páginas web. En algunas páginas, es posible que primero se le solicite confirmación al usuario.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" y "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />" requieren que establezcas la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera.</translation>
 <translation id="4873380469296842901">Si habilitas esta configuración, los usuarios que hayan habilitado Phone Hub podrán acceder a las notificaciones del teléfono desde Chrome OS.
 
       Si la inhabilitas, los usuarios no podrán usar esta función. Tampoco podrán hacerlo si inhabilitas la política PhoneHubAllowed.

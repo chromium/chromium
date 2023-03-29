@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">ನೀವು ಈಗಾಗಲೇ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಈ ಸೈಟ್‌ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಒಂದನ್ನು ಉಳಿಸಿದ್ದೀರಿ. Google ನಿಮಗಾಗಿ ಇತ್ತೀಚಿನ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="4343046787186034850">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4359125752503270327">ಈ ಪುಟವು ಇನ್ನೊಂದು ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ.</translation>
+<translation id="4371526908359194219">ಇಮೇಲ್ ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="4375040482473363939">QR ಕೋಡ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
 <translation id="4389019817280890563">ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="498985224078955265">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
+<translation id="5016420433031926653"><ph name="USER_EMAIL" /> ಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5017828934289857214">ನಂತರ ನನಗೆ ಜ್ಞಾಪಿಸಿ</translation>
 <translation id="5037676449506322593">ಎಲ್ಲವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
@@ -1172,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿಲ್ಲ}=1{{count} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="8981454092730389528">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="8985320356172329008">Google ಗೆ ಹೀಗೆ ಸೈನ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="8998289560386111590">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="9000089900434778519">ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್ <ph name="DSE_NAME" /> ಆಗಿದೆ. ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ಅವರ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="9008201768610948239">ನಿರ್ಲಕ್ಷಿಸಿ</translation>
 <translation id="9034759925968272072">Google ಖಾತೆಯಿಂದ ನೀವು ಸೈನ್ ಔಟ್ ಆಗಲಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸದ ಇತರ ಪ್ರಕಾರಗಳನ್ನು ಹೊಂದಿರಬಹುದು.</translation>

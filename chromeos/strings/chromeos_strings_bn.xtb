@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />টি নামযুক্ত<ph name="NAME" />-এর মধ্যে <ph name="INDEX" /> নম্বর ডিভাইস।</translation>
 <translation id="7108668606237948702">লিখুন</translation>
 <translation id="7130438335435247835">অ্যাক্সেস পয়েন্ট নাম (APN)</translation>
+<translation id="7131634559772719176">প্রিসেট কনফার্ম করুন</translation>
 <translation id="7134436342991564651">{0,plural, =1{নেম-সার্ভার}one{নেম সার্ভার}other{নেম সার্ভার}}</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">আপনার পাসওয়ার্ড পরিবর্তন করা হয়ে গেছে। এখন থেকে নতুন পাসওয়ার্ড ব্যবহার করুন।</translation>
 <translation id="7763470514545477072">ডোমেন সাফিক্সের সাথে মিল থাকা</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
+<translation id="7770834998503326261">আপনার বেছে নেওয়া সম্পর্কিত অতিরিক্ত তথ্য</translation>
 <translation id="7778717409420828014">আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
 <translation id="7784116172884276937">কোনও ডিএনএস সার্ভার সেট আপ করা হয়নি</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8045012663542226664">'মাইক্রোফোন মিউট কী'</translation>
+<translation id="8050091914317269817">এই ওয়ালপেপারটি বেছে নিলে অটো ডার্ক মোড এবং ওয়ালপেপারের রঙ ম্যাচিং চালু হবে।</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>

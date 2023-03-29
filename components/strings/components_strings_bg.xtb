@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Перфориране долу вдясно</translation>
 <translation id="2122719317867821810">Това правило работи нормално, но на друго място е зададена несъвместима стойност, която е заменена от него.</translation>
 <translation id="2126374524350484896">PDF файлът е създаден със:</translation>
+<translation id="2128262927290305126">В профила ви в Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Прилагането на посочените от вас шаблони не е възможно, тъй като правилото DnsOverHttpsMode не е зададено.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Мъжко облекло</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Изисква се нулиране на устройството</translation>
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2225927550500503913">Виртуалната карта е включена</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Влизане в профила<ph name="END_LINK" /> в Wi-Fi мрежата</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
 <translation id="2241693394036365668">Изтегляне на файл</translation>
 <translation id="2246264294482514010">10 x 12 инча</translation>
@@ -1084,6 +1086,7 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Споделянето на екрана е възобновено</translation>
 <translation id="3632892046558972264">Споделянето на екрана е на пауза</translation>
+<translation id="3633035844150606508">Запазване на адреса в профила ви в Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Бутон „Актуализиране на Chrome“. Натиснете Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="3634530185120165534">Тава 5</translation>
 <translation id="3634567936866541746">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chrome препоръчва да проверите запазените си пароли.</translation>
@@ -1987,6 +1990,7 @@
 <translation id="5830698870816298009">Използване и местене на камерата</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5838278095973806738">Не ви препоръчваме да въвеждате поверителна информация в този сайт (например пароли или номера на кредитни карти), тъй като може да бъде открадната от извършители на атаки.</translation>
+<translation id="5841338463993781099">Да се запази ли в профила?</translation>
 <translation id="5851548754964597211">Списък с раздели</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Изключено</translation>

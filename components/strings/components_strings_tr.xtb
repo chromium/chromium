@@ -498,6 +498,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2119867082804433120">Sağ altta delik</translation>
 <translation id="2122719317867821810">Bu politika beklendiği gibi çalışıyor, ancak başka bir yerde ayarlanmış çakışan bir değeri geçersiz kılıyor.</translation>
 <translation id="2126374524350484896">PDF üreticisi:</translation>
+<translation id="2128262927290305126"><ph name="ACCOUNT" /> Google Hesabınızda</translation>
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Erkek giyim</translation>
@@ -543,6 +544,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2219735899272417925">Cihazın sıfırlanması gerekiyor</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2225927550500503913">Sanal kart etkin</translation>
+<translation id="2226636330183131181">Kablosuz ağda <ph name="BEGIN_LINK" />oturum açma<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
 <translation id="2241693394036365668">Dosya indirme</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
@@ -1084,6 +1086,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3631244953324577188">Biyometri</translation>
 <translation id="3632503704576938756">Ekran paylaşımı devam ettiriliyor</translation>
 <translation id="3632892046558972264">Ekran paylaşımı duraklatıldı</translation>
+<translation id="3633035844150606508">Adresi Google Hesabınıza (<ph name="ACCOUNT" />) kaydedin</translation>
 <translation id="3633738897356909127">Chrome'u güncelle düğmesi, Chrome ayarlarınızdan Chrome'u güncellemek için Enter'a basın</translation>
 <translation id="3634530185120165534">Tepsi 5</translation>
 <translation id="3634567936866541746">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chrome, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
@@ -1987,6 +1990,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>
+<translation id="5841338463993781099">Hesaba kaydedilsin mi?</translation>
 <translation id="5851548754964597211">Sekme listesi</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Kapalı</translation>
@@ -2179,7 +2183,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6328784461820205019">"Bağlantınız gizli değil", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" veya "SSL sertifika hatası"</translation>
 <translation id="6328786501058569169">Bu site yanıltıcıdır</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> boyutundan daha az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
-<translation id="6337534724793800597">Politikalara ada göre filtre uygula</translation>
+<translation id="6337534724793800597">Politikaları ada göre filtrele</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> değeri geçersiz olduğundan kullanılmaz.</translation>
 <translation id="6340739886198108203">Yönetici politikası, gizli içerik görünür olduğunda ekran görüntüsü veya kayıt alınmasını önermiyor:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefine aktarmanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefine aktarmanızı önermiyor}}</translation>

@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> was using Chromium and left bookmarks, passwords and other settings on this device.</translation>
+<translation id="372658070733623520">To use and save Chromium data in your Google Account, verify that it's you.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="5983312940147103417">Make Chromium Better</translation>
 <translation id="6062449165341879460">Your organisation <ph name="DOMAIN" /> will have access to your Chromium data, bookmarks, history, passwords and other settings that you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organisation. Your organisation can also set user policies specific to that account that can change the behaviour of Chromium.</translation>
+<translation id="61109258320235597">To use and save Chromium data in your Google Account, enter your passphrase.</translation>
 <translation id="6119647025869519954">To make Chromium your default:
 1. Open settings
 2. Tap the default browser app

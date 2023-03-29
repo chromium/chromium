@@ -26,6 +26,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1507198376417198979">Personnalisez votre nouveau profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome a besoin d'accéder au Bluetooth pour continuer 
  l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Ce guide vous aide à comprendre vos choix, afin que Chrome fonctionne comme vous le souhaitez</translation>
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1583073672411044740">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -68,6 +69,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2131230230468101642">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Vous pouvez aussi supprimer des centres d'intérêt si vous ne souhaitez pas que Chrome les prenne en compte.</translation>
 <translation id="2139300032719313227">Redémarrer Chrome OS</translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
+<translation id="2163996651553460171">Exploitez tout le potentiel de Chrome</translation>
 <translation id="2174917724755363426">Installation non terminée. Voulez-vous vraiment annuler ?</translation>
 <translation id="223889379102603431">Informations sur la manière dont Chrome gère ses certificats racines</translation>
 <translation id="2258103955319320201">Pour retrouver vos réglages Chrome sur tous vos appareils, connectez-vous, puis activez la synchronisation.</translation>

@@ -40,6 +40,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1182225749592316782">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa</translation>
 <translation id="1183863904939664422">En ole kiinnostunut ehdotuksesta</translation>
+<translation id="1184126796192815024">Tämä verkko ei tue sovellusten striimausta puhelimesta. Kokeile käyttää puhelimen hotspotia. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Paranna tietoturvaa lisäämällä salasana tai PIN-koodi</translation>
 <translation id="118532027333893379">Tallenna koko näytön sisältö napauttamalla mitä tahansa kohtaa</translation>
 <translation id="1190609913194133056">Ilmoituskeskus</translation>
@@ -1252,6 +1253,7 @@ Uusi asennus</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vielä yksi numero}other{Vielä # numeroa}}</translation>
 <translation id="6867938213751067702">Lataus keskeytetty: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Pikanäppäin poistettu käytöstä</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 sovellus}other{# sovellusta}}</translation>
 <translation id="6884665277231944629">Palaa tähän päivään</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Vaihda ikkunaa painamalla alanuolta</translation>
@@ -1432,6 +1434,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7749443890790263709">Työpöytiä on enimmäismäärä.</translation>
 <translation id="776344839111254542">Klikkaa nähdäksesi päivityksen tiedot</translation>
 <translation id="7768784765476638775">Teksti puhuttuna</translation>
+<translation id="7769299611924763557">GIF on valmis pian</translation>
 <translation id="7780094051999721182">pikakuvakkeista</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7796735576426975947">Uusi ilmoitus piilotettu</translation>

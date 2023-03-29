@@ -498,6 +498,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2119867082804433120">Zulo bat behean, eskuinetara</translation>
 <translation id="2122719317867821810">Gidalerroak espero bezala funtzionatzen du, baina gatazka sortzen duen balio bat beste nonbait dago ezarrita, eta gidalerro honek hura ordezten du.</translation>
 <translation id="2126374524350484896">PDFaren egilea:</translation>
+<translation id="2128262927290305126">Zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroa ez delako ezarri.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Gizonentzako arropa</translation>
@@ -543,6 +544,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2219735899272417925">Gailua berrabiarazi behar da</translation>
 <translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2225927550500503913">Txartel birtuala aktibatuta dago</translation>
+<translation id="2226636330183131181">Wifi-sarean <ph name="BEGIN_LINK" />saioa hastea<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Bidali</translation>
 <translation id="2241693394036365668">Fitxategi bat deskargatu da</translation>
 <translation id="2246264294482514010">25,4 × 30,48 cm (10 × 12 in)</translation>
@@ -1080,6 +1082,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3631244953324577188">Sistema biometrikoak</translation>
 <translation id="3632503704576938756">Pantaila-partekatzeari berrekin zaio</translation>
 <translation id="3632892046558972264">Pantaila-partekatzea pausatu da</translation>
+<translation id="3633035844150606508">Gorde helbidea zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="3633738897356909127">"Eguneratu Chrome" botoia: sakatu "Sartu" Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
 <translation id="3634530185120165534">5. erretilua</translation>
 <translation id="3634567936866541746">Webgune engainagarri batean idatzi duzu pasahitza. Kontuak babesteko, gordetako pasahitzei begiratu bat ematea gomendatzen du Chrome-k.</translation>
@@ -1983,6 +1986,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5830698870816298009">kameraren erabilera eta mugimendua</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5838278095973806738">Ez zenuke kontuzko informaziorik (adibidez, pasahitzak edo kreditu-txartelak) eman behar webgune honetan, erasotzaileek lapur lezaketelako.</translation>
+<translation id="5841338463993781099">Kontuan gorde nahi duzu?</translation>
 <translation id="5851548754964597211">Fitxen zerrenda</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>

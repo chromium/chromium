@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1516530951338665275">Google Chrome tarvitsee Bluetoothia jatkaakseen
  laiteparin muodostusta. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Tämä opas auttaa sinua ymmärtämään valintojasi, jotta Chrome toimii haluamallasi tavalla</translation>
 <translation id="1547295885616600893">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää.</translation>
 <translation id="1553358976309200471">Päivitä Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chrome-profiiliin. Tämä luo uuden Chrome-profiilin: <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -65,6 +66,7 @@
 <translation id="2131230230468101642">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromen ottavan huomioon.</translation>
 <translation id="2139300032719313227">Käynnistä Chrome-käyttöjärjestelmä uudelleen</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
+<translation id="2163996651553460171">Kaikkien Chromen ominaisuuksien hyödyntäminen</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="223889379102603431">Tietoa siitä, miten Chrome hallinnoi juurivarmenteitaan</translation>
 <translation id="2258103955319320201">Jos haluat pääsyn Chromen selainsisältöön kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>

@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">Szabja személyre az új Chrome-profilját</translation>
 <translation id="1516530951338665275">A Google Chrome-nak Bluetooth-hozzáférésre van szükséges a párosítás 
  folytatásához. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Ez az útmutató segít megérteni a választható lehetőségeket, hogy a Chrome az Ön által kívánt módon működhessen</translation>
 <translation id="1547295885616600893">A ChromeOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="1553358976309200471">A Chrome böngésző frissítése</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chrome-profilba. Ezzel új Chrome-profilt hoz létre a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz.</translation>
@@ -65,6 +66,7 @@
 <translation id="2131230230468101642">Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Arra is lehetősége van, hogy eltávolítsa azokat az érdeklődési köröket, amelyeket nem szeretne, hogy a Chrome figyelembe vegyen.</translation>
 <translation id="2139300032719313227">A ChromeOS újraindítása</translation>
 <translation id="2151406531797534936">Indítsa újra most a Chrome-ot</translation>
+<translation id="2163996651553460171">Hozza ki a legtöbbet a Chrome-ból</translation>
 <translation id="2174917724755363426">A telepítés még nem fejeződött be. Biztosan megszakítja a műveletet?</translation>
 <translation id="223889379102603431">Információ arról, hogy a Chrome hogyan kezeli a főtanúsítványokat</translation>
 <translation id="2258103955319320201">Ha szeretne minden eszközén hozzáférni a Chrome böngészőhöz tartozó anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>

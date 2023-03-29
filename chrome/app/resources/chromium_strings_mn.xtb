@@ -94,6 +94,7 @@
 <translation id="3185330573522821672">Chromium-н шинэ профайлаа тохируулна уу</translation>
 <translation id="3190315855212034486">Chromium-д гамтал гарлаа. Дахин эхлүүлэх үү?</translation>
 <translation id="3258596308407688501">Chromium нь өөрийн өгөгдлийн сан руу уншуулж бас бичиж чадахгүй байна: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Энэ хөтөч танд сонголтоо ойлгоход туслах бөгөөд ингэснээр Chromium таны хүссэнээр ажиллана</translation>
 <translation id="3283186697780795848">Chromium <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="328888136576916638">Google-ийн API түлхүүр байхгүй байна. Chromium-ийн зарим функц идэвхгүй болно.</translation>
@@ -380,6 +381,7 @@
 <translation id="924957577793602335">Chromium-г өөрийн болгоoрой</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>
 <translation id="942598560705308788">Chromium-с удирддаг гэрчилгээ</translation>
+<translation id="959579472876010517">Chromium-г бүрэн ашиглаарай</translation>
 <translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>
 <translation id="967427899662692980">Chromium-н хамгийн хүчирхэг аюулгүй байдлыг аваарай</translation>
 <translation id="9792300276217204">Таныг Chromium-г хаах үед төхөөрөмжөөс тань сайтын өгөгдлийг үргэлж арилгана</translation>

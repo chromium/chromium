@@ -94,6 +94,7 @@
 <translation id="3258596308407688501">Chromium no pot llegir ni escriure en el directori de dades:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Aquesta guia t'ajuda a entendre les opcions que has triat perquè Chromium funcioni com vulguis</translation>
 <translation id="3283186697780795848">Està instal·lada la versió <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
@@ -382,6 +383,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="924957577793602335">Personalitza Chromium</translation>
 <translation id="93478295209880648">Pot ser que Chromium no funcioni correctament perquè ja no és compatible amb Windows XP ni Windows Vista</translation>
 <translation id="942598560705308788">Certificats gestionats per Chromium</translation>
+<translation id="959579472876010517">Treu el màxim profit de Chromium</translation>
 <translation id="965162752251293939">Qui està utilitzant Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguretat més efectiva de Chromium</translation>
 <translation id="9792300276217204">Esborra sempre les dades dels llocs web del dispositiu quan tanquis Chromium</translation>

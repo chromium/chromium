@@ -498,6 +498,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2119867082804433120">Perforación en la esquina inferior derecha</translation>
 <translation id="2122719317867821810">Esta política se comporta según lo esperado, pero anuló un valor en conflicto que se configuró en otro lugar.</translation>
 <translation id="2126374524350484896">Generador de PDF:</translation>
+<translation id="2128262927290305126">En tu Cuenta de Google <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Ropa masculina</translation>
@@ -543,6 +544,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2219735899272417925">Se debe restablecer el dispositivo</translation>
 <translation id="2224337661447660594">Sin Internet</translation>
 <translation id="2225927550500503913">Se activó la tarjeta virtual</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Acceder<ph name="END_LINK" /> a la red Wi-Fi</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="2241693394036365668">Se descargó un archivo</translation>
 <translation id="2246264294482514010">25.4 × 30.5 cm (10 × 12 in)</translation>
@@ -628,6 +630,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2469153820345007638">Orden de 1 a N</translation>
 <translation id="2470767536994572628">Cuando edites anotaciones, se mostrará este documento en una vista de una sola página y en su rotación original</translation>
 <translation id="2479410451996844060">URL de búsqueda no válida</translation>
+<translation id="2480300195898055381">En tu Cuenta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="248348093745724435">Políticas de la máquina</translation>
 <translation id="2491120439723279231">El certificado del servidor contiene errores.</translation>
@@ -841,6 +844,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3029752078111257850">Noticias del mundo</translation>
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
+<translation id="3041450980936463495">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu Cuenta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Información sobre el certificado</translation>
 <translation id="305162504811187366">El historial del Escritorio remoto de Chrome, incluidas las marcas de tiempo, los hosts y las ID de sesión de los clientes</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
@@ -1083,6 +1087,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3631244953324577188">Biométricos</translation>
 <translation id="3632503704576938756">Se reanudó compartir pantalla</translation>
 <translation id="3632892046558972264">Se pausó compartir pantalla</translation>
+<translation id="3633035844150606508">Guardar la dirección en tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Botón Actualizar Chrome: presiona Intro para actualizar Chrome desde la configuración del navegador</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Ingresaste tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chrome te recomienda revisar las contraseñas que tengas guardadas.</translation>
@@ -1933,6 +1938,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5695542892312572833">¿Deseas usar Windows Hello para verificar y completar tu compra?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Administrar…</translation>
+<translation id="5706906618852913030">¿Quieres guardarla en la cuenta?</translation>
 <translation id="5707154300732650394">Reanudar tu exploración</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -1985,6 +1991,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No debes ingresar información confidencial en este sitio (p. ej., contraseñas o tarjetas de crédito), ya que los atacantes podrían robarla.</translation>
+<translation id="5841338463993781099">¿Quieres guardarla en la cuenta?</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Desactivado</translation>

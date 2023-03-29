@@ -96,6 +96,7 @@
 <translation id="3258596308407688501">Chromium не можа чытаць з каталога даных і запісваць у яго:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">У гэтым дапаможніку вы знойдзеце інфармацыю па эфектыўным выкарыстанні Chromium у адпаведнасці са сваімі наладамі</translation>
 <translation id="3283186697780795848">Усталявана версія Chromium <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Перазапусціць</translation>
 <translation id="328888136576916638">Адсутнічаюць ключы Google API. Некаторыя функцыі Chromium будуць выключаны.</translation>
@@ -383,6 +384,7 @@
 <translation id="924957577793602335">Дастасуйце Chromium да сваіх мэт</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
 <translation id="942598560705308788">Сертыфікаты, якімі кіруе Chromium</translation>
+<translation id="959579472876010517">Выкарыстоўвайце ўсе магчымасці Chromium</translation>
 <translation id="965162752251293939">Хто выкарыстоўвае Chromium?</translation>
 <translation id="967427899662692980">Засцеражыце браўзер Chromium ад небяспек</translation>
 <translation id="9792300276217204">Заўсёды выдаляць даныя сайтаў з прылады пры закрыцці Chromium</translation>

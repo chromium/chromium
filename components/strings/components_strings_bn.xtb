@@ -499,6 +499,7 @@
 <translation id="2119867082804433120">নিচে ডানদিকে পাঞ্চ করুন</translation>
 <translation id="2122719317867821810">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে এমন মান সেট করা হয়েছে যা একে অপরের সাথে ম্যাচ করে না এবং সেই মানকে এই নীতির মাধ্যমে ওভাররাইড করে দেওয়া হয়।</translation>
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
+<translation id="2128262927290305126">আপনার Google অ্যাকাউন্টে <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">পুরুষদের পোশাক</translation>
@@ -544,6 +545,7 @@
 <translation id="2219735899272417925">ডিভাইস রিসেট করতে হবে</translation>
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2225927550500503913">ভার্চুয়াল কার্ড চালু করা হয়েছে</translation>
+<translation id="2226636330183131181">ওয়াই ফাই নেটওয়ার্কে <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="2246264294482514010">১০ x ১২ ইঞ্চি</translation>
@@ -1085,6 +1087,7 @@
 <translation id="3631244953324577188">বায়োমেট্রিক্স</translation>
 <translation id="3632503704576938756">স্ক্রিন শেয়ার করার ফিচার আবার চালু করা হয়েছে</translation>
 <translation id="3632892046558972264">স্ক্রিন শেয়ার করার ফিচার পজ করা হয়েছে</translation>
+<translation id="3633035844150606508">আপনার Google অ্যাকাউন্টে ঠিকানা সেভ করুন, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Chrome আপডেট করার বোতাম, আপনার Chrome সেটিংসে Chrome আপডেট করতে Enter প্রেস করুন</translation>
 <translation id="3634530185120165534">ট্রে ৫</translation>
 <translation id="3634567936866541746">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chrome আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
@@ -1795,6 +1798,7 @@
 <translation id="5324080437450482387">পরিচিতির তথ্য বেছে নিন</translation>
 <translation id="5329858041417644019">আপনার ব্রাউজারটি ম্যানেজ করা হয়নি</translation>
 <translation id="5332219387342487447">শিপিংয়ের মাধ্যম</translation>
+<translation id="5332769172018416402">মেসেজ করে অ্যাক্সেসের জন্য অনুরোধ করুন</translation>
 <translation id="5333022057423422993">Chrome-এর হিসেবে আপনার এখনই ব্যবহার করা পাসওয়ার্ডের তথ্য চুরি হয়ে গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত রাখতে, আপনার সেভ করা পাসওয়ার্ড চেক করার জন্য সাজেস্ট করছি।</translation>
 <translation id="5334013548165032829">বিস্তারিত সিস্টেম লগ</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
@@ -1988,6 +1992,7 @@
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5838278095973806738">এই সাইটে আপনার কোনো সংবেদনশীল তথ্য দেওয়া উচিত হবে না (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড) কারণ আক্রমণকারীরা এগুলি চুরি করতে পারে।</translation>
+<translation id="5841338463993781099">অ্যাকাউন্টে সেভ করবেন?</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>

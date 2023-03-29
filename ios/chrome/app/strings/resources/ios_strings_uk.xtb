@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">Ви вже зберегли пароль для цього сайту в обліковому записі Google. Зберегти лише останній пароль?</translation>
 <translation id="4343046787186034850">Доступ до камери й мікрофона надано</translation>
 <translation id="4359125752503270327">Ця сторінка відкриється в іншому додатку.</translation>
+<translation id="4371526908359194219">Сповіщення електронною поштою</translation>
 <translation id="4375040482473363939">Шукати за QR-кодом</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4389019817280890563">Натисніть, щоб змінити мову.</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">Видалити з цього пристрою</translation>
 <translation id="498985224078955265">Щоб надіслати цю вкладку на інший пристрій, увійдіть в обліковий запис Chrome на обох пристроях.</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
+<translation id="5016420433031926653">Надсилати на адресу <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Нагадати пізніше</translation>
 <translation id="5037676449506322593">Вибрати всі</translation>
 <translation id="5039804452771397117">Дозволити</translation>
@@ -755,6 +757,7 @@
 <translation id="6219550825416862075">З поверненням</translation>
 <translation id="6219688215832490856">Ніколи не перекладати</translation>
 <translation id="6223816392543092032">Отримайте доступ до своїх закладок, історії, паролів та інших налаштувань на всіх пристроях.</translation>
+<translation id="6224759905509595045">Підтвердити особу…</translation>
 <translation id="6229318421047648685">Версія сайту для комп’ютера</translation>
 <translation id="6231782223312638214">Пропозиції</translation>
 <translation id="6232329973559504466">Пошук в анонімному режимі</translation>
@@ -915,6 +918,7 @@
 <translation id="7108762695052995889">Перейти на сайт</translation>
 <translation id="7133798577887235672">Повне ім’я</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
+<translation id="7161230316646448869">Синхронізуйте свої закладки, історію тощо на всіх пристроях</translation>
 <translation id="7162168282402939716">Розблокувати анонімні вкладки, використовуючи <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Захистіть свої паролі</translation>
 <translation id="7173114856073700355">Відкрити налаштування</translation>
@@ -1170,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{Немає зламаних паролів}=1{{count} зламаний пароль}one{{count} зламаний пароль}few{{count} зламані паролі}many{{count} зламаних паролів}other{{count} зламаного пароля}}</translation>
 <translation id="8981454092730389528">Відстеження дій у Google</translation>
 <translation id="8985320356172329008">Ви ввійшли в обліковий запис Google як</translation>
+<translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="9000089900434778519">Ваша пошукова система – <ph name="DSE_NAME" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

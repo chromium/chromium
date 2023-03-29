@@ -40,6 +40,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1182225749592316782">Desta forma, terán acceso todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
 <translation id="1183863904939664422">Non me interesa esta suxestión</translation>
+<translation id="1184126796192815024">Esta rede non admite as aplicacións de reprodución en tempo real do teléfono. Proba a usar a zona wifi do teléfono. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Escribe o contrasinal ou o PIN como medida de seguranza adicional</translation>
 <translation id="118532027333893379">Toca calquera parte para facer unha captura da pantalla completa</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
@@ -1253,6 +1254,7 @@ Nova instalación</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
 <translation id="6867938213751067702">Púxose en pausa a descarga de <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicación}other{# aplicacións}}</translation>
 <translation id="6884665277231944629">Volver a hoxe</translation>
 <translation id="6886172995547742638">O rendemento do dispositivo (<ph name="DEVICE_TYPE" />) pode empeorar. Usa un adaptador de corrente USB‑C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou máis.</translation>
 <translation id="688631446150864480">Premer frecha abaixo para cambiar de ventá</translation>
@@ -1433,6 +1435,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="776344839111254542">Fai clic para ver os detalles da actualización</translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
+<translation id="7769299611924763557">O teu GIF estará listo decontado</translation>
 <translation id="7780094051999721182">atallos</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7796735576426975947">Ocultouse unha nova notificación</translation>

@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Төмөнкү оң жагын тешүү</translation>
 <translation id="2122719317867821810">Бул саясат талаптагыдай иштеп жатат, бирок ал башка жерде коюлган карама-каршы мааниге өзгөртүп койду.</translation>
 <translation id="2126374524350484896">PDF форматына өзгөртүүчү кызмат:</translation>
+<translation id="2128262927290305126">Google аккаунтуңузда (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">Сиз көрсөткөн үлгүлөрдү колдонууга болбойт, анткени DnsOverHttpsMode саясаты коюлган эмес.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Эркектердин кийими</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Түзмөктү баштапкы абалга келтирүү керек</translation>
 <translation id="2224337661447660594">Интернет жок</translation>
 <translation id="2225927550500503913">Виртуалдык карта күйгүзүлдү</translation>
+<translation id="2226636330183131181">WiFi тармагына <ph name="BEGIN_LINK" />кирүү<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
 <translation id="2241693394036365668">Файл жүктөлүп алынды</translation>
 <translation id="2246264294482514010">10 x 12 дюйм</translation>
@@ -1083,6 +1085,7 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Экран бөлүшүү улантылды</translation>
 <translation id="3632892046558972264">Экран бөлүшүү тындырылды</translation>
+<translation id="3633035844150606508">Даректи Google аккаунтуңузга (<ph name="ACCOUNT" />) сактоо</translation>
 <translation id="3633738897356909127">Chrome'ду жаңыртуу баскычы. Chrome параметрлериңизден Chrome'ду жаңыртуу үчүн, Enter баскычын басыңыз</translation>
 <translation id="3634530185120165534">5-түпкүч</translation>
 <translation id="3634567936866541746">Сырсөзүңүздү жаңы эле кооптуу сайтта киргиздиңиз. Аккаунттарыңызды коргоо үчүн Chrome сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
@@ -1986,6 +1989,7 @@
 <translation id="5830698870816298009">камераны колдонуу жана жылдыруу</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5838278095973806738">Бул сайтка эч кандай жеке маалымат киргизилбеши керек (мисалы, сырсөздөр же насыя карточкаларынын номерлери), себеби аны чабуулчулар уурдап алышы мүмкүн.</translation>
+<translation id="5841338463993781099">Аккаунтта сактайсызбы?</translation>
 <translation id="5851548754964597211">Өтмөк тизмеси</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Өчүк</translation>

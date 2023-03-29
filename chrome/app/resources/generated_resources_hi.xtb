@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">आपके डिवाइस को <ph name="DOMAIN" /> मैनेज करता है. एडमिन इस डिवाइस पर मौजूद किसी भी प्रोफ़ाइल का डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="1026655690966755180">पोर्ट जोड़ें</translation>
 <translation id="1026822031284433028">इमेज लोड करें</translation>
+<translation id="1026959648338730078">Windows Hello या बाहरी सुरक्षा कुंजी</translation>
 <translation id="1028604629594230522">Chrome उन पेजों को पहले से लोड कर देता है जिन पर आपके जाने की संभावना हो. ऐसा इसलिए है, ताकि जब आप उन पर जाएं, तो वे ज़्यादा तेज़ी से लोड हों.</translation>
 <translation id="1028700151766901954">वजह: एलबीएस <ph name="DEFAULT_OPEN_BROWSER" /> में डिफ़ॉल्ट रूप से मौजूद रहेगा.</translation>
 <translation id="1029317248976101138">ज़ूम</translation>
@@ -942,6 +943,7 @@
 <translation id="1797117170091578105">अपने Chromebook के कीबोर्ड की मदद से चलाएं. कीबोर्ड की कुंजियों को अपनी पसंद के मुताबिक, खास कार्रवाइयों के लिए सेट किया जा सकता है.</translation>
 <translation id="1800502858278951817">किसी भी एक्सटेंशन ने, <ph name="SITE_NAME" /> को पढ़ने और उसे बदलने की अनुमति नहीं मांगी है</translation>
 <translation id="180203835522132923">Search + O, फिर W</translation>
+<translation id="1802457294427928325">F कुंजियों के फ़ंक्शन को ChromeOS की सबसे ऊपर वाली कार्रवाइयों में बदलें</translation>
 <translation id="1802624026913571222">कवर बंद होने पर, डिवाइस को नींद मोड में ले जाएं</translation>
 <translation id="1802687198411089702">पेज काम नहीं कर रहा है. आप इंतज़ार कर सकते हैं या बाहर निकल सकते हैं.</translation>
 <translation id="1803531841600994172">वह भाषा जिसमें अनुवाद करना है</translation>
@@ -1271,6 +1273,7 @@
 <translation id="208634871997892083">हमेशा-चालू वीपीएन</translation>
 <translation id="2087822576218954668">प्रिंट: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> इंस्टॉल करने के बाद ही डिवाइस का नाम दर्ज किया जा सकता है.</translation>
+<translation id="2088564884469682888">पहले से मौजूद TrackPoint</translation>
 <translation id="2089090684895656482">कम</translation>
 <translation id="208928984520943006">किसी भी समय होम स्क्रीन पर जाने के लिए, स्क्रीन के सबसे निचले हिस्से से ऊपर की ओर स्वाइप करें.</translation>
 <translation id="2089566709556890888">Google Chrome के ज़रिए सुरक्षित रूप से ब्राउज़ करें</translation>
@@ -1464,6 +1467,7 @@
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2238379619048995541">आवृत्ति स्थिति डेटा</translation>
 <translation id="2241053333139545397">कई वेबसाइटों पर अपना डेटा पढ़ें और बदलें</translation>
+<translation id="2241242047787527912">यहां सूची में दी गई हर एक कुंजी के लिए, वह कार्रवाई चुनें जो आपको करनी है</translation>
 <translation id="2241634353105152135">बस एक बार</translation>
 <translation id="2242687258748107519">फ़ाइल जानकारी</translation>
 <translation id="2245603955208828424">आइटम के एक-एक अक्षर पर जाने के लिए, ऐरो वाले बटनों का इस्तेमाल करें</translation>
@@ -1505,12 +1509,14 @@
 <translation id="2271986192355138465">वेब ऐप्लिकेशन को इंस्टॉल करने का तरीका जानें</translation>
 <translation id="2272430695183451567">कोई भी स्विच ऐक्सेस बटन असाइन नहीं किया गया</translation>
 <translation id="2272570998639520080">मार्टिनी ग्लास</translation>
+<translation id="2272830751703114341">सबसे ऊपर वाली पंक्ति की कुंजियों के फ़ंक्शन को स्विच करने के लिए, सिस्टम/लॉन्चर बटन चालू करें</translation>
 <translation id="2273119997271134996">वीडियो-पोर्ट के डॉक से जुड़ी समस्या</translation>
 <translation id="2274840746523584236">अपना Chromebook चार्ज करें</translation>
 <translation id="2276503375879033601">ज़्यादा ऐप्स  जोड़ें</translation>
 <translation id="2276910256003242519">डेटा मिटाया जा रहा है...</translation>
 <translation id="2278562042389100163">ब्राउज़र विंडो खोलें</translation>
 <translation id="2278668501808246459">कंटेनर मैनेजर शुरू हो रहा है</translation>
+<translation id="2279051792571591988">डिफ़ॉल्ट बटन लेबल पहले जैसा करें</translation>
 <translation id="2280486287150724112">दायां हाशिया</translation>
 <translation id="2281863813036651454">माउस का बायां क्लिक</translation>
 <translation id="2282146716419988068">GPU प्रक्रिया</translation>
@@ -2820,6 +2826,7 @@
 <translation id="3441663102605358937">इस खाते की पुष्टि करने के लिए, <ph name="ACCOUNT" /> में फिर से साइन इन करें</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> को बेहतर बनाने के लिए, Google को अपने हार्डवेयर के डेटा का इस्तेमाल करने दें. अगर आपकी ओर से अनुमति नहीं दी जाती है, तो भी यह डेटा सही अपडेट तय करने के लिए Google के पास भेजा जाता है. हालांकि, इस डेटा को न तो स्टोर किया जाता है और न ही किसी और काम के लिए इस्तेमाल किया जाता है.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> का समय खत्म हो गया</translation>
+<translation id="3443754338602062261">आपके <ph name="BRAND" /> में, इन खातों के पासवर्ड पहले से मौजूद हैं. अगर यहां दिए गए पासवर्ड में से किसी एक को इंपोर्ट करने का विकल्प चुना जाता है, तो मौजूदा पासवर्ड बदल जाएगा.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" />, <ph name="FILENAME" /> देख पाएंगे</translation>
 <translation id="3445047461171030979">Google Assistant में तुरंत जवाब की सुविधा</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
@@ -3066,6 +3073,7 @@
 <translation id="3659550105763988702"><ph name="APP_NAME" /> के लिए अपनी पासकी इस्तेमाल करें</translation>
 <translation id="3659929705630080526">आपने कई बार गलत ऐक्सेस कोड डाला है. बाद में कोशिश करें</translation>
 <translation id="3660234220361471169">अविश्वसनीय</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 मौजूदा पासवर्ड मिला}one{{NUM_PASSWORDS} मौजूदा पासवर्ड मिला}other{{NUM_PASSWORDS} मौजूदा पासवर्ड मिले}}</translation>
 <translation id="3664511988987167893">एक्सटेंशन आइकॉन</translation>
 <translation id="3665589677786828986">Chrome को पता चला है कि आपकी कुछ सेटिंग किसी दूसरे प्रोग्राम के द्वारा दूषित कर दी गई हैं और उन्हें उनके मूल डिफ़ॉल्ट पर रीसेट कर दिया गया है.</translation>
 <translation id="3665919494326051362">मौजूदा वर्शन <ph name="CURRENT_VERSION" /> है</translation>
@@ -3081,6 +3089,7 @@
 <translation id="3677959414150797585">इसमें ऐप्लिकेशन, वेबपेज वगैरह शामिल हैं. यह सुझावों को बेहतर बनाने के लिए आंकड़े सिर्फ़ तब भेजता है जब आपने इस्तेमाल के बारे में जानकारी देने वाला डेटा शेयर करने का विकल्प चुना हो.</translation>
 <translation id="3678156199662914018">एक्‍सटेंशन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">जब आप अपने कंप्यूटर पर साइन आउट करेंगे, तो इस विंडो में देखे गए पेजों की जानकारी आपके ब्राउज़र इतिहास में सेव नहीं होगी. साथ ही, इन पेजों से जुड़ा किसी भी तरह का डेटा मिट जाएगा, जैसे कि कुकी. आपकी डाउनलोड की गई सभी फ़ाइलें और बनाए गए बुकमार्क भी सेव नहीं रहेंगे.</translation>
+<translation id="3679126865530709868">पहले से मौजूद टचपैड</translation>
 <translation id="368019053277764111">साइड पैनल में सर्च टूलबार चालू करें</translation>
 <translation id="3680683624079082902">लिखाई को बोली में बदलने के लिए आवाज़ की सेटिंग</translation>
 <translation id="3681311097828166361">आपके फ़ीडबैक के लिए धन्यवाद. आप अब ऑफ़लाइन हैं और आपकी रिपोर्ट बाद में भेज दी जाएगी.</translation>
@@ -4258,6 +4267,7 @@
 <translation id="47158868804223727">ग्रुप को बड़ा या छोटा करने के लिए, उसके नाम पर क्लिक करें</translation>
 <translation id="4716483597559580346">अतिरिक्त सुरक्षा के लिए Powerwash करें</translation>
 <translation id="471759229191973607">थीम बदलें</translation>
+<translation id="4718564115458102525">कोई कीबोर्ड नहीं मिला</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> का पासवर्ड</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> आपकी स्क्रीन शेयर कर रहा है.</translation>
 <translation id="4722989931633062466">तीसरे पक्ष की सेवा के लिए, साइन इन करने के अनुरोधों को दिखाने की अनुमति नहीं है</translation>
@@ -5468,6 +5478,7 @@
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
 <translation id="5844574845205796324">एक्सप्लोर करने के लिए नया कॉन्टेंट सुझाएं</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{रीमैप की गई 1 कुंजी}one{रीमैप की गई {COUNT} कुंजी}other{रीमैप की गई {COUNT} कुंजियां}}</translation>
 <translation id="5846200638699387931">रिलेशन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">कोई शैडो नहीं</translation>
 <translation id="5846504156837627898">साइट के लिए अनुमतियां मैनेज करें</translation>
@@ -5592,6 +5603,7 @@
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google Safe Browsing को भेजें?</translation>
 <translation id="5945363896952315544">इस सुरक्षा कुंजी में और फ़िंगरप्रिंट सेव नहीं किए जा सकते. नया फ़िंगरप्रिंट जोड़ने के लिए, सबसे पहले मौजूदा फ़िंगरप्रिंट मिटाएं</translation>
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">इंपोर्ट करने की प्रोसेस रद्द करें</translation>
 <translation id="5948536763493709626">कोई कीबोर्ड या माउस जोड़ें या अपनी टचस्क्रीन का इस्तेमाल करके, सेट अप करना जारी रखें. अगर आप ब्लूटूथ डिवाइसों का इस्तेमाल कर रहे हैं, तो यह पक्का करें कि वे दूसरे डिवाइसों से जोड़े जाने के लिए तैयार हों.</translation>
 <translation id="5949544233750246342">फ़ाइल को पार्स नहीं किया जा सका</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> स्थानीय फ़ॉन्ट इस्तेमाल करना चाहता है</translation>
@@ -5848,6 +5860,7 @@
 <translation id="6177412385419165772">हटाया जा रहा है...</translation>
 <translation id="6178664161104547336">किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6178682841350631965">आपने साइन इन करने के लिए जो डेटा डाला है, वह अपडेट हो गया</translation>
+<translation id="6179893151569852357">F कुंजियों को ChromeOS की सबसे ऊपर वाली पंक्ति की कुंजियों में बदलें</translation>
 <translation id="6180510783007738939">लाइन खींचने का टूल</translation>
 <translation id="6180550893222597997">आपको <ph name="APP_NAME" /> के लिए किस पासकी का इस्तेमाल करना है?</translation>
 <translation id="6181431612547969857">डाउनलोड करना ब्लॉक किया गया</translation>
@@ -6048,6 +6061,7 @@
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="6370021412472292592">मेनिफ़ेस्‍ट लोड नहीं किया जा सका.</translation>
 <translation id="637135143619858508">ज़्यादा जगह</translation>
+<translation id="6372856076511744743">कीबोर्ड के बटन फिर से मैप करें</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">फिर से कोशिश करें</translation>
 <translation id="6374635887697228982">छूट चाहिए?</translation>
@@ -6492,6 +6506,7 @@
 <translation id="677646486571529447">नोट जोड़ें</translation>
 <translation id="6776589734354015877">अतिरिक्त सुविधाएं पाएं</translation>
 <translation id="6776729248872343918">फ़ास्ट पेयर की सुविधा चालू करें</translation>
+<translation id="677778081766640955">F कुंजियों और ChromeOS की कार्रवाइयों के बीच स्विच करने के लिए, बटन को दबाकर रखें</translation>
 <translation id="6777817260680419853">रीडायरेक्ट ब्लॉक किया गया</translation>
 <translation id="6779092717724412415">किसी भी टेक्स्ट को हाइलाइट करने के लिए, उसे चुनें और दायां क्लिक करें.</translation>
 <translation id="6779447100905857289">अपने कार्ट</translation>
@@ -7659,6 +7674,7 @@
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7804072833593604762">टैब बंद है</translation>
 <translation id="7805768142964895445">स्थिति</translation>
+<translation id="7805906048382884326">सलाह बंद करें</translation>
 <translation id="7807067443225230855">सर्च और Assistant</translation>
 <translation id="7807117920154132308">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. इस डिवाइस पर 'स्क्रीन पर दिखने वाला कॉन्टेंट इस्तेमाल करें' चालू करके, <ph name="SUPERVISED_USER_NAME" /> Assistant से ज़्यादा फ़ायदे पा सकते हैं.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> को हमेशा अपने कैमरे को एक्सेस करने की अनुमति दें</translation>

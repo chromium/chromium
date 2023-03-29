@@ -50,6 +50,8 @@
 <translation id="1042248468362992359">Lidhu me të dhënat celulare për të përdorur zonën e qasjes për internet. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Ndodhi një gabim. Linux mund të jetë përmirësuar pjesërisht. Shqyrto evidencat për më shumë informacion. Evidencat janë ruajtur te Skedarët &gt; Skedarët e mi &gt; <ph name="LOG_FILE" /></translation>
 <translation id="104419033123549300">Stili i hartës së tasteve</translation>
+<translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori janë përdorur dhe sa memorie është përdorur zakonisht. Nëse aktivizohet edhe "Sinkronizimi i aplikacioneve", do të mblidhen të dhëna të tjera të përdorimit dhe të diagnostikimit të aplikacioneve, duke përfshirë për aplikacionet e uebit dhe aplikacionet për Android.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mos i lejosh në çdo kohë në cilësimet e pajisjes me ChromeOS të fëmijës. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="104710386808485638">Do ta rinisësh Linux?</translation>
 <translation id="1047431265488717055">Kopjo tekstin e lidhjes</translation>
 <translation id="1048286738600630630">Ekranet</translation>
@@ -288,6 +290,9 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1243436884219965846">Rishiko fjalëkalimet</translation>
 <translation id="1244265436519979884">Restaurimi i Linux aktualisht në vazhdim</translation>
 <translation id="1244303850296295656">Shtesa e paketës</translation>
+<translation id="124479667302995853"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, kjo na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor, sa memorie përdor ti zakonisht dhe të dhënat e diagnostikimit dhe të përdorimit të aplikacioneve për Android. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse aktivizohet edhe "Sinkronizimi i aplikacioneve", do të mblidhen të dhëna të tjera të përdorimit dhe të diagnostikimit të aplikacioneve, duke përfshirë për aplikacionet e uebit dhe aplikacionet për Android.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mos i lejosh në çdo kohë në cilësimet e pajisjes sate me ChromeOS. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktiv për "Llogarinë tënde të Google", të dhënat e tua të Android mund të ruhen në atë llogari. Mund t'i shikosh të dhënat, t'i fshish ato dhe të ndryshosh cilësimet e tua të llogarisë tek account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1245628370644070008">Rikuperimi i të dhënave lokale</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> nuk mund të instalohej: URL e imazhit ktheu kod gabimi <ph name="HTTP_ERROR" />. Kontakto me administratorin tënd.</translation>
 <translation id="1247372569136754018">Mikrofoni (i brendshëm)</translation>
@@ -377,7 +382,9 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1331977651797684645">Isha unë.</translation>
 <translation id="1333489022424033687">Disa veçori në <ph name="ORIGIN" /> mund të mos funksionojnë deri sa të pastrosh të dhënat që sajtet e tjera kanë ruajtur në pajisjen tënde</translation>
 <translation id="1333965224356556482">Mos lejo që sajtet të shikojnë vendndodhjen tënde</translation>
+<translation id="1335282218035876586">Pajisja jote Chromebook nuk merr më përditësime të sigurisë dhe të softuerit. Përmirësoje pajisjen tënde Chromebook për përvojën më të mirë.</translation>
 <translation id="133535873114485416">Hyrja e preferuar</translation>
+<translation id="1335437153193710305">Mund të zgjedhësh profilin nga i cili dëshiron të shikosh fjalëkalimet</translation>
 <translation id="1335929031622236846">Regjistro pajisjen tënde</translation>
 <translation id="1336902454946927954">Çelësi yt i sigurisë është i kyçur sepse gjurma jote e gishtit nuk mund të njihej. Për ta shkyçur, fut kodin PIN.</translation>
 <translation id="1338631221631423366">Po çiftohet...</translation>
@@ -1164,6 +1171,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1997433994358798851">Chrome ka nevojë për leje për të përdorur Bluetooth-in për t'u lidhur me pajisjen tënde</translation>
 <translation id="1997616988432401742">Certifikatat e tua</translation>
 <translation id="1999115740519098545">Në nisje</translation>
+<translation id="1999315477791571194">Te "Menaxheri i fjalëkalimeve i Google" <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="2002109485265116295">Kohë reale</translation>
 <translation id="2003130567827682533">Për të aktivizuar të dhënat e "<ph name="NAME" />", në fillim lidhu me një rrjet Wi-Fi</translation>
 <translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
@@ -1205,6 +1213,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2039464276165755892">Fshih përmbajtjet e njoftimeve kur zbulohet dikush tjetër</translation>
 <translation id="2040460856718599782">Gabim! Diçka nuk shkoi mirë gjatë përpjekjes për të të vërtetuar. Kontrollo për së dyti kredencialet e identifikimit dhe provo sërish.</translation>
 <translation id="2040894699575719559">Vendndodhja u bllokua</translation>
+<translation id="2041246176170574368">Përditësimet e sigurisë përfundojnë së shpejti. Kurse 50 $ ose më shumë në një pajisje të re Chromebook.</translation>
 <translation id="2042279886444479655">Profilet aktive</translation>
 <translation id="2044014337866019681">Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
@@ -1233,6 +1242,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2061366302742593739">Nuk ka asgjë për të shfaqur</translation>
 <translation id="2062354623176996748">Përdor uebin pa ruajtur historikun tënd të shfletimit me një dritare "të fshehtë"</translation>
 <translation id="206308717637808771">Fshiji të dhënat kur mbyll të gjitha dritaret. Të dhënat trajtohen njëlloj si sajti që po shikon</translation>
+<translation id="2063623149012168328">Shto një shkurtore për te "<ph name="BRAND" />"</translation>
 <translation id="2065405795449409761">Chrome po kontrollohet nga një softuer testues i automatizuar.</translation>
 <translation id="2071393345806050157">Nuk ka skedar lokal të regjistrit.</translation>
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
@@ -2285,6 +2295,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2949289451367477459">Përdor vendndodhjen. Lejo që aplikacionet dhe shërbimet me autorizim për vendndodhje të përdorin vendndodhjen e kësaj pajisjeje. Google mund të mbledhë në mënyrë periodike të dhëna të vendndodhjes dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Më regjistro</translation>
 <translation id="2953019166882260872">Lidhe telefonin me kabllo</translation>
+<translation id="2953210795988451570">Përditësimet e sigurisë kanë përfunduar. Përmirësoje me një pajisje të re Chromebook.</translation>
 <translation id="2953218713108551165">Njoftimet nuk lejohen për <ph name="SITE" />. Do të pyetesh përsëri gjatë vizitës sate të radhës.</translation>
 <translation id="2956070239128776395">Seksioni i përfshirë në grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Paralajmërim i paketimit të shtesës</translation>
@@ -2740,6 +2751,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3388094447051599208">Tabakaja e daljes është pothuajse plot</translation>
 <translation id="3388788256054548012">Ky skedar është i enkriptuar. Kërkoji zotëruesit ta deshifrojë.</translation>
 <translation id="3390013585654699824">Detajet e aplikacioneve</translation>
+<translation id="3390530051434634135">Shënim: <ph name="NOTE" /></translation>
 <translation id="3393554941209044235">Analiza e dokumentit e Chrome</translation>
 <translation id="3393582007140394275">Ekrani nuk mund të transmetohej.</translation>
 <translation id="3394850431319394743">Lejohen të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
@@ -3282,6 +3294,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3846116211488856547">Merr vegla për zhvillimin e faqeve të internetit, aplikacioneve për Android dhe shumë të tjera. Instalimi i Linux do të shkarkojë <ph name="DOWNLOAD_SIZE" /> të dhëna.</translation>
 <translation id="3847319713229060696">Ndihmo në përmirësimin e sigurisë për të gjithë</translation>
 <translation id="3848547754896969219">Hape në &amp;dritare "të fshehtë"</translation>
+<translation id="3850172593216628215">Përditësimet e sigurisë kanë përfunduar. Kurse 50 $ ose më shumë në një pajisje të re Chromebook.</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3851428669031642514">Ngarko skriptet e pasigurta</translation>
 <translation id="3852215160863921508">Ndihma për hyrjen</translation>
@@ -4136,6 +4149,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4622051949285931942">Të çaktivizohen përditësimet automatike?</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
 <translation id="4623189117674524348">Sistemi nuk arriti të autorizonte qasjen e API-së për këtë pajisje.</translation>
+<translation id="4623341761454569602">Te "Menaxheri i fjalëkalimeve i Google" <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4625078469366263107">Aktivizo aplikacionin</translation>
 <translation id="4627427111733173920">Kukit u bllokuan</translation>
 <translation id="4627442949885028695">Vazhdo nga një pajisje tjetër</translation>
@@ -4374,6 +4388,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4841741146571978176">Një makinë e kërkuar virtuale nuk ekziston. Provo të konfigurosh <ph name="VM_TYPE" /> për të vazhduar</translation>
 <translation id="4842976633412754305">Kjo faqe po përpiqet të ngarkojë skripte nga burime të paverifikuara.</translation>
 <translation id="4844333629810439236">Tastiera të tjera</translation>
+<translation id="4844347226195896707">Shiko fjalëkalimet e tua edhe kur nuk përdor Chrome ose Android duke u identifikuar te &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4844633725025837809">Për siguri shtesë, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="4846628405149428620">Zgjidh se ku mund t'i ruajë ndryshimet ky sajt</translation>
@@ -4417,6 +4432,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4878653975845355462">Sfondet e personalizuara janë çaktivizuar nga administratori yt</translation>
 <translation id="4878718769565915065">Shtimi i një gjurme gishti te ky çelës sigurie dështoi</translation>
 <translation id="4879491255372875719">Automatike (e parazgjedhur)</translation>
+<translation id="4880315242806573837">Përditësimet e sigurisë përfundojnë së shpejti. Përmirësoje me një pajisje të re Chromebook.</translation>
 <translation id="4880827082731008257">Historiku i kërkimeve</translation>
 <translation id="4881062916686771679">Ky skedar përfshin softuerë keqdashës që mund të komprometojnë llogaritë e tua personale dhe llogaritë e tua të rrjeteve sociale, duke përfshirë <ph name="USER_EMAIL" /></translation>
 <translation id="4881685975363383806">Mos ma kujto herën tjetër</translation>
@@ -4827,6 +4843,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5275352920323889391">Qen</translation>
 <translation id="527605719918376753">Çaktivizo zërin e skedës</translation>
 <translation id="527605982717517565">Lejo gjithmonë JavaScript në <ph name="HOST" /></translation>
+<translation id="5276288422515364908">Nuk do të marrësh më përditësime të sigurisë dhe të softuerit për këtë pajisje Chromebook duke filluar nga <ph name="MONTH_AND_YEAR" />. Përmirësoje pajisjen tënde Chromebook për përvojën më të mirë.</translation>
 <translation id="5276357196618041410">Konfigurimi nuk mund të ruhet pa identifikimin në fillim</translation>
 <translation id="5277127016695466621">Shfaq panelin anësor</translation>
 <translation id="5278823018825269962">ID-ja e statusit</translation>
@@ -5150,6 +5167,9 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5559311991468302423">Fshi adresën</translation>
 <translation id="55601339223879446">Rregullo kufijtë e desktopit tënd brenda ekranit</translation>
 <translation id="5561162485081632007">Zbulon dhe të paralajmëron rreth ngjarjeve të rrezikshme kur ato ndodhin</translation>
+<translation id="5561488201985846671"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori janë përdorur, sa memorie është përdorur zakonisht dhe të dhënat e përdorimit dhe të diagnostikimit të aplikacioneve për Android. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse aktivizohet edhe "Sinkronizimi i aplikacioneve", do të mblidhen të dhëna të tjera të përdorimit dhe të diagnostikimit të aplikacioneve, duke përfshirë për aplikacionet e uebit dhe aplikacionet për Android.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mos i lejosh në çdo kohë në cilësimet e pajisjes me ChromeOS të fëmijës. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />Nëse cilësimi "Aktiviteti i uebit dhe i aplikacioneve" është aktivizuar për "Llogarinë e Google" të fëmijës tënd, të dhënat e fëmijës mund të ruhen në "Llogarinë e Google" të fëmijës. Mëso më shumë për këto cilësime dhe se si t'i rregullosh ato te families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5562781907504170924">Kjo skedë është e lidhur me një pajisje me Bluetooth.</translation>
 <translation id="556321030400250233">skedar lokal ose i ndarë</translation>
 <translation id="5563234215388768762">Kërko në Google ose shkruaj një URL</translation>
@@ -5274,6 +5294,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5678550637669481956">Është dhënë qasja "për lexim dhe shkrim" për <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Po dërgohet te <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Lexo të dhënat e tua në <ph name="WEBSITE_1" /></translation>
+<translation id="5679785611070310751">Nuk do të marrësh më përditësime të sigurisë për këtë pajisje Chromebook duke filluar nga <ph name="MONTH_AND_YEAR" />. Është koha për ta përmirësuar për të pasur sigurinë dhe softuerin më të fundit. Zbatohen kushtet e ofertës.</translation>
 <translation id="5680050361008726776">Të hiqet "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5683806393796685434">Fut kodin tënd të aktivizimit</translation>
 <translation id="5684181005476681636">Detajet e Wi-Fi</translation>
@@ -5396,6 +5417,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5794786537412027208">Dil nga të gjitha aplikacionet e Chrome</translation>
 <translation id="5796485699458186843">Skedë &amp;e re "e fshehtë"</translation>
 <translation id="5797521893972859201">Pastron historikun, duke përfshirë dhe në kutinë e kërkimit</translation>
+<translation id="5797934230382081317">Mëso se si të fillosh në &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; dhe &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Sajtet mund të instalojnë përpunuesit e pagesave</translation>
 <translation id="579915268381781820">Çelësi yt i sigurisë është hequr.</translation>
 <translation id="5799478978078236781">Merr këshilla, oferta dhe përditësime për <ph name="DEVICE_TYPE" /> dhe ndaj komentet e tua.</translation>
@@ -5466,6 +5488,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5857090052475505287">Skedar i ri</translation>
 <translation id="5857171483910641802">Shkurtoret sugjerohen bazuar në sajtet e uebit që ti viziton shpesh</translation>
 <translation id="5857675236236529683">Kur të jesh gati, mund ta gjesh listën tënde të leximit këtu</translation>
+<translation id="5857693745746757503">Kurse 50 $ ose më shumë në një pajisje të re Chromebook nëse e përmirëson sot</translation>
 <translation id="5858490737742085133">Terminali</translation>
 <translation id="585979798156957858">Çelës meta i jashtëm</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
@@ -6803,6 +6826,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7039326228527141150">Qasu te pajisjet me USB nga <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Identifikimi i Microsoft me "Kartën smart"</translation>
 <translation id="7039951224110875196">Krijo një "Llogari të Google" për një fëmijë</translation>
+<translation id="7039968672732182060">Pajisja jote Chromebook nuk merr më përditësime të sigurisë. Është koha për ta përmirësuar për të pasur sigurinë dhe softuerin më të fundit. Zbatohen kushtet e ofertës.</translation>
 <translation id="7041405817194720353">U hoqën: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="COUNT" /> leje të tjera</translation>
 <translation id="7042116641003232070">Lejohet të ruajë të dhëna në pajisjen tënde</translation>
 <translation id="7043108582968290193">U krye! Nuk u gjet asnjë aplikacion i papërputhshëm.</translation>
@@ -7034,6 +7058,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7272674038937250585">Nuk është dhënë asnjë përshkrim</translation>
 <translation id="7273110280511444812">bashkëngjitur së fundi më <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> deri në e plotë</translation>
+<translation id="727595954130325265">Bli tani</translation>
 <translation id="727952162645687754">Gabim në shkarkim</translation>
 <translation id="7280041992884344566">Ndodhi një gabim ndërkohë që Chrome po kërkonte për softuerë të dëmshëm</translation>
 <translation id="7280649757394340890">Cilësimet e zërit për tekstin në ligjërim</translation>
@@ -7235,6 +7260,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7457831169406914076">{COUNT,plural, =1{një lidhje}other{# lidhje}}</translation>
 <translation id="7458168200501453431">Përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google.</translation>
 <translation id="7458715171471938198">Të rivendosen aplikacionet?</translation>
+<translation id="7458933488302148148">Kontrollo fjalëkalimet e ruajtura për të forcuar sigurinë dhe për të qëndruar më i sigurt në linjë</translation>
 <translation id="7460045493116006516">Tema aktuale që ke instaluar</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="746216226901520237">Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund ta çaktivizosh Smart Lock te "Cilësimet".</translation>
@@ -7362,6 +7388,8 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7575272930307342804">Kontrollet e navigimit</translation>
 <translation id="7576690715254076113">Sistemo</translation>
 <translation id="7576976045740938453">Ka ndodhur një problem me llogarinë e modalitetit të demonstrimit.</translation>
+<translation id="7577048250795121670"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, kjo na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor dhe sa memorie përdor ti zakonisht. Nëse aktivizohet edhe "Sinkronizimi i aplikacioneve", do të mblidhen të dhëna të tjera të përdorimit dhe të diagnostikimit të aplikacioneve, duke përfshirë për aplikacionet e uebit dhe aplikacionet për Android.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mos i lejosh në çdo kohë në cilësimet e pajisjes sate me Chrome. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7578137152457315135">Cilësimet e gjurmës së gishtit</translation>
 <translation id="7578692661782707876">Fut kodin tënd të konfirmimit.</translation>
 <translation id="7581007437437492586">Politikat janë konfiguruar saktë</translation>
@@ -7711,6 +7739,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7874257161694977650">Sfondet e Chrome</translation>
 <translation id="7876027585589532670">Shkurtorja nuk mund të modifikohet</translation>
 <translation id="7877451762676714207">Gabim i panjohur në server. Provo sërish më vonë ose kontakto me administratorin e serverit.</translation>
+<translation id="7878945852730162014">Menaxho skedarët ndërkohë që shkarkohen dhe hapi ata kur të përfundojë shkarkimi</translation>
 <translation id="7879478708475862060">Ndiq modalitetin e hyrjes</translation>
 <translation id="7879631849810108578">Shkurtorja u vendos: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">Të dhënat lokale do të fshihen kur ta rinisësh</translation>
@@ -7885,6 +7914,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8023133589013344428">Menaxho gjuhët në cilësimet e Chrome OS Flex</translation>
 <translation id="8023801379949507775">Përditëso shtesat tani</translation>
 <translation id="8025151549289123443">Ekrani i kyçjes dhe identifikimi</translation>
+<translation id="8025291188699172126">Rreth përditësimeve</translation>
 <translation id="8026334261755873520">Pastro të dhënat e shfletimit</translation>
 <translation id="8026471514777758216">Të gjitha pajisjet e tua</translation>
 <translation id="8027581147000338959">Hape në dritare të re</translation>
@@ -7981,6 +8011,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8097959162767603171">Administratori yt duhet të pranojë fillimisht kushtet e shërbimit në listën e pajisjeve Chrome të "Panelit të administratorit".</translation>
 <translation id="8098156986344908134">Të instalohet <ph name="DEVICE_OS" /> dhe të fshihet disku i ngurtë?</translation>
 <translation id="8098616321286360457">Nevojitet lidhje me rrjetin</translation>
+<translation id="8100230553590752325">Përdor fjalëkalimet e ruajtura në çdo pajisje</translation>
 <translation id="810068641062493918">U zgjodh <ph name="LANGUAGE" />. Shtyp "Kërko" plus "Hapësirë" për ta anuluar zgjedhjen.</translation>
 <translation id="8100972288595615768">Të pastrohen të dhënat e sajtit dhe lejet për <ph name="SITE_NAME" />?</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -8809,12 +8840,14 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8846163936679269230">Rivendos profilet e kartës eSIM</translation>
 <translation id="8846239054091760429">Audioja mono, nisja, "Titrat në çast" etj.</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848963863312877204">Gjej shkarkimet e tua këtu</translation>
 <translation id="8849001918648564819">E fshehur</translation>
 <translation id="8849219423513870962">Anulo heqjen e profilit të kartës eSIM me emrin <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> nga <ph name="CHECKING" /></translation>
 <translation id="8850251000316748990">Shiko më shumë...</translation>
 <translation id="885246833287407341">Argumentet e funksionit API</translation>
 <translation id="8853586775156634952">Kjo kartë do të ruhet vetëm në këtë pajisje</translation>
+<translation id="8853731677580212469">"Menaxheri i fjalëkalimeve i Google" në ueb</translation>
 <translation id="8854745870658584490">Shkurtorja e zgjedhjes</translation>
 <translation id="8855977033756560989">Kjo pajisje Chromebook Enterprise vjen si pjesë e paketës me Chrome Enterprise Upgrade. Për të përfituar nga kapacitetet për ndërmarrjet, regjistroje këtë pajisje me një llogari administratori të Google.</translation>
 <translation id="8856028055086294840">Restauro aplikacionet dhe faqet</translation>
@@ -9077,6 +9110,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="907779190626433918">Përdor një fjalëkalim unik për çdo sajt ose aplikacion. Nëse dikush zbulon një fjalëkalim të ripërdorur, ai mund të përdoret për të marrë qasje te llogaritë e tua të tjera.</translation>
 <translation id="9078193189520575214">Ndryshimet po zbatohen...</translation>
 <translation id="9078316009970372699">Çaktivizo "Ndarjen e internetit në çast"</translation>
+<translation id="9078546160009814724">Emri i përdoruesit: <ph name="USERNAME" /></translation>
 <translation id="9079267182985899251">Ky opsion nuk do të mbështetet së shpejti. Për të prezantuar një skedë, përdor <ph name="GOOGLE_MEET" />.</translation>
 <translation id="9080175821499742274">"Kursyesi i memories" liron memorien nga skedat joaktive që të mund të përdoret nga skedat aktive dhe aplikacionet e tjera.</translation>
 <translation id="9080971985541434310">përllogarit interesat e tu - Chrome mund të përllogarisë interesat e tu</translation>

@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1182225749592316782">এটি ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতির মাধ্যমে সব অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="1183863904939664422">এই সাজেশনে আগ্রহী নই</translation>
+<translation id="1184126796192815024">এই নেটওয়ার্ক আপনার ফোন থেকে স্ট্রিমিং অ্যাপ ব্যবহার করা যাবে না। আপনার ফোনের হটস্পট ব্যবহার করার চেষ্টা করুন। <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">আরও নিরাপত্তার জন্য পাসওয়ার্ড বা পিন লিখুন</translation>
 <translation id="118532027333893379">ফুল স্ক্রিন ক্যাপচার করতে, যেখানে খুশি ট্যাপ করুন</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
@@ -1252,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{আরও ১টি সংখ্যা লিখতে হবে}one{আরও #টি সংখ্যা লিখতে হবে}other{আরও #টি সংখ্যা লিখতে হবে}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ডাউনলোড পজ করা হয়েছে</translation>
 <translation id="6878400149835617132">শর্টকাট বন্ধ করা আছে</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{১টি অ্যাপ}one{#টি অ্যাপ}other{#টি অ্যাপ}}</translation>
 <translation id="6884665277231944629">আজকের তারিখ বেছে নিন</translation>
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
 <translation id="688631446150864480">উইন্ডো পাল্টাতে, 'নিম্নমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
@@ -1432,6 +1434,7 @@
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="776344839111254542">আপডেটের বিশদ বিবরণ জানার জন্য ক্লিক করুন</translation>
 <translation id="7768784765476638775">বাছুন ও শুনুন</translation>
+<translation id="7769299611924763557">আপনার GIF শীঘ্রই তৈরি হয়ে যাবে</translation>
 <translation id="7780094051999721182">শর্টকাট</translation>
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
 <translation id="7796735576426975947">নতুন বিজ্ঞপ্তি লুকানো আছে</translation>

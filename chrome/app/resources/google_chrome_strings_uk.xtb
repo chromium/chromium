@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">Налаштуйте свій новий профіль Chrome</translation>
 <translation id="1516530951338665275">Щоб продовжити підключення, надайте веб-переглядачу Google Chrome
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Цей посібник допоможе зробити роботу Chrome ефективнішою відповідно до ваших налаштувань</translation>
 <translation id="1547295885616600893">ОС Chrome працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1583073672411044740">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -65,6 +66,7 @@
 <translation id="2131230230468101642">З міркувань конфіденційності ми автоматично видаляємо ваші інтереси через 4 тижні. Якщо ви й надалі переглядатимете веб-сторінки, відповідний інтерес може знову з’явитися в списку. Щоб Chrome не враховував певні інтереси, їх можна вилучити.</translation>
 <translation id="2139300032719313227">Перезапустіть ОС Chrome</translation>
 <translation id="2151406531797534936">Перезапустіть Chrome</translation>
+<translation id="2163996651553460171">Користуйтеся всіма можливостями Chrome</translation>
 <translation id="2174917724755363426">Встановлення не завершено. Скасувати його?</translation>
 <translation id="223889379102603431">Інформація про те, як Chrome керує кореневими сертифікатами</translation>
 <translation id="2258103955319320201">Щоб мати доступ до своїх даних у веб-переглядачі Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>

@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Aşağı sağdan deşik açmaq</translation>
 <translation id="2122719317867821810">Bu siyasət nəzərdə tutulduğu kimi işləyir, lakin ziddiyyətli bir dəyər başqa bir yerdə təyin olunub və bu siyasət tərəfindən əvəzlənib.</translation>
 <translation id="2126374524350484896">PDF yaradıcısı:</translation>
+<translation id="2128262927290305126">Google Hesabında (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode siyasətinin ayarlanmamasına görə qeyd etdiyiniz şablonlar tətbiq edilməyə bilər.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Kişi geyimləri</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Cihazın sıfırlanması tələb olunur</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2225927550500503913">Virtual kart aktiv edildi</translation>
+<translation id="2226636330183131181">WiFi şəbəkəsinə <ph name="BEGIN_LINK" />daxil olunur<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">İndi göndərin</translation>
 <translation id="2241693394036365668">Fayl endirilir</translation>
 <translation id="2246264294482514010">10 x 12 düym</translation>
@@ -1080,6 +1082,7 @@
 <translation id="3631244953324577188">Biometriklər</translation>
 <translation id="3632503704576938756">Ekran paylaşımı davam etdirilir</translation>
 <translation id="3632892046558972264">Ekran paylaşımı durdurulub</translation>
+<translation id="3633035844150606508">Ünvanı Google Hesabında (<ph name="ACCOUNT" />) saxlayın</translation>
 <translation id="3633738897356909127">"Chrome'u güncəlləyin" düyməsi, Chrome ayarlarında Chrome'u güncəlləmək üçün Enter düyməsinə basın</translation>
 <translation id="3634530185120165534">Qab 5</translation>
 <translation id="3634567936866541746">İndicə parolunuzu aldadıcı sayt içində yazdınız. Hesablarınızı qorumaq üçün Chrome yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
@@ -1790,6 +1793,7 @@
 <translation id="5324080437450482387">Kontakt Məlumatı seçin</translation>
 <translation id="5329858041417644019">Brauzer idarə edilmir</translation>
 <translation id="5332219387342487447">Göndəriş Üsulu</translation>
+<translation id="5332769172018416402">Mesaj ilə soruşun</translation>
 <translation id="5333022057423422993">Chrome indicə istifadə etdiyiniz parolu bir data pozuntusunda tapıb. Hesablarınızı qorumaq üçün yadda saxlanmış parollarınızı yoxlamağınızı tövsiyə edirik.</translation>
 <translation id="5334013548165032829">Ətraflı sistem qeydləri</translation>
 <translation id="5334145288572353250">Ünvan saxlanılsın?</translation>
@@ -1983,6 +1987,7 @@
 <translation id="5830698870816298009">kameranın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="583281660410589416">Naməlum</translation>
 <translation id="5838278095973806738">Bu saytda hər hansı həssəs məlumatı (məsələn, parollar və kredit kartları) yerləşdirməməlisiniz, cünki, hücumçular tərəfindən oğurlana bilər.</translation>
+<translation id="5841338463993781099">Hesabda saxlansın?</translation>
 <translation id="5851548754964597211">Panel siyahısı</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Deaktiv</translation>

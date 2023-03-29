@@ -25,6 +25,7 @@
 <translation id="1507198376417198979">Personalize o seu novo perfil do Chrome</translation>
 <translation id="1516530951338665275">O Google Chrome necessita do acesso ao Bluetooth para continuar 
 a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Este guia permite-lhe compreender as suas escolhas, de modo a que o Chrome funcione da forma que quer</translation>
 <translation id="1547295885616600893">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Esta ação cria um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -65,6 +66,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2131230230468101642">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chrome considere.</translation>
 <translation id="2139300032719313227">Reinicie o ChromeOS</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
+<translation id="2163996651553460171">Tire o máximo partido do Chrome</translation>
 <translation id="2174917724755363426">Instalação não concluída. Tem a certeza de que quer cancelar?</translation>
 <translation id="223889379102603431">Informações sobre como o Chrome gere os certificados de raiz</translation>
 <translation id="2258103955319320201">Para aceder aos seus itens do navegador Chrome em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização</translation>

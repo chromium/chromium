@@ -479,6 +479,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4342946437867096381">Ja has desat una contrasenya per a aquest lloc web al teu Compte de Google. Google pot triar la contrasenya més recent.</translation>
 <translation id="4343046787186034850">S'ha permès l'accés a la càmera i el micròfon</translation>
 <translation id="4359125752503270327">Aquesta pàgina s'obrirà en una altra aplicació.</translation>
+<translation id="4371526908359194219">Notificacions per correu electrònic</translation>
 <translation id="4375040482473363939">Cerca mitjançant un codi QR</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4389019817280890563">Toca per canviar l'idioma.</translation>
@@ -580,6 +581,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4986678885919050584">Suprimeix d'aquest dispositiu</translation>
 <translation id="498985224078955265">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome en els dos dispositius.</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
+<translation id="5016420433031926653">Envia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Recorda-m'ho més tard</translation>
 <translation id="5037676449506322593">Selecciona-ho tot</translation>
 <translation id="5039804452771397117">Permet</translation>
@@ -1172,6 +1174,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8978059030508051916">{count,plural, =0{Cap contrasenya en perill}=1{{count} contrasenya en perill}other{{count} contrasenyes en perill}}</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
 <translation id="8985320356172329008">Has iniciat la sessió a Google com a</translation>
+<translation id="8998289560386111590">No disponible al teu dispositiu</translation>
 <translation id="9000089900434778519">El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="9008201768610948239">Ignora</translation>
 <translation id="9034759925968272072">No se us tancarà la sessió del compte de Google, el qual és possible que tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

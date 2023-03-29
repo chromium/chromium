@@ -479,6 +479,7 @@
 <translation id="4342946437867096381">您已在 Google 帐号中保存了一个用于登录此网站的密码。Google 可为您选择保存最新的密码。</translation>
 <translation id="4343046787186034850">已启用摄像头和麦克风使用权限</translation>
 <translation id="4359125752503270327">此页面将在其他应用中打开。</translation>
+<translation id="4371526908359194219">电子邮件通知</translation>
 <translation id="4375040482473363939">QR 码搜索</translation>
 <translation id="4378154925671717803">电话机</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
@@ -558,7 +559,7 @@
 <translation id="4834499902900503484">登录 Chrome 后，您保存的密码会保存到您的 Google 帐号中。如需关闭此设置，请<ph name="BEGIN_LINK" />前往“设置”<ph name="END_LINK" />。</translation>
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 帐号中。</translation>
 <translation id="4844899002472726590">查看和修改您感兴趣的主题</translation>
-<translation id="4848999860252535517">删除用于登录 <ph name="WEBSITE" /> 的密码？</translation>
+<translation id="4848999860252535517">要删除用于登录 <ph name="WEBSITE" /> 的密码吗？</translation>
 <translation id="4854345657858711387">设置密码</translation>
 <translation id="4858786880085262208">尽可能升级到 HTTPS。安全网站可能会内嵌不安全的内容。</translation>
 <translation id="4860895144060829044">拨打</translation>
@@ -580,6 +581,7 @@
 <translation id="4986678885919050584">从此设备中移除</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="5005498671520578047">复制密码</translation>
+<translation id="5016420433031926653">发送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
 <translation id="5037676449506322593">全选</translation>
 <translation id="5039804452771397117">允许</translation>
@@ -1017,7 +1019,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">导出密码…</translation>
 <translation id="794799177247607889">停止生成日志</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{没有密码已遭泄露}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
+<translation id="7953440832920792856">{COUNT,plural, =0{没有泄露的密码}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
 <translation id="7959441099968534758">前往 Feed</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7966516440812255683">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
@@ -1172,6 +1174,7 @@
 <translation id="8978059030508051916">{count,plural, =0{没有任何已泄露的密码}=1{有 {count} 个已泄露的密码}other{有 {count} 个已泄露的密码}}</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8985320356172329008">已使用以下帐号登录 Google：</translation>
+<translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 帐号。您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>

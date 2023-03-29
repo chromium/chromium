@@ -479,6 +479,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4342946437867096381">Xa gardaches un contrasinal para este sitio na túa Conta de Google. Google pode seleccionar o contrasinal máis recente por ti.</translation>
 <translation id="4343046787186034850">Permitiuse o acceso á cámara e ao micrófono</translation>
 <translation id="4359125752503270327">Esta páxina abrirase noutra aplicación.</translation>
+<translation id="4371526908359194219">Notificacións por correo electrónico</translation>
 <translation id="4375040482473363939">Busca de códigos QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4389019817280890563">Toca para cambiar de idioma.</translation>
@@ -580,6 +581,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4986678885919050584">Quitar deste dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
+<translation id="5016420433031926653">Enviaranse a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrarmo máis tarde</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -755,6 +757,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6219550825416862075">Dámosche a benvida de novo</translation>
 <translation id="6219688215832490856">Non traducir nunca</translation>
 <translation id="6223816392543092032">Accede aos teus marcadores, historial, contrasinais e outras opcións de configuración en todos os teus dispositivos.</translation>
+<translation id="6224759905509595045">Verifica que es ti…</translation>
 <translation id="6229318421047648685">Solicitar sitio para ordenadores</translation>
 <translation id="6231782223312638214">Suxerido</translation>
 <translation id="6232329973559504466">Busca do modo de incógnito</translation>
@@ -915,6 +918,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7108762695052995889">Visitar sitio</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
+<translation id="7161230316646448869">Sincroniza os teus marcadores e o historial, entre outras cousas, en todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Protexe os teus contrasinais fronte a problemas de seguranza</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
@@ -1170,6 +1174,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8978059030508051916">{count,plural, =0{Ningún contrasinal vulnerado}=1{{count} contrasinal vulnerado}other{{count} contrasinais vulnerados}}</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
 <translation id="8985320356172329008">Iniciaches sesión en Google como</translation>
+<translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
 <translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

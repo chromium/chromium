@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Пристрій <ph name="INDEX" /> з <ph name="COUNT" />: "<ph name="NAME" />".</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Ім’я точки доступу (APN)</translation>
+<translation id="7131634559772719176">Підтвердити набір налаштувань</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
+<translation id="7770834998503326261">Додаткова інформація, пов’язана з вибраним варіантом</translation>
 <translation id="7778717409420828014">Наша команда перегляне ваш відгук. Він допоможе нам покращити роботу Chromebook. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
 <translation id="7791543448312431591">Додати</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8045012663542226664">Вимкнення звуку мікрофона</translation>
+<translation id="8050091914317269817">Якщо вибрати цей фоновий малюнок, буде ввімкнено автоматичний темний режим і відповідний добір кольорів.</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>

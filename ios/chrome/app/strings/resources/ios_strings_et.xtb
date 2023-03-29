@@ -479,6 +479,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4342946437867096381">Salvestasite selle saidi parooli juba oma Google'i kontole. Google saab teie jaoks valida kõige hiljutisema parooli.</translation>
 <translation id="4343046787186034850">Juurdepääs kaamerale ja mikrofonile on lubatud</translation>
 <translation id="4359125752503270327">See leht avatakse teises rakenduses.</translation>
+<translation id="4371526908359194219">Meilimärguanded</translation>
 <translation id="4375040482473363939">QR-koodi otsing</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Puudutage keele muutmiseks.</translation>
@@ -580,6 +581,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4986678885919050584">Eemalda sellest seadmest</translation>
 <translation id="498985224078955265">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
+<translation id="5016420433031926653">Saatmine aadressile <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Tuleta hiljem meelde</translation>
 <translation id="5037676449506322593">Vali kõik</translation>
 <translation id="5039804452771397117">Luba</translation>
@@ -1172,6 +1174,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8978059030508051916">{count,plural, =0{Ükski parool ei ole ohus}=1{{count} ohustatud parool}other{{count} ohustatud parooli}}</translation>
 <translation id="8981454092730389528">Google'i kontotegevuste haldus</translation>
 <translation id="8985320356172329008">Google'isse sisse logitud kasutajana</translation>
+<translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
 <translation id="9000089900434778519">Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="9008201768610948239">Eira</translation>
 <translation id="9034759925968272072">Teid ei logita Google'i kontolt välja. Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>

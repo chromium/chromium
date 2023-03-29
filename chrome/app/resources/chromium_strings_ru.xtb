@@ -92,6 +92,7 @@
 <translation id="3185330573522821672">Настройте новый профиль Chromium</translation>
 <translation id="3190315855212034486">Произошел сбой Chromium. Перезапустить?</translation>
 <translation id="3258596308407688501">Chromium не может выполнять операции чтения и записи в своем каталоге: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Это руководство поможет настроить Chromium под себя.</translation>
 <translation id="3283186697780795848">Установлен браузер Chromium версии <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
 <translation id="328888136576916638">Отсутствуют ключи API Google. Некоторые функции Chromium могут не работать.</translation>
@@ -377,6 +378,7 @@
 <translation id="924957577793602335">Настройте Chromium для себя</translation>
 <translation id="93478295209880648">В работе Chromium могут возникать сбои, так как браузер больше не поддерживает Windows XP и Windows Vista.</translation>
 <translation id="942598560705308788">Сертификаты, которыми управляет Chromium</translation>
+<translation id="959579472876010517">Используйте все возможности браузера Chromium</translation>
 <translation id="965162752251293939">Кто использует Chromium?</translation>
 <translation id="967427899662692980">Обеспечьте максимальную защиту в Chromium</translation>
 <translation id="9792300276217204">Всегда удалять с устройства данные сайтов при закрытии Chromium</translation>

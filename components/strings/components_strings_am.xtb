@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">ከታች በቀን በኩል ብስ</translation>
 <translation id="2122719317867821810">ይህ መመሪያ እንደታሰበው እየሰራ ነው ነገር ግን የሚጋጭ እሴት በሌላ ቦታ የተቀናበረ ሲሆን በዚህ መመሪያ ተሽሯል።</translation>
 <translation id="2126374524350484896">የPDF አዘጋጅ፦</translation>
+<translation id="2128262927290305126">በእርስዎ Google መለያ <ph name="ACCOUNT" /> ውስጥ</translation>
 <translation id="2130448033692577677">የDnsOverHttpsMode መመሪያው ባለመዋቀሩ ምክንያት እርስዎ የገለጿቸው ቅንብር ደንቦች ላይተገበሩ ይችላሉ።</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">የወንዶች ልብስ</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">የመሣሪያ ዳግም ማስጀመር ያስፈልጋል</translation>
 <translation id="2224337661447660594">ምንም በይነመረብ የለም</translation>
 <translation id="2225927550500503913">ምናባዊ ካርድ በርቷል</translation>
+<translation id="2226636330183131181">ወደ Wi-Fi አውታረ መረብ <ph name="BEGIN_LINK" />በመለያ በመግባት ላይ<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">አሁን ላክ</translation>
 <translation id="2241693394036365668">ፋይል ወርዷል</translation>
 <translation id="2246264294482514010">10 x 12 ኢንች</translation>
@@ -1083,6 +1085,7 @@
 <translation id="3631244953324577188">ባዮሜትሪክስ</translation>
 <translation id="3632503704576938756">ማያ ገጽ ማጋራት ከቆመበት ቀጥሏል</translation>
 <translation id="3632892046558972264">ማያ ገጽ ማጋራት ባለበት ቆሟል</translation>
+<translation id="3633035844150606508">በእርስዎ Google መለያ <ph name="ACCOUNT" /> ውስጥ አድራሻን ያስቀምጡ</translation>
 <translation id="3633738897356909127">የChrome አዝራርን ያዘምኑ፣ Chromeን ለማዘመን ከእርስዎ Chrome ቅንብሮች ሆነው አስገባን ይጫኑ</translation>
 <translation id="3634530185120165534">መሳቢያ 5</translation>
 <translation id="3634567936866541746">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ Chrome የተቀመጡ ይለፍ ቃላትዎን መፈተሽ ይመክራል።</translation>
@@ -1793,6 +1796,7 @@
 <translation id="5324080437450482387">የእውቂያ መረጃ ይምረጡ</translation>
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>
 <translation id="5332219387342487447">የመላኪያ መንገድ</translation>
+<translation id="5332769172018416402">በመልዕክት ውስጥ ጠይቅ</translation>
 <translation id="5333022057423422993">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለማስጠበቅ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="5334013548165032829">ዝርዝር የስርዓት ምዝግብ ማስታወሻዎች</translation>
 <translation id="5334145288572353250">አድራሻ ይቀመጥ?</translation>
@@ -1986,6 +1990,7 @@
 <translation id="5830698870816298009">የካሜራ አጠቃቀም እና እንቅስቃሴ</translation>
 <translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5838278095973806738">በአጥቂዎች ሊሰረቅ ስለሚችል በዚህ ጣቢያ ላይ ማናቸውም አደጋን ሊያስከትል የሚችል መረጃ (ለምሳሌ፦ የይለፍ ቃሎች ወይም የክሬዲት ካርዶች) ማስገባት የለብዎትም።</translation>
+<translation id="5841338463993781099">በመለያ ውስጥ ይቀመጥ?</translation>
 <translation id="5851548754964597211">የትር ዝርዝር</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">አጥፋ</translation>

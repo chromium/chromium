@@ -27,6 +27,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1507198376417198979">Anpassa din nya Chrome-profil</translation>
 <translation id="1516530951338665275">Google Chrome behöver åtkomst för Bluetooth för att fortsätta 
  parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Med den här guiden får du hjälp att förstå dina val, så att Chrome fungerar som du vill</translation>
 <translation id="1547295885616600893">Chrome OS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />ytterligare program med öppen källkod<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> är redan inloggad på den här Chrome-profilen. En ny Chrome-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -69,6 +70,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2131230230468101642">För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chrome ska inkludera.</translation>
 <translation id="2139300032719313227">Starta om Chrome OS</translation>
 <translation id="2151406531797534936">Starta om Chrome nu</translation>
+<translation id="2163996651553460171">Få ut mesta möjliga av Chrome</translation>
 <translation id="2174917724755363426">Installationen är inte klar. Är du säker på att du vill avbryta?</translation>
 <translation id="223889379102603431">Information om hur Chrome hanterar sina rotcertifikat</translation>
 <translation id="2258103955319320201">Logga in och aktivera synkronisering om du vill få tillgång till saker i webbläsaren Chrome på olika enheter.</translation>

@@ -1254,6 +1254,7 @@ Uus installimine</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Üks number on jäänud}other{# numbrit on jäänud}}</translation>
 <translation id="6867938213751067702">Allalaadimine on peatatud: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Otsetee on välja lülitatud</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 rakendus}other{# rakendust}}</translation>
 <translation id="6884665277231944629">Tagasi tänase juurde</translation>
 <translation id="6886172995547742638">Seadme <ph name="DEVICE_TYPE" /> jõudlus võib olla väiksem. Kasutage sertifitseeritud <ph name="PREFERRED_MINIMUM_POWER" /> W või võimsamat USB-C-toiteadapterit.</translation>
 <translation id="688631446150864480">Akende vahetamiseks vajutage allanoolt</translation>
@@ -1434,6 +1435,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
 <translation id="776344839111254542">Klõpsake värskenduse üksikasjade vaatamiseks</translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
+<translation id="7769299611924763557">Teie GIF on varsti valmis</translation>
 <translation id="7780094051999721182">otseteid</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7796735576426975947">Uus märguanne on peidetud</translation>

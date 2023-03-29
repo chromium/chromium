@@ -1253,6 +1253,7 @@ Nova namestitev</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Še ena števka}one{Še # števka}two{Še # števki}few{Še # števke}other{Še # števk}}</translation>
 <translation id="6867938213751067702">Prenos je začasno zaustavljen (<ph name="FILENAME" />)</translation>
 <translation id="6878400149835617132">Bližnjica je izklopljena</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacija}one{# aplikacija}two{# aplikaciji}few{# aplikacije}other{# aplikacij}}</translation>
 <translation id="6884665277231944629">Nazaj na današnji dan</translation>
 <translation id="6886172995547742638">Naprava <ph name="DEVICE_TYPE" /> morda deluje slabše. Uporabite potrjen napajalnik USB-C z močjo <ph name="PREFERRED_MINIMUM_POWER" /> W ali več.</translation>
 <translation id="688631446150864480">Za preklapljanje med okni pritisnite tipko s puščico dol</translation>
@@ -1433,6 +1434,7 @@ Nova namestitev</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="776344839111254542">Kliknite, če si želite ogledati podrobnosti o posodobitvi</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
+<translation id="7769299611924763557">GIF bo kmalu pripravljen</translation>
 <translation id="7780094051999721182">bližnjicah</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7796735576426975947">Novo obvestilo je skrito</translation>

@@ -1221,6 +1221,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{એક અંક બાકી}one{# અંક બાકી}other{# અંક બાકી}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" />નું ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="6878400149835617132">શૉર્ટકટ બંધ કર્યો</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
 <translation id="6884665277231944629">આજની તારીખ પર પાછા જાઓ</translation>
 <translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
 <translation id="688631446150864480">વિન્ડો સ્વિચ કરવા માટે, નીચેની ઍરો કી દબાવો</translation>
@@ -1393,6 +1394,7 @@
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
 <translation id="776344839111254542">અપડેટની વિગતો જોવા માટે ક્લિક કરો</translation>
 <translation id="7768784765476638775">સાંભળવા માટે પસંદ કરો</translation>
+<translation id="7769299611924763557">તમારું GIF ટૂંક સમયમાં તૈયાર થઈ જશે</translation>
 <translation id="7780094051999721182">શૉર્ટકટ</translation>
 <translation id="7780159184141939021">સ્ક્રીનને ફેરવો</translation>
 <translation id="7796735576426975947">નવું નોટિફિકેશન છુપાવ્યું</translation>

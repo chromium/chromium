@@ -94,6 +94,7 @@
 <translation id="3258596308407688501">Chromium 无法读写其数据目录：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">您可以通过本指南了解您的选择，以便让 Chromium 以您期望的方式运行</translation>
 <translation id="3283186697780795848">已安装 Chromium 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
@@ -381,6 +382,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="924957577793602335">定制您的专属 Chromium</translation>
 <translation id="93478295209880648">Chromium 可能无法正常运行，因为它不再支持 Windows XP 和 Windows Vista</translation>
 <translation id="942598560705308788">由 Chromium 管理的证书</translation>
+<translation id="959579472876010517">充分利用 Chromium</translation>
 <translation id="965162752251293939">谁在使用 Chromium？</translation>
 <translation id="967427899662692980">获享 Chromium 的最强安全保护</translation>
 <translation id="9792300276217204">始终在关闭 Chromium 时清除设备上的网站数据</translation>

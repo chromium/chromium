@@ -479,6 +479,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4342946437867096381">Du har allerede gemt en adgangskode til dette website på din Google-konto. Google kan vælge den seneste adgangskode for dig.</translation>
 <translation id="4343046787186034850">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="4359125752503270327">Denne side åbner i en anden app.</translation>
+<translation id="4371526908359194219">Mailnotifikationer</translation>
 <translation id="4375040482473363939">Søgning efter QR-kode</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Tryk for at skifte sprog.</translation>
@@ -580,6 +581,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4986678885919050584">Fjern fra denne enhed</translation>
 <translation id="498985224078955265">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
+<translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
 <translation id="5037676449506322593">Vælg alle</translation>
 <translation id="5039804452771397117">Tillad</translation>
@@ -1172,6 +1174,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8978059030508051916">{count,plural, =0{Ingen kompromitterede adgangskoder}=1{{count} kompromitteret adgangskode}one{{count} kompromitteret adgangskode}other{{count} kompromitterede adgangskoder}}</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8985320356172329008">Du er logget ind på Google som</translation>
+<translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
 <translation id="9000089900434778519">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

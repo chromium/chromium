@@ -58,6 +58,7 @@
 <translation id="1283524564873030414">過去 24 時間</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />権限は、このサイトから離れるとオフにリセットされます。</translation>
+<translation id="1305822519689023679">Google アカウントのパスワードを常に使用できるようにするには、本人確認を行ってください。</translation>
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
 <translation id="1321993286294231467">画像の保存中にエラーが発生しました。</translation>
 <translation id="1322735045095424339">組織がシークレット モードを使用するよう求めています</translation>
@@ -107,6 +108,7 @@
 <translation id="1626771852476987600">使い回されているパスワード: <ph name="COUNT" /> 件</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="1644574205037202324">履歴</translation>
+<translation id="165008673352427892">新機能</translation>
 <translation id="1650222530560417226">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
 <translation id="1653432787084483144">{count,plural, =1{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}other{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}}</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
@@ -120,6 +122,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> を信頼できる場合は、保存済みのパスワードを使用してログインできます。</translation>
 <translation id="1740468249224277719">ダブルタップしてインストール。</translation>
+<translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
 <translation id="1752547299766512813">パスワードの保存</translation>
 <translation id="1753905327828125965">よくアクセスするページ</translation>
 <translation id="1767766085187034454">Google 翻訳</translation>
@@ -402,6 +405,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3818293389945649617">次を検索</translation>
 <translation id="3819183753496523827">オフラインです。インターネット接続を確認してもう一度お試しください。</translation>
+<translation id="3832419617903252251">パスワードはこのデバイスにのみ保存されます</translation>
 <translation id="3835964409414434850">次のタブに移動する</translation>
 <translation id="3838691874161539578">保存したパスワードをチェックしてセキュリティを強化し、ウェブを安全に利用できるようにしましょう</translation>
 <translation id="385051799172605136">戻る</translation>
@@ -475,6 +479,7 @@
 <translation id="4342946437867096381">このサイトのパスワードは Google アカウントにすでに保存されています。Google では最新のパスワードが自動的に選択されます。</translation>
 <translation id="4343046787186034850">カメラとマイクへのアクセスが許可されています</translation>
 <translation id="4359125752503270327">このページは別のアプリケーションで開かれます。</translation>
+<translation id="4371526908359194219">メール通知</translation>
 <translation id="4375040482473363939">QR コード検索</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4389019817280890563">タップして言語を変更できます。</translation>
@@ -576,6 +581,7 @@
 <translation id="4986678885919050584">このデバイスから削除</translation>
 <translation id="498985224078955265">このタブを別のデバイスに送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
+<translation id="5016420433031926653">送信先: <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">後で通知する</translation>
 <translation id="5037676449506322593">すべてを選択</translation>
 <translation id="5039804452771397117">許可する</translation>
@@ -630,6 +636,7 @@
 <translation id="54401264925851789">ページのセキュリティ情報</translation>
 <translation id="5443952882982198570">クレジット カード</translation>
 <translation id="5444892875087332195">ブックマーク</translation>
+<translation id="5453250766792920795">{count,plural, =1{ブックマークをアカウント（{email}）に保存しました}other{ブックマークをアカウント（{email}）に保存しました}}</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
@@ -656,6 +663,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">QR コードを作成</translation>
 <translation id="567881659373499783">バージョン <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">Google アカウントでパスワードを使用して保存するには、本人確認を行ってください。</translation>
 <translation id="5690398455483874150">{count,plural, =1{現在 1 個の Chrome ウィンドウを表示しています}other{現在 {count} 個の Chrome ウィンドウを表示しています}}</translation>
 <translation id="5701270923492462699">カメラへのアクセスが許可されています</translation>
 <translation id="5704908597376970822">ログインできません。</translation>
@@ -788,6 +796,7 @@
 
 データは <ph name="TIME" /> に同期パスフレーズで暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6418346271604475326">PDF を準備しています</translation>
+<translation id="6421095165635308">{count,plural, =1{ブックマークをアカウント（{email}）の {title} に保存しました}other{ブックマークをアカウント（{email}）の {title} に保存しました}}</translation>
 <translation id="6429213933892582367">[パスワードのオプション] を開きます</translation>
 <translation id="6434591244308415567">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="6435236283694032571">リーディング リストに追加する</translation>
@@ -876,6 +885,7 @@
 <translation id="6888009575607455378">変更を破棄してもよろしいですか？</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6897187120838603299">パスワードはこのデバイスに保存されます。</translation>
+<translation id="6906448540340261898">Google アカウントのパスワードを常に使用できるようにしてください</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />、このデバイスのみ。</translation>
 <translation id="6914583639806229067">コピーした画像を検索</translation>
 <translation id="6914783257214138813">エクスポートしたファイルを閲覧できるユーザーにパスワードを知られてしまう可能性があります。</translation>
@@ -1162,6 +1172,7 @@
 <translation id="8978059030508051916">{count,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {count} 件}other{不正使用されたパスワード: {count} 件}}</translation>
 <translation id="8981454092730389528">Google アクティビティ管理</translation>
 <translation id="8985320356172329008">Google にログイン済みのユーザー</translation>
+<translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9000089900434778519">検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9034759925968272072">Google アカウントへのログイン状態は維持されます。Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
