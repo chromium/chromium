@@ -130,7 +130,8 @@ std::string TestTokenStorageOnDisk::FetchTokenFromKey(const std::string& key) {
     return std::string();
   }
 
-  const std::string* token = token_data->FindStringPath(user_name_ + '.' + key);
+  const std::string* token =
+      token_data->GetDict().FindStringByDottedPath(user_name_ + '.' + key);
   if (!token) {
     VLOG(1) << "Could not find token for: " << key;
     return std::string();
