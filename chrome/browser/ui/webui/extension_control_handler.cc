@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/extension_control_handler.h"
+#include "chrome/browser/ui/webui/extension_control_handler.h"
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -13,10 +13,8 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_system.h"
 
-namespace settings {
-
-ExtensionControlHandler::ExtensionControlHandler() {}
-ExtensionControlHandler::~ExtensionControlHandler() {}
+ExtensionControlHandler::ExtensionControlHandler() = default;
+ExtensionControlHandler::~ExtensionControlHandler() = default;
 
 void ExtensionControlHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -35,5 +33,3 @@ void ExtensionControlHandler::HandleDisableExtension(
   extension_service->DisableExtension(
       extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
 }
-
-}  // namespace settings
