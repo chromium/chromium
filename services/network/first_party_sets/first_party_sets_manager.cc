@@ -158,15 +158,18 @@ void FirstPartySetsManager::InvokePendingQueries() {
       "Cookie.FirstPartySets.InitializationDuration.ReadyToServeQueries2",
       construction_timer_.Elapsed());
 
-  if (!pending_queries_)
-    return;
-
-  base::UmaHistogramCounts10000("Cookie.FirstPartySets.DelayedQueriesCount",
-                                pending_queries_->size());
-  base::UmaHistogramTimes("Cookie.FirstPartySets.MostDelayedQueryDelta2",
+  base::UmaHistogramTimes("Cookie.FirstPartySets.Network.MostDelayedQueryDelta",
                           first_async_query_timer_.has_value()
                               ? first_async_query_timer_->Elapsed()
                               : base::TimeDelta());
+
+  base::UmaHistogramCounts10000(
+      "Cookie.FirstPartySets.Network.DelayedQueriesCount",
+      pending_queries_ ? pending_queries_->size() : 0);
+
+  if (!pending_queries_) {
+    return;
+  }
 
   std::unique_ptr<base::circular_deque<base::OnceClosure>> queue;
   queue.swap(pending_queries_);

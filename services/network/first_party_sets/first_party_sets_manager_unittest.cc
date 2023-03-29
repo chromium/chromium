@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -32,6 +33,11 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 using Type = net::SamePartyContext::Type;
+
+const char* kDelayedQueriesCountHistogram =
+    "Cookie.FirstPartySets.Network.DelayedQueriesCount";
+const char* kMostDelayedQueryDeltaHistogram =
+    "Cookie.FirstPartySets.Network.MostDelayedQueryDelta";
 
 namespace network {
 
@@ -56,10 +62,12 @@ class FirstPartySetsManagerTest : public ::testing::Test {
     return result.has_value() ? result.value() : future.Get();
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   FirstPartySetsManager& manager() { return manager_; }
 
  private:
   base::test::TaskEnvironment env_;
+  base::HistogramTester histogram_tester_;
   FirstPartySetsManager manager_;
 };
 
@@ -73,6 +81,7 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
   net::SchemefulSite example_cctld(GURL("https://example.cctld"));
   net::SchemefulSite example_test(GURL("https://example.test"));
   net::SchemefulSite aaaa(GURL("https://aaaa.test"));
+
   SetCompleteSets({{aaaa, net::FirstPartySetEntry(
                               example_test, net::SiteType::kAssociated, 0)},
                    {example_test,
@@ -88,6 +97,9 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
                   },
                   net::FirstPartySetsContextConfig(), base::NullCallback()),
               Optional(IsEmpty()));
+
+  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsManagerDisabledTest, FindEntries) {
@@ -129,6 +141,8 @@ TEST_F(FirstPartySetsEnabledTest, SetCompleteSets) {
                                        absl::nullopt)),
           Pair(aaaa, net::FirstPartySetEntry(example_test,
                                              net::SiteType::kAssociated, 0))));
+  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsEnabledTest, SetCompleteSets_Idempotent) {
@@ -221,6 +235,8 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
               net::FirstPartySetMetadata(
                   net::SamePartyContext(Type::kSameParty), &entry, &entry));
   }
+  histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindEntries) {

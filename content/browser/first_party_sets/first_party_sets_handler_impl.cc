@@ -99,17 +99,18 @@ void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
     return;
   }
   if (global_sets_.has_value()) {
-    std::move(callback).Run(GetContextConfigForPolicyInternal(*policy));
+    std::move(callback).Run(
+        GetContextConfigForPolicyInternal(*policy, absl::nullopt));
     return;
   }
   // Add to the deque of callbacks that will be processed once the list
   // of First-Party Sets has been fully initialized.
-  on_sets_ready_callbacks_.push_back(
+  EnqueuePendingTask(
       base::BindOnce(
           &FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal,
           // base::Unretained(this) is safe here because this is a static
           // singleton.
-          base::Unretained(this), policy->Clone())
+          base::Unretained(this), policy->Clone(), base::ElapsedTimer())
           .Then(std::move(callback)));
 }
 
@@ -147,7 +148,7 @@ absl::optional<net::GlobalFirstPartySets> FirstPartySetsHandlerImpl::GetSets(
 
   if (!callback.is_null()) {
     // base::Unretained(this) is safe here because this is a static singleton.
-    on_sets_ready_callbacks_.push_back(
+    EnqueuePendingTask(
         base::BindOnce(&FirstPartySetsHandlerImpl::GetGlobalSetsSync,
                        base::Unretained(this))
             .Then(std::move(callback)));
@@ -231,8 +232,7 @@ void FirstPartySetsHandlerImpl::SetCompleteSets(
   CHECK(!global_sets_.has_value());
   global_sets_ = std::move(sets);
 
-  if (IsEnabled())
-    InvokePendingQueries();
+  InvokePendingQueries();
 }
 
 void FirstPartySetsHandlerImpl::SetDatabase(
@@ -250,11 +250,30 @@ void FirstPartySetsHandlerImpl::SetDatabase(
                      user_data_dir.Append(kFirstPartySetsDatabase));
 }
 
+void FirstPartySetsHandlerImpl::EnqueuePendingTask(base::OnceClosure run_task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!global_sets_.has_value());
+
+  if (!first_async_task_timer_.has_value()) {
+    first_async_task_timer_ = base::ElapsedTimer();
+  }
+
+  on_sets_ready_callbacks_.push_back(std::move(run_task));
+}
+
 void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(enabled_);
+
   base::circular_deque<base::OnceClosure> queue;
   queue.swap(on_sets_ready_callbacks_);
+
+  base::UmaHistogramCounts10000(
+      "Cookie.FirstPartySets.Browser.DelayedQueriesCount", queue.size());
+  base::UmaHistogramTimes("Cookie.FirstPartySets.Browser.MostDelayedQueryDelta",
+                          first_async_task_timer_.has_value()
+                              ? first_async_task_timer_->Elapsed()
+                              : base::TimeDelta());
+
   while (!queue.empty()) {
     base::OnceCallback callback = std::move(queue.front());
     queue.pop_front();
@@ -301,7 +320,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
   }
 
   // base::Unretained(this) is safe because this is a static singleton.
-  on_sets_ready_callbacks_.push_back(base::BindOnce(
+  EnqueuePendingTask(base::BindOnce(
       &FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal,
       base::Unretained(this), browser_context_getter, browser_context_id,
       std::move(context_config), std::move(callback)));
@@ -418,10 +437,11 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadata(
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!global_sets_.has_value()) {
-    on_sets_ready_callbacks_.push_back(base::BindOnce(
+    EnqueuePendingTask(base::BindOnce(
         &FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal,
         base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
-        party_context, config.Clone(), std::move(callback)));
+        party_context, config.Clone(), base::ElapsedTimer(),
+        std::move(callback)));
     return;
   }
 
@@ -434,18 +454,32 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal(
     const absl::optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& config,
+    const base::ElapsedTimer& timer,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());
+
+  base::UmaHistogramTimes(
+      "Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata2",
+      timer.Elapsed());
+
   std::move(callback).Run(global_sets_->ComputeMetadata(
       site, base::OptionalToPtr(top_frame_site), party_context, config));
 }
 
 net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal(
-    const base::Value::Dict& policy) const {
+    const base::Value::Dict& policy,
+    const absl::optional<base::ElapsedTimer>& timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());
+
+  if (timer.has_value()) {
+    base::UmaHistogramTimes(
+        "Cookie.FirstPartySets.EnqueueingDelay.ContextConfig2",
+        timer->Elapsed());
+  }
+
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 

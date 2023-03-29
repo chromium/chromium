@@ -61,6 +61,11 @@ const char* kCctldsField = "ccTLDs";
 const char* kFirstPartySetsClearSiteDataOutcomeHistogram =
     "FirstPartySets.Initialization.ClearSiteDataOutcome";
 
+const char* kDelayedQueriesCountHistogram =
+    "Cookie.FirstPartySets.Browser.DelayedQueriesCount";
+const char* kMostDelayedQueryDeltaHistogram =
+    "Cookie.FirstPartySets.Browser.MostDelayedQueryDelta";
+
 }  // namespace
 
 TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
@@ -148,12 +153,12 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
                                  {kAdditionsField, 0, kPrimaryField}));
 }
 
-class FirstPartySetsHandlerImplEnabledTest : public ::testing::Test {
+class FirstPartySetsHandlerImplTest : public ::testing::Test {
  public:
-  explicit FirstPartySetsHandlerImplEnabledTest()
+  explicit FirstPartySetsHandlerImplTest(bool enabled)
       : handler_(FirstPartySetsHandlerImpl::CreateForTesting(
-            /*enabled=*/true,
-            /*embedder_will_provide_public_sets=*/true)) {
+            /*enabled=*/enabled,
+            /*embedder_will_provide_public_sets=*/enabled)) {
     CHECK(scoped_dir_.CreateUniqueTempDir());
     CHECK(PathExists(scoped_dir_.GetPath()));
   }
@@ -246,6 +251,31 @@ class FirstPartySetsHandlerImplEnabledTest : public ::testing::Test {
   FirstPartySetsHandlerImpl handler_;
 };
 
+class FirstPartySetsHandlerImplDisabledTest
+    : public FirstPartySetsHandlerImplTest {
+ public:
+  FirstPartySetsHandlerImplDisabledTest()
+      : FirstPartySetsHandlerImplTest(/*enabled=*/false) {}
+};
+
+TEST_F(FirstPartySetsHandlerImplDisabledTest, InitMetrics) {
+  base::HistogramTester histogram_tester;
+  handler().Init(
+      /*user_data_dir=*/{}, LocalSetDeclaration());
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram_tester.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
+}
+
+class FirstPartySetsHandlerImplEnabledTest
+    : public FirstPartySetsHandlerImplTest {
+ public:
+  FirstPartySetsHandlerImplEnabledTest()
+      : FirstPartySetsHandlerImplTest(/*enabled=*/true) {}
+};
+
 TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite associated(GURL("https://associatedsite1.test"));
@@ -297,6 +327,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                 foo, net::SiteType::kPrimary, absl::nullopt)),
                   Pair(associated, net::FirstPartySetEntry(
                                        foo, net::SiteType::kAssociated, 0))));
+
+  histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 
   ClearSiteDataOnChangedSetsForContextAndWait(
       context(), browser_context_id, net::FirstPartySetsContextConfig());
@@ -355,6 +388,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                        absl::nullopt))));
   histogram.ExpectUniqueSample(kFirstPartySetsClearSiteDataOutcomeHistogram,
                                /*sample=*/true, 1);
+  histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -493,6 +528,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   EXPECT_EQ(GetPersistedSetsAndWait(browser_context_id), absl::nullopt);
   // Should not be recorded.
   histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
+  histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -540,6 +577,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                        absl::nullopt))));
   histogram.ExpectUniqueSample(kFirstPartySetsClearSiteDataOutcomeHistogram,
                                /*sample=*/true, 1);
+  histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
+  histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
