@@ -84,8 +84,8 @@ StreamPipelineDescriptor& StreamPipelineDescriptor::operator=(
 
 PostProcessingPipelineParser::PostProcessingPipelineParser(
     base::Value config_dict)
-    : file_path_(""), config_dict_(std::move(config_dict)) {
-  postprocessor_config_ = config_dict_.FindPath(kPostProcessorsKey);
+    : file_path_(""), config_dict_(std::move(config_dict).TakeDict()) {
+  postprocessor_config_ = config_dict_.FindDict(kPostProcessorsKey);
   if (!postprocessor_config_) {
     LOG(WARNING) << "No post-processor config found.";
   }
@@ -105,9 +105,9 @@ PostProcessingPipelineParser::PostProcessingPipelineParser(
   auto config_dict_ptr = deserializer.Deserialize(&error_code, &error_msg);
   CHECK(config_dict_ptr) << "Invalid JSON in " << file_path_ << " error "
                          << error_code << ":" << error_msg;
-  config_dict_ = base::Value(std::move(*config_dict_ptr));
+  config_dict_ = std::move(config_dict_ptr->GetDict());
 
-  postprocessor_config_ = config_dict_.FindPath(kPostProcessorsKey);
+  postprocessor_config_ = config_dict_.FindDict(kPostProcessorsKey);
   if (!postprocessor_config_) {
     LOG(WARNING) << "No post-processor config found.";
   }
@@ -122,7 +122,7 @@ PostProcessingPipelineParser::GetStreamPipelines() {
     return descriptors;
   }
   const base::Value::List* pipelines_list =
-      postprocessor_config_->GetDict().FindList(kOutputStreamsKey);
+      postprocessor_config_->FindList(kOutputStreamsKey);
   if (!pipelines_list) {
     LOG(WARNING) << "No post-processors found for streams (key = "
                  << kOutputStreamsKey
@@ -172,7 +172,8 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetLinearizePipeline() {
 StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
     const std::string& key) {
   const base::Value* stream_value =
-      postprocessor_config_ ? postprocessor_config_->FindPath(key) : nullptr;
+      postprocessor_config_ ? postprocessor_config_->FindByDottedPath(key)
+                            : nullptr;
   if (!postprocessor_config_ || !stream_value) {
     LOG(WARNING) << "No post-processor description found for \"" << key
                  << "\" in " << file_path_ << ". Using passthrough.";
