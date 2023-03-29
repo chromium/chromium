@@ -83,13 +83,14 @@ TEST_F(AuctionMetricsRecorderTest, ResultAndEndToEndLatencyInMillis) {
 TEST_F(AuctionMetricsRecorderTest, CrashOnRepeatedOnAuctionEnd) {
   recorder().OnAuctionEnd(AuctionResult::kNoBids);
 
-  EXPECT_DEATH(recorder().OnAuctionEnd(AuctionResult::kNoBids), "");
+  EXPECT_DEATH_IF_SUPPORTED(recorder().OnAuctionEnd(AuctionResult::kNoBids),
+                            "");
 }
 
 TEST_F(AuctionMetricsRecorderTest, MostMethodsCrashAfterOnAuctionEnd) {
   recorder().OnAuctionEnd(AuctionResult::kNoBids);
 
-  EXPECT_DEATH(recorder().SetNumInterestGroups(4), "");
+  EXPECT_DEATH_IF_SUPPORTED(recorder().SetNumInterestGroups(4), "");
 }
 
 TEST_F(AuctionMetricsRecorderTest, LoadInterestGroupPhaseLatencyInMillis) {
