@@ -402,13 +402,14 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   std::string result;
   while (!dialog_init_complete) {
     // It is possible that the `FileHandlerPageElement` element still hasn't
-    // been initiated yet. It is completed when the `tasks` member is non-empty.
+    // been initiated yet. It is completed when the `localTasks` member is
+    // non-empty.
     if (!content::ExecuteScriptAndExtractString(
             web_contents,
             base::StringPrintf(
                 "domAutomationController.send(%s)",
                 ScriptFillPlaceholder(
-                    "JSON.stringify(%s.tasks.map(task => task.appId))",
+                    "JSON.stringify(%s.localTasks.map(task => task.appId))",
                     "file-handler-page")
                     .c_str()),
             &result)) {
@@ -433,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   // task to be opened. Use this to find the `selected_task_position` and to
   // watch for the appropriate url in `urls_` to open.
   size_t selected_task = 1;
-  // Position of the selected task in dialog's tasks array - this is not
+  // Position of the selected task in dialog's localTasks array - this is not
   // necessarily the same as the `tasks_` vector. Its position is its id
   // so use this to click the task's button.
   size_t selected_task_position;

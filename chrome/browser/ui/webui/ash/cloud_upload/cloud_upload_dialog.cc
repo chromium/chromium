@@ -653,8 +653,7 @@ void CloudOpenTask::SetTaskArgs(
       dialog_task->icon_url = task.icon_url.spec();
       dialog_task->app_id = task.task_descriptor.app_id;
 
-      // TODO(petermarshall): Rename args->tasks to local_tasks.
-      args->tasks.push_back(std::move(dialog_task));
+      args->local_tasks.push_back(std::move(dialog_task));
       local_tasks_.push_back(std::move(task.task_descriptor));
     }
   }
@@ -865,7 +864,7 @@ CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
       dialog_args_(std::move(args)),
       callback_(std::move(callback)),
       dialog_page_(dialog_page),
-      num_local_tasks_(dialog_args_->tasks.size()),
+      num_local_tasks_(dialog_args_->local_tasks.size()),
       office_move_confirmation_shown_(office_move_confirmation_shown) {}
 
 CloudUploadDialog::~CloudUploadDialog() = default;

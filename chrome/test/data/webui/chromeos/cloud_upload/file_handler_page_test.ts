@@ -80,7 +80,7 @@ suite('<file-handler-page>', () => {
       installOfficeWebAppResult: false,
       odfsMounted: false,
       dialogPage: DialogPage.kFileHandlerDialog,
-      tasks: createTasks(numTasks),
+      localTasks: createTasks(numTasks),
     });
 
     assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
@@ -113,7 +113,7 @@ suite('<file-handler-page>', () => {
       installOfficeWebAppResult: false,
       odfsMounted: false,
       dialogPage: DialogPage.kFileHandlerDialog,
-      tasks: createTasks(numTasks),
+      localTasks: createTasks(numTasks),
     });
 
     assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
@@ -145,7 +145,7 @@ suite('<file-handler-page>', () => {
       installOfficeWebAppResult: false,
       odfsMounted: false,
       dialogPage: DialogPage.kFileHandlerDialog,
-      tasks: createTasks(numTasks),
+      localTasks: createTasks(numTasks),
     });
 
     assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
@@ -178,7 +178,7 @@ suite('<file-handler-page>', () => {
       installOfficeWebAppResult: false,
       odfsMounted: false,
       dialogPage: DialogPage.kFileHandlerDialog,
-      tasks: createTasks(numTasks),
+      localTasks: createTasks(numTasks),
     });
 
     assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
@@ -213,7 +213,7 @@ suite('<file-handler-page>', () => {
               installOfficeWebAppResult: false,
               odfsMounted: false,
               dialogPage: DialogPage.kFileHandlerDialog,
-              tasks: createTasks(numTasks),
+              localTasks: createTasks(numTasks),
             });
             const accordionCard =
                 fileHandlerPageApp.$<AccordionTopCardElement>('#accordion');
@@ -259,7 +259,7 @@ suite('<file-handler-page>', () => {
               installOfficeWebAppResult: false,
               odfsMounted: false,
               dialogPage: DialogPage.kFileHandlerDialog,
-              tasks: createTasks(numTasks),
+              localTasks: createTasks(numTasks),
             });
             const accordionCard =
                 fileHandlerPageApp.$<AccordionTopCardElement>('#accordion');
@@ -297,7 +297,7 @@ suite('<file-handler-page>', () => {
       installOfficeWebAppResult: false,
       odfsMounted: false,
       dialogPage: DialogPage.kFileHandlerDialog,
-      tasks: [],
+      localTasks: [],
     });
     assertEquals(fileHandlerPageApp.cloudProviderCards.length, 2);
     assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
@@ -318,7 +318,7 @@ suite('<file-handler-page>', () => {
           installOfficeWebAppResult: false,
           odfsMounted: false,
           dialogPage: DialogPage.kFileHandlerDialog,
-          tasks: createTasks(numTasks),
+          localTasks: createTasks(numTasks),
         });
         const accordionCard =
             fileHandlerPageApp.$<AccordionTopCardElement>('#accordion');

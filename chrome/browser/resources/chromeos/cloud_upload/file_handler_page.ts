@@ -20,7 +20,7 @@ export class FileHandlerPageElement extends HTMLElement {
    * The local file tasks that the user could use to open the file. There are
    * separate buttons for the Drive and Office PWA apps.
    */
-  tasks: DialogTask[] = [];
+  localTasks: DialogTask[] = [];
   /**
    * References to the HTMLElement used to display the tasks that the user can
    * select.
@@ -61,9 +61,9 @@ export class FileHandlerPageElement extends HTMLElement {
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
-      assert(dialogArgs.args.tasks);
+      assert(dialogArgs.args.localTasks);
       // Adjust the dialog's size if there are no local tasks to display.
-      if (dialogArgs.args.tasks.length == 0) {
+      if (dialogArgs.args.localTasks.length == 0) {
         this.style.height = '311px';
       }
 
@@ -89,7 +89,7 @@ export class FileHandlerPageElement extends HTMLElement {
       officeCard.id = 'onedrive';
       this.addCloudProviderCard(officeCard);
 
-      const localTasks = dialogArgs.args.tasks;
+      const localTasks = dialogArgs.args.localTasks;
       if (localTasks.length == 0) {
         return;
       }
@@ -106,15 +106,14 @@ export class FileHandlerPageElement extends HTMLElement {
         localHandlerCard.setParameters(task.position, task.title);
         localHandlerCard.setIconUrl(task.iconUrl);
         localHandlerCard.id = this.toStringId(task.position);
-        if (i == dialogArgs.args.tasks.length - 1) {
+        if (i == dialogArgs.args.localTasks.length - 1) {
           // Round bottom for last card.
           localHandlerCard.$('#container')!.classList.add('round-bottom');
         }
         this.addLocalHandlerCard(localHandlerCard);
 
-        // Set `this.tasks` at end of `initDynamicContent` as an indication of
-        // completion.
-        this.tasks = dialogArgs.args.tasks;
+        // Set local tasks to indicate completion (used in tests).
+        this.localTasks = dialogArgs.args.localTasks;
       }
     } catch (e) {
       // TODO(b:243095484) Define expected behavior.
