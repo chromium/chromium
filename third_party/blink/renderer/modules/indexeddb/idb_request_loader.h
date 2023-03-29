@@ -8,13 +8,15 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class FileReaderLoader;
 class IDBRequestQueueItem;
 class IDBRequest;
 class IDBValue;
@@ -28,9 +30,8 @@ class IDBValue;
 // most of the time the array will consist of a single element. This design
 // assumes that the overhead of creating and destroying a Vector is much smaller
 // than the IPC overhead required to load the Blob data into the renderer.
-class IDBRequestLoader : public FileReaderLoaderClient {
-  USING_FAST_MALLOC(IDBRequestLoader);
-
+class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
+                         public FileReaderLoaderClient {
  public:
   // Creates a loader that will unwrap IDBValues received by a IDBRequest.
   //
@@ -54,6 +55,10 @@ class IDBRequestLoader : public FileReaderLoaderClient {
   void DidReceiveDataForClient(const char* data, unsigned data_length) override;
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
+  void Trace(Visitor* visitor) const override {
+    FileReaderLoaderClient::Trace(visitor);
+    visitor->Trace(loader_);
+  }
 
  private:
   // Starts unwrapping the next wrapped IDBValue.
@@ -65,7 +70,7 @@ class IDBRequestLoader : public FileReaderLoaderClient {
   void ReportSuccess();
   void ReportError();
 
-  std::unique_ptr<FileReaderLoader> loader_;
+  Member<FileReaderLoader> loader_;
 
   // Transaction result queue item for the IDBRequest.
   //

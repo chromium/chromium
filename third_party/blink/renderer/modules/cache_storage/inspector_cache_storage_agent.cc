@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -446,12 +447,13 @@ class GetCacheKeysForRequestData {
 };
 
 class CachedResponseFileReaderLoaderClient final
-    : private FileReaderLoaderClient {
+    : public GarbageCollected<CachedResponseFileReaderLoaderClient>,
+      public FileReaderLoaderClient {
  public:
   static void Load(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    scoped_refptr<BlobDataHandle> blob,
                    std::unique_ptr<RequestCachedResponseCallback> callback) {
-    new CachedResponseFileReaderLoaderClient(
+    MakeGarbageCollected<CachedResponseFileReaderLoaderClient>(
         std::move(task_runner), std::move(blob), std::move(callback));
   }
 
@@ -484,27 +486,34 @@ class CachedResponseFileReaderLoaderClient final
     data_->Append(data, data_length);
   }
 
- private:
+  void Trace(Visitor* visitor) const override {
+    FileReaderLoaderClient::Trace(visitor);
+    visitor->Trace(loader_);
+  }
+
   CachedResponseFileReaderLoaderClient(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<BlobDataHandle>&& blob,
       std::unique_ptr<RequestCachedResponseCallback>&& callback)
-      : loader_(std::make_unique<FileReaderLoader>(
+      : loader_(MakeGarbageCollected<FileReaderLoader>(
             FileReaderLoader::kReadByClient,
-            static_cast<FileReaderLoaderClient*>(this),
+            this,
             std::move(task_runner))),
         callback_(std::move(callback)),
-        data_(SharedBuffer::Create()) {
+        data_(SharedBuffer::Create()),
+        keep_alive_(this) {
     loader_->Start(std::move(blob));
   }
 
   ~CachedResponseFileReaderLoaderClient() override = default;
 
-  void dispose() { delete this; }
+ private:
+  void dispose() { keep_alive_.Clear(); }
 
-  std::unique_ptr<FileReaderLoader> loader_;
+  Member<FileReaderLoader> loader_;
   std::unique_ptr<RequestCachedResponseCallback> callback_;
   scoped_refptr<SharedBuffer> data_;
+  SelfKeepAlive<CachedResponseFileReaderLoaderClient> keep_alive_;
 };
 
 }  // namespace

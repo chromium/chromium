@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -50,7 +51,7 @@ DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(
     ExceptionState& exception_state) {
   DCHECK(blob);
 
-  std::unique_ptr<FileReaderLoader> loader = std::make_unique<FileReaderLoader>(
+  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReaderLoader::kReadAsArrayBuffer, nullptr, task_runner_);
   StartLoading(*loader, *blob, exception_state);
 
@@ -61,7 +62,7 @@ String FileReaderSync::readAsBinaryString(Blob* blob,
                                           ExceptionState& exception_state) {
   DCHECK(blob);
 
-  std::unique_ptr<FileReaderLoader> loader = std::make_unique<FileReaderLoader>(
+  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReaderLoader::kReadAsBinaryString, nullptr, task_runner_);
   StartLoading(*loader, *blob, exception_state);
   return loader->StringResult();
@@ -72,7 +73,7 @@ String FileReaderSync::readAsText(Blob* blob,
                                   ExceptionState& exception_state) {
   DCHECK(blob);
 
-  std::unique_ptr<FileReaderLoader> loader = std::make_unique<FileReaderLoader>(
+  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReaderLoader::kReadAsText, nullptr, task_runner_);
   loader->SetEncoding(encoding);
   StartLoading(*loader, *blob, exception_state);
@@ -83,7 +84,7 @@ String FileReaderSync::readAsDataURL(Blob* blob,
                                      ExceptionState& exception_state) {
   DCHECK(blob);
 
-  std::unique_ptr<FileReaderLoader> loader = std::make_unique<FileReaderLoader>(
+  FileReaderLoader* loader = MakeGarbageCollected<FileReaderLoader>(
       FileReaderLoader::kReadAsDataURL, nullptr, task_runner_);
   loader->SetDataType(blob->type());
   StartLoading(*loader, *blob, exception_state);

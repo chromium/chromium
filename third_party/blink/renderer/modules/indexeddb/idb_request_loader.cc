@@ -85,7 +85,7 @@ void IDBRequestLoader::StartNextValue() {
   DCHECK(!file_reader_loading_);
   file_reader_loading_ = true;
 #endif  // DCHECK_IS_ON()
-  loader_ = std::make_unique<FileReaderLoader>(
+  loader_ = MakeGarbageCollected<FileReaderLoader>(
       FileReaderLoader::kReadByClient, this,
       exection_context->GetTaskRunner(TaskType::kDatabaseAccess));
   loader_->Start(unwrapper.WrapperBlobHandle());

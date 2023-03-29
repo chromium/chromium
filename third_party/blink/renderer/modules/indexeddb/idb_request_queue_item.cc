@@ -69,7 +69,7 @@ class IDBDatabaseGetAllResultSinkImpl
       owner_->values_ = std::move(idb_values);
       if (is_wrapped) {
         owner_->loader_ =
-            std::make_unique<IDBRequestLoader>(owner_, owner_->values_);
+            MakeGarbageCollected<IDBRequestLoader>(owner_, owner_->values_);
         if (owner_->started_loading_) {
           // Try again now that the values exist.
           owner_->StartLoading();
@@ -195,7 +195,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   request_->queue_item_ = this;
   values_.push_back(std::move(value));
   if (attach_loader)
-    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -212,7 +212,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
   if (attach_loader)
-    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -236,7 +236,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   }
 
   if (attach_loader) {
-    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
   }
 }
 
@@ -258,7 +258,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   request_->queue_item_ = this;
   values_.push_back(std::move(value));
   if (attach_loader)
-    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -281,7 +281,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   request_->queue_item_ = this;
   values_.push_back(std::move(value));
   if (attach_loader)
-    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -342,7 +342,7 @@ void IDBRequestQueueItem::StartLoading() {
     // IDBRequestLoader that hasn't been Start()ed. The current implementation
     // behaves well even if Cancel() is called without Start() being called, but
     // this reset makes the IDBRequestLoader lifecycle easier to reason about.
-    loader_.reset();
+    loader_.Clear();
 
     CancelLoading();
     return;
@@ -363,7 +363,7 @@ void IDBRequestQueueItem::CancelLoading() {
 
   if (loader_) {
     loader_->Cancel();
-    loader_.reset();
+    loader_.Clear();
 
     // IDBRequestLoader::Cancel() should not call any of the EnqueueResponse
     // variants.
