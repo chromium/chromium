@@ -526,6 +526,12 @@ BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
              "UseMultiPlaneFormatForHardwareVideo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables creating single shared image and mailbox for multi-planar formats for
+// software video decoders.
+BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
+             "UseMultiPlaneFormatForSoftwareVideo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables binding software video NV12/P010 GMBs as separate shared images.
 BASE_FEATURE(kMultiPlaneSoftwareVideoSharedImages,
              "MultiPlaneSoftwareVideoSharedImages",
