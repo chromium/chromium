@@ -61,7 +61,10 @@ enum class TouchToFillCreditCardTriggerOutcome {
   kUnsupportedFieldType = 10,
   // Fast Checkout was shown before TouchToFill could be triggered.
   kFastCheckoutWasShown = 11,
-  kMaxValue = kFastCheckoutWasShown
+  // Form is considered to be already filled if the credit card number or expiry
+  // date already have non-empty values.
+  kFormAlreadyFilled = 12,
+  kMaxValue = kFormAlreadyFilled
 };
 
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
@@ -154,7 +157,15 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   //
   // If the DryRunResult::outcome is TriggerOutcome::kShow, the
   // DryRun::cards_to_suggest contains the cards; otherwise it is empty.
-  DryRunResult DryRun(FormGlobalId form_id, FieldGlobalId field_id);
+  // TODO(crbug.com/1331312): Remove the optional_received_form. The
+  // implementation currently fetches the FormStructure corresponding to
+  // form_id. The fields' values of this form structure correspond to the
+  // initial and so probably stale values. optional_received_form is the form
+  // received from the renderer, so it contains the current values. This is
+  // needed for the non-empty checks.
+  DryRunResult DryRun(FormGlobalId form_id,
+                      FieldGlobalId field_id,
+                      const FormData* optional_received_form = nullptr);
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 
@@ -165,6 +176,13 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   // The form is considered correctly filled if all autofilled fields were not
   // edited by user afterwards.
   bool IsFillingCorrect(const FormStructure& submitted_form) const;
+
+  // Checks if the credit card form is already filled with values. The form is
+  // considered to be filled if the credit card number and the expiry date
+  // fields are non-empty.
+  // TODO(crbug.com/1331312): FormData is used here to ensure that we check the
+  // most recent form values. FormStructure knows only about the initial values.
+  bool IsFormPrefilled(const FormData& form);
 
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 

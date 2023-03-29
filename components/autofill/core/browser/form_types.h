@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_TYPES_H_
 
+#include "autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -18,6 +19,9 @@ enum class FormType : int {
   kPasswordForm,
   kMaxValue = kPasswordForm
 };
+
+// TODO(crbug/1428897): Move it to AutofillField class.
+bool FieldHasExpirationDateType(const AutofillField* field);
 
 // Returns true if the form contains fields that represent the card number and
 // the card expiration date.

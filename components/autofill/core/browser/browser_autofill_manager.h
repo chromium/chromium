@@ -413,6 +413,11 @@ class BrowserAutofillManager : public AutofillManager,
     OnFormProcessed(form, form_structure);
   }
 
+  // Returns the field corresponding to |form| and |field| that can be
+  // autofilled. Returns NULL if the field cannot be autofilled.
+  [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
+                                                const FormFieldData& field);
+
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too
@@ -572,11 +577,6 @@ class BrowserAutofillManager : public AutofillManager,
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.
   std::unique_ptr<FormStructure> ValidateSubmittedForm(const FormData& form);
-
-  // Returns the field corresponding to |form| and |field| that can be
-  // autofilled. Returns NULL if the field cannot be autofilled.
-  [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
-                                                const FormFieldData& field);
 
   // Returns true if any field in the form corresponds to an address
   // |FieldTypeGroup|.
