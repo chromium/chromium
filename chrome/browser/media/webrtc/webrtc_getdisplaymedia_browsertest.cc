@@ -1375,8 +1375,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaSelfBrowserSurfaceBrowserTest,
                          testing::Values("", "include", "exclude"));
 
+// TODO(1428806) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                       SelfBrowserSurfaceChangesCapturedTab) {
+                       DISABLED_SelfBrowserSurfaceChangesCapturedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This test relies on |capturing_tab| appearing earlier in the media picker,
@@ -1393,8 +1394,10 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
   EXPECT_EQ(IsSelfBrowserSurfaceExclude(), other_tab->IsBeingCaptured());
 }
 
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                       SelfBrowserSurfaceInteractionWithPreferCurrentTab) {
+// TODO(1428806) Re-enable flaky test.
+IN_PROC_BROWSER_TEST_P(
+    GetDisplayMediaSelfBrowserSurfaceBrowserTest,
+    DISABLED_SelfBrowserSurfaceInteractionWithPreferCurrentTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This test relies on |capturing_tab| appearing earlier in the media picker,
