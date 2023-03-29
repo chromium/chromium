@@ -67,21 +67,25 @@ class NewTabPageTest : public InProcessBrowserTest,
         base::JSONReader::Read(base::StringPiece(
             reinterpret_cast<const char*>(message.data()), message.size()));
     CHECK(maybe_parsed_message.has_value());
-    base::Value parsed_message = std::move(maybe_parsed_message.value());
-    auto* method = parsed_message.FindStringPath("method");
+    base::Value::Dict parsed_message =
+        std::move(maybe_parsed_message.value()).TakeDict();
+    auto* method = parsed_message.FindString("method");
     if (!method) {
       return;
     }
     if (*method == "Network.requestWillBeSent") {
       // We track all started network requests to match them to corresponding
       // load completions.
-      auto request_id = *parsed_message.FindStringPath("params.requestId");
-      auto url = GURL(*parsed_message.FindStringPath("params.request.url"));
+      auto request_id =
+          *parsed_message.FindStringByDottedPath("params.requestId");
+      auto url =
+          GURL(*parsed_message.FindStringByDottedPath("params.request.url"));
       loading_resources_[request_id] = url;
     } else if (*method == "Network.loadingFinished") {
       // Cross off network request from pending loads. Once all loads have
       // completed we potentially unblock the test from waiting.
-      auto request_id = *parsed_message.FindStringPath("params.requestId");
+      auto request_id =
+          *parsed_message.FindStringByDottedPath("params.requestId");
       auto url = loading_resources_[request_id];
       loading_resources_.erase(request_id);
       loaded_resources_.insert(url);
@@ -92,9 +96,9 @@ class NewTabPageTest : public InProcessBrowserTest,
       }
     } else if (*method == "DOM.attributeModified") {
       // Check if lazy load has completed and potentially unblock waiting test.
-      auto node_id = *parsed_message.FindIntPath("params.nodeId");
-      auto name = *parsed_message.FindStringPath("params.name");
-      auto value = *parsed_message.FindStringPath("params.value");
+      auto node_id = *parsed_message.FindIntByDottedPath("params.nodeId");
+      auto name = *parsed_message.FindStringByDottedPath("params.name");
+      auto value = *parsed_message.FindStringByDottedPath("params.value");
       if (node_id == 3 && name == "lazy-loaded" && value == "true") {
         lazy_loaded_ = true;
       }

@@ -78,7 +78,8 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
   auto body_value = base::JSONReader::Read(request_body);
-  EXPECT_EQ("en-US", *body_value->FindStringPath("client_info.language_code"));
+  EXPECT_EQ("en-US", *body_value->GetDict().FindStringByDottedPath(
+                         "client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://appsitemsuggest-pa.googleapis.com/v1/items",
       R"(
@@ -377,7 +378,8 @@ TEST_F(DriveServiceTest, AddsClientTagIfRequested) {
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
   auto body_value = base::JSONReader::Read(request_body);
-  EXPECT_EQ("foo", *body_value->FindStringPath("client_info.client_tags.name"));
+  EXPECT_EQ("foo", *body_value->GetDict().FindStringByDottedPath(
+                       "client_info.client_tags.name"));
 }
 
 TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {

@@ -421,7 +421,7 @@ void PhotosService::OnJsonParsed(
     return;
   }
 
-  auto* memories = result->FindListPath("memory");
+  auto* memories = result->GetDict().FindList("memory");
   if (!memories) {
     base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount", 0, 0,
                                    10, 11);
@@ -434,13 +434,14 @@ void PhotosService::OnJsonParsed(
   std::vector<photos::mojom::MemoryPtr> memory_list;
 
   base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount",
-                                 memories->GetList().size(), 0, 10, 11);
-  for (const auto& memory : memories->GetList()) {
-    auto* title = memory.FindStringPath("title.header");
-    auto* memory_id = memory.FindStringPath("memoryMediaKey");
-    auto* cover_id = memory.FindStringPath("coverMediaKey");
-    auto* cover_url = memory.FindStringPath("coverUrl");
-    auto* cover_dat_url = memory.FindStringPath("coverDatUrl");
+                                 memories->size(), 0, 10, 11);
+  for (const auto& memory : *memories) {
+    const auto& memory_dict = memory.GetDict();
+    auto* title = memory_dict.FindStringByDottedPath("title.header");
+    auto* memory_id = memory_dict.FindString("memoryMediaKey");
+    auto* cover_id = memory_dict.FindString("coverMediaKey");
+    auto* cover_url = memory_dict.FindString("coverUrl");
+    auto* cover_dat_url = memory_dict.FindString("coverDatUrl");
     if (!title || !memory_id || !cover_id || (!cover_url && !cover_dat_url)) {
       continue;
     }

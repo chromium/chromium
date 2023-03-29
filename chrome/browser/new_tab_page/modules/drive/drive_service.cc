@@ -303,7 +303,7 @@ void DriveService::OnJsonParsed(
     callbacks_.clear();
     return;
   }
-  auto* items = result->FindListPath("item");
+  auto* items = result->GetDict().FindList("item");
   if (!items) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
@@ -312,25 +312,26 @@ void DriveService::OnJsonParsed(
     return;
   }
   std::vector<drive::mojom::FilePtr> document_list;
-  for (const auto& item : items->GetList()) {
-    auto* title = item.FindStringPath("driveItem.title");
-    auto* mime_type = item.FindStringPath("driveItem.mimeType");
-    auto* justification_text_segments = item.FindListPath(
+  for (const auto& item : *items) {
+    const auto& item_dict = item.GetDict();
+    auto* title = item_dict.FindStringByDottedPath("driveItem.title");
+    auto* mime_type = item_dict.FindStringByDottedPath("driveItem.mimeType");
+    auto* justification_text_segments = item_dict.FindListByDottedPath(
         "justification.unstructuredJustificationDescription.textSegment");
     if (!justification_text_segments ||
-        justification_text_segments->GetList().size() == 0) {
+        justification_text_segments->size() == 0) {
       continue;
     }
     std::string justification_text;
-    for (auto& text_segment : justification_text_segments->GetList()) {
-      auto* justification_text_path = text_segment.FindStringPath("text");
+    for (auto& text_segment : *justification_text_segments) {
+      auto* justification_text_path = text_segment.GetDict().FindString("text");
       if (!justification_text_path) {
         continue;
       }
       justification_text += *justification_text_path;
     }
-    auto* id = item.FindStringKey("itemId");
-    auto* item_url = item.FindStringKey("url");
+    auto* id = item_dict.FindString("itemId");
+    auto* item_url = item_dict.FindString("url");
     if (!title || !mime_type || justification_text.empty() || !id ||
         !item_url || !GURL(*item_url).is_valid()) {
       continue;
