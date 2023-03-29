@@ -91,6 +91,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -135,15 +136,16 @@ public class FirstRunIntegrationTest {
 
     private Promise<List<Account>> mAccountsPromise;
 
-    private final Set<Class> mSupportedActivities =
-            CollectionUtil.newHashSet(ChromeLauncherActivity.class, FirstRunActivity.class,
-                    ChromeTabbedActivity.class, CustomTabActivity.class);
+    private final Set<Class> mSupportedActivities = CollectionUtil.newHashSet(
+            ChromeLauncherActivity.class, FirstRunActivity.class, TabbedModeFirstRunActivity.class,
+            ChromeTabbedActivity.class, CustomTabActivity.class);
     private final Map<Class, ActivityMonitor> mMonitorMap = new HashMap<>();
     private Instrumentation mInstrumentation;
     private Context mContext;
 
     private FirstRunActivityTestObserver mTestObserver = new FirstRunActivityTestObserver();
     private Activity mLastActivity;
+    private Class mFirstRunActivityClass;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -165,6 +167,8 @@ public class FirstRunIntegrationTest {
 
         mInstrumentation = InstrumentationRegistry.getInstrumentation();
         mContext = mInstrumentation.getTargetContext();
+        mFirstRunActivityClass = DeviceFormFactor.isTablet() ? TabbedModeFirstRunActivity.class
+                                                             : FirstRunActivity.class;
         for (Class clazz : mSupportedActivities) {
             ActivityMonitor monitor = new ActivityMonitor(clazz.getName(), null, false);
             mMonitorMap.put(clazz, monitor);
@@ -180,6 +184,12 @@ public class FirstRunIntegrationTest {
         if (mLastActivity != null) {
             TestThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.finish());
         }
+        // Finish the rest of the running activities.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+                runningActivity.finish();
+            }
+        });
 
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(false);
@@ -203,7 +213,7 @@ public class FirstRunIntegrationTest {
         // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
         // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
         // startup flow where they were interrupted.
-        return waitForActivity(FirstRunActivity.class);
+        return waitForFirstRunActivity();
     }
 
     private <T extends Activity> T waitForActivity(Class<T> activityClass) {
@@ -274,6 +284,10 @@ public class FirstRunIntegrationTest {
                 Uri.parse(expected), actual);
     }
 
+    private FirstRunActivity waitForFirstRunActivity() {
+        return (FirstRunActivity) waitForActivity(mFirstRunActivityClass);
+    }
+
     /**
      * When launching a second Chrome, the new FRE should replace the old FRE. In order to know when
      * the second FirstRunActivity is ready, use object inequality with old one.
@@ -287,7 +301,7 @@ public class FirstRunIntegrationTest {
                     for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
                         @ActivityState
                         int state = ApplicationStatus.getStateForActivity(runningActivity);
-                        if (runningActivity.getClass() == FirstRunActivity.class
+                        if (runningActivity.getClass() == mFirstRunActivityClass
                                 && runningActivity != previousFreActivity
                                 && (state == ActivityState.STARTED
                                         || state == ActivityState.RESUMED)) {
@@ -346,7 +360,7 @@ public class FirstRunIntegrationTest {
         Assert.assertFalse(mLastActivity.isFinishing());
 
         // First run should be skipped for this Activity.
-        Assert.assertEquals(0, getMonitor(FirstRunActivity.class).getHits());
+        Assert.assertEquals(0, getMonitor(mFirstRunActivityClass).getHits());
     }
 
     @Test
@@ -358,7 +372,7 @@ public class FirstRunIntegrationTest {
 
         // Because the ChromeLauncherActivity notices that the FRE hasn't been run yet, it
         // redirects to it.
-        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
 
         // Once the user closes the FRE, the user should be kicked back into the
         // startup flow where they were interrupted.
@@ -584,7 +598,7 @@ public class FirstRunIntegrationTest {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
 
-        FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity freActivity = waitForFirstRunActivity();
         CriteriaHelper.pollUiThread(
                 () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
         // Make sure native is initialized so that the subsequent transition is not blocked.
@@ -652,7 +666,7 @@ public class FirstRunIntegrationTest {
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
 
-        FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity freActivity = waitForFirstRunActivity();
         CriteriaHelper.pollUiThread(
                 () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
 
@@ -681,7 +695,7 @@ public class FirstRunIntegrationTest {
         initializePreferences(testCase);
 
         launchCustomTabs(TEST_URL);
-        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstFreActivity = waitForFirstRunActivity();
 
         launchViewIntent(FOO_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
@@ -697,7 +711,7 @@ public class FirstRunIntegrationTest {
         initializePreferences(testCase);
 
         launchViewIntent(TEST_URL);
-        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstFreActivity = waitForFirstRunActivity();
 
         launchCustomTabs(FOO_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
@@ -713,7 +727,7 @@ public class FirstRunIntegrationTest {
         initializePreferences(testCase);
 
         launchViewIntent(TEST_URL);
-        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstFreActivity = waitForFirstRunActivity();
 
         launchViewIntent(FOO_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
@@ -726,7 +740,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     public void testMultipleFresBackButton() throws Exception {
         launchViewIntent(TEST_URL);
-        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstFreActivity = waitForFirstRunActivity();
 
         launchViewIntent(TEST_URL);
         FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
@@ -753,7 +767,7 @@ public class FirstRunIntegrationTest {
         blockOnFlowIsKnown();
 
         launchViewIntent(TEST_URL);
-        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
         CriteriaHelper.pollUiThread(
                 (() -> firstRunActivity.getNativeInitializationPromise().isFulfilled()),
                 "native never initialized.");
@@ -816,7 +830,7 @@ public class FirstRunIntegrationTest {
         blockOnFlowIsKnown();
 
         launchCustomTabs(TEST_URL);
-        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
         CriteriaHelper.pollUiThread(
                 (() -> firstRunActivity.getNativeInitializationPromise().isFulfilled()),
                 "native never initialized.");
@@ -835,7 +849,7 @@ public class FirstRunIntegrationTest {
         enableCloudManagementViaPolicy();
 
         launchViewIntent(TEST_URL);
-        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
         clickThroughFirstRun(firstRunActivity, testCase);
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
