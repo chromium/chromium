@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "cc/base/simple_enclosed_region.h"
+#include "cc/slim/damage_data.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,7 +32,14 @@ struct FrameData {
   absl::optional<uint32_t> deadline_in_frames;
   bool use_default_lower_bound_deadline = false;
 
+  // These fields are for a particular render pass (ie target) and the
+  // recursive tree walk will update and clear these fields for new
+  // render passes as needed
   SimpleEnclosedRegion occlusion_in_target;
+  RenderPassDamageData render_pass_damage;
+
+  FrameDamageData current_frame_damage;
+  bool subtree_property_changed_from_parent = false;
 };
 
 }  // namespace cc::slim

@@ -1657,6 +1657,260 @@ TEST_F(SlimLayerTreeCompositorFrameTest, Guttering) {
   EXPECT_TRUE(region.Contains(viewport_));
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, PropertyDamage) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  root_layer->AddChild(solid_color_layer);
+
+  auto check_frame = [&](SkColor4f color, gfx::Rect damage) {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    EXPECT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(color),
+                                  viz::HasRect(gfx::Rect(50, 50))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                                  viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(pass->damage_rect, damage);
+  };
+
+  // First frame should have full damage.
+  check_frame(SkColors::kRed, viewport_);
+
+  solid_color_layer->SetBackgroundColor(SkColors::kGreen);
+  // Damage only the layer.
+  check_frame(SkColors::kGreen, gfx::Rect(50, 50));
+
+  solid_color_layer->SetPosition(gfx::PointF(10.2f, 10.2f));
+  // Damage newly exposed area as well. Also damage is rounded to enclosing
+  // rect.
+  check_frame(SkColors::kGreen, gfx::Rect(61, 61));
+
+  // Damage is empty if there is no change.
+  check_frame(SkColors::kGreen, gfx::Rect());
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, PropertyChangeFromParentDamage) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto parent = Layer::Create();
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  parent->AddChild(solid_color_layer);
+  root_layer->AddChild(parent);
+
+  auto check_frame = [&](gfx::Rect damage) {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    EXPECT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                  viz::HasRect(gfx::Rect(50, 50))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                                  viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(pass->damage_rect, damage);
+  };
+
+  // First frame should have full damage.
+  check_frame(viewport_);
+
+  parent->SetPosition(gfx::PointF(10.0f, 10.0f));
+  // Damage newly exposed area as well.
+  check_frame(gfx::Rect(60, 60));
+
+  parent->SetOpacity(0.5f);
+  check_frame(gfx::Rect(10, 10, 50, 50));
+
+  // Rotate about center, which does not change visible rect.
+  parent->SetTransformOrigin(gfx::Point3F(25.0f, 25.0f, 0.0f));
+  parent->SetTransform(gfx::Transform::Make90degRotation());
+  check_frame(gfx::Rect(10, 10, 50, 50));
+
+  // Damage is empty if there is no change.
+  check_frame(gfx::Rect());
+
+  solid_color_layer->RemoveFromParent();
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    EXPECT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                                  viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    // Removed layer damages exposed area.
+    EXPECT_EQ(pass->damage_rect, gfx::Rect(10, 10, 50, 50));
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, NonRootPassDamage) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto parent = Layer::Create();
+  auto solid_color_layer =
+      CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  parent->AddChild(solid_color_layer);
+  root_layer->AddChild(parent);
+
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    EXPECT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                  viz::HasRect(gfx::Rect(50, 50))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                                  viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    // First frame should have full damage.
+    EXPECT_EQ(pass->damage_rect, viewport_);
+  }
+
+  parent->SetFilters({cc::slim::Filter::CreateBrightness(0.5f)});
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    EXPECT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                  viz::HasRect(gfx::Rect(50, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(50, 50)))));
+    EXPECT_EQ(child_pass->damage_rect, gfx::Rect(50, 50));
+
+    auto& root_pass = frame.render_pass_list.back();
+    EXPECT_THAT(
+        root_pass->quad_list,
+        ElementsAre(
+            AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                  viz::HasRect(gfx::Rect(50, 50))),
+            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                  viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(root_pass->damage_rect, gfx::Rect(50, 50));
+  }
+
+  // new frame with no change should not have damage.
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    EXPECT_EQ(child_pass->damage_rect, gfx::Rect());
+    auto& root_pass = frame.render_pass_list.back();
+    EXPECT_EQ(root_pass->damage_rect, gfx::Rect());
+  }
+
+  // Changing child layer damages both passes.
+  solid_color_layer->SetBackgroundColor(SkColors::kBlue);
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    EXPECT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                                  viz::HasRect(gfx::Rect(50, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(50, 50)))));
+    EXPECT_EQ(child_pass->damage_rect, gfx::Rect(50, 50));
+
+    auto& root_pass = frame.render_pass_list.back();
+    EXPECT_THAT(
+        root_pass->quad_list,
+        ElementsAre(
+            AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                  viz::HasRect(gfx::Rect(50, 50))),
+            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                  viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(root_pass->damage_rect, gfx::Rect(50, 50));
+  }
+
+  // Moving child pass damages root pass.
+  parent->SetPosition(gfx::PointF(25.0f, 25.0f));
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    EXPECT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                                  viz::HasRect(gfx::Rect(50, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(50, 50)))));
+    // Child pass damage rect ideally can be empty here because none of the
+    // layers inside the pass changed in relation to the pass. Current
+    // implementation uses Layer::NotifySubtreeChanged that damages the whole
+    // subtree across render passes which is why the child pass is damaged.
+    // Getting damage correct may be tricky and brittle, and currently viz
+    // ignores damage on non-root render passes, so this case is not
+    // implemented.
+    EXPECT_EQ(child_pass->damage_rect, gfx::Rect(50, 50));
+
+    auto& root_pass = frame.render_pass_list.back();
+    EXPECT_THAT(
+        root_pass->quad_list,
+        ElementsAre(
+            AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                  viz::HasRect(gfx::Rect(50, 50))),
+            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                  viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(root_pass->damage_rect, gfx::Rect(75, 75));
+  }
+
+  // Adding a layer outside the child pass and check child pass is not damaged.
+  root_layer->AddChild(
+      CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kGreen));
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 2u);
+    auto& child_pass = frame.render_pass_list.front();
+    EXPECT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kBlue),
+                                  viz::HasRect(gfx::Rect(50, 50)),
+                                  viz::HasVisibleRect(gfx::Rect(50, 50)))));
+    EXPECT_EQ(child_pass->damage_rect, gfx::Rect());
+
+    auto& root_pass = frame.render_pass_list.back();
+    EXPECT_THAT(
+        root_pass->quad_list,
+        ElementsAre(
+            AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                  viz::HasRect(gfx::Rect(10, 10)),
+                  viz::HasVisibleRect(gfx::Rect(10, 10))),
+            AllOf(viz::IsCompositorRenderPassQuad(child_pass->id),
+                  viz::HasRect(gfx::Rect(50, 50))),
+            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                  viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(root_pass->damage_rect, gfx::Rect(10, 10));
+  }
+
+  // Removing child pass damages parent pass.
+  solid_color_layer->RemoveFromParent();
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    EXPECT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGreen),
+                                  viz::HasRect(gfx::Rect(10, 10)),
+                                  viz::HasVisibleRect(gfx::Rect(10, 10))),
+                            AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                                  viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_),
+                                  viz::HasTransform(gfx::Transform()))));
+    EXPECT_EQ(pass->damage_rect, gfx::Rect(25, 25, 50, 50));
+  }
+}
+
 }  // namespace
 
 }  // namespace cc::slim

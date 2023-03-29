@@ -80,6 +80,7 @@ void LayerTreeImpl::SetViewportRectAndScale(
 
   device_viewport_rect_ = device_viewport_rect;
   device_scale_factor_ = device_scale_factor;
+  damage_from_previous_frame_.clear();
   SetNeedsDraw();
 }
 
@@ -89,6 +90,7 @@ void LayerTreeImpl::set_background_color(SkColor4f color) {
   }
 
   background_color_ = color;
+  damage_from_previous_frame_.clear();
   SetNeedsDraw();
 }
 
@@ -183,6 +185,7 @@ void LayerTreeImpl::SetRoot(scoped_refptr<Layer> root) {
     root_->SetLayerTree(this);
     SetNeedsDraw();
   }
+  damage_from_previous_frame_.clear();
 }
 
 void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
@@ -202,6 +205,7 @@ void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
   }
   client_->DidInitializeLayerTreeFrameSink();
   ui_resource_manager_.RecreateUIResources();
+  damage_from_previous_frame_.clear();
 
   UpdateNeedsBeginFrame();
 }
@@ -209,6 +213,7 @@ void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
 void LayerTreeImpl::ReleaseLayerTreeFrameSink() {
   DCHECK(!IsVisible());
   frame_sink_.reset();
+  damage_from_previous_frame_.clear();
 }
 
 bool LayerTreeImpl::BeginFrame(
@@ -298,10 +303,6 @@ void LayerTreeImpl::NotifyTreeChanged() {
   SetNeedsDraw();
 }
 
-void LayerTreeImpl::NotifyPropertyChanged() {
-  SetNeedsDraw();
-}
-
 viz::ClientResourceProvider* LayerTreeImpl::GetClientResourceProvider() {
   if (!frame_sink_) {
     return nullptr;
@@ -385,9 +386,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
-  // TODO(crbug.com/1408128): Only has a very simple and basic compositor frame
-  // generation. Some missing features include:
-  // * Damage tracking
   TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
 
   for (auto& resource_request :
@@ -463,6 +461,10 @@ void LayerTreeImpl::GenerateCompositorFrame(
       }
     }
   }
+
+  ProcessDamageForRenderPass(*render_pass, frame_data);
+  damage_from_previous_frame_ = std::move(frame_data.current_frame_damage);
+  frame_data.current_frame_damage.clear();
 
   render_pass->copy_requests = std::move(copy_requests_for_next_frame_);
   copy_requests_for_next_frame_.clear();
@@ -616,6 +618,8 @@ void LayerTreeImpl::Draw(Layer& layer,
   // clip applied.
   const gfx::RectF* clip_in_target = nullptr;
   SimpleEnclosedRegion occlusion_in_new_pass;
+  RenderPassDamageData parent_pass_damage = std::move(data.render_pass_damage);
+  data.render_pass_damage.clear();
   {
     SimpleEnclosedRegion parent_pass_occlusion = data.occlusion_in_target;
     data.occlusion_in_target.Clear();
@@ -641,6 +645,7 @@ void LayerTreeImpl::Draw(Layer& layer,
   }
 
   if (new_pass->quad_list.empty()) {
+    data.render_pass_damage = std::move(parent_pass_damage);
     // Throw away new pass if it has no quads.
     return;
   }
@@ -688,11 +693,16 @@ void LayerTreeImpl::Draw(Layer& layer,
                /*backdrop_filter_quality=*/1.f,
                /*intersects_damage_under=*/true);
 
-  // TODO(crbug.com/1408128): Properly implement damage, including setting
-  // `has_damage_from_contributing_content`.
   new_pass->output_rect = content_rect;
-  new_pass->damage_rect = content_rect;
   new_pass->filters = layer.GetFilters();
+
+  ProcessDamageForRenderPass(*new_pass, data);
+  parent_pass_damage.emplace_back(
+      layer.id(),
+      DamageData(new_pass->has_damage_from_contributing_content,
+                 transform_new_pass_to_parent_target.MapRect(content_rect)));
+  data.render_pass_damage = std::move(parent_pass_damage);
+
   data.frame.render_pass_list.push_back(std::move(new_pass));
 }
 
@@ -705,9 +715,16 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
     const gfx::RectF* clip_in_target,
     const gfx::RectF& clip_in_layer,
     float opacity) {
-  for (auto& child : base::Reversed(layer.children())) {
-    Draw(*child, render_pass, data, transform_to_root, transform_to_target,
-         clip_in_target, clip_in_layer, opacity);
+  const bool subtree_property_changed =
+      layer.GetAndResetSubtreePropertyChanged() ||
+      data.subtree_property_changed_from_parent;
+  {
+    base::AutoReset reset(&data.subtree_property_changed_from_parent,
+                          subtree_property_changed);
+    for (auto& child : base::Reversed(layer.children())) {
+      Draw(*child, render_pass, data, transform_to_root, transform_to_target,
+           clip_in_target, clip_in_layer, opacity);
+    }
   }
 
   gfx::Rect integer_clip_in_target;
@@ -719,12 +736,19 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
   // `masks_to_bounds()`.
   gfx::RectF visible_rectf(layer.bounds().width(), layer.bounds().height());
   visible_rectf.Intersect(clip_in_layer);
+  gfx::RectF visible_rectf_in_target =
+      transform_to_target.MapRect(visible_rectf);
   if (!visible_rectf.IsEmpty() && layer.HasDrawableContent() &&
       UpdateOcclusionRect(layer, data, transform_to_target, opacity,
-                          visible_rectf)) {
+                          visible_rectf_in_target, visible_rectf)) {
+    gfx::Rect visible_rect = gfx::ToEnclosingRect(visible_rectf);
     layer.AppendQuads(render_pass, data, transform_to_root, transform_to_target,
                       clip_in_target ? &integer_clip_in_target : nullptr,
-                      gfx::ToEnclosingRect(visible_rectf), opacity);
+                      visible_rect, opacity);
+    data.render_pass_damage.emplace_back(
+        layer.id(), DamageData(layer.GetAndResetPropertyChanged() ||
+                                   subtree_property_changed,
+                               gfx::ToEnclosingRect(visible_rectf_in_target)));
   }
 }
 
@@ -733,6 +757,7 @@ bool LayerTreeImpl::UpdateOcclusionRect(
     FrameData& data,
     const gfx::Transform& transform_to_target,
     float opacity,
+    const gfx::RectF& visible_rectf_in_target,
     gfx::RectF& visible_rect) {
   // Skip occlusion calculations on non-axis aligned layers.
   // Note this is to reduce complexity of occlusion tracking (eg can use
@@ -744,10 +769,9 @@ bool LayerTreeImpl::UpdateOcclusionRect(
   DCHECK(transform_to_target.Is2dTransform());
   DCHECK(transform_to_target.IsInvertible());
 
-  gfx::RectF visible_rect_in_target = transform_to_target.MapRect(visible_rect);
   // Use enclosing rect here to avoid false rejections due to rounding error.
   if (data.occlusion_in_target.Contains(
-          gfx::ToEnclosingRect(visible_rect_in_target))) {
+          gfx::ToEnclosingRect(visible_rectf_in_target))) {
     return false;
   }
 
@@ -766,13 +790,90 @@ bool LayerTreeImpl::UpdateOcclusionRect(
   }
 
   // Add unoccluded visible rect to occlusion.
-  if (visible_rect_in_target.width() >= min_occlusion_tracking_dimension_ ||
-      visible_rect_in_target.height() >= min_occlusion_tracking_dimension_) {
+  if (visible_rectf_in_target.width() >= min_occlusion_tracking_dimension_ ||
+      visible_rectf_in_target.height() >= min_occlusion_tracking_dimension_) {
     // Use ToEnclosedRect to avoid including extra pixels as occluded due to
     // rounding error.
-    data.occlusion_in_target.Union(gfx::ToEnclosedRect(visible_rect_in_target));
+    data.occlusion_in_target.Union(
+        gfx::ToEnclosedRect(visible_rectf_in_target));
   }
   return true;
+}
+
+void LayerTreeImpl::ProcessDamageForRenderPass(
+    viz::CompositorRenderPass& render_pass,
+    FrameData& data) {
+  // Damage contributions to this frame:
+  // * Damaged rect in this frame (or if it's new)
+  // * Rect in previous frame if it is damaged in this frame, since the area of
+  //   the old rect may now be exposed.
+  // * Rects that disappeared in this frame.
+
+  // Find previous map or use empty map if pass didn't exist.
+  RenderPassDamageData previous_data;
+  {
+    auto itr = damage_from_previous_frame_.find(render_pass.id.value());
+    if (itr != damage_from_previous_frame_.end()) {
+      previous_data = std::move(itr->second);
+      damage_from_previous_frame_.erase(itr);
+    }
+  }
+
+  gfx::Rect damage;
+
+  // Sort the new rect by id. `previous_data` is already sorted.
+  SortRenderPassDamageData(data.render_pass_damage);
+
+  // Iterate through the two sorted structures in parallel, being careful to add
+  // rects in `previous_data` but not in new data to `damage`.
+  auto previous_data_itr = previous_data.cbegin();
+  for (auto& [layer_id, layer_data] : data.render_pass_damage) {
+    // Precondition for entering the loop is `previous_data_itr` points to the
+    // next item (if any) to check. Any previous items have already been
+    // processed.
+
+    while (previous_data_itr != previous_data.cend() &&
+           previous_data_itr->first < layer_id) {
+      // Add damage from rects that no longer exist.
+      if (previous_data_itr != previous_data.cend()) {
+        damage.Union(previous_data_itr->second.visible_rect_in_target);
+      }
+      previous_data_itr++;
+    }
+
+    bool layer_is_new = previous_data_itr == previous_data.cend() ||
+                        previous_data_itr->first > layer_id;
+    if (layer_is_new || layer_data.property_changed) {
+      // If layer is new or property changed, layer contributes to damage.
+      damage.Union(layer_data.visible_rect_in_target);
+      if (!layer_is_new) {
+        CHECK_EQ(previous_data_itr->first, layer_id);
+        // If layer moved, previous visible rect may now be exposed.
+        damage.Union(previous_data_itr->second.visible_rect_in_target);
+      }
+    }
+    if (!layer_is_new) {
+      previous_data_itr++;
+    }
+  }
+
+  // Add damage from rects that no longer exist.
+  while (previous_data_itr != previous_data.cend()) {
+    damage.Union(previous_data_itr->second.visible_rect_in_target);
+    previous_data_itr++;
+  }
+
+  // Move pass damage data into `data.current_frame_damage`.
+  auto insert_result = data.current_frame_damage.try_emplace(
+      render_pass.id.value(), std::move(data.render_pass_damage));
+  CHECK(insert_result.second);
+  data.render_pass_damage.clear();
+
+  // Assign damage to render pass.
+  damage.Intersect(render_pass.output_rect);
+  render_pass.damage_rect = damage;
+  render_pass.has_damage_from_contributing_content =
+      !render_pass.damage_rect.IsEmpty();
 }
 
 }  // namespace cc::slim

@@ -60,7 +60,9 @@ Layer::Layer(scoped_refptr<cc::Layer> cc_layer)
       contents_opaque_(false),
       draws_content_(false),
       hide_layer_and_subtree_(false),
-      masks_to_bounds_(false) {}
+      masks_to_bounds_(false),
+      property_changed_(false),
+      subtree_property_changed_(false) {}
 
 Layer::~Layer() {
   RemoveAllChildren();
@@ -101,16 +103,19 @@ void Layer::InsertChild(scoped_refptr<Layer> child, size_t position) {
 }
 
 void Layer::InsertChildSlim(scoped_refptr<Layer> child, size_t position) {
+  if (position < children_.size() && children_.at(position) == child) {
+    return;
+  }
   WillAddChildSlim(child.get());
   const size_t index = std::min(position, children_.size());
   children_.insert(children_.begin() + index, std::move(child));
-  NotifyTreeChanged();
 }
 
 void Layer::WillAddChildSlim(Layer* child) {
   child->RemoveFromParentSlim();
   child->SetParentSlim(this);
   child->SetLayerTree(layer_tree());
+  child->NotifySubtreeChanged();
 }
 
 void Layer::ReplaceChild(Layer* old_child, scoped_refptr<Layer> new_child) {
@@ -133,8 +138,8 @@ void Layer::ReplaceChild(Layer* old_child, scoped_refptr<Layer> new_child) {
     *it = std::move(new_child);
   } else {
     children_.erase(it);
+    NotifyPropertyChanged();
   }
-  NotifyTreeChanged();
 }
 
 void Layer::RemoveFromParent() {
@@ -152,7 +157,7 @@ void Layer::RemoveFromParentSlim() {
   SetLayerTree(nullptr);
   base::EraseIf(parent_->children_,
                 [&](auto& ptr) { return ptr.get() == this; });
-  parent_->NotifyTreeChanged();
+  parent_->NotifyPropertyChanged();
   SetParentSlim(nullptr);
 }
 
@@ -170,7 +175,7 @@ void Layer::RemoveAllChildren() {
     child->SetParentSlim(nullptr);
   }
   children_.clear();
-  NotifyTreeChanged();
+  NotifySubtreeChanged();
 }
 
 bool Layer::HasAncestor(Layer* layer) const {
@@ -218,7 +223,7 @@ void Layer::SetPosition(const gfx::PointF& position) {
     return;
   }
   position_ = position;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 const gfx::PointF Layer::position() const {
@@ -234,7 +239,11 @@ void Layer::SetBounds(const gfx::Size& bounds) {
     return;
   }
   bounds_ = bounds;
-  NotifyPropertyChanged();
+  if (masks_to_bounds_) {
+    NotifySubtreeChanged();
+  } else {
+    NotifyPropertyChanged();
+  }
 }
 
 const gfx::Size& Layer::bounds() const {
@@ -251,7 +260,7 @@ void Layer::SetTransform(const gfx::Transform& transform) {
     return;
   }
   transform_ = transform;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 const gfx::Transform& Layer::transform() const {
@@ -267,7 +276,7 @@ void Layer::SetTransformOrigin(const gfx::Point3F& origin) {
     return;
   }
   transform_origin_ = origin;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 gfx::Point3F Layer::transform_origin() const {
@@ -311,7 +320,7 @@ void Layer::SetContentsOpaque(bool opaque) {
     return;
   }
   contents_opaque_ = opaque;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 bool Layer::contents_opaque() const {
@@ -329,7 +338,7 @@ void Layer::SetOpacity(float opacity) {
     return;
   }
   opacity_ = opacity;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 float Layer::opacity() const {
@@ -368,7 +377,7 @@ void Layer::SetHideLayerAndSubtree(bool hide) {
     return;
   }
   hide_layer_and_subtree_ = hide;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 bool Layer::hide_layer_and_subtree() const {
@@ -385,7 +394,7 @@ void Layer::SetMasksToBounds(bool masks_to_bounds) {
     return;
   }
   masks_to_bounds_ = masks_to_bounds;
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 bool Layer::masks_to_bounds() const {
@@ -401,7 +410,7 @@ void Layer::SetFilters(std::vector<Filter> filters) {
     return;
   }
   filters_ = std::move(filters);
-  NotifyPropertyChanged();
+  NotifySubtreeChanged();
 }
 
 bool Layer::HasDrawableContent() const {
@@ -452,6 +461,18 @@ int Layer::GetNumDrawingLayersInSubtree() const {
   return num_descendants_that_draw_content_ + (draws_content_ ? 1 : 0);
 }
 
+bool Layer::GetAndResetPropertyChanged() {
+  bool changed = property_changed_;
+  property_changed_ = false;
+  return changed;
+}
+
+bool Layer::GetAndResetSubtreePropertyChanged() {
+  bool changed = subtree_property_changed_;
+  subtree_property_changed_ = false;
+  return changed;
+}
+
 void Layer::AppendQuads(viz::CompositorRenderPass& render_pass,
                         FrameData& data,
                         const gfx::Transform& transform_to_root,
@@ -480,19 +501,23 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
   return quad_state;
 }
 
-void Layer::NotifyTreeChanged() {
+void Layer::NotifySubtreeChanged() {
   if (cc_layer()) {
     return;
   }
+  subtree_property_changed_ = true;
   if (layer_tree_) {
     static_cast<LayerTreeImpl*>(layer_tree_)->NotifyTreeChanged();
   }
 }
 
 void Layer::NotifyPropertyChanged() {
-  DCHECK(!cc_layer());
+  if (cc_layer()) {
+    return;
+  }
+  property_changed_ = true;
   if (layer_tree_) {
-    static_cast<LayerTreeImpl*>(layer_tree_)->NotifyPropertyChanged();
+    static_cast<LayerTreeImpl*>(layer_tree_)->NotifyTreeChanged();
   }
 }
 

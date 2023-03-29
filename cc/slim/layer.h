@@ -207,6 +207,12 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // This method counts this layer, This is different from
   // `NumDescendantsThatDrawContent` which counts descendent layers only.
   int GetNumDrawingLayersInSubtree() const;
+  // Note these `GetAndReset` methods may be skipped by LayerTree if LayerTree
+  // skips processing an entire subtree that includes this layer. If this layer
+  // is processed for a subsequent frame, an ancestor layer must have
+  // `subtree_property_changed_` that applies to this layer.
+  bool GetAndResetPropertyChanged();
+  bool GetAndResetSubtreePropertyChanged();
 
   void UpdateDrawsContent();
   virtual bool HasDrawableContent() const;
@@ -232,7 +238,11 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
       const gfx::Rect& visible_rect,
       float opacity);
 
-  void NotifyTreeChanged();
+  // Use `NotifyPropertyChanged` for a change that can only affect the contents
+  // of this layer, but not the contents of any layer in the parent or subtree.
+  // Otherwise use `NotifySubtreeChanged` which is applied recursively to the
+  // whole subtree at draw time.
+  void NotifySubtreeChanged();
   void NotifyPropertyChanged();
 
   const scoped_refptr<cc::Layer> cc_layer_;
@@ -270,6 +280,13 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   bool draws_content_ : 1;
   bool hide_layer_and_subtree_ : 1;
   bool masks_to_bounds_ : 1;
+
+  // Indicates there is damage for this layer.
+  bool property_changed_ : 1;
+  // Indicates there is damage for the entire subtree. This is tracked
+  // only at the root of the subtree, and is applied recursively to the entire
+  // subtree at draw time.
+  bool subtree_property_changed_ : 1;
 };
 
 }  // namespace cc::slim

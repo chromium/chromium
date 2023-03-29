@@ -5,6 +5,8 @@
 component("slim") {
   sources = [
     "constants.h",
+    "damage_data.cc",
+    "damage_data.h",
     "features.cc",
     "features.h",
     "filter.cc",
