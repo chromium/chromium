@@ -249,9 +249,10 @@ Feature::Availability SimpleFeature::IsAvailableToContextForBind(
     int context_id,
     const ContextData* context_data,
     const Feature* feature) {
-  return feature->IsAvailableToContextImpl(
-      extension, context, url, platform, context_id, true,
-      context_data ? context_data->Clone() : nullptr);
+  CHECK(feature);
+  CHECK(context_data);
+  return feature->IsAvailableToContextImpl(extension, context, url, platform,
+                                           context_id, true, *context_data);
 }
 
 Feature::Availability SimpleFeature::IsAvailableToContextImpl(
@@ -261,11 +262,11 @@ Feature::Availability SimpleFeature::IsAvailableToContextImpl(
     Platform platform,
     int context_id,
     bool check_developer_mode,
-    std::unique_ptr<ContextData> context_data) const {
+    const ContextData& context_data) const {
   if (RequiresDelegatedAvailabilityCheck()) {
     return RunDelegatedAvailabilityCheck(extension, context, url, platform,
                                          context_id, check_developer_mode,
-                                         std::move(context_data));
+                                         context_data);
   }
 
   Availability environment_availability = GetEnvironmentAvailability(
@@ -300,15 +301,9 @@ Feature::Availability SimpleFeature::IsAvailableToContextImpl(
   // TODO(kalman): Assert that if the context was a webpage or WebUI context
   // then at some point a "matches" restriction was checked.
 
-  // NOTE: The current function (IsAvailableToContextImpl) owns |context_data|
-  // until it completes running. Each call to the bound thunk that
-  // CheckDependencies() makes will access the object and dereference its
-  // pointer. |context_data| must remain alive while it's bound to the thunk
-  // and the thunk lifespan should not run beyond the lifespan of
-  // IsAvailableToContextImpl().
   return CheckDependencies(base::BindRepeating(
       &IsAvailableToContextForBind, base::RetainedRef(extension), context, url,
-      platform, context_id, base::Unretained(context_data.get())));
+      platform, context_id, base::Unretained(&context_data)));
 }
 
 Feature::Availability SimpleFeature::IsAvailableToEnvironment(
@@ -753,12 +748,12 @@ Feature::Availability SimpleFeature::RunDelegatedAvailabilityCheck(
     Platform platform,
     int context_id,
     bool check_developer_mode,
-    std::unique_ptr<ContextData> context_data) const {
+    const ContextData& context_data) const {
   DCHECK(RequiresDelegatedAvailabilityCheck());
   DCHECK(HasDelegatedAvailabilityCheckHandler());
   if (!delegated_availability_check_handler_.Run(
           name_, extension, context, url, platform, context_id,
-          check_developer_mode, std::move(context_data))) {
+          check_developer_mode, context_data)) {
     return CreateAvailability(FAILED_DELEGATED_AVAILABILITY_CHECK);
   }
   return CreateAvailability(IS_AVAILABLE);

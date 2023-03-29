@@ -57,42 +57,38 @@ class SimpleFeature : public Feature {
 
   ~SimpleFeature() override;
 
-  Availability IsAvailableToContext(
-      const Extension* extension,
-      Context context,
-      int context_id,
-      std::unique_ptr<ContextData> context_data) const {
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    int context_id,
+                                    const ContextData& context_data) const {
     return IsAvailableToContext(extension, context, GURL(), context_id,
-                                std::move(context_data));
+                                context_data);
   }
-  Availability IsAvailableToContext(
-      const Extension* extension,
-      Context context,
-      Platform platform,
-      int context_id,
-      std::unique_ptr<ContextData> context_data) const {
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    Platform platform,
+                                    int context_id,
+                                    const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, GURL(), platform,
-                                    context_id, true, std::move(context_data));
+                                    context_id, true, context_data);
   }
-  Availability IsAvailableToContext(
-      const Extension* extension,
-      Context context,
-      const GURL& url,
-      int context_id,
-      std::unique_ptr<ContextData> context_data) const {
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    const GURL& url,
+                                    int context_id,
+                                    const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, url,
                                     GetCurrentPlatform(), context_id, true,
-                                    std::move(context_data));
+                                    context_data);
   }
-  Availability IsAvailableToContext(
-      const Extension* extension,
-      Context context,
-      const GURL& url,
-      Platform platform,
-      int context_id,
-      std::unique_ptr<ContextData> context_data) const {
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    const GURL& url,
+                                    Platform platform,
+                                    int context_id,
+                                    const ContextData& context_data) const {
     return IsAvailableToContextImpl(extension, context, url, platform,
-                                    context_id, true, std::move(context_data));
+                                    context_id, true, context_data);
   }
 
   // extension::Feature:
@@ -227,7 +223,7 @@ class SimpleFeature : public Feature {
       Platform platform,
       int context_id,
       bool check_developer_mode,
-      std::unique_ptr<ContextData> context_data) const override;
+      const ContextData& context_data) const override;
 
  private:
   friend struct FeatureComparator;
@@ -294,7 +290,7 @@ class SimpleFeature : public Feature {
       Platform platform,
       int context_id,
       bool check_developer_mode,
-      std::unique_ptr<ContextData> context_data) const;
+      const ContextData& context_data) const;
 
   // For clarity and consistency, we handle the default value of each of these
   // members the same way: it matches everything. It is up to the higher level

@@ -25,7 +25,7 @@ class PermissionFeature : public SimpleFeature {
       Feature::Platform platform,
       int context_id,
       bool check_developer_mode,
-      std::unique_ptr<ContextData> context_data) const override;
+      const ContextData& context_data) const override;
 };
 
 }  // namespace extensions

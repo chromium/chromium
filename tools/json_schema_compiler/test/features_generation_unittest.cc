@@ -113,14 +113,13 @@ void FeatureComparator::CompareFeature(const SimpleFeature* feature) {
 
 TEST(FeaturesGenerationTest, FeaturesTest) {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
-  map.emplace(
-      "requires_delegated_availability_check",
-      base::BindLambdaForTesting(
-          [&](const std::string& api_full_name, const Extension* extension,
-              Feature::Context context, const GURL& url,
-              Feature::Platform platform, int context_id,
-              bool check_developer_mode,
-              std::unique_ptr<ContextData> context_data) { return false; }));
+  map.emplace("requires_delegated_availability_check",
+              base::BindLambdaForTesting(
+                  [&](const std::string& api_full_name,
+                      const Extension* extension, Feature::Context context,
+                      const GURL& url, Feature::Platform platform,
+                      int context_id, bool check_developer_mode,
+                      const ContextData& context_data) { return false; }));
   ExtensionsClient::Get()->SetFeatureDelegatedAvailabilityCheckMap(
       std::move(map));
   FeatureProvider provider;

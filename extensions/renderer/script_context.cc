@@ -23,6 +23,7 @@
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/renderer_context_data.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/v8_helpers.h"
@@ -275,8 +276,7 @@ Feature::Availability ScriptContext::GetAvailability(
   }
   return ExtensionAPI::GetSharedInstance()->IsAvailable(
       api_name, extension, context_type_, url(), check_alias,
-      kRendererProfileId,
-      std::make_unique<RendererFrameContextData>(web_frame()));
+      kRendererProfileId, RendererFrameContextData(web_frame()));
 }
 
 std::string ScriptContext::GetContextTypeDescription() const {
@@ -303,11 +303,18 @@ bool ScriptContext::IsAnyFeatureAvailableToContext(
     const Feature& api,
     CheckAliasStatus check_alias) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  if (web_frame()) {
+    return ExtensionAPI::GetSharedInstance()->IsAnyFeatureAvailableToContext(
+        api, extension(), context_type(),
+        GetDocumentLoaderURLForFrame(web_frame()), check_alias,
+        kRendererProfileId, RendererFrameContextData(web_frame()));
+  }
+
   // TODO(lazyboy): Decide what we should do for service workers, where
   // web_frame() is null.
-  GURL url = web_frame() ? GetDocumentLoaderURLForFrame(web_frame()) : url_;
   return ExtensionAPI::GetSharedInstance()->IsAnyFeatureAvailableToContext(
-      api, extension(), context_type(), url, check_alias, kRendererProfileId);
+      api, extension(), context_type(), url_, check_alias, kRendererProfileId,
+      RendererContextData());
 }
 
 // static

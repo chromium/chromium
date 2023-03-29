@@ -116,7 +116,7 @@ bool ControlledFrameTestAvailabilityCheck(
     extensions::Feature::Platform platform,
     int context_id,
     bool check_developer_mode,
-    std::unique_ptr<extensions::ContextData> context_data) {
+    const extensions::ContextData& context_data) {
   return false;
 }
 

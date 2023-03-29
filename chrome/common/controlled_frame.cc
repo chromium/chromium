@@ -12,8 +12,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 
-class GURL;
-
 namespace controlled_frame {
 
 bool AvailabilityCheck(const std::string& api_full_name,
@@ -23,7 +21,7 @@ bool AvailabilityCheck(const std::string& api_full_name,
                        extensions::Feature::Platform platform,
                        int context_id,
                        bool check_developer_mode,
-                       std::unique_ptr<extensions::ContextData> context_data) {
+                       const extensions::ContextData& context_data) {
   // Verify that Controlled Frame and IWAs are enabled and ensure the invoking
   // context is correct.
   if (!base::FeatureList::IsEnabled(features::kIwaControlledFrame) ||
@@ -31,17 +29,8 @@ bool AvailabilityCheck(const std::string& api_full_name,
     return false;
   }
 
-  // If |context_data| isn't set, then this can't be an IWA. Default to turning
-  // off Controlled Frame. In the future, if //extensions can guarantee a
-  // |context_data| is always passed, this should become a CHECK(context_data)
-  // and instead rely on the ->IsIsolatedApplication() call to verify the
-  // invoking context isn't an IWA.
-  if (!context_data) {
-    return false;
-  }
-
   // Verify that the app is isolated and the API name is in our expected list.
-  return context_data->IsIsolatedApplication() &&
+  return context_data.IsIsolatedApplication() &&
          base::Contains(GetControlledFrameFeatureList(), api_full_name);
 }
 

@@ -158,17 +158,19 @@ void ExtensionAPI::RegisterDependencyProvider(const std::string& name,
   dependency_providers_[name] = provider;
 }
 
-bool ExtensionAPI::IsAnyFeatureAvailableToContext(const Feature& api,
-                                                  const Extension* extension,
-                                                  Feature::Context context,
-                                                  const GURL& url,
-                                                  CheckAliasStatus check_alias,
-                                                  int context_id) {
+bool ExtensionAPI::IsAnyFeatureAvailableToContext(
+    const Feature& api,
+    const Extension* extension,
+    Feature::Context context,
+    const GURL& url,
+    CheckAliasStatus check_alias,
+    int context_id,
+    const ContextData& context_data) {
   auto provider = dependency_providers_.find("api");
   CHECK(provider != dependency_providers_.end());
 
   if (api.IsAvailableToContext(extension, context, url, context_id,
-                               /*context_data=*/nullptr)
+                               context_data)
           .is_available()) {
     return true;
   }
@@ -180,7 +182,7 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(const Feature& api,
   for (const Feature* feature : features) {
     if (feature
             ->IsAvailableToContext(extension, context, url, context_id,
-                                   /*context_data=*/nullptr)
+                                   context_data)
             .is_available()) {
       return true;
     }
@@ -198,7 +200,7 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(const Feature& api,
                << " for API feature " << api.name();
   return IsAnyFeatureAvailableToContext(*alias, extension, context, url,
                                         CheckAliasStatus::NOT_ALLOWED,
-                                        context_id);
+                                        context_id, context_data);
 }
 
 Feature::Availability ExtensionAPI::IsAvailable(
@@ -208,7 +210,7 @@ Feature::Availability ExtensionAPI::IsAvailable(
     const GURL& url,
     CheckAliasStatus check_alias,
     int context_id,
-    std::unique_ptr<ContextData> context_data) {
+    const ContextData& context_data) {
   const Feature* feature = GetFeatureDependency(full_name);
   if (!feature) {
     return Feature::Availability(Feature::NOT_PRESENT,
@@ -216,14 +218,12 @@ Feature::Availability ExtensionAPI::IsAvailable(
   }
 
   Feature::Availability availability = feature->IsAvailableToContext(
-      extension, context, url, context_id,
-      context_data ? context_data->Clone() : nullptr);
+      extension, context, url, context_id, context_data);
   if (availability.is_available() || check_alias != CheckAliasStatus::ALLOWED)
     return availability;
 
-  Feature::Availability alias_availability =
-      IsAliasAvailable(full_name, *feature, extension, context, url, context_id,
-                       std::move(context_data));
+  Feature::Availability alias_availability = IsAliasAvailable(
+      full_name, *feature, extension, context, url, context_id, context_data);
   return alias_availability.is_available() ? alias_availability : availability;
 }
 
@@ -299,7 +299,7 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
     Feature::Context context,
     const GURL& url,
     int context_id,
-    std::unique_ptr<ContextData> context_data) {
+    const ContextData& context_data) {
   const std::string& alias = feature.alias();
   if (alias.empty())
     return Feature::Availability(Feature::NOT_PRESENT, "Alias not defined");
@@ -326,8 +326,8 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
   CHECK(alias_feature) << "Cannot find alias feature " << alias
                        << " for API feature " << feature.name();
 
-  return alias_feature->IsAvailableToContext(
-      extension, context, url, context_id, std::move(context_data));
+  return alias_feature->IsAvailableToContext(extension, context, url,
+                                             context_id, context_data);
 }
 
 base::StringPiece ExtensionAPI::GetSchemaStringPieceUnsafe(

@@ -111,7 +111,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
                                                 ->GetID(),
                                             &owner_site_url),
       owner_site_url, util::GetBrowserContextId(context_),
-      std::make_unique<BrowserFrameContextData>(
+      BrowserFrameContextData(
           guest->owner_web_contents()->GetPrimaryMainFrame()));
 
   return availability.is_available();

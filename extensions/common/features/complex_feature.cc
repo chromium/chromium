@@ -65,18 +65,18 @@ Feature::Availability ComplexFeature::IsAvailableToContextImpl(
     Platform platform,
     int context_id,
     bool check_developer_mode,
-    std::unique_ptr<ContextData> context_data) const {
+    const ContextData& context_data) const {
   Feature::Availability first_availability =
-      features_[0]->IsAvailableToContextImpl(
-          extension, context, url, platform, context_id, check_developer_mode,
-          context_data ? context_data->Clone() : nullptr);
+      features_[0]->IsAvailableToContextImpl(extension, context, url, platform,
+                                             context_id, check_developer_mode,
+                                             context_data);
   if (first_availability.is_available())
     return first_availability;
 
   for (auto it = features_.cbegin() + 1; it != features_.cend(); ++it) {
     Availability availability = (*it)->IsAvailableToContextImpl(
         extension, context, url, platform, context_id, check_developer_mode,
-        context_data ? context_data->Clone() : nullptr);
+        context_data);
     if (availability.is_available())
       return availability;
   }

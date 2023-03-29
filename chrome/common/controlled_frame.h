@@ -6,9 +6,12 @@
 #define CHROME_COMMON_CONTROLLED_FRAME_H_
 
 #include <memory>
+#include <string>
 
 #include "extensions/common/context_data.h"
 #include "extensions/common/features/feature.h"
+
+class GURL;
 
 namespace controlled_frame {
 
@@ -19,7 +22,7 @@ bool AvailabilityCheck(const std::string& api_full_name,
                        extensions::Feature::Platform platform,
                        int context_id,
                        bool check_developer_mode,
-                       std::unique_ptr<extensions::ContextData> context_data);
+                       const extensions::ContextData& context_data);
 
 extensions::Feature::FeatureDelegatedAvailabilityCheckMap
 CreateAvailabilityCheckMap();

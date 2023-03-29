@@ -18,6 +18,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/test_context_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,35 +59,32 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
       ExtensionBuilder("test extension").Build();
 
   const Feature* feature = provider->GetFeature("description");
-  EXPECT_EQ(
-      Feature::IS_AVAILABLE,
-      feature
-          ->IsAvailableToContext(extension.get(), Feature::UNSPECIFIED_CONTEXT,
-                                 GURL(), kUnspecifiedContextId,
-                                 /*context_data=*/nullptr)
-          .result());
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            feature
+                ->IsAvailableToContext(extension.get(),
+                                       Feature::UNSPECIFIED_CONTEXT, GURL(),
+                                       kUnspecifiedContextId, TestContextData())
+                .result());
 
   // This is a generic extension, so an app-only feature isn't allowed.
   feature = provider->GetFeature("app.background");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(
-      Feature::INVALID_TYPE,
-      feature
-          ->IsAvailableToContext(extension.get(), Feature::UNSPECIFIED_CONTEXT,
-                                 GURL(), kUnspecifiedContextId,
-                                 /*context_data=*/nullptr)
-          .result());
+  EXPECT_EQ(Feature::INVALID_TYPE,
+            feature
+                ->IsAvailableToContext(extension.get(),
+                                       Feature::UNSPECIFIED_CONTEXT, GURL(),
+                                       kUnspecifiedContextId, TestContextData())
+                .result());
 
   // A feature not listed in the manifest isn't allowed.
   feature = provider->GetFeature("background");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(
-      Feature::NOT_PRESENT,
-      feature
-          ->IsAvailableToContext(extension.get(), Feature::UNSPECIFIED_CONTEXT,
-                                 GURL(), kUnspecifiedContextId,
-                                 /*context_data=*/nullptr)
-          .result());
+  EXPECT_EQ(Feature::NOT_PRESENT,
+            feature
+                ->IsAvailableToContext(extension.get(),
+                                       Feature::UNSPECIFIED_CONTEXT, GURL(),
+                                       kUnspecifiedContextId, TestContextData())
+                .result());
 }
 
 // Tests that a real permission feature is available for the correct types of
@@ -123,7 +121,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
                                        GURL(), kUnspecifiedContextId,
-                                       /*context_data=*/nullptr)
+                                       TestContextData())
                 .result());
 
   // A permission only available to allowlisted extensions returns availability
@@ -137,7 +135,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
                                        GURL(), kUnspecifiedContextId,
-                                       /*context_data=*/nullptr)
+                                       TestContextData())
                 .result());
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -148,7 +146,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
                                        GURL(), kUnspecifiedContextId,
-                                       /*context_data=*/nullptr)
+                                       TestContextData())
                 .result());
 }
 
@@ -191,7 +189,7 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
       [&](const std::string& api_full_name, const Extension* extension,
           Feature::Context context, const GURL& url, Feature::Platform platform,
           int context_id, bool check_developer_mode,
-          std::unique_ptr<ContextData> context_data) { return false; };
+          const ContextData& context_data) { return false; };
   map.emplace(kDelegatedFeatureName,
               base::BindLambdaForTesting(delegated_availability_check));
   map.emplace(kMissingRequiresDelegatedCheckFeatureName,

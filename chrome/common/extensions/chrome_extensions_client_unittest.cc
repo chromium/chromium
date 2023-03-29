@@ -15,6 +15,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -43,7 +44,7 @@ bool FeatureDelegatedCheck(const std::string& api_full_name,
                            Feature::Platform platform,
                            int context_id,
                            bool check_developer_mode,
-                           std::unique_ptr<ContextData> context_data) {
+                           const ContextData& context_data) {
   return api_full_name == "AllowedFeature";
 }
 
@@ -71,8 +72,7 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
             .Run("AllowedFeature", /*extension=*/nullptr,
                  Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
                  Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
-                 /*check_developer_mode=*/false,
-                 /*context_data=*/nullptr);
+                 /*check_developer_mode=*/false, TestContextData());
     EXPECT_TRUE(allowed_result);
 
     ASSERT_EQ(1u, map.count("DisallowedFeature"));
@@ -81,8 +81,7 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
             .Run("DisallowedFeature", /*extension=*/nullptr,
                  Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
                  Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
-                 /*check_developer_mode=*/false,
-                 /*context_data=*/nullptr);
+                 /*check_developer_mode=*/false, TestContextData());
     EXPECT_FALSE(disallowed_result);
   }
 }

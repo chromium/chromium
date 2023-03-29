@@ -28,6 +28,7 @@ bool BrowserFrameContextData::IsIsolatedApplication() const {
 
 std::unique_ptr<FrameContextData>
 BrowserFrameContextData::GetLocalParentOrOpener() const {
+  CHECK(frame_);
   content::RenderFrameHost* parent_or_opener = frame_->GetParent();
   // Non primary pages(e.g. fenced frame, prerendered page, bfcache, and
   // portals) can't look at the opener, and WebContents::GetOpener returns the
@@ -55,6 +56,7 @@ BrowserFrameContextData::GetLocalParentOrOpener() const {
 }
 
 GURL BrowserFrameContextData::GetUrl() const {
+  CHECK(frame_);
   if (frame_->GetLastCommittedURL().is_empty()) {
     // It's possible for URL to be empty when `frame_` is on the initial empty
     // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
@@ -65,6 +67,7 @@ GURL BrowserFrameContextData::GetUrl() const {
 }
 
 url::Origin BrowserFrameContextData::GetOrigin() const {
+  CHECK(frame_);
   return frame_->GetLastCommittedOrigin();
 }
 
@@ -81,6 +84,7 @@ bool BrowserFrameContextData::CanAccess(const FrameContextData& target) const {
 }
 
 uintptr_t BrowserFrameContextData::GetId() const {
+  CHECK(frame_);
   return frame_->GetRoutingID();
 }
 

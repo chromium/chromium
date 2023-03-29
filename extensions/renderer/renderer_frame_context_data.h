@@ -22,7 +22,11 @@ namespace extensions {
 class RendererFrameContextData : public FrameContextData {
  public:
   explicit RendererFrameContextData(const blink::WebLocalFrame* frame)
-      : frame_(frame) {}
+      : frame_(frame) {
+    // Note: Extension tests mock objects like ScriptContext and don't fill in
+    // their frame. This results in calls to this constructor with a nullptr
+    // frame, so we can't CHECK(frame_) here.
+  }
 
   ~RendererFrameContextData() override = default;
 

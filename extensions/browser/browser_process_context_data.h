@@ -20,7 +20,9 @@ namespace extensions {
 class BrowserProcessContextData : public ProcessContextData {
  public:
   explicit BrowserProcessContextData(content::RenderProcessHost* process)
-      : process_(process) {}
+      : process_(process) {
+    CHECK(process_);
+  }
 
   ~BrowserProcessContextData() override = default;
 

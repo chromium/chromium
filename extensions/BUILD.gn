@@ -142,6 +142,8 @@ static_library("test_support") {
     "test/result_catcher.h",
     "test/test_content_script_load_waiter.cc",
     "test/test_content_script_load_waiter.h",
+    "test/test_context_data.cc",
+    "test/test_context_data.h",
     "test/test_extension_dir.cc",
     "test/test_extension_dir.h",
     "test/test_extensions_client.cc",

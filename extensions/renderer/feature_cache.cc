@@ -8,11 +8,13 @@
 
 #include "base/command_line.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/renderer_context_data.h"
 
 namespace extensions {
 
@@ -27,7 +29,8 @@ FeatureCache::~FeatureCache() = default;
 FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
     Feature::Context context_type,
     const Extension* extension,
-    const GURL& url) {
+    const GURL& url,
+    const ContextData& context_data) {
   bool is_webui_or_untrusted_webui =
       context_type == Feature::WEBUI_CONTEXT ||
       context_type == Feature::WEBUI_UNTRUSTED_CONTEXT;
@@ -38,9 +41,9 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
   DCHECK_NE(Feature::UNSPECIFIED_CONTEXT, context_type)
       << "FeatureCache shouldn't be used for unspecified contexts.";
 
-  const ExtensionFeatureData& features =
-      GetFeaturesFromCache(context_type, extension,
-                           url.DeprecatedGetOriginAsURL(), kRendererProfileId);
+  const ExtensionFeatureData& features = GetFeaturesFromCache(
+      context_type, extension, url.DeprecatedGetOriginAsURL(),
+      kRendererProfileId, context_data);
   FeatureNameVector names;
   names.reserve(features.available_features.size());
   for (const Feature* feature : features.available_features) {
@@ -53,7 +56,7 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
     // change based on additional context attributes.
     if (ExtensionAPI::GetSharedInstance()->IsAnyFeatureAvailableToContext(
             *feature, extension, context_type, url,
-            CheckAliasStatus::NOT_ALLOWED, kRendererProfileId)) {
+            CheckAliasStatus::NOT_ALLOWED, kRendererProfileId, context_data)) {
       names.push_back(feature->name());
     }
   }
@@ -61,12 +64,14 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
 }
 
 FeatureCache::FeatureNameVector
-FeatureCache::GetDeveloperModeRestrictedFeatures(Feature::Context context_type,
-                                                 const Extension* extension,
-                                                 const GURL& url) {
-  const ExtensionFeatureData& features =
-      GetFeaturesFromCache(context_type, extension,
-                           url.DeprecatedGetOriginAsURL(), kRendererProfileId);
+FeatureCache::GetDeveloperModeRestrictedFeatures(
+    Feature::Context context_type,
+    const Extension* extension,
+    const GURL& url,
+    const ContextData& context_data) {
+  const ExtensionFeatureData& features = GetFeaturesFromCache(
+      context_type, extension, url.DeprecatedGetOriginAsURL(),
+      kRendererProfileId, context_data);
   FeatureNameVector names;
   names.reserve(features.dev_mode_restricted_features.size());
   for (const Feature* feature : features.dev_mode_restricted_features) {
@@ -89,15 +94,16 @@ const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
     Feature::Context context_type,
     const Extension* extension,
     const GURL& origin,
-    int context_id) {
+    int context_id,
+    const ContextData& context_data) {
   if (context_type == Feature::WEBUI_CONTEXT ||
       context_type == Feature::WEBUI_UNTRUSTED_CONTEXT) {
     auto iter = webui_cache_.find(origin);
     if (iter != webui_cache_.end())
       return iter->second;
     return webui_cache_
-        .emplace(origin,
-                 CreateCacheEntry(context_type, extension, origin, context_id))
+        .emplace(origin, CreateCacheEntry(context_type, extension, origin,
+                                          context_id, context_data))
         .first->second;
   }
 
@@ -107,8 +113,8 @@ const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
   if (iter != extension_cache_.end())
     return iter->second;
   return extension_cache_
-      .emplace(key,
-               CreateCacheEntry(context_type, extension, origin, context_id))
+      .emplace(key, CreateCacheEntry(context_type, extension, origin,
+                                     context_id, context_data))
       .first->second;
 }
 
@@ -116,7 +122,8 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
     Feature::Context context_type,
     const Extension* extension,
     const GURL& origin,
-    int context_id) {
+    int context_id,
+    const ContextData& context_data) {
   ExtensionFeatureData features;
   const FeatureProvider* api_feature_provider =
       FeatureProvider::GetAPIFeatures();
@@ -152,11 +159,11 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
 
     if (!ExtensionAPI::GetSharedInstance()->IsAnyFeatureAvailableToContext(
             *feature, extension, context_type, url_to_use,
-            CheckAliasStatus::NOT_ALLOWED, context_id)) {
+            CheckAliasStatus::NOT_ALLOWED, context_id, context_data)) {
       if (feature
               ->IsAvailableToContextIgnoringDevMode(
                   extension, context_type, url_to_use,
-                  Feature::GetCurrentPlatform(), context_id)
+                  Feature::GetCurrentPlatform(), context_id, context_data)
               .is_available()) {
         features.dev_mode_restricted_features.push_back(feature);
       }

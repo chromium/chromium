@@ -176,6 +176,8 @@ source_set("renderer") {
     "programmatic_script_injector.h",
     "render_frame_observer_natives.cc",
     "render_frame_observer_natives.h",
+    "renderer_context_data.cc",
+    "renderer_context_data.h",
     "renderer_extension_registry.cc",
     "renderer_extension_registry.h",
     "renderer_frame_context_data.cc",

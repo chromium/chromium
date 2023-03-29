@@ -35,6 +35,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/browser_frame_context_data.h"
+#include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -430,11 +431,24 @@ void ExtensionFunction::AddWorkerResponseTarget() {
     dispatcher()->AddWorkerResponseTarget(this);
 }
 
+std::unique_ptr<extensions::ContextData> ExtensionFunction::GetContextData()
+    const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (is_from_service_worker()) {
+    return std::make_unique<extensions::BrowserProcessContextData>(
+        content::RenderProcessHost::FromID(source_process_id_));
+  } else {
+    return std::make_unique<extensions::BrowserFrameContextData>(
+        render_frame_host());
+  }
+}
+
 bool ExtensionFunction::HasPermission() const {
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           name_, extension_.get(), source_context_type_, source_url(),
-          extensions::CheckAliasStatus::ALLOWED, context_id_, GetContextData());
+          extensions::CheckAliasStatus::ALLOWED, context_id_,
+          *GetContextData());
   return availability.is_available();
 }
 

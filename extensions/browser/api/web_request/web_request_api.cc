@@ -747,7 +747,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
                 ->IsAvailableToContext(
                     nullptr, Feature::WEBUI_CONTEXT, embedder_url,
                     util::GetBrowserContextId(browser_context),
-                    std::make_unique<BrowserFrameContextData>(frame))
+                    BrowserFrameContextData(frame))
                 .is_available()) {
           skip_proxy = false;
         }

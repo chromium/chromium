@@ -1036,7 +1036,7 @@ void EventRouter::DispatchEventToProcess(
           event.event_name, extension, target_context, listener_url,
           CheckAliasStatus::ALLOWED,
           util::GetBrowserContextId(browser_context_),
-          std::make_unique<BrowserProcessContextData>(process));
+          BrowserProcessContextData(process));
   if (!availability.is_available()) {
     // TODO(crbug.com/1412151): Ideally it shouldn't be possible to reach here,
     // because access is checked on registration. However, we don't always

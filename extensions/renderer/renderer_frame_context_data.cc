@@ -21,6 +21,9 @@ std::unique_ptr<ContextData> RendererFrameContextData::Clone() const {
 
 std::unique_ptr<FrameContextData>
 RendererFrameContextData::CloneFrameContextData() const {
+  // Note: Extension tests mock objects like ScriptContext and don't fill in
+  // their frame. This results in calls to this constructor with a nullptr
+  // frame, so we can't CHECK(frame_) here.
   return std::make_unique<RendererFrameContextData>(frame_);
 }
 
@@ -30,6 +33,7 @@ bool RendererFrameContextData::IsIsolatedApplication() const {
 
 std::unique_ptr<FrameContextData>
 RendererFrameContextData::GetLocalParentOrOpener() const {
+  CHECK(frame_);
   blink::WebFrame* parent_or_opener = nullptr;
   if (frame_->Parent()) {
     parent_or_opener = frame_->Parent();
@@ -50,6 +54,7 @@ RendererFrameContextData::GetLocalParentOrOpener() const {
 }
 
 GURL RendererFrameContextData::GetUrl() const {
+  CHECK(frame_);
   if (frame_->GetDocument().Url().IsEmpty()) {
     // It's possible for URL to be empty when `frame_` is on the initial empty
     // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
@@ -60,14 +65,17 @@ GURL RendererFrameContextData::GetUrl() const {
 }
 
 url::Origin RendererFrameContextData::GetOrigin() const {
+  CHECK(frame_);
   return frame_->GetSecurityOrigin();
 }
 
 bool RendererFrameContextData::CanAccess(const url::Origin& target) const {
+  CHECK(frame_);
   return frame_->GetSecurityOrigin().CanAccess(target);
 }
 
 bool RendererFrameContextData::CanAccess(const FrameContextData& target) const {
+  CHECK(frame_);
   // It is important that below `web_security_origin` wraps the security
   // origin of the `target_frame` (rather than a new origin created via
   // url::Origin round-trip - such an origin wouldn't be 100% equivalent -
@@ -75,6 +83,7 @@ bool RendererFrameContextData::CanAccess(const FrameContextData& target) const {
   // scenario is execised by ScriptContextTest.GetEffectiveDocumentURL.
   const blink::WebLocalFrame* target_frame =
       static_cast<const RendererFrameContextData&>(target).frame_;
+  CHECK(target_frame);
   blink::WebSecurityOrigin web_security_origin =
       target_frame->GetDocument().GetSecurityOrigin();
 
@@ -82,6 +91,7 @@ bool RendererFrameContextData::CanAccess(const FrameContextData& target) const {
 }
 
 uintptr_t RendererFrameContextData::GetId() const {
+  CHECK(frame_);
   return reinterpret_cast<uintptr_t>(frame_);
 }
 

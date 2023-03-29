@@ -12,6 +12,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::mojom::ManifestLocation;
@@ -162,7 +163,7 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
       [&](const std::string& api_full_name, const Extension* extension,
           Feature::Context context, const GURL& url, Feature::Platform platform,
           int context_id, bool check_developer_mode,
-          std::unique_ptr<ContextData> context_data) {
+          const ContextData& context_data) {
         ++delegated_availability_check_call_count;
         return delegated_availability_check_call_count == success_call_count;
       };
@@ -207,7 +208,7 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
               complex_feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, Feature::UNSPECIFIED_CONTEXT,
-                      GURL(), kUnspecifiedContextId, /*context_data=*/nullptr)
+                      GURL(), kUnspecifiedContextId, TestContextData())
                   .result());
     EXPECT_EQ(2u, delegated_availability_check_call_count);
   }

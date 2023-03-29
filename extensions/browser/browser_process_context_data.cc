@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 
 namespace extensions {
 
@@ -21,9 +20,8 @@ BrowserProcessContextData::CloneProcessContextData() const {
 }
 
 bool BrowserProcessContextData::IsIsolatedApplication() const {
-  return process_ &&
-         process_->GetWebExposedIsolationLevel() >=
-             content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  return process_->GetWebExposedIsolationLevel() >=
+         content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
 }
 
 }  // namespace extensions

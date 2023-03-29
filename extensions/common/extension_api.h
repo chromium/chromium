@@ -109,7 +109,7 @@ class ExtensionAPI {
                                     const GURL& url,
                                     CheckAliasStatus check_alias,
                                     int context_id,
-                                    std::unique_ptr<ContextData> context_data);
+                                    const ContextData& context_data);
 
   // Determines whether an API, or any parts of that API, can be exposed to
   // |context|.
@@ -122,7 +122,8 @@ class ExtensionAPI {
                                       Feature::Context context,
                                       const GURL& url,
                                       CheckAliasStatus check_alias,
-                                      int context_id);
+                                      int context_id,
+                                      const ContextData& context_data);
 
   // Gets the StringPiece for the schema specified by |api_name|.
   base::StringPiece GetSchemaStringPiece(const std::string& api_name);
@@ -161,14 +162,13 @@ class ExtensionAPI {
 
   // Checks if |full_name| is available to provided context and extension under
   // associated API's alias name.
-  Feature::Availability IsAliasAvailable(
-      const std::string& full_name,
-      const Feature& feature,
-      const Extension* extension,
-      Feature::Context context,
-      const GURL& url,
-      int context_id,
-      std::unique_ptr<ContextData> context_data);
+  Feature::Availability IsAliasAvailable(const std::string& full_name,
+                                         const Feature& feature,
+                                         const Extension* extension,
+                                         Feature::Context context,
+                                         const GURL& url,
+                                         int context_id,
+                                         const ContextData& context_data);
 
   // Loads a schema.
   void LoadSchema(const std::string& name, const base::StringPiece& schema);
