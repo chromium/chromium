@@ -391,7 +391,6 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
 
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
-  // TODO(crbug.com/1285128): Ensure sufficient contrast.
   base::Value::Dict dict;
   dict.Set(default_offline::kAppShortName,
            web_app_registrar.GetAppShortName(*app_id));
