@@ -41,7 +41,6 @@ ExtensionsTest::ExtensionsTest(
 ExtensionsTest::~ExtensionsTest() {
   // Destroy the task runners before nulling the browser/utility clients, as
   // posted tasks may use them.
-  rvh_test_enabler_.reset();
   task_environment_.reset();
   content::SetUtilityClientForTesting(nullptr);
 }
@@ -110,6 +109,7 @@ void ExtensionsTest::TearDown() {
   extensions_browser_client_.reset();
   ExtensionsBrowserClient::Set(nullptr);
 
+  rvh_test_enabler_.reset();
   incognito_context_.reset();
   browser_context_.reset();
   pref_service_.reset();
