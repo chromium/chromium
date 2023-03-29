@@ -1577,8 +1577,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("transferFromDriveToDownloads")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
+// TODO(crbug.com/1425820), TODO(crbug.com/1428909): Re-enable this test.
+#if !defined(LEAK_SANITIZER) || !BUILDFLAG(IS_CHROMEOS) || \
+    !defined(ADDRESS_SANITIZER)
         TestCase("transferOfficeFileFromDriveToDownloads")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
+#endif
         TestCase("transferFromDownloadsToMyFiles")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
         TestCase("transferFromDownloadsToMyFilesMove")
