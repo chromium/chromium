@@ -283,7 +283,7 @@ void MediaRecorder::stop(ExceptionState& exception_state) {
     return;
   }
 
-  StopRecording();
+  StopRecording(/*error_event=*/nullptr);
 }
 
 void MediaRecorder::pause(ExceptionState& exception_state) {
@@ -341,8 +341,8 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
         "The MediaRecorder's state is '" + StateToString(state_) + "'.");
     return;
   }
-  WriteData(nullptr /* data */, 0 /* length */, true /* lastInSlice */,
-            base::Time::Now().ToDoubleT() * 1000.0);
+  WriteData(/*data=*/nullptr, /*length=*/0, /*last_in_slice=*/true,
+            base::Time::Now().ToDoubleT() * 1000.0, /*error_event=*/nullptr);
 }
 
 bool MediaRecorder::isTypeSupported(ExecutionContext* context,
@@ -399,15 +399,16 @@ void MediaRecorder::ContextDestroyed() {
 void MediaRecorder::WriteData(const void* data,
                               size_t length,
                               bool last_in_slice,
-                              double timecode) {
-  // Update mime_type_ when "onstart" is sent by the MediaRecorder. This method
-  // is used also from StopRecording, with a zero length. If we never wrote
-  // anything we don't want to send start or associated actions (update the mime
-  // type in that case).
-  if (!first_write_received_ && length) {
+                              double timecode,
+                              ErrorEvent* error_event) {
+  if (!first_write_received_) {
     mime_type_ = recorder_handler_->ActualMimeType();
     ScheduleDispatchEvent(Event::Create(event_type_names::kStart));
     first_write_received_ = true;
+  }
+
+  if (error_event) {
+    ScheduleDispatchEvent(error_event);
   }
 
   if (!blob_data_) {
@@ -437,14 +438,13 @@ void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
       script_state, MakeGarbageCollected<DOMException>(code, message));
   ErrorEventInit* event_init = ErrorEventInit::Create();
   event_init->setError(error_value);
-  ScheduleDispatchEvent(
+  StopRecording(
       ErrorEvent::Create(script_state, event_type_names::kError, event_init));
-  StopRecording();
 }
 
 void MediaRecorder::OnAllTracksEnded() {
   DVLOG(1) << __func__;
-  StopRecording();
+  StopRecording(/*error_event=*/nullptr);
 }
 
 void MediaRecorder::OnStreamChanged(const String& message) {
@@ -460,7 +460,7 @@ void MediaRecorder::CreateBlobEvent(Blob* blob, double timecode) {
       event_type_names::kDataavailable, blob, timecode));
 }
 
-void MediaRecorder::StopRecording() {
+void MediaRecorder::StopRecording(ErrorEvent* error_event) {
   if (state_ == State::kInactive) {
     // This may happen if all tracks have ended and recording has stopped or
     // never started.
@@ -476,11 +476,10 @@ void MediaRecorder::StopRecording() {
   state_ = State::kInactive;
 
   recorder_handler_->Stop();
-  first_write_received_ = false;
-
-  WriteData(nullptr /* data */, 0 /* length */, true /* lastInSlice */,
-            base::Time::Now().ToDoubleT() * 1000.0);
+  WriteData(/*data=*/nullptr, /*length=*/0, /*last_in_slice=*/true,
+            base::Time::Now().ToDoubleT() * 1000.0, error_event);
   ScheduleDispatchEvent(Event::Create(event_type_names::kStop));
+  first_write_received_ = false;
 }
 
 void MediaRecorder::ScheduleDispatchEvent(Event* event) {

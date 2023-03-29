@@ -81,7 +81,8 @@ class MODULES_EXPORT MediaRecorder
   virtual void WriteData(const void* data,
                          size_t length,
                          bool last_in_slice,
-                         double timecode);
+                         double timecode,
+                         ErrorEvent* error_event);
   virtual void OnError(DOMExceptionCode code, const String& message);
 
   // This causes an invalid modification error to be sent and recording to be
@@ -97,7 +98,7 @@ class MODULES_EXPORT MediaRecorder
  private:
   void CreateBlobEvent(Blob* blob, double timecode);
 
-  void StopRecording();
+  void StopRecording(ErrorEvent* error_event);
   void ScheduleDispatchEvent(Event* event);
   void DispatchScheduledEvent();
 

@@ -645,9 +645,9 @@ void MediaRecorderHandler::WriteData(base::StringPiece data) {
   const base::TimeTicks now = base::TimeTicks::Now();
   // Non-buffered mode does not need to check timestamps.
   if (timeslice_.is_zero()) {
-    recorder_->WriteData(
-        data.data(), data.length(), true /* lastInSlice */,
-        (now - base::TimeTicks::UnixEpoch()).InMillisecondsF());
+    recorder_->WriteData(data.data(), data.length(), /*last_in_slice=*/true,
+                         (now - base::TimeTicks::UnixEpoch()).InMillisecondsF(),
+                         /*error_event=*/nullptr);
     return;
   }
 
@@ -656,7 +656,8 @@ void MediaRecorderHandler::WriteData(base::StringPiece data) {
   if (last_in_slice)
     slice_origin_timestamp_ = now;
   recorder_->WriteData(data.data(), data.length(), last_in_slice,
-                       (now - base::TimeTicks::UnixEpoch()).InMillisecondsF());
+                       (now - base::TimeTicks::UnixEpoch()).InMillisecondsF(),
+                       /*error_event=*/nullptr);
 }
 
 void MediaRecorderHandler::UpdateTracksLiveAndEnabled() {
