@@ -99,7 +99,7 @@ public class MainActivity
 
     /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
-            "androix.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
 
     /**
      * Minimal height the bottom sheet CCT should show is half of the display height.
@@ -789,7 +789,7 @@ public class MainActivity
                 }
                 if (!mBackgroundInteractCheckbox.isChecked()) {
                     customTabsIntent.intent.putExtra(
-                            "androix.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION",
+                            "androidx.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION",
                             BACKGROUND_INTERACT_OFF_VALUE);
                 }
 
