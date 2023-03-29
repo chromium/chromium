@@ -101,7 +101,6 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
     return;
   }
 
-  frame_timing_history_->FrameArrived(base::TimeTicks::Now());
   frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
 
   DiscardCachedFrame();
@@ -388,18 +387,7 @@ void LayerTreeFrameSinkHolder::ProcessFirstPendingBeginFrame(
 bool LayerTreeFrameSinkHolder::ShouldSubmitFrameNow() const {
   DCHECK(reactive_frame_submission_);
 
-  if (pending_begin_frames_.empty() || pending_submit_frames_ >= 1) {
-    return false;
-  }
-
-  // Two cases when we don't want to wait any longer:
-  //   - if `last_frame_did_notproduce_` is true (i.e., the previous response to
-  //     BeginFrame is DidNotProduceFrame); or
-  //   - if we expect there won't be more frames arriving before reaching the
-  //     deadline.
-  return frame_timing_history_->last_frame_did_not_produce() ||
-         frame_timing_history_->GetNextFrameArrivalTimeEstimate() >=
-             pending_begin_frames_.front().send_deadline_estimate;
+  return !pending_begin_frames_.empty() && pending_submit_frames_ == 0;
 }
 
 }  // namespace exo

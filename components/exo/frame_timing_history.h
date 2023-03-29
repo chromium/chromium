@@ -26,11 +26,6 @@ class FrameTimingHistory {
   // Estimates the duration from LayerTreeFrameSinkHolder submitting a frame to
   // the remote side receiving it.
   base::TimeDelta GetFrameTransferDurationEstimate() const;
-  // Estimates the time when the next frame arrives at LayerTreeFrameSinkHolder.
-  base::TimeTicks GetNextFrameArrivalTimeEstimate() const;
-
-  // Notifies that a frame arrives at LayerTreeFrameSinkHolder.
-  void FrameArrived(base::TimeTicks arrival_time);
 
   // Notifies that a frame is submitted to the remote side.
   void FrameSubmitted(uint32_t frame_token, base::TimeTicks submitted_time);
@@ -54,25 +49,14 @@ class FrameTimingHistory {
   //     next frame arrival.
   void MayRecordDidNotProduceToFrameArrvial(bool valid);
 
-  bool last_frame_did_not_produce() const {
-    return last_frame_did_not_produce_;
-  }
-
  private:
   void RecordFrameResponseToRemote(bool did_not_produce);
   void RecordFrameHandled(bool discarded);
 
-  base::TimeDelta GetFrameArrivalIntervalEstimate() const;
-
-  base::TimeTicks last_frame_arrival_time_;
-
   base::flat_map<uint32_t, base::TimeTicks> pending_submitted_time_;
 
-  cc::RollingTimeDeltaHistory frame_arrival_interval_history_;
   cc::RollingTimeDeltaHistory frame_transfer_duration_history_;
 
-  // True if the last response to the remote side is DidNotProduceFrame.
-  bool last_frame_did_not_produce_ = false;
   // Records the time of sending the last DidNotProduceFrame response. It is
   // used to report DidNotProduceToFrameArrival metric and then reset.
   base::TimeTicks last_did_not_produce_time_;

@@ -11,7 +11,6 @@ namespace exo {
 namespace {
 
 constexpr size_t kRollingHistorySize = 60u;
-constexpr double kFrameArrivalIntervalEstimationPercentile = 90.0;
 constexpr double kFrameTransferDurationEstimationPercentile = 90.0;
 
 // Reports metrics when the number of data points reaches this threshold.
@@ -20,29 +19,13 @@ constexpr int32_t kReportMetricsThreshold = 100;
 }  // namespace
 
 FrameTimingHistory::FrameTimingHistory()
-    : frame_arrival_interval_history_(kRollingHistorySize),
-      frame_transfer_duration_history_(kRollingHistorySize) {}
+    : frame_transfer_duration_history_(kRollingHistorySize) {}
 
 FrameTimingHistory::~FrameTimingHistory() = default;
 
 base::TimeDelta FrameTimingHistory::GetFrameTransferDurationEstimate() const {
   return frame_transfer_duration_history_.Percentile(
       kFrameTransferDurationEstimationPercentile);
-}
-
-base::TimeTicks FrameTimingHistory::GetNextFrameArrivalTimeEstimate() const {
-  return last_frame_arrival_time_ + GetFrameArrivalIntervalEstimate();
-}
-
-void FrameTimingHistory::FrameArrived(base::TimeTicks arrival_time) {
-  DCHECK_GE(arrival_time, last_frame_arrival_time_);
-
-  if (!last_frame_arrival_time_.is_null()) {
-    frame_arrival_interval_history_.InsertSample(arrival_time -
-                                                 last_frame_arrival_time_);
-  }
-
-  last_frame_arrival_time_ = arrival_time;
 }
 
 void FrameTimingHistory::FrameSubmitted(uint32_t frame_token,
@@ -101,7 +84,6 @@ void FrameTimingHistory::MayRecordDidNotProduceToFrameArrvial(bool valid) {
 void FrameTimingHistory::RecordFrameResponseToRemote(bool did_not_produce) {
   last_did_not_produce_time_ =
       did_not_produce ? base::TimeTicks::Now() : base::TimeTicks();
-  last_frame_did_not_produce_ = did_not_produce;
 
   frame_response_count_++;
   if (did_not_produce) {
@@ -130,11 +112,6 @@ void FrameTimingHistory::RecordFrameHandled(bool discarded) {
     frame_handling_count_ = 0;
     frame_handling_discarded_ = 0;
   }
-}
-
-base::TimeDelta FrameTimingHistory::GetFrameArrivalIntervalEstimate() const {
-  return frame_arrival_interval_history_.Percentile(
-      kFrameArrivalIntervalEstimationPercentile);
 }
 
 }  // namespace exo
