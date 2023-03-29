@@ -125,6 +125,9 @@ class ActionContext {
       : delegate_(std::move(delegate)), result_cb_(std::move(result_cb)) {}
 
   // Completes work returning result or status, and then self-destructs.
+  // This is the only way `ActionContext` ceases to exist, so any asynchronous
+  // callback in its subclasses is safe to use `base::Unretained(this)` and
+  // does not need weak pointers.
   void Complete(R result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(result_cb_) << "Already completed";
@@ -155,7 +158,10 @@ class FileUploadDelegate::AccessTokenRetriever
 
   void RequestAccessToken() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     DCHECK(!access_token_request_);
     DVLOG(1) << "Requesting access token.";
@@ -187,10 +193,6 @@ class FileUploadDelegate::AccessTokenRetriever
   // The OAuth request to receive the access token.
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Should remain the last member so it will be destroyed first and
-  // invalidate all weak pointers.
-  base::WeakPtrFactory<AccessTokenRetriever> weak_ptr_factory_{this};
 };
 
 // Self-destructing context for FileUploadJob initiation.
@@ -213,20 +215,25 @@ class FileUploadDelegate::InitContext
 
   void Run() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     // Perform file operation on a thread pool, then resume on the current task
     // runner.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&InitContext::InitFile, origin_path_),
-        base::BindOnce(&InitContext::FileOpened,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&InitContext::FileOpened, base::Unretained(this)));
   }
 
   void FileOpened(StatusOr<int64_t> total_result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     if (!total_result.ok()) {
       Complete(total_result.status());
@@ -283,7 +290,7 @@ class FileUploadDelegate::InitContext
     // Make a call and get response headers.
     delegate()->SendAndGetResponse(
         url_loader_.get(), base::BindOnce(&InitContext::OnInitURLLoadComplete,
-                                          weak_ptr_factory_.GetWeakPtr()));
+                                          base::Unretained(this)));
   }
 
   void OnInitURLLoadComplete(
@@ -348,10 +355,6 @@ class FileUploadDelegate::InitContext
 
   // Total size.
   int64_t total_ GUARDED_BY_CONTEXT(sequence_checker_) = 0L;
-
-  // Should remain the last member so it will be destroyed first and
-  // invalidate all weak pointers.
-  base::WeakPtrFactory<InitContext> weak_ptr_factory_{this};
 };
 
 // Self-destructing context for FileUploadJob next step.
@@ -376,7 +379,10 @@ class FileUploadDelegate::NextStepContext
 
   void Run() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     // Parse session token.
     const auto tokens = base::SplitStringPiece(
@@ -407,13 +413,16 @@ class FileUploadDelegate::NextStepContext
     delegate()->SendAndGetResponse(
         url_loader_.get(),
         base::BindOnce(&NextStepContext::OnQueryURLLoadComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       base::Unretained(this)));
   }
 
   void OnQueryURLLoadComplete(
       scoped_refptr<::net::HttpResponseHeaders> headers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
@@ -507,9 +516,8 @@ class FileUploadDelegate::NextStepContext
         base::BindOnce(&NextStepContext::LoadFileData,
                        std::string(origin_path_), total_, upload_received,
                        size),
-        base::BindOnce(&NextStepContext::PerformUpload,
-                       weak_ptr_factory_.GetWeakPtr(), upload_received, size,
-                       std::move(resource_request)));
+        base::BindOnce(&NextStepContext::PerformUpload, base::Unretained(this),
+                       upload_received, size, std::move(resource_request)));
   }
 
   void PerformUpload(
@@ -518,7 +526,10 @@ class FileUploadDelegate::NextStepContext
       std::unique_ptr<::network::ResourceRequest> resource_request,
       StatusOr<std::string> buffer_result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     if (!buffer_result.ok()) {
       Complete(buffer_result.status());
@@ -534,7 +545,7 @@ class FileUploadDelegate::NextStepContext
     delegate()->SendAndGetResponse(
         url_loader_.get(),
         base::BindOnce(&NextStepContext::OnUploadURLLoadComplete,
-                       weak_ptr_factory_.GetWeakPtr(), upload_received, size));
+                       base::Unretained(this), upload_received, size));
   }
 
   void OnUploadURLLoadComplete(
@@ -632,10 +643,6 @@ class FileUploadDelegate::NextStepContext
 
   // Memory usage by upload.
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Should remain the last member so it will be destroyed first and
-  // invalidate all weak pointers.
-  base::WeakPtrFactory<NextStepContext> weak_ptr_factory_{this};
 };
 
 // Self-destructing context for FileUploadJob finalization.
@@ -652,7 +659,10 @@ class FileUploadDelegate::FinalContext
 
   void Run() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     // Parse session token.
     const auto tokens = base::SplitStringPiece(
@@ -682,13 +692,16 @@ class FileUploadDelegate::FinalContext
     // Make a call and get response headers.
     delegate()->SendAndGetResponse(
         url_loader_.get(), base::BindOnce(&FinalContext::OnQueryURLLoadComplete,
-                                          weak_ptr_factory_.GetWeakPtr()));
+                                          base::Unretained(this)));
   }
 
   void OnQueryURLLoadComplete(
       scoped_refptr<::net::HttpResponseHeaders> headers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(delegate());
+    if (!delegate()) {
+      Complete(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+      return;
+    }
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
@@ -739,7 +752,7 @@ class FileUploadDelegate::FinalContext
     delegate()->SendAndGetResponse(
         url_loader_.get(),
         base::BindOnce(&FinalContext::OnFinalizeURLLoadComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       base::Unretained(this)));
   }
 
   void OnFinalizeURLLoadComplete(
@@ -787,15 +800,15 @@ class FileUploadDelegate::FinalContext
   // Helper to upload the data.
   std::unique_ptr<network::SimpleURLLoader> url_loader_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Should remain the last member so it will be destroyed first and
-  // invalidate all weak pointers.
-  base::WeakPtrFactory<FinalContext> weak_ptr_factory_{this};
 };
 
-FileUploadDelegate::FileUploadDelegate() = default;
+FileUploadDelegate::FileUploadDelegate() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-FileUploadDelegate::~FileUploadDelegate() = default;
+FileUploadDelegate::~FileUploadDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void FileUploadDelegate::InitializeOnce() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

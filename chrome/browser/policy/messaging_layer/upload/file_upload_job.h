@@ -46,7 +46,7 @@ class FileUploadJob {
   // `session_token` and `access_parameters`.
   class Delegate {
    public:
-    virtual ~Delegate() = default;
+    virtual ~Delegate();
 
     // Asynchronously initializes upload.
     // Calls back with `total` and `session_token` are set, or Status in case
@@ -83,8 +83,13 @@ class FileUploadJob {
     // completion and doesn't report the outcome.
     virtual void DoDeleteFile(base::StringPiece origin_path) = 0;
 
+    // Returns weak pointer.
+    base::WeakPtr<Delegate> GetWeakPtr();
+
    protected:
-    Delegate() = default;
+    Delegate();
+
+    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
   // Singleton manager class responsible for keeping track of incoming jobs:
@@ -108,7 +113,7 @@ class FileUploadJob {
     void Register(Priority priority,
                   Record record_copy,
                   ::ash::reporting::LogUploadEvent log_upload_event,
-                  Delegate* delegate,  // not owned, must outlive the Job!
+                  base::WeakPtr<Delegate> delegate,
                   base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb);
 
     // Accessor.
@@ -177,7 +182,7 @@ class FileUploadJob {
   // event. When upload is going to be started, `tracker` is empty yet.
   FileUploadJob(const UploadSettings& settings,
                 const UploadTracker& tracker,
-                Delegate* delegate);  // not owned, must outlive the Job!
+                base::WeakPtr<Delegate> delegate);
   FileUploadJob(const FileUploadJob& other) = delete;
   FileUploadJob& operator=(const FileUploadJob& other) = delete;
   ~FileUploadJob();
@@ -238,9 +243,9 @@ class FileUploadJob {
                                  Record record_copy,
                                  base::OnceCallback<void(Status)> done_cb);
 
-  // Unowned delegate that performs actual actions.
-  // It must outlive the job (the same delegate may be used by multiple jobs).
-  const base::raw_ptr<Delegate> delegate_;
+  // Unowned delegate that performs actual actions (the same delegate is used by
+  // multiple jobs).
+  const base::WeakPtr<Delegate> delegate_;
 
   SEQUENCE_CHECKER(job_sequence_checker_);
 

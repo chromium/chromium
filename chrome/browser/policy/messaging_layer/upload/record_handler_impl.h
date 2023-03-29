@@ -55,7 +55,7 @@ class RecordHandlerImpl : public RecordHandler {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   // The next two fields are only used for LOG_UPLOAD events.
-  const std::unique_ptr<FileUploadJob::Delegate> delegate_;
+  std::unique_ptr<FileUploadJob::Delegate> delegate_;
 };
 
 }  // namespace reporting

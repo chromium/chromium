@@ -219,7 +219,6 @@ class FakeOAuth2AccessTokenManagerDelegate
     return CoreAccountId(kRobotAccountId) == account_id;
   }
 };
-
 }  // namespace
 
 class FileUploadDelegateTest : public ::testing::Test {
@@ -953,8 +952,8 @@ TEST_F(FileUploadDelegateTest, FinishFailures) {
   {
     test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
     delegate->DoFinalize(
-        /*session_token=*/
-        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        /*session_token=*/base::StrCat(
+            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
         finish_done.cb());
     const auto& result = finish_done.result();
     ASSERT_THAT(

@@ -536,19 +536,18 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::IMMEDIATE), _, _))
-      .WillOnce(
-          Invoke([](Priority priority, Record record,
-                    StorageModuleInterface::EnqueueCallback callback) {
-            EXPECT_TRUE(record.needs_local_unencrypted_copy());
-            LogUploadEvent log_upload_event;
-            EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
-                                                        record.data().size()));
-            EXPECT_THAT(log_upload_event,
-                        AllOf(MatchSettings(),
-                              MatchTrackerInProgress(0L, 300L, "ABC")));
-            EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
-            std::move(callback).Run(Status::StatusOK());
-          }));
+      .WillOnce(Invoke([](Priority priority, Record record,
+                          StorageModuleInterface::EnqueueCallback callback) {
+        EXPECT_TRUE(record.needs_local_unencrypted_copy());
+        LogUploadEvent log_upload_event;
+        EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
+                                                    record.data().size()));
+        EXPECT_THAT(
+            log_upload_event,
+            AllOf(MatchSettings(), MatchTrackerInProgress(0L, 300L, "ABC")));
+        EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
+        std::move(callback).Run(Status::StatusOK());
+      }));
 
   for (size_t i = 0; i < kNumTestRecords; ++i) {
     ScopedReservation record_reservation(init_encrypted_record.ByteSizeLong(),
@@ -598,19 +597,18 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::IMMEDIATE), _, _))
-      .WillOnce(
-          Invoke([](Priority priority, Record record,
-                    StorageModuleInterface::EnqueueCallback callback) {
-            EXPECT_TRUE(record.needs_local_unencrypted_copy());
-            LogUploadEvent log_upload_event;
-            EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
-                                                        record.data().size()));
-            EXPECT_THAT(log_upload_event,
-                        AllOf(MatchSettings(),
-                              MatchTrackerInProgress(200L, 300L, "ABC")));
-            EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
-            std::move(callback).Run(Status::StatusOK());
-          }));
+      .WillOnce(Invoke([](Priority priority, Record record,
+                          StorageModuleInterface::EnqueueCallback callback) {
+        EXPECT_TRUE(record.needs_local_unencrypted_copy());
+        LogUploadEvent log_upload_event;
+        EXPECT_TRUE(log_upload_event.ParseFromArray(record.data().data(),
+                                                    record.data().size()));
+        EXPECT_THAT(
+            log_upload_event,
+            AllOf(MatchSettings(), MatchTrackerInProgress(200L, 300L, "ABC")));
+        EXPECT_FALSE(log_upload_event.upload_tracker().has_status());
+        std::move(callback).Run(Status::StatusOK());
+      }));
 
   for (size_t i = 0; i < kNumTestRecords; ++i) {
     ScopedReservation record_reservation(
