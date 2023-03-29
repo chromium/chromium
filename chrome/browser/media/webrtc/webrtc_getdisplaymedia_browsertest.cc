@@ -1149,7 +1149,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool()));
 
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
+// TODO(1428806) Re-enable flaky test.
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
+                       DISABLED_ChangeSource) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
   content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -1208,9 +1210,9 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
-
+// TODO(1428806) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
-                       ChangeSourceThenStopTracksRemovesIndicators) {
+                       DISABLED_ChangeSourceThenStopTracksRemovesIndicators) {
   if (!ShouldShowShareThisTabInsteadButton()) {
     GTEST_SKIP();
   }
@@ -1239,8 +1241,9 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   } while (GetInfoBarManager(capturing_tab)->infobar_count() > 0u);
 }
 
+// TODO(1428806) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
-                       ChangeSourceReject) {
+                       DISABLED_ChangeSourceReject) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
   content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
