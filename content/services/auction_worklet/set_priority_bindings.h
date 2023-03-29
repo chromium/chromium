@@ -17,8 +17,8 @@ namespace auction_worklet {
 
 // Class to manage bindings for setting interest group priority. Expected to be
 // used for a for a context managed by ContextRecycler. Allows only a single
-// call for to set a priority. On any subequent calls, clears the set priority
-// and throws an exception.
+// call to set a priority. On any subsequent calls, clears the set priority and
+// throws an exception.
 class SetPriorityBindings : public Bindings {
  public:
   explicit SetPriorityBindings(AuctionV8Helper* v8_helper);
@@ -38,7 +38,7 @@ class SetPriorityBindings : public Bindings {
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
-  // This cleared if an exception is thrown.
+  // This is cleared if an exception is thrown.
   absl::optional<double> set_priority_;
 
   // Once an exception has been thrown, `set_priority_` will be permanently

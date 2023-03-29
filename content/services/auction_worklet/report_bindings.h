@@ -16,8 +16,8 @@
 namespace auction_worklet {
 
 // Class to manage bindings for setting a report URL. Expected to be used for a
-// context managed by ContextRecycler.. Allows only a single call for a report
-// URL. On any subequent calls, clears the report URL and throws an exception.
+// context managed by ContextRecycler. Allows only a single call for a report
+// URL. On any subsequent calls, clears the report URL and throws an exception.
 // Also throws on invalid URLs or non-HTTPS URLs.
 class ReportBindings : public Bindings {
  public:
@@ -38,7 +38,7 @@ class ReportBindings : public Bindings {
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
-  // This cleared if an exception is thrown.
+  // This is cleared if an exception is thrown.
   absl::optional<GURL> report_url_;
 
   // Once an exception has been thrown, `report_url_` will be permanently

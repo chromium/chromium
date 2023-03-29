@@ -16,11 +16,11 @@
 
 namespace auction_worklet {
 
-// Class to manage bindings for setting ad beacon URLs. Expected to be
-// used for a for a context managed by ContextRecycler. Allows only a single
-// call for the ad beacon reporting map. On any subequent calls registerAdBeacon
-// throws an exception and keeps the previous ad_beacon_map_ state.
-// registerAdBeacon also throws on invalid URLs or non-HTTPS URLs in the map.
+// Class to manage bindings for setting ad beacon URLs. Expected to be used for
+// a context managed by ContextRecycler. Allows only a single call for the ad
+// beacon reporting map. On any subsequent calls registerAdBeacon throws an
+// exception and keeps the previous ad_beacon_map_ state. registerAdBeacon also
+// throws on invalid URLs or non-HTTPS URLs in the map.
 class RegisterAdBeaconBindings : public Bindings {
  public:
   explicit RegisterAdBeaconBindings(AuctionV8Helper* v8_helper);
