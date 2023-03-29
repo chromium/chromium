@@ -68,7 +68,6 @@ cd ..
 echo "Building libei"
 tar xf libei-main.tar.gz
 cd libei-main
-patch -p1 < ${SCRIPT_DIR}/patches/0001-config-Make-memfd_create-optional.patch
 
 echo "Compiler details (including search paths):"
 `gcc -print-prog-name=cpp` -v
