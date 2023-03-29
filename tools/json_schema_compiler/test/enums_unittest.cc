@@ -21,6 +21,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumTypePopulate) {
     EXPECT_TRUE(enums::EnumType::Populate(value.GetDict(), enum_type));
     EXPECT_EQ(enums::Enumeration::kOne, enum_type.type);
     EXPECT_EQ(value, enum_type.ToValue());
+    EXPECT_EQ(enum_type.Clone().ToValue(), enum_type.ToValue());
   }
   {
     enums::EnumType enum_type;
@@ -55,10 +56,12 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
     value.Set("enumeration", "one");
     ASSERT_TRUE(enums::HasEnumeration::Populate(value, enumeration));
     EXPECT_EQ(value, enumeration.ToValue());
+    EXPECT_EQ(enumeration.Clone().ToValue(), enumeration.ToValue());
 
     value.Set("optional_enumeration", "two");
     ASSERT_TRUE(enums::HasEnumeration::Populate(value, enumeration));
     EXPECT_EQ(value, enumeration.ToValue());
+    EXPECT_EQ(enumeration.Clone().ToValue(), enumeration.ToValue());
   }
   {
     enums::ReferenceEnum enumeration;
@@ -68,6 +71,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
     value.Set("reference_enum", "one");
     ASSERT_TRUE(enums::ReferenceEnum::Populate(value, enumeration));
     EXPECT_EQ(value, enumeration.ToValue());
+    EXPECT_EQ(enumeration.Clone().ToValue(), enumeration.ToValue());
   }
 }
 
@@ -125,6 +129,7 @@ TEST(JsonSchemaCompilerEnumsTest, OptionalEnumTypePopulate) {
     EXPECT_TRUE(enums::OptionalEnumType::Populate(value.GetDict(), enum_type));
     EXPECT_EQ(enums::Enumeration::kTwo, enum_type.type);
     EXPECT_EQ(value, enum_type.ToValue());
+    EXPECT_EQ(enum_type.Clone().ToValue(), enum_type.ToValue());
   }
   {
     enums::OptionalEnumType enum_type;
@@ -132,6 +137,7 @@ TEST(JsonSchemaCompilerEnumsTest, OptionalEnumTypePopulate) {
     EXPECT_TRUE(enums::OptionalEnumType::Populate(value.GetDict(), enum_type));
     EXPECT_EQ(enums::Enumeration::kNone, enum_type.type);
     EXPECT_EQ(value, enum_type.ToValue());
+    EXPECT_EQ(enum_type.Clone().ToValue(), enum_type.ToValue());
   }
   {
     enums::OptionalEnumType enum_type;

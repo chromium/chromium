@@ -274,6 +274,10 @@ class _Generator(object):
             .Append('static bool Populate(%s);' % self._GenerateParams(
                 ('const base::Value::Dict& value', '%s& out' % classname)))
           )
+        (c.Append()
+          .Comment('Creates a deep copy of %s.' % classname)
+          .Append('%s Clone() const;' % classname)
+        )
         if is_toplevel:
           (c.Append()
             .Comment('Creates a %s object from a base::Value, or NULL on '

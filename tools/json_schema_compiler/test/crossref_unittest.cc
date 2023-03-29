@@ -48,6 +48,8 @@ TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
   // Test ToValue of the compiled type --> value.
   base::Value::Dict crossref_value = crossref_type.ToValue();
   EXPECT_EQ(crossref_orig, crossref_value);
+
+  EXPECT_EQ(crossref_type.Clone().ToValue(), crossref_type.ToValue());
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {

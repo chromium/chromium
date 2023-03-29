@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/any.h"
 
-TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
+TEST(JsonSchemaCompilerAnyTest, PopulateAndClone) {
   {
     test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
@@ -17,6 +17,9 @@ TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
     EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
     base::Value::Dict any_type_to_value(any_type.ToValue());
     EXPECT_EQ(any_type_dict, any_type_to_value);
+
+    test::api::any::AnyType any_type_copy = any_type.Clone();
+    EXPECT_EQ(any_type_dict, any_type_copy.ToValue());
   }
   {
     test::api::any::AnyType any_type;
@@ -25,6 +28,9 @@ TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
     EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
     base::Value::Dict any_type_to_value(any_type.ToValue());
     EXPECT_EQ(any_type_dict, any_type_to_value);
+
+    test::api::any::AnyType any_type_copy = any_type.Clone();
+    EXPECT_EQ(any_type_dict, any_type_copy.ToValue());
   }
 }
 

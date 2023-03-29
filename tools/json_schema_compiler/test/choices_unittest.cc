@@ -27,6 +27,12 @@ TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
   {
     absl::optional<TakesIntegers::Params> params(
         TakesIntegers::Params::Create(List(base::Value(true)).GetList()));
+
+    static_assert(!std::is_copy_constructible_v<TakesIntegers::Params>);
+    static_assert(!std::is_copy_assignable_v<TakesIntegers::Params>);
+    static_assert(std::is_move_constructible_v<TakesIntegers::Params>);
+    static_assert(std::is_move_assignable_v<TakesIntegers::Params>);
+
     EXPECT_FALSE(params);
   }
   {
@@ -35,6 +41,7 @@ TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->nums.as_integers);
     EXPECT_EQ(6, *params->nums.as_integer);
+    EXPECT_EQ(6, *params->nums.Clone().as_integer);
   }
   {
     absl::optional<TakesIntegers::Params> params(TakesIntegers::Params::Create(
@@ -42,6 +49,7 @@ TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->nums.as_integers);
     EXPECT_EQ(Vector(2, 6, 8), *params->nums.as_integers);
+    EXPECT_EQ(Vector(2, 6, 8), *params->nums.Clone().as_integers);
   }
 }
 
@@ -53,6 +61,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
+    EXPECT_EQ("asdf", *params->string_info.Clone().strings.as_string);
     EXPECT_FALSE(params->string_info.integers);
   }
   {
@@ -64,9 +73,11 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
+    EXPECT_EQ("asdf", *params->string_info.Clone().strings.as_string);
     ASSERT_TRUE(params->string_info.integers);
     EXPECT_FALSE(params->string_info.integers->as_integers);
     EXPECT_EQ(6, *params->string_info.integers->as_integer);
+    EXPECT_EQ(6, *params->string_info.Clone().integers->as_integer);
   }
 }
 
@@ -121,6 +132,12 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
   dict.Set("strings", std::move(strings_value));
 
   choices::ChoiceType out;
+
+  static_assert(!std::is_copy_constructible_v<choices::ChoiceType>);
+  static_assert(!std::is_copy_assignable_v<choices::ChoiceType>);
+  static_assert(std::is_move_constructible_v<choices::ChoiceType>);
+  static_assert(std::is_move_assignable_v<choices::ChoiceType>);
+
   ASSERT_TRUE(choices::ChoiceType::Populate(dict, out));
   ASSERT_TRUE(out.integers.as_integer);
   EXPECT_FALSE(out.integers.as_integers);

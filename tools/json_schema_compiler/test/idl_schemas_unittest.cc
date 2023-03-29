@@ -31,6 +31,11 @@ namespace ObjectFunction1 = test::api::idl_object_types::ObjectFunction1;
 
 TEST(IdlCompiler, Basics) {
   // Test MyType1.
+  static_assert(!std::is_copy_constructible_v<MyType1>);
+  static_assert(!std::is_copy_assignable_v<MyType1>);
+  static_assert(std::is_move_constructible_v<MyType1>);
+  static_assert(std::is_move_assignable_v<MyType1>);
+
   MyType1 a;
   a.x = 5;
   a.y = std::string("foo");
@@ -38,6 +43,7 @@ TEST(IdlCompiler, Basics) {
   EXPECT_TRUE(MyType1::Populate(a.ToValue(), b));
   EXPECT_EQ(a.x, b.x);
   EXPECT_EQ(a.y, b.y);
+  EXPECT_EQ(a.Clone().ToValue(), a.ToValue());
 
   // Test Function2, which takes an integer parameter.
   base::Value::List list;

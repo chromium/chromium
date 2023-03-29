@@ -159,6 +159,7 @@ class _Generator(object):
             classname_in_namespace, type_.properties.values()))
 
       if type_.origin.from_json:
+        c.Cblock(self._GenerateClone(classname_in_namespace, type_))
         if type_.property_type is not PropertyType.CHOICES:
           c.Cblock(self._GenerateTypePopulate(classname_in_namespace, type_))
         c.Cblock(self._GenerateTypePopulateFromValue(
@@ -225,6 +226,70 @@ class _Generator(object):
       s = ''
     s = s + ' {}'
     return Code().Append(s)
+
+  def _GenerateCloneItem(self, type_, field_name, is_optional):
+    """Generates the cloning statement for an individual data member.
+    """
+
+    underlying_type = self._type_helper.FollowRef(type_)
+    c = Code()
+
+    if (type_.property_type == PropertyType.ARRAY and
+        self._type_helper.FollowRef(type_.item_type).property_type in (
+            PropertyType.ANY,
+            PropertyType.OBJECT)):
+      if is_optional:
+        (c.Sblock('if (%(name)s) {')
+            .Append('out.%(name)s.emplace();')
+            .Append('out.%(name)s->reserve(%(name)s->size());')
+            .Sblock('for (const auto& element : *%(name)s) {')
+              .Append('out.%(name)s->push_back(element.Clone());')
+            .Eblock('}')
+          .Eblock('}'))
+      else:
+        (c.Append('out.%(name)s.reserve(%(name)s.size());')
+          .Sblock('for (const auto& element : %(name)s) {')
+            .Append('out.%(name)s.push_back(element.Clone());')
+          .Eblock('}'))
+    elif (underlying_type.property_type == PropertyType.OBJECT or
+          underlying_type.property_type == PropertyType.ANY or
+          underlying_type.property_type == PropertyType.CHOICES or
+          (underlying_type.property_type == PropertyType.FUNCTION and not
+          type_.is_serializable_function)):
+      if is_optional:
+        (c.Sblock('if (%(name)s) {')
+          .Append('out.%(name)s = %(name)s->Clone();')
+          .Eblock('}'))
+      else:
+        c.Append('out.%(name)s = %(name)s.Clone();')
+    else:
+      c.Append('out.%(name)s = %(name)s;')
+
+    c.Substitute({'name': field_name})
+    return c
+
+  def _GenerateClone(self, cpp_namespace, type_):
+    """Generates the function for cloning a type.
+    """
+    classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
+    c = Code()
+    c.Sblock('%(namespace)s %(namespace)s::Clone() const {')
+    c.Append('%(classname)s out;')
+
+    if type_.property_type is PropertyType.CHOICES:
+      for choice in type_.choices:
+        c.Concat(self._GenerateCloneItem(
+          choice, 'as_%s' % choice.unix_name, is_optional=True))
+    else:
+      for prop in type_.properties.values():
+        c.Concat(self._GenerateCloneItem(
+          prop.type_, prop.type_.unix_name, is_optional=prop.optional))
+
+    (c.Append('return out;')
+      .Eblock('}')
+      .Substitute({'namespace': cpp_namespace, 'classname': classname}))
+    return c
+
 
   def _GenerateTypePopulate(self, cpp_namespace, type_):
     """Generates the function for populating a type given a pointer to it.

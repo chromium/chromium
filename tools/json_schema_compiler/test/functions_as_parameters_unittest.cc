@@ -51,6 +51,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, out));
     EXPECT_EQ(expected_value, out.ToValue());
+    EXPECT_EQ(out.Clone().ToValue(), out.ToValue());
   }
 }
 
@@ -60,6 +61,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(empty_dictionary, out));
     EXPECT_FALSE(out.event_callback.has_value());
+    EXPECT_EQ(out.Clone().ToValue(), out.ToValue());
   }
   {
     base::Value::Dict value;
@@ -68,6 +70,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, out));
     EXPECT_TRUE(out.event_callback.has_value());
+    EXPECT_EQ(out.Clone().ToValue(), out.ToValue());
   }
   {
     base::Value::Dict value;
@@ -76,6 +79,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, out));
     EXPECT_TRUE(out.event_callback.has_value());
+    EXPECT_EQ(out.Clone().ToValue(), out.ToValue());
   }
 }
 
@@ -106,6 +110,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, SerializableFunctionTypes) {
   ASSERT_TRUE(
       SerializableFunctionType::Populate(std::move(serialized), deserialized));
   EXPECT_EQ(kFunction, serializable_type.function_property);
+  EXPECT_EQ(serializable_type.Clone().ToValue(), serializable_type.ToValue());
 }
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest,
@@ -121,6 +126,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest,
         std::move(serialized), deserialized));
     ASSERT_TRUE(serializable_type.function_property);
     EXPECT_EQ(kFunction, *serializable_type.function_property);
+    EXPECT_EQ(serializable_type.Clone().ToValue(), serializable_type.ToValue());
   }
   {
     // Test without the property set.
@@ -130,5 +136,6 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest,
     ASSERT_TRUE(OptionalSerializableFunctionType::Populate(
         std::move(serialized), deserialized));
     EXPECT_FALSE(serializable_type.function_property);
+    EXPECT_EQ(serializable_type.Clone().ToValue(), serializable_type.ToValue());
   }
 }

@@ -55,6 +55,8 @@ TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
     arrays::BasicArrayType basic_array_type;
     ASSERT_TRUE(arrays::BasicArrayType::Populate(value, basic_array_type));
     EXPECT_EQ(value, basic_array_type.ToValue());
+
+    EXPECT_EQ(basic_array_type.Clone().ToValue(), basic_array_type.ToValue());
   }
 }
 
@@ -83,6 +85,9 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
   // Test ToValue.
   base::Value::Dict as_value(enum_array_reference.ToValue());
   EXPECT_EQ(value, as_value);
+
+  EXPECT_EQ(enum_array_reference.Clone().ToValue(),
+            enum_array_reference.ToValue());
 }
 
 TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
@@ -125,6 +130,8 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   // Test ToValue.
   base::Value::Dict as_value(enum_array_mixed.ToValue());
   EXPECT_EQ(value, as_value);
+
+  EXPECT_EQ(enum_array_mixed.Clone().ToValue(), enum_array_mixed.ToValue());
 }
 
 TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
@@ -145,6 +152,8 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     ASSERT_TRUE(
         arrays::OptionalEnumArrayType::Populate(value, enum_array_type));
     EXPECT_EQ(enums, *enum_array_type.types);
+
+    EXPECT_EQ(enum_array_type.Clone().ToValue(), enum_array_type.ToValue());
   }
   {
     base::Value::Dict value;
@@ -173,6 +182,8 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     EXPECT_EQ(1, ref_array_type.refs[0].val);
     EXPECT_EQ(2, ref_array_type.refs[1].val);
     EXPECT_EQ(3, ref_array_type.refs[2].val);
+
+    EXPECT_EQ(ref_array_type.Clone().ToValue(), ref_array_type.ToValue());
   }
   {
     base::Value::Dict value;
