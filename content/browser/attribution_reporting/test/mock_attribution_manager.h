@@ -33,6 +33,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
@@ -140,7 +141,9 @@ class MockAttributionManager : public AttributionManager {
                              int status,
                              base::Time);
 #if BUILDFLAG(IS_ANDROID)
-  void NotifyOsRegistration(const OsRegistration&, bool is_debug_key_allowed);
+  void NotifyOsRegistration(const OsRegistration&,
+                            bool is_debug_key_allowed,
+                            attribution_reporting::mojom::OsRegistrationResult);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager>);

@@ -412,7 +412,8 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
 void AttributionInternalsHandlerImpl::OnOsRegistration(
     base::Time time,
     const OsRegistration& registration,
-    bool is_debug_key_allowed) {
+    bool is_debug_key_allowed,
+    attribution_reporting::mojom::OsRegistrationResult result) {
   auto web_ui_os_registration =
       attribution_internals::mojom::WebUIOsRegistration::New();
   web_ui_os_registration->time = time.ToJsTimeIgnoringNull();
@@ -420,6 +421,7 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
   web_ui_os_registration->top_level_origin = registration.top_level_origin;
   web_ui_os_registration->is_debug_key_allowed = is_debug_key_allowed;
   web_ui_os_registration->type = registration.GetType();
+  web_ui_os_registration->result = result;
 
   observer_->OnOsRegistration(std::move(web_ui_os_registration));
 }

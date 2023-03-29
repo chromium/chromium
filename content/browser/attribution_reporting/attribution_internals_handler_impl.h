@@ -82,9 +82,11 @@ class AttributionInternalsHandlerImpl
       attribution_reporting::mojom::SourceRegistrationError) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  void OnOsRegistration(base::Time time,
-                        const OsRegistration&,
-                        bool is_debug_key_allowed) override;
+  void OnOsRegistration(
+      base::Time time,
+      const OsRegistration&,
+      bool is_debug_key_allowed,
+      attribution_reporting::mojom::OsRegistrationResult) override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   void OnObserverDisconnected();

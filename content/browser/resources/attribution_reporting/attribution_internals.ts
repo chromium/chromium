@@ -12,7 +12,7 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {TriggerAttestation} from './attribution.mojom-webui.js';
 import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
-import {OsRegistrationType} from './attribution_reporting.mojom-webui.js';
+import {OsRegistrationResult, OsRegistrationType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
@@ -706,13 +706,14 @@ class OsRegistration {
   registrationUrl: string;
   topLevelOrigin: string;
   registrationType: string;
-  debug: boolean;
+  debugKeyAllowed: boolean;
+  result: string;
 
   constructor(mojo: WebUIOsRegistration) {
     this.timestamp = new Date(mojo.time);
     this.registrationUrl = mojo.registrationUrl.url;
     this.topLevelOrigin = originToText(mojo.topLevelOrigin);
-    this.debug = mojo.isDebugKeyAllowed;
+    this.debugKeyAllowed = mojo.isDebugKeyAllowed;
 
     switch (mojo.type) {
       case OsRegistrationType.kSource:
@@ -720,6 +721,26 @@ class OsRegistration {
         break;
       case OsRegistrationType.kTrigger:
         this.registrationType = 'OS Trigger';
+        break;
+      default:
+        assertNotReached();
+    }
+
+    switch (mojo.result) {
+      case OsRegistrationResult.kPassedToOs:
+        this.result = 'Passed to OS';
+        break;
+      case OsRegistrationResult.kUnsupported:
+        this.result = 'Unsupported';
+        break;
+      case OsRegistrationResult.kInvalidRegistrationUrl:
+        this.result = 'Invalid registration URL';
+        break;
+      case OsRegistrationResult.kProhibitedByBrowserPolicy:
+        this.result = 'Prohibited by browser policy';
+        break;
+      case OsRegistrationResult.kExcessiveQueueSize:
+        this.result = 'Excessive queue size';
         break;
       default:
         assertNotReached();
@@ -741,7 +762,8 @@ class OsRegistrationTableModel extends TableModel<OsRegistration> {
           new ValueColumn<OsRegistration, string>(
               'Top-Level Origin', (e) => e.topLevelOrigin),
           new ValueColumn<OsRegistration, boolean>(
-              'Debug Key Allowed', (e) => e.debug),
+              'Debug Key Allowed', (e) => e.debugKeyAllowed),
+          new ValueColumn<OsRegistration, string>('Result', (e) => e.result),
         ],
         0,
         'No OS Registrations',

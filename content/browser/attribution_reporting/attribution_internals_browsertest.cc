@@ -63,6 +63,7 @@
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
@@ -435,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[1]?.innerText === 'OS Source' &&
           table.children[0].children[2]?.innerText === 'https://a.test/' &&
           table.children[0].children[3]?.innerText === 'https://b.test' &&
-          table.children[0].children[4]?.innerText === 'false') {
+          table.children[0].children[4]?.innerText === 'false' &&
+          table.children[0].children[5]?.innerText === 'Passed to OS') {
         obs.disconnect();
         document.title = $1;
       }
@@ -450,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       OsRegistration(GURL("https://a.test"),
                      url::Origin::Create(GURL("https://b.test")),
                      AttributionInputEvent()),
-      /*is_debug_key_allowed=*/false);
+      /*is_debug_key_allowed=*/false,
+      attribution_reporting::mojom::OsRegistrationResult::kPassedToOs);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 #endif  // BUILDFLAG(IS_ANDROID)

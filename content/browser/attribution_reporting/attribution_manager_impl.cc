@@ -84,6 +84,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
@@ -93,8 +94,10 @@ namespace {
 
 using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
+
 #if BUILDFLAG(IS_ANDROID)
-using OsRegistrationType = ::attribution_reporting::mojom::OsRegistrationType;
+using ::attribution_reporting::mojom::OsRegistrationResult;
+using ::attribution_reporting::mojom::OsRegistrationType;
 #endif
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -1251,12 +1254,18 @@ void AttributionManagerImpl::HandleOsRegistration(
     OsRegistration registration,
     GlobalRenderFrameHostId render_frame_id) {
   if (!attribution_os_level_manager_) {
+    NotifyOsRegistration(registration,
+                         /*is_debug_key_allowed=*/false,
+                         OsRegistrationResult::kUnsupported);
     return;
   }
 
   const auto registration_origin =
       url::Origin::Create(registration.registration_url);
   if (registration_origin.opaque()) {
+    NotifyOsRegistration(registration,
+                         /*is_debug_key_allowed=*/false,
+                         OsRegistrationResult::kInvalidRegistrationUrl);
     return;
   }
 
@@ -1282,6 +1291,9 @@ void AttributionManagerImpl::HandleOsRegistration(
                           RenderFrameHost::FromID(render_frame_id),
                           source_origin, destination_origin,
                           /*reporting_origin=*/&registration_origin)) {
+    NotifyOsRegistration(registration,
+                         /*is_debug_key_allowed=*/false,
+                         OsRegistrationResult::kProhibitedByBrowserPolicy);
     return;
   }
 
@@ -1291,6 +1303,9 @@ void AttributionManagerImpl::HandleOsRegistration(
   bool allowed = size_before_push < max_pending_events_;
   base::UmaHistogramBoolean("Conversions.EnqueueOsEventAllowed", allowed);
   if (!allowed) {
+    NotifyOsRegistration(registration,
+                         /*is_debug_key_allowed=*/false,
+                         OsRegistrationResult::kExcessiveQueueSize);
     return;
   }
 
@@ -1315,13 +1330,15 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
               return;
             }
 
+            DCHECK(manager->attribution_os_level_manager_);
             DCHECK(!manager->pending_os_events_.empty());
 
             {
               const auto& event = manager->pending_os_events_.front();
               manager->attribution_os_level_manager_->Register(
                   event, is_debug_key_allowed);
-              manager->NotifyOsRegistration(event, is_debug_key_allowed);
+              manager->NotifyOsRegistration(event, is_debug_key_allowed,
+                                            OsRegistrationResult::kPassedToOs);
             }
 
             manager->pending_os_events_.pop_front();
@@ -1334,10 +1351,11 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
 
 void AttributionManagerImpl::NotifyOsRegistration(
     const OsRegistration& registration,
-    bool is_debug_key_allowed) {
+    bool is_debug_key_allowed,
+    OsRegistrationResult result) {
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnOsRegistration(now, registration, is_debug_key_allowed);
+    observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
   }
 }
 

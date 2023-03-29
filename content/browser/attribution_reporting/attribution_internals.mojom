@@ -184,12 +184,13 @@ struct WebUISourceRegistration {
 // displayed as a log by WebUI.
 struct WebUIOsRegistration {
   // Contains msec since the Unix epoch, as returned by
-  // base::Time::toJsTimeIgnoringNull().
+  // base::Time::ToJsTimeIgnoringNull().
   double time;
   url.mojom.Url registration_url;
   url.mojom.Origin top_level_origin;
   bool is_debug_key_allowed;
   attribution_reporting.mojom.OsRegistrationType type;
+  attribution_reporting.mojom.OsRegistrationResult result;
 };
 
 // Observer for events relevant to the attribution internals WebUI.
@@ -218,7 +219,8 @@ interface Observer {
   // Called when a trigger is registered, regardless of success or failure.
   OnTriggerHandled(WebUITrigger trigger);
 
-  // Called when an OS source or trigger is successfully passed to the OS.
+  // Called when an OS source or trigger is registered, regardless of success
+  // or failure.
   OnOsRegistration(WebUIOsRegistration registration);
 };
 

@@ -17,3 +17,11 @@ enum OsRegistrationType {
   kSource = 0,
   kTrigger = 1,
 };
+
+enum OsRegistrationResult {
+  kPassedToOs = 0,
+  kUnsupported = 1,
+  kInvalidRegistrationUrl = 2,
+  kProhibitedByBrowserPolicy = 3,
+  kExcessiveQueueSize = 4,
+};
