@@ -171,11 +171,13 @@ TEST_F(WebAppPrefsUtilsTest, TestTakeAllWebAppInstallSources) {
       prefs()->GetUserPrefValue(prefs::kWebAppsPreferences);
   ASSERT_TRUE(web_apps_prefs);
   ASSERT_TRUE(web_apps_prefs->is_dict());
-  EXPECT_EQ(1u, web_apps_prefs->DictSize());
-  EXPECT_FALSE(web_apps_prefs->FindPath("app1"));
-  EXPECT_FALSE(web_apps_prefs->FindPath("app2"));
-  EXPECT_TRUE(web_apps_prefs->FindPath("app3"));
-  EXPECT_FALSE(web_apps_prefs->FindPath("app3.latest_web_app_install_source"));
+  const base::Value::Dict& web_apps_pref_dict = web_apps_prefs->GetDict();
+  EXPECT_EQ(1u, web_apps_pref_dict.size());
+  EXPECT_FALSE(web_apps_pref_dict.Find("app1"));
+  EXPECT_FALSE(web_apps_pref_dict.Find("app2"));
+  EXPECT_TRUE(web_apps_pref_dict.Find("app3"));
+  EXPECT_FALSE(web_apps_pref_dict.FindByDottedPath(
+      "app3.latest_web_app_install_source"));
 }
 
 }  // namespace web_app
