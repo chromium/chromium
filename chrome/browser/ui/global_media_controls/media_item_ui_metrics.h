@@ -33,6 +33,8 @@ enum GlobalMediaControlsCastMode {
 
 class MediaItemUIMetrics {
  public:
+  static void RecordStartCastMode(media_router::MediaCastMode cast_mode);
+  static void RecordStopCastMode(media_router::MediaCastMode cast_mode);
   static void RecordStartCastingMetrics(
       media_router::SinkIconType sink_icon_type,
       media_router::MediaCastMode cast_mode,

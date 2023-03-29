@@ -32,13 +32,23 @@ GlobalMediaControlsCastMode GetGlobalMediaControlsCastMode(
 
 }  // namespace
 
+void MediaItemUIMetrics::RecordStartCastMode(
+    media_router::MediaCastMode cast_mode) {
+  base::UmaHistogramEnumeration(kStartCastingModeHistogramName,
+                                GetGlobalMediaControlsCastMode(cast_mode));
+}
+void MediaItemUIMetrics::RecordStopCastMode(
+    media_router::MediaCastMode cast_mode) {
+  base::UmaHistogramEnumeration(kStopCastingModeHistogramName,
+                                GetGlobalMediaControlsCastMode(cast_mode));
+}
+
 void MediaItemUIMetrics::RecordStartCastingMetrics(
     media_router::SinkIconType sink_icon_type,
     media_router::MediaCastMode cast_mode,
     GlobalMediaControlsEntryPoint entry_point) {
   MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(sink_icon_type);
-  base::UmaHistogramEnumeration(kStartCastingModeHistogramName,
-                                GetGlobalMediaControlsCastMode(cast_mode));
+  RecordStartCastMode(cast_mode);
 
   GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point) {
@@ -59,8 +69,7 @@ void MediaItemUIMetrics::RecordStartCastingMetrics(
 void MediaItemUIMetrics::RecordStopCastingMetrics(
     media_router::MediaCastMode cast_mode,
     GlobalMediaControlsEntryPoint entry_point) {
-  base::UmaHistogramEnumeration(kStopCastingModeHistogramName,
-                                GetGlobalMediaControlsCastMode(cast_mode));
+  RecordStopCastMode(cast_mode);
 
   GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point) {
