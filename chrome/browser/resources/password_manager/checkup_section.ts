@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './shared_style.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -212,6 +213,19 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         this.checkedPasswordsText_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
                 'checkedPasswords', this.status_.totalNumberOfPasswords || 0);
+        if (!!oldStatus && oldStatus.state === CheckState.RUNNING &&
+            newStatus.state !== CheckState.NO_PASSWORDS) {
+          let stateText: string;
+          if (this.compromisedPasswords_.length > 0) {
+            stateText = this.i18n('checkupResultRed');
+          } else if (this.hasAnyIssues_()) {
+            stateText = this.i18n('checkupResultYellow');
+          } else {
+            stateText = this.i18n('checkupResultGreen');
+          }
+          getAnnouncerInstance().announce(
+              [this.checkedPasswordsText_, stateText].join('. '));
+        }
         return;
       case CheckState.CANCELED:
         this.checkedPasswordsText_ = this.i18n('checkupCanceled');
