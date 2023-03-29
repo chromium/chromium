@@ -74,7 +74,7 @@ constexpr char kNote[] = "note";
 - (void)passwordDetailsTableViewControllerDidDisappear {
 }
 
-- (void)showPasscodeDialog {
+- (void)showPasscodeDialogForReason:(PasscodeDialogReason)reason {
 }
 
 - (void)showPasswordDeleteDialogWithPasswordDetails:(PasswordDetails*)password
