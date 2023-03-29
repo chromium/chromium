@@ -5,30 +5,30 @@
 // https://gpuweb.github.io/gpuweb/
 
 interface mixin GPURenderEncoderBase {
-    void setPipeline(GPURenderPipeline pipeline);
+    [NoAllocDirectCall] void setPipeline(GPURenderPipeline pipeline);
 
     void setIndexBuffer(GPUBuffer buffer,
                         GPUIndexFormat format,
                         optional GPUSize64 offset = 0,
                         optional GPUSize64 size);
 
-    void setVertexBuffer(GPUIndex32 slot,
-                         GPUBuffer buffer,
-                         optional GPUSize64 offset = 0,
-                         optional GPUSize64 size);
+    [NoAllocDirectCall] void setVertexBuffer(GPUIndex32 slot,
+                                             GPUBuffer buffer,
+                                             optional GPUSize64 offset = 0,
+                                             optional GPUSize64 size);
 
-    void draw(GPUSize32 vertexCount,
-              optional GPUSize32 instanceCount = 1,
-              optional GPUSize32 firstVertex = 0,
-              optional GPUSize32 firstInstance = 0);
-    void drawIndexed(GPUSize32 indexCount,
-                     optional GPUSize32 instanceCount = 1,
-                     optional GPUSize32 firstIndex = 0,
-                     optional GPUSignedOffset32 baseVertex = 0,
-                     optional GPUSize32 firstInstance = 0);
+    [NoAllocDirectCall] void draw(GPUSize32 vertexCount,
+                                  optional GPUSize32 instanceCount = 1,
+                                  optional GPUSize32 firstVertex = 0,
+                                  optional GPUSize32 firstInstance = 0);
+    [NoAllocDirectCall] void drawIndexed(GPUSize32 indexCount,
+                                         optional GPUSize32 instanceCount = 1,
+                                         optional GPUSize32 firstIndex = 0,
+                                         optional GPUSignedOffset32 baseVertex = 0,
+                                         optional GPUSize32 firstInstance = 0);
 
-    void drawIndirect(GPUBuffer indirectBuffer,
-                      GPUSize64 indirectOffset);
-    void drawIndexedIndirect(GPUBuffer indirectBuffer,
-                             GPUSize64 indirectOffset);
+    [NoAllocDirectCall] void drawIndirect(GPUBuffer indirectBuffer,
+                                          GPUSize64 indirectOffset);
+    [NoAllocDirectCall] void drawIndexedIndirect(GPUBuffer indirectBuffer,
+                                                 GPUSize64 indirectOffset);
 };

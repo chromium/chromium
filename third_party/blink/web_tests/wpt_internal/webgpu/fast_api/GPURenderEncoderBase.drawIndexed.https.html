@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function optimizedMethodCall(renderEncoder, indexCount, instanceCount, firstIndex, baseVertex, firstInstance) {
+  renderEncoder.drawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
+}
+
+function test(t, hotLoop, renderEncoder, indexCount, instanceCount, firstIndex, baseVertex, firstInstance) {
+  try {
+    hotLoop(1, renderEncoder, indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  assert_unreached("A TypeError should be thrown.");
+}
+
+async function testRenderEncoder(t, device, renderEncoder) {
+  function hotLoop(count, renderEncoder, indexCount, instanceCount, firstIndex, baseVertex, firstInstance) {
+    for (let i = 0; i < count; ++i) {
+      optimizedMethodCall(renderEncoder, indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
+    }
+  }
+  hotLoop(100, renderEncoder, 1, 2, 3, 4, 5);
+
+  // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
+  // An exception should be thrown.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  test(t, hotLoop, renderEncoder, 0xFFFFFFFF + 1, 2, 3, 4, 5);
+  test(t, hotLoop, renderEncoder, 1, 0xFFFFFFFF + 1, 3, 4, 5);
+  test(t, hotLoop, renderEncoder, 1, 2, 0xFFFFFFFF + 1, 4, 5);
+  test(t, hotLoop, renderEncoder, 1, 2, 3, 4, 0xFFFFFFFF + 1);
+
+  // baseVertex is a GPUSignedOffset32
+  test(t, hotLoop, renderEncoder, 1, 2, 3, 0x7FFFFFFF + 1, 5);
+  test(t, hotLoop, renderEncoder, 1, 2, 3, -0x80000000 - 1, 5);
+}
+
+async function testRenderPassEncoder(t, device) {
+  const encoder = device.createCommandEncoder();
+
+  const colorTexture = device.createTexture({
+    format: 'rgba8unorm',
+    size: [4, 4, 1],
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+  const renderPassEncoder = encoder.beginRenderPass({
+    colorAttachments: [{
+      view: colorTexture.createView(),
+      loadOp: 'load',
+      storeOp: 'store',
+    }],
+  });
+  await testRenderEncoder(t, device, renderPassEncoder);
+}
+
+async function testRenderBundleEncoder(t, device) {
+  const renderBundleEncoder = device.createRenderBundleEncoder({
+    colorFormats: ['rgba8unorm'],
+  });
+  await testRenderEncoder(t, device, renderBundleEncoder);
+}
+
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+
+  await testRenderPassEncoder(t, device);
+  await testRenderBundleEncoder(t, device);
+});
+</script>
+</body>
+</html>

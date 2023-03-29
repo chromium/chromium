@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function optimizedMethodCall(renderEncoder, indirectBuffer, indirectOffset) {
+  renderEncoder.drawIndirect(indirectBuffer, indirectOffset);
+}
+
+function test(t, hotLoop, renderEncoder, indirectBuffer, indirectOffset) {
+  try {
+    hotLoop(1, renderEncoder, indirectBuffer, indirectOffset);
+  } catch(e) {
+    assert_true(e instanceof TypeError);
+    return;
+  }
+  assert_unreached("A TypeError should be thrown.");
+}
+
+async function testRenderEncoder(t, device, renderEncoder, indirectBuffer) {
+  function hotLoop(count, renderEncoder, indirectBuffer, indirectOffset) {
+    for (let i = 0; i < count; ++i) {
+      optimizedMethodCall(renderEncoder, indirectBuffer, indirectOffset);
+    }
+  }
+  hotLoop(100, renderEncoder, indirectBuffer, 4);
+
+  // Wait a bit for V8 to optimize. Then call again with an out-of-bounds value.
+  // An exception should be thrown.
+  await new Promise(resolve => t.step_timeout(resolve, 50));
+
+  // kJSMaxInteger = 0x20000000000000 - 1;
+  test(t, hotLoop, renderEncoder, indirectBuffer, 0x20000000000000);
+}
+
+async function testRenderPassEncoder(t, device, indirectBuffer) {
+  const encoder = device.createCommandEncoder();
+
+  const colorTexture = device.createTexture({
+    format: 'rgba8unorm',
+    size: [4, 4, 1],
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+  const renderPassEncoder = encoder.beginRenderPass({
+    colorAttachments: [{
+      view: colorTexture.createView(),
+      loadOp: 'load',
+      storeOp: 'store',
+    }],
+  });
+  await testRenderEncoder(t, device, renderPassEncoder, indirectBuffer);
+}
+
+async function testRenderBundleEncoder(t, device, indirectBuffer) {
+  const renderBundleEncoder = device.createRenderBundleEncoder({
+    colorFormats: ['rgba8unorm'],
+  });
+  await testRenderEncoder(t, device, renderBundleEncoder, indirectBuffer);
+}
+
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+
+  const indirectBuffer = device.createBuffer({
+    size: 32,
+    usage: GPUBufferUsage.INDIRECT,
+  });
+  await testRenderPassEncoder(t, device, indirectBuffer);
+  await testRenderBundleEncoder(t, device, indirectBuffer);
+});
+</script>
+</body>
+</html>
