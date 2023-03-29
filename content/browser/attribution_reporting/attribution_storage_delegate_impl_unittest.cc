@@ -615,5 +615,54 @@ TEST_F(AttributionStorageDelegateImplTestFeatureConfigured,
             Lt(trigger_time + base::Minutes(30))));
 }
 
+// Verifies that field test params are validated correctly.
+class AttributionStorageDelegateImplTestInvalidFeatureConfigured
+    : public testing::Test {
+ public:
+  AttributionStorageDelegateImplTestInvalidFeatureConfigured() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kConversionMeasurement,
+          {{"first_report_window_deadline", "-1d"},
+           {"second_report_window_deadline", "-5d"},
+           {"aggregate_report_min_delay", "-1m"},
+           {"aggregate_report_delay_span", "-29m"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
+       NegativeFirstWindow_DefaultUsed) {
+  base::Time source_time = base::Time::Now();
+  const AttributionReport report =
+      GetReport(source_time, /*trigger_time=*/source_time);
+  EXPECT_EQ(
+      source_time + base::Days(2) + base::Hours(1),
+      AttributionStorageDelegateImpl().GetEventLevelReportTime(
+          report.attribution_info().source, report.attribution_info().time));
+}
+
+TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
+       NegativeSecondWindow_DefaultUsed) {
+  base::Time source_time = base::Time::Now();
+  base::Time trigger_time = source_time + base::Days(2) + base::Minutes(1);
+  const AttributionReport report = GetReport(source_time, trigger_time);
+  EXPECT_EQ(
+      source_time + base::Days(7) + base::Hours(1),
+      AttributionStorageDelegateImpl().GetEventLevelReportTime(
+          report.attribution_info().source, report.attribution_info().time));
+}
+
+TEST_F(AttributionStorageDelegateImplTestInvalidFeatureConfigured,
+       NegativeAggregateParams_DefaultsUsed) {
+  base::Time trigger_time = base::Time::Now();
+  EXPECT_THAT(
+      AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
+      AllOf(Ge(trigger_time + base::Minutes(10)),
+            Lt(trigger_time + base::Hours(1))));
+}
+
 }  // namespace
 }  // namespace content

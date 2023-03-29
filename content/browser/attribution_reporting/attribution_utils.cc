@@ -4,10 +4,13 @@
 
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,26 +27,41 @@ using ::attribution_reporting::mojom::SourceType;
 
 constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 
+constexpr base::TimeDelta kDefaultFirstReportWindowDeadline = base::Days(2);
+constexpr base::TimeDelta kDefaultSecondReportWindowDeadline = base::Days(7);
+
 const base::FeatureParam<base::TimeDelta> kFirstReportWindowDeadline{
     &blink::features::kConversionMeasurement, "first_report_window_deadline",
-    base::Days(2)};
+    kDefaultFirstReportWindowDeadline};
 
 const base::FeatureParam<base::TimeDelta> kSecondReportWindowDeadline{
     &blink::features::kConversionMeasurement, "second_report_window_deadline",
-    base::Days(7)};
+    kDefaultSecondReportWindowDeadline};
 
-base::span<const base::TimeDelta> EarlyDeadlines(SourceType source_type) {
-  // TODO(tquintanilla): Investigate techniques to valid these params.
-  static const base::TimeDelta kEarlyDeadlinesNavigation[] = {
-      kFirstReportWindowDeadline.Get(),
-      kSecondReportWindowDeadline.Get(),
-  };
+std::vector<base::TimeDelta> EarlyDeadlines(SourceType source_type) {
+  base::TimeDelta first_report_window_deadline =
+      kFirstReportWindowDeadline.Get();
+  base::TimeDelta second_report_window_deadline =
+      kSecondReportWindowDeadline.Get();
+
+  if (first_report_window_deadline.is_negative() ||
+      first_report_window_deadline >= second_report_window_deadline) {
+    LOG(WARNING) << "Invalid reporting window deadline value(s) - "
+                 << "Reporting window deadlines should be non-negative "
+                 << "and the first deadline should be less than the second."
+                 << "Reverting to default values: ["
+                 << kDefaultFirstReportWindowDeadline << ", "
+                 << kDefaultSecondReportWindowDeadline << "]";
+    first_report_window_deadline = kDefaultFirstReportWindowDeadline;
+    second_report_window_deadline = kDefaultSecondReportWindowDeadline;
+  }
 
   switch (source_type) {
     case SourceType::kNavigation:
-      return kEarlyDeadlinesNavigation;
+      return std::vector<base::TimeDelta>{first_report_window_deadline,
+                                          second_report_window_deadline};
     case SourceType::kEvent:
-      return base::span<const base::TimeDelta>();
+      return std::vector<base::TimeDelta>();
   }
 }
 
@@ -122,7 +140,7 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
   DCHECK_GE(window_index, 0);
   DCHECK_LT(window_index, NumReportWindows(source.source_type()));
 
-  base::span<const base::TimeDelta> early_deadlines =
+  std::vector<base::TimeDelta> early_deadlines =
       EarlyDeadlines(source.source_type());
 
   base::TimeDelta deadline =
