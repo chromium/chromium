@@ -57,7 +57,34 @@ class SendResponseHelper {
   std::unique_ptr<bool> response_;
 };
 
-enum RunFunctionFlags { NONE = 0, INCLUDE_INCOGNITO = 1 << 0 };
+enum RunFunctionFlags : int { NONE = 0, INCLUDE_INCOGNITO = 1 };
+
+// TODO(crbug.com/394840): This struct should be deleted and replaced with an
+// `enum class` type, once all the uses of `RunFunctionFlags` have been removed
+// from the codebase.
+
+// This struct acts as a migration path to allow the gradual replacement of the
+// aforementioned `RunFunctionFlags`, with a new enum type like this:
+//
+//   enum class FunctionMode { kNone, kIncognito, };
+//
+// Once all use of `RunFunctionFlags` are gone, it will be possible to just just
+// remove this polyfill.
+struct FunctionMode {
+  // Fake enum keys.
+  enum Internal {
+    kNone,
+    kIncognito,
+  };
+
+  // Implicit conversion is allowed in this struct, so that it is possible to
+  // gradually migrate all uses of `RunFunctionFlags` to an enum class later on.
+  FunctionMode(int value);  // NOLINT
+
+  operator int() const { return value; }  // NOLINT
+
+  int value = kNone;
+};
 
 // Parses JSON and returns the dictionary, or absl::nullopt if the JSON is
 // invalid or not a dictionary.
@@ -72,6 +99,11 @@ std::string GetString(const base::Value::Dict& val, const std::string& key);
 base::Value::List GetList(const base::Value::Dict& val, const std::string& key);
 base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
 
+// If |val| is a dictionary, return it as one, otherwise create an empty one.
+base::Value::Dict ToDict(absl::optional<base::ValueView> val);
+// If |val| is a list, return it as one, otherwise create an empty one.
+base::Value::List ToList(absl::optional<base::ValueView> val);
+
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
@@ -79,12 +111,12 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags);
+    FunctionMode mode);
 absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     base::Value::List args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags);
+    FunctionMode mode);
 
 // RunFunctionWithDelegateAndReturnSingleResult, except with a NULL
 // implementation of the Delegate.
@@ -96,7 +128,7 @@ absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,
-    RunFunctionFlags flags);
+    FunctionMode mode);
 
 // Run |function| with |args| and return the resulting error. Adds an error to
 // the current test if |function| returns a result. Takes ownership of
@@ -104,7 +136,7 @@ absl::optional<base::Value> RunFunctionAndReturnSingleResult(
 std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context,
-                                      RunFunctionFlags flags);
+                                      FunctionMode mode);
 std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context);
@@ -121,15 +153,16 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
 // we can refactor when we see what is needed.
 bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
-                 content::BrowserContext* context);
+                 content::BrowserContext* context,
+                 FunctionMode mode = FunctionMode::kNone);
 bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-                 RunFunctionFlags flags);
+                 FunctionMode mode);
 bool RunFunction(ExtensionFunction* function,
                  base::Value::List args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-                 RunFunctionFlags flags);
+                 FunctionMode mode);
 
 }  // namespace api_test_utils
 }  // namespace extensions

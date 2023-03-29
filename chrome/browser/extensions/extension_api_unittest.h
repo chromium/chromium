@@ -27,7 +27,7 @@ namespace extensions {
 // background page for the extension and use it in API function calls. (If
 // needed, this could be expanded to allow for alternate WebContents).
 // When calling RunFunction[AndReturn*], |args| should be in JSON format,
-// wrapped in a list. See also RunFunction* in extension_function_test_utils.h.
+// wrapped in a list. See also RunFunction* in api_test_utils.h.
 // TODO(yoz): Move users of this base class to use the equivalent base class
 // in extensions/browser/api_unittest.h.
 class ExtensionApiUnittest : public BrowserWithTestWindowTest {
@@ -50,22 +50,29 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
 
   // Various ways of running an API function. These methods take ownership of
   // |function|. |args| should be in JSON format, wrapped in a list.
-  // See also the RunFunction* methods in extension_function_test_utils.h.
+  // See also the RunFunction* methods in api_test_utils.h.
 
-  // Return the function result as a base::Value.
+  // DEPRECATED. Use RunFunctionAndReturnSingleValue.
   std::unique_ptr<base::Value> RunFunctionAndReturnValue(
       ExtensionFunction* function,
       const std::string& args);
 
-  // Return the function result as a base::Value::Dict, or absl::nullopt.
-  // This will EXPECT-fail if the result is not a base::Value::Dict.
+  // Return the function result as a base::Value, if successful, or nullopt on
+  // failure.
+  absl::optional<base::Value> RunFunctionAndReturnSingleValue(
+      ExtensionFunction* function,
+      const std::string& args);
+
+  // Return the function result as a base::Value::Dict, if successful, or
+  // nullopt on failure. This will EXPECT-fail if the result is not a
+  // base::Value::Dict.
   absl::optional<base::Value::Dict> RunFunctionAndReturnDictionary(
       ExtensionFunction* function,
       const std::string& args);
 
-  // Return the function result as a base::Value, or NULL.
-  // This will EXPECT-fail if the result is not a list.
-  std::unique_ptr<base::Value> RunFunctionAndReturnList(
+  // Return the function result as a base::Value::List, if successful, or
+  // nullopt on failure. This will EXPECT-fail if the result is not a list.
+  absl::optional<base::Value::List> RunFunctionAndReturnList(
       ExtensionFunction* function,
       const std::string& args);
 

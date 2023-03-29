@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -21,20 +22,11 @@
 
 using extensions::ExtensionFunctionDispatcher;
 
-namespace {
-
-absl::optional<base::Value::List> ParseList(const std::string& data) {
-  absl::optional<base::Value> result = base::JSONReader::Read(data);
-  if (!result || !result->is_list())
-    return absl::nullopt;
-  return std::move(*result).TakeList();
-}
-
-}  // namespace
-
 namespace extensions {
 
 namespace api_test_utils {
+
+FunctionMode::FunctionMode(int value) : value(value) {}
 
 SendResponseHelper::SendResponseHelper(ExtensionFunction* function) {
   function->set_has_callback(true);
@@ -116,25 +108,49 @@ base::Value::Dict GetDict(const base::Value::Dict& dict,
   return value->Clone();
 }
 
+base::Value::Dict ToDict(absl::optional<base::ValueView> val) {
+  if (!val) {
+    ADD_FAILURE() << "val is nullopt";
+    return base::Value::Dict();
+  }
+  base::Value result = val->ToValue();
+  if (!result.is_dict()) {
+    ADD_FAILURE() << "val is not a dictionary";
+    return base::Value::Dict();
+  }
+  return std::move(result).TakeDict();
+}
+
+base::Value::List ToList(absl::optional<base::ValueView> val) {
+  if (!val) {
+    ADD_FAILURE() << "val is nullopt";
+    return base::Value::List();
+  }
+  base::Value result = val->ToValue();
+  if (!result.is_list()) {
+    ADD_FAILURE() << "val is not a dictionary";
+    return base::Value::List();
+  }
+  return std::move(result).TakeList();
+}
+
 absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags) {
-  absl::optional<base::Value::List> parsed_args = ParseList(args);
-  CHECK(parsed_args) << "Could not parse extension function arguments: "
-                     << args;
+    FunctionMode mode) {
+  base::Value::List parsed_args = base::test::ParseJsonList(args);
 
   return RunFunctionWithDelegateAndReturnSingleResult(
-      function, std::move(*parsed_args), std::move(dispatcher), flags);
+      function, std::move(parsed_args), std::move(dispatcher), mode);
 }
 
 absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     base::Value::List args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags) {
-  RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
+    FunctionMode mode) {
+  RunFunction(function.get(), std::move(args), std::move(dispatcher), mode);
   EXPECT_TRUE(function->GetError().empty())
       << "Unexpected error: " << function->GetError();
   const base::Value::List* results = function->GetResultListForTest();
@@ -147,36 +163,38 @@ absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context) {
-  return RunFunctionAndReturnSingleResult(function, args, context, NONE);
+  return RunFunctionAndReturnSingleResult(function, args, context,
+                                          FunctionMode::kNone);
 }
 
 absl::optional<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,
-    RunFunctionFlags flags) {
+    FunctionMode mode) {
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
       new ExtensionFunctionDispatcher(context));
 
   return RunFunctionWithDelegateAndReturnSingleResult(
-      function, args, std::move(dispatcher), flags);
+      function, args, std::move(dispatcher), mode);
 }
 
 std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context) {
-  return RunFunctionAndReturnError(function, args, context, NONE);
+  return RunFunctionAndReturnError(function, args, context,
+                                   FunctionMode::kNone);
 }
 
 std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context,
-                                      RunFunctionFlags flags) {
+                                      FunctionMode mode) {
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
       new ExtensionFunctionDispatcher(context));
   scoped_refptr<ExtensionFunction> function_owner(function);
   // Without a callback the function will not generate a result.
-  RunFunction(function, args, std::move(dispatcher), flags);
+  RunFunction(function, args, std::move(dispatcher), mode);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
   const base::Value::List* results = function->GetResultListForTest();
@@ -189,35 +207,34 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
 
 bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
-                 content::BrowserContext* context) {
+                 content::BrowserContext* context,
+                 FunctionMode mode) {
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
       new ExtensionFunctionDispatcher(context));
-  return RunFunction(function, args, std::move(dispatcher), NONE);
+  return RunFunction(function, args, std::move(dispatcher), mode);
 }
 
 bool RunFunction(
     ExtensionFunction* function,
     const std::string& args,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
-    RunFunctionFlags flags) {
-  absl::optional<base::Value::List> parsed_args = ParseList(args);
-  CHECK(parsed_args) << "Could not parse extension function arguments: "
-                     << args;
-  return RunFunction(function, std::move(*parsed_args), std::move(dispatcher),
-                     flags);
+    FunctionMode mode) {
+  base::Value::List parsed_args = base::test::ParseJsonList(args);
+  return RunFunction(function, std::move(parsed_args), std::move(dispatcher),
+                     mode);
 }
 
 bool RunFunction(ExtensionFunction* function,
                  base::Value::List args,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
-                 RunFunctionFlags flags) {
+                 FunctionMode mode) {
   SendResponseHelper response_helper(function);
   function->SetArgs(std::move(args));
 
   CHECK(dispatcher);
   function->SetDispatcher(dispatcher->AsWeakPtr());
 
-  function->set_include_incognito_information(flags & INCLUDE_INCOGNITO);
+  function->set_include_incognito_information(mode == FunctionMode::kIncognito);
   function->preserve_results_for_testing();
   function->RunWithValidation().Execute();
   response_helper.WaitForResponse();

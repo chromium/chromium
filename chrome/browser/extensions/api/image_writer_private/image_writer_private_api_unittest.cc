@@ -48,9 +48,9 @@ TEST_F(ImageWriterPrivateApiUnittest,
   prefs->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
   auto function = base::MakeRefCounted<
       ImageWriterPrivateListRemovableStorageDevicesFunction>();
-  std::unique_ptr<base::Value> devices =
+  absl::optional<base::Value::List> devices =
       RunFunctionAndReturnList(function.get(), "[]");
-  ASSERT_TRUE(devices.get() && devices.get()->GetList().empty())
+  ASSERT_TRUE(devices && devices->empty())
       << "Under policy ListDevices should return an empty list.";
 }
 
