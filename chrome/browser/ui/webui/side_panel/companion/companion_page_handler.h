@@ -9,11 +9,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
+#include "components/lens/buildflags.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#endif
 
 class Browser;
 class CompanionSidePanelUntrustedUI;
@@ -55,8 +60,13 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
 
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
+  raw_ptr<Browser> browser_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  std::unique_ptr<lens::LensRegionSearchController>
+      lens_region_search_controller_;
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   std::unique_ptr<PromoHandler> promo_handler_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
