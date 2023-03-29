@@ -51,6 +51,14 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
                  field->server_type_prediction_is_override());
   field_data.Set("htmlType", FieldTypeToStringPiece(field->html_type()));
   field_data.Set("section", field->section.ToString());
+  field_data.Set("rank", base::NumberToString(field->rank()));
+  field_data.Set("rankInSignatureGroup",
+                 base::NumberToString(field->rank_in_signature_group()));
+  field_data.Set("rankInHostForm",
+                 base::NumberToString(field->rank_in_host_form()));
+  field_data.Set(
+      "rankInHostFormSignatureGroup",
+      base::NumberToString(field->rank_in_host_form_signature_group()));
 
   field_data.Set("isEmpty", field->IsEmpty());
   field_data.Set("isFocusable", field->IsFocusable());
