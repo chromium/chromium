@@ -5,7 +5,6 @@
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,9 +16,9 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -44,14 +43,6 @@ bool g_did_wrong_exit_overview_gesture = false;
 bool g_did_wrong_next_desk_gesture = false;
 bool g_did_wrong_last_desk_gesture = false;
 
-// Is the reverse scrolling for touchpad on.
-bool IsNaturalScrollOn() {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
-         pref->GetBoolean(prefs::kNaturalScroll);
-}
-
 // Reverse an offset when the reverse scrolling is on.
 float GetOffset(float offset) {
   // The handler code uses the new directions which is the reverse of the old
@@ -59,7 +50,7 @@ float GetOffset(float offset) {
   // disabled so that the users get old behavior.
   if (!features::IsReverseScrollGesturesEnabled())
     return -offset;
-  return IsNaturalScrollOn() ? -offset : offset;
+  return window_util::IsNaturalScrollOn() ? -offset : offset;
 }
 
 void ShowReverseGestureToast(const char* toast_id,
@@ -76,8 +67,10 @@ void ShowReverseGestureToast(const char* toast_id,
 bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
   const bool correct_gesture = in_overview ? (offset_y < 0) : (offset_y > 0);
 
-  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
+  if (!features::IsReverseScrollGesturesEnabled() ||
+      window_util::IsNaturalScrollOn()) {
     return correct_gesture;
+  }
 
   bool* const did_wrong_ptr = in_overview ? &g_did_wrong_exit_overview_gesture
                                           : &g_did_wrong_enter_overview_gesture;
@@ -143,8 +136,10 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
 void MaybeHandleWrongHorizontalGesture(bool move_left,
                                        const Desk* previous_desk,
                                        const Desk* next_desk) {
-  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
+  if (!features::IsReverseScrollGesturesEnabled() ||
+      window_util::IsNaturalScrollOn()) {
     return;
+  }
 
   // Perform wrong gesture on the first desk.
   if (move_left && next_desk && !previous_desk) {

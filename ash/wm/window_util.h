@@ -158,6 +158,9 @@ bool ShouldShowForCurrentUser(aura::Window* window);
 
 ASH_EXPORT aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event);
 
+// Checks the prefs to see if natural scroll for the touchpad is turned on.
+ASH_EXPORT bool IsNaturalScrollOn();
+
 }  // namespace window_util
 }  // namespace ash
 

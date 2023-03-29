@@ -12,6 +12,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/event.h"
@@ -24,14 +25,6 @@ namespace {
 // The distance a user has to move their mouse from |initial_mouse_location_|
 // before this stops filtering mouse events.
 constexpr int kMouseMovementThreshold = 5;
-
-// Is the reverse scrolling for touchpad on.
-bool IsNaturalScrollOn() {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
-         pref->GetBoolean(prefs::kNaturalScroll);
-}
 
 // Is reverse scrolling for mouse wheel on.
 bool IsReverseScrollOn() {
@@ -322,7 +315,7 @@ bool WindowCycleEventFilter::ProcessEventImpl(int finger_count,
     return false;
   }
 
-  if (finger_count == 2 && !IsNaturalScrollOn()) {
+  if (finger_count == 2 && !window_util::IsNaturalScrollOn()) {
     // Two finger swipe from left to right should move the list right regardless
     // of natural scroll settings.
     delta_x = -delta_x;

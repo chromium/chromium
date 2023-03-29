@@ -585,8 +585,6 @@ void WindowCycleView::Layout() {
 
   // Layout a tab slider if there is more than one desk.
   if (is_interactive_alt_tab_mode_allowed) {
-    // TODO(crbug.com/1216238): Change these back to DCHECKs once the bug is
-    // resolved.
     CHECK(tab_slider_);
     CHECK(no_recent_items_label_);
     // Layout the tab slider.

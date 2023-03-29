@@ -115,19 +115,8 @@ class EventCounter : public ui::EventHandler {
   int mouse_events_;
 };
 
-bool IsWindowMinimized(aura::Window* window) {
-  return WindowState::Get(window)->IsMinimized();
-}
-
 bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
-}
-
-bool IsNaturalScrollOn() {
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  return pref->GetBoolean(prefs::kTouchpadEnabled) &&
-         pref->GetBoolean(prefs::kNaturalScroll);
 }
 
 int GetOffsetX(int offset) {
@@ -141,8 +130,10 @@ int GetOffsetY(int offset) {
   // The handler code uses the new directions which is the reverse of the old
   // handler code. Reverse the offset if the ReverseScrollGestures feature is
   // disabled so that the unit tests test the old behavior.
-  if (!features::IsReverseScrollGesturesEnabled() || IsNaturalScrollOn())
+  if (!features::IsReverseScrollGesturesEnabled() ||
+      window_util::IsNaturalScrollOn()) {
     return -offset;
+  }
   return offset;
 }
 
@@ -733,21 +724,21 @@ TEST_F(WindowCycleControllerTest, CyclePreservesMinimization) {
   wm::ActivateWindow(window1.get());
   WindowState::Get(window1.get())->Minimize();
   wm::ActivateWindow(window0.get());
-  EXPECT_TRUE(IsWindowMinimized(window1.get()));
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMinimized());
 
   // On window 2.
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
-  EXPECT_TRUE(IsWindowMinimized(window1.get()));
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMinimized());
 
   // Back on window 1.
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
-  EXPECT_TRUE(IsWindowMinimized(window1.get()));
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMinimized());
 
   CompleteCycling(controller);
 
-  EXPECT_TRUE(IsWindowMinimized(window1.get()));
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMinimized());
 }
 
 // Tests that the tab key events are not sent to the window.

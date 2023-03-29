@@ -275,48 +275,43 @@ void WindowCycleController::SetFocusedWindow(aura::Window* window) {
   window_cycle_list_->SetFocusedWindow(window);
 }
 
-bool WindowCycleController::IsEventInCycleView(const ui::LocatedEvent* event) {
+bool WindowCycleController::IsEventInCycleView(
+    const ui::LocatedEvent* event) const {
   return window_cycle_list_ && window_cycle_list_->IsEventInCycleView(event);
 }
 
 aura::Window* WindowCycleController::GetWindowAtPoint(
-    const ui::LocatedEvent* event) {
+    const ui::LocatedEvent* event) const {
   return window_cycle_list_ ? window_cycle_list_->GetWindowAtPoint(event)
                             : nullptr;
 }
 
 bool WindowCycleController::IsEventInTabSliderContainer(
-    const ui::LocatedEvent* event) {
+    const ui::LocatedEvent* event) const {
   return window_cycle_list_ &&
          window_cycle_list_->IsEventInTabSliderContainer(event);
 }
 
-bool WindowCycleController::IsWindowListVisible() {
+bool WindowCycleController::IsWindowListVisible() const {
   return window_cycle_list_ && window_cycle_list_->ShouldShowUi();
 }
 
-bool WindowCycleController::IsInteractiveAltTabModeAllowed() {
+bool WindowCycleController::IsInteractiveAltTabModeAllowed() const {
   return Shell::Get()->desks_controller()->GetNumberOfDesks() > 1;
 }
 
-bool WindowCycleController::IsAltTabPerActiveDesk() {
+bool WindowCycleController::IsAltTabPerActiveDesk() const {
   return IsInteractiveAltTabModeAllowed() && active_user_pref_service_ &&
          active_user_pref_service_->GetBoolean(prefs::kAltTabPerDesk);
 }
 
-bool WindowCycleController::IsSwitchingMode() {
+bool WindowCycleController::IsSwitchingMode() const {
   return IsInteractiveAltTabModeAllowed() && is_switching_mode_;
 }
 
-bool WindowCycleController::IsTabSliderFocused() {
+bool WindowCycleController::IsTabSliderFocused() const {
   return IsInteractiveAltTabModeAllowed() &&
          window_cycle_list_->IsTabSliderFocused();
-}
-
-void WindowCycleController::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  active_user_pref_service_ = pref_service;
-  InitFromUserPrefs();
 }
 
 void WindowCycleController::OnModeChanged(bool per_desk,
@@ -378,6 +373,12 @@ void WindowCycleController::OnModeChanged(bool per_desk,
     default:
       NOTREACHED();
   }
+}
+
+void WindowCycleController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  active_user_pref_service_ = pref_service;
+  InitFromUserPrefs();
 }
 
 void WindowCycleController::OnDeskAdded(const Desk* desk) {
