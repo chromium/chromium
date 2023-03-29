@@ -10,6 +10,7 @@ file://third_party/OWNERS
 # Security reviews
 file://build/fuchsia/SECURITY_OWNERS
 file://chromeos/SECURITY_OWNERS
+file://content/browser/CHILD_PROCESS_SECURITY_POLICY_OWNERS
 file://ipc/SECURITY_OWNERS
 file://net/base/SECURITY_OWNERS
 file://sandbox/linux/OWNERS

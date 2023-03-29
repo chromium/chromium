@@ -6,6 +6,10 @@ boliu@chromium.org
 per-file BUILD.gn=*
 
 # For security review.
+per-file child_process_security_policy_impl.*=set noparent
+per-file child_process_security_policy_impl.*=file://content/browser/CHILD_PROCESS_SECURITY_POLICY_OWNERS
+per-file child_process_security_policy_unittest.cc=set noparent
+per-file child_process_security_policy_unittest.cc=file://content/browser/CHILD_PROCESS_SECURITY_POLICY_OWNERS
 per-file browser_interface_binders.*=set noparent
 per-file browser_interface_binders.*=file://ipc/SECURITY_OWNERS
 per-file mojo_binder_policy_map_impl.*=set noparent
