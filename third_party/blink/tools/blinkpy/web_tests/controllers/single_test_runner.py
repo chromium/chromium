@@ -716,6 +716,8 @@ class SingleTestRunner(object):
                 break
 
         assert expected_output
+        # TODO(crbug.com/1396136): Update the test_type to use a string array.
+        test_output.test_type = 'image'
 
         # Combine compare_text_result and test_result
         expected_output.text = expected_text_output.text
