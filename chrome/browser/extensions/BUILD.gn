@@ -15,6 +15,7 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions)
 
@@ -794,6 +795,7 @@ static_library("extensions") {
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
+    "//chrome/browser/extensions:cws_item_service_proto",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
     "//chrome/browser/image_decoder",
@@ -1385,6 +1387,10 @@ static_library("extensions") {
   } else {
     sources += [ "api/braille_display_private/braille_controller_stub.cc" ]
   }
+}
+
+proto_library("cws_item_service_proto") {
+  sources = [ "cws_item_service.proto" ]
 }
 
 static_library("test_support") {
