@@ -30,7 +30,6 @@ group("deployment_resources") {
     "//build/fuchsia/",
     "//build/util/lib/",
     "//third_party/fuchsia-sdk/sdk/.build-id/",
-    "//third_party/fuchsia-sdk/sdk/bin/fpave.sh",
     "//third_party/fuchsia-sdk/sdk/bin/fuchsia-common.sh",
     "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
