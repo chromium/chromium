@@ -12,7 +12,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/immediate_crash.h"
-#include "base/location.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //
@@ -68,16 +67,12 @@ class BASE_EXPORT CheckError {
 
   static CheckError Check(const char* file, int line, const char* condition);
 
-  static CheckError DCheck(
-      const char* condition,
-      const base::Location& location = base::Location::Current());
+  static CheckError DCheck(const char* file, int line, const char* condition);
 
   static CheckError PCheck(const char* file, int line, const char* condition);
   static CheckError PCheck(const char* file, int line);
 
-  static CheckError DPCheck(
-      const char* condition,
-      const base::Location& location = base::Location::Current());
+  static CheckError DPCheck(const char* file, int line, const char* condition);
 
   static CheckError NotImplemented(const char* file,
                                    int line,
@@ -104,8 +99,7 @@ class BASE_EXPORT CheckError {
 
 class BASE_EXPORT NotReachedError : public CheckError {
  public:
-  static NotReachedError NotReached(
-      const base::Location& location = base::Location::Current());
+  static NotReachedError NotReached(const char* file, int line);
 
   // Used to trigger a NOTREACHED() without providing file or line while also
   // discarding log-stream arguments. See base/notreached.h.
@@ -188,10 +182,14 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 
 #if DCHECK_IS_ON()
 
-#define DCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DCheck(#condition), condition)
-#define DPCHECK(condition) \
-  CHECK_FUNCTION_IMPL(::logging::CheckError::DPCheck(#condition), condition)
+#define DCHECK(condition)                                            \
+  CHECK_FUNCTION_IMPL(                                               \
+      ::logging::CheckError::DCheck(__FILE__, __LINE__, #condition), \
+      condition)
+#define DPCHECK(condition)                                            \
+  CHECK_FUNCTION_IMPL(                                                \
+      ::logging::CheckError::DPCheck(__FILE__, __LINE__, #condition), \
+      condition)
 
 #else
 
