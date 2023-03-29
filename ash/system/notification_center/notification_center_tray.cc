@@ -21,8 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/message_center_types.h"
 
 namespace ash {
 
@@ -31,11 +29,12 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
                          TrayBackgroundViewCatalogName::kNotificationCenter,
                          RoundedCornerBehavior::kStartRounded),
       notification_icons_controller_(
-          std::make_unique<NotificationIconsController>(shelf)) {
+          std::make_unique<NotificationIconsController>(
+              shelf,
+              /*model=*/nullptr,
+              /*notification_center_tray=*/this)) {
   SetID(VIEW_ID_SA_NOTIFICATION_TRAY);
   set_use_bounce_in_animation(false);
-
-  message_center::MessageCenter::Get()->AddObserver(this);
 
   tray_container()->SetMargin(
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
@@ -57,9 +56,7 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
   }
 }
 
-NotificationCenterTray::~NotificationCenterTray() {
-  message_center::MessageCenter::Get()->RemoveObserver(this);
-}
+NotificationCenterTray::~NotificationCenterTray() = default;
 
 void NotificationCenterTray::OnSystemTrayVisibilityChanged(
     bool system_tray_visible) {
@@ -161,40 +158,13 @@ void NotificationCenterTray::OnAnyBubbleVisibilityChanged(
   }
 }
 
-void NotificationCenterTray::OnNotificationAdded(
-    const std::string& notification_id) {
-  UpdateVisibility();
-}
-
-void NotificationCenterTray::OnNotificationDisplayed(
-    const std::string& notification_id,
-    const message_center::DisplaySource source) {
-  UpdateVisibility();
-}
-
-void NotificationCenterTray::OnNotificationRemoved(
-    const std::string& notification_id,
-    bool by_user) {
-  UpdateVisibility();
-}
-
-void NotificationCenterTray::OnNotificationUpdated(
-    const std::string& notification_id) {
-  UpdateVisibility();
-}
-
 void NotificationCenterTray::UpdateVisibility() {
+  // `NotificationIconsController` handles updating this tray's tray items, so
+  // no need to do that here.
   const bool new_visibility =
       message_center::MessageCenter::Get()->NotificationCount() > 0 &&
       system_tray_visible_;
-  if (new_visibility == visible_preferred()) {
-    return;
-  }
-
   SetVisiblePreferred(new_visibility);
-
-  notification_icons_controller_->UpdateNotificationIcons();
-  notification_icons_controller_->UpdateNotificationIndicators();
 
   // We should close the bubble if there are no more notifications to show.
   if (!new_visibility && bubble_) {

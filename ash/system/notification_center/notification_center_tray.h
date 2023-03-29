@@ -13,8 +13,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/message_center/message_center_observer.h"
-#include "ui/message_center/message_center_types.h"
 
 namespace views {
 class Widget;
@@ -30,9 +28,7 @@ class TrayBubbleView;
 // A button in the tray which displays the number of currently available
 // notifications along with icons for pinned notifications. Clicking this button
 // opens a bubble with a scrollable list of all current notifications.
-class ASH_EXPORT NotificationCenterTray
-    : public TrayBackgroundView,
-      public message_center::MessageCenterObserver {
+class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView {
  public:
   METADATA_HEADER(NotificationCenterTray);
 
@@ -48,6 +44,11 @@ class ASH_EXPORT NotificationCenterTray
 
   // True if the bubble is shown.
   bool IsBubbleShown() const;
+
+  // Update the visibility of the tray button based on available notifications.
+  // If there are no notifications the tray button should be hidden and shown
+  // otherwise.
+  void UpdateVisibility();
 
   // TrayBackgroundView:
   std::u16string GetAccessibleNameForBubble() override;
@@ -75,20 +76,6 @@ class ASH_EXPORT NotificationCenterTray
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
-
-  // message_center::MessageCenterObserver:
-  void OnNotificationAdded(const std::string& notification_id) override;
-  void OnNotificationDisplayed(
-      const std::string& notification_id,
-      const message_center::DisplaySource source) override;
-  void OnNotificationRemoved(const std::string& notification_id,
-                             bool by_user) override;
-  void OnNotificationUpdated(const std::string& notification_id) override;
-
-  // Update the visibility of the tray button based on available notifications.
-  // If there are no notifications the tray button should be hidden and shown
-  // otherwise.
-  void UpdateVisibility();
 
   // Manages showing notification icons in the tray.
   const std::unique_ptr<NotificationIconsController>

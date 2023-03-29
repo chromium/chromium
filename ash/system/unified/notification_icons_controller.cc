@@ -148,8 +148,14 @@ void NotificationIconTrayItemView::OnThemeChanged() {
 
 NotificationIconsController::NotificationIconsController(
     Shelf* shelf,
-    UnifiedSystemTrayModel* system_tray_model)
-    : shelf_(shelf), system_tray_model_(system_tray_model) {
+    UnifiedSystemTrayModel* system_tray_model,
+    NotificationCenterTray* notification_center_tray)
+    : shelf_(shelf),
+      system_tray_model_(system_tray_model),
+      notification_center_tray_(notification_center_tray) {
+  // When the QS revamp is enabled `notification_center_tray` should not be
+  // null.
+  DCHECK(!features::IsQsRevampEnabled() || notification_center_tray);
   if (system_tray_model) {
     // `UnifiedSystemTrayModel` should not be used once the kQsRevamp feature is
     // enabled. Once kQsRevamp is enabled `UnifiedSystemTrayModel` and
@@ -266,6 +272,10 @@ void NotificationIconsController::OnDisplayMetricsChanged(
 }
 
 void NotificationIconsController::OnNotificationAdded(const std::string& id) {
+  if (features::IsQsRevampEnabled()) {
+    base::AutoReset<bool> reset(&is_notification_center_tray_updating_, true);
+    notification_center_tray_->UpdateVisibility();
+  }
   message_center::Notification* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(id);
   // `notification` is null if it is not visible.
@@ -280,6 +290,10 @@ void NotificationIconsController::OnNotificationAdded(const std::string& id) {
 
 void NotificationIconsController::OnNotificationRemoved(const std::string& id,
                                                         bool by_user) {
+  if (features::IsQsRevampEnabled()) {
+    notification_center_tray_->UpdateVisibility();
+  }
+
   // If the notification removed is displayed in an icon, call update to show
   // another notification if needed.
   if (GetNotificationIconShownInTray(id))
@@ -289,19 +303,47 @@ void NotificationIconsController::OnNotificationRemoved(const std::string& id,
 }
 
 void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
+  if (features::IsQsRevampEnabled()) {
+    notification_center_tray_->UpdateVisibility();
+  }
+
   // A notification update may impact certain notification icon(s) visibility
   // in the tray, so update all notification icons.
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
 }
 
+void NotificationIconsController::OnNotificationDisplayed(
+    const std::string& notification_id,
+    const message_center::DisplaySource source) {
+  if (features::IsQsRevampEnabled()) {
+    notification_center_tray_->UpdateVisibility();
+    if (is_notification_center_tray_updating_) {
+      // No need to update the notification icons/indicators here because those
+      // updates will happen when the rest of `OnNotificationAdded()` executes.
+      // This also avoids calling `ShelfLayoutManager::LayoutShelf()` in the
+      // middle of its current execution, which is good because that function
+      // is not reentrant.
+      return;
+    }
+    UpdateNotificationIcons();
+    UpdateNotificationIndicators();
+  }
+}
+
 void NotificationIconsController::OnQuietModeChanged(bool in_quiet_mode) {
+  if (features::IsQsRevampEnabled()) {
+    notification_center_tray_->UpdateVisibility();
+  }
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
 }
 
 void NotificationIconsController::OnSessionStateChanged(
     session_manager::SessionState state) {
+  if (features::IsQsRevampEnabled()) {
+    notification_center_tray_->UpdateVisibility();
+  }
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
 

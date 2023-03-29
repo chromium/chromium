@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "ui/display/display_observer.h"
 #include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/message_center_types.h"
 
 namespace message_center {
 class Notification;
@@ -65,7 +66,9 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
 };
 
 // Controller for notification icons in `UnifiedSystemTray` button. If the
-// QsRevamp feature is enabled, this is used in `NotificationCenterTray`. The
+// QsRevamp feature is enabled, this is used in `NotificationCenterTray`
+// instead, and has the added responsibility of letting the
+// `NotificationCenterTray` know when it may need to update its visibility. The
 // icons will be displayed in medium or large screen size and only for important
 // notifications.
 class ASH_EXPORT NotificationIconsController
@@ -74,8 +77,10 @@ class ASH_EXPORT NotificationIconsController
       public message_center::MessageCenterObserver,
       public SessionObserver {
  public:
-  explicit NotificationIconsController(Shelf* shelf,
-                                       UnifiedSystemTrayModel* model = nullptr);
+  explicit NotificationIconsController(
+      Shelf* shelf,
+      UnifiedSystemTrayModel* model = nullptr,
+      NotificationCenterTray* notification_center_tray = nullptr);
   ~NotificationIconsController() override;
   NotificationIconsController(const NotificationIconsController&) = delete;
   NotificationIconsController& operator=(const NotificationIconsController&) =
@@ -108,6 +113,9 @@ class ASH_EXPORT NotificationIconsController
   void OnNotificationAdded(const std::string& id) override;
   void OnNotificationRemoved(const std::string& id, bool by_user) override;
   void OnNotificationUpdated(const std::string& id) override;
+  void OnNotificationDisplayed(
+      const std::string& notification_id,
+      const message_center::DisplaySource source) override;
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
   // SessionObserver:
@@ -155,9 +163,20 @@ class ASH_EXPORT NotificationIconsController
   // Owned by `UnifiedSystemTray`
   UnifiedSystemTrayModel* const system_tray_model_;
 
+  // `NotificationCenterTray` owns this `NotificationIconsController` when the
+  // QS revamp is enabled. `NotificationCenterTray` itself is owned by the views
+  // hierarchy. Note that this will always be null if the QS revamp is not
+  // enabled.
+  NotificationCenterTray* notification_center_tray_ = nullptr;
+
   NotificationCounterView* notification_counter_view_ = nullptr;
   QuietModeView* quiet_mode_view_ = nullptr;
   SeparatorTrayItemView* separator_ = nullptr;
+
+  // True when `notification_center_tray_` is currently updating, false
+  // otherwise. This is used to avoid updating notification icons/indicators
+  // when we know that such an update is already in the pipeline.
+  bool is_notification_center_tray_updating_ = false;
 
   base::ScopedObservation<UnifiedSystemTrayModel,
                           UnifiedSystemTrayModel::Observer>
