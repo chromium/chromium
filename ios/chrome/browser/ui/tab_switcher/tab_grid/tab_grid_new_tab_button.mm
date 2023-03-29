@@ -44,7 +44,7 @@ const CGFloat kLargeSymbolSize = 37;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     CGFloat symbolSize = largeSize ? kLargeSymbolSize : kSmallSymbolSize;
-    if (base::FeatureList::IsEnabled(kSFSymbolsFollowup)) {
+    if (base::FeatureList::IsEnabled(kSFSymbolsFollowUp)) {
       _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
     } else {
       _symbol =

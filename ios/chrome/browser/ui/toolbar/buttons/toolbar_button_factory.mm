@@ -168,7 +168,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)openNewTabButton {
   ToolbarButton* newTabButton;
   if (@available(iOS 15, *)) {
-    NSString* symbolName = base::FeatureList::IsEnabled(kSFSymbolsFollowup)
+    NSString* symbolName = base::FeatureList::IsEnabled(kSFSymbolsFollowUp)
                                ? kPlusCircleFillSymbol
                                : kLegacyPlusCircleFillSymbol;
     UIImage* image = SymbolWithPalette(

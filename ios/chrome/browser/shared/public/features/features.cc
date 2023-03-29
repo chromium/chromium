@@ -128,8 +128,8 @@ BASE_FEATURE(kUseSFSymbolsInOmnibox,
              "UseSFSymbolsInOmnibox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSFSymbolsFollowup,
-             "SFSymbolsFollowup",
+BASE_FEATURE(kSFSymbolsFollowUp,
+             "SFSymbolsFollowUp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCalendarExperienceKit,
