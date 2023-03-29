@@ -146,7 +146,7 @@ CF_TO_NS_CAST_IMPL(CTFont, UIFont)
 // CF_TO_NS_CAST_IMPL(CTFont, NSFont)
 
 extern "C" {
-Boolean _CFIsObjC(CFTypeID typeID, CFTypeRef obj);
+Boolean _CFIsObjC(CFTypeID typeID, _Nonnull CFTypeRef obj);
 }  // extern "C"
 
 namespace base::mac {
@@ -168,7 +168,7 @@ inline BASE_EXPORT CF_RETURNS_RETAINED _Nullable CTFontRef NSToCFOwnershipCast(
   return cf_val;
 }
 
-inline BASE_EXPORT _Nullable NSFont* CFToNSPtrCast(CTFontRef _Nullable cf_val) {
+inline BASE_EXPORT NSFont* _Nullable CFToNSPtrCast(CTFontRef _Nullable cf_val) {
   NSFont* ns_val = (__bridge NSFont*)cf_val;
   DCHECK(!cf_val || CTFontGetTypeID() == CFGetTypeID(cf_val) ||
          (_CFIsObjC(CTFontGetTypeID(), cf_val) &&
