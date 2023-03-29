@@ -71,6 +71,10 @@ constexpr float kMinimumDragToSnapDistanceDp = 96.f;
 constexpr float kFlingToCloseVelocityThreshold = 2000.f;
 constexpr float kItemMinOpacity = 0.4f;
 
+// The scale factor used to calculate the minimum side length for the overview
+// item bounds on the desks bar.
+constexpr float kScaleFactorForMinimumSideLength = 0.5f;
+
 // Amount of time we wait to unpause the occlusion tracker after a overview item
 // is finished dragging. Waits a bit longer than the overview item animation.
 constexpr base::TimeDelta kOcclusionPauseDurationForDrag =
@@ -113,15 +117,39 @@ gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
   const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
   DCHECK(desks_bar_view);
 
+  const int expanded_desks_bar_height =
+      DesksBarView::GetExpandedBarHeight(overview_grid->root_window());
+
   // We should always use the expanded desks bar height here even if the desks
   // bar is actually in zero state to calculate `scale_factor`. Because if zero
   // state bar height is used here, the dragged window could become too small
   // during the drag.
-  const float scale_factor =
-      static_cast<float>(
-          DesksBarView::GetExpandedBarHeight(overview_grid->root_window())) /
-      overview_grid->root_window()->bounds().height();
+  const float scale_factor = static_cast<float>(expanded_desks_bar_height) /
+                             overview_grid->root_window()->bounds().height();
   gfx::SizeF scaled_size = gfx::ScaleSize(window_original_size, scale_factor);
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    // Adjust the scaled size to ensure that its smaller side length is equal or
+    // larger than the `minimum_size_length`, and then adjust the larger size
+    // length to preserve the ratio of the original size.
+    const float minimum_size_length =
+        expanded_desks_bar_height * kScaleFactorForMinimumSideLength;
+    const float scaled_size_height = scaled_size.height();
+    const float scaled_size_width = scaled_size.width();
+    if (scaled_size_height < minimum_size_length ||
+        scaled_size_width < minimum_size_length) {
+      if (scaled_size_height < scaled_size_width) {
+        scaled_size.set_height(minimum_size_length);
+        scaled_size.set_width(scaled_size_width / scaled_size_height *
+                              minimum_size_length);
+      } else {
+        scaled_size.set_width(minimum_size_length);
+        scaled_size.set_height(scaled_size_height / scaled_size_width *
+                               minimum_size_length);
+      }
+    }
+  }
+
   // Add the margins overview mode adds around the window's contents.
   scaled_size.Enlarge(2 * kWindowMargin, 2 * kWindowMargin + kHeaderHeightDp);
   return scaled_size;
