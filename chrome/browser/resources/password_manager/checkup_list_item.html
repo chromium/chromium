@@ -27,6 +27,17 @@
     margin-inline-start: 4px;
   }
 
+  #usernameContainer {
+    display: flex;
+  }
+
+  #username {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   #changeButton {
     align-items: flex-end;
     display: flex;
@@ -61,7 +72,7 @@
       <div id="shownUrl" class="label">
         [[group.name]]
       </div>
-      <div class="cr-secondary-text label">
+      <div id="usernameContainer" class="cr-secondary-text label">
         <span id="username">[[item.username]]</span>
         <input id="insecurePassword" focus-row-control
                   focus-type="passwordField" readonly
