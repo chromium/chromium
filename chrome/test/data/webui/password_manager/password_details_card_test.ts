@@ -349,4 +349,72 @@ suite('PasswordDetailsCardTest', function() {
 
     assertTrue(deleteDialog.$.removeButton.disabled);
   });
+
+  test('Sites title', async function() {
+    const password = createPasswordEntry(
+        {url: 'test.com', username: 'vik', password: 'password69'});
+    password.affiliatedDomains = [
+      {
+        name: 'test.com',
+        url: 'https://test.com',
+        signonRealm: 'https://test.com/',
+      },
+    ];
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(
+        card.$.domainLabel.textContent!.trim(),
+        loadTimeData.getString('sitesLabel'));
+  });
+
+  test('Apps title', async function() {
+    const password = createPasswordEntry(
+        {url: 'test.com', username: 'vik', password: 'password69'});
+    password.affiliatedDomains = [
+      {
+        name: 'test.com',
+        url: 'https://test.com',
+        signonRealm: 'android://someHash/',
+      },
+    ];
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(
+        card.$.domainLabel.textContent!.trim(),
+        loadTimeData.getString('appsLabel'));
+  });
+
+  test('Apps and sites title', async function() {
+    const password = createPasswordEntry(
+        {url: 'test.com', username: 'vik', password: 'password69'});
+    password.affiliatedDomains = [
+      {
+        name: 'test.com',
+        url: 'https://test.com',
+        signonRealm: 'android://someHash/',
+      },
+      {
+        name: 'test.com',
+        url: 'https://test.com',
+        signonRealm: 'https://test.com/',
+      },
+    ];
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(
+        card.$.domainLabel.textContent!.trim(),
+        loadTimeData.getString('sitesAndAppsLabel'));
+  });
 });

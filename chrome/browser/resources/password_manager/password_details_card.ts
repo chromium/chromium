@@ -37,6 +37,7 @@ export interface PasswordDetailsCardElement {
     copyPasswordButton: CrIconButtonElement,
     copyUsernameButton: CrIconButtonElement,
     deleteButton: CrButtonElement,
+    domainLabel: HTMLElement,
     editButton: CrButtonElement,
     noteValue: HTMLElement,
     passwordValue: CrInputElement,
@@ -174,6 +175,17 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private extendAuthValidity_() {
     PasswordManagerImpl.getInstance().extendAuthValidity();
+  }
+
+  private getDomainLabel_(): string {
+    const hasApps = this.password.affiliatedDomains?.some(
+        domain => domain.signonRealm.startsWith('android://'));
+    const hasSites = this.password.affiliatedDomains?.some(
+        domain => !domain.signonRealm.startsWith('android://'));
+    if (hasApps && hasSites) {
+      return this.i18n('sitesAndAppsLabel');
+    }
+    return hasApps ? this.i18n('appsLabel') : this.i18n('sitesLabel');
   }
 }
 
