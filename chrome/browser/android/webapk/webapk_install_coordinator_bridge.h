@@ -53,9 +53,22 @@ class WebApkInstallCoordinatorBridge {
 
   void OnFinishedApkInstall(const WebApkInstallResult result);
 
+  void Retry(
+      JNIEnv* env,
+      jstring start_url,
+      const base::android::JavaParamRef<jbyteArray>& java_serialized_proto,
+      const base::android::JavaParamRef<jobject>& java_primary_icon);
+
+  void OnRetryFinished(const WebApkInstallResult result);
+
   void Destroy(JNIEnv* env);
 
  private:
+  void RetryInstallOnUiThread(
+      std::unique_ptr<std::string> serialized_proto,
+      const SkBitmap& primary_icon,
+      WebApkInstallService::ServiceInstallFinishCallback finish_callback);
+
   JavaObjectWeakGlobalRef java_ref_;
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

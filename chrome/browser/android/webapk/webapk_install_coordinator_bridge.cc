@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/android/chrome_jni_headers/WebApkInstallCoordinatorBridge_jni.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -108,6 +109,45 @@ void WebApkInstallCoordinatorBridge::OnFinishedApkInstall(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   Java_WebApkInstallCoordinatorBridge_onFinishedInstall(env, obj, (int)result);
+}
+
+void WebApkInstallCoordinatorBridge::Retry(
+    JNIEnv* env,
+    jstring java_webapp_id,
+    const base::android::JavaParamRef<jbyteArray>& java_serialized_proto,
+    const base::android::JavaParamRef<jobject>& java_primary_icon) {
+  GURL install_id = GURL(ConvertJavaStringToUTF8(env, java_webapp_id));
+
+  auto serialized_proto = std::make_unique<std::string>(
+      JavaByteArrayToString(env, java_serialized_proto));
+  const SkBitmap primary_icon =
+      gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(java_primary_icon));
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      BindOnce(
+          &WebApkInstallCoordinatorBridge::RetryInstallOnUiThread,
+          base::Unretained(this), std::move(serialized_proto), primary_icon,
+          base::BindPostTask(
+              sequenced_task_runner_,
+              base::BindOnce(&WebApkInstallCoordinatorBridge::OnRetryFinished,
+                             weak_ptr_factory_.GetWeakPtr()))));
+}
+
+void WebApkInstallCoordinatorBridge::OnRetryFinished(
+    WebApkInstallResult result) {
+  webapk::TrackInstallRetryResult(result);
+}
+
+void WebApkInstallCoordinatorBridge::RetryInstallOnUiThread(
+    std::unique_ptr<std::string> serialized_proto,
+    const SkBitmap& primary_icon,
+    WebApkInstallService::ServiceInstallFinishCallback finish_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  WebApkInstallService::Get(ProfileManager::GetLastUsedProfile())
+      ->RetryInstallAsync(std::move(serialized_proto), primary_icon,
+                          false /*is_primary_icon_maskable*/,
+                          std::move(finish_callback));
 }
 
 }  // namespace webapps

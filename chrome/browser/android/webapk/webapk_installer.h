@@ -83,7 +83,7 @@ class WebApkInstaller {
   // the WebApkInstallCoordinatorService as this already receives the
   // |serialized_webapk| from the client. Calls |callback| once the install
   // completed or failed.
-  static void InstallForServiceAsync(
+  static void InstallWithProtoAsync(
       content::BrowserContext* context,
       std::unique_ptr<std::string> serialized_webapk,
       const std::u16string& short_name,
@@ -110,9 +110,9 @@ class WebApkInstaller {
                                      bool is_primary_icon_maskable,
                                      FinishCallback callback);
 
-  // Calls the private function |InstallForServiceAsync| for testing.
+  // Calls the private function |InstallWithProtoAsync| for testing.
   // Should be used only for testing.
-  static void InstallForServiceAsyncForTesting(
+  static void InstallWithProtoAsyncForTesting(
       WebApkInstaller* installer,
       std::unique_ptr<std::string> serialized_webapk,
       const std::u16string& short_name,
@@ -200,15 +200,15 @@ class WebApkInstaller {
                    FinishCallback finish_callback);
 
   // Talks to the Chrome WebAPK server to generate a WebAPK on the server and to
-  // Google Play to install the downloaded WebAPK when the install is requested
-  // by Weblayer. Calls |finish_callback| once the install completed or failed.
-  void InstallForServiceAsync(std::unique_ptr<std::string> serialized_webapk,
-                              const std::u16string& short_name,
-                              webapps::ShortcutInfo::Source source,
-                              const SkBitmap& primary_icon,
-                              bool is_primary_icon_maskable,
-                              GURL& manifest_url,
-                              FinishCallback finish_callback);
+  // Google Play to install the downloaded WebAPK.
+  // Calls |finish_callback| once the install completed or failed.
+  void InstallWithProtoAsync(std::unique_ptr<std::string> serialized_webapk,
+                             const std::u16string& short_name,
+                             webapps::ShortcutInfo::Source source,
+                             const SkBitmap& primary_icon,
+                             bool is_primary_icon_maskable,
+                             GURL& manifest_url,
+                             FinishCallback finish_callback);
 
   // Called once there is sufficient space on the user's device to install a
   // WebAPK. The user may already have had sufficient space on their device

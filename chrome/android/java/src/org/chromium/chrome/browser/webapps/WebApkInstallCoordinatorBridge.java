@@ -62,12 +62,19 @@ public class WebApkInstallCoordinatorBridge {
         }
     }
 
+    void retry(String startUrl, byte[] proto, Bitmap primaryIcon) {
+        WebApkInstallCoordinatorBridgeJni.get().retry(
+                mNativeWebApkInstallCoordinatorBridge, startUrl, proto, primaryIcon);
+    }
+
     @NativeMethods
     interface Natives {
         long init(WebApkInstallCoordinatorBridge caller);
         void install(long nativeWebApkInstallCoordinatorBridge,
                 WebApkInstallCoordinatorBridge caller, byte[] apkProto, Bitmap primaryIcon,
                 boolean isPrimaryIconMaskable);
+        void retry(long nativeWebApkInstallCoordinatorBridge, String startUrl, byte[] apkProto,
+                Bitmap primaryIcon);
         void destroy(long nativeWebApkInstallCoordinatorBridge);
     }
 }

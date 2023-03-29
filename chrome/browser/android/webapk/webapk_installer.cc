@@ -144,7 +144,7 @@ void WebApkInstaller::InstallAsync(content::BrowserContext* context,
 }
 
 // static
-void WebApkInstaller::InstallForServiceAsync(
+void WebApkInstaller::InstallWithProtoAsync(
     content::BrowserContext* context,
     std::unique_ptr<std::string> serialized_webapk,
     const std::u16string& short_name,
@@ -155,7 +155,7 @@ void WebApkInstaller::InstallForServiceAsync(
     FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallForServiceAsync(
+  installer->InstallWithProtoAsync(
       std::move(serialized_webapk), short_name, source, primary_icon,
       is_primary_icon_maskable, manifest_url, std::move(finish_callback));
 }
@@ -182,7 +182,7 @@ void WebApkInstaller::InstallAsyncForTesting(
 }
 
 // static
-void WebApkInstaller::InstallForServiceAsyncForTesting(
+void WebApkInstaller::InstallWithProtoAsyncForTesting(
     WebApkInstaller* installer,
     std::unique_ptr<std::string> serialized_webapk,
     const std::u16string& short_name,
@@ -191,7 +191,7 @@ void WebApkInstaller::InstallForServiceAsyncForTesting(
     bool is_primary_icon_maskable,
     GURL& manifest_url,
     FinishCallback callback) {
-  installer->InstallForServiceAsync(
+  installer->InstallWithProtoAsync(
       std::move(serialized_webapk), short_name, source, primary_icon,
       is_primary_icon_maskable, manifest_url, std::move(callback));
 }
@@ -337,7 +337,7 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
   CheckFreeSpace();
 }
 
-void WebApkInstaller::InstallForServiceAsync(
+void WebApkInstaller::InstallWithProtoAsync(
     std::unique_ptr<std::string> serialized_webapk,
     const std::u16string& short_name,
     webapps::ShortcutInfo::Source source,

@@ -115,7 +115,9 @@ struct ShortcutInfo {
     // install was requested by another app.
     SOURCE_CHROME_SERVICE = 16,
 
-    SOURCE_COUNT = 17
+    SOURCE_INSTALL_RETRY = 17,
+
+    SOURCE_COUNT = 18
   };
 
   explicit ShortcutInfo(const GURL& shortcut_url);

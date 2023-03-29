@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
 
@@ -28,10 +29,9 @@ class WebContents;
 }
 
 namespace webapps {
-struct ShortcutInfo;
 enum class WebApkInstallResult;
 enum class WebApkUpdateReason;
-}
+}  // namespace webapps
 
 class SkBitmap;
 
@@ -80,6 +80,11 @@ class WebApkInstallService : public KeyedService {
                     bool is_primary_icon_maskable,
                     webapps::WebappInstallSource install_source);
 
+  void RetryInstallAsync(std::unique_ptr<std::string> serialized_web_apk,
+                         const SkBitmap& primary_icon,
+                         bool is_primary_icon_maskable,
+                         ServiceInstallFinishCallback finish_callback);
+
   // This function is used if the install is scheduled in the
   // WebApkInstallCoordinatorService service. Installs WebAPKs based on a
   // serialized_web_apk it receives from the client. It
@@ -113,13 +118,14 @@ class WebApkInstallService : public KeyedService {
   // Called once the install scheduled from the service completed or failed.
   // Triggers the callback to propagate the |WebApkInstallResult| to the
   // scheduling Client.
-  void OnFinishedInstallForService(
+  void OnFinishedInstallWithProto(
       const GURL& manifest_url,
       const GURL& manifest_id,
       const GURL& url,
       const std::u16string& short_name,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable,
+      webapps::ShortcutInfo::Source source,
       ServiceInstallFinishCallback done_callback,
       webapps::WebApkInstallResult result,
       std::unique_ptr<std::string> serialized_webapk,
@@ -134,6 +140,7 @@ class WebApkInstallService : public KeyedService {
       const std::u16string& short_name,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable,
+      webapps::ShortcutInfo::Source source,
       webapps::WebApkInstallResult result,
       std::unique_ptr<std::string> serialized_webapk,
       const std::string& webapk_package_name);
