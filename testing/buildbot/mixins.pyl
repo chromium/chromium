@@ -255,6 +255,13 @@
       },
     },
   },
+  'android_user': {
+    'swarming': {
+      'dimensions': {
+        'device_os_type': 'user',
+      },
+    },
+  },
   'arm64': {
     'swarming': {
       'dimensions': {
@@ -1197,6 +1204,7 @@
     'swarming': {
       'dimensions': {
         'device_type': 'a13',
+        'os': 'Android',
       },
     },
   },
@@ -1204,6 +1212,7 @@
     'swarming': {
       'dimensions': {
         'device_type': 'a23',
+        'os': 'Android',
       },
     },
   },

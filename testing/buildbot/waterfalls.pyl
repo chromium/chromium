@@ -4385,6 +4385,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
+          'android_user',
           'has_native_resultdb_integration',
           'gpu-swarming-pool',
           'samsung_a13',
@@ -4401,6 +4402,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
+          'android_user',
           'has_native_resultdb_integration',
           'gpu-swarming-pool',
           'samsung_a23',
@@ -5621,7 +5623,10 @@
           'mojo_rust',
           'rust_build_tests',
         ],
-        'mixins': [ 'pie_fleet' ],
+        'mixins': [
+          'pie_fleet',
+          'walleye',
+        ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
@@ -5634,7 +5639,10 @@
           'mojo_rust',
           'rust_build_tests',
         ],
-        'mixins': [ 'pie_fleet' ],
+        'mixins': [
+          'pie_fleet',
+          'walleye',
+        ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
@@ -5647,7 +5655,10 @@
           'mojo_rust',
           'rust_build_tests',
         ],
-        'mixins': [ 'pie_fleet' ],
+        'mixins': [
+          'pie_fleet',
+          'walleye',
+        ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because

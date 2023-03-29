@@ -17,7 +17,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -35,7 +37,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -53,7 +57,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -72,7 +78,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -91,7 +99,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -117,7 +127,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -135,7 +147,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -153,7 +167,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -172,7 +188,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -191,7 +209,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -217,7 +237,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -235,7 +257,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -253,7 +277,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -272,7 +298,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -291,7 +319,9 @@
           "dimension_sets": [
             {
               "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google"
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
