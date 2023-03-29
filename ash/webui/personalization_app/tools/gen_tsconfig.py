@@ -91,10 +91,13 @@ def main(args):
             },
         },
         'files': [
-            # Add the .d.ts files.  Type definition only files are not
-            # picked up automatically with `rootDirs`.
+            # Add the .d.ts files.
             normalize_path(out_json_dir, path)
             for path in out_json['files'] if path.endswith('.d.ts')
+        ],
+        'include': [
+            # Include every source file underneath the generated tsconfig.json.
+            '**/*'
         ],
         'references': [{
             'path': normalize_path(out_json_dir, path['path'])
