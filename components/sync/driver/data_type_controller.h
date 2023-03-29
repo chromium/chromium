@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/shutdown_reason.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 
 namespace syncer {
 
@@ -82,7 +82,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // logic shuts down gracefully by flushing remaining changes and calling
   // StopSyncing on the SyncableService. This assumes no changes will ever
   // propagate from sync again from point where Stop() is called.
-  virtual void Stop(ShutdownReason shutdown_reason, StopCallback callback) = 0;
+  virtual void Stop(SyncStopMetadataFate fate, StopCallback callback) = 0;
 
   // Name of this data type.  For logging purposes only.
   std::string name() const { return ModelTypeToDebugString(type()); }

@@ -18,6 +18,7 @@
 #include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/driver/model_type_controller.h"
@@ -26,6 +27,7 @@
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
@@ -318,7 +320,8 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
 
     if (reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
-      nigori_controller_->Stop(reason, base::DoNothing());
+      nigori_controller_->Stop(ShutdownReasonToSyncStopMetadataFate(reason),
+                               base::DoNothing());
     }
 
     nigori_controller_.reset();
@@ -348,7 +351,7 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
     // There's no "purging" logic for any other data type, so likely it's not
     // necessary for NIGORI either.
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
-    nigori_controller_->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+    nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                              base::DoNothing());
     LoadAndConnectNigoriController();
   }

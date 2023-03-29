@@ -164,21 +164,10 @@ std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
   return std::move(activation_response_);
 }
 
-void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
+void ModelTypeController::Stop(SyncStopMetadataFate fate,
+                               StopCallback callback) {
   DCHECK(CalledOnValidThread());
   DCHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
-
-  // Leave metadata if we do not disable sync completely.
-  SyncStopMetadataFate metadata_fate = KEEP_METADATA;
-  switch (reason) {
-    case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
-      break;
-    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
-      metadata_fate = CLEAR_METADATA;
-      break;
-    case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
-      NOTREACHED_NORETURN();
-  }
 
   switch (state()) {
     case NOT_RUNNING:
@@ -188,7 +177,7 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
       // Clear metadata if needed.
       if (base::FeatureList::IsEnabled(
               kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
-          metadata_fate == CLEAR_METADATA) {
+          fate == CLEAR_METADATA) {
         ClearMetadataWhileStopped();
       }
       return;
@@ -196,7 +185,7 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
     case STOPPING:
       DCHECK(!model_stop_callbacks_.empty());
       model_stop_metadata_fate_ =
-          TakeStrictestMetadataFate(model_stop_metadata_fate_, metadata_fate);
+          TakeStrictestMetadataFate(model_stop_metadata_fate_, fate);
       model_stop_callbacks_.push_back(std::move(callback));
       // This just means stopping was requested while starting the data type.
       // Metadata will cleared (if CLEAR_METADATA) in OnSyncStopping.
@@ -208,7 +197,7 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
       DLOG(WARNING) << "Deferring stop for " << ModelTypeToDebugString(type())
                     << " because it's still starting";
       model_load_callback_.Reset();
-      model_stop_metadata_fate_ = metadata_fate;
+      model_stop_metadata_fate_ = fate;
       model_stop_callbacks_.push_back(std::move(callback));
       // The actual stop will be executed when the starting process is finished.
       state_ = STOPPING;
@@ -219,7 +208,7 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
       DVLOG(1) << "Stopping sync for " << ModelTypeToDebugString(type());
       model_load_callback_.Reset();
       state_ = NOT_RUNNING;
-      delegate_->OnSyncStopping(metadata_fate);
+      delegate_->OnSyncStopping(fate);
       delegate_ = nullptr;
       std::move(callback).Run();
       break;

@@ -61,21 +61,13 @@ AutofillWalletModelTypeController::~AutofillWalletModelTypeController() {
   sync_service_->RemoveObserver(this);
 }
 
-void AutofillWalletModelTypeController::Stop(
-    syncer::ShutdownReason shutdown_reason,
-    StopCallback callback) {
+void AutofillWalletModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
+                                             StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  switch (shutdown_reason) {
-    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
-      // Special case: For Wallet-related data types, we want to clear all data
-      // even when Sync is stopped temporarily.
-      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
-      break;
-    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
-    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
-      break;
-  }
-  ModelTypeController::Stop(shutdown_reason, std::move(callback));
+  // Special case: For Wallet-related data types, we want to clear all data
+  // even when Sync is stopped temporarily, regardless of incoming fate value.
+  ModelTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
+                            std::move(callback));
 }
 
 syncer::DataTypeController::PreconditionState

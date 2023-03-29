@@ -228,7 +228,7 @@ TEST_F(ModelTypeControllerTest, Stop) {
 
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
-  controller()->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+  controller()->Stop(SyncStopMetadataFate::KEEP_METADATA,
                      stop_completion.Get());
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
@@ -242,7 +242,7 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeEnabled) {
 
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
-  controller()->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+  controller()->Stop(SyncStopMetadataFate::KEEP_METADATA,
                      stop_completion.Get());
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
@@ -257,12 +257,12 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeDisabled) {
 
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
-// When Stop() is called with ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA, while
+// When Stop() is called with SyncStopMetadataFate::CLEAR_METADATA, while
 // the controller is still stopping, data is indeed cleared, regardless of the
 // ShutdownReason of previous calls.
 TEST_F(ModelTypeControllerTest, StopWhileStopping) {
@@ -278,11 +278,11 @@ TEST_F(ModelTypeControllerTest, StopWhileStopping) {
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
 
-  controller()->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
+  controller()->Stop(SyncStopMetadataFate::KEEP_METADATA,
                      stop_completion.Get());
   ASSERT_EQ(DataTypeController::STOPPING, controller()->state());
 
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
   ASSERT_EQ(DataTypeController::STOPPING, controller()->state());
 
@@ -306,7 +306,7 @@ TEST_F(ModelTypeControllerTest, StopBeforeLoadModels) {
 
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
 
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
@@ -334,7 +334,7 @@ TEST_F(ModelTypeControllerTest, StopDuringFailedState) {
 
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
 
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
@@ -359,7 +359,7 @@ TEST_F(ModelTypeControllerTest, StopWhileStarting) {
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
   EXPECT_EQ(DataTypeController::STOPPING, controller()->state());
 
@@ -386,7 +386,7 @@ TEST_F(ModelTypeControllerTest, StopWhileStartingWithError) {
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
   EXPECT_EQ(DataTypeController::STOPPING, controller()->state());
 
@@ -430,7 +430,7 @@ TEST_F(ModelTypeControllerTest, StopWhileErrorInFlight) {
   // later below.
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run());
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
@@ -488,7 +488,7 @@ TEST_F(ModelTypeControllerTest, StopAndReportErrorWhileStarting) {
   base::MockCallback<base::OnceClosure> stop_completion;
   EXPECT_CALL(stop_completion, Run()).Times(0);
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                      stop_completion.Get());
   EXPECT_EQ(DataTypeController::STOPPING, controller()->state());
 
@@ -544,8 +544,7 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   // Stop sync.
   EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStopping).Times(0);
   EXPECT_CALL(delegate_for_transport_mode, OnSyncStopping);
-  controller.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-                  base::DoNothing());
+  controller.Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller.state());
 
   // Start sync with SyncMode::kFull.
@@ -565,8 +564,7 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   // Stop sync.
   EXPECT_CALL(delegate_for_transport_mode, OnSyncStopping).Times(0);
   EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStopping);
-  controller.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-                  base::DoNothing());
+  controller.Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller.state());
 }
 
@@ -651,14 +649,12 @@ TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeNotRunning) {
   // to NOT_RUNNING state.
   ASSERT_TRUE(LoadModels());
   controller()->Connect();
-  controller()->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                     base::DoNothing());
+  controller()->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 
   // ClearMetadataWhileStopped() should be called on Stop() even if state is
   // NOT_RUNNING.
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-                     base::DoNothing());
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
@@ -684,8 +680,7 @@ TEST_F(ModelTypeControllerTest, ClearMetadataWhenDatatypeInFailedState) {
   // ClearMetadataWhileStopped() should be called on Stop() even if state is
   // FAILED.
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
-  controller()->Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-                     base::DoNothing());
+  controller()->Stop(SyncStopMetadataFate::CLEAR_METADATA, base::DoNothing());
   ASSERT_EQ(DataTypeController::FAILED, controller()->state());
 }
 

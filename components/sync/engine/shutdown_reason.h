@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SHUTDOWN_REASON_H_
 #define COMPONENTS_SYNC_ENGINE_SHUTDOWN_REASON_H_
 
+#include "components/sync/base/sync_stop_metadata_fate.h"
+
 namespace syncer {
 
 // Reason for shutting down the sync engine.
@@ -25,6 +27,9 @@ enum class ShutdownReason {
 };
 
 const char* ShutdownReasonToString(ShutdownReason reason);
+
+SyncStopMetadataFate ShutdownReasonToSyncStopMetadataFate(
+    ShutdownReason shutdown_reason);
 
 }  // namespace syncer
 

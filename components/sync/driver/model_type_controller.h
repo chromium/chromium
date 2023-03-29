@@ -49,7 +49,7 @@ class ModelTypeController : public DataTypeController {
   void LoadModels(const ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
   std::unique_ptr<DataTypeActivationResponse> Connect() override;
-  void Stop(ShutdownReason reason, StopCallback callback) override;
+  void Stop(SyncStopMetadataFate fate, StopCallback callback) override;
   State state() const override;
   bool ShouldRunInTransportOnlyMode() const override;
   void GetAllNodes(AllNodesCallback callback) override;

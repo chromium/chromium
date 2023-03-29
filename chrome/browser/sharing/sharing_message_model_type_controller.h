@@ -26,8 +26,7 @@ class SharingMessageModelTypeController : public syncer::ModelTypeController {
       const SharingMessageModelTypeController&) = delete;
 
   // DataTypeController overrides.
-  void Stop(syncer::ShutdownReason shutdown_reason,
-            StopCallback callback) override;
+  void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_MESSAGE_MODEL_TYPE_CONTROLLER_H_

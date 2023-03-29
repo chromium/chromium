@@ -26,20 +26,13 @@ UserEventModelTypeController::~UserEventModelTypeController() {
   sync_service_->RemoveObserver(this);
 }
 
-void UserEventModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
+void UserEventModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                         StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  switch (shutdown_reason) {
-    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
-      // Special case: For USER_EVENT, we want to clear all data even when Sync
-      // is stopped temporarily.
-      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
-      break;
-    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
-    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
-      break;
-  }
-  ModelTypeController::Stop(shutdown_reason, std::move(callback));
+  // Special case: For USER_EVENT, we want to clear all data even when Sync is
+  // stopped temporarily.
+  ModelTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
+                            std::move(callback));
 }
 
 DataTypeController::PreconditionState

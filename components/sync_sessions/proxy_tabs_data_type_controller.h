@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/driver/data_type_controller.h"
 
 class PrefService;
@@ -40,8 +41,7 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
   std::unique_ptr<syncer::DataTypeActivationResponse> Connect() override;
-  void Stop(syncer::ShutdownReason shutdown_reason,
-            StopCallback callback) override;
+  void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
   State state() const override;
   bool ShouldRunInTransportOnlyMode() const override;
   void GetAllNodes(AllNodesCallback callback) override;

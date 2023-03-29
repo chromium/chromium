@@ -502,8 +502,10 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
     if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA &&
         base::FeatureList::IsEnabled(
             kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
+      SyncStopMetadataFate fate =
+          ShutdownReasonToSyncStopMetadataFate(shutdown_reason);
       for (auto& [type, controller] : data_type_controllers_) {
-        controller->Stop(shutdown_reason, base::DoNothing());
+        controller->Stop(fate, base::DoNothing());
       }
     }
     return;
@@ -1857,8 +1859,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
     // STOP_SYNC_AND_KEEP_DATA is used instead of BROWSER_SHUTDOWN_AND_KEEP_DATA
     // because crbug.com/1400437 is removing shutdown logic from controllers.
     for (const auto& [type, controller] : data_type_controllers_) {
-      controller->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                       base::DoNothing());
+      controller->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
     }
     restart = true;
   }

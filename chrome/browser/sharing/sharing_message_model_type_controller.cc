@@ -18,21 +18,14 @@ SharingMessageModelTypeController::SharingMessageModelTypeController(
 SharingMessageModelTypeController::~SharingMessageModelTypeController() =
     default;
 
-void SharingMessageModelTypeController::Stop(
-    syncer::ShutdownReason shutdown_reason,
-    StopCallback callback) {
+void SharingMessageModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
+                                             StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  switch (shutdown_reason) {
-    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
-      // Clear sync metadata even when sync gets paused (e.g. persistent auth
-      // error). This is needed because SharingMessageBridgeImpl uses the
-      // processor's IsTrackingMetadata() bit to determine whether sharing
-      // messages can be sent (they can't if sync is paused).
-      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
-      break;
-    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
-    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
-      break;
-  }
-  ModelTypeController::Stop(shutdown_reason, std::move(callback));
+  // Clear sync metadata regardless of incoming fate even when sync gets paused
+  // (e.g. persistent auth error). This is needed because
+  // SharingMessageBridgeImpl uses the processor's IsTrackingMetadata() bit to
+  // determine whether sharing messages can be sent (they can't if sync is
+  // paused).
+  ModelTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
+                            std::move(callback));
 }

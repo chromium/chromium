@@ -15,6 +15,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
+#include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/model/sync_error.h"
 
 namespace syncer {
@@ -124,7 +126,12 @@ void ModelLoadManager::StopDatatypeImpl(
 
   // Note: Depending on |shutdown_reason|, USS types might clear their metadata
   // in response to Stop().
-  dtc->Stop(shutdown_reason, std::move(callback));
+
+  // TODO(crbug.com/1400437): More methods in ModelLoadManager and
+  // DataTypeManagerImpl could be refactored to also take MetadataFate instead
+  // of ShutdownReason
+  dtc->Stop(ShutdownReasonToSyncStopMetadataFate(shutdown_reason),
+            std::move(callback));
 }
 
 void ModelLoadManager::LoadDesiredTypes() {
@@ -154,8 +161,7 @@ void ModelLoadManager::LoadDesiredTypes() {
                               base::Unretained(dtc), configure_context_,
                               std::move(model_load_callback));
       DCHECK(!loaded_types_.Has(dtc->type()));
-      dtc->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                std::move(stop_callback));
+      dtc->Stop(SyncStopMetadataFate::KEEP_METADATA, std::move(stop_callback));
     }
   }
 

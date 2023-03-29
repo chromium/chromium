@@ -58,7 +58,7 @@ ProxyTabsDataTypeController::Connect() {
   return activation_response;
 }
 
-void ProxyTabsDataTypeController::Stop(syncer::ShutdownReason shutdown_reason,
+void ProxyTabsDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
   state_ = NOT_RUNNING;
   state_changed_cb_.Run(state_);

@@ -73,7 +73,7 @@ void PasswordModelTypeController::LoadModels(
   ModelTypeController::LoadModels(configure_context, model_load_callback);
 }
 
-void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
+void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
   DCHECK(CalledOnValidThread());
   sync_service_observation_.Reset();
@@ -83,16 +83,9 @@ void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
   // want to end up with two copies of the passwords (one in the profile DB, one
   // in the account DB).
   if (sync_mode_ == syncer::SyncMode::kTransportOnly) {
-    switch (shutdown_reason) {
-      case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
-        shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
-        break;
-      case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
-      case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
-        break;
-    }
+    fate = syncer::SyncStopMetadataFate::CLEAR_METADATA;
   }
-  ModelTypeController::Stop(shutdown_reason, std::move(callback));
+  ModelTypeController::Stop(fate, std::move(callback));
 }
 
 syncer::DataTypeController::PreconditionState
