@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors
+# Copyright (c) 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -188,6 +188,8 @@ crypto_sources = [
   "src/crypto/rand_extra/rand_extra.c",
   "src/crypto/rand_extra/windows.c",
   "src/crypto/rc4/rc4.c",
+  "src/crypto/record_replay.c",
+  "src/crypto/record_replay.h",
   "src/crypto/refcount_c11.c",
   "src/crypto/refcount_lock.c",
   "src/crypto/rsa_extra/rsa_asn1.c",
