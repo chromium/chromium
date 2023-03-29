@@ -1001,9 +1001,22 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   SimpleFeature feature;
   feature.set_requires_delegated_availability_check(true);
   feature.set_contexts({Feature::WEB_PAGE_CONTEXT});
+  {
+    // Test a feature that requires a delegated availability check but is
+    // missing the check handler.
+    EXPECT_EQ(Feature::MISSING_DELEGATED_AVAILABILITY_CHECK,
+              feature
+                  .IsAvailableToContext(
+                      /*extension=*/nullptr, Feature::WEB_PAGE_CONTEXT,
+                      kUnspecifiedContextId, TestContextData())
+                  .result());
+  }
+
   feature.SetDelegatedAvailabilityCheckHandler(delegated_availability_check);
   feature.set_name(expected_feature_name);
   {
+    // Test a feature that requires a delegated availability check and the check
+    // is not successful.
     EXPECT_EQ(Feature::FAILED_DELEGATED_AVAILABILITY_CHECK,
               feature
                   .IsAvailableToContext(
@@ -1013,11 +1026,11 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
     EXPECT_EQ(1u, delegated_availability_check_call_count);
   }
 
-  // Test a feature that requires a delegated availability check and the check
-  // is successful.
   expected_feature_name = "AllowedFeature";
   feature.set_name(expected_feature_name);
   {
+    // Test a feature that requires a delegated availability check and the check
+    // is successful.
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature
                   .IsAvailableToContext(
@@ -1025,6 +1038,35 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
                       kUnspecifiedContextId, TestContextData())
                   .result());
     EXPECT_EQ(2u, delegated_availability_check_call_count);
+  }
+
+  feature.set_channel(version_info::Channel::DEV);
+  {
+    // Test a feature that requires a delegated availability check and the check
+    // would be successful, but actually isn't called since the environment
+    // check fails.
+    ScopedCurrentChannel current_channel(Channel::STABLE);
+    EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
+              feature
+                  .IsAvailableToContext(
+                      /*extension=*/nullptr, Feature::WEB_PAGE_CONTEXT,
+                      kUnspecifiedContextId, TestContextData())
+                  .result());
+    EXPECT_EQ(2u, delegated_availability_check_call_count);
+  }
+  feature.set_channel(version_info::Channel::STABLE);
+  {
+    // Test a feature that requires a delegated availability check and the check
+    // would be successful, then confirm the check is called because the
+    // environment check passes.
+    ScopedCurrentChannel current_channel(Channel::STABLE);
+    EXPECT_EQ(Feature::IS_AVAILABLE,
+              feature
+                  .IsAvailableToContext(
+                      /*extension=*/nullptr, Feature::WEB_PAGE_CONTEXT,
+                      kUnspecifiedContextId, TestContextData())
+                  .result());
+    EXPECT_EQ(3u, delegated_availability_check_call_count);
   }
 }
 

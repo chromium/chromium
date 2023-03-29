@@ -6,12 +6,12 @@
 
 namespace extensions::features_test_utils {
 
-// This list should stay in sync with GetControlledFrameFeatureList().
 std::vector<const char*> GetExpectedDelegatedFeaturesForTest() {
   return {
-      "chromeWebViewInternal", "declarativeWebRequest",
-      "guestViewInternal",     "webRequest",
-      "webViewInternal",       "webViewRequest",
+      "chromeWebViewInternal",
+      "guestViewInternal",
+      "webRequestInternal",
+      "webViewInternal",
   };
 }
 

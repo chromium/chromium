@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/environment.h"
-#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
@@ -50,9 +49,12 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/initialize_extensions_client.h"
-#include "extensions/common/context_data.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extensions_client.h"
+
+namespace extensions {
+class ContextData;
+}  // namespace extensions
 #endif
 
 namespace {

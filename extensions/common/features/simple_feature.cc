@@ -263,17 +263,28 @@ Feature::Availability SimpleFeature::IsAvailableToContextImpl(
     int context_id,
     bool check_developer_mode,
     const ContextData& context_data) const {
-  if (RequiresDelegatedAvailabilityCheck()) {
-    return RunDelegatedAvailabilityCheck(extension, context, url, platform,
-                                         context_id, check_developer_mode,
-                                         context_data);
-  }
-
+  // Check the environment availability first. This is because, for features
+  // that use delegated availability checks, those checks should also include
+  // environment availability checks. By checking the environment first, if the
+  // feature isn't intended for the current environment, it will fail the
+  // availability check here first. If it passes the environment check, then the
+  // delegated availability check will run and we can return that result, either
+  // pass or fail. This also allows features that don't require delegated
+  // availability checks to proceed through their normal checks from environment
+  // on to manifest and then context availability.
   Availability environment_availability = GetEnvironmentAvailability(
       platform, GetCurrentChannel(), GetCurrentFeatureSessionType(), context_id,
       check_developer_mode);
   if (!environment_availability.is_available())
     return environment_availability;
+
+  if (RequiresDelegatedAvailabilityCheck()) {
+    return HasDelegatedAvailabilityCheckHandler()
+               ? RunDelegatedAvailabilityCheck(
+                     extension, context, url, platform, context_id,
+                     check_developer_mode, std::move(context_data))
+               : CreateAvailability(MISSING_DELEGATED_AVAILABILITY_CHECK);
+  }
 
   if (extension) {
     Availability manifest_availability = GetManifestAvailability(
@@ -399,6 +410,9 @@ std::string SimpleFeature::GetAvailabilityMessage(
       return base::StringPrintf(
           "'%s' requires the user to have developer mode enabled.",
           name().c_str());
+    case MISSING_DELEGATED_AVAILABILITY_CHECK:
+      return base::StringPrintf(
+          "'%s' is missing its delegated availability check", name().c_str());
     case FAILED_DELEGATED_AVAILABILITY_CHECK:
       return base::StringPrintf("'%s' failed its delegated availability check.",
                                 name().c_str());

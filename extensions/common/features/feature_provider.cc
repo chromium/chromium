@@ -179,15 +179,13 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
 void FeatureProvider::AddFeature(base::StringPiece name,
                                  std::unique_ptr<Feature> feature) {
   DCHECK(feature);
-  if (feature->RequiresDelegatedAvailabilityCheck()) {
-    auto& map =
-        ExtensionsClient::Get()->GetFeatureDelegatedAvailabilityCheckMap();
-    DCHECK(!map.empty());
-
+  const auto& map =
+      ExtensionsClient::Get()->GetFeatureDelegatedAvailabilityCheckMap();
+  if (!map.empty() && feature->RequiresDelegatedAvailabilityCheck()) {
     auto it = map.find(feature->name());
-    DCHECK(it != map.end());
-    DCHECK(!it->second.is_null());
-    feature->SetDelegatedAvailabilityCheckHandler(it->second);
+    if (it != map.end() && !it->second.is_null()) {
+      feature->SetDelegatedAvailabilityCheckHandler(it->second);
+    }
   }
 
   features_[std::string(name)] = std::move(feature);

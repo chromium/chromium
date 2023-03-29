@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentRendererClientBrowserTest,
   {
     const auto& map =
         extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
-    EXPECT_EQ(6u, map.size());
+    EXPECT_EQ(4u, map.size());
     for (const auto* feature : extensions::features_test_utils::
              GetExpectedDelegatedFeaturesForTest()) {
       EXPECT_EQ(1u, map.count(feature));
