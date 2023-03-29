@@ -545,6 +545,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         } else {
             mRightMargin = margin + mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
         }
+
+        computeAndUpdateTabWidth(false, false);
     }
 
     /**
