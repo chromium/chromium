@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_SYNC_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_SYNC_H_
 
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -65,10 +64,6 @@ class FileReaderSync final : public ScriptWrappable {
   }
   String readAsText(Blob*, const String& encoding, ExceptionState&);
   String readAsDataURL(Blob*, ExceptionState&);
-
-  void Trace(Visitor* visitor) const override {
-    ScriptWrappable::Trace(visitor);
-  }
 
  private:
   void StartLoading(FileReaderLoader&, const Blob&, ExceptionState&);

@@ -124,7 +124,7 @@ class PresentationConnection::BlobLoader final
              PresentationConnection* presentation_connection,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : presentation_connection_(presentation_connection),
-        loader_(MakeGarbageCollected<FileReaderLoader>(
+        loader_(std::make_unique<FileReaderLoader>(
             FileReaderLoader::kReadAsArrayBuffer,
             this,
             std::move(task_runner))) {
@@ -145,15 +145,13 @@ class PresentationConnection::BlobLoader final
 
   void Cancel() { loader_->Cancel(); }
 
-  void Trace(Visitor* visitor) const override {
-    FileReaderLoaderClient::Trace(visitor);
+  void Trace(Visitor* visitor) const {
     visitor->Trace(presentation_connection_);
-    visitor->Trace(loader_);
   }
 
  private:
   Member<PresentationConnection> presentation_connection_;
-  Member<FileReaderLoader> loader_;
+  std::unique_ptr<FileReaderLoader> loader_;
 };
 
 PresentationConnection::PresentationConnection(LocalDOMWindow& window,

@@ -247,7 +247,7 @@ class XMLHttpRequest::BlobLoader final
  public:
   BlobLoader(XMLHttpRequest* xhr, scoped_refptr<BlobDataHandle> handle)
       : xhr_(xhr),
-        loader_(MakeGarbageCollected<FileReaderLoader>(
+        loader_(std::make_unique<FileReaderLoader>(
             FileReaderLoader::kReadByClient,
             this,
             xhr->GetExecutionContext()->GetTaskRunner(
@@ -266,15 +266,11 @@ class XMLHttpRequest::BlobLoader final
 
   void Cancel() { loader_->Cancel(); }
 
-  void Trace(Visitor* visitor) const override {
-    FileReaderLoaderClient::Trace(visitor);
-    visitor->Trace(xhr_);
-    visitor->Trace(loader_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(xhr_); }
 
  private:
   Member<XMLHttpRequest> xhr_;
-  Member<FileReaderLoader> loader_;
+  std::unique_ptr<FileReaderLoader> loader_;
 };
 
 XMLHttpRequest* XMLHttpRequest::Create(ScriptState* script_state) {

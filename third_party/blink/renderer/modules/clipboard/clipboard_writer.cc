@@ -344,7 +344,7 @@ bool ClipboardWriter::IsValidType(const String& type) {
 void ClipboardWriter::WriteToSystem(Blob* blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!file_reader_);
-  file_reader_ = MakeGarbageCollected<FileReaderLoader>(
+  file_reader_ = std::make_unique<FileReaderLoader>(
       FileReaderLoader::kReadAsArrayBuffer, this,
       std::move(file_reading_task_runner_));
   file_reader_->Start(blob->GetBlobDataHandle());
@@ -360,23 +360,21 @@ void ClipboardWriter::DidFinishLoading() {
   DOMArrayBuffer* array_buffer = file_reader_->ArrayBufferResult();
   DCHECK(array_buffer);
 
-  file_reader_.Clear();
+  file_reader_.reset();
   self_keep_alive_.Clear();
 
   StartWrite(array_buffer, clipboard_task_runner_);
 }
 
 void ClipboardWriter::DidFail(FileErrorCode error_code) {
-  file_reader_.Clear();
+  file_reader_.reset();
   self_keep_alive_.Clear();
   promise_->RejectFromReadOrDecodeFailure();
 }
 
 void ClipboardWriter::Trace(Visitor* visitor) const {
-  FileReaderLoaderClient::Trace(visitor);
   visitor->Trace(promise_);
   visitor->Trace(system_clipboard_);
-  visitor->Trace(file_reader_);
 }
 
 }  // namespace blink

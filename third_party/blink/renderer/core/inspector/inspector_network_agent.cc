@@ -190,21 +190,16 @@ static std::unique_ptr<protocol::Network::Headers> BuildObjectForHeaders(
   return protocol::Network::Headers::fromValue(headers_object.get(), &errors);
 }
 
-class InspectorFileReaderLoaderClient final
-    : public GarbageCollected<InspectorFileReaderLoaderClient>,
-      public FileReaderLoaderClient {
+class InspectorFileReaderLoaderClient final : public FileReaderLoaderClient {
  public:
   InspectorFileReaderLoaderClient(
       scoped_refptr<BlobDataHandle> blob,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback)
-      : blob_(std::move(blob)),
-        callback_(std::move(callback)),
-        loader_(MakeGarbageCollected<FileReaderLoader>(
-            FileReaderLoader::kReadByClient,
-            this,
-            std::move(task_runner))),
-        keep_alive_(this) {}
+      : blob_(std::move(blob)), callback_(std::move(callback)) {
+    loader_ = std::make_unique<FileReaderLoader>(
+        FileReaderLoader::kReadByClient, this, std::move(task_runner));
+  }
 
   InspectorFileReaderLoaderClient(const InspectorFileReaderLoaderClient&) =
       delete;
@@ -231,24 +226,18 @@ class InspectorFileReaderLoaderClient final
 
   void DidFail(FileErrorCode) override { Done(nullptr); }
 
-  void Trace(Visitor* visitor) const override {
-    FileReaderLoaderClient::Trace(visitor);
-    visitor->Trace(loader_);
-  }
-
  private:
   void Done(scoped_refptr<SharedBuffer> output) {
     std::move(callback_).Run(output);
-    keep_alive_.Clear();
+    delete this;
   }
 
   scoped_refptr<BlobDataHandle> blob_;
   String mime_type_;
   String text_encoding_name_;
   base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback_;
-  Member<FileReaderLoader> loader_;
+  std::unique_ptr<FileReaderLoader> loader_;
   scoped_refptr<SharedBuffer> raw_data_;
-  SelfKeepAlive<InspectorFileReaderLoaderClient> keep_alive_;
 };
 
 static void ResponseBodyFileReaderLoaderDone(
@@ -332,7 +321,7 @@ class InspectorPostBodyParser
                     String* destination) {
     if (!blob_handle)
       return;
-    auto* reader = MakeGarbageCollected<InspectorFileReaderLoaderClient>(
+    auto* reader = new InspectorFileReaderLoaderClient(
         blob_handle, task_runner_,
         WTF::BindOnce(&InspectorPostBodyParser::BlobReadCallback,
                       WTF::RetainedRef(this), WTF::Unretained(destination)));
@@ -1988,12 +1977,10 @@ void InspectorNetworkAgent::GetResponseBodyBlob(
     callback->sendFailure(Response::InternalError());
     return;
   }
-  InspectorFileReaderLoaderClient* client =
-      MakeGarbageCollected<InspectorFileReaderLoaderClient>(
-          blob, context->GetTaskRunner(TaskType::kFileReading),
-          WTF::BindOnce(
-              ResponseBodyFileReaderLoaderDone, resource_data->MimeType(),
-              resource_data->TextEncodingName(), std::move(callback)));
+  InspectorFileReaderLoaderClient* client = new InspectorFileReaderLoaderClient(
+      blob, context->GetTaskRunner(TaskType::kFileReading),
+      WTF::BindOnce(ResponseBodyFileReaderLoaderDone, resource_data->MimeType(),
+                    resource_data->TextEncodingName(), std::move(callback)));
   client->Start();
 }
 

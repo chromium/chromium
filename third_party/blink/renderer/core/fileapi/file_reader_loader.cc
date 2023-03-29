@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -75,7 +74,9 @@ FileReaderLoader::FileReaderLoader(
   DCHECK(task_runner_);
 }
 
-FileReaderLoader::~FileReaderLoader() = default;
+FileReaderLoader::~FileReaderLoader() {
+  Cleanup();
+}
 
 void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
 #if DCHECK_IS_ON()
@@ -197,7 +198,6 @@ void FileReaderLoader::SetEncoding(const String& encoding) {
 void FileReaderLoader::Cleanup() {
   handle_watcher_.Cancel();
   consumer_handle_.reset();
-  receiver_.reset();
 
   // If we get any error, we do not need to keep a buffer around.
   if (error_code_ != FileErrorCode::kOK) {
@@ -297,7 +297,7 @@ void FileReaderLoader::OnFinishLoading() {
 
 void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
                                         uint64_t expected_content_size) {
-  auto weak_this = WrapWeakPersistent(this);
+  auto weak_this = weak_factory_.GetWeakPtr();
   OnStartLoading(expected_content_size);
   // OnStartLoading calls out to our client, which could delete |this|, so bail
   // out if that happened.
@@ -315,7 +315,7 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
     handle_watcher_.Watch(
         consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
         WTF::BindRepeating(&FileReaderLoader::OnDataPipeReadable,
-                           WrapWeakPersistent(this)));
+                           WTF::Unretained(this)));
   }
 }
 
@@ -370,7 +370,7 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
       return;
     }
 
-    auto weak_this = WrapWeakPersistent(this);
+    auto weak_this = weak_factory_.GetWeakPtr();
     OnReceivedData(static_cast<const char*>(buffer), num_bytes);
     // OnReceivedData calls out to our client, which could delete |this|, so
     // bail out if that happened.

@@ -203,7 +203,9 @@ FileReader::FileReader(ExecutionContext* context)
       still_firing_events_(false),
       read_type_(FileReaderLoader::kReadAsBinaryString) {}
 
-FileReader::~FileReader() = default;
+FileReader::~FileReader() {
+  Terminate();
+}
 
 const AtomicString& FileReader::InterfaceName() const {
   return event_target_names::kFileReader;
@@ -315,7 +317,7 @@ void FileReader::ExecutePendingRead() {
   DCHECK_EQ(loading_state_, kLoadingStatePending);
   loading_state_ = kLoadingStateLoading;
 
-  loader_ = MakeGarbageCollected<FileReaderLoader>(
+  loader_ = std::make_unique<FileReaderLoader>(
       read_type_, this,
       GetExecutionContext()->GetTaskRunner(TaskType::kFileReading));
   loader_->SetEncoding(encoding_);
@@ -481,10 +483,8 @@ void FileReader::FireEvent(const AtomicString& type) {
 
 void FileReader::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
-  visitor->Trace(loader_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  FileReaderLoaderClient::Trace(visitor);
 }
 
 }  // namespace blink

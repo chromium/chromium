@@ -144,15 +144,11 @@ class WebSocketChannelImpl::BlobLoader final
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
 
-  void Trace(Visitor* visitor) const override {
-    FileReaderLoaderClient::Trace(visitor);
-    visitor->Trace(channel_);
-    visitor->Trace(loader_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(channel_); }
 
  private:
   Member<WebSocketChannelImpl> channel_;
-  Member<FileReaderLoader> loader_;
+  std::unique_ptr<FileReaderLoader> loader_;
   // This doesn't use WTF::Vector because it doesn't currently support 64-bit
   // sizes.
   MessageData data_;
@@ -165,10 +161,10 @@ WebSocketChannelImpl::BlobLoader::BlobLoader(
     WebSocketChannelImpl* channel,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : channel_(channel),
-      loader_(MakeGarbageCollected<FileReaderLoader>(
-          FileReaderLoader::kReadByClient,
-          this,
-          std::move(task_runner))) {
+      loader_(
+          std::make_unique<FileReaderLoader>(FileReaderLoader::kReadByClient,
+                                             this,
+                                             std::move(task_runner))) {
   loader_->Start(std::move(blob_data_handle));
 }
 

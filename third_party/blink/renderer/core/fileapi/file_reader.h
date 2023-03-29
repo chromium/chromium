@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_H_
 
+#include <memory>
+
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -131,7 +133,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   String encoding_;
   probe::AsyncTaskContext async_task_context_;
 
-  Member<FileReaderLoader> loader_;
+  std::unique_ptr<FileReaderLoader> loader_;
   Member<DOMException> error_;
   absl::optional<base::ElapsedTimer> last_progress_notification_time_;
 };
