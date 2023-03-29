@@ -201,44 +201,44 @@ TEST_F(StatusTest, DifferentModesOfConstruction) {
   ASSERT_EQ(packed.message(), "");
   // Keep serialized around, accessing |data| from it inline causes it
   // to be destructed and |unpacked| to be used after being freed.
-  auto serialized = MediaSerialize(packed);
-  auto* unpacked = serialized.FindDictPath("data");
+  auto serialized = MediaSerialize(packed).TakeDict();
+  auto* unpacked = serialized.FindDict("data");
   ASSERT_NE(unpacked, nullptr);
-  ASSERT_EQ(unpacked->DictSize(), 3ul);
-  ASSERT_EQ(unpacked->FindIntPath("DataA"), 7);
-  ASSERT_EQ(unpacked->FindIntPath("DataB"), 3);
-  ASSERT_EQ(*unpacked->FindStringPath("DataC"), "apple pie");
+  ASSERT_EQ(unpacked->size(), 3ul);
+  ASSERT_EQ(unpacked->FindInt("DataA"), 7);
+  ASSERT_EQ(unpacked->FindInt("DataB"), 3);
+  ASSERT_EQ(*unpacked->FindString("DataC"), "apple pie");
 
   // Can construct implicitly from a {code, "message", data} for a type with
   // OnCreateFrom in it's traits
   PackingStatus packed2 = {PackingStatus::Codes::kFail, "*explosion*", data};
   ASSERT_EQ(packed2.code(), PackingStatus::Codes::kFail);
   ASSERT_EQ(packed2.message(), "*explosion*");
-  serialized = MediaSerialize(packed);
-  unpacked = serialized.FindDictPath("data");
+  serialized = MediaSerialize(packed).TakeDict();
+  unpacked = serialized.FindDict("data");
   ASSERT_NE(unpacked, nullptr);
-  ASSERT_EQ(unpacked->DictSize(), 3ul);
-  ASSERT_EQ(unpacked->FindIntPath("DataA"), 7);
-  ASSERT_EQ(unpacked->FindIntPath("DataB"), 3);
-  ASSERT_EQ(*unpacked->FindStringPath("DataC"), "apple pie");
+  ASSERT_EQ(unpacked->size(), 3ul);
+  ASSERT_EQ(unpacked->FindInt("DataA"), 7);
+  ASSERT_EQ(unpacked->FindInt("DataB"), 3);
+  ASSERT_EQ(*unpacked->FindString("DataC"), "apple pie");
 
   NormalStatus root = NormalStatus::Codes::kFoo;
   PackingStatus derrived = {PackingStatus::Codes::kFail, std::move(root)};
-  serialized = MediaSerialize(derrived);
-  unpacked = serialized.FindDictPath("cause");
+  serialized = MediaSerialize(derrived).TakeDict();
+  unpacked = serialized.FindDict("cause");
   ASSERT_NE(unpacked, nullptr);
-  ASSERT_EQ(unpacked->DictSize(), 5ul);
-  ASSERT_EQ(unpacked->FindIntPath("code").value_or(0),
+  ASSERT_EQ(unpacked->size(), 5ul);
+  ASSERT_EQ(unpacked->FindInt("code").value_or(0),
             static_cast<int>(NormalStatus::Codes::kFoo));
 
   root = NormalStatus::Codes::kFoo;
   derrived = {PackingStatus::Codes::kFail, "blah", std::move(root)};
-  serialized = MediaSerialize(derrived);
-  unpacked = serialized.FindDictPath("cause");
-  ASSERT_EQ(*serialized.FindStringPath("message"), "blah");
+  serialized = MediaSerialize(derrived).TakeDict();
+  unpacked = serialized.FindDict("cause");
+  ASSERT_EQ(*serialized.FindString("message"), "blah");
   ASSERT_NE(unpacked, nullptr);
-  ASSERT_EQ(unpacked->DictSize(), 5ul);
-  ASSERT_EQ(unpacked->FindIntPath("code").value_or(0),
+  ASSERT_EQ(unpacked->size(), 5ul);
+  ASSERT_EQ(unpacked->FindInt("code").value_or(0),
             static_cast<int>(NormalStatus::Codes::kFoo));
 }
 
