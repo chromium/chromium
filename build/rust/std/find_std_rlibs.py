@@ -35,6 +35,8 @@ def main():
                       required=True)
   parser.add_argument("--stdlibs",
                       help="Expected list of standard library libraries")
+  parser.add_argument("--ignore-stdlibs",
+                      help="List of sysroot libraries to ignore")
   parser.add_argument("--extra-libs",
                       help="List of extra non-libstd sysroot libraries")
   parser.add_argument("--rustc-revision",
@@ -54,6 +56,9 @@ def main():
         rlibs_expected.add(name)
       else:
         rlibs_expected.add(f"{name}-{version}")
+    ignore_rlibs = set()
+    if args.ignore_stdlibs is not None:
+      ignore_rlibs = set(args.ignore_stdlibs.split(','))
   else:
     rlibs_expected = None
 
@@ -134,6 +139,8 @@ def main():
       output_filename = f"lib{concise_name}.rlib"
 
       if rlibs_expected is not None:
+        if concise_name in ignore_rlibs:
+          continue
         if concise_name not in rlibs_expected:
           raise Exception("Found stdlib rlib that wasn't expected: %s" % f)
         rlibs_expected.remove(concise_name)

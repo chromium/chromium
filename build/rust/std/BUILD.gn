@@ -55,13 +55,31 @@ if (toolchain_has_rust) {
     "object",
     "panic_abort",
     "panic_unwind",
-    "proc_macro",
     "rustc_demangle",
     "std_detect",
     "test",
     "unicode_width",
     "unwind",
   ]
+
+  # rlibs explicitly ignored when copying prebuilt sysroot libraries.
+  # find_std_rlibs.py rightfully errors out if an unexpected prebuilt lib is
+  # encountered, since it usually indicates we missed something. This ignore
+  # list is also passed to it. This has no effect on the local std build.
+  ignore_stdlib_files = []
+
+  # proc_macro is special: we only run proc macros on the host, so we only want
+  # it for our host toolchain.
+  if (current_toolchain == host_toolchain_no_sanitizers) {
+    # Directs the local_std_for_rustc target to depend on proc_macro, and
+    # includes proc_macro in the prebuilts copied in find_stdlib. Otherwise it
+    # is not built or copied.
+    stdlib_files += [ "proc_macro" ]
+  } else {
+    # Explicitly ignore it from the prebuilts. Nothing needs to be done for the
+    # local std build.
+    ignore_stdlib_files += [ "proc_macro" ]
+  }
 
   # Different Rust toolchains may add or remove files relative to the above
   # list. That can be specified in gn args for anyone using (for instance)
@@ -135,6 +153,13 @@ if (toolchain_has_rust) {
         "--stdlibs",
         string_join(",", all_stdlibs_to_copy),
       ]
+
+      if (ignore_stdlib_files != []) {
+        args += [
+          "--ignore-stdlibs",
+          string_join(",", ignore_stdlib_files),
+        ]
+      }
     }
 
     if (extra_sysroot_libs != []) {
