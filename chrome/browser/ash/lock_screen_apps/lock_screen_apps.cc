@@ -103,7 +103,7 @@ bool IsLockScreenCapable(Profile* profile, const std::string& app_id) {
     return false;
   }
   return extensions::ActionHandlersInfo::HasLockScreenActionHandler(
-      chrome_app, app_runtime::ACTION_TYPE_NEW_NOTE);
+      chrome_app, app_runtime::ActionType::kNewNote);
 }
 
 // Gets the set of app IDs that are allowed to be launched on the lock screen,

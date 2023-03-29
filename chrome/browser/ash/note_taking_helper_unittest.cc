@@ -384,7 +384,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         extensions::ListBuilder()
             .Append(extensions::DictionaryBuilder()
                         .Set("action", app_runtime::ToString(
-                                           app_runtime::ACTION_TYPE_NEW_NOTE))
+                                           app_runtime::ActionType::kNewNote))
                         .Set("enabled_on_lock_screen", true)
                         .Build())
             .Build();
@@ -487,8 +487,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
                        const extensions::Extension* extension,
                        app_runtime::ActionData action_data) {
     EXPECT_EQ(profile(), passed_context);
-    EXPECT_EQ(app_runtime::ActionType::ACTION_TYPE_NEW_NOTE,
-              action_data.action_type);
+    EXPECT_EQ(app_runtime::ActionType::kNewNote, action_data.action_type);
     launched_chrome_apps_.push_back(ChromeAppLaunchInfo{extension->id()});
   }
 
@@ -574,7 +573,7 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
 
   base::Value::List lock_disabled_action_handler =
       extensions::ListBuilder()
-          .Append(app_runtime::ToString(app_runtime::ACTION_TYPE_NEW_NOTE))
+          .Append(app_runtime::ToString(app_runtime::ActionType::kNewNote))
           .Build();
 
   // Install Keep app that does not support lock screen note taking - it should
@@ -724,7 +723,7 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
   scoped_refptr<const extensions::Extension> has_new_note = CreateExtension(
       kNewNoteId, kName, /*permissions=*/absl::nullopt,
       extensions::ListBuilder()
-          .Append(app_runtime::ToString(app_runtime::ACTION_TYPE_NEW_NOTE))
+          .Append(app_runtime::ToString(app_runtime::ActionType::kNewNote))
           .Build());
   InstallExtension(has_new_note.get(), profile());
   // "action_handlers": []
@@ -875,7 +874,7 @@ TEST_F(NoteTakingHelperTest, AllowlistedAndCustomAppsShowOnlyOnce) {
   scoped_refptr<const extensions::Extension> extension = CreateExtension(
       kProdKeepExtensionId, "Keep", /*permissions=*/absl::nullopt,
       extensions::ListBuilder()
-          .Append(app_runtime::ToString(app_runtime::ACTION_TYPE_NEW_NOTE))
+          .Append(app_runtime::ToString(app_runtime::ActionType::kNewNote))
           .Build());
   InstallExtension(extension.get(), profile());
 

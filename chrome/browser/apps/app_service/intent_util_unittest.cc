@@ -285,7 +285,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
 TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
   const std::string note_action_handler =
       extensions::api::app_runtime::ToString(
-          extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE);
+          extensions::api::app_runtime::ActionType::kNewNote);
   // Foo app has a note-taking action handler.
   extensions::ExtensionBuilder foo_app("Foo");
   std::string manifest = base::StringPrintf(R"(

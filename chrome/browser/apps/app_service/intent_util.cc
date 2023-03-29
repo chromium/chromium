@@ -262,7 +262,7 @@ apps::IntentFilters CreateIntentFiltersForChromeApp(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (extensions::ActionHandlersInfo::HasActionHandler(
-          extension, extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE)) {
+          extension, extensions::api::app_runtime::ActionType::kNewNote)) {
     filters.push_back(CreateNoteTakingFilter());
   }
 #endif

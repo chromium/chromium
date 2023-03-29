@@ -75,7 +75,7 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
     }
 
     app_runtime::ActionType action_type = app_runtime::ParseActionType(value);
-    if (action_type == app_runtime::ACTION_TYPE_NONE) {
+    if (action_type == app_runtime::ActionType::kNone) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidActionHandlersActionType, value);
       return false;

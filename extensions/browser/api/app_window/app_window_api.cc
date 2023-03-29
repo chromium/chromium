@@ -372,9 +372,10 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
   }
 
-  api::app_runtime::ActionType action_type = api::app_runtime::ACTION_TYPE_NONE;
+  api::app_runtime::ActionType action_type =
+      api::app_runtime::ActionType::kNone;
   if (options &&
-      options->lock_screen_action != api::app_runtime::ACTION_TYPE_NONE) {
+      options->lock_screen_action != api::app_runtime::ActionType::kNone) {
     if (source_context_type() != Feature::LOCK_SCREEN_EXTENSION_CONTEXT) {
       return RespondNow(Error(
           app_window_constants::kLockScreenActionRequiresLockScreenContext));
@@ -393,7 +394,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   create_params.creator_process_id = source_process_id();
 
   AppWindow* app_window = nullptr;
-  if (action_type == api::app_runtime::ACTION_TYPE_NONE) {
+  if (action_type == api::app_runtime::ActionType::kNone) {
     app_window =
         AppWindowClient::Get()->CreateAppWindow(browser_context(), extension());
   } else {

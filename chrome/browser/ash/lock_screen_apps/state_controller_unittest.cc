@@ -517,7 +517,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     return std::make_unique<TestAppWindow>(
         profile, state_controller()->CreateAppWindowForLockScreenAction(
                      profile, extension,
-                     extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,
+                     extensions::api::app_runtime::ActionType::kNewNote,
                      std::make_unique<ChromeAppDelegate>(profile, true)));
   }
 
@@ -946,7 +946,7 @@ TEST_F(LockScreenAppStateTest, NoLockScreenProfile) {
       ->extension_service()
       ->AddExtension(app.get());
   EXPECT_FALSE(state_controller()->CreateAppWindowForLockScreenAction(
-      profile(), app.get(), extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,
+      profile(), app.get(), extensions::api::app_runtime::ActionType::kNewNote,
       std::make_unique<ChromeAppDelegate>(profile(), true)));
 }
 
@@ -1088,7 +1088,7 @@ TEST_F(LockScreenAppStateTest, CloseAppWhileLaunching) {
             state_controller()->GetLockScreenNoteState());
 
   EXPECT_FALSE(state_controller()->CreateAppWindowForLockScreenAction(
-      profile(), app(), extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,
+      profile(), app(), extensions::api::app_runtime::ActionType::kNewNote,
       std::make_unique<ChromeAppDelegate>(profile(), true)));
 
   ExpectObservedStatesMatch({TrayActionState::kAvailable},
@@ -1184,7 +1184,7 @@ TEST_F(LockScreenAppStateTest, AppWindowRegistration) {
 
   EXPECT_FALSE(state_controller()->CreateAppWindowForLockScreenAction(
       LockScreenProfile(), app(),
-      extensions::api::app_runtime::ACTION_TYPE_NONE,
+      extensions::api::app_runtime::ActionType::kNone,
       std::make_unique<ChromeAppDelegate>(LockScreenProfile(), true)));
 
   app_window = CreateNoteTakingWindow(LockScreenProfile(), app());
@@ -1424,7 +1424,7 @@ TEST_F(LockScreenAppStateTest, CloseNoteWhileLaunching) {
             state_controller()->GetLockScreenNoteState());
 
   EXPECT_FALSE(state_controller()->CreateAppWindowForLockScreenAction(
-      profile(), app(), extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,
+      profile(), app(), extensions::api::app_runtime::ActionType::kNewNote,
       std::make_unique<ChromeAppDelegate>(profile(), true)));
 
   ExpectObservedStatesMatch({TrayActionState::kAvailable},

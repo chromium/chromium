@@ -120,7 +120,7 @@ class LockScreenEventObserver
             arg_value);
     ASSERT_TRUE(launch_data);
     ASSERT_TRUE(launch_data->action_data);
-    EXPECT_EQ(extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,
+    EXPECT_EQ(extensions::api::app_runtime::ActionType::kNewNote,
               launch_data->action_data->action_type);
 
     ASSERT_TRUE(launch_data->action_data->is_lock_screen_action);

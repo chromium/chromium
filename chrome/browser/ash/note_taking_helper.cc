@@ -658,7 +658,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     return LaunchResult::CHROME_APP_MISSING;
   }
   app_runtime::ActionData action_data;
-  action_data.action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
+  action_data.action_type = app_runtime::ActionType::kNewNote;
   launch_chrome_app_callback_.Run(profile, app, std::move(action_data));
   return LaunchResult::CHROME_SUCCESS;
 }

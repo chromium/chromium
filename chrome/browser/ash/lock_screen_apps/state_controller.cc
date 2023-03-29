@@ -409,8 +409,9 @@ extensions::AppWindow* StateController::CreateAppWindowForLockScreenAction(
     const extensions::Extension* extension,
     extensions::api::app_runtime::ActionType action,
     std::unique_ptr<extensions::AppDelegate> app_delegate) {
-  if (action != extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE)
+  if (action != extensions::api::app_runtime::ActionType::kNewNote) {
     return nullptr;
+  }
 
   if (note_app_window_)
     return nullptr;
