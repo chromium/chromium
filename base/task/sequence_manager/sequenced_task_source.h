@@ -38,8 +38,7 @@ class SequencedTaskSource {
                  QueueName task_queue_name);
     ~SelectedTask();
 
-    // TODO(crbug.com/1409100): breaks base_unittests.
-    const raw_ref<Task, DisableDanglingPtrDetection> task;
+    const raw_ref<Task> task;
     // Callback to fill trace event arguments associated with the task
     // execution. Can be null
     TaskExecutionTraceLogger task_execution_trace_logger =

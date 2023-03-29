@@ -485,12 +485,17 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       task_annotator_.RunTask(
           "ThreadControllerImpl::RunTask", *selected_task->task,
           [&selected_task, &source](perfetto::EventContext& ctx) {
-            if (selected_task->task_execution_trace_logger)
+            if (selected_task->task_execution_trace_logger) {
               selected_task->task_execution_trace_logger.Run(
                   ctx, *selected_task->task);
+            }
             source->MaybeEmitTaskDetails(ctx, selected_task.value());
           });
     }
+
+    // Reset `selected_task` before the call to `DidRunTask()` below makes its
+    // `PendingTask` reference dangling.
+    selected_task.reset();
 
     LazyNow lazy_now_after_run_task(time_source_);
     main_thread_only().task_source->DidRunTask(lazy_now_after_run_task);

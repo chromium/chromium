@@ -134,15 +134,18 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
         !tasks_.front().delayed_run_time.is_null()) {
       return absl::nullopt;
     }
-    running_stack_.push_back(std::move(tasks_.front()));
+    task_execution_stack_.push_back(std::move(tasks_.front()));
     tasks_.pop();
-    return SelectedTask(running_stack_.back(), TaskExecutionTraceLogger(),
+    return SelectedTask(task_execution_stack_.back(),
+                        TaskExecutionTraceLogger(),
                         static_cast<TaskQueue::QueuePriority>(
                             TaskQueue::DefaultQueuePriority::kNormalPriority),
                         QueueName::TEST_TQ);
   }
 
-  void DidRunTask(LazyNow& lazy_now) override { running_stack_.pop_back(); }
+  void DidRunTask(LazyNow& lazy_now) override {
+    task_execution_stack_.pop_back();
+  }
 
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override {}
 
@@ -190,7 +193,14 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
  private:
   raw_ptr<TickClock> clock_;
   std::queue<Task> tasks_;
-  std::vector<Task> running_stack_;
+  // Use std::deque() so that references returned by SelectNextTask() remain
+  // valid until the matching call to DidRunTask(), even when nested RunLoops
+  // cause tasks to be pushed on the stack in-between. This is needed because
+  // references are kept in local variables by calling code between
+  // SelectNextTask()/DidRunTask().
+  //
+  // See also `SequenceManagerImpl::MainThreadOnly::task_execution_stack`.
+  std::deque<Task> task_execution_stack_;
   bool has_pending_high_resolution_tasks = false;
 };
 
