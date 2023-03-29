@@ -13,6 +13,10 @@ _EXTRA_PATHS_COMPONENTS = [('testing', )]
 
 # pylint: disable=invalid-name,missing-function-docstring
 def CommonChecks(input_api, output_api):
+    # Neither running nor linting Fuchsia tests is supported on Windows.
+    if input_api.is_windows:
+        return []
+
     tests = []
 
     chromium_src_path = input_api.os_path.realpath(

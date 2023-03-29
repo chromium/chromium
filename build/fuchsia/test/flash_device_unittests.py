@@ -16,7 +16,6 @@ _TEST_PRODUCT = 'test_product'
 _TEST_VERSION = 'test.version'
 
 
-@unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 # pylint: disable=too-many-public-methods,protected-access
 class FlashDeviceTest(unittest.TestCase):
     """Unittests for flash_device.py."""
