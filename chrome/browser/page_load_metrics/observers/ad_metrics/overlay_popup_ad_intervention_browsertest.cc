@@ -95,11 +95,12 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
       subresource_filter::mojom::AdsViolation::kOverlayPopupAd, 0);
 }
 
-// TODO(https://crbug.com/1350894): Flaky on Linux MSAN and LSAN, and on
-// ChromeOS for debug builds.
+// TODO(https://crbug.com/1350894): Fix flakiness and re-enable test.
 #if (BUILDFLAG(IS_LINUX) &&                                     \
      (defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER))) || \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) ||             \
+    (defined(LEAK_SANITIZER) && BUILDFLAG(IS_CHROMEOS) &&       \
+     defined(ADDRESS_SANITIZER))
 #define MAYBE_OverlayPopupAd_AdInterventionTriggered \
   DISABLED_OverlayPopupAd_AdInterventionTriggered
 #else
