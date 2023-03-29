@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/api/webrtc_audio_private/webrtc_audio_private_api.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/audio/audio_device_description.h"
@@ -48,6 +48,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -60,8 +61,7 @@ using media::AudioDeviceDescriptions;
 
 namespace extensions {
 
-using extension_function_test_utils::RunFunctionAndReturnError;
-using extension_function_test_utils::RunFunctionAndReturnSingleResult;
+using api_test_utils::RunFunctionAndReturnSingleResult;
 
 namespace {
 
@@ -115,14 +115,12 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
     params->Append(base::Value(std::move(request_info)));
   }
 
-  std::unique_ptr<base::Value> InvokeGetSinks() {
+  absl::optional<base::Value> InvokeGetSinks() {
     scoped_refptr<WebrtcAudioPrivateGetSinksFunction> function =
         new WebrtcAudioPrivateGetSinksFunction();
     function->set_source_url(source_url_);
 
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnSingleResult(function.get(), "[]", browser()));
-    return result;
+    return RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
   }
 
   GURL source_url_;
@@ -134,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   AudioDeviceDescriptions devices;
   GetAudioDeviceDescriptions(false, &devices);
 
-  std::unique_ptr<base::Value> result = InvokeGetSinks();
+  absl::optional<base::Value> result = InvokeGetSinks();
   const base::Value::List& sink_list = result->GetList();
 
   std::string result_string;
@@ -202,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
     std::string parameter_string;
     JSONWriter::Write(parameters, &parameter_string);
 
-    std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
-        function.get(), parameter_string, browser()));
+    absl::optional<base::Value> result = RunFunctionAndReturnSingleResult(
+        function.get(), parameter_string, profile());
     std::string result_string;
     JSONWriter::Write(*result, &result_string);
     VLOG(2) << "Results: " << result_string;
