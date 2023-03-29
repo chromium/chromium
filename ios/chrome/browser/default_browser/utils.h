@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_
-#define IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_
+#define IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_
 
 #import <UIKit/UIKit.h>
 
@@ -169,4 +169,4 @@ bool UserInPromoCooldown();
 // in the NSDictionary stored under `kBrowserDefaultsKey`.
 const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
-#endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

@@ -60,7 +60,7 @@ source_set("public") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/default_browser:utils",
   ]
   public_deps = [ ":badge_state_public" ]
 }

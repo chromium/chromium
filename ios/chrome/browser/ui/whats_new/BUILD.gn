@@ -24,6 +24,8 @@ source_set("whats_new") {
   deps = [
     ":feature_flags",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
@@ -32,7 +34,6 @@ source_set("whats_new") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/whats_new/cells",
     "//ios/chrome/browser/ui/whats_new/data_source",

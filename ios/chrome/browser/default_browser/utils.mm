@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
@@ -15,8 +15,8 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/identity_error_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -231,8 +231,9 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   NSString* key = StorageKeyForDefaultPromoType(type);
   NSArray* dates = GetObjectFromStorageForKey<NSArray>(key);
-  if (!dates)
+  if (!dates) {
     return {};
+  }
 
   std::vector<base::Time> times;
   times.reserve(dates.count);
@@ -240,12 +241,14 @@ std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   const base::Time now = base::Time::Now();
   for (NSObject* object : dates) {
     NSDate* date = base::mac::ObjCCast<NSDate>(object);
-    if (!date)
+    if (!date) {
       continue;
+    }
 
     const base::Time time = base::Time::FromNSDate(date);
-    if (now - time > kUserActivityTimestampExpiration)
+    if (now - time > kUserActivityTimestampExpiration) {
       continue;
+    }
 
     times.push_back(time);
   }
@@ -277,8 +280,9 @@ void StoreTimestampsForPromoType(DefaultPromoType type,
 // in the past.
 bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
   NSDate* date = GetObjectFromStorageForKey<NSDate>(key);
-  if (!date)
+  if (!date) {
     return false;
+  }
 
   const base::Time time = base::Time::FromNSDate(date);
   return base::Time::Now() - time < delay;
@@ -288,8 +292,9 @@ bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
 // in the past.
 bool HasRecordedEventForKeyMoreThanDelay(NSString* key, base::TimeDelta delay) {
   NSDate* date = GetObjectFromStorageForKey<NSDate>(key);
-  if (!date)
+  if (!date) {
     return false;
+  }
 
   const base::Time time = base::Time::FromNSDate(date);
   return base::Time::Now() - time > delay;
@@ -581,12 +586,14 @@ DefaultPromoType MostRecentInterestDefaultPromoType(
 
   for (DefaultPromoType promo_type : kDefaultPromoTypes) {
     // Ignore DefaultPromoTypeAllTabs if the extra requirements are not met.
-    if (promo_type == DefaultPromoTypeAllTabs && skip_all_tabs_promo_type)
+    if (promo_type == DefaultPromoTypeAllTabs && skip_all_tabs_promo_type) {
       continue;
+    }
 
     std::vector<base::Time> times = LoadTimestampsForPromoType(promo_type);
-    if (times.empty())
+    if (times.empty()) {
       continue;
+    }
 
     const base::Time last_time_for_type = times.back();
     if (last_time_for_type >= most_recent_event_time) {

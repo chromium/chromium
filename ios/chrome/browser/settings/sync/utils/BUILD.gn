@@ -1,0 +1,24 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("identity_error_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "account_error_ui_info.h",
+    "account_error_ui_info.mm",
+    "identity_error_util.h",
+    "identity_error_util.mm",
+    "sync_state.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/driver",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

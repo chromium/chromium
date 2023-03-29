@@ -8,7 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

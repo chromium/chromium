@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_view_controller.h"
 
 #import "base/feature_list.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"

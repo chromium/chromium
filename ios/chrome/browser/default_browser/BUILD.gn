@@ -6,3 +6,44 @@ source_set("default_browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "promo_source.h" ]
 }
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    "//components/feature_engagement/public",
+    "//components/sync/driver",
+    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/settings/sync/utils:identity_error_util",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "utils_test_support.h",
+    "utils_test_support.mm",
+  ]
+  deps = [ ":utils" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "utils_unittest.mm" ]
+  deps = [
+    ":test_support",
+    ":utils",
+    "//base/test:test_support",
+    "//ios/chrome/browser/default_browser:utils",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

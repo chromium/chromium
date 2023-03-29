@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_TAILORED_PROMO_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_TAILORED_PROMO_UTIL_H_
 
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 
 @protocol TailoredPromoConsumer <NSObject>
 

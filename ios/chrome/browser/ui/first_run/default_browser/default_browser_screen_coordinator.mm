@@ -6,10 +6,10 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 

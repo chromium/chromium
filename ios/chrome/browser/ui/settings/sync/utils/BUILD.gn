@@ -14,7 +14,6 @@ source_set("utils") {
     "sync_util.mm",
   ]
   deps = [
-    ":identity_error_util",
     "//base",
     "//components/browser_sync",
     "//components/infobars/core",
@@ -27,6 +26,7 @@ source_set("utils") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/settings/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
@@ -40,25 +40,6 @@ source_set("utils") {
     "//ui/gfx",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("identity_error_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "account_error_ui_info.h",
-    "account_error_ui_info.mm",
-    "identity_error_util.h",
-    "identity_error_util.mm",
-    "sync_state.h",
-  ]
-  deps = [
-    "//base",
-    "//components/sync/driver",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/public/features",
-    "//ui/base",
-  ]
-  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

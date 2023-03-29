@@ -6,8 +6,8 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "components/metrics/metrics_log_uploader.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
+#import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

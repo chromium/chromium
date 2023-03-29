@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
+#import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -51,7 +51,6 @@ class DefaultBrowserUtilsTest : public PlatformTest {
 
 // Tests interesting information for each type.
 TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
-
   // General promo.
   EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
