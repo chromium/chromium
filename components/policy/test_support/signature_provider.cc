@@ -11,8 +11,12 @@
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
+#include "device_management_backend.pb.h"
+
+namespace em = enterprise_management;
 
 namespace policy {
 
@@ -171,19 +175,33 @@ bool SignatureProvider::SigningKey::GetSignatureForDomain(
   return false;
 }
 
-bool SignatureProvider::SigningKey::Sign(const std::string& str,
-                                         std::string* signature) const {
-  std::vector<uint8_t> signature_vec;
-  std::string sha1 = base::SHA1HashString(str);
-  if (!crypto::SignatureCreator::Sign(
-          private_key_.get(), crypto::SignatureCreator::SHA1,
-          base::as_bytes(base::make_span(sha1)).data(), sha1.size(),
-          &signature_vec)) {
+bool SignatureProvider::SigningKey::Sign(
+    const std::string& str,
+    em::PolicyFetchRequest::SignatureType signature_type,
+    std::string* signature) const {
+  crypto::SignatureCreator::HashAlgorithm crypto_hash_alg;
+  switch (signature_type) {
+    case em::PolicyFetchRequest::SHA256_RSA:
+      crypto_hash_alg = crypto::SignatureCreator::SHA256;
+      break;
+    case em::PolicyFetchRequest::NONE:
+    case em::PolicyFetchRequest::SHA1_RSA:
+      crypto_hash_alg = crypto::SignatureCreator::SHA1;
+      break;
+  }
+
+  std::unique_ptr<crypto::SignatureCreator> signer =
+      crypto::SignatureCreator::Create(private_key_.get(), crypto_hash_alg);
+
+  std::vector<uint8_t> input(str.begin(), str.end());
+  std::vector<uint8_t> result;
+
+  if (!signer->Update(input.data(), input.size()) || !signer->Final(&result)) {
     return false;
   }
 
-  signature->assign(reinterpret_cast<const char*>(signature_vec.data()),
-                    signature_vec.size());
+  signature->assign(std::string(result.begin(), result.end()));
+
   return true;
 }
 

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/test_support/remote_commands_state.h"
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -29,6 +30,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#include "components/policy/test_support/remote_commands_state.h"
 #include "components/policy/test_support/request_handler_for_register_browser.h"
 #include "components/policy/test_support/request_handler_for_register_cert_based.h"
 #include "components/policy/test_support/request_handler_for_register_device_and_user.h"
@@ -96,8 +98,13 @@ PolicyStorage* EmbeddedPolicyTestServer::policy_storage() {
   return &server_state_->policy_storage_;
 }
 
+RemoteCommandsState* EmbeddedPolicyTestServer::remote_commands_state() {
+  return remote_commands_state_.get();
+}
+
 EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
     : http_server_(EmbeddedTestServer::TYPE_HTTP) {
+  remote_commands_state_ = std::make_unique<RemoteCommandsState>();
   ResetServerState();
   RegisterHandler(std::make_unique<RequestHandlerForApiAuthorization>(this));
   RegisterHandler(std::make_unique<RequestHandlerForAutoEnrollment>(this));

@@ -184,8 +184,9 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
   policy_data.set_policy_invalidation_topic(
       policy_storage()->policy_invalidation_topic());
 
-  if (fetch_request.signature_type() != em::PolicyFetchRequest::NONE)
+  if (fetch_request.signature_type() != em::PolicyFetchRequest::NONE) {
     policy_data.set_public_key_version(signing_key_version);
+  }
 
   if (policy_type == dm_protocol::kChromeUserPolicyType ||
       policy_type == dm_protocol::kChromePublicAccountPolicyType) {
@@ -216,6 +217,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
   if (fetch_request.signature_type() == em::PolicyFetchRequest::SHA1_RSA) {
     // Sign the serialized policy data.
     if (!signing_key->Sign(fetch_response->policy_data(),
+                           fetch_request.signature_type(),
                            fetch_response->mutable_policy_data_signature())) {
       error_msg->assign("Error signing policy_data");
       return false;
@@ -242,6 +244,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
 
     if (client_key &&
         !client_key->Sign(fetch_response->new_public_key(),
+                          fetch_request.signature_type(),
                           fetch_response->mutable_new_public_key_signature())) {
       error_msg->assign("Error signing new_public_key");
       return false;

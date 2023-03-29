@@ -6,6 +6,8 @@
 #define COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_STATE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/observer_list_threadsafe.h"
+#include "base/synchronization/lock.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;
@@ -16,19 +18,27 @@ namespace policy {
 // execution results of sent remote commands.
 class RemoteCommandsState {
  public:
+  // Interface for classes who would like to monitor remote command result.
+  class Observer {
+   public:
+    // Called when a remote command result is available.
+    virtual void OnRemoteCommandResultAvailable(int command_id) = 0;
+
+   protected:
+    virtual ~Observer() = default;
+  };
+
   RemoteCommandsState();
-  RemoteCommandsState(RemoteCommandsState&& state);
-  RemoteCommandsState& operator=(RemoteCommandsState&& state);
+  RemoteCommandsState(RemoteCommandsState&& state) = delete;
+  RemoteCommandsState& operator=(RemoteCommandsState&& state) = delete;
   ~RemoteCommandsState();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Removes all pending remote commands and available results.
   // Gets called on fake_dmserver construction.
   void ResetState();
-
-  // Removes all pending remote commands.
-  // This is intended to be used to clean up commands after they were fetched
-  // by the client.
-  void ClearPendingRemoteCommands();
 
   // Adds a remote command to the queue of pending remote commands.
   // Expected to be called by tests to set up the environment
@@ -39,8 +49,8 @@ class RemoteCommandsState {
   // client.
   void AddRemoteCommandResult(const em::RemoteCommandResult& result);
 
-  // Returns all pending remote commands.
-  const std::vector<em::RemoteCommand>& GetPendingRemoteCommands() const;
+  // Returns all pending remote commands and deletes them from the state.
+  std::vector<em::RemoteCommand> ExtractPendingRemoteCommands();
 
   // Returns in |result| an execution result for a command with
   // a command ID == |id|.
@@ -49,11 +59,16 @@ class RemoteCommandsState {
   bool GetRemoteCommandResult(int id, em::RemoteCommandResult* result);
 
  private:
+  base::Lock lock_;
+
   // Maps a command ID to an execution result of that command on the client.
-  base::flat_map<int, em::RemoteCommandResult> command_results;
+  base::flat_map<int, em::RemoteCommandResult> command_results_
+      GUARDED_BY(lock_);
 
   // Queue of pending remote commands.
-  std::vector<em::RemoteCommand> pending_commands;
+  std::vector<em::RemoteCommand> pending_commands_ GUARDED_BY(lock_);
+
+  scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 };
 
 }  // namespace policy

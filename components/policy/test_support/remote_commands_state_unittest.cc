@@ -22,7 +22,7 @@ TEST(RemoteCommandsStateTest, AddPendingRemoteCommand) {
   state.AddPendingRemoteCommand(command);
 
   const std::vector<em::RemoteCommand> pending_commands =
-      state.GetPendingRemoteCommands();
+      state.ExtractPendingRemoteCommands();
   EXPECT_EQ(pending_commands.size(), 1u);
   EXPECT_EQ(pending_commands[0].command_id(), 1);
   EXPECT_EQ(pending_commands[0].payload(), "{}");
@@ -66,24 +66,9 @@ TEST(RemoteCommandsStateTest, ResetsStateCorrectly) {
   state.ResetState();
 
   const std::vector<em::RemoteCommand> pending_commands =
-      state.GetPendingRemoteCommands();
+      state.ExtractPendingRemoteCommands();
   EXPECT_EQ(pending_commands.size(), 0u);
   EXPECT_FALSE(state.GetRemoteCommandResult(/*id=*/10, &result));
-}
-
-TEST(RemoteCommandsStateTest, ClearsCommandsCorrectly) {
-  em::RemoteCommand command;
-  command.set_command_id(1);
-  command.set_type(em::RemoteCommand::DEVICE_REMOTE_POWERWASH);
-  command.set_payload("{}");
-  RemoteCommandsState state;
-  state.AddPendingRemoteCommand(command);
-
-  state.ClearPendingRemoteCommands();
-
-  const std::vector<em::RemoteCommand> pending_commands =
-      state.GetPendingRemoteCommands();
-  EXPECT_EQ(pending_commands.size(), 0u);
 }
 
 }  // namespace policy

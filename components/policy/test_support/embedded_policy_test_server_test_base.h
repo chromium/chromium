@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/remote_commands_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -25,6 +26,7 @@ namespace policy {
 
 class ClientStorage;
 class PolicyStorage;
+class RemoteCommandsState;
 
 class EmbeddedPolicyTestServerTestBase : public testing::Test {
  public:
@@ -66,6 +68,10 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   ClientStorage* client_storage() { return test_server_.client_storage(); }
 
   PolicyStorage* policy_storage() { return test_server_.policy_storage(); }
+
+  RemoteCommandsState* remote_commands_state() {
+    return test_server_.remote_commands_state();
+  }
 
  private:
   // Adds a query param to the |resource_request_|.

@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -27,6 +26,7 @@ namespace policy {
 
 class ClientStorage;
 class PolicyStorage;
+class RemoteCommandsState;
 
 extern const char kFakeDeviceToken[];
 extern const char kInvalidEnrollmentToken[];
@@ -58,6 +58,10 @@ class EmbeddedPolicyTestServer {
     }
     PolicyStorage* policy_storage() { return parent_->policy_storage(); }
 
+    RemoteCommandsState* remote_commands_state() {
+      return parent_->remote_commands_state();
+    }
+
    private:
     const raw_ptr<EmbeddedPolicyTestServer> parent_;
   };
@@ -73,6 +77,8 @@ class EmbeddedPolicyTestServer {
   ClientStorage* client_storage();
 
   PolicyStorage* policy_storage();
+
+  RemoteCommandsState* remote_commands_state();
 
   // Returns the service URL.
   GURL GetServiceURL() const;
@@ -115,6 +121,10 @@ class EmbeddedPolicyTestServer {
   // ServerState contains all the fields that represent the server state.
   struct ServerState;
   std::unique_ptr<ServerState> server_state_;
+
+  // TODO(b/275564884): Combine the remote commands state with the server state.
+  // Separate because fake_dm_server clears server_state_ on each handler call.
+  std::unique_ptr<RemoteCommandsState> remote_commands_state_;
 };
 
 }  // namespace policy

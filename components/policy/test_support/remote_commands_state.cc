@@ -10,46 +10,62 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-RemoteCommandsState::RemoteCommandsState() {
+RemoteCommandsState::RemoteCommandsState()
+    : observer_list_(
+          base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
   ResetState();
 }
-RemoteCommandsState::RemoteCommandsState(RemoteCommandsState&& state) = default;
-RemoteCommandsState& RemoteCommandsState::operator=(
-    RemoteCommandsState&& state) = default;
 RemoteCommandsState::~RemoteCommandsState() = default;
 
-void RemoteCommandsState::ResetState() {
-  command_results.clear();
-  ClearPendingRemoteCommands();
+void RemoteCommandsState::AddObserver(Observer* observer) {
+  base::AutoLock lock(lock_);
+  observer_list_->AddObserver(observer);
 }
 
-void RemoteCommandsState::ClearPendingRemoteCommands() {
-  pending_commands.clear();
+void RemoteCommandsState::RemoveObserver(Observer* observer) {
+  base::AutoLock lock(lock_);
+  observer_list_->RemoveObserver(observer);
+}
+
+void RemoteCommandsState::ResetState() {
+  base::AutoLock lock(lock_);
+  command_results_.clear();
+  pending_commands_.clear();
 }
 
 void RemoteCommandsState::AddPendingRemoteCommand(
     const em::RemoteCommand& command) {
-  pending_commands.push_back(command);
+  base::AutoLock lock(lock_);
+  pending_commands_.push_back(command);
 }
 
 void RemoteCommandsState::AddRemoteCommandResult(
     const em::RemoteCommandResult& result) {
-  command_results[result.command_id()] = result;
+  base::AutoLock lock(lock_);
+  command_results_[result.command_id()] = result;
+  observer_list_->Notify(
+      FROM_HERE, &RemoteCommandsState::Observer::OnRemoteCommandResultAvailable,
+      result.command_id());
 }
 
-const std::vector<em::RemoteCommand>&
-RemoteCommandsState::GetPendingRemoteCommands() const {
-  return pending_commands;
+std::vector<em::RemoteCommand>
+RemoteCommandsState::ExtractPendingRemoteCommands() {
+  base::AutoLock lock(lock_);
+  std::vector<em::RemoteCommand> pending_commands_tmp(
+      std::move(pending_commands_));
+  pending_commands_.clear();
+  return pending_commands_tmp;
 }
 
 bool RemoteCommandsState::GetRemoteCommandResult(
     int id,
     em::RemoteCommandResult* result) {
-  if (command_results.count(id) == 0) {
+  base::AutoLock lock(lock_);
+  if (command_results_.count(id) == 0) {
     return false;
   }
 
-  *result = command_results.at(id);
+  *result = command_results_.at(id);
 
   return true;
 }
