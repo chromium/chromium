@@ -72,13 +72,6 @@ class HtmlChecker(object):
     return regex_check.RegexCheck(self.input_api.re, line_number, line, regex,
         "For i18n-content use javaScriptCase.")
 
-  def ImportCorrectPolymerHtml(self, line_number, line):
-    bad_import_url = r"(chrome://resources/polymer/v1_0/polymer/polymer.html)"
-    regex = self.input_api.re.compile(bad_import_url)
-    return regex_check.RegexCheck(self.input_api.re, line_number, line, regex,
-        "Please import chrome://resources/html/polymer.html instead " +
-        "(to ensure your Polymer config is set up correctly)");
-
   def LabelCheck(self, line_number, line):
     regex = self.input_api.re.compile("""
         (?:^|\s)     # start of line or whitespace
@@ -118,7 +111,6 @@ class HtmlChecker(object):
                 self.DoNotUseBrElementCheck(line_number, line),
                 self.DoNotUseInputTypeButtonCheck(line_number, line),
                 self.I18nContentJavaScriptCaseCheck(line_number, line),
-                self.ImportCorrectPolymerHtml(line_number, line),
                 self.LabelCheck(line_number, line),
                 self.QuotePolymerBindings(line_number, line),
             ] if _f
