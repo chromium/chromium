@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
-class BookmarkToolbarCoordinator {
+public class BookmarkToolbarCoordinator {
     private final BookmarkToolbar mToolbar;
     private final BookmarkToolbarMediator mMediator;
     private final PropertyModel mModel;
@@ -42,7 +42,7 @@ class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
         mMediator = new BookmarkToolbarMediator(context, mModel, bookmarkItemsAdapter,
-                bookmarkDelegateSupplier, selectionDelegate, bookmarkModel);
+                bookmarkDelegateSupplier, selectionDelegate, bookmarkModel, bookmarkOpener);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

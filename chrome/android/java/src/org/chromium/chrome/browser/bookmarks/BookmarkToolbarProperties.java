@@ -11,6 +11,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.function.Function;
+
 /** Responsible for hosting properties of BookmarkToolbar views. */
 class BookmarkToolbarProperties {
     /** Dependencies */
@@ -47,9 +49,11 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER_CALLBACK =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<Function<Integer, Boolean>> MENU_ID_CLICKED_FUNCTION =
+            new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
             SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
-            OPEN_SEARCH_UI_RUNNABLE, OPEN_FOLDER_CALLBACK};
+            OPEN_SEARCH_UI_RUNNABLE, OPEN_FOLDER_CALLBACK, MENU_ID_CLICKED_FUNCTION};
 }

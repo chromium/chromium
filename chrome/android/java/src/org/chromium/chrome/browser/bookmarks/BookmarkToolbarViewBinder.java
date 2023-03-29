@@ -50,6 +50,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK) {
             bookmarkToolbar.setOpenFolderCallback(
                     model.get(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK));
+        } else if (key == BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION) {
+            bookmarkToolbar.setMenuIdClickedFunction(
+                    model.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION));
         }
     }
 }

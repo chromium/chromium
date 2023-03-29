@@ -13,11 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -28,7 +24,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
 import java.util.List;
-
+import java.util.function.Function;
 /**
  * Main toolbar of bookmark UI. It is responsible for displaying title and buttons
  * associated with the current context.
@@ -52,6 +48,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     private Runnable mOpenSearchUiRunnable;
     private Callback<BookmarkId> mOpenFolderCallback;
+    private Function<Integer, Boolean> mMenuIdClickedFunction;
 
     public BookmarkToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -132,82 +129,16 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         mOpenFolderCallback = openFolderCallback;
     }
 
+    void setMenuIdClickedFunction(Function<Integer, Boolean> menuIdClickedFunction) {
+        mMenuIdClickedFunction = menuIdClickedFunction;
+    }
+
     // OnMenuItemClickListener implementation.
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         hideOverflowMenu();
-
-        if (menuItem.getItemId() == R.id.edit_menu_id) {
-            BookmarkAddEditFolderActivity.startEditFolderActivity(
-                    getContext(), mCurrentFolder.getId());
-            return true;
-        } else if (menuItem.getItemId() == R.id.close_menu_id) {
-            BookmarkUtils.finishActivityOnPhone(getContext());
-            return true;
-        } else if (menuItem.getItemId() == R.id.search_menu_id) {
-            mOpenSearchUiRunnable.run();
-            return true;
-        }
-
-        if (menuItem.getItemId() == R.id.selection_mode_edit_menu_id) {
-            List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
-            assert list.size() == 1;
-            BookmarkItem item = mBookmarkModel.getBookmarkById(list.get(0));
-            if (item.isFolder()) {
-                BookmarkAddEditFolderActivity.startEditFolderActivity(getContext(), item.getId());
-            } else {
-                BookmarkUtils.startEditActivity(getContext(), item.getId());
-            }
-            return true;
-        } else if (menuItem.getItemId() == R.id.selection_mode_move_menu_id) {
-            List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
-            if (list.size() >= 1) {
-                BookmarkFolderSelectActivity.startFolderSelectActivity(
-                        getContext(), list.toArray(new BookmarkId[0]));
-                RecordUserAction.record("MobileBookmarkManagerMoveToFolderBulk");
-            }
-            return true;
-        } else if (menuItem.getItemId() == R.id.selection_mode_delete_menu_id) {
-            List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
-            if (list.size() >= 1) {
-                mBookmarkModel.deleteBookmarks(list.toArray(new BookmarkId[0]));
-                RecordUserAction.record("MobileBookmarkManagerDeleteBulk");
-            }
-            return true;
-        } else if (menuItem.getItemId() == R.id.selection_open_in_new_tab_id) {
-            RecordUserAction.record("MobileBookmarkManagerEntryOpenedInNewTab");
-            RecordHistogram.recordCount1000Histogram(
-                    "Bookmarks.Count.OpenInNewTab", mSelectionDelegate.getSelectedItems().size());
-            mBookmarkOpener.openBookmarksInNewTabs(
-                    mSelectionDelegate.getSelectedItemsAsList(), /*incognito=*/false);
-            return true;
-        } else if (menuItem.getItemId() == R.id.selection_open_in_incognito_tab_id) {
-            RecordUserAction.record("MobileBookmarkManagerEntryOpenedInIncognito");
-            RecordHistogram.recordCount1000Histogram("Bookmarks.Count.OpenInIncognito",
-                    mSelectionDelegate.getSelectedItems().size());
-            mBookmarkOpener.openBookmarksInNewTabs(
-                    mSelectionDelegate.getSelectedItemsAsList(), /*incognito=*/true);
-            return true;
-        } else if (menuItem.getItemId() == R.id.reading_list_mark_as_read_id
-                || menuItem.getItemId() == R.id.reading_list_mark_as_unread_id) {
-            // Handle the seclection "mark as" buttons in the same block because the behavior is
-            // the same other than one boolean flip.
-            for (int i = 0; i < mSelectionDelegate.getSelectedItemsAsList().size(); i++) {
-                BookmarkId bookmark =
-                        (BookmarkId) mSelectionDelegate.getSelectedItemsAsList().get(i);
-                if (bookmark.getType() != BookmarkType.READING_LIST) continue;
-
-                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmark);
-                mBookmarkModel.setReadStatusForReadingList(bookmarkItem.getUrl(),
-                        /*read=*/menuItem.getItemId() == R.id.reading_list_mark_as_read_id);
-            }
-            mSelectionDelegate.clearSelection();
-            return true;
-        }
-
-        assert false : "Unhandled menu click.";
-        return false;
+        return mMenuIdClickedFunction.apply(menuItem.getItemId());
     }
 
     // SelectableListToolbar implementation.

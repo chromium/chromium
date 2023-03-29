@@ -8,13 +8,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -31,6 +37,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver,
     private final BookmarkItemsAdapter mBookmarkItemsAdapter;
     private final SelectionDelegate mSelectionDelegate;
     private final BookmarkModel mBookmarkModel;
+    private final BookmarkOpener mBookmarkOpener;
 
     // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -40,14 +47,17 @@ class BookmarkToolbarMediator implements BookmarkUiObserver,
     BookmarkToolbarMediator(Context context, PropertyModel model,
             BookmarkItemsAdapter bookmarkItemsAdapter,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
-            SelectionDelegate selectionDelegate, BookmarkModel bookmarkModel) {
+            SelectionDelegate selectionDelegate, BookmarkModel bookmarkModel,
+            BookmarkOpener bookmarkOpener) {
         mContext = context;
         mModel = model;
+        mModel.set(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION, this::onMenuIdClick);
         mBookmarkItemsAdapter = bookmarkItemsAdapter;
         mBookmarkItemsAdapter.addDragListener(this);
         mSelectionDelegate = selectionDelegate;
         mSelectionDelegate.addObserver(this);
         mBookmarkModel = bookmarkModel;
+        mBookmarkOpener = bookmarkOpener;
 
         bookmarkDelegateSupplier.onAvailable((bookmarkDelegate) -> {
             mBookmarkDelegate = bookmarkDelegate;
@@ -58,6 +68,78 @@ class BookmarkToolbarMediator implements BookmarkUiObserver,
             mBookmarkDelegate.addUiObserver(this);
             mBookmarkDelegate.notifyStateChange(this);
         });
+    }
+
+    boolean onMenuIdClick(@IdRes int id) {
+        if (id == R.id.edit_menu_id) {
+            BookmarkAddEditFolderActivity.startEditFolderActivity(mContext, mCurrentFolder);
+            return true;
+        } else if (id == R.id.close_menu_id) {
+            BookmarkUtils.finishActivityOnPhone(mContext);
+            return true;
+        } else if (id == R.id.search_menu_id) {
+            assert mBookmarkDelegate != null;
+            mBookmarkDelegate.openSearchUi();
+            mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.BACK);
+            return true;
+        } else if (id == R.id.selection_mode_edit_menu_id) {
+            List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
+            assert list.size() == 1;
+            BookmarkItem item = mBookmarkModel.getBookmarkById(list.get(0));
+            if (item.isFolder()) {
+                BookmarkAddEditFolderActivity.startEditFolderActivity(mContext, item.getId());
+            } else {
+                BookmarkUtils.startEditActivity(mContext, item.getId());
+            }
+            return true;
+        } else if (id == R.id.selection_mode_move_menu_id) {
+            List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
+            if (list.size() >= 1) {
+                BookmarkFolderSelectActivity.startFolderSelectActivity(
+                        mContext, list.toArray(new BookmarkId[0]));
+                RecordUserAction.record("MobileBookmarkManagerMoveToFolderBulk");
+            }
+            return true;
+        } else if (id == R.id.selection_mode_delete_menu_id) {
+            List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
+            if (list.size() >= 1) {
+                mBookmarkModel.deleteBookmarks(list.toArray(new BookmarkId[0]));
+                RecordUserAction.record("MobileBookmarkManagerDeleteBulk");
+            }
+            return true;
+        } else if (id == R.id.selection_open_in_new_tab_id) {
+            RecordUserAction.record("MobileBookmarkManagerEntryOpenedInNewTab");
+            RecordHistogram.recordCount1000Histogram(
+                    "Bookmarks.Count.OpenInNewTab", mSelectionDelegate.getSelectedItems().size());
+            mBookmarkOpener.openBookmarksInNewTabs(
+                    mSelectionDelegate.getSelectedItemsAsList(), /*incognito=*/false);
+            return true;
+        } else if (id == R.id.selection_open_in_incognito_tab_id) {
+            RecordUserAction.record("MobileBookmarkManagerEntryOpenedInIncognito");
+            RecordHistogram.recordCount1000Histogram("Bookmarks.Count.OpenInIncognito",
+                    mSelectionDelegate.getSelectedItems().size());
+            mBookmarkOpener.openBookmarksInNewTabs(
+                    mSelectionDelegate.getSelectedItemsAsList(), /*incognito=*/true);
+            return true;
+        } else if (id == R.id.reading_list_mark_as_read_id
+                || id == R.id.reading_list_mark_as_unread_id) {
+            // Handle the seclection "mark as" buttons in the same block because the behavior is
+            // the same other than one boolean flip.
+            for (int i = 0; i < mSelectionDelegate.getSelectedItemsAsList().size(); i++) {
+                BookmarkId bookmark =
+                        (BookmarkId) mSelectionDelegate.getSelectedItemsAsList().get(i);
+                if (bookmark.getType() != BookmarkType.READING_LIST) continue;
+
+                BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmark);
+                mBookmarkModel.setReadStatusForReadingList(bookmarkItem.getUrl(),
+                        /*read=*/id == R.id.reading_list_mark_as_read_id);
+            }
+            mSelectionDelegate.clearSelection();
+            return true;
+        }
+
+        assert false : "Unhandled menu click.";
+        return false;
     }
 
     // BookmarkUiObserver implementation.

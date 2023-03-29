@@ -349,6 +349,9 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     }
 
     // Testing methods.
+    public BookmarkToolbarCoordinator getToolbarCoordinatorForTesting() {
+        return mBookmarkToolbarCoordinator;
+    }
 
     public BookmarkToolbar getToolbarForTesting() {
         return mBookmarkToolbarCoordinator.getToolbarForTesting(); // IN-TEST
