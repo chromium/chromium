@@ -365,13 +365,12 @@ message AutoUpdateSettingsProto {
 
   // Specifies the time intervals during which the device is not allowed to do
   // automatic update checks. This is a JSON string, for details see
-  // "DeviceAutoUpdateTimeRestrictions" in policy_templates.json.
+  // DeviceAutoUpdateTimeRestrictions.yaml.
   optional string disallowed_time_intervals = 12;
 
   // Specifies how much of the fleet to update per day as a json
   // string that contains a list of pairs <day, percentage>. For more
-  // details and examples, see "DeviceUpdateStagingSchedule" in
-  // policy_templates.json.
+  // details and examples, see DeviceUpdateStagingSchedule.yaml.
   optional string staging_schedule = 14;
 
   // This token is forwarded to omaha by update_engine. If it is set, omaha may
@@ -1571,17 +1570,15 @@ message DeviceWilcoDtcConfigurationProto {
 // Settings that control power peak shift policy.
 message DevicePowerPeakShiftProto {
   // Setting that controls whether power peak shift is enabled on this device.
-  // For details see "DevicePowerPeakShiftEnabled" in policy_templates.json.
+  // For details see DevicePowerPeakShiftEnabled.yaml.
   optional bool enabled = 1;
 
   // Setting that controls power peak shift battery threshold on this device.
-  // For details see "DevicePowerPeakShiftBatteryThreshold" in
-  // policy_templates.json.
+  // For details see DevicePowerPeakShiftBatteryThreshold.yaml.
   optional int32 battery_threshold = 2;
 
   // Setting that controls power peak shift day configs on this device.
-  // This is a JSON string, for details see "DevicePowerPeakShiftDayConfig" in
-  // policy_templates.json.
+  // This is a JSON string, for details see DevicePowerPeakShiftDayConfig.yaml.
   optional string day_configs = 3;
 }
 
@@ -1609,14 +1606,13 @@ message DeviceDockMacAddressSourceProto {
 message DeviceAdvancedBatteryChargeModeProto {
   // Setting that controls whether advanced battery charge mode is enabled on
   // this device.
-  // For details see "DeviceAdvancedBatteryChargeModeEnabled" in
-  // policy_templates.json.
+  // For details see DeviceAdvancedBatteryChargeModeEnabled.yaml.
   optional bool enabled = 1;
 
   // Setting that controls advanced battery charge mode day config on this
   // device.
   // This is a JSON string, for details see
-  // "DeviceAdvancedBatteryChargeModeDayConfig" in policy_templates.json.
+  // DeviceAdvancedBatteryChargeModeDayConfig.yaml.
   optional string day_configs = 2;
 }
 
@@ -1632,17 +1628,15 @@ message DeviceBatteryChargeModeProto {
   }
 
   // Setting that controls battery charge mode on this device.
-  // For details see "DeviceBatteryChargeMode" in policy_templates.json.
+  // For details see DeviceBatteryChargeMode.yaml.
   optional BatteryChargeMode battery_charge_mode = 1;
 
   // Percent at which charging starts when using CUSTOM.
-  // For details see "DeviceBatteryChargeCustomStartCharging" in
-  // policy_templates.json.
+  // For details see DeviceBatteryChargeCustomStartCharging.yaml.
   optional int32 custom_charge_start = 2;
 
   // Percent at which charging stops when using CUSTOM.
-  // For details see "DeviceBatteryChargeCustomStopCharging" in
-  // policy_templates.json.
+  // For details see DeviceBatteryChargeCustomStopCharging.yaml.
   optional int32 custom_charge_stop = 3;
 }
 
@@ -1656,8 +1650,7 @@ message DeviceUsbPowerShareProto {
 // checks are recurring. In order to disable a set schedule the policy must be
 // removed.
 message DeviceScheduledUpdateCheckProto {
-  // This is a JSON string, for details see "DeviceScheduledUpdateCheck" in
-  // policy_templates.json.
+  // This is a JSON string, for details see DeviceScheduledUpdateCheck.yaml.
   optional string device_scheduled_update_check_settings = 1;
 }
 
@@ -1671,22 +1664,21 @@ message DevicePowerwashAllowedProto {
 // used via the WebUSB API on the login screen.
 message DeviceLoginScreenWebUsbAllowDevicesForUrlsProto {
   // This is a JSON string, for details see
-  // "DeviceLoginScreenWebUsbAllowDevicesForUrls" in policy_templates.json.
+  // DeviceLoginScreenWebUsbAllowDevicesForUrls.yaml.
   optional string device_login_screen_webusb_allow_devices_for_urls = 1;
 }
 
 // Settings that control the availability of System-proxy service and the web
 // proxy credentials for system services connecting through System-proxy.
 message SystemProxySettingsProto {
-  // This is a JSON string, for details see "SystemProxySettings" in
-  // policy_templates.json.
+  // This is a JSON string, for details see SystemProxySettings.yaml.
   optional string system_proxy_settings = 1;
 }
 
 // Settings that control what certificates should be privisioned via DM server.
 message RequiredClientCertificateForDeviceProto {
   // This is a JSON string, for details see
-  // "RequiredClientCertificateForDevice" in policy_templates.json.
+  // RequiredClientCertificateForDevice.yaml.
   optional string required_client_certificate_for_device = 1;
 }
 
@@ -1716,7 +1708,7 @@ message DeviceFamilyLinkAccountsAllowedProto {
 // and time intervals of updating ARC data snapshot.
 message OBSOLETE_DeviceArcDataSnapshotHoursProto {
   // This is a JSON string, for details see
-  // "DeviceArcDataSnapshotHours" in policy_template.json
+  // DeviceArcDataSnapshotHours.yaml.
   optional string OBSOLETE_arc_data_snapshot_hours = 1 [deprecated = true];
 }
 
@@ -1759,8 +1751,7 @@ message DeviceDebugPacketCaptureAllowedProto {
 // recurring. In order to disable scheduled reboots the policy must be
 // removed.
 message DeviceScheduledRebootProto {
-  // This is a JSON string, for details see "DeviceScheduledReboot" in
-  // policy_templates.json.
+  // This is a JSON string, for details see DeviceScheduledReboot.yaml.
   optional string device_scheduled_reboot_settings = 1;
 }
 
