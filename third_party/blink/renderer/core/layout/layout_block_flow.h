@@ -1024,9 +1024,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   friend class MarginInfo;
   friend class LineWidth;  // needs to know FloatingObject
 
-  // LayoutRubyBase objects need to be able to split and merge, moving their
-  // children around (calling makeChildrenNonInline).
-  friend class LayoutRubyBase;
+  // LayoutNGRubyBase objects need to be able to split and merge, moving their
+  // children around (calling MakeChildrenNonInline).
+  friend class LayoutNGRubyBase;
 
   // FIXME-BLOCKFLOW: These methods have implementations in
   // LayoutBlockFlowLine. They should be moved to the proper header once the

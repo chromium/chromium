@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_inline.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
@@ -850,25 +849,6 @@ void InlineFlowBox::PlaceBoxesInBlockDirection(
           has_annotations_before = true;
         else
           has_annotations_after = true;
-
-        LineLayoutRubyRun ruby_run =
-            LineLayoutRubyRun(curr->GetLineLayoutItem());
-        if (LineLayoutRubyBase ruby_base = ruby_run.RubyBase()) {
-          LayoutUnit bottom_ruby_base_leading =
-              (curr->LogicalHeight() - ruby_base.LogicalBottom()) +
-              ruby_base.LogicalHeight() -
-              (ruby_base.LastRootBox() ? ruby_base.LastRootBox()->LineBottom()
-                                       : LayoutUnit());
-          LayoutUnit top_ruby_base_leading =
-              ruby_base.LogicalTop() +
-              (ruby_base.FirstRootBox() ? ruby_base.FirstRootBox()->LineTop()
-                                        : LayoutUnit());
-          new_logical_top +=
-              !GetLineLayoutItem().StyleRef().IsFlippedLinesWritingMode()
-                  ? top_ruby_base_leading
-                  : bottom_ruby_base_leading;
-          box_height -= (top_ruby_base_leading + bottom_ruby_base_leading);
-        }
       }
       if (curr->IsInlineTextBox()) {
         TextEmphasisPosition emphasis_mark_position;

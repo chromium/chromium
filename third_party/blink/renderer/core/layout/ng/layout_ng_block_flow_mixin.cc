@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -286,7 +285,6 @@ void LayoutNGBlockFlowMixin<Base>::Trace(Visitor* visitor) const {
 
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutBlockFlow>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutProgress>;
-template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyBase>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyRun>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutView>;

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_RUBY_RUN_H_
 
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 
 namespace blink {
@@ -33,10 +32,6 @@ class LineLayoutRubyRun : public LineLayoutBlockFlow {
     ToRubyRun()->GetOverhang(first_line, start_layout_item.GetLayoutObject(),
                              end_layout_item.GetLayoutObject(), start_overhang,
                              end_overhang);
-  }
-
-  LineLayoutRubyBase RubyBase() const {
-    return LineLayoutRubyBase(ToRubyRun()->RubyBase());
   }
 
   bool CanBreakBefore(const LazyLineBreakIterator& iterator) const {

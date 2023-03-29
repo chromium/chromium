@@ -36,9 +36,9 @@
 
 namespace blink {
 
-class LayoutRubyBase;
 template <typename Base>
 class LayoutNGMixin;
+class LayoutNGRubyBase;
 class LayoutNGRubyText;
 
 // LayoutRubyRun are 'inline-block/table' like objects,and wrap a single pairing
@@ -56,9 +56,9 @@ class LayoutRubyRun : public LayoutBlockFlow {
   bool HasRubyText() const;
   bool HasRubyBase() const;
   LayoutNGRubyText* RubyText() const;
-  LayoutRubyBase* RubyBase() const;
+  LayoutNGRubyBase* RubyBase() const;
   // Creates the base if it doesn't already exist
-  LayoutRubyBase& EnsureRubyBase();
+  LayoutNGRubyBase& EnsureRubyBase();
 
   LayoutObject* LayoutSpecialExcludedChild(bool relayout_children,
                                            SubtreeLayoutScope&) override;
@@ -83,7 +83,7 @@ class LayoutRubyRun : public LayoutBlockFlow {
   }
 
  protected:
-  LayoutRubyBase& CreateRubyBase() const;
+  LayoutNGRubyBase& CreateRubyBase() const;
 
  private:
   bool IsOfType(LayoutObjectType type) const override {

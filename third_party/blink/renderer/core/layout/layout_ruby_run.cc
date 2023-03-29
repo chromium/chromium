@@ -32,8 +32,8 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_text.h"
 
@@ -73,12 +73,12 @@ LayoutNGRubyText* LayoutRubyRun::RubyText() const {
   return DynamicTo<LayoutNGRubyText>(child);
 }
 
-LayoutRubyBase* LayoutRubyRun::RubyBase() const {
+LayoutNGRubyBase* LayoutRubyRun::RubyBase() const {
   NOT_DESTROYED();
-  return DynamicTo<LayoutRubyBase>(LastChild());
+  return DynamicTo<LayoutNGRubyBase>(LastChild());
 }
 
-LayoutRubyBase& LayoutRubyRun::EnsureRubyBase() {
+LayoutNGRubyBase& LayoutRubyRun::EnsureRubyBase() {
   NOT_DESTROYED();
   if (auto* base = RubyBase())
     return *base;
@@ -132,7 +132,7 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
 
       // Make sure we don't leave anything in the percentage descendant
       // map before moving the children to the new base.
-      LayoutRubyBase& base = EnsureRubyBase();
+      auto& base = EnsureRubyBase();
       if (HasPercentHeightDescendants() || base.HasPercentHeightDescendants()) {
         ClearPercentHeightDescendants();
       }
@@ -141,7 +141,7 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
   } else {
     // child is not a text -> insert it into the base
     // (append it instead if beforeChild is the ruby text)
-    LayoutRubyBase& base = EnsureRubyBase();
+    auto& base = EnsureRubyBase();
     if (before_child == &base)
       before_child = base.FirstChild();
     if (before_child && before_child->IsRubyText())
@@ -156,11 +156,11 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
   // If the child is a ruby text, then merge the ruby base with the base of
   // the right sibling run, if possible.
   if (!BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
-    LayoutRubyBase* base = RubyBase();
+    auto* base = RubyBase();
     LayoutObject* right_neighbour = NextSibling();
     if (base->FirstChild() && right_neighbour && right_neighbour->IsRubyRun()) {
       auto* right_run = To<LayoutRubyRun>(right_neighbour);
-      LayoutRubyBase& right_base = right_run->EnsureRubyBase();
+      auto& right_base = right_run->EnsureRubyBase();
       if (right_base.FirstChild()) {
         // Collect all children in a single base, then swap the bases.
         if (right_base.HasPercentHeightDescendants()) {
@@ -189,9 +189,10 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
   }
 }
 
-LayoutRubyBase& LayoutRubyRun::CreateRubyBase() const {
+LayoutNGRubyBase& LayoutRubyRun::CreateRubyBase() const {
   NOT_DESTROYED();
-  auto* layout_object = LayoutRubyBase::CreateAnonymous(&GetDocument(), *this);
+  auto* layout_object = MakeGarbageCollected<LayoutNGRubyBase>();
+  layout_object->SetDocumentForAnonymous(&GetDocument());
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           StyleRef(), EDisplay::kBlock);
@@ -248,7 +249,7 @@ void LayoutRubyRun::UpdateLayout() {
   rt->SetLogicalLeft(LayoutUnit());
 
   // Place the LayoutNGRubyText such that its bottom is flush with the lineTop
-  // of the first line of the LayoutRubyBase.
+  // of the first line of the LayoutNGRubyBase.
   LayoutUnit last_line_ruby_text_bottom = rt->LogicalHeight();
   LayoutUnit first_line_ruby_text_top;
   if (RootInlineBox* root_box = rt->LastRootBox()) {
@@ -262,7 +263,7 @@ void LayoutRubyRun::UpdateLayout() {
                                           : RubyPosition::kBefore;
   if (StyleRef().GetRubyPosition() == block_start_position) {
     LayoutUnit first_line_top;
-    if (LayoutRubyBase* rb = RubyBase()) {
+    if (auto* rb = RubyBase()) {
       RootInlineBox* root_box = rb->FirstRootBox();
       if (root_box)
         first_line_top = root_box->LogicalTopLayoutOverflow();
@@ -272,7 +273,7 @@ void LayoutRubyRun::UpdateLayout() {
     rt->SetLogicalTop(-last_line_ruby_text_bottom + first_line_top);
   } else {
     LayoutUnit last_line_bottom = LogicalHeight();
-    if (LayoutRubyBase* rb = RubyBase()) {
+    if (auto* rb = RubyBase()) {
       RootInlineBox* root_box = rb->LastRootBox();
       if (root_box)
         last_line_bottom = root_box->LogicalBottomLayoutOverflow();
@@ -297,7 +298,7 @@ void LayoutRubyRun::GetOverhang(bool first_line,
   start_overhang = 0;
   end_overhang = 0;
 
-  LayoutRubyBase* ruby_base = RubyBase();
+  auto* ruby_base = RubyBase();
   auto* ruby_text = RubyText();
 
   if (!ruby_base || !ruby_text)

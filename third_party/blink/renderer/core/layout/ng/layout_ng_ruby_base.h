@@ -6,18 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_RUBY_BASE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyBase>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyBase>;
-
-// A LayoutNG version of LayoutRubyBase.
-class CORE_EXPORT LayoutNGRubyBase final
-    : public LayoutNGBlockFlowMixin<LayoutRubyBase> {
+// Represents a ruby base box.
+// https://drafts.csswg.org/css-ruby-1/#ruby-base-box.
+class CORE_EXPORT LayoutNGRubyBase final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGRubyBase();
   ~LayoutNGRubyBase() override;
@@ -26,7 +21,26 @@ class CORE_EXPORT LayoutNGRubyBase final
     NOT_DESTROYED();
     return "LayoutNGRubyBase";
   }
-  void UpdateBlockLayout(bool relayout_children) override;
+  bool IsOfType(LayoutObjectType type) const override;
+  bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
+
+  // This function removes all children that are before (!) `before_child`
+  // and appends them to `to_base`.
+  void MoveChildren(LayoutNGRubyBase& to_base,
+                    LayoutObject* before_child = nullptr);
+
+ private:
+  void MoveInlineChildrenTo(LayoutNGRubyBase& to_base,
+                            LayoutObject* before_child);
+  void MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
+                           LayoutObject* before_child);
+};
+
+template <>
+struct DowncastTraits<LayoutNGRubyBase> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRubyBase();
+  }
 };
 
 }  // namespace blink
