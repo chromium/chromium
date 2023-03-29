@@ -559,13 +559,17 @@ void CrasAudioHandler::RefreshNoiseCancellationState() {
       (internal_mic->audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION));
 }
 
-void CrasAudioHandler::SetNoiseCancellationState(bool noise_cancellation_on) {
+void CrasAudioHandler::SetNoiseCancellationState(
+    bool noise_cancellation_on,
+    AudioSettingsChangeSource source) {
   CrasAudioClient::Get()->SetNoiseCancellationEnabled(noise_cancellation_on);
   audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_on);
 
   for (auto& observer : observers_) {
     observer.OnNoiseCancellationStateChanged();
   }
+  base::UmaHistogramEnumeration(kNoiseCancellationEnabledSourceHistogramName,
+                                source);
 }
 
 void CrasAudioHandler::RequestNoiseCancellationSupported(

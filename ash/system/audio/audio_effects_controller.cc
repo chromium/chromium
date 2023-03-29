@@ -72,7 +72,9 @@ void AudioEffectsController::OnEffectControlActivated(
       // Toggle noise cancellation.
       CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
       bool new_state = !audio_handler->GetNoiseCancellationState();
-      audio_handler->SetNoiseCancellationState(new_state);
+      audio_handler->SetNoiseCancellationState(
+          new_state,
+          CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray);
       return;
     }
     case VcEffectId::kLiveCaption: {

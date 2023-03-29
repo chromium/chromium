@@ -308,7 +308,9 @@ class CrosAudioConfigImplTest : public testing::Test {
   }
 
   void SetNoiseCancellationState(bool noise_cancellation_on) {
-    cras_audio_handler_->SetNoiseCancellationState(noise_cancellation_on);
+    cras_audio_handler_->SetNoiseCancellationState(
+        noise_cancellation_on,
+        CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -558,6 +560,9 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   bool expect_noise_cancellation_enabled = true;
   histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
                                       expect_noise_cancellation_enabled, 0);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 0);
 
   // Turn on noise cancellation support.
   SetNoiseCancellationSupported(/*supported=*/true);
@@ -567,6 +572,9 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   SimulateSetNoiseCancellationEnabled(/*enabled=*/true);
   histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
                                       expect_noise_cancellation_enabled, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 1);
 
   // Add input audio nodes.
   SetAudioNodes({kInternalMic, kUsbMic});
@@ -592,6 +600,9 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   expect_noise_cancellation_enabled = false;
   histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
                                       expect_noise_cancellation_enabled, 0);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 1);
 
   // Turn noise cancellation off with active input device that supports noise
   // cancellation.
@@ -604,6 +615,9 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
             fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
   histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
                                       expect_noise_cancellation_enabled, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {

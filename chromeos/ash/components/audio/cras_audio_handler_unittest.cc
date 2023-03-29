@@ -5104,17 +5104,25 @@ TEST_P(CrasAudioHandlerTest,
 
   // Turn off noise cancellation.
   cras_audio_handler_->SetNoiseCancellationState(
-      /*noise_cancellation_on=*/false);
+      /*noise_cancellation_on=*/false,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
 
   EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
   EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 1);
 
   // Turn on noise cancellation.
   cras_audio_handler_->SetNoiseCancellationState(
-      /*noise_cancellation_on=*/true);
+      /*noise_cancellation_on=*/true,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
 
   EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
   EXPECT_TRUE(fake_cras_audio_client()->noise_cancellation_enabled());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 2);
 }
 
 TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
@@ -5132,7 +5140,8 @@ TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
   EXPECT_EQ(0, test_observer_->noise_cancellation_state_change_count());
 
   // Change noise cancellation state to trigger observer.
-  cras_audio_handler_->SetNoiseCancellationState(false);
+  cras_audio_handler_->SetNoiseCancellationState(
+      false, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
 
   EXPECT_EQ(1, test_observer_->noise_cancellation_state_change_count());
 }

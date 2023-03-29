@@ -490,7 +490,8 @@ void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
 void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   const bool new_state = !audio_handler->GetNoiseCancellationState();
-  audio_handler->SetNoiseCancellationState(new_state);
+  audio_handler->SetNoiseCancellationState(
+      new_state, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
   if (features::IsQsRevampEnabled()) {
     noise_cancellation_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         new_state ? kUnifiedMenuMicNoiseCancelHighIcon

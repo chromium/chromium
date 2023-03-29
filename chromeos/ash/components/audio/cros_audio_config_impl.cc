@@ -333,7 +333,8 @@ void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
     return;
   }
 
-  audio_handler->SetNoiseCancellationState(enabled);
+  audio_handler->SetNoiseCancellationState(
+      enabled, CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
   base::UmaHistogramBoolean(kNoiseCancellationEnabledHistogramName, enabled);
 }
 

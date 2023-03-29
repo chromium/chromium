@@ -90,7 +90,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     kSystemTray = 0,
     kOsSettings,
     kAccelerator,
-    kMaxValue = kAccelerator,
+    kVideoConferenceTray,
+    kMaxValue = kVideoConferenceTray,
   };
 
   static constexpr base::TimeDelta kMetricsDelayTimerInterval =
@@ -103,6 +104,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "Cras.OutputVolumeChangedSource";
   static constexpr char kOutputVolumeMuteSourceHistogramName[] =
       "Cras.OutputVolumeMutedSource";
+  static constexpr char kNoiseCancellationEnabledSourceHistogramName[] =
+      "Cras.NoiseCancellationEnabledSource";
 
   class AudioObserver {
    public:
@@ -340,8 +343,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void RefreshNoiseCancellationState();
 
   // Updates noise cancellation state in `CrasAudioClient` and
-  // `AudioDevicesPrefHandler` to the provided value.
-  void SetNoiseCancellationState(bool noise_cancellation_on);
+  // `AudioDevicesPrefHandler` to the provided value. `source` records to
+  // metrics who changed the noise cancellation state.
+  void SetNoiseCancellationState(bool noise_cancellation_on,
+                                 AudioSettingsChangeSource source);
 
   // Get if noise cancellation is supported by the board.
   void RequestNoiseCancellationSupported(

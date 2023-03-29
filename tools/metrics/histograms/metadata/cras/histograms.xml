@@ -503,6 +503,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.NoiseCancellationEnabledSource"
+    enum="AudioSettingsChangeSource" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Records the source of enabling/disabling noise cancellation.
+  </summary>
+</histogram>
+
 <histogram name="Cras.OutputVolumeChangedSource"
     enum="AudioSettingsChangeSource" expires_after="2024-02-14">
   <owner>gavinwill@chromium.org</owner>

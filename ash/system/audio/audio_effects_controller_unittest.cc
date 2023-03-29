@@ -12,6 +12,7 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
@@ -73,6 +74,8 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
     return audio_effects_controller_;
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   AudioEffectsController* audio_effects_controller_ = nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> tray_controller_;
@@ -118,7 +121,11 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationNotEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly disable noise cancellation.
-  cras_audio_handler()->SetNoiseCancellationState(false);
+  cras_audio_handler()->SetNoiseCancellationState(
+      false, CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray, 1);
 
   // Noise cancellation effect state is disabled.
   absl::optional<int> effect_state = audio_effects_controller()->GetEffectState(
@@ -126,11 +133,15 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationNotEnabled) {
   EXPECT_TRUE(effect_state.has_value());
   EXPECT_EQ(effect_state, 0);
 
-  cras_audio_handler()->SetNoiseCancellationState(true);
+  cras_audio_handler()->SetNoiseCancellationState(
+      true, CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray);
   effect_state = audio_effects_controller()->GetEffectState(
       VcEffectId::kNoiseCancellation);
   EXPECT_TRUE(effect_state.has_value());
   EXPECT_EQ(effect_state, 1);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray, 2);
 }
 
 TEST_F(AudioEffectsControllerTest, NoiseCancellationEnabled) {
@@ -141,7 +152,11 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly enable noise cancellation.
-  cras_audio_handler()->SetNoiseCancellationState(true);
+  cras_audio_handler()->SetNoiseCancellationState(
+      true, CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray);
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kNoiseCancellationEnabledSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray, 1);
 
   // Noise cancellation effect state is disabled.
   absl::optional<int> effect_state = audio_effects_controller()->GetEffectState(
@@ -158,7 +173,8 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSetNotEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly enable noise cancellation.
-  cras_audio_handler()->SetNoiseCancellationState(true);
+  cras_audio_handler()->SetNoiseCancellationState(
+      true, CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray);
 
   // Check that noise cancellation is enabled.
   EXPECT_TRUE(cras_audio_handler()->GetNoiseCancellationState());
@@ -179,7 +195,8 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSetEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly disable noise cancellation.
-  cras_audio_handler()->SetNoiseCancellationState(false);
+  cras_audio_handler()->SetNoiseCancellationState(
+      false, CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray);
 
   // Check that noise cancellation is disabled.
   EXPECT_FALSE(cras_audio_handler()->GetNoiseCancellationState());
