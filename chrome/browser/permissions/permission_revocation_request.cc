@@ -43,17 +43,18 @@ OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
   if (!stored_value.is_dict())
     return status;
 
-  const base::Value* dict = stored_value.FindPath(kPermissionName);
+  const base::Value::Dict* dict =
+      stored_value.GetDict().FindDict(kPermissionName);
   if (!dict)
     return status;
 
-  if (dict->FindBoolPath(kExcludedKey).has_value()) {
+  if (dict->FindBool(kExcludedKey).has_value()) {
     status.is_exempt_from_future_revocations =
-        dict->FindBoolPath(kExcludedKey).value();
+        dict->FindBool(kExcludedKey).value();
   }
-  if (dict->FindBoolPath(permissions::kRevokedKey).has_value()) {
+  if (dict->FindBool(permissions::kRevokedKey).has_value()) {
     status.has_been_previously_revoked =
-        dict->FindBoolPath(permissions::kRevokedKey).value();
+        dict->FindBool(permissions::kRevokedKey).value();
   }
 
   return status;
