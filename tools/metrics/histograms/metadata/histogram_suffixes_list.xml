@@ -4972,21 +4972,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RequestThrottlerTypes" separator="_">
-  <suffix name="SuggestionFetcherActiveNTPUser"
-      label="Fetcher for content suggestions on mobile NTP - active NTP users"/>
-  <suffix name="SuggestionFetcherActiveSuggestionsConsumer"
-      label="Fetcher for content suggestions on mobile NTP - active
-             suggestions consumers"/>
-  <suffix name="SuggestionFetcherRareNTPUser"
-      label="Fetcher for content suggestions on mobile NTP - rare NTP users"/>
-  <suffix name="SuggestionThumbnailFetcher"
-      label="Fetcher for article thumbnails on mobile NTP"/>
-  <affected-histogram name="NewTabPage.RequestThrottler.PerDay"/>
-  <affected-histogram name="NewTabPage.RequestThrottler.PerDayInteractive"/>
-  <affected-histogram name="NewTabPage.RequestThrottler.RequestStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ResourceSchedulerPeakDelayableRequestsInFlight"
     separator=".">
   <suffix name="LayoutBlocking"

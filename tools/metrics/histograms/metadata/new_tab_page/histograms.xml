@@ -1876,46 +1876,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.RequestThrottler.PerDay" units="requests"
-    expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Records how many background requests of the given type the browser tried to
-    perform each day where the type is specified by the _suffix of the
-    histogram. The histogram is emitted only after midnight of the given day
-    passes - right before the first following request (which can be several days
-    later if the user does not use Chrome in the meantime). The histogram counts
-    requests with both QUOTA_GRANTED and QUOTA_EXCEEDED status, i.e. the count
-    can easily exceed the daily quota.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.RequestThrottler.PerDayInteractive"
-    units="requests" expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Records how many interactive requests of the given type the browser tried to
-    perform each day where the type is specified by the _suffix of the
-    histogram. The histogram is emitted only after midnight of the given day
-    passes - right before the first following request (which can be several days
-    later if the user does not use Chrome in the meantime). The histogram counts
-    requests with both QUOTA_GRANTED and QUOTA_EXCEEDED status, i.e. the count
-    can easily exceed the daily quota.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.RequestThrottler.RequestStatus"
-    enum="NtpRequestThrottlerStatus" expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Records the status w.r.t. the quota for all requests of the given type. The
-    type of request is specified by the _suffix of the histogram.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.SearchAvailableLoadTime2.ColdStart" units="ms"
     expires_after="2022-02-20">
   <owner>fgorski@chromium.org</owner>

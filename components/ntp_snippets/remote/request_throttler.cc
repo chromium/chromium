@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -23,17 +22,6 @@
 namespace ntp_snippets {
 
 namespace {
-
-// Enumeration listing all possible outcomes for fetch attempts. Used for UMA
-// histogram, so do not change existing values. Insert new values at the end,
-// and update the histogram definition.
-enum class RequestStatus {
-  INTERACTIVE_QUOTA_GRANTED,
-  BACKGROUND_QUOTA_GRANTED,
-  BACKGROUND_QUOTA_EXCEEDED,
-  INTERACTIVE_QUOTA_EXCEEDED,
-  REQUEST_STATUS_COUNT
-};
 
 // Quota value to use if no quota should be applied (by default).
 const int kUnlimitedQuota = INT_MAX;
@@ -49,11 +37,8 @@ struct RequestThrottler::RequestTypeInfo {
   const int default_interactive_quota;
 };
 
-// When adding a new type here, extend also the "RequestThrottlerTypes"
-// <histogram_suffixes> in histograms.xml with the |name| string.
 const RequestThrottler::RequestTypeInfo RequestThrottler::kRequestTypeInfo[] = {
-    // The following three types share the same prefs. They differ in quota
-    // values (and UMA histograms).
+    // The following three types share the same prefs.
     // RequestCounter::RequestType::CONTENT_SUGGESTION_FETCHER_RARE_NTP_USER,
     {"SuggestionFetcherRareNTPUser", prefs::kSnippetFetcherRequestCount,
      prefs::kSnippetFetcherInteractiveRequestCount,
@@ -95,26 +80,6 @@ RequestThrottler::RequestThrottler(PrefService* pref_service, RequestType type)
         << GetRequestTypeName();
     interactive_quota_ = type_info_->default_interactive_quota;
   }
-
-  // Since the histogram names are dynamic, we cannot use the standard macros
-  // and we need to lookup the histograms, instead.
-  int status_count = static_cast<int>(RequestStatus::REQUEST_STATUS_COUNT);
-  // Corresponds to UMA_HISTOGRAM_ENUMERATION(name, sample, |status_count|).
-  histogram_request_status_ = base::LinearHistogram::FactoryGet(
-      base::StringPrintf("NewTabPage.RequestThrottler.RequestStatus_%s",
-                         GetRequestTypeName()),
-      1, status_count, status_count + 1,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  // Corresponds to UMA_HISTOGRAM_COUNTS_100(name, sample).
-  histogram_per_day_background_ = base::Histogram::FactoryGet(
-      base::StringPrintf("NewTabPage.RequestThrottler.PerDay_%s",
-                         GetRequestTypeName()),
-      1, 100, 50, base::HistogramBase::kUmaTargetedHistogramFlag);
-  // Corresponds to UMA_HISTOGRAM_COUNTS_100(name, sample).
-  histogram_per_day_interactive_ = base::Histogram::FactoryGet(
-      base::StringPrintf("NewTabPage.RequestThrottler.PerDayInteractive_%s",
-                         GetRequestTypeName()),
-      1, 100, 50, base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
 // static
@@ -138,18 +103,7 @@ bool RequestThrottler::DemandQuotaForRequest(bool interactive_request) {
 
   int new_count = GetCount(interactive_request) + 1;
   SetCount(interactive_request, new_count);
-  bool available = (new_count <= GetQuota(interactive_request));
-
-  if (interactive_request) {
-    histogram_request_status_->Add(static_cast<int>(
-        available ? RequestStatus::INTERACTIVE_QUOTA_GRANTED
-                  : RequestStatus::INTERACTIVE_QUOTA_EXCEEDED));
-  } else {
-    histogram_request_status_->Add(
-        static_cast<int>(available ? RequestStatus::BACKGROUND_QUOTA_GRANTED
-                                   : RequestStatus::BACKGROUND_QUOTA_EXCEEDED));
-  }
-  return available;
+  return new_count <= GetQuota(interactive_request);
 }
 
 void RequestThrottler::ResetCounterIfDayChanged() {
@@ -163,9 +117,6 @@ void RequestThrottler::ResetCounterIfDayChanged() {
     // The counter is used for the first time in this profile.
     SetDay(now_day);
   } else if (now_day != GetDay()) {
-    // Day has changed - report the number of requests from the previous day.
-    histogram_per_day_background_->Add(GetCount(/*interactive_request=*/false));
-    histogram_per_day_interactive_->Add(GetCount(/*interactive_request=*/true));
     // Reset the counters.
     SetCount(/*interactive_request=*/false, 0);
     SetCount(/*interactive_request=*/true, 0);

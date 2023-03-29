@@ -74489,13 +74489,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="NTP Promo restored"/>
 </enum>
 
-<enum name="NtpRequestThrottlerStatus">
-  <int value="0" label="Interactive request - quota granted"/>
-  <int value="1" label="Background request - quota granted"/>
-  <int value="2" label="Background request - quota exceeded"/>
-  <int value="3" label="Interactive request - quota exceeded"/>
-</enum>
-
 <enum name="NTPSearchSuggestionsRequestStatus">
   <int value="0" label="Unknown Error"/>
   <int value="1" label="ReceivedResponse"/>
