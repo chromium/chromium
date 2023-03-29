@@ -446,24 +446,68 @@ BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Specifies the GM3 omnibox background color in Dark Mode.
+//
+// In order to control the value of this param via Finch, the
+// kOmniboxSteadyStateBackgroundColor feature flag must be enabled.
+//
+// Enabling only the kChromeRefresh2023 flag, while leaving the
+// kOmniboxSteadyStateBackgroundColor flag disabled, will result in the param
+// being locked to its default value and ignoring any overrides provided via
+// Finch.
+//
+// If neither kChromeRefresh2023 nor kOmniboxSteadyStateBackgroundColor are
+// enabled, then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxDarkBackgroundColor(
     &omnibox::kOmniboxSteadyStateBackgroundColor,
     "OmniboxDarkBackgroundColor",
     "0x2A2A2A");
 
 // Specifies the GM3 omnibox background color in Dark Mode (on-hover).
+//
+// In order to control the value of this param via Finch, the
+// kOmniboxSteadyStateBackgroundColor feature flag must be enabled.
+//
+// Enabling only the kChromeRefresh2023 flag, while leaving the
+// kOmniboxSteadyStateBackgroundColor flag disabled, will result in the param
+// being locked to its default value and ignoring any overrides provided via
+// Finch.
+//
+// If neither kChromeRefresh2023 nor kOmniboxSteadyStateBackgroundColor are
+// enabled, then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxDarkBackgroundColorHovered(
     &omnibox::kOmniboxSteadyStateBackgroundColor,
     "OmniboxDarkBackgroundColorHovered",
     "0x4C4C4B");
 
 // Specifies the GM3 omnibox background color in Light Mode.
+//
+// In order to control the value of this param via Finch, the
+// kOmniboxSteadyStateBackgroundColor feature flag must be enabled.
+//
+// Enabling only the kChromeRefresh2023 flag, while leaving the
+// kOmniboxSteadyStateBackgroundColor flag disabled, will result in the param
+// being locked to its default value and ignoring any overrides provided via
+// Finch.
+//
+// If neither kChromeRefresh2023 nor kOmniboxSteadyStateBackgroundColor are
+// enabled, then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxLightBackgroundColor(
     &omnibox::kOmniboxSteadyStateBackgroundColor,
     "OmniboxLightBackgroundColor",
     "0xEBEFF7");
 
 // Specifies the GM3 omnibox background color in Light Mode (on-hover).
+//
+// In order to control the value of this param via Finch, the
+// kOmniboxSteadyStateBackgroundColor feature flag must be enabled.
+//
+// Enabling only the kChromeRefresh2023 flag, while leaving the
+// kOmniboxSteadyStateBackgroundColor flag disabled, will result in the param
+// being locked to its default value and ignoring any overrides provided via
+// Finch.
+//
+// If neither kChromeRefresh2023 nor kOmniboxSteadyStateBackgroundColor are
+// enabled, then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxLightBackgroundColorHovered(
     &omnibox::kOmniboxSteadyStateBackgroundColor,
     "OmniboxLightBackgroundColorHovered",
