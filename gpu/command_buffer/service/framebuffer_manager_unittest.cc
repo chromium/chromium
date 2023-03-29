@@ -136,6 +136,8 @@ class FramebufferInfoTestBase : public GpuServiceTest {
         nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
   ~FramebufferInfoTestBase() override {
+    // Drop unowned reference before `manager_` destroys it.
+    framebuffer_ = nullptr;
     manager_.Destroy(false);
     texture_manager_->MarkContextLost();
     texture_manager_->Destroy();
