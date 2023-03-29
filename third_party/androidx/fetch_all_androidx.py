@@ -54,6 +54,9 @@ _OVERRIDES = [
      'https://androidx.dev/snapshots/builds/9668027/artifacts/repository/'
      'androidx/recyclerview/recyclerview/1.4.0-SNAPSHOT/'
      'recyclerview-1.4.0-20230228.234124-1.aar'),
+    ('androidx_activity_activity/activity-1.8.0-SNAPSHOT.aar',
+     'https://dl.google.com/android/maven2/androidx/activity/activity/'
+     '1.8.0-alpha02/activity-1.8.0-alpha02.aar'),
 ]
 
 

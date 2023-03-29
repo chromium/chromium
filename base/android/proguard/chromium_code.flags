@@ -54,3 +54,7 @@
 -keep,allowobfuscation,allowaccessmodification class * extends <1> {
   <init>();
 }
+
+# TODO(agrieve): Remove once we start to use Android U SDK.
+-dontwarn android.window.BackEvent
+-dontwarn android.window.OnBackAnimationCallback

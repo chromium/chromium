@@ -244,6 +244,10 @@
   <init>();
 }
 
+# TODO(agrieve): Remove once we start to use Android U SDK.
+-dontwarn android.window.BackEvent
+-dontwarn android.window.OnBackAnimationCallback
+
 # File: ../../build/android/dcheck_is_off.flags
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
