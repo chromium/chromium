@@ -7006,11 +7006,11 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
 
   // Trusted signals response for the single expected request. Interest group
   // "0" bids 2, interest group "1" bids 1.
-  auction_worklet::AddVersionedJsonResponse(
+  auction_worklet::AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(kBidder1TrustedSignalsUrl.spec() +
            "?hostname=publisher1.com&keys=key0,key1&interestGroupNames=0,1"),
-      R"({"key0":2, "key1": 1})", 4);
+      R"({"keys":{"key0":2, "key1": 1}})", /*data_version=*/4);
 
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);

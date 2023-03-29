@@ -3373,6 +3373,40 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 }
 
+TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsV1) {
+  const GURL kFullSignalsUrl(
+      "https://signals.test/"
+      "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
+
+  const char kJson[] = R"(
+    {
+      "key1": 1,
+      "key2": [2]
+    }
+  )";
+
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_trusted_bidding_signals_keys_ =
+      std::vector<std::string>({"key1", "key2"});
+
+  // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
+  // should be made. The request succeeds.
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson,
+                        /*data_version=*/absl::nullopt,
+                        /*format_version_string=*/absl::nullopt);
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New(
+          R"({"key1":1,"key2":[2]})", 1, /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/
+      {"Bidding signals URL https://signals.test/ is using outdated bidding "
+       "signals format. Consumers should be updated to use bidding signals "
+       "format version 2"});
+}
+
 // Test that when no trusted signals are fetched, generating bids is delayed
 // until the OnBiddingSignalsReceivedCallback is invoked.
 TEST_F(BidderWorkletTest, GenerateBidOnBiddingSignalsReceivedNoTrustedSignals) {

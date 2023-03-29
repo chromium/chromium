@@ -549,11 +549,18 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
         return;
       }
     }
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.ReceivedDeprecatedBiddingSignalsFormat",
+        format_version != 2);
     if (format_version == 1) {
       result = base::MakeRefCounted<Result>(
           /*priority_vectors=*/TrustedSignals::Result::PriorityVectorMap(),
           ParseKeyValueMap(v8_helper.get(), v8_object, *bidding_signals_keys),
           maybe_data_version);
+      error_msg = base::StringPrintf(
+          "Bidding signals URL %s is using outdated bidding signals format. "
+          "Consumers should be updated to use bidding signals format version 2",
+          signals_url.spec().c_str());
     } else {
       DCHECK_EQ(format_version, 2);
       result = base::MakeRefCounted<Result>(
@@ -579,7 +586,7 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
   }
 
   PostCallbackToUserThread(std::move(user_thread_task_runner), weak_instance,
-                           std::move(result), absl::nullopt);
+                           std::move(result), std::move(error_msg));
 }
 
 void TrustedSignals::PostCallbackToUserThread(

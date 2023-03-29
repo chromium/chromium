@@ -260,7 +260,12 @@ class TrustedSignalsTest : public testing::Test {
                            absl::optional<std::string> error_msg) {
     load_signals_result_ = std::move(result);
     error_msg_ = std::move(error_msg);
-    EXPECT_EQ(load_signals_result_.get() == nullptr, error_msg_.has_value());
+    if (!expect_nonfatal_error_) {
+      EXPECT_EQ(load_signals_result_.get() == nullptr, error_msg_.has_value());
+    } else {
+      EXPECT_TRUE(load_signals_result_);
+      EXPECT_TRUE(error_msg_);
+    }
     load_signals_run_loop_->Quit();
   }
 
@@ -275,6 +280,10 @@ class TrustedSignalsTest : public testing::Test {
   std::unique_ptr<base::RunLoop> load_signals_run_loop_;
   scoped_refptr<TrustedSignals::Result> load_signals_result_;
   absl::optional<std::string> error_msg_;
+
+  // If false, only one of `result` or `error_msg` is expected to be received in
+  // LoadSignalsCallback().
+  bool expect_nonfatal_error_ = false;
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
@@ -921,6 +930,8 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExperimentId) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
+  expect_nonfatal_error_ = true;
+
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/?hostname=publisher"
@@ -929,6 +940,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
           kHostname,
           /*experiment_group_id=*/absl::nullopt,
           /*format_version_string=*/absl::nullopt);
+  EXPECT_EQ(error_msg_,
+            "Bidding signals URL https://url.test/ is using outdated bidding "
+            "signals format. Consumers should be updated to use bidding "
+            "signals format version 2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals.get(), {"key2"}));
@@ -943,6 +958,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
+  expect_nonfatal_error_ = true;
+
   // Only version 2 officially has a version header, but allow an explicit
   // version of "1" to mean the first version.
   scoped_refptr<TrustedSignals::Result> signals =
@@ -953,6 +970,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
           kHostname,
           /*experiment_group_id=*/absl::nullopt,
           /*format_version_string=*/"1");
+  EXPECT_EQ(error_msg_,
+            "Bidding signals URL https://url.test/ is using outdated bidding "
+            "signals format. Consumers should be updated to use bidding "
+            "signals format version 2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
   EXPECT_EQ(R"({"key2":[2]})", ExtractBiddingSignals(signals.get(), {"key2"}));
@@ -984,6 +1005,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
 // A V1 header (i.e., no version header) with a V2 body treats all values as
 // null (since it can't find keys).
 TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
+  expect_nonfatal_error_ = true;
+
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/"
@@ -991,6 +1014,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
           kBaseBiddingJson, {"name1"}, {"key1"}, kHostname,
           /*experiment_group_id=*/absl::nullopt,
           /*format_version_string=*/absl::nullopt);
+  EXPECT_EQ(error_msg_,
+            "Bidding signals URL https://url.test/ is using outdated bidding "
+            "signals format. Consumers should be updated to use bidding "
+            "signals format version 2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
   EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
