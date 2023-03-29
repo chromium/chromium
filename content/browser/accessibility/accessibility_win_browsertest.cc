@@ -964,18 +964,29 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestLoadingAccessibilityTree) {
   testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
 
-  GURL html_data_url(
-      "data:text/html," +
-      base::EscapeQueryParamValue(R"HTML(<body></body>)HTML", false));
-  ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
-
-  // The initial accessible returned should have state STATE_SYSTEM_BUSY while
-  // the accessibility tree is being requested from the renderer.
   AccessibleChecker document1_checker(std::wstring(), ROLE_SYSTEM_DOCUMENT,
                                       std::wstring());
-  document1_checker.SetExpectedState(STATE_SYSTEM_READONLY |
-                                     STATE_SYSTEM_FOCUSED | STATE_SYSTEM_BUSY);
-  document1_checker.CheckAccessible(GetRendererAccessible());
+
+  {
+    AccessibilityNotificationWaiter preload_waiter(
+        shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kNone);
+
+    GURL html_data_url(
+        "data:text/html," +
+        base::EscapeQueryParamValue(R"HTML(<body></body>)HTML", false));
+    ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
+
+    // It's possible to receive accessibility data from the new document before
+    // NavigateToURL returns, in which case it's too late to verify anything
+    // about the initial state of browser accessibility.
+    if (!preload_waiter.notification_received()) {
+      // The initial accessible returned should have state STATE_SYSTEM_BUSY
+      // while the accessibility tree is being requested from the renderer.
+      document1_checker.SetExpectedState(
+          STATE_SYSTEM_READONLY | STATE_SYSTEM_FOCUSED | STATE_SYSTEM_BUSY);
+      document1_checker.CheckAccessible(GetRendererAccessible());
+    }
+  }
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,

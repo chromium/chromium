@@ -67,6 +67,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // node that was the target of the event.
   int event_target_id() const { return event_target_id_; }
 
+  bool notification_received() const { return notification_received_; }
+
   // After WaitForNotification returns, use this to retrieve the
   // RenderFrameHostImpl that was the target of the event.
   RenderFrameHostImpl* event_render_frame_host() const {
