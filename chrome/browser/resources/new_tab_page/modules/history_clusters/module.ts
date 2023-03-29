@@ -4,10 +4,10 @@
 
 import '../module_header.js';
 import './suggest_tile.js';
-import './tile.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
@@ -17,6 +17,7 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {HistoryClustersProxyImpl} from './history_clusters_proxy.js';
 import {getTemplate} from './module.html.js';
+import {TileModuleElement} from './tile.js';
 
 export const LAYOUT_1_MIN_IMAGE_VISITS = 2;
 export const LAYOUT_1_MIN_VISITS = 2;
@@ -49,6 +50,18 @@ export enum HistoryClusterElementType {
   SHOW_ALL = 2,
 }
 
+/**
+ * The overall image presence state of the visit tiles on unloading the page.
+ * This enum must match the numbering for NTPHistoryClustersImageDisplayState in
+ * enums.xml. These values are persisted to logs. Entries should not be
+ * renumbered, removed or reused.
+ */
+export enum HistoryClusterImageDisplayState {
+  NONE = 0,
+  SOME = 1,
+  ALL = 2,
+}
+
 export interface HistoryClustersModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
@@ -79,6 +92,25 @@ export class HistoryClustersModuleElement extends I18nMixin
   cluster: Cluster;
   layoutType: HistoryClusterLayoutType;
   searchResultPage: URLVisit;
+
+  override ready() {
+    super.ready();
+
+    listenOnce(window, 'unload', () => {
+      const visitTiles: TileModuleElement[] = Array.from(
+          this.shadowRoot!.querySelectorAll('ntp-history-clusters-tile'));
+      const count = visitTiles.reduce(
+          (acc, tile) => acc + (tile.hasImageUrl() ? 1 : 0), 0);
+      const state = (visitTiles.length === count) ?
+          HistoryClusterImageDisplayState.ALL :
+          (count === 0) ? HistoryClusterImageDisplayState.NONE :
+                          HistoryClusterImageDisplayState.SOME;
+      chrome.metricsPrivate.recordEnumerationValue(
+          `NewTabPage.HistoryClusters.Layout${
+              this.layoutType}.ImageDisplayState`,
+          state, Object.keys(HistoryClusterImageDisplayState).length);
+    });
+  }
 
   private isLayout_(type: HistoryClusterLayoutType): boolean {
     return type === this.layoutType;
