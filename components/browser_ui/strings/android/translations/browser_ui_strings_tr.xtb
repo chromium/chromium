@@ -41,7 +41,7 @@
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919950603503897840">Kişi seçin</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
-<translation id="1984937141057606926">Üçüncü taraf hariç izin verildi</translation>
+<translation id="1984937141057606926">Üçüncü taraf hariç izin veriliyor</translation>
 <translation id="1989112275319619282">Göz at</translation>
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="2004697686368036666">Bazı sitelerdeki özellikler çalışmayabilir</translation>
@@ -104,7 +104,7 @@
 <translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3114012059975132928">Video oynatıcı</translation>
 <translation id="3115898365077584848">Bilgileri Göster</translation>
-<translation id="3123473560110926937">Bazı sitelerde engellendi</translation>
+<translation id="3123473560110926937">Bazı sitelerde engelleniyor</translation>
 <translation id="3143754809889689516">Baştan oynat</translation>
 <translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> depolanmış veri</translation>
@@ -362,7 +362,7 @@
 <translation id="8324158725704657629">Tekrar sorma</translation>
 <translation id="834785183489258869">Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="8372893542064058268">Belirli bir site için Arka Plan Senkronizasyonuna izin verin.</translation>
-<translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezler dahil</translation>
+<translation id="8376384591331888629">Bu sitedeki üçüncü taraf çerezleri dahil</translation>
 <translation id="83792324527827022">Bir site kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="8380167699614421159">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="8394832520002899662">Siteye dönmek için dokunun</translation>
