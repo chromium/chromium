@@ -16,8 +16,8 @@ items:
 - caption: Disable alternate error pages
   value: false
 owners:
-- file://components/policy/OWNERS
-- pastarmovj@chromium.org
+- file://net/OWNERS
+- bashi@chromium.org
 schema:
   type: boolean
 supported_on:
