@@ -19,6 +19,8 @@ export {PasswordManagerAppElement} from './password_manager_app.js';
 export {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
 export {PasswordsExporterElement} from './passwords_exporter.js';
 export {PasswordsSectionElement} from './passwords_section.js';
+export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from './prefs/extension_control_browser_proxy.js';
+export {ExtensionControlledIconElement} from './prefs/extension_controlled_icon.js';
 export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export {PrefsBrowserProxy, PrefsBrowserProxyImpl, PrefsChangedListener} from './prefs/prefs_browser_proxy.js';
 export {PromoCard, PromoCardsProxy, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';

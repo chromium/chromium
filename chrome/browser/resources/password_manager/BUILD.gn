@@ -64,6 +64,7 @@ build_webui("build") {
   non_web_component_files = [
     "password_manager.ts",
     "password_manager_proxy.ts",
+    "prefs/extension_control_browser_proxy.ts",
     "prefs/pref_mixin.ts",
     "prefs/prefs_browser_proxy.ts",
     "router.ts",

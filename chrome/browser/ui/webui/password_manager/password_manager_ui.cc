@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
@@ -127,6 +128,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"deletePasswordDialogAccount",
      IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_FROM_ACCOUNT_CHECKBOX_LABEL},
     {"deletePasswordDialogTitle", IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_TITLE},
+    {"disable", IDS_DISABLE},
     {"downloadFile", IDS_PASSWORD_MANAGER_UI_DOWNLOAD_FILE},
     {"downloadLinkShow", IDS_DOWNLOAD_LINK_SHOW},
     {"editDisclaimerDescription",
@@ -160,6 +162,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"leakedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_LEAKED},
     {"localPasswordManager",
      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
+    {"manage", IDS_SETTINGS_MANAGE},
     {"menu", IDS_MENU},
     {"missingTLD", IDS_PASSWORD_MANAGER_UI_MISSING_TLD},
     {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
@@ -343,6 +346,7 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
                                                                         true);
   web_ui->AddMessageHandler(
       std::make_unique<password_manager::SyncHandler>(profile));
+  web_ui->AddMessageHandler(std::make_unique<ExtensionControlHandler>());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   web_ui->AddMessageHandler(
       std::make_unique<password_manager::PromoCardsHandler>(
