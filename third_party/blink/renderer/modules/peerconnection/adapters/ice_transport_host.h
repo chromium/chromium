@@ -15,7 +15,6 @@
 namespace blink {
 
 class IceTransportProxy;
-class QuicTransportHost;
 
 // This class is the host side correspondent to the IceTransportProxy. See the
 // IceTransportProxy documentation for background. This class lives on the host
@@ -52,29 +51,9 @@ class IceTransportHost final : public IceTransportAdapter::Delegate {
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread() const;
   scoped_refptr<base::SingleThreadTaskRunner> host_thread() const;
 
-  void StartGathering(const cricket::IceParameters& local_parameters,
-                      const cricket::ServerAddresses& stun_servers,
-                      const WebVector<cricket::RelayServerConfig>& turn_servers,
-                      IceTransportPolicy policy);
-  void Start(const cricket::IceParameters& remote_parameters,
-             cricket::IceRole role,
-             const Vector<cricket::Candidate>& initial_remote_candidates);
-  void HandleRemoteRestart(const cricket::IceParameters& new_remote_parameters);
-  void AddRemoteCandidate(const cricket::Candidate& candidate);
-
-  // A QuicTransportHost can be connected to this IceTransportHost. Only one can
-  // be connected at a time, and the caller must ensure that the consumer is
-  // disconnected before destroying the IceTransportHost.
-  // ConnectConsumer returns an implementation of IceTransportAdapter that
-  // should only be used on the host thread.
-  bool HasConsumer() const;
-  IceTransportAdapter* ConnectConsumer(QuicTransportHost* consumer_host);
-  void DisconnectConsumer(QuicTransportHost* consumer_host);
-
  private:
   // IceTransportAdapter::Delegate overrides.
   void OnGatheringStateChanged(cricket::IceGatheringState new_state) override;
-  void OnCandidateGathered(const cricket::Candidate& candidate) override;
   void OnStateChanged(webrtc::IceTransportState new_state) override;
   void OnSelectedCandidatePairChanged(
       const std::pair<cricket::Candidate, cricket::Candidate>&
@@ -84,7 +63,6 @@ class IceTransportHost final : public IceTransportAdapter::Delegate {
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
   std::unique_ptr<IceTransportAdapter> transport_;
   base::WeakPtr<IceTransportProxy> proxy_;
-  QuicTransportHost* consumer_host_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
 };

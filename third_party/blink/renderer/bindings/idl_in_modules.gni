@@ -555,7 +555,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate_init.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate_pair.idl",
-          "//third_party/blink/renderer/modules/peerconnection/rtc_ice_gather_options.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_ice_parameters.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_ice_server.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.idl",

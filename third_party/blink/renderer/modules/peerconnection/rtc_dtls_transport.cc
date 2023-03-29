@@ -104,7 +104,7 @@ void RTCDtlsTransport::Close() {
   if (current_state_.state() != webrtc::DtlsTransportState::kClosed) {
     DispatchEvent(*Event::Create(event_type_names::kStatechange));
   }
-  ice_transport_->stop();
+  ice_transport_->Stop();
 }
 
 // Implementation of DtlsTransportProxy::Delegate

@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_sctp_transport.h"
 
+#include "base/test/test_simple_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport_test.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -17,8 +18,14 @@ namespace blink {
 
 using testing::_;
 using testing::Invoke;
+using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
+
+class MockEventListener final : public NativeEventListener {
+ public:
+  MOCK_METHOD2(Invoke, void(ExecutionContext*, Event*));
+};
 
 class MockSctpTransport : public webrtc::SctpTransportInterface {
  public:
@@ -50,7 +57,39 @@ class MockSctpTransport : public webrtc::SctpTransportInterface {
   webrtc::SctpTransportObserverInterface* observer_ = nullptr;
 };
 
-class RTCSctpTransportTest : public RTCIceTransportTest {};
+class RTCSctpTransportTest : public testing::Test {
+ public:
+  RTCSctpTransportTest();
+  ~RTCSctpTransportTest() override;
+
+  // Run the main thread and worker thread until both are idle.
+  void RunUntilIdle();
+
+ protected:
+  scoped_refptr<base::TestSimpleTaskRunner> main_thread_;
+  scoped_refptr<base::TestSimpleTaskRunner> worker_thread_;
+  Vector<Persistent<MockEventListener>> mock_event_listeners_;
+};
+
+RTCSctpTransportTest::RTCSctpTransportTest()
+    : main_thread_(new base::TestSimpleTaskRunner()),
+      worker_thread_(new base::TestSimpleTaskRunner()) {}
+
+RTCSctpTransportTest::~RTCSctpTransportTest() {
+  RunUntilIdle();
+
+  // Explicitly verify expectations of garbage collected mock objects.
+  for (auto mock : mock_event_listeners_) {
+    Mock::VerifyAndClear(mock);
+  }
+}
+
+void RTCSctpTransportTest::RunUntilIdle() {
+  while (worker_thread_->HasPendingTask() || main_thread_->HasPendingTask()) {
+    worker_thread_->RunPendingTasks();
+    main_thread_->RunPendingTasks();
+  }
+}
 
 TEST_F(RTCSctpTransportTest, CreateFromMocks) {
   V8TestingScope scope;

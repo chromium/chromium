@@ -885,8 +885,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_pair_stats.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_stats.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_stats.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_gather_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_gather_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_parameters.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_parameters.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.cc",

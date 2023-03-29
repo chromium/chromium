@@ -23,7 +23,6 @@ namespace blink {
 
 class IceTransportHost;
 class LocalFrame;
-class QuicTransportProxy;
 
 // This class allows the ICE implementation (P2PTransportChannel) to run on a
 // thread different from the thread from which it is controlled. All
@@ -74,31 +73,10 @@ class IceTransportProxy final {
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread() const;
   scoped_refptr<base::SingleThreadTaskRunner> host_thread() const;
 
-  // These methods are proxied to an IceTransportAdapter instance.
-  void StartGathering(const cricket::IceParameters& local_parameters,
-                      const cricket::ServerAddresses& stun_servers,
-                      const WebVector<cricket::RelayServerConfig>& turn_servers,
-                      IceTransportPolicy policy);
-  void Start(const cricket::IceParameters& remote_parameters,
-             cricket::IceRole role,
-             const Vector<cricket::Candidate>& initial_remote_candidates);
-  void HandleRemoteRestart(const cricket::IceParameters& new_remote_parameters);
-  void AddRemoteCandidate(const cricket::Candidate& candidate);
-
-  // A QuicTransportProxy can be connected to this IceTransportProxy. Only one
-  // can be connected at a time, and the caller must ensure that the consumer
-  // is disconnected before destroying the IceTransportProxy.
-  // ConnectConsumer returns an IceTransportHost that can be used to connect
-  // a QuicTransportHost.
-  bool HasConsumer() const;
-  IceTransportHost* ConnectConsumer(QuicTransportProxy* consumer_proxy);
-  void DisconnectConsumer(QuicTransportProxy* consumer_proxy);
-
  private:
   // Callbacks from RTCIceTransportHost.
   friend class IceTransportHost;
   void OnGatheringStateChanged(cricket::IceGatheringState new_state);
-  void OnCandidateGathered(const cricket::Candidate& candidate);
   void OnStateChanged(webrtc::IceTransportState new_state);
   void OnSelectedCandidatePairChanged(
       const std::pair<cricket::Candidate, cricket::Candidate>&
@@ -110,7 +88,6 @@ class IceTransportProxy final {
   // long as this is alive it is safe to post tasks to it (using unretained).
   std::unique_ptr<IceTransportHost, base::OnTaskRunnerDeleter> host_;
   Delegate* const delegate_;
-  QuicTransportProxy* consumer_proxy_ = nullptr;
 
   // This handle notifies scheduler about an active connection associated
   // with a frame. Handle should be destroyed when connection is closed.

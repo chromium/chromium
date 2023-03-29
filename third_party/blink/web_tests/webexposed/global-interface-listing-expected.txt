@@ -7318,23 +7318,17 @@ interface RTCIceTransport : EventTarget
     attribute @@toStringTag
     getter gatheringState
     getter ongatheringstatechange
-    getter onicecandidate
     getter onselectedcandidatepairchange
     getter onstatechange
     getter role
     getter state
-    method addRemoteCandidate
     method constructor
-    method gather
     method getLocalCandidates
     method getLocalParameters
     method getRemoteCandidates
     method getRemoteParameters
     method getSelectedCandidatePair
-    method start
-    method stop
     setter ongatheringstatechange
-    setter onicecandidate
     setter onselectedcandidatepairchange
     setter onstatechange
 interface RTCPeerConnection : EventTarget
