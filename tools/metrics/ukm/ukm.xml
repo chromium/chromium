@@ -19913,7 +19913,6 @@ be describing additional metrics about the same event.
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
   <summary>
     Metrics related to Prerender2
     (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
@@ -20007,6 +20006,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PageEndReason" enum="PageEndReason">
+    <obsolete>
+      Removed March 2023.
+    </obsolete>
     <summary>
       The |page_load_metrics::PageEndReason| for the prerender's activation.
     </summary>

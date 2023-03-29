@@ -75,7 +75,7 @@ namespace page_load_metrics {
 struct ExtraRequestCompleteInfo;
 }  // namespace page_load_metrics
 
-namespace net{
+namespace net {
 enum Error;
 }  // namespace net
 
@@ -114,8 +114,7 @@ class PrerenderPageLoadMetricsObserver
 
  private:
   void RecordSessionEndHistograms(
-      const page_load_metrics::mojom::PageLoadTiming& main_frame_timing,
-      bool app_entering_background);
+      const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
   // Records Cumulative Layout Shift Score (CLS) to UMA and UKM.
   void RecordLayoutShiftScoreMetrics(
       const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
