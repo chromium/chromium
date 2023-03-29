@@ -452,6 +452,19 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
   }
 }
 
+void InputInjectorWayland::Core::InjectPendingEvents(bool libei_succeeded) {
+  if (!libei_succeeded) {
+    LOG(WARNING) << "Setting up libei failed, going to rely on slower "
+                 << "input injection path";
+
+    // These are needed so that we can acquire keyboard/pointer capability.
+    InjectFakeKeyEvent();
+    InjectFakePointerEvent();
+  }
+
+  MaybeFlushPendingEvents();
+}
+
 void InputInjectorWayland::Core::SetRemoteDesktopSessionDetails(
     const SessionDetails& session_details) {
   if (!input_task_runner_->BelongsToCurrentThread()) {
@@ -464,11 +477,8 @@ void InputInjectorWayland::Core::SetRemoteDesktopSessionDetails(
   remotedesktop_portal_.SetSessionDetails(session_details);
   remote_desktop_initialized_ = true;
 
-  // These are needed so that we can acquire keyboard/pointer capability.
-  InjectFakeKeyEvent();
-  InjectFakePointerEvent();
-
-  MaybeFlushPendingEvents();
+  remotedesktop_portal_.SetupLibei(
+      base::BindOnce(&Core::InjectPendingEvents, this));
 }
 
 void InputInjectorWayland::Core::MaybeFlushPendingEvents() {

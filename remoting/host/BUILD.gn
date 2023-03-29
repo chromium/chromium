@@ -228,6 +228,10 @@ if (is_linux) {
   pkg_config("xkbcommon") {
     packages = [ "xkbcommon" ]
   }
+
+  pkg_config("libevdev") {
+    packages = [ "libevdev" ]
+  }
 }
 
 # This must be a static library instead of a source set because
@@ -500,6 +504,7 @@ static_library("common") {
   }
 
   if (remoting_use_x11) {
+    assert(use_glib)
     defines += [ "REMOTING_USE_X11" ]
     sources += [
       "curtain_mode_linux.cc",
@@ -523,6 +528,8 @@ static_library("common") {
       "linux/desktop_display_info_loader_wayland.h",
       "linux/desktop_resizer_wayland.cc",
       "linux/desktop_resizer_wayland.h",
+      "linux/ei_event_watcher_glib.cc",
+      "linux/ei_event_watcher_glib.h",
       "linux/input_injector_wayland.cc",
       "linux/input_injector_wayland.h",
       "linux/remote_desktop_portal.cc",
@@ -548,6 +555,11 @@ static_library("common") {
       "x11_display_util.cc",
       "x11_display_util.h",
     ]
+    configs += [
+      "//third_party/webrtc/modules/portal:gio",
+      ":libevdev",
+    ]
+    libs += [ "//third_party/libei/lib64/libei.a" ]
     public_deps += [
       "//third_party/wayland:wayland_client",
       "//third_party/wayland-protocols:xdg_output_protocol",

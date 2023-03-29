@@ -102,6 +102,7 @@ class InputInjectorWayland : public InputInjector {
     void MovePointerTo(int x, int y);
     void MovePointerBy(int delta_x, int delta_y);
     void InjectKeyPress(unsigned int code, bool pressed, bool is_code = true);
+    void InjectPendingEvents(bool libei_scucceeded);
 
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
     std::set<int> pressed_keys_;
