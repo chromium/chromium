@@ -14,7 +14,7 @@ namespace chromeos::wm::features {
 // https://crbug.com/1240411
 BASE_FEATURE(kWindowLayoutMenu,
              "WindowLayoutMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsWindowLayoutMenuEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
