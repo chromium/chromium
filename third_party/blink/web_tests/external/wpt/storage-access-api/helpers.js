@@ -57,18 +57,18 @@ function RunTestsInNestedIFrame(sourceURL) {
   }, true);
 }
 
-function RunRequestStorageAccessInDetachedFrame() {
+function CreateDetachedFrame() {
   const frame = document.createElement('iframe');
   document.body.append(frame);
   const inner_doc = frame.contentDocument;
   frame.remove();
-  return inner_doc.requestStorageAccess();
+  return inner_doc;
 }
 
-function RunRequestStorageAccessViaDomParser() {
+function CreateDocumentViaDOMParser() {
   const parser = new DOMParser();
   const doc = parser.parseFromString('<html></html>', 'text/html');
-  return doc.requestStorageAccess();
+  return doc;
 }
 
 function RunCallbackWithGesture(callback) {
