@@ -2507,6 +2507,11 @@ void GLES2DecoderPassthroughTestBase::TearDown() {
   group_->Destroy(decoder_.get(), false);
   decoder_.reset();
   group_ = nullptr;
+
+  // Drop unowned references to buffer memory before service destroys them.
+  shared_memory_address_ = nullptr;
+  shared_memory_base_ = nullptr;
+
   command_buffer_service_.reset();
   gl::init::ShutdownGL(display_, false);
 }
