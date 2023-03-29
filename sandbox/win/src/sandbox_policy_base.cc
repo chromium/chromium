@@ -114,7 +114,6 @@ ConfigBase::ConfigBase() noexcept
       delayed_mitigations_(0),
       add_restricting_random_sid_(false),
       lockdown_default_dacl_(false),
-      allow_no_sandbox_job_(false),
       is_csrss_connected_(true),
       memory_limit_(0),
       ui_exceptions_(0),
@@ -396,14 +395,6 @@ JobLevel ConfigBase::GetJobLevel() const {
 
 void ConfigBase::SetJobMemoryLimit(size_t memory_limit) {
   memory_limit_ = memory_limit;
-}
-
-void ConfigBase::SetAllowNoSandboxJob() {
-  allow_no_sandbox_job_ = true;
-}
-
-bool ConfigBase::GetAllowNoSandboxJob() {
-  return allow_no_sandbox_job_;
 }
 
 ResultCode ConfigBase::AddKernelObjectToClose(const wchar_t* handle_type,

@@ -61,8 +61,6 @@ class TestTargetConfig : public TargetConfig {
   }
   JobLevel GetJobLevel() const override { return sandbox::JobLevel{}; }
   void SetJobMemoryLimit(size_t memory_limit) override {}
-  void SetAllowNoSandboxJob() override { NOTREACHED(); }
-  bool GetAllowNoSandboxJob() override { return false; }
   ResultCode AddRule(SubSystem subsystem,
                      Semantics semantics,
                      const wchar_t* pattern) override {

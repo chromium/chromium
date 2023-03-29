@@ -73,7 +73,6 @@ SANDBOX_POLICY_EXPORT extern const char kLibassistantSandbox[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Flags owned by the service manager sandbox.
-SANDBOX_POLICY_EXPORT extern const char kAllowNoSandboxJob[];
 SANDBOX_POLICY_EXPORT extern const char kAllowSandboxDebugging[];
 SANDBOX_POLICY_EXPORT extern const char kDisableGpuSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kDisableNamespaceSandbox[];

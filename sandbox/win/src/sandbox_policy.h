@@ -221,13 +221,6 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Get the configured AppContainer.
   virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
 
-  // Allows the launch of the the target process to proceed even if no job can
-  // be created.
-  virtual void SetAllowNoSandboxJob() = 0;
-
-  // Returns true if target process launch should proceed if job creation fails.
-  virtual bool GetAllowNoSandboxJob() = 0;
-
   // Adds a handle that will be closed in the target process after lockdown.
   // A nullptr value for handle_name indicates all handles of the specified
   // type. An empty string for handle_name indicates the handle is unnamed.

@@ -60,8 +60,6 @@ class ConfigBase final : public TargetConfig {
   ResultCode SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) override;
   JobLevel GetJobLevel() const override;
   void SetJobMemoryLimit(size_t memory_limit) override;
-  void SetAllowNoSandboxJob() override;
-  bool GetAllowNoSandboxJob() override;
   ResultCode AddRule(SubSystem subsystem,
                      Semantics semantics,
                      const wchar_t* pattern) override;
@@ -137,7 +135,6 @@ class ConfigBase final : public TargetConfig {
   MitigationFlags delayed_mitigations_;
   bool add_restricting_random_sid_;
   bool lockdown_default_dacl_;
-  bool allow_no_sandbox_job_;
   bool is_csrss_connected_;
   size_t memory_limit_;
   uint32_t ui_exceptions_;
