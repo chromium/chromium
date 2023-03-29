@@ -165,8 +165,7 @@ public class CardUnmaskPrompt
             // Populate card details.
             ChromeImageView cardIconView = (ChromeImageView) mMainView.findViewById(R.id.card_icon);
             cardIconView.setImageDrawable(AutofillUiUtils.getCardIcon(context, cardArtUrl,
-                    cardIconId, R.dimen.card_unmask_dialog_credit_card_icon_width,
-                    R.dimen.card_unmask_dialog_credit_card_icon_height,
+                    cardIconId, getCardIconWidthId(), getCardIconHeightId(),
                     isVirtualCard
                             || ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
@@ -603,5 +602,21 @@ public class CardUnmaskPrompt
     @VisibleForTesting
     public String getErrorMessage() {
         return mErrorMessage.getText().toString();
+    }
+
+    public static int getCardIconWidthId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.card_unmask_dialog_credit_card_icon_width_new;
+        }
+        return R.dimen.card_unmask_dialog_credit_card_icon_width;
+    }
+
+    public static int getCardIconHeightId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.card_unmask_dialog_credit_card_icon_height_new;
+        }
+        return R.dimen.card_unmask_dialog_credit_card_icon_height;
     }
 }
