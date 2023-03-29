@@ -62,12 +62,12 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
 
   // The foreground color of the dropdown. If not overridden, this returns
   // absl::nullopt and the default color will be used.
-  virtual absl::optional<ui::ColorId> GetDropdownForegroundColorAt(
+  virtual absl::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
       size_t index) const;
 
   // The background color of the dropdown. If not overridden, this returns
   // absl::nullopt and the default color will be used.
-  virtual absl::optional<ui::ColorId> GetDropdownBackgroundColorAt(
+  virtual absl::optional<ui::ColorId> GetDropdownBackgroundColorIdAt(
       size_t index) const;
 
  protected:

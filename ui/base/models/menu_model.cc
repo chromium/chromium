@@ -97,11 +97,12 @@ void MenuModel::SetMenuModelDelegate(MenuModelDelegate* delegate) {
   menu_model_delegate_ = delegate;
 }
 
-absl::optional<ui::ColorId> MenuModel::GetForegroundColor(size_t index) {
+absl::optional<ui::ColorId> MenuModel::GetForegroundColorId(size_t index) {
   return absl::nullopt;
 }
 
-absl::optional<ui::ColorId> MenuModel::GetSubmenuBackgroundColor(size_t index) {
+absl::optional<ui::ColorId> MenuModel::GetSubmenuBackgroundColorId(
+    size_t index) {
   return absl::nullopt;
 }
 

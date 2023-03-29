@@ -608,7 +608,7 @@ bool SubmenuView::OnScroll(float dx, float dy) {
   return false;
 }
 
-void SubmenuView::SetBorderColor(absl::optional<ui::ColorId> color_id) {
+void SubmenuView::SetBorderColorId(absl::optional<ui::ColorId> color_id) {
   if (scroll_view_container_) {
     scroll_view_container_->SetBorderColorId(color_id);
   }

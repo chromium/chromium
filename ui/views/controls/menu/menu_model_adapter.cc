@@ -115,8 +115,8 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
       menu_index, item_id, model->GetLabelAt(model_index),
       model->GetSecondaryLabelAt(model_index),
       model->GetMinorTextAt(model_index), minor_icon, icon, *type,
-      ui::NORMAL_SEPARATOR, model->GetSubmenuBackgroundColor(model_index),
-      model->GetForegroundColor(model_index));
+      ui::NORMAL_SEPARATOR, model->GetSubmenuBackgroundColorId(model_index),
+      model->GetForegroundColorId(model_index));
 
   if (model->IsAlertedAt(model_index))
     menu_item_view->SetAlerted();

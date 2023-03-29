@@ -181,7 +181,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   }
   MenuHost* host() { return host_; }
 
-  void SetBorderColor(absl::optional<ui::ColorId> color_id);
+  void SetBorderColorId(absl::optional<ui::ColorId> color_id);
 
  protected:
   // View method. Overridden to schedule a paint. We do this so that when

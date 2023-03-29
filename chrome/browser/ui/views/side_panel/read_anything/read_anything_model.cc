@@ -276,13 +276,13 @@ std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
   return font_label;
 }
 
-absl::optional<ui::ColorId> ReadAnythingFontModel::GetDropdownForegroundColorAt(
-    size_t index) const {
+absl::optional<ui::ColorId>
+ReadAnythingFontModel::GetDropdownForegroundColorIdAt(size_t index) const {
   return foreground_color_id_;
 }
 
-absl::optional<ui::ColorId> ReadAnythingFontModel::GetDropdownBackgroundColorAt(
-    size_t index) const {
+absl::optional<ui::ColorId>
+ReadAnythingFontModel::GetDropdownBackgroundColorIdAt(size_t index) const {
   return background_color_id_;
 }
 

@@ -368,7 +368,7 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     CreateSubmenu();
     // Set the submenu border color to be the same as the first submenu
     // background color;
-    submenu_->SetBorderColor(submenu_background_color);
+    submenu_->SetBorderColorId(submenu_background_color);
     if (submenu_background_color.has_value()) {
       submenu_->SetBackground(
           views::CreateThemedSolidBackground(submenu_background_color.value()));

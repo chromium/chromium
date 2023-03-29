@@ -36,12 +36,12 @@ bool ReadAnythingMenuModel::IsValidIndex(size_t index) {
   return false;
 }
 
-absl::optional<ui::ColorId> ReadAnythingMenuModel::GetForegroundColor(
+absl::optional<ui::ColorId> ReadAnythingMenuModel::GetForegroundColorId(
     size_t index) {
   return foreground_color_id_;
 }
 
-absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColor(
+absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColorId(
     size_t index) {
   return submenu_background_color_id_;
 }

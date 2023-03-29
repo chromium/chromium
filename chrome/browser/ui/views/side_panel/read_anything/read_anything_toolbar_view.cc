@@ -201,12 +201,12 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
                                   foreground_color_id);
 
   // Update the background colors for the dropdowns.
-  colors_button_->SetDropdownColors(dropdown_color_id, foreground_color_id);
-  letter_spacing_button_->SetDropdownColors(dropdown_color_id,
+  colors_button_->SetDropdownColorIds(dropdown_color_id, foreground_color_id);
+  letter_spacing_button_->SetDropdownColorIds(dropdown_color_id,
+                                              foreground_color_id);
+  line_spacing_button_->SetDropdownColorIds(dropdown_color_id,
                                             foreground_color_id);
-  line_spacing_button_->SetDropdownColors(dropdown_color_id,
-                                          foreground_color_id);
-  font_combobox_->SetDropdownColors(dropdown_color_id, foreground_color_id);
+  font_combobox_->SetDropdownColorIds(dropdown_color_id, foreground_color_id);
 
   for (views::Separator* separator : separators_) {
     separator->SetColorId(separator_color_id);

@@ -46,16 +46,16 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   std::string GetLabelFontListAt(size_t index);
   size_t GetSelectedIndex() { return selected_index_; }
 
-  absl::optional<ui::ColorId> GetDropdownForegroundColorAt(
+  absl::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
       size_t index) const override;
-  absl::optional<ui::ColorId> GetDropdownBackgroundColorAt(
+  absl::optional<ui::ColorId> GetDropdownBackgroundColorIdAt(
       size_t index) const override;
 
-  void SetForegroundColor(absl::optional<ui::ColorId> foreground_color) {
+  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
     foreground_color_id_ = foreground_color;
   }
 
-  void SetBackgroundColor(absl::optional<ui::ColorId> background_color) {
+  void SetBackgroundColorId(absl::optional<ui::ColorId> background_color) {
     background_color_id_ = background_color;
   }
 

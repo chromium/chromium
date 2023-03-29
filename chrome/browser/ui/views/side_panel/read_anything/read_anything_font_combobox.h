@@ -28,8 +28,8 @@ class ReadAnythingFontCombobox : public views::Combobox {
   ReadAnythingFontCombobox& operator=(const ReadAnythingFontCombobox&) = delete;
   ~ReadAnythingFontCombobox() override;
 
-  void SetDropdownColors(absl::optional<ui::ColorId> foreground_color,
-                         absl::optional<ui::ColorId> background_color);
+  void SetDropdownColorIds(absl::optional<ui::ColorId> foreground_color,
+                           absl::optional<ui::ColorId> background_color);
 
   // views::Combobox:
   gfx::Size GetMinimumSize() const override;

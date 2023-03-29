@@ -52,12 +52,12 @@ void ComboboxModel::RemoveObserver(ComboboxModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-absl::optional<ui::ColorId> ComboboxModel::GetDropdownForegroundColorAt(
+absl::optional<ui::ColorId> ComboboxModel::GetDropdownForegroundColorIdAt(
     size_t index) const {
   return absl::nullopt;
 }
 
-absl::optional<ui::ColorId> ComboboxModel::GetDropdownBackgroundColorAt(
+absl::optional<ui::ColorId> ComboboxModel::GetDropdownBackgroundColorIdAt(
     size_t index) const {
   return absl::nullopt;
 }

@@ -173,8 +173,8 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
                                            MenuModel** model,
                                            size_t* index);
 
-  virtual absl::optional<ui::ColorId> GetForegroundColor(size_t index);
-  virtual absl::optional<ui::ColorId> GetSubmenuBackgroundColor(size_t index);
+  virtual absl::optional<ui::ColorId> GetForegroundColorId(size_t index);
+  virtual absl::optional<ui::ColorId> GetSubmenuBackgroundColorId(size_t index);
 
  private:
   // MenuModelDelegate. Weak. Could be null.

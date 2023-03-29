@@ -264,21 +264,21 @@ TEST_F(ReadAnythingModelTest, DefaultIndexSetOnSetSelectedFontByIndex) {
 }
 
 TEST_F(ReadAnythingModelTest, FontModelHasDefaultNullOptColors) {
-  EXPECT_FALSE(GetFontModel()->GetDropdownForegroundColorAt(0).has_value());
-  EXPECT_FALSE(GetFontModel()->GetDropdownBackgroundColorAt(0).has_value());
+  EXPECT_FALSE(GetFontModel()->GetDropdownForegroundColorIdAt(0).has_value());
+  EXPECT_FALSE(GetFontModel()->GetDropdownBackgroundColorIdAt(0).has_value());
 }
 
 TEST_F(ReadAnythingModelTest, FontModelSetsDropdownAndForegroundColors) {
   ReadAnythingColorsModel* color_model = model_->GetColorsModel();
   ReadAnythingColorsModel::ColorInfo color_info = color_model->GetColorsAt(2);
 
-  GetFontModel()->SetForegroundColor(color_info.foreground_color_id);
-  GetFontModel()->SetBackgroundColor(color_info.dropdown_color_id);
+  GetFontModel()->SetForegroundColorId(color_info.foreground_color_id);
+  GetFontModel()->SetBackgroundColorId(color_info.dropdown_color_id);
 
   EXPECT_EQ(color_info.foreground_color_id,
-            GetFontModel()->GetDropdownForegroundColorAt(0).value());
+            GetFontModel()->GetDropdownForegroundColorIdAt(0).value());
   EXPECT_EQ(color_info.dropdown_color_id,
-            GetFontModel()->GetDropdownBackgroundColorAt(0).value());
+            GetFontModel()->GetDropdownBackgroundColorIdAt(0).value());
 }
 
 #endif  // !defined(ADDRESS_SANITIZER)

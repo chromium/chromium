@@ -20,14 +20,16 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   ComboboxMenuModel& operator&(const ComboboxMenuModel&) = delete;
   ~ComboboxMenuModel() override;
 
-  absl::optional<ui::ColorId> GetForegroundColor(size_t index) override;
-  absl::optional<ui::ColorId> GetSubmenuBackgroundColor(size_t index) override;
+  absl::optional<ui::ColorId> GetForegroundColorId(size_t index) override;
+  absl::optional<ui::ColorId> GetSubmenuBackgroundColorId(
+      size_t index) override;
 
-  void SetForegroundColor(absl::optional<ui::ColorId> foreground_color) {
+  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
     foreground_color_id_ = foreground_color;
   }
 
-  void SetSubmenuBackgroundColor(absl::optional<ui::ColorId> background_color) {
+  void SetSubmenuBackgroundColorId(
+      absl::optional<ui::ColorId> background_color) {
     submenu_background_color_id_ = background_color;
   }
 
