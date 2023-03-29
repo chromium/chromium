@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.omnibox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -18,7 +17,6 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.After;
@@ -41,7 +39,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -58,10 +55,10 @@ import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -162,27 +159,19 @@ public class ActionChipsDelegateImplUnitTest {
     }
 
     /**
-     * Create Omnibox Action action of a given type.
-     */
-    private OmniboxPedal buildAction(@OmniboxActionType int type) {
-        return new OmniboxPedal(type, OmniboxPedalType.NONE, "hint", "contents",
-                "accessibility suffix", "accessibility hint", null);
-    }
-
-    /**
      * Create Omnibox Pedal action of a given type.
      */
-    private OmniboxPedal buildPedal(@OmniboxPedalType int type) {
-        return new OmniboxPedal(OmniboxActionType.PEDAL, type, "hint", "contents",
-                "accessibility suffix", "accessibility hint", null);
+    private OmniboxAction buildPedal(@OmniboxPedalType int type) {
+        return new OmniboxPedal(
+                type, "hint", "contents", "accessibility suffix", "accessibility hint");
     }
 
     /**
      * Create HistoryCluster Action with a supplied query.
      */
-    private HistoryClustersAction buildHistoryClustersAction(String query) {
+    private OmniboxAction buildHistoryClustersAction(String query) {
         return new HistoryClustersAction(
-                "hint", "contents", "accessibility suffix", "accessibility hint", null, query);
+                "hint", "contents", "accessibility suffix", "accessibility hint", query);
     }
 
     @Test
@@ -286,63 +275,5 @@ public class ActionChipsDelegateImplUnitTest {
 
         mDelegate.execute(buildHistoryClustersAction(testJourneyName));
         verify(mHistoryClustersCoordinator).openHistoryClustersUi(testJourneyName);
-    }
-
-    @Test
-    public void verifyDecorations_omniboxPedals() {
-        // List of all custom resources used by Omnibox Pedals.
-        // Any pedals not listed here will by default use the R.drawable.fre_product_logo.
-        Map<Integer, Integer> customResourceMap =
-                ImmutableMap.of(OmniboxPedalType.PLAY_CHROME_DINO_GAME, R.drawable.ic_dino);
-
-        for (var entry : SUPPORTED_PEDALS) {
-            var icon = mDelegate.getIcon(buildPedal(entry));
-
-            var expectedIconRes =
-                    customResourceMap.getOrDefault(entry, R.drawable.fre_product_logo);
-
-            assertEquals(String.format("While evaluating OmniboxPedalType = %d", entry),
-                    (int) expectedIconRes, icon.iconRes);
-            // Expect everything except fre_product_logo to receive tint.
-            assertEquals(String.format("While evaluating OmniboxPedalType = %d", entry),
-                    expectedIconRes != R.drawable.fre_product_logo, icon.tintWithTextColor);
-        }
-    }
-
-    @Test
-    public void verifyDecorations_unsupportedPedalTypes() {
-        // This test catches introduction of any new pedal types to make sure we
-        // account for these pedals in the verifyDecorations_omniboxPedals test.
-        // Guarantees that no new pedals can be enabled without proper test coverage.
-        for (int type = OmniboxPedalType.NONE; type < OmniboxPedalType.TOTAL_COUNT; type++) {
-            // Skip past pedals we already know we support.
-            if (SUPPORTED_PEDALS.contains(type)) continue;
-
-            // "Local variables referenced by lambda must be effectively final"
-            final int pedalType = type;
-            assertThrows(AssertionError.class, () -> mDelegate.getIcon(buildPedal(pedalType)));
-        }
-    }
-
-    @Test
-    public void verifyDecorations_omniboxActions() {
-        var icon = mDelegate.getIcon(buildHistoryClustersAction("test"));
-        assertEquals(R.drawable.ic_journeys, icon.iconRes);
-        assertTrue(icon.tintWithTextColor);
-    }
-
-    @Test
-    public void verifyDecorations_unsupportedActionTypes() {
-        // This test catches introduction of any new action types to make sure we
-        // account for these actions in the verifyDecorations_omniboxActions test.
-        // Guarantees that no new actions can be enabled without proper test coverage.
-        for (int type = OmniboxActionType.UNKNOWN; type <= OmniboxActionType.LAST; type++) {
-            // Skip past actions we already know we support.
-            if (SUPPORTED_ACTIONS.contains(type)) continue;
-
-            // "Local variables referenced by lambda must be effectively final"
-            final int actionType = type;
-            assertThrows(AssertionError.class, () -> mDelegate.getIcon(buildAction(actionType)));
-        }
     }
 }

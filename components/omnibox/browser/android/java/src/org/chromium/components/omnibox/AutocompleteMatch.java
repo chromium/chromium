@@ -16,7 +16,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
-import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
@@ -110,7 +110,7 @@ public class AutocompleteMatch {
     private boolean mHasTabMatch;
     private final @Nullable List<SuggestTile> mSuggestTiles;
     private long mNativeMatch;
-    private final @NonNull List<OmniboxPedal> mActions;
+    private final @NonNull List<OmniboxAction> mActions;
 
     public AutocompleteMatch(int nativeType, Set<Integer> subtypes, boolean isSearchType,
             int relevance, int transition, String displayText,
@@ -119,7 +119,7 @@ public class AutocompleteMatch {
             String fillIntoEdit, GURL url, GURL imageUrl, String imageDominantColor,
             boolean isDeletable, String postContentType, byte[] postData, int groupId,
             List<QueryTile> queryTiles, byte[] clipboardImageData, boolean hasTabMatch,
-            List<SuggestTile> suggestTiles, @Nullable List<OmniboxPedal> actions) {
+            List<SuggestTile> suggestTiles, @Nullable List<OmniboxAction> actions) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -159,7 +159,7 @@ public class AutocompleteMatch {
             GURL url, GURL imageUrl, String imageDominantColor, boolean isDeletable,
             String postContentType, byte[] postData, int groupId, List<QueryTile> tiles,
             byte[] clipboardImageData, boolean hasTabMatch, String[] suggestTileTitles,
-            GURL[] suggestTileUrls, int[] suggestTileTypes, OmniboxPedal[] actions) {
+            GURL[] suggestTileUrls, int[] suggestTileTypes, OmniboxAction[] actions) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -330,7 +330,7 @@ public class AutocompleteMatch {
     }
 
     @NonNull
-    public List<OmniboxPedal> getActions() {
+    public List<OmniboxAction> getActions() {
         return mActions;
     }
 

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -60,7 +61,7 @@ public class ActionChipsProcessor {
      *
      * @param suggestion The suggestion to process.
      * @param model Property model to update.
-     * @param position The position for the list of OmniboxPedal among omnibox suggestions.
+     * @param position The position of the suggestion with OmniboxAction(s) on the suggestion list.
      */
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         if (!doesProcessSuggestion(suggestion, position)) {
@@ -76,14 +77,14 @@ public class ActionChipsProcessor {
         // the chips may show up under the decoration.
         modelList.add(new ListItem(ActionChipsProperties.ViewType.HEADER, new PropertyModel()));
 
-        for (OmniboxPedal chip : actionChipList) {
-            final var chipIcon = mActionChipsDelegate.getIcon(chip);
+        for (OmniboxAction chip : actionChipList) {
+            final var chipIcon = chip.getIcon();
             final var chipModel =
                     new PropertyModel.Builder(ChipProperties.ALL_KEYS)
-                            .with(ChipProperties.TEXT, chip.getHint())
+                            .with(ChipProperties.TEXT, chip.hint)
                             .with(ChipProperties.CONTENT_DESCRIPTION,
                                     mContext.getString(
-                                            R.string.accessibility_omnibox_pedal, chip.getHint()))
+                                            R.string.accessibility_omnibox_pedal, chip.hint))
                             .with(ChipProperties.ENABLED, true)
                             .with(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position))
                             .with(ChipProperties.ICON, chipIcon.iconRes)
@@ -92,9 +93,9 @@ public class ActionChipsProcessor {
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
 
-            if (chip.getActionId() == OmniboxActionType.PEDAL) {
-                mLastVisiblePedals.add(chip.getPedalId());
-            } else if (chip.getActionId() == OmniboxActionType.HISTORY_CLUSTERS) {
+            if (chip.actionId == OmniboxActionType.PEDAL) {
+                mLastVisiblePedals.add(OmniboxPedal.from(chip).pedalId);
+            } else if (chip.actionId == OmniboxActionType.HISTORY_CLUSTERS) {
                 mJourneysActionShownPosition = position;
             }
         }
@@ -106,13 +107,13 @@ public class ActionChipsProcessor {
         return suggestion.getActions().size() > 0 && position < MAX_POSITION;
     }
 
-    private void executeAction(@NonNull OmniboxPedal omniboxPedal, int position) {
-        if (omniboxPedal.getActionId() == OmniboxActionType.HISTORY_CLUSTERS) {
+    private void executeAction(@NonNull OmniboxAction action, int position) {
+        if (action.actionId == OmniboxActionType.HISTORY_CLUSTERS) {
             RecordHistogram.recordEnumeratedHistogram("Omnibox.SuggestionUsed.ResumeJourney",
                     position, SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
         }
         mSuggestionHost.finishInteraction();
-        mActionChipsDelegate.execute(omniboxPedal);
+        mActionChipsDelegate.execute(action);
     }
 
     /**

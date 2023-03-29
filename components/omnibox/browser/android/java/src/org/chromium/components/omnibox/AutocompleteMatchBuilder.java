@@ -9,7 +9,7 @@ import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -46,7 +46,7 @@ public class AutocompleteMatchBuilder {
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
     private List<AutocompleteMatch.SuggestTile> mSuggestTiles;
-    private List<OmniboxPedal> mActions;
+    private List<OmniboxAction> mActions;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -264,10 +264,10 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
-     * @param omniboxPedal Omnibox pedal.
+     * @param actions List of actions to add to the AutocompleteMatch.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setActions(@NonNull List<OmniboxPedal> actions) {
+    public AutocompleteMatchBuilder setActions(@NonNull List<OmniboxAction> actions) {
         mActions = actions;
         return this;
     }

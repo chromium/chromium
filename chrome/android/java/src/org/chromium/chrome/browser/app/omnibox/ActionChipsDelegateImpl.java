@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,13 +38,14 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
- * Handle the events related to {@link OmniboxPedal}.
+ * Handle the events related to {@link OmniboxAction}.
  */
 public class ActionChipsDelegateImpl implements ActionChipsDelegate {
     private final @NonNull Activity mActivity;
@@ -61,11 +61,11 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
-    private void executePedalAction(OmniboxPedal omniboxPedal) {
+    private void executePedalAction(OmniboxPedal pedal) {
         @OmniboxPedalType
-        int omniboxPedalType = omniboxPedal.getPedalId();
+        int pedalId = pedal.pedalId;
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        switch (omniboxPedalType) {
+        switch (pedalId) {
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
                 settingsLauncher.launchSettingsActivity(
                         mActivity, ClearBrowsingDataTabsFragment.class);
@@ -129,23 +129,21 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                 }
                 break;
         }
-        SuggestionsMetrics.recordPedalUsed(omniboxPedalType);
+        SuggestionsMetrics.recordPedalUsed(pedalId);
         return;
     }
 
     @Override
-    public void execute(OmniboxPedal omniboxPedal) {
-        switch (omniboxPedal.getActionId()) {
+    public void execute(OmniboxAction action) {
+        switch (action.actionId) {
             case OmniboxActionType.PEDAL:
-                executePedalAction(omniboxPedal);
+                executePedalAction(OmniboxPedal.from(action));
                 break;
 
             case OmniboxActionType.HISTORY_CLUSTERS:
                 if (mHistoryClustersCoordinator != null) {
-                    assert omniboxPedal instanceof HistoryClustersAction;
-                    String query = ((HistoryClustersAction) omniboxPedal).getQuery();
-                    assert !TextUtils.isEmpty(query);
-                    mHistoryClustersCoordinator.openHistoryClustersUi(query);
+                    mHistoryClustersCoordinator.openHistoryClustersUi(
+                            HistoryClustersAction.from(action).query);
                 }
                 break;
         }
@@ -181,51 +179,6 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
     private void startActivity(@NonNull Intent intent) {
         IntentUtils.addTrustedIntentExtras(intent);
         mActivity.startActivity(intent);
-    }
-
-    @Override
-    public @NonNull ChipIcon getIcon(OmniboxPedal omniboxPedal) {
-        if (omniboxPedal.getActionId() != OmniboxActionType.PEDAL) {
-            return getActionIcon(omniboxPedal);
-        }
-
-        @OmniboxPedalType
-        int omniboxPedalType = omniboxPedal.getPedalId();
-
-        switch (omniboxPedalType) {
-            case OmniboxPedalType.CLEAR_BROWSING_DATA:
-            case OmniboxPedalType.MANAGE_PASSWORDS:
-            case OmniboxPedalType.UPDATE_CREDIT_CARD:
-            case OmniboxPedalType.LAUNCH_INCOGNITO:
-            case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
-            case OmniboxPedalType.MANAGE_SITE_SETTINGS:
-            case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
-            case OmniboxPedalType.VIEW_CHROME_HISTORY:
-            case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
-                return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
-            case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
-                return new ChipIcon(R.drawable.ic_dino, /*tintWithTextColor=*/true);
-            default:
-                // Please confirm the icon for the new pedals in
-                // chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc, if the new pedal uses
-                // a special icon.
-                assert false : "New pedals need to confirm the icon and add update list above.";
-                break;
-        }
-        return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
-    }
-
-    /** Returns the icon for an action that's not a pedal. */
-    private ChipIcon getActionIcon(OmniboxPedal omniboxPedal) {
-        int omniboxActionType = omniboxPedal.getActionId();
-
-        switch (omniboxActionType) {
-            case OmniboxActionType.HISTORY_CLUSTERS:
-                return new ChipIcon(R.drawable.ic_journeys, /*tintWithTextColor=*/true);
-            default:
-                assert false : "New actions need to confirm the icon and update the list above.";
-                return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
-        }
     }
 
     /**

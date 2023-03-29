@@ -5,93 +5,46 @@
 package org.chromium.components.omnibox.action;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.url.GURL;
+import org.chromium.components.browser_ui.styles.R;
 
 /**
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
  * please check on OmniboxAction class definition on native side.
  */
-public class OmniboxPedal {
-    private final @OmniboxActionType int mActionId;
-    private final @OmniboxPedalType int mPedalId;
-    private final @NonNull String mHint;
-    private final @NonNull String mSuggestionContents;
-    private final @NonNull String mAccessibilitySuffix;
-    private final @NonNull String mAccessibilityHint;
-    private final @Nullable GURL mUrl;
-
-    public OmniboxPedal(@OmniboxActionType int actionId, @OmniboxPedalType int pedalId,
-            @NonNull String hint, @NonNull String suggestionContents,
-            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
-            @Nullable GURL url) {
-        mActionId = actionId;
-        mPedalId = pedalId;
-        mHint = hint;
-        mSuggestionContents = suggestionContents;
-        mAccessibilitySuffix = accessibilitySuffix;
-        mAccessibilityHint = accessibilityHint;
-        mUrl = url;
-    }
-
-    /**
-     * @return an ID used to identify the underlying pedal.
-     */
-    public @OmniboxPedalType int getPedalId() {
-        return mPedalId;
-    }
-
-    /**
-     * @return an ID used to identify the underlying action.
-     */
-    public @OmniboxActionType int getActionId() {
-        return mActionId;
-    }
-
-    /**
-     * @return the hint for the action.
-     */
-    public @NonNull String getHint() {
-        return mHint;
-    }
-
-    /**
-     * @return the suggestion contents for the action.
-     */
-    public @NonNull String getSuggestionContents() {
-        return mSuggestionContents;
-    }
-
-    /**
-     * @return the accessibility suffix for the action.
-     */
-    public @NonNull String getAccessibilitySuffix() {
-        return mAccessibilitySuffix;
-    }
-
-    /**
-     * @return the accessibility hint for the action.
-     */
-    public @NonNull String getAccessibilityHint() {
-        return mAccessibilityHint;
-    }
-
-    /**
-     * @return the URL for the action.
-     */
-    public @Nullable GURL getUrl() {
-        return mUrl;
-    }
+public class OmniboxPedal extends OmniboxAction {
+    /** The type of the underlying pedal. */
+    public final @OmniboxPedalType int pedalId;
 
     @CalledByNative
-    private static OmniboxPedal build(int id, @NonNull String hint,
+    public OmniboxPedal(@OmniboxPedalType int pedalId, @NonNull String hint,
             @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
-            @NonNull String accessibilityHint, @Nullable GURL url) {
-        return new OmniboxPedal(OmniboxActionType.PEDAL, id, hint, suggestionContents,
-                accessibilitySuffix, accessibilityHint, url);
+            @NonNull String accessibilityHint) {
+        super(OmniboxActionType.PEDAL, hint, suggestionContents, accessibilitySuffix,
+                accessibilityHint);
+        this.pedalId = pedalId;
+    }
+
+    @Override
+    public @NonNull ChipIcon getIcon() {
+        if (pedalId == OmniboxPedalType.PLAY_CHROME_DINO_GAME) {
+            return new ChipIcon(R.drawable.ic_dino, /*tintWithTextColor=*/true);
+        }
+        return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+    }
+
+    /**
+     * Cast supplied OmniboxAction to OmniboxPedal.
+     * Requires the supplied input to be a valid instance of an OmniboxPedal whose
+     * actionId is the PEDAL.
+     */
+    public static @NonNull OmniboxPedal from(@NonNull OmniboxAction action) {
+        assert action != null;
+        assert action.actionId == OmniboxActionType.PEDAL;
+        assert action instanceof OmniboxPedal;
+        return (OmniboxPedal) action;
     }
 }

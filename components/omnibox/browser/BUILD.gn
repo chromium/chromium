@@ -489,6 +489,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersAction.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
 
@@ -517,12 +518,17 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
-    sources = [ "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/action/HistoryClustersActionUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxPedalUnitTest.java",
+    ]
     deps = [
       ":browser_java",
       ":junit_test_support",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//third_party/android_deps:com_google_guava_guava_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",

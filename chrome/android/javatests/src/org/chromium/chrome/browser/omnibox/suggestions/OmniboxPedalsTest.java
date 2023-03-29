@@ -68,10 +68,8 @@ import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,7 +82,7 @@ import java.util.List;
 public class OmniboxPedalsTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false).name("RegularTab"),
+            List.of(new ParameterSet().value(false).name("RegularTab"),
                     new ParameterSet().value(true).name("IncognitoTab"));
 
     public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
@@ -164,7 +162,7 @@ public class OmniboxPedalsTest {
         for (int i = 0; i < coordinator.getSuggestionCount(); ++i) {
             AutocompleteMatch suggestion = coordinator.getSuggestionAt(i);
             if (suggestion != null && !suggestion.getActions().isEmpty()
-                    && suggestion.getActions().get(0).getPedalId() == pedalType) {
+                    && suggestion.getActions().get(0).actionId == OmniboxActionType.PEDAL) {
                 return suggestion;
             }
         }
@@ -265,17 +263,16 @@ public class OmniboxPedalsTest {
     private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(Arrays.asList(
-                        new OmniboxPedal(OmniboxActionType.PEDAL, id, "hints", "suggestionContents",
-                                "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL())))
+                .setActions(List.of(new OmniboxPedal(id, "hints", "suggestionContents",
+                        "accessibilitySuffix", "accessibilityHint")))
                 .build();
     }
 
     private AutocompleteMatch createDummyHistoryClustersAction(String name) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setActions(Arrays.asList(new HistoryClustersAction("hints", "suggestionContents",
-                        "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL(), name)))
+                .setActions(List.of(new HistoryClustersAction("hints", "suggestionContents",
+                        "accessibilitySuffix", "accessibilityHint", name)))
                 .build();
     }
 

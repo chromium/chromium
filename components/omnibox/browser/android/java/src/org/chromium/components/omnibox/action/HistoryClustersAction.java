@@ -4,38 +4,46 @@
 
 package org.chromium.components.omnibox.action;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.url.GURL;
+import org.chromium.components.browser_ui.styles.R;
 
 /**
  * Omnibox action for showing the history clusters (journeys) UI. This exists as a separate class so
  * that it can expose the associated query directly.
  */
-public class HistoryClustersAction extends OmniboxPedal {
-    private final String mQuery;
-
-    public HistoryClustersAction(@NonNull String hint, @NonNull String suggestionContents,
-            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
-            @Nullable GURL url, @NonNull String query) {
-        super(OmniboxActionType.HISTORY_CLUSTERS, OmniboxPedalType.NONE, hint, suggestionContents,
-                accessibilitySuffix, accessibilityHint, url);
-        mQuery = query;
-    }
-
-    public String getQuery() {
-        return mQuery;
-    }
+public class HistoryClustersAction extends OmniboxAction {
+    /** Associated user query, guaranteed to be a non-empty string. */
+    public final @NonNull String query;
 
     @CalledByNative
-    private static HistoryClustersAction build(@NonNull String hint,
-            @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
-            @NonNull String accessibilityHint, @Nullable GURL url, @NonNull String query) {
-        return new HistoryClustersAction(
-                hint, suggestionContents, accessibilitySuffix, accessibilityHint, url, query);
+    public HistoryClustersAction(@NonNull String hint, @NonNull String suggestionContents,
+            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
+            @NonNull String query) {
+        super(OmniboxActionType.HISTORY_CLUSTERS, hint, suggestionContents, accessibilitySuffix,
+                accessibilityHint);
+        assert !TextUtils.isEmpty(query);
+        this.query = query;
+    }
+
+    @Override
+    public @NonNull ChipIcon getIcon() {
+        return new ChipIcon(R.drawable.ic_journeys, /*tintWithTextColor=*/true);
+    }
+
+    /**
+     * Cast supplied OmniboxAction to HistoryClustersAction.
+     * Requires the supplied input to be a valid instance of an HistoryClustersAction whose
+     * actionId is the HISTORY_CLUSTERS_ACTION.
+     */
+    public static @NonNull HistoryClustersAction from(@NonNull OmniboxAction action) {
+        assert action != null;
+        assert action.actionId == OmniboxActionType.HISTORY_CLUSTERS;
+        assert action instanceof HistoryClustersAction;
+        return (HistoryClustersAction) action;
     }
 }
