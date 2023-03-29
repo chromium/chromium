@@ -626,6 +626,29 @@ crbug.com/1426793 [ android android-sm-a135m ] conformance/extensions/webgl-comp
 crbug.com/1426793 [ android android-sm-a135m ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
 crbug.com/1426793 [ android android-sm-a135m ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
 
+# Much slower (6x or worse) with the validating decoder than the passthrough
+# decoder. We list out all the tests so as to avoid a conflict with the wildcard
+# Slow expectation.
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-00.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-02.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-03.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-04.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-05.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-06.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-07.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-08.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-10.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-11.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-12.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-13.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-14.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-15.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-16.html [ Failure ]
+crbug.com/1426593 [ android android-sm-a135m no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-17.html [ Failure ]
+
+
 ############
 # ChromeOS #
 ############
