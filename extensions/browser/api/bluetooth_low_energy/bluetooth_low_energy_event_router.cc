@@ -67,33 +67,33 @@ std::vector<apibtle::CharacteristicProperty> PopulateCharacteristicProperties(
     return result;
 
   if (properties & BluetoothRemoteGattCharacteristic::PROPERTY_BROADCAST)
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_BROADCAST);
+    result.push_back(apibtle::CharacteristicProperty::kBroadcast);
   if (properties & BluetoothRemoteGattCharacteristic::PROPERTY_READ)
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_READ);
+    result.push_back(apibtle::CharacteristicProperty::kRead);
   if (properties &
       BluetoothRemoteGattCharacteristic::PROPERTY_WRITE_WITHOUT_RESPONSE) {
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_WRITEWITHOUTRESPONSE);
+    result.push_back(apibtle::CharacteristicProperty::kWriteWithoutResponse);
   }
   if (properties & BluetoothRemoteGattCharacteristic::PROPERTY_WRITE)
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_WRITE);
+    result.push_back(apibtle::CharacteristicProperty::kWrite);
   if (properties & BluetoothRemoteGattCharacteristic::PROPERTY_NOTIFY)
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_NOTIFY);
+    result.push_back(apibtle::CharacteristicProperty::kNotify);
   if (properties & BluetoothRemoteGattCharacteristic::PROPERTY_INDICATE)
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_INDICATE);
+    result.push_back(apibtle::CharacteristicProperty::kIndicate);
   if (properties &
       BluetoothRemoteGattCharacteristic::PROPERTY_AUTHENTICATED_SIGNED_WRITES) {
     result.push_back(
-        apibtle::CHARACTERISTIC_PROPERTY_AUTHENTICATEDSIGNEDWRITES);
+        apibtle::CharacteristicProperty::kAuthenticatedSignedWrites);
   }
   if (properties &
       BluetoothRemoteGattCharacteristic::PROPERTY_EXTENDED_PROPERTIES) {
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_EXTENDEDPROPERTIES);
+    result.push_back(apibtle::CharacteristicProperty::kExtendedProperties);
   }
   if (properties & BluetoothRemoteGattCharacteristic::PROPERTY_RELIABLE_WRITE)
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_RELIABLEWRITE);
+    result.push_back(apibtle::CharacteristicProperty::kReliableWrite);
   if (properties &
       BluetoothRemoteGattCharacteristic::PROPERTY_WRITABLE_AUXILIARIES) {
-    result.push_back(apibtle::CHARACTERISTIC_PROPERTY_WRITABLEAUXILIARIES);
+    result.push_back(apibtle::CharacteristicProperty::kWritableAuxiliaries);
   }
   return result;
 }
