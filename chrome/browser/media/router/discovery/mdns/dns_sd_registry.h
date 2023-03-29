@@ -60,6 +60,8 @@ class DnsSdRegistry : public DnsSdDelegate {
   virtual void RegisterDnsSdListener(const std::string& service_type);
   virtual void UnregisterDnsSdListener(const std::string& service_type);
 
+  void ResetForTest();
+
  protected:
   // Data class for managing all the resources and information related to a
   // particular service type.

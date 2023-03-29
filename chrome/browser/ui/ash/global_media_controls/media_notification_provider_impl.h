@@ -9,6 +9,7 @@
 #include "ash/system/media/media_notification_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/ash/global_media_controls/media_item_ui_device_selector_delegate_ash.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
@@ -19,6 +20,9 @@
 class Profile;
 
 namespace global_media_controls {
+namespace mojom {
+class DeviceService;
+}  // namespace mojom
 class MediaItemManager;
 class MediaItemUIListView;
 class MediaSessionItemProducer;
@@ -84,7 +88,15 @@ class ASH_EXPORT MediaNotificationProviderImpl
     profile_for_testing_ = profile;
   }
 
+  void set_device_service_for_testing(
+      global_media_controls::mojom::DeviceService* device_service) {
+    device_service_for_testing_ = device_service;
+  }
+
  private:
+  global_media_controls::mojom::DeviceService* GetDeviceService(
+      base::WeakPtr<media_message_center::MediaNotificationItem> item) const;
+
   base::ObserverList<MediaNotificationProviderObserver> observers_;
 
   base::WeakPtr<global_media_controls::MediaItemUIListView>
@@ -99,7 +111,11 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_{this};
 
+  MediaItemUIDeviceSelectorDelegateAsh device_selector_delegate_;
+
   raw_ptr<Profile> profile_for_testing_ = nullptr;
+  raw_ptr<global_media_controls::mojom::DeviceService>
+      device_service_for_testing_ = nullptr;
 };
 
 }  // namespace ash

@@ -34,10 +34,20 @@
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 #include "media/remoting/device_capability_checker.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/media_ui_ash.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/media_ui.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace mojom {
 using global_media_controls::mojom::DeviceListClient;
@@ -79,9 +89,9 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
 
 }  // namespace
 
-MediaNotificationService::MediaNotificationService(
-    Profile* profile,
-    bool show_from_all_profiles) {
+MediaNotificationService::MediaNotificationService(Profile* profile,
+                                                   bool show_from_all_profiles)
+    : receiver_(this) {
   item_manager_ = global_media_controls::MediaItemManager::Create();
 
   absl::optional<base::UnguessableToken> source_id;
@@ -125,6 +135,24 @@ MediaNotificationService::MediaNotificationService(
     item_manager_->AddItemProducer(
         presentation_request_notification_producer_.get());
   }
+
+  // On Lacros-enabled Chrome OS, MediaNotificationService instances exist on
+  // both Ash and Lacros sides. The Ash-side instance manages Casting from
+  // System Web Apps.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->media_ui_ash()
+      ->RegisterDeviceService(content::MediaSession::GetSourceId(profile),
+                              receiver_.BindNewPipeAndPassRemote());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::MediaUI>()) {
+    chromeos::LacrosService::Get()
+        ->GetRemote<crosapi::mojom::MediaUI>()
+        ->RegisterDeviceService(content::MediaSession::GetSourceId(profile),
+                                receiver_.BindNewPipeAndPassRemote());
+  }
+#endif
 }
 
 MediaNotificationService::~MediaNotificationService() {
@@ -133,9 +161,9 @@ MediaNotificationService::~MediaNotificationService() {
 }
 
 void MediaNotificationService::Shutdown() {
-  // |cast_notification_producer_| and
-  // |presentation_request_notification_producer_| depend on MediaRouter,
-  // which is another keyed service.
+  // `cast_notification_producer_` and
+  // `presentation_request_notification_producer_` depend on MediaRouter,
+  // which is another keyed service. So they must be destroyed here.
   if (cast_notification_producer_) {
     item_manager_->RemoveItemProducer(cast_notification_producer_.get());
   }
@@ -143,7 +171,6 @@ void MediaNotificationService::Shutdown() {
     item_manager_->RemoveItemProducer(
         presentation_request_notification_producer_.get());
   }
-
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
 }

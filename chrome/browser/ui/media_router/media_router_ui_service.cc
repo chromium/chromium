@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -56,11 +57,20 @@ void MediaRouterUIService::RemoveObserver(Observer* observer) {
 }
 
 void MediaRouterUIService::ConfigureService() {
-  if (!MediaRouterEnabled(profile_)) {
+  if (MediaRouterEnabled(profile_)) {
+    if (!action_controller_) {
+      action_controller_ =
+          std::make_unique<MediaRouterActionController>(profile_);
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    if (GlobalMediaControlsCastStartStopEnabled(profile_)) {
+      // Ensure that MediaNotificationService is instantiated so that it can
+      // show the Cast device picker in Global Media Controls.
+      MediaNotificationServiceFactory::GetForProfile(profile_);
+    }
+#endif
+  } else {
     DisableService();
-  } else if (!action_controller_ && MediaRouterEnabled(profile_)) {
-    action_controller_ =
-        std::make_unique<MediaRouterActionController>(profile_);
   }
 }
 

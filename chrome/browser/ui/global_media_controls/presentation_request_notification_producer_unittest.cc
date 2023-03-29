@@ -26,6 +26,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
+#endif
+
 using testing::_;
 using testing::AtLeast;
 using testing::NiceMock;
@@ -44,6 +48,9 @@ class PresentationRequestNotificationProducerTest
         media_router::kGlobalMediaControlsCastStartStop);
     ChromeRenderViewHostTestHarness::SetUp();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    crosapi_environment_.SetUp();
+#endif
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&media_router::MockMediaRouter::Create));
     notification_service_ =
@@ -60,6 +67,9 @@ class PresentationRequestNotificationProducerTest
 
   void TearDown() override {
     notification_service_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    crosapi_environment_.TearDown();
+#endif
     media_router::WebContentsPresentationManager::SetTestInstance(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -112,6 +122,9 @@ class PresentationRequestNotificationProducerTest
       nullptr;
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::TestCrosapiEnvironment crosapi_environment_;
+#endif
 };
 
 TEST_F(PresentationRequestNotificationProducerTest,

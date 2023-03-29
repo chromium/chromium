@@ -169,6 +169,11 @@ void DnsSdRegistry::UnregisterDnsSdListener(const std::string& service_type) {
     service_data_map_.erase(it);
 }
 
+void DnsSdRegistry::ResetForTest() {
+  service_data_map_.clear();
+  service_discovery_client_.reset();
+}
+
 void DnsSdRegistry::ServiceChanged(const std::string& service_type,
                                    bool added,
                                    const DnsSdService& service) {

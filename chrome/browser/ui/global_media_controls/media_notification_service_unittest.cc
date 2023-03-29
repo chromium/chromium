@@ -42,6 +42,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
+#endif
+
 namespace mojom {
 using global_media_controls::mojom::DeviceListClient;
 using global_media_controls::mojom::DeviceListHost;
@@ -86,6 +90,9 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    crosapi_environment_.SetUp();
+#endif
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&media_router::MockMediaRouter::Create));
     service_ = std::make_unique<MediaNotificationService>(profile(), false);
@@ -94,6 +101,9 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     SimulateCloseDialog();
     service_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    crosapi_environment_.TearDown();
+#endif
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -183,6 +193,9 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<MediaNotificationService> service_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::TestCrosapiEnvironment crosapi_environment_;
+#endif
 };
 
 // This class enables the features for starting/stopping cast sessions from

@@ -390,6 +390,8 @@ source_set("test_support") {
     "test_controller_ash.h",
     "test_crosapi_dependency_registry.cc",
     "test_crosapi_dependency_registry.h",
+    "test_crosapi_environment.cc",
+    "test_crosapi_environment.h",
   ]
   allow_circular_includes_from = [ "//chrome/test:test_support" ]
   deps = [
