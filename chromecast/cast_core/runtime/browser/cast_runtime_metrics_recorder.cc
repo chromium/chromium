@@ -120,10 +120,10 @@ void CastRuntimeMetricsRecorder::RemoveActiveConnection(
 void CastRuntimeMetricsRecorder::RecordCastEvent(
     std::unique_ptr<CastEventBuilder> event_builder) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    DLOG(INFO) << "RecordCastEvent direct";
+    DVLOG(1) << "RecordCastEvent direct";
     RecordCastEventOnSequence(std::move(event_builder));
   } else {
-    DLOG(INFO) << "RecordCastEvent bounce";
+    DVLOG(1) << "RecordCastEvent bounce";
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&CastRuntimeMetricsRecorder::RecordCastEventOnSequence,
@@ -133,7 +133,7 @@ void CastRuntimeMetricsRecorder::RecordCastEvent(
 
 void CastRuntimeMetricsRecorder::RecordCastEventOnSequence(
     std::unique_ptr<CastEventBuilder> event_builder) {
-  DLOG(INFO) << "RecordCastEventOnSequence";
+  DVLOG(1) << "RecordCastEventOnSequence";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (events_.size() >= kCastEventLimit) {
     static bool logged_once = false;
@@ -235,19 +235,19 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
   std::unique_ptr<const base::Value> value(
       JSONStringValueDeserializer(event).Deserialize(nullptr, nullptr));
   if (!value) {
-    DVLOG(3) << "This is not a JSON format event: " << event;
+    LOG(ERROR) << "This is not a JSON format event: " << event;
     return false;
   }
 
   if (!value->is_dict()) {
-    DVLOG(3) << "This is not a dictionary JSON format event: " << event;
+    LOG(ERROR) << "This is not a dictionary JSON format event: " << event;
     return false;
   }
 
   const base::Value::Dict& value_dict = value->GetDict();
   const std::string* name = value_dict.FindString(kEventName);
   if (!name) {
-    DVLOG(3) << "Missing field:" << kEventName;
+    LOG(ERROR) << "Missing field:" << kEventName;
     return false;
   }
 
