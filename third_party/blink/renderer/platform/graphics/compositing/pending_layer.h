@@ -178,8 +178,7 @@ class PLATFORM_EXPORT PendingLayer {
                           bool tracks_raster_invalidations);
   void UpdateSolidColorLayer(PendingLayer* old_pending_layer);
 
-  void UpdateLayerProperties();
-  void UpdateLayerSelection(cc::LayerSelection&);
+  void UpdateLayerProperties(cc::LayerSelection&, bool selection_only);
 
   bool UsesSolidColorLayer() const {
     return RuntimeEnabledFeatures::SolidColorLayersEnabled() && is_solid_color_;

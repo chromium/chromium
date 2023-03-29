@@ -66,14 +66,11 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
                              const PropertyTreeState& layer_state,
                              const gfx::Rect* cull_rect = nullptr);
 
-  // Returns true if any selection was painted in the provided PaintChunkSubset.
-  static bool UpdateLayerSelection(cc::Layer& layer,
-                                   const PropertyTreeState& layer_state,
-                                   const PaintChunkSubset&,
-                                   cc::LayerSelection& layer_selection);
   static void UpdateLayerProperties(cc::Layer& layer,
                                     const PropertyTreeState& layer_state,
-                                    const PaintChunkSubset&);
+                                    const PaintChunkSubset&,
+                                    cc::LayerSelection& layer_selection,
+                                    bool selection_only);
 };
 
 }  // namespace blink

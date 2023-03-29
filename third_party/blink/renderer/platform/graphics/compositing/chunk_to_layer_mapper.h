@@ -28,6 +28,8 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   // method must be called to prepare for the chunk.
   void SwitchToChunk(const PaintChunk&);
 
+  const PropertyTreeState& ChunkState() const { return chunk_state_; }
+
   // Maps a visual rectangle in the current chunk space into the layer space.
   gfx::Rect MapVisualRect(const gfx::Rect&) const;
 

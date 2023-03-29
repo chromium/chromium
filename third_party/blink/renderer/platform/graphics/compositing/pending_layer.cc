@@ -581,8 +581,7 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
       break;
   }
 
-  UpdateLayerProperties();
-  UpdateLayerSelection(layer_selection);
+  UpdateLayerProperties(layer_selection, /*selection_only=*/false);
 
   cc::Layer& layer = CcLayer();
   layer.SetLayerTreeHost(layer_tree_host);
@@ -636,39 +635,18 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
     }
   }
 
-  if (!chunks_unchanged)
-    UpdateLayerProperties();
-  UpdateLayerSelection(layer_selection);
+  UpdateLayerProperties(layer_selection, chunks_unchanged);
 }
 
-void PendingLayer::UpdateLayerProperties() {
+void PendingLayer::UpdateLayerProperties(cc::LayerSelection& layer_selection,
+                                         bool selection_only) {
   // Properties of foreign layers are managed by their owners.
-  if (compositing_type_ == PendingLayer::kForeignLayer)
+  if (compositing_type_ == PendingLayer::kForeignLayer) {
     return;
-  PaintChunksToCcLayer::UpdateLayerProperties(CcLayer(), GetPropertyTreeState(),
-                                              Chunks());
-}
-
-void PendingLayer::UpdateLayerSelection(cc::LayerSelection& layer_selection) {
-  // Foreign layers cannot contain selection.
-  if (compositing_type_ == PendingLayer::kForeignLayer)
-    return;
-  bool any_selection_was_painted = PaintChunksToCcLayer::UpdateLayerSelection(
-      CcLayer(), GetPropertyTreeState(), Chunks(), layer_selection);
-  if (any_selection_was_painted) {
-    // If any selection was painted, but we didn't see the start or end bound
-    // recorded, it could have been outside of the painting cull rect thus
-    // invisible. Mark the bound as such if this is the case.
-    if (layer_selection.start.type == gfx::SelectionBound::EMPTY) {
-      layer_selection.start.type = gfx::SelectionBound::LEFT;
-      layer_selection.start.hidden = true;
-    }
-
-    if (layer_selection.end.type == gfx::SelectionBound::EMPTY) {
-      layer_selection.end.type = gfx::SelectionBound::RIGHT;
-      layer_selection.end.hidden = true;
-    }
   }
+  PaintChunksToCcLayer::UpdateLayerProperties(CcLayer(), GetPropertyTreeState(),
+                                              Chunks(), layer_selection,
+                                              selection_only);
 }
 
 // The heuristic for picking a checkerboarding color works as follows:
