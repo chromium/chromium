@@ -108,40 +108,22 @@
 
 - (void)confirmationAlertSecondaryAction {
   LogUserInteractionWithFullscreenPromo();
-  if (IsInRemindMeLaterGroup()) {
-    if (self.defaultBrowerPromoViewController.tertiaryActionString) {
-      // When the "Remind Me Later" button is visible, it is the secondary
-      // button, while the "No Thanks" button is the tertiary button.
-      [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-                IOSDefaultBrowserFullscreenPromoAction::kRemindMeLater];
-      base::RecordAction(base::UserMetricsAction(
-          "IOS.DefaultBrowserFullscreenPromo.RemindMeTapped"));
-      LogRemindMeLaterPromoActionInteraction();
-      [self NotifyFETRemindMeLater];
-    } else {
-      [self logDefaultBrowserFullscreenRemindMeSecondPromoHistogramForAction:
-                IOSDefaultBrowserFullscreenPromoAction::kCancel];
-      base::RecordAction(base::UserMetricsAction(
-          "IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-      [self recordDefaultBrowserPromoShown];
-    }
-  } else {
-    [self logDefaultBrowserFullscreenPromoHistogramForAction:
-              IOSDefaultBrowserFullscreenPromoAction::kCancel];
-    base::RecordAction(
-        base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-    [self recordDefaultBrowserPromoShown];
-  }
+  [self logDefaultBrowserFullscreenPromoHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+  base::RecordAction(
+      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
+  [self recordDefaultBrowserPromoShown];
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertTertiaryAction {
   DCHECK(IsInRemindMeLaterGroup());
   [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
-  base::RecordAction(
-      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-  LogUserInteractionWithFullscreenPromo();
+            IOSDefaultBrowserFullscreenPromoAction::kRemindMeLater];
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.DefaultBrowserFullscreenPromo.RemindMeTapped"));
+  LogRemindMeLaterPromoActionInteraction();
+  [self NotifyFETRemindMeLater];
   [self recordDefaultBrowserPromoShown];
   [self.handler hidePromo];
 }

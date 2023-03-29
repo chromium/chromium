@@ -663,10 +663,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
     self.secondaryActionButton = [self createSecondaryActionButton];
     [actionStackView addArrangedSubview:self.secondaryActionButton];
   }
-
+  // Tertiary button should show above the primary one.
   if (self.tertiaryActionString) {
     self.tertiaryActionButton = [self createTertiaryButton];
-    [actionStackView addArrangedSubview:self.tertiaryActionButton];
+    [actionStackView insertArrangedSubview:self.tertiaryActionButton atIndex:0];
   }
   return actionStackView;
 }

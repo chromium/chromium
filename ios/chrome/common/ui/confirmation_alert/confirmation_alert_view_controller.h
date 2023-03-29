@@ -34,7 +34,7 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 @property(nonatomic, copy) NSString* titleString;
 
 // Text style for the title. If nil, will default to UIFontTextStyleTitle1.
-@property(nonatomic, copy) NSString* titleTextStyle;
+@property(nonatomic, copy) UIFontTextStyle titleTextStyle;
 
 // (Optional) The additional headline below the main title. Must be set before
 // the view is loaded.

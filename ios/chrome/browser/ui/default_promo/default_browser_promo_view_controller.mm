@@ -34,17 +34,13 @@
           ? l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE)
           : l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_DESCRIPTION);
   self.primaryActionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   if (IsInRemindMeLaterGroup() &&
       !ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
-    // Show the Remind Me Later button if the user is in the correct experiment
-    // group and this isn't the second impression.
-    self.secondaryActionString = l10n_util::GetNSString(
+    // Show the Remind Me Later button if the user is in the correct experiment.
+    self.tertiaryActionString = l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_REMIND_ME_LATER_BUTTON_TEXT);
-    self.tertiaryActionString =
-        l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
-  } else {
-    self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT);
   }
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
   [super loadView];
