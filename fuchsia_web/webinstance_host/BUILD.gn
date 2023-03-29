@@ -115,18 +115,3 @@ source_set("webinstance_host_v1") {
     "//third_party/fuchsia-sdk/sdk/pkg/fidl",
   ]
 }
-
-source_set("webinstance_host_integration_test") {
-  testonly = true
-  visibility += [ "//fuchsia_web/webengine/*" ]
-  sources = [ "web_instance_host_integration_test.cc" ]
-  deps = [
-    ":webinstance_host_v1",
-    "//base",
-    "//fuchsia_web/common/test:test_support",
-    "//fuchsia_web/webengine:browsertest_core",
-    "//net:test_support",
-    "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-  ]
-}

@@ -198,6 +198,7 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::Create() {
   realm_builder.AddRoute(
       Route{.capabilities = {Protocol{chromium::cast::DataReset::Name_},
                              Protocol{fuchsia::web::FrameHost::Name_},
+                             Protocol{fuchsia::web::Debug::Name_},
                              Protocol{fuchsia::sys::Runner::Name_}},
             .source = ChildRef{kCastRunnerComponentName},
             .targets = {ParentRef()}});

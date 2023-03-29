@@ -37,8 +37,11 @@
 #include "components/fuchsia_component_support/dynamic_component_host.h"
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
+#include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
+#include "fuchsia_web/common/test/test_debug_listener.h"
 #include "fuchsia_web/common/test/test_devtools_list_fetcher.h"
+#include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_integration_test_base.h"
@@ -942,6 +945,71 @@ TEST_F(CastRunnerIntegrationTest, FrameHost_Service) {
   const GURL url = test_server().GetURL(kBlankAppUrl);
   EXPECT_TRUE(LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
+}
+
+// Check that connecting and disconnecting to the FrameHost service does not
+// trigger shutdown of the devtools service.
+TEST_F(CastRunnerIntegrationTest, FrameHostDebugging) {
+  // Before triggering the launch of any `web_instance` by the `cast_runner`,
+  // attach a `TestDebugListener`, to be notified when the DevTools port becomes
+  // available.
+  TestDebugListener dev_tools_listener;
+  fidl::Binding<fuchsia::web::DevToolsListener> dev_tools_listener_binding(
+      &dev_tools_listener);
+  auto debug = test_realm_services().Connect<fuchsia::web::Debug>();
+  debug.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "Failed to use debug protocol";
+    ADD_FAILURE();
+  });
+  base::RunLoop dev_tools_enabled;
+  debug->EnableDevTools(
+      dev_tools_listener_binding.NewBinding(),
+      [done = dev_tools_enabled.QuitClosure()]() { done.Run(); });
+  dev_tools_enabled.Run();
+
+  // Connect a `FrameHost` client, create a `Frame`, and navigate it to some
+  // test content. Loading the content will result in the DevTools port becoming
+  // available for the test to connect to.
+  auto frame_host = test_realm_services().Connect<fuchsia::web::FrameHost>();
+  fuchsia::web::CreateFrameParams create_frame_params;
+  create_frame_params.set_enable_remote_debugging(true);
+  auto frame = FrameForTest::Create(frame_host, std::move(create_frame_params));
+  GURL url = test_server().GetURL("/defaultresponse");
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
+  frame.navigation_listener().RunUntilUrlEquals(url);
+
+  // Wait for the DevTools port to become available, and then connect to it to
+  // verify that there is a single debuggable page listed.
+  dev_tools_listener.RunUntilNumberOfPortsIs(1);
+  uint16_t remote_debugging_port = *(dev_tools_listener.debug_ports().begin());
+
+  base::Value::List devtools_list =
+      GetDevToolsListFromPort(remote_debugging_port);
+  EXPECT_EQ(devtools_list.size(), 1u);
+  base::Value* devtools_url = devtools_list[0].FindPath("url");
+  ASSERT_TRUE(devtools_url->is_string());
+  EXPECT_EQ(devtools_url->GetString(), url);
+
+  // Create a new `FrameHost` client, and immediately close it. The DevTools
+  // port should remain open regardless.
+  auto frame_host_2 = test_realm_services().Connect<fuchsia::web::FrameHost>();
+  frame_host_2.Unbind();
+
+  // Navigate to a different page. The devtools service should still be active
+  // and report the new page.
+  GURL url2 = test_server().GetURL("/title1.html");
+  ASSERT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url2.spec()));
+  frame.navigation_listener().RunUntilUrlEquals(url2);
+
+  devtools_list = GetDevToolsListFromPort(remote_debugging_port);
+  EXPECT_EQ(devtools_list.size(), 1u);
+  devtools_url = devtools_list[0].FindPath("url");
+  ASSERT_TRUE(devtools_url->is_string());
+  EXPECT_EQ(devtools_url->GetString(), url2);
 }
 
 #if defined(ARCH_CPU_ARM_FAMILY)

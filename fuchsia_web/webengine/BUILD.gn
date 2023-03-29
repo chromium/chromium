@@ -706,7 +706,6 @@ test("web_engine_integration_tests") {
     "//fuchsia_web/common/test:run_all_integration_tests",
     "//fuchsia_web/common/test:test_support",
     "//fuchsia_web/webengine/test:integration",
-    "//fuchsia_web/webinstance_host:webinstance_host_integration_test",
     "//media",
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/camera:test_support",
