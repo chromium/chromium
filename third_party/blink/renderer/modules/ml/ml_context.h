@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -37,6 +38,7 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
   V8MLPowerPreference GetPowerPreference() const;
   V8MLModelFormat GetModelFormat() const;
   unsigned int GetNumThreads() const;
+  void LogConsoleWarning(const String& message);
 
   ML* GetML();
 

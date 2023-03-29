@@ -5524,6 +5524,7 @@ interface MLGraphBuilder
     method maxPool2d
     method min
     method mul
+    method pad
     method relu
     method resample2d
     method reshape

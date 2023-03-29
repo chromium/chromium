@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -54,6 +55,13 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   ElementWiseBinaryKind kind,
                                   const MLOperand* a,
                                   const MLOperand* b);
+
+MLOperand* BuildPad(V8TestingScope& scope,
+                    MLGraphBuilder* builder,
+                    const MLOperand* input,
+                    const Vector<uint32_t>& beginningPadding,
+                    const Vector<uint32_t>& endingPadding,
+                    const MLPadOptions* options = MLPadOptions::Create());
 
 enum class Pool2dKind { kAverage, kMax };
 

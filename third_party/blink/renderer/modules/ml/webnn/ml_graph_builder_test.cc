@@ -2565,6 +2565,93 @@ TEST_F(MLGraphBuilderTest, LeakyReluTest) {
   }
 }
 
+MLOperand* BuildPad(V8TestingScope& scope,
+                    MLGraphBuilder* builder,
+                    const MLOperand* input,
+                    const Vector<uint32_t>& beginningPadding,
+                    const Vector<uint32_t>& endingPadding,
+                    const MLPadOptions* options) {
+  auto* output = builder->pad(input, beginningPadding, endingPadding, options,
+                              scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), input->Type());
+  auto* pad = output->Operator();
+  EXPECT_NE(pad, nullptr);
+  EXPECT_EQ(pad->Kind(), MLOperator::OperatorKind::kPad);
+  EXPECT_EQ(pad->IsConnected(), true);
+  EXPECT_NE(pad->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, PadTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building pad with default options, beginningPadding = {1, 2} and
+    // endingPadding = {1, 2}.
+    auto* input =
+        BuildInput(builder, "input", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLPadOptions::Create();
+    EXPECT_TRUE(options->hasMode());
+    EXPECT_EQ(options->mode(), V8MLPaddingMode::Enum::kConstant);
+    EXPECT_TRUE(options->hasValue());
+    EXPECT_EQ(options->value(), 0);
+    auto* output = BuildPad(scope, builder, input, {1, 2}, {1, 2}, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 7}));
+  }
+  {
+    // Test throwing error when the length of beginningPadding is not equal to
+    // the input rank.
+    auto* input =
+        BuildInput(builder, "input", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLPadOptions::Create();
+    options->setMode(V8MLPaddingMode::Enum::kEdge);
+    auto* output =
+        builder->pad(input, {1}, {1, 2}, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The length of beginningPadding must be equal to the rank of the "
+              "input tensor.");
+  }
+  {
+    // Test throwing error when the length of endingPadding is not equal to the
+    // input rank.
+    auto* input =
+        BuildInput(builder, "input", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLPadOptions::Create();
+    options->setMode(V8MLPaddingMode::Enum::kReflection);
+    auto* output = builder->pad(input, {1, 0}, {1, 2, 0}, options,
+                                scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The length of endingPadding must be equal to the rank of the "
+              "input tensor.");
+  }
+  {
+    // Test throwing error when the padding of one dimension is too large.
+    auto* input =
+        BuildInput(builder, "input", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLPadOptions::Create();
+    options->setMode(V8MLPaddingMode::Enum::kReflection);
+    auto* output = builder->pad(input, {2294967295, 0}, {3294967295, 2},
+                                options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The padding of dimension (0) is too large.");
+  }
+}
+
 TEST_F(MLGraphBuilderTest, Softmax) {
   V8TestingScope scope;
   MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());

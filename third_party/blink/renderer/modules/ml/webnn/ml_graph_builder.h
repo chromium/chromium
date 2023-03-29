@@ -27,6 +27,7 @@ class MLConv2dOptions;
 class MLGemmOptions;
 class MLGraph;
 class MLLeakyReluOptions;
+class MLPadOptions;
 class MLPool2dOptions;
 class MLResample2dOptions;
 class MLTransposeOptions;
@@ -126,6 +127,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                        ExceptionState& exception_state);
   MLActivation* leakyRelu(const MLLeakyReluOptions* options,
                           ExceptionState& exception_state);
+
+  MLOperand* pad(const MLOperand* input,
+                 const Vector<uint32_t>& beginningPadding,
+                 const Vector<uint32_t>& endingPadding,
+                 const MLPadOptions* options,
+                 ExceptionState& exception_state);
 
   // Pooling operations
   MLOperand* averagePool2d(const MLOperand* input,

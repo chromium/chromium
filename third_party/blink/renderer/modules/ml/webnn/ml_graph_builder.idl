@@ -36,6 +36,18 @@ dictionary MLLeakyReluOptions {
   float alpha = 0.01;
 };
 
+enum MLPaddingMode {
+  "constant",
+  "edge",
+  "reflection",
+  "symmetric"
+};
+
+dictionary MLPadOptions {
+  MLPaddingMode mode = "constant";
+  float value = 0;
+};
+
 enum MLRoundingType {
   "floor",
   "ceil"
@@ -102,6 +114,9 @@ dictionary MLTransposeOptions{
 
   [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
   [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});
+
+  [RaisesException] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
+                sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});
 
   // Pooling operations
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});

@@ -13,13 +13,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
-#include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -1024,6 +1023,64 @@ MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
       this, MLOperator::OperatorKind::kLeakyRelu, options);
 }
 
+MLOperand* MLGraphBuilder::pad(const MLOperand* input,
+                               const Vector<uint32_t>& beginningPadding,
+                               const Vector<uint32_t>& endingPadding,
+                               const MLPadOptions* options,
+                               ExceptionState& exception_state) {
+  const auto input_rank = input->Dimensions().size();
+  if (beginningPadding.size() != input_rank) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of beginningPadding must be "
+                                      "equal to the rank of the input tensor.");
+    return nullptr;
+  }
+  if (endingPadding.size() != input_rank) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of endingPadding must be "
+                                      "equal to the rank of the input tensor.");
+    return nullptr;
+  }
+
+  if (options->mode().AsEnum() != V8MLPaddingMode::Enum::kConstant &&
+      fabs(options->value() - 0.0f) > std::numeric_limits<float>::epsilon()) {
+    ml_context_->LogConsoleWarning(
+        "The pad value is ignored unless the options.mode is set to "
+        "constant.");
+  }
+
+  // Each dimension of the output tensor can be calculated as follow:
+  // output_size = beginning_padding + input_size + ending_padding.
+  Vector<uint32_t> output_shape(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; i++) {
+    auto checked_output_size =
+        base::MakeCheckedNum<uint32_t>(input->Dimensions()[i]) +
+        beginningPadding[i] + endingPadding[i];
+    if (!checked_output_size.AssignIfValid(&output_shape[i])) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          String::Format("The padding of dimension (%u) is too large.", i));
+      return nullptr;
+    }
+  }
+
+  auto* pad = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kPad, options);
+  String error_message;
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad, the output
+  // tensor of pad has the same type as its input.
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), std::move(output_shape), pad, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  pad->Connect({input}, {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
                                          const MLPool2dOptions* options,
                                          ExceptionState& exception_state) {
@@ -1190,17 +1247,9 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
   Vector<uint32_t> output_shape(input_shape);
   if (options->hasSizes()) {
     if (options->hasScales()) {
-      auto* execution_context = GetContext()->GetML()->GetExecutionContext();
-      if (!execution_context) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                          "Execution context is invalid.");
-        return nullptr;
-      }
-      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
+      ml_context_->LogConsoleWarning(
           "When sizes and scales are both specified, scales argument is "
-          "ignored."));
+          "ignored.");
     }
     if (options->sizes().size() != 2) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,

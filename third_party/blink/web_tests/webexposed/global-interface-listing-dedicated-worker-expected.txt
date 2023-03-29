@@ -1181,6 +1181,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method maxPool2d
 [Worker]     method min
 [Worker]     method mul
+[Worker]     method pad
 [Worker]     method relu
 [Worker]     method resample2d
 [Worker]     method reshape

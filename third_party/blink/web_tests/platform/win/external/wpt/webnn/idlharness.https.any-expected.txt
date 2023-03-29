@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 403 tests; 250 PASS, 153 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 403 tests; 252 PASS, 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -222,7 +222,7 @@ FAIL MLGraphBuilder interface: operation linear(optional MLLinearOptions) assert
 FAIL MLGraphBuilder interface: operation lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions) assert_own_property: interface prototype object missing non-static operation expected property "lstm" missing
 FAIL MLGraphBuilder interface: operation lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "lstmCell" missing
 FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "matmul" missing
-FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_own_property: interface prototype object missing non-static operation expected property "pad" missing
+FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_equals: property has wrong .length expected 2 but got 3
 PASS MLGraphBuilder interface: operation averagePool2d(MLOperand, optional MLPool2dOptions)
 FAIL MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
 PASS MLGraphBuilder interface: operation maxPool2d(MLOperand, optional MLPool2dOptions)
@@ -342,8 +342,8 @@ FAIL MLGraphBuilder interface: builder must inherit property "lstmCell(MLOperand
 FAIL MLGraphBuilder interface: calling lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) on builder with too few arguments must throw TypeError assert_inherits: property "lstmCell" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "matmul(MLOperand, MLOperand)" with the proper type assert_inherits: property "matmul" not found in prototype chain
 FAIL MLGraphBuilder interface: calling matmul(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "matmul" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "pad(MLOperand, MLOperand, optional MLPadOptions)" with the proper type assert_inherits: property "pad" not found in prototype chain
-FAIL MLGraphBuilder interface: calling pad(MLOperand, MLOperand, optional MLPadOptions) on builder with too few arguments must throw TypeError assert_inherits: property "pad" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "pad(MLOperand, MLOperand, optional MLPadOptions)" with the proper type
+PASS MLGraphBuilder interface: calling pad(MLOperand, MLOperand, optional MLPadOptions) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "averagePool2d(MLOperand, optional MLPool2dOptions)" with the proper type
 PASS MLGraphBuilder interface: calling averagePool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "l2Pool2d(MLOperand, optional MLPool2dOptions)" with the proper type assert_inherits: property "l2Pool2d" not found in prototype chain

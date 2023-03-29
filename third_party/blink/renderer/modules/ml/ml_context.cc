@@ -40,6 +40,16 @@ unsigned int MLContext::GetNumThreads() const {
   return num_threads_;
 }
 
+void MLContext::LogConsoleWarning(const String& message) {
+  auto* execution_context = ml_->GetExecutionContext();
+  if (!execution_context) {
+    return;
+  }
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning, message));
+}
+
 ML* MLContext::GetML() {
   return ml_.Get();
 }

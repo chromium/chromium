@@ -40,6 +40,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "averagePool2d";
     case MLOperator::OperatorKind::kMaxPool2d:
       return "maxPool2d";
+    case MLOperator::OperatorKind::kPad:
+      return "pad";
     case MLOperator::OperatorKind::kRelu:
       return "relu";
     case MLOperator::OperatorKind::kReshape:
