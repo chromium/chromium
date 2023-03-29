@@ -1444,7 +1444,6 @@ class AutofillInteractiveTestWithHistogramTester
 };
 
 // Test the basic form-fill flow.
-// TODO(https://crbug.com/1045709): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicFormFill) {
   CreateTestProfile();
   SetTestUrlResponse(kTestShippingFormString);
