@@ -31,6 +31,8 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -575,6 +577,15 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
                       << " because a transition from " << GetState()
                       << "to discarded is not allowed.";
+    return false;
+  }
+
+  // Can't discard a tab displayed in a picture-in-picture window. We check this
+  // here instead of in `CanDiscard` as not all calls to `Discard` check
+  // `CanDiscard` and discarding a picture-in-picture WebContents leaves the
+  // window in a bad state.
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (browser && browser->is_type_picture_in_picture()) {
     return false;
   }
 
