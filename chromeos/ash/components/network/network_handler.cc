@@ -32,7 +32,6 @@
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
 #include "chromeos/ash/components/network/network_activation_handler_impl.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
-#include "chromeos/ash/components/network/network_cert_migrator.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler_impl.h"
@@ -87,7 +86,6 @@ NetworkHandler::NetworkHandler()
     hotspot_metrics_helper_.reset(new HotspotMetricsHelper());
   }
   if (NetworkCertLoader::IsInitialized()) {
-    network_cert_migrator_.reset(new NetworkCertMigrator());
     client_cert_resolver_.reset(new ClientCertResolver());
     auto_connect_handler_.reset(new AutoConnectHandler());
     network_certificate_handler_.reset(new NetworkCertificateHandler());
@@ -171,9 +169,6 @@ void NetworkHandler::Init() {
                                         network_connection_handler_.get());
   hidden_network_metrics_helper_->Init(network_configuration_handler_.get());
   vpn_network_metrics_helper_->Init(network_configuration_handler_.get());
-  if (network_cert_migrator_) {
-    network_cert_migrator_->Init(network_state_handler_.get());
-  }
   if (client_cert_resolver_) {
     client_cert_resolver_->Init(network_state_handler_.get(),
                                 managed_network_configuration_handler_.get());

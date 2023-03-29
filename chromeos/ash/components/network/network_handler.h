@@ -39,7 +39,6 @@ class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandlerImpl;
 class NetworkActivationHandler;
-class NetworkCertMigrator;
 class NetworkCertificateHandler;
 class NetworkConfigurationHandler;
 class NetworkConnectionHandler;
@@ -176,7 +175,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<VpnNetworkMetricsHelper> vpn_network_metrics_helper_;
   std::unique_ptr<CellularNetworkMetricsLogger>
       cellular_network_metrics_logger_;
-  std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
   std::unique_ptr<AutoConnectHandler> auto_connect_handler_;
   std::unique_ptr<NetworkCertificateHandler> network_certificate_handler_;
