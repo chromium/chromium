@@ -324,6 +324,14 @@ function Target_getCurrentMessageContents() {
     };
   }
 
+  if (!gLastConsoleAPICall) {
+    return {
+      source: "UnknownMessageError",
+      level: "error",
+      text: "Could not look up message contents"
+    };
+  }
+
   // Get the protocol representation of the message arguments.
   const argumentValues = [];
   for (const arg of gLastConsoleAPICall.args || []) {
@@ -428,16 +436,25 @@ function getStackFrames() {
 
 
 // Build a protocol Result object from a result/exceptionDetails CDP rval.
-function buildRrpObjectResult({ result: cdpResult, exceptionDetails }) {
-  const rrpId = buildRrpObjectFromCdpObject(cdpResult);
-  const protocolResult = { data: {} };
+function buildRrpObjectResult(cdpReturnValue) {
+  const rrpResult = { data: {} };
+  if (cdpReturnValue) {
+    const { result: cdpResult, exceptionDetails } = cdpReturnValue;
+    const rrpId = buildRrpObjectFromCdpObject(cdpResult);
 
-  if (exceptionDetails) {
-    protocolResult.exception = rrpId;
-  } else {
-    protocolResult.returned = rrpId;
+    if (exceptionDetails) {
+      rrpResult.exception = rrpId;
+    } else {
+      rrpResult.returned = rrpId;
+    }
   }
-  return { result: protocolResult };
+  else {
+    // Sometimes things go wrong.
+    // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendMessage 
+    // from Pause_evaluateIn*.
+    rrpResult.failed = true;
+  }
+  return { result: rrpResult };
 }
 
 
@@ -460,7 +477,13 @@ function Pause_evaluateInFrame({ frameId, expression }) {
     return buildRrpObjectResult({ result: argsCdp });
   }
 
-  const rv = doEvaluation();
+  let rv = null;
+  try {
+    rv = doEvaluation();
+  }
+  catch (err) {
+    log(`[RuntimeError] evaluateInFrame err: ${err?.stack || err}`);
+  }
   return buildRrpObjectResult(rv);
 
   function doEvaluation() {
@@ -480,12 +503,15 @@ function Pause_evaluateInFrame({ frameId, expression }) {
 }
 
 function Pause_evaluateInGlobal({ expression }) {
-  const rv = sendMessage("Runtime.evaluate", { expression });
+  let rv = null;
+  try {
+    rv = sendMessage("Runtime.evaluate", { expression });
+  }
+  catch (err) {
+    log(`[RuntimeError] evaluateInGlobal err: ${err?.stack || err}`);
+  }
   return buildRrpObjectResult(rv);
 }
-
-// function onMaybeNewPause() {
-// }
 
 function Pause_getAllFrames() {
   const frames = getStackFrames().map((frame, index) => {
@@ -548,32 +574,63 @@ function isNativeFunctionDescription(functionString) {
 }
 
 function isPrototype(x) {
-  return x === x.constructor.prototype;
+  return x === x?.constructor?.prototype;
+}
+
+
+/**
+ * Check whether given object `x` has what looks like a native ctor.
+ */
+function isProbablyInstanceOfNativeClass(x) {
+  // hackfix: check if its ctor has a native toString
+  try {
+    return x?.constructor &&
+      // avoid false positives for prototypes (see https://linear.app/replay/issue/RUN-1067)
+      x.constructor === x.__proto__?.constructor &&
+      isProbablyNativeFunction(x.constructor);
+  }
+  catch (err) {
+    // Note: there can be some errors here, e.g.:
+    // "Error: Blocked a frame with origin ... from accessing a cross-origin frame."
+    log(`[RuntimeError] isProbablyInstanceOfNativeClass err: ${err?.stack || err}`);
+  }
+}
+
+/**
+ * Check whether the object has what looks like a native ctor and
+ * is not a plain object or array.
+ * @see https://linear.app/replay/issue/RUN-1592#comment-4011cec0
+ */
+function isProbablyInstanceOfSpecificNativeClass(plainObject, cdpObj) {
+  return isProbablyInstanceOfNativeClass(plainObject) && 
+    cdpObj.subtype !== 'array' &&
+    cdpObj.subtype !== 'typedarray' &&
+    cdpObj.className !== 'Object';
 }
 
 /**
  * Check whether given object `x` is instance of class of given `target.name`,
- * and also has a `native` constructor.
- * NOTE: ideal solution is `x instanceof global[name]`, but we cannot do that.
- * @see https://linear.app/replay/issue/RUN-1014/chromium-find-better-way-of-determining-dom-class-membership
+ * and also has what looks like a native ctor.
  */
 function isInstanceOfNative(x, target) {
-  /**
-   * NOTE: `instanceof` is implemented in `Object::InstanceOf` -> `JSReceiver::HasInPrototypeChain`
-   * @see https://github.com/replayio/gecko-dev/blob/592992ff7e15cb8ad1dd6fb109f19bd3523cd452/devtools/server/actors/replay/module.js#L1937
-   * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/objects.cc#L929
-   * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/js-objects.cc#170
-   */
-
   // hackfix: check if its native, and has `name` in inheritance chain
   const name = target?.name;
-  return x?.constructor && name &&
-    // avoid false positives for prototypes (see https://linear.app/replay/issue/RUN-1067)
-    x.constructor === x.__proto__?.constructor &&
-    isProbablyNativeFunction(x.constructor) &&
+  return name &&
+    isProbablyInstanceOfNativeClass(x) &&
     hasInProtoChain(x.constructor, name);
 }
 
+/**
+ * This is kinda like `instanceof`, but window-independent.
+ * NOTE: ideal solution is `x instanceof global[name]`, but we cannot do that since it does not work when operating in
+ * a context with multiple instance of `global` (i.e. windows).
+ * @see https://linear.app/replay/issue/RUN-1014/chromium-find-better-way-of-determining-dom-class-membership
+ * 
+ * NOTE: `instanceof` is implemented in `Object::InstanceOf` -> `JSReceiver::HasInPrototypeChain`
+ * @see https://github.com/replayio/gecko-dev/blob/592992ff7e15cb8ad1dd6fb109f19bd3523cd452/devtools/server/actors/replay/module.js#L1937
+ * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/objects.cc#L929
+ * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/js-objects.cc#170
+ */
 function hasInProtoChain(x, name) {
   if (x.name === name) {
     return true;
@@ -1080,20 +1137,31 @@ ProtocolObjectPreview.prototype = {
   get pageIndex() { return 0; },
 
   get pageSize() {
+    if (isProbablyInstanceOfSpecificNativeClass(this.raw, this.cdpObj)) {
+      // Don't limit native objects because in gecko, we add all native getters,
+      // independent of prop limits.
+      return 0;
+    }
     return MaxItems[this.level] || 10;
   },
 
   fill() {
-    // WARNING: `Runtime.getProperties` evaluates native getters and thus can cause
-    //          lazy calls to `Update{Style,Layout}` etc. which might still cause
-    //          some crashes - https://linear.app/replay/issue/RUN-1016#comment-90c46ba7
-    const cdpProperties = sendMessage("Runtime.getProperties", {
-      objectId: this.cdpObj.objectId,
-      ownProperties: false,
-      generatePreview: false,
-      pageIndex: this.pageIndex,
-      pageSize: this.pageSize
-    });
+    let cdpProperties;
+    if (this.level !== 'noProperties') {
+      // WARNING: we manage possible divergences caused by `Runtime.getProperties` evaluating native getter
+      //    in V8's |doesAttributeHaveObservableSideEffectOnGet|.
+      //    see: https://github.com/replayio/chromium-v8/pull/115/files#diff-72ee0a91d32565577bd78ed94b034ae3b4bf51676c5d42165e9363cad18dccf9R1328
+      cdpProperties = sendMessage("Runtime.getProperties", {
+        objectId: this.cdpObj.objectId,
+        ownProperties: false,
+        generatePreview: false,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      });
+    }
+    else {
+      cdpProperties = { result: [] };
+    }
 
     if (!cdpProperties.result) {
       return {
@@ -1141,8 +1209,12 @@ ProtocolObjectPreview.prototype = {
 
       // only add complete prop data for own props
       const rrpProp = createRrpPropertyDescriptor(cdpProp);
-      if (rrpProp.get || Object.hasOwn(this.raw, propKey)) {
-        // only add own props or prototype's getters
+      // NOTE: according to the official docs, CDP will just only provide `get` and `set`
+      // for "accessor descriptors only", so we use some heuristics to "kinda" guess what might be good targets
+      // while ignoring static members of native classes in the proto chain.
+      // See: https://linear.app/replay/issue/RUN-1592#comment-4011cec0
+      if (cdpProp.isOwn || (cdpProp.configurable && cdpProp.enumerable)) {
+        // Goal: only add own props or prototype's getters
         const force = false;
         this.addProperty(this.cdpObj, rrpProp, force);
       }
@@ -4344,23 +4416,66 @@ extern "C" void V8RecordReplayRegisterBrowserEventCallback(
   void (*callback)(const char* name, const char* payload)
 );
 
-static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, const char* script, const char* filename) {
+/**
+ * Copied from gin/try_catch.h.
+ */
+static v8::Local<v8::String> GetSourceLine(v8::Isolate* isolate,
+                                    v8::Local<v8::Message> message) {
+  auto maybe = message->GetSourceLine(isolate->GetCurrentContext());
+  v8::Local<v8::String> source_line;
+  return maybe.ToLocal(&source_line) ? source_line : v8::String::Empty(isolate);
+}
+
+static const std::string V8ToString(v8::Isolate* isolate, v8::Local<v8::Value> str) {
+  v8::String::Utf8Value s(isolate, str);
+  return *s;
+}
+
+static std::string GetStackTrace(v8::Isolate* isolate, v8::TryCatch& try_catch_) {
+  if (!try_catch_.HasCaught()) {
+    return "";
+  }
+
+  std::stringstream ss;
+  v8::Local<v8::Message> message = try_catch_.Message();
+  ss << V8ToString(isolate, message->Get()) << std::endl
+     << V8ToString(isolate, GetSourceLine(isolate, message)) << std::endl;
+
+  v8::Local<v8::StackTrace> trace = message->GetStackTrace();
+  if (trace.IsEmpty())
+    return ss.str();
+
+  int len = trace->GetFrameCount();
+  for (int i = 0; i < len; ++i) {
+    v8::Local<v8::StackFrame> frame = trace->GetFrame(isolate, i);
+    ss << V8ToString(isolate, frame->GetScriptName()) << ":"
+       << frame->GetLineNumber() << ":" << frame->GetColumn() << ": "
+       << V8ToString(isolate, frame->GetFunctionName()) << std::endl;
+  }
+  return ss.str();
+}
+
+static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, const char* source_raw, const char* filename) {
   v8::Local<v8::String> filename_string = ToV8String(isolate, filename);
   v8::ScriptOrigin origin(isolate, filename_string);
 
-  v8::Local<v8::String> source = ToV8String(isolate, script);
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::String> source = ToV8String(isolate, source_raw);
+  auto maybe_script = v8::Script::Compile(context, source, &origin);
 
-  // TODO: check for errors after `Compile` and `Run` - https://linear.app/replay/issue/RUN-955/chromium-should-not-diverge-and-crash-if-greplayscript-does-not
-  v8::Local<v8::Script> compiled = v8::Script::Compile(context, source, &origin).ToLocalChecked();
-  compiled->Run(context).ToLocalChecked();
+  v8::Local<v8::Script> script;
+  if (!maybe_script.ToLocal(&script)) {
+    // [RUN-955] Report error if things go wrong.
+    // based on ShellRunner::Run
+    CHECK(false && "Replay RunScript failed") << GetStackTrace(isolate, try_catch);
+  }
+  script->Run(context).ToLocalChecked();
 }
 
 static bool TestEnv(const char* env) {
   const char* v = getenv(env);
   return v && v[0] && v[0] != '0';
 }
-
-
 
 void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
