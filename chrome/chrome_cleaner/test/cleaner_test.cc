@@ -447,14 +447,16 @@ class CleanerTest : public CleanerTestBase,
   TestFeatures test_features_;
 };
 
-TEST_P(CleanerTest, Scanner_ScanOnly) {
+// Disabled to support shipping a no-op build of the software reporter.
+TEST_P(CleanerTest, DISABLED_Scanner_ScanOnly) {
   base::CommandLine command_line = BuildCommandLine(kScannerExecutable);
   ExpectExitCode(command_line,
                  chrome_cleaner::RESULT_CODE_REPORT_ONLY_PUPS_FOUND);
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
 }
 
-TEST_P(CleanerTest, Scanner_Removable) {
+// Disabled to support shipping a no-op build of the software reporter.
+TEST_P(CleanerTest, DISABLED_Scanner_Removable) {
   CreateRemovableUwS();
   base::CommandLine command_line = BuildCommandLine(kScannerExecutable);
 
