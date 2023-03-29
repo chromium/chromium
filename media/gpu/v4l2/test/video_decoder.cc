@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -50,8 +51,15 @@ void VideoDecoder::Initialize() {
 
   gfx::Size coded_size;
   uint32_t num_planes;
-  if (!v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes))
+  uint32_t fourcc;
+  if (!v4l2_ioctl_->GetFmt(CAPTURE_queue_->type(), &coded_size, &num_planes,
+                           &fourcc)) {
     LOG(FATAL) << "GetFmt for CAPTURE queue failed.";
+  }
+  LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc && 2 == num_planes) ||
+             (V4L2_PIX_FMT_NV12 == fourcc && 1 == num_planes))
+      << media::FourccToString(fourcc)
+      << " does not have the correct number of planes: " << num_planes;
 
   CAPTURE_queue_->set_coded_size(coded_size);
   CAPTURE_queue_->set_num_planes(num_planes);

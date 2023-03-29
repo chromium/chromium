@@ -150,14 +150,13 @@ MmappedBuffer::~MmappedBuffer() {
 V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
                      uint32_t fourcc,
                      const gfx::Size& size,
-                     uint32_t num_planes,
                      enum v4l2_memory memory,
                      uint32_t num_buffers)
     : type_(type),
       fourcc_(fourcc),
       num_buffers_(num_buffers),
       display_size_(size),
-      num_planes_(num_planes),
+      num_planes_(1),
       memory_(memory) {}
 
 V4L2Queue::~V4L2Queue() = default;
@@ -389,7 +388,8 @@ bool V4L2IoctlShim::SetFmt(const std::unique_ptr<V4L2Queue>& queue) const {
 
 bool V4L2IoctlShim::GetFmt(const enum v4l2_buf_type type,
                            gfx::Size* coded_size,
-                           uint32_t* num_planes) const {
+                           uint32_t* num_planes,
+                           uint32_t* fourcc) const {
   struct v4l2_format fmt;
 
   memset(&fmt, 0, sizeof(fmt));
@@ -399,6 +399,7 @@ bool V4L2IoctlShim::GetFmt(const enum v4l2_buf_type type,
 
   coded_size->SetSize(fmt.fmt.pix_mp.width, fmt.fmt.pix_mp.height);
   *num_planes = fmt.fmt.pix_mp.num_planes;
+  *fourcc = fmt.fmt.pix_mp.pixelformat;
 
   LOG(INFO) << type << " - VIDIOC_G_FMT: " << fmt.fmt.pix_mp;
 

@@ -235,8 +235,6 @@ namespace v4l2_test {
 constexpr uint32_t kNumberOfBuffersInCaptureQueue = 6;
 constexpr uint32_t kNumberOfBuffersInOutputQueue = 1;
 
-constexpr uint32_t kNumberOfPlanesInOutputQueue = 1;
-
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
               "buffers is currently assumed to be no larger than 16.");
@@ -244,9 +242,6 @@ static_assert(kNumberOfBuffersInCaptureQueue <= 16,
 static_assert(kNumberOfBuffersInOutputQueue == 1,
               "Too many buffers in OUTPUT queue. It is currently designed to "
               "support only 1 request at a time.");
-
-static_assert(kNumberOfPlanesInOutputQueue == 1,
-              "Number of planes is expected to be 1 for OUTPUT queue.");
 
 Vp8Decoder::Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -295,13 +290,11 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
   uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
-  int num_planes = 1;
 
   if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
                                       uncompressed_fourcc)) {
     // Fall back to MM21 for MediaTek platforms
     uncompressed_fourcc = V4L2_PIX_FMT_MM21;
-    num_planes = 2;
 
     if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
                                         uncompressed_fourcc)) {
@@ -320,18 +313,14 @@ std::unique_ptr<Vp8Decoder> Vp8Decoder::Create(
   // https://buganizer.corp.google.com/issues/202214561#comment31
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
-      bitstream_coded_size, /*num_planes=*/1, V4L2_MEMORY_MMAP,
-      /*num_buffers=*/kNumberOfBuffersInOutputQueue);
+      bitstream_coded_size, V4L2_MEMORY_MMAP, kNumberOfBuffersInOutputQueue);
   OUTPUT_queue->set_coded_size(bitstream_coded_size);
 
   // TODO(b/256543928): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
-  // |num_planes| represents separate memory buffers, not planes for Y, U, V.
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, uncompressed_fourcc,
-      bitstream_coded_size,
-      /*num_planes=*/num_planes, V4L2_MEMORY_MMAP,
-      /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
+      bitstream_coded_size, V4L2_MEMORY_MMAP, kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
       new Vp8Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),

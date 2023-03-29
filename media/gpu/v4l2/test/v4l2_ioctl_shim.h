@@ -75,7 +75,6 @@ class V4L2Queue {
   V4L2Queue(enum v4l2_buf_type type,
             uint32_t fourcc,
             const gfx::Size& size,
-            uint32_t num_planes,
             enum v4l2_memory memory,
             uint32_t num_buffers);
 
@@ -174,10 +173,12 @@ class V4L2IoctlShim {
   [[nodiscard]] bool SetFmt(const std::unique_ptr<V4L2Queue>& queue) const;
 
   // Retrieves the format of |queue| (via VIDIOC_G_FMT) and returns true if
-  // successful, filling in |coded_size| and |num_planes| in that case.
+  // successful, filling in |coded_size|, |num_planes|, and |fourcc| in that
+  // case.
   [[nodiscard]] bool GetFmt(const enum v4l2_buf_type type,
                             gfx::Size* coded_size,
-                            uint32_t* num_planes) const;
+                            uint32_t* num_planes,
+                            uint32_t* fourcc) const;
 
   // Tries to configure |queue|. This does not modify the underlying
   // driver state.
