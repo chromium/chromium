@@ -992,7 +992,7 @@ std::string SearchForKeyInStringDictUTF8(
     return std::string();
   }
   const std::string* value =
-      json_obj->FindStringPath(base::JoinString(path, "."));
+      json_obj->GetDict().FindStringByDottedPath(base::JoinString(path, "."));
   return value ? *value : std::string();
 }
 
@@ -1029,9 +1029,10 @@ HRESULT SearchForListInStringDictUTF8(
     return E_FAIL;
   }
 
-  auto* value = json_obj->FindListPath(base::JoinString(path, "."));
-  if (value && value->is_list()) {
-    for (const base::Value& entry_val : value->GetList()) {
+  auto* value =
+      json_obj->GetDict().FindListByDottedPath(base::JoinString(path, "."));
+  if (value) {
+    for (const base::Value& entry_val : *value) {
       const base::Value::Dict& entry = entry_val.GetDict();
       const std::string* list_key_str = entry.FindString(list_key);
       if (list_key_str) {
