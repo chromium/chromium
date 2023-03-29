@@ -14,6 +14,7 @@
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/test_system_sounds_delegate.h"
+#include "ash/user_education/user_education_delegate.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "url/gurl.h"
 
@@ -71,7 +72,9 @@ TestShellDelegate::CreateSystemSoundsDelegate() const {
 
 std::unique_ptr<UserEducationDelegate>
 TestShellDelegate::CreateUserEducationDelegate() const {
-  return nullptr;
+  return user_education_delegate_factory_
+             ? user_education_delegate_factory_.Run()
+             : nullptr;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
