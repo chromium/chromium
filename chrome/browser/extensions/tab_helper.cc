@@ -207,8 +207,9 @@ TabHelper::TabHelper(content::WebContents* web_contents)
 
 void TabHelper::SetExtensionApp(const Extension* extension) {
   DCHECK(!extension || AppLaunchInfo::GetFullLaunchURL(extension).is_valid());
-  if (extension_app_ == extension)
+  if (extension_app_ == extension) {
     return;
+  }
 
   if (extension) {
     DCHECK(extension->is_app());

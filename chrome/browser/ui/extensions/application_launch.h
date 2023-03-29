@@ -20,11 +20,11 @@ class FilePath;
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
-}
+}  // namespace extensions
 
 enum class WindowOpenDisposition;
 

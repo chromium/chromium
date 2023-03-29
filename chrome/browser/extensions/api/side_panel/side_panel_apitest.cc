@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"

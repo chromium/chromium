@@ -69,8 +69,9 @@ void WebAppTabHelper::SetAppId(absl::optional<AppId> app_id) {
   DCHECK(!app_id || !app_id->empty());
   DCHECK(!app_id || provider_->registrar_unsafe().IsInstalled(*app_id) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
-  if (app_id_ == app_id)
+  if (app_id_ == app_id) {
     return;
+  }
 
   absl::optional<AppId> previous_app_id = std::move(app_id_);
   app_id_ = std::move(app_id);

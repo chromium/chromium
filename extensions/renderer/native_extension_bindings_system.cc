@@ -499,8 +499,9 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = context->v8_context();
   v8::Local<v8::Object> chrome = GetOrCreateChrome(v8_context);
-  if (chrome.IsEmpty())
+  if (chrome.IsEmpty()) {
     return;
+  }
 
   DCHECK(GetBindingsDataFromContext(v8_context));
 

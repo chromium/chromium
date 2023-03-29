@@ -116,11 +116,13 @@ void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
     return;
   }
 
-  if (!queue_.empty())
+  if (!queue_.empty()) {
     DCHECK_EQ(launch_params.app_id, queue_.front().app_id);
+  }
   queue_.push_back(std::move(launch_params));
-  if (!pending_navigation_)
+  if (!pending_navigation_) {
     SendQueuedLaunchParams(web_contents()->GetLastCommittedURL());
+  }
 }
 
 void WebAppLaunchQueue::Reset() {
@@ -137,8 +139,9 @@ const AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
 
 void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   // Currently, launch data is only sent the primary main frame.
-  if (!handle->IsInPrimaryMainFrame())
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   if (pending_navigation_) {
     pending_navigation_ = false;
@@ -161,14 +164,16 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   // Leaving the document resets all queue state.
-  if (!handle->IsSameDocument())
+  if (!handle->IsSameDocument()) {
     Reset();
+  }
 }
 
 void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
   for (WebAppLaunchParams& launch_params : queue_) {
-    if (&launch_params == &queue_.back())
+    if (&launch_params == &queue_.back()) {
       last_sent_queued_launch_params_ = launch_params;
+    }
     SendLaunchParams(std::move(launch_params), current_url);
   }
   queue_.clear();
@@ -187,11 +192,13 @@ void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
   if (!launch_params.paths.empty() || !launch_params.dir.empty()) {
     EntriesBuilder entries_builder(web_contents(), launch_params.target_url,
                                    launch_params.paths.size() + 1);
-    if (!launch_params.dir.empty())
+    if (!launch_params.dir.empty()) {
       entries_builder.AddDirectoryEntry(launch_params.dir);
+    }
 
-    for (const auto& path : launch_params.paths)
+    for (const auto& path : launch_params.paths) {
       entries_builder.AddFileEntry(path);
+    }
 
     launch_service->SetLaunchFiles(entries_builder.Build());
   } else {

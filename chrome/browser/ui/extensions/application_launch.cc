@@ -144,8 +144,9 @@ bool IsAllowedToOverrideURL(const extensions::Extension* extension,
 GURL UrlForExtension(const extensions::Extension* extension,
                      Profile* profile,
                      const apps::AppLaunchParams& params) {
-  if (!extension)
+  if (!extension) {
     return params.override_url;
+  }
 
   GURL url;
   if (!params.override_url.is_empty()) {
@@ -158,8 +159,9 @@ GURL UrlForExtension(const extensions::Extension* extension,
   // For extensions lacking launch urls, determine a reasonable fallback.
   if (!url.is_valid()) {
     url = extensions::OptionsPageInfo::GetOptionsPage(extension);
-    if (!url.is_valid())
+    if (!url.is_valid()) {
       url = GURL(chrome::kChromeUIExtensionsURL);
+    }
   }
 
   return url;
@@ -282,12 +284,14 @@ WebContents* OpenApplicationTab(Profile* profile,
 WebContents* OpenEnabledApplication(Profile* profile,
                                     apps::AppLaunchParams&& params) {
   const Extension* extension = GetExtension(profile, params);
-  if (!extension)
+  if (!extension) {
     return nullptr;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile())
+  if (!profile->IsMainProfile()) {
     return nullptr;
+  }
 #endif
 
   WebContents* tab = nullptr;
@@ -373,12 +377,13 @@ Browser* CreateApplicationWindow(Profile* profile,
   const Extension* const extension = GetExtension(profile, params);
 
   std::string app_name;
-  if (!params.override_app_name.empty())
+  if (!params.override_app_name.empty()) {
     app_name = params.override_app_name;
-  else if (extension)
+  } else if (extension) {
     app_name = web_app::GenerateApplicationNameFromAppId(extension->id());
-  else
+  } else {
     app_name = web_app::GenerateApplicationNameFromURL(url);
+  }
 
   gfx::Rect initial_bounds;
   if (!params.override_bounds.IsEmpty()) {
