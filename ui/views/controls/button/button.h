@@ -230,6 +230,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   gfx::Point GetMenuPosition() const;
 
+  View* ink_drop_view() const { return ink_drop_view_; }
+  void SetInkDropView(View* view);
+
  protected:
   explicit Button(PressedCallback callback = PressedCallback());
 
@@ -329,6 +332,11 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // When true, the ink drop ripple will be shown when setting state to hot
   // tracked with SetHotTracked().
   bool show_ink_drop_when_hot_tracked_ = false;
+
+  // |ink_drop_view_| is generally the button, but can be overridden for special
+  // cases (e.g. Checkbox) where the InkDrop may be more appropriately installed
+  // on a child view of the button.
+  View* ink_drop_view_ = this;
 
   std::unique_ptr<Painter> focus_painter_;
 
