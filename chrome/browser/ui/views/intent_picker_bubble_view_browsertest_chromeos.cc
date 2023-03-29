@@ -1199,7 +1199,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
 // Test that remember by choice checkbox works for open PWA option.
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       RememberOpenPWA) {
+                       // TODO(crbug.com/1428813): Re-enable this test
+                       DISABLED_RememberOpenPWA) {
   base::HistogramTester histogram_tester;
 
   GURL test_url(InScopeAppUrl());

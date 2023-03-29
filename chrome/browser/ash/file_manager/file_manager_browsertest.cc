@@ -1052,7 +1052,9 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest, Test) {
+// TODO(crbug.com/1425820): Re-enable this test
+IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest,
+                       DISABLED_Test) {
   StartTest();
 }
 

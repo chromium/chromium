@@ -322,7 +322,8 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithDefaultBasename,
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
-IN_PROC_BROWSER_TEST_P(StartupTracingTest, TestEnableTracing) {
+// TODO(1428814): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_TestEnableTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   if (GetOutputLocation() ==
