@@ -143,9 +143,21 @@
     }
   }
 
-  [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{
-                  [self.delegate closeTabWithIdentifier:identifier];
-                }]];
+  UIAction* closeTabAction;
+  ProceduralBlock closeTabActionBlock = ^{
+    [self.delegate closeTabWithIdentifier:identifier];
+  };
+
+  if (pinnedActionsAvailable && pinnedState) {
+    closeTabAction =
+        [actionFactory actionToClosePinnedTabWithBlock:closeTabActionBlock];
+  } else {
+    closeTabAction =
+        [actionFactory actionToCloseRegularTabWithBlock:closeTabActionBlock];
+  }
+
+  [menuElements addObject:closeTabAction];
+
   return menuElements;
 }
 

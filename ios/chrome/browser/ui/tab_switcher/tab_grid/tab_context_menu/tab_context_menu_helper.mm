@@ -169,12 +169,23 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                   }]];
   }
 
-  [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{
-                  [self.contextMenuDelegate
-                      closeTabWithIdentifier:cell.itemIdentifier
-                                   incognito:self.incognito
-                                      pinned:pinned];
-                }]];
+  UIAction* closeTabAction;
+  ProceduralBlock closeTabActionBlock = ^{
+    [self.contextMenuDelegate closeTabWithIdentifier:cell.itemIdentifier
+                                           incognito:self.incognito
+                                              pinned:pinned];
+  };
+
+  if (IsPinnedTabsEnabled() && !self.incognito && pinned) {
+    closeTabAction =
+        [actionFactory actionToClosePinnedTabWithBlock:closeTabActionBlock];
+  } else {
+    closeTabAction =
+        [actionFactory actionToCloseRegularTabWithBlock:closeTabActionBlock];
+  }
+
+  [menuElements addObject:closeTabAction];
+
   return menuElements;
 }
 

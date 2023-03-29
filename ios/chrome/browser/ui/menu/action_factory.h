@@ -91,8 +91,11 @@ class GURL;
 // Creates a UIAction instance for editing a bookmark.
 - (UIAction*)actionToEditBookmarkWithBlock:(ProceduralBlock)block;
 
-// Creates a UIAction instance for closing a tab.
-- (UIAction*)actionToCloseTabWithBlock:(ProceduralBlock)block;
+// Creates a UIAction instance for closing a regular tab.
+- (UIAction*)actionToCloseRegularTabWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for closing a pinned tab.
+- (UIAction*)actionToClosePinnedTabWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for saving an image.
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block;

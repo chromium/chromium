@@ -696,6 +696,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSETAB" desc="The iOS context menu item for closing a tab. [iOS only]" meaning="Close the current tab [Title Case].">
         Close Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB" desc="The iOS context menu item for closing a pinned tab. [iOS only]" meaning="Close the current pinned tab [Title Case].">
+        Close Pinned Tab
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPY" desc="The iOS menu item for copying a link's URL into the pasteboard. Shorter than the desktop version [iOS only]">
         Copy Link URL
       </message>

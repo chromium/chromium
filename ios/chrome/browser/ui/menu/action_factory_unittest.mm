@@ -83,8 +83,8 @@ TEST_F(ActionFactoryTest, BookmarkAction) {
   EXPECT_EQ(expectedImage, action.image);
 }
 
-// Tests that the close action has the right title and image.
-TEST_F(ActionFactoryTest, CloseAction) {
+// Tests that the close regular tab action has the right title and image.
+TEST_F(ActionFactoryTest, CloseRegularTabAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
@@ -93,7 +93,24 @@ TEST_F(ActionFactoryTest, CloseAction) {
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSETAB);
 
-  UIAction* action = [factory actionToCloseTabWithBlock:^{
+  UIAction* action = [factory actionToCloseRegularTabWithBlock:^{
+  }];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the close pinned tab action has the right title and image.
+TEST_F(ActionFactoryTest, ClosePinnedTabAction) {
+  ActionFactory* factory =
+      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
+
+  UIImage* expectedImage =
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB);
+
+  UIAction* action = [factory actionToClosePinnedTabWithBlock:^{
   }];
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
