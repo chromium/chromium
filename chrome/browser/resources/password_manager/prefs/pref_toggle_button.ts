@@ -75,7 +75,7 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
   static get observers() {
     return [
       'prefValueChanged_(pref.value)',
-      'prefManagementChanged_(pref.extensionId)',
+      'prefEnforcementChanged_(pref.enforcement)',
     ];
   }
 
@@ -125,8 +125,13 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
     this.checked = prefValue;
   }
 
-  private prefManagementChanged_(extensionId: string|null) {
-    this.disabled = !!extensionId;
+  private prefEnforcementChanged_(enforcement:
+                                      chrome.settingsPrivate.Enforcement|null) {
+    this.disabled =
+        (enforcement === chrome.settingsPrivate.Enforcement.ENFORCED);
+    // Ensure the `cr-actionable-row-style` is informed of the state of the
+    // control.
+    this.toggleAttribute('effectively-disabled_', this.disabled);
   }
 
   /** Update the pref to the current |checked| value. */

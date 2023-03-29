@@ -79,11 +79,10 @@ suite('SettingsSectionTest', function() {
     assertFalse(value);
   });
 
-  test('extension control disables toggle', async function() {
+  test('enforcement disables toggle', async function() {
     const enableServicePref =
         await prefsProxy.getPref('credentials_enable_service');
-    enableServicePref.extensionId = 'test';
-    enableServicePref.controlledByName = 'test extension';
+    enableServicePref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
 
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
