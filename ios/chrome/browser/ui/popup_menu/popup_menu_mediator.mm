@@ -359,32 +359,36 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 // If an added or removed bookmark is the same as the current url, update the
 // toolbar so the star highlight is kept in sync.
-- (void)bookmarkNodeChildrenChanged:
-    (const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [self updateBookmarkItem];
 }
 
 // If all bookmarks are removed, update the toolbar so the star highlight is
 // kept in sync.
-- (void)bookmarkModelRemovedAllNodes {
+- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   [self updateBookmarkItem];
 }
 
 // In case we are on a bookmarked page before the model is loaded.
-- (void)bookmarkModelLoaded {
+- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   [self updateBookmarkItem];
 }
 
-- (void)bookmarkNodeChanged:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [self updateBookmarkItem];
 }
-- (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
-     movedFromParent:(const bookmarks::BookmarkNode*)oldParent
-            toParent:(const bookmarks::BookmarkNode*)newParent {
+
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+           fromParent:(const bookmarks::BookmarkNode*)oldParent
+             toParent:(const bookmarks::BookmarkNode*)newParent {
   // No-op -- required by BookmarkModelBridgeObserver but not used.
 }
-- (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
-                 fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
   [self updateBookmarkItem];
 }
 

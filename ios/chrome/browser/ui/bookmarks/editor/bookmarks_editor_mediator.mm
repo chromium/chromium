@@ -87,11 +87,12 @@
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded {
+- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   // No-op.
 }
 
-- (void)bookmarkNodeChanged:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (_ignoresBookmarkModelChanges) {
     return;
   }
@@ -101,8 +102,8 @@
   }
 }
 
-- (void)bookmarkNodeChildrenChanged:
-    (const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (_ignoresBookmarkModelChanges) {
     return;
   }
@@ -110,9 +111,10 @@
   [self.consumer updateFolderLabel];
 }
 
-- (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
-     movedFromParent:(const bookmarks::BookmarkNode*)oldParent
-            toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+           fromParent:(const bookmarks::BookmarkNode*)oldParent
+             toParent:(const bookmarks::BookmarkNode*)newParent {
   if (_ignoresBookmarkModelChanges) {
     return;
   }
@@ -122,21 +124,22 @@
   }
 }
 
-- (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)bookmarkNode
-                 fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (_ignoresBookmarkModelChanges) {
     return;
   }
 
-  if (self.bookmark == bookmarkNode) {
+  if (self.bookmark == node) {
     self.bookmark = nil;
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
-  } else if (self.folder == bookmarkNode) {
+  } else if (self.folder == node) {
     [self changeFolder:self.bookmarkModel->mobile_node()];
   }
 }
 
-- (void)bookmarkModelRemovedAllNodes {
+- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   if (_ignoresBookmarkModelChanges) {
     return;
   }

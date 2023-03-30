@@ -971,7 +971,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded {
+- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   DCHECK(!self.displayedFolderNode);
   self.displayedFolderNode = self.profileBookmarks->root_node();
 
@@ -1028,28 +1028,32 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }];
 }
 
-- (void)bookmarkNodeChanged:(const BookmarkNode*)node {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // No-op here.  Bookmarks might be refreshed in BookmarksHomeMediator.
 }
 
-- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // No-op here.  Bookmarks might be refreshed in BookmarksHomeMediator.
 }
 
-- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
-     movedFromParent:(const BookmarkNode*)oldParent
-            toParent:(const BookmarkNode*)newParent {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+           fromParent:(const bookmarks::BookmarkNode*)oldParent
+             toParent:(const bookmarks::BookmarkNode*)newParent {
   // No-op here.  Bookmarks might be refreshed in BookmarksHomeMediator.
 }
 
-- (void)bookmarkNodeDeleted:(const BookmarkNode*)node
-                 fromFolder:(const BookmarkNode*)folder {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.displayedFolderNode == node) {
     [self setTableViewEditing:NO];
   }
 }
 
-- (void)bookmarkModelRemovedAllNodes {
+- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   // No-op
 }
 

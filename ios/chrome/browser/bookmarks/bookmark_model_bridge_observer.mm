@@ -31,7 +31,7 @@ BookmarkModelBridge::~BookmarkModelBridge() {
 
 void BookmarkModelBridge::BookmarkModelLoaded(bookmarks::BookmarkModel* model,
                                               bool ids_reassigned) {
-  [observer_ bookmarkModelLoaded];
+  [observer_ bookmarkModelLoaded:model_];
 }
 
 void BookmarkModelBridge::BookmarkModelBeingDeleted(
@@ -48,7 +48,10 @@ void BookmarkModelBridge::BookmarkNodeMoved(
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
   const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
-  [observer_ bookmarkNode:node movedFromParent:old_parent toParent:new_parent];
+  [observer_ bookmarkModel:model_
+               didMoveNode:node
+                fromParent:old_parent
+                  toParent:new_parent];
 }
 
 void BookmarkModelBridge::BookmarkNodeAdded(
@@ -56,7 +59,7 @@ void BookmarkModelBridge::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  [observer_ bookmarkNodeChildrenChanged:parent];
+  [observer_ bookmarkModel:model_ didChangeChildrenForNode:parent];
 }
 
 void BookmarkModelBridge::BookmarkNodeRemoved(
@@ -69,29 +72,29 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
   // destroys `this`.
   id<BookmarkModelBridgeObserver> observer = observer_;
 
-  [observer bookmarkNodeDeleted:node fromFolder:parent];
-  [observer bookmarkNodeChildrenChanged:parent];
+  [observer bookmarkModel:model_ didDeleteNode:node fromFolder:parent];
+  [observer bookmarkModel:model_ didChangeChildrenForNode:parent];
 }
 
 void BookmarkModelBridge::BookmarkNodeChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  [observer_ bookmarkNodeChanged:node];
+  [observer_ bookmarkModel:model_ didChangeNode:node];
 }
 
 void BookmarkModelBridge::BookmarkNodeFaviconChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  SEL selector = @selector(bookmarkNodeFaviconChanged:);
+  SEL selector = @selector(bookmarkModel:didChangeFaviconForNode:);
   if ([observer_ respondsToSelector:selector]) {
-    [observer_ bookmarkNodeFaviconChanged:node];
+    [observer_ bookmarkModel:model_ didChangeFaviconForNode:node];
   }
 }
 
 void BookmarkModelBridge::BookmarkNodeChildrenReordered(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  [observer_ bookmarkNodeChildrenChanged:node];
+  [observer_ bookmarkModel:model_ didChangeChildrenForNode:node];
 }
 
 void BookmarkModelBridge::OnWillRemoveAllUserBookmarks(
@@ -105,5 +108,5 @@ void BookmarkModelBridge::OnWillRemoveAllUserBookmarks(
 void BookmarkModelBridge::BookmarkAllUserNodesRemoved(
     bookmarks::BookmarkModel* model,
     const std::set<GURL>& removed_urls) {
-  [observer_ bookmarkModelRemovedAllNodes];
+  [observer_ bookmarkModelRemovedAllNodes:model_];
 }

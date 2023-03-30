@@ -394,12 +394,13 @@ const int kMaxBookmarksSearchResults = 50;
 // BookmarkModelBridgeObserver Callbacks
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
-- (void)bookmarkModelLoaded {
+- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   [self.consumer refreshContents];
 }
 
 // The node has changed, but not its children.
-- (void)bookmarkNodeChanged:(const BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // The root folder changed. Do nothing.
   if (bookmarkNode == self.sharedState.tableViewDisplayedRootNode) {
     return;
@@ -412,7 +413,8 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 // The node has not changed, but its children have.
-- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // In search mode, we want to refresh any changes (like undo).
   if (self.sharedState.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
@@ -431,9 +433,10 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 // The node has moved to a new parent folder.
-- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
-     movedFromParent:(const BookmarkNode*)oldParent
-            toParent:(const BookmarkNode*)newParent {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+           fromParent:(const bookmarks::BookmarkNode*)oldParent
+             toParent:(const bookmarks::BookmarkNode*)newParent {
   if (oldParent == self.sharedState.tableViewDisplayedRootNode ||
       newParent == self.sharedState.tableViewDisplayedRootNode) {
     // A folder was added or removed from the currently displayed folder.
@@ -442,8 +445,9 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 // `node` was deleted from `folder`.
-- (void)bookmarkNodeDeleted:(const BookmarkNode*)node
-                 fromFolder:(const BookmarkNode*)folder {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.sharedState.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
   } else if (self.sharedState.tableViewDisplayedRootNode == node) {
@@ -453,12 +457,12 @@ const int kMaxBookmarksSearchResults = 50;
 }
 
 // All non-permanent nodes have been removed.
-- (void)bookmarkModelRemovedAllNodes {
+- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   // TODO(crbug.com/695749) Check if this case is applicable in the new UI.
 }
 
-- (void)bookmarkNodeFaviconChanged:
-    (const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   // Only urls have favicons.
   DCHECK(bookmarkNode->is_url());
 

@@ -13,28 +13,32 @@
 // The ObjC translations of the C++ observer callbacks are defined here.
 @protocol BookmarkModelBridgeObserver <NSObject>
 // The bookmark model has loaded.
-- (void)bookmarkModelLoaded;
+- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model;
 // The node has changed, but not its children.
-- (void)bookmarkNodeChanged:(const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // The node has not changed, but the ordering and existence of its children have
 // changed.
-- (void)bookmarkNodeChildrenChanged:
-    (const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // The node has moved to a new parent folder.
-- (void)bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
-     movedFromParent:(const bookmarks::BookmarkNode*)oldParent
-            toParent:(const bookmarks::BookmarkNode*)newParent;
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+           fromParent:(const bookmarks::BookmarkNode*)oldParent
+             toParent:(const bookmarks::BookmarkNode*)newParent;
 // `node` was deleted from `folder`.
-- (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
-                 fromFolder:(const bookmarks::BookmarkNode*)folder;
-// All non-permanent nodes have been removed.
-- (void)bookmarkModelRemovedAllNodes;
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder;
+// All non-permanent nodes have been removed in model.
+- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model;
 
 @optional
 // Called before removing all non-permanent nodes.
 - (void)bookmarkModelWillRemoveAllNodes:(const bookmarks::BookmarkModel*)model;
 // The node favicon changed.
-- (void)bookmarkNodeFaviconChanged:(const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 @end
 
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC

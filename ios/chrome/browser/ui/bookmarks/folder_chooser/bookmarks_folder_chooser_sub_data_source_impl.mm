@@ -68,39 +68,43 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModelLoaded {
+- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   // The bookmark model is assumed to be loaded when this controller is created.
   NOTREACHED();
 }
 
-- (void)bookmarkNodeChanged:(const BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   if (bookmarkNode->is_folder()) {
     [_consumer notifyModelUpdated];
   }
 }
 
-- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   [_consumer notifyModelUpdated];
 }
 
-- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
-     movedFromParent:(const BookmarkNode*)oldParent
-            toParent:(const BookmarkNode*)newParent {
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+           fromParent:(const bookmarks::BookmarkNode*)oldParent
+             toParent:(const bookmarks::BookmarkNode*)newParent {
   if (bookmarkNode->is_folder()) {
     [_consumer notifyModelUpdated];
   }
 }
 
-- (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode
-                 fromFolder:(const BookmarkNode*)folder {
-  [_parentDataSource bookmarkNodeDeleted:bookmarkNode];
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
+  [_parentDataSource bookmarkNodeDeleted:node];
 }
 
 - (void)bookmarkModelWillRemoveAllNodes:(const BookmarkModel*)model {
   [_parentDataSource bookmarkModelWillRemoveAllNodes:model];
 }
 
-- (void)bookmarkModelRemovedAllNodes {
+- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   [_consumer notifyModelUpdated];
 }
 
