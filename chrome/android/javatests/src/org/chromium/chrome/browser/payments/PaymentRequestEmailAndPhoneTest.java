@@ -72,7 +72,6 @@ public class PaymentRequestEmailAndPhoneTest {
     /** Provide the existing valid email address and phone number to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -85,7 +84,6 @@ public class PaymentRequestEmailAndPhoneTest {
     /** Attempt to add an invalid email address and phone number and cancel the transaction. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidEmailAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -133,7 +131,6 @@ public class PaymentRequestEmailAndPhoneTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());

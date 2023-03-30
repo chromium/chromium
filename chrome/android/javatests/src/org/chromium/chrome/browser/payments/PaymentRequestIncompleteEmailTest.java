@@ -85,7 +85,6 @@ public class PaymentRequestIncompleteEmailTest {
     /** Attempt to add an invalid email alongside the already invalid data and cancel. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
@@ -118,7 +117,6 @@ public class PaymentRequestIncompleteEmailTest {
     /** Update the email with valid data and provide that to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());

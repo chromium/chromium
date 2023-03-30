@@ -84,7 +84,6 @@ public class PaymentRequestPhoneTest {
     /** Attempt to add an invalid phone number and cancel the transaction. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidPhoneAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -107,7 +106,6 @@ public class PaymentRequestPhoneTest {
     /** Add a new phone number and provide that to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddPhoneAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -131,7 +129,6 @@ public class PaymentRequestPhoneTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());

@@ -73,7 +73,6 @@ public class PaymentRequestContactDetailsTest {
     /** Provide the existing valid payer name, phone number and email address to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -86,7 +85,6 @@ public class PaymentRequestContactDetailsTest {
     /** Attempt to add invalid contact information and cancel the transaction. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidContactAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -109,7 +107,6 @@ public class PaymentRequestContactDetailsTest {
     /** Add new payer name, phone number and email address and provide that to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddContactAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -133,7 +130,6 @@ public class PaymentRequestContactDetailsTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @DisabledTest(message = "https://crbug.com/1182528")
     public void testQuickAddContactAndCloseShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -164,7 +160,6 @@ public class PaymentRequestContactDetailsTest {
     /** Quickly pressing on [X] and then "add contact info" should not crash. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCloseAndAddContactShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -192,7 +187,6 @@ public class PaymentRequestContactDetailsTest {
     /** Test that going into the editor and cancelling will leave the row checked. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -213,7 +207,6 @@ public class PaymentRequestContactDetailsTest {
     /** Test that going into the "add" flow and cancelling will leave existing row checked. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -234,7 +227,6 @@ public class PaymentRequestContactDetailsTest {
     /** Quickly pressing on "add contact info" and then "cancel" should not crash. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickAddContactAndCancelShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
@@ -297,7 +289,6 @@ public class PaymentRequestContactDetailsTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());

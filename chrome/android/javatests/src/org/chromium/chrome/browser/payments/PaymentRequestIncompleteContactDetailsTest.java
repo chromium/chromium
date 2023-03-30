@@ -53,7 +53,6 @@ public class PaymentRequestIncompleteContactDetailsTest {
     /** Attempt to update the contact information with invalid data and cancel the transaction. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteContactAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
@@ -119,7 +118,6 @@ public class PaymentRequestIncompleteContactDetailsTest {
     /** Update the contact information with valid data and provide that to the merchant. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteContactAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
