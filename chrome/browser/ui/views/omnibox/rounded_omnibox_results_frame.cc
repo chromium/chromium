@@ -22,6 +22,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/layout/layout_provider.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -177,8 +178,15 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use rounded corners.
-  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
+  bool cr23_expanded_shape =
+      base::FeatureList::IsEnabled(omnibox::kExpandedStateShape) ||
+      base::FeatureList::IsEnabled(features::kChromeRefresh2023);
+  int corner_radius =
+      cr23_expanded_shape
+          ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                views::ShapeContextTokens::kOmniboxExpandedRadius)
+          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                views::Emphasis::kHigh);
   contents_host_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(corner_radius));
   contents_host_->layer()->SetIsFastRoundedCorner(true);
