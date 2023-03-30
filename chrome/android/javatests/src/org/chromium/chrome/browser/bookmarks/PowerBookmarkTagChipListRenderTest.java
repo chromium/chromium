@@ -102,6 +102,7 @@ public class PowerBookmarkTagChipListRenderTest extends BlankUiTestActivityTestC
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/1429103")
     public void testTagListLarge() throws IOException {
         PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder();
         PowerBookmarkMeta.Tag.Builder tag = PowerBookmarkMeta.Tag.newBuilder();

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.os.Build;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -20,7 +18,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -468,7 +465,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1161540")
+    @DisabledTest(message = "https://crbug.com/1429093")
     public void testChainedTapsRemovedFromHistory() throws Exception {
         // Make sure we use tap for the simulateResolveSearch since only tap chains.
         FeatureList.setTestFeatures(ENABLE_NONE);

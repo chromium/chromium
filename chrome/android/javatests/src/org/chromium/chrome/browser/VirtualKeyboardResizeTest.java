@@ -345,6 +345,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1429090")
     public void testOverlaysContentMetaTag() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?overlays-content");

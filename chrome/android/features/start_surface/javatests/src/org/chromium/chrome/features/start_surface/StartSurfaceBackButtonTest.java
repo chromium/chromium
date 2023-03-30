@@ -400,6 +400,7 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1429106")
     public void testBackButtonOnIncognitoTabOpenedFromStart() throws ExecutionException {
         // This is a test for crbug.com/1315915 to make sure when clicking back button on the
         // incognito tab opened from Start, the non-incognito homepage should show.
