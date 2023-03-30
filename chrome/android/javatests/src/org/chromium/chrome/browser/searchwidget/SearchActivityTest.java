@@ -48,6 +48,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.FileProviderHelper;
@@ -91,6 +92,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
@@ -110,6 +112,7 @@ import java.util.concurrent.Callable;
  *
  *                    + Add microphone tests somehow (vague query + confident query).
  */
+@Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // Search widget not supported on auto.
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Test start up behaviors.")
