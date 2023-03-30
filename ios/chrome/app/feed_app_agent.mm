@@ -109,6 +109,11 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
       self.appState.mainBrowserState);
 }
 
+// Returns the FeedMetricsRecorder.
+- (FeedMetricsRecorder*)feedMetricsRecorder {
+  return self.feedService->GetFeedMetricsRecorder();
+}
+
 // Registers handler for the background refresh task. According to
 // documentation, this must complete before the end of
 // `applicationDidFinishLaunching`.
@@ -179,16 +184,11 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
       !IsFeedAppCloseBackgroundRefreshEnabled()) {
     return;
   }
-  if (_wasForegroundedAtLeastOnce) {
-    [FeedMetricsRecorder
-        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
-  } else {
-    [FeedMetricsRecorder
-        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
-    // TODO(crbug.com/1396459): Remove this workaround and enable background
-    // cold starts.
-    GetApplicationContext()->GetMetricsService()->OnAppEnterBackground();
-    exit(0);
+
+  // TODO(crbug.com/1396459): Kill the app if in a cold start because currently
+  // there are issues with background cold starts.
+  if (!_wasForegroundedAtLeastOnce) {
+    [self handleColdStartAndKillApp];
   }
   if (IsRecurringBackgroundRefreshScheduleEnabled()) {
     [self scheduleBackgroundRefresh];
@@ -200,11 +200,58 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
       [self maybeNotifyRefreshSuccess:NO];
     });
   };
+
+  // The `engagedWithLatestRefreshedContent` criteria only applies to background
+  // app close. Early return if criteria is not met.
+  if (IsFeedAppCloseBackgroundRefreshEnabled() &&
+      ![self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]) {
+    return;
+  }
+
+  // Cold starts are killed earlier in this method, so warm and cold starts
+  // cannot be recorded at the same time.
+  [self recordWarmStartMetrics];
+
   // This is expected to crash if FeedService is not available.
   [self feedService]->PerformBackgroundRefreshes(^(BOOL success) {
     [self maybeNotifyRefreshSuccess:success];
     [task setTaskCompletedWithSuccess:success];
   });
+}
+
+// Records cold start histogram and kills app.
+- (void)handleColdStartAndKillApp {
+  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
+    // Normally check `engagedWithLatestRefreshedContent` whenever background
+    // app close is enabled. However, it doesn't matter for cold starts. Kill
+    // the app in all cold starts.
+    [FeedMetricsRecorder recordFeedRefreshTrigger:
+                             FeedRefreshTrigger::kBackgroundColdStartAppClose];
+  } else {
+    [FeedMetricsRecorder
+        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundColdStart];
+  }
+  // TODO(crbug.com/1396459): Remove this workaround and enable background
+  // cold starts.
+  [self maybeNotifyRefreshSuccess:NO];
+  GetApplicationContext()->GetMetricsService()->OnAppEnterBackground();
+  exit(0);
+}
+
+// Record refresh trigger for warm start.
+- (void)recordWarmStartMetrics {
+  CHECK(!IsFeedAppCloseBackgroundRefreshEnabled() ||
+        [self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]);
+
+  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
+    // This is recorded if both app close and regular background refreshes are
+    // enabled.
+    [FeedMetricsRecorder recordFeedRefreshTrigger:
+                             FeedRefreshTrigger::kBackgroundWarmStartAppClose];
+  } else {
+    [FeedMetricsRecorder
+        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
+  }
 }
 
 #pragma mark - Refresh Completion Notifications (only enabled by Experimental Settings)
