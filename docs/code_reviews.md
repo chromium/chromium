@@ -129,6 +129,7 @@ like a long leave. If you were inactive only for a certain period of time
 while you were on a long leave and have been meeting the above owner's
 expectations in other times, you can create a CL to re-add yourself and land
 after getting local owner's approval (you can refer to this policy in the CL).
+The removal script will cc the removed owner and one other owner to avoid spam.
 
 ### OWNERS file details
 
