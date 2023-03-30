@@ -157,15 +157,15 @@ absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
 // Pulls the video conference URI out of the conferenceData field, if there is
 // one on the event. Returns the first one it finds or an empty GURL if there is
 // none.
-GURL GetConferenceDataUri(const base::Value& value) {
-  const auto* entry_points = value.FindListPath(kConferenceDataEntryPoints);
+GURL GetConferenceDataUri(const base::Value::Dict& dict) {
+  const auto* entry_points =
+      dict.FindListByDottedPath(kConferenceDataEntryPoints);
   if (!entry_points) {
     return GURL();
   }
 
   const auto video_conference_entry_point = base::ranges::find_if(
-      entry_points->GetList().begin(), entry_points->GetList().end(),
-      [](const auto& entry_point) {
+      entry_points->begin(), entry_points->end(), [](const auto& entry_point) {
         const std::string* entry_point_type =
             entry_point.GetDict().FindString(kEntryPointType);
         if (!entry_point_type) {
@@ -174,7 +174,7 @@ GURL GetConferenceDataUri(const base::Value& value) {
         return *entry_point_type == kVideoConferenceValue;
       });
 
-  if (video_conference_entry_point == entry_points->GetList().end()) {
+  if (video_conference_entry_point == entry_points->end()) {
     return GURL();
   }
 
@@ -210,7 +210,7 @@ bool ConvertResponseItems(const base::Value* value, CalendarEvent* event) {
     event->set_self_response_status(self_response_status.value());
   }
 
-  GURL conference_data_uri = GetConferenceDataUri(*value);
+  GURL conference_data_uri = GetConferenceDataUri(value->GetDict());
   event->set_conference_data_uri(conference_data_uri);
 
   return true;
