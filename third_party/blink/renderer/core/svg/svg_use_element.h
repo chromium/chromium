@@ -103,7 +103,7 @@ class SVGUseElement final : public SVGGraphicsElement,
   bool HasCycleUseReferencing(const ContainerNode& target_instance,
                               const SVGElement& new_target) const;
 
-  void DispatchPendingEvent(const AtomicString&);
+  void QueueOrDispatchPendingEvent(const AtomicString&);
   void NotifyFinished(Resource*) override;
   String DebugName() const override;
   void UpdateTargetReference();

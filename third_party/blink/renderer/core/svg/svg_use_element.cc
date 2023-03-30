@@ -607,8 +607,15 @@ gfx::RectF SVGUseElement::GetBBox() {
   return bbox;
 }
 
-void SVGUseElement::DispatchPendingEvent(const AtomicString& event_name) {
-  DispatchEvent(*Event::Create(event_name));
+void SVGUseElement::QueueOrDispatchPendingEvent(
+    const AtomicString& event_name) {
+  if (GetDocument().GetExecutionContext() &&
+      GetDocument().GetExecutionContext()->is_in_back_forward_cache()) {
+    // Queue the event if the page is in back/forward cache.
+    EnqueueEvent(*Event::Create(event_name), TaskType::kDOMManipulation);
+  } else {
+    DispatchEvent(*Event::Create(event_name));
+  }
 }
 
 void SVGUseElement::NotifyFinished(Resource* resource) {
@@ -623,8 +630,8 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
   DCHECK(!pending_event_.IsActive());
   pending_event_ = PostCancellableTask(
       *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(&SVGUseElement::DispatchPendingEvent, WrapPersistent(this),
-                    event_name));
+      WTF::BindOnce(&SVGUseElement::QueueOrDispatchPendingEvent,
+                    WrapPersistent(this), event_name));
 }
 
 String SVGUseElement::DebugName() const {
