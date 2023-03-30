@@ -35,10 +35,10 @@ else:
 
 from spdx_writer import SpdxWriter
 
-# TODO(agrieve): Move build_utils.WriteDepFile into a non-android directory.
-_REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.insert(0, os.path.join(_REPOSITORY_ROOT, 'build/android/gyp'))
-from util import build_utils
+_REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(_REPOSITORY_ROOT, 'build'))
+import action_helpers
 
 
 # Paths from the root of the tree to directories to skip.
@@ -857,8 +857,8 @@ def GenerateCredits(file_template_file,
     license_file_list = (entry['license_file'] for entry in entries)
     license_file_list = (os.path.relpath(p) for p in license_file_list)
     license_file_list = sorted(set(license_file_list))
-    build_utils.WriteDepfile(depfile, output_file,
-                             license_file_list + ['build.ninja'])
+    action_helpers.write_depfile(depfile, output_file,
+                                 license_file_list + ['build.ninja'])
 
   return True
 
@@ -1009,11 +1009,12 @@ def main():
   parser.add_argument(
       'command', choices=['help', 'scan', 'credits', 'license_file'])
   parser.add_argument('output_file', nargs='?')
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   args = parser.parse_args()
-  args.extra_third_party_dirs = build_utils.ParseGnList(
+  args.extra_third_party_dirs = action_helpers.parse_gn_list(
       args.extra_third_party_dirs)
-  args.extra_allowed_dirs = build_utils.ParseGnList(args.extra_allowed_dirs)
+  args.extra_allowed_dirs = action_helpers.parse_gn_list(
+      args.extra_allowed_dirs)
 
   if args.command == 'scan':
     if not ScanThirdPartyDirs():

@@ -4,8 +4,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
 import sys
 import argparse
@@ -16,11 +14,9 @@ _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
     os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
 
-sys.path.append(os.path.join(_CHROME_SOURCE, 'build/android/gyp'))
+sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
-from util import build_utils
-
-_chr = unichr if sys.version_info.major == 2 else chr
+import action_helpers
 
 
 def parse_emoji_annotations(keyword_file):
@@ -55,7 +51,7 @@ def transform_emoji_data(metadata, names, keywords, first_only):
         if shortcodes is None:
           shortcodes = []
         # transform array of codepoint values into unicode string.
-        string = u''.join(_chr(x) for x in codepoints)
+        string = u''.join(chr(x) for x in codepoints)
 
         # keyword data has U+FE0F emoji presentation characters removed.
         if string not in names:
@@ -136,7 +132,7 @@ def main(args):
     metadata = transform_emoji_data(metadata, names, keywords, first_group)
 
     # write output file atomically in utf-8 format.
-    with build_utils.AtomicOutput(output_file) as tmp_file:
+    with action_helpers.atomic_output(output_file) as tmp_file:
         tmp_file.write(
             json.dumps(metadata, separators=(',', ':'),
                        ensure_ascii=False).encode('utf-8'))

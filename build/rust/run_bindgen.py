@@ -9,18 +9,18 @@ import os
 import subprocess
 import sys
 
-# Set up path to be able to import build_utils.
+# Set up path to be able to import action_helpers.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, 'build', 'android', 'gyp'))
-from util import build_utils
+                 os.pardir, 'build'))
+import action_helpers
 
 from filter_clang_args import filter_clang_args
 
 
 def atomic_copy(in_path, out_path):
   with open(in_path, 'rb') as input:
-    with build_utils.AtomicOutput(out_path, only_if_changed=True) as output:
+    with action_helpers.atomic_output(out_path) as output:
       content = input.read()
       output.write(content)
 

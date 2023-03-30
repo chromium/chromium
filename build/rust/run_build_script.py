@@ -24,21 +24,21 @@
 # That's it. We don't even support the other standard cargo:rustc-
 # output messages.
 
-import os
-import sys
-
-# Set up path to be able to import build_utils
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, 'build', 'android', 'gyp'))
-from util import build_utils
-
 import argparse
 import io
-import subprocess
-import re
+import os
 import platform
+import re
+import subprocess
+import sys
 import tempfile
+
+# Set up path to be able to import action_helpers
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
+                 os.pardir, 'build'))
+import action_helpers
+
 
 RUSTC_VERSION_LINE = re.compile(r"(\w+): (.*)")
 
@@ -142,7 +142,7 @@ def main():
 
     # AtomicOutput will ensure we only write to the file on disk if what we
     # give to write() is different than what's currently on disk.
-    with build_utils.AtomicOutput(args.output) as output:
+    with action_helpers.atomic_output(args.output) as output:
       output.write(flags.encode("utf-8"))
 
     # Copy any generated code out of the temporary directory,
@@ -155,7 +155,7 @@ def main():
         if not os.path.exists(out_dir):
           os.makedirs(out_dir)
         with open(in_path, 'rb') as input:
-          with build_utils.AtomicOutput(out_path) as output:
+          with action_helpers.atomic_output(out_path) as output:
             content = input.read()
             output.write(content)
 

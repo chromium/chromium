@@ -2,17 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
+import json
 import os
 import sys
 
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
     os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
-sys.path.append(os.path.join(_CHROME_SOURCE, 'build/android/gyp'))
+sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
-import argparse
-import json
-from util import build_utils
+import action_helpers
 
 
 # Set of unicode characters that do not render with fonts available on ChromeOS
@@ -73,7 +73,7 @@ def main(args):
     emoticon_data = process_emoticon_data(metadata)
 
     # Write output file atomically in utf-8 format.
-    with build_utils.AtomicOutput(output_file) as tmp_file:
+    with action_helpers.atomic_output(output_file) as tmp_file:
         tmp_file.write(
             json.dumps(emoticon_data,
                        separators=(',', ':'),

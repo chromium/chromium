@@ -11,11 +11,11 @@ import os
 import sys
 import re
 
-# Set up path to be able to import build_utils
+# Set up path to be able to import action_helpers.
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, 'build', 'android', 'gyp'))
-from util import build_utils
+                 os.pardir, 'build'))
+import action_helpers
 
 # This script wraps rustc for (currently) these reasons:
 # * To work around some ldflags escaping performed by ninja/gn
@@ -149,7 +149,7 @@ def main():
         else:
           replacement_lines.append(line)
     if dirty:  # we made a change, let's write out the file
-      with build_utils.AtomicOutput(args.depfile) as output:
+      with action_helpers.atomic_output(args.depfile) as output:
         output.write("\n".join(replacement_lines).encode("utf-8"))
 
 

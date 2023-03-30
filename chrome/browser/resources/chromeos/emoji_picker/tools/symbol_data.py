@@ -16,9 +16,9 @@ from typing import Any, Dict, Generator, List, Optional, Sequence, Set, Tuple
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
     os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
-sys.path.append(os.path.join(_CHROME_SOURCE, 'build/android/gyp'))
+sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
-from util import build_utils
+import action_helpers
 
 # Initialize logger.
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
@@ -350,7 +350,7 @@ def main(argv: List[str]) -> None:
         symbols_groups_dicts.append(symbol_group_dict)
 
     # Write the result to output path as json file.
-    with build_utils.AtomicOutput(args.output) as tmp_file:
+    with action_helpers.atomic_output(args.output) as tmp_file:
         tmp_file.write(
             json.dumps(
                 symbols_groups_dicts,

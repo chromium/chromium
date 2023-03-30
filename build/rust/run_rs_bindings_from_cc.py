@@ -10,13 +10,10 @@ import os
 import subprocess
 import sys
 
-# Set up path to be able to import build_utils.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 CHROMIUM_SRC_DIR = os.path.relpath(os.path.join(THIS_DIR, os.pardir, os.pardir))
 sys.path.append(THIS_DIR)
-sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'build', 'android', 'gyp'))
 from run_bindgen import filter_clang_args
-from util import build_utils
 
 RUST_TOOLCHAIN_DIR = os.path.join(CHROMIUM_SRC_DIR, "third_party",
                                   "rust-toolchain")
