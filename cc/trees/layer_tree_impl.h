@@ -801,7 +801,12 @@ class CC_EXPORT LayerTreeImpl {
   std::vector<std::unique_ptr<ViewTransitionRequest>>
   TakeViewTransitionRequests();
 
+  // Returns true if there are pending ViewTransition requests that need a draw.
   bool HasViewTransitionRequests() const;
+
+  // Returns true if there is a pending ViewTransition save request to cache
+  // output of the current frame.
+  bool HasViewTransitionSaveRequest() const;
 
   void ClearVisualUpdateDurations();
   void SetVisualUpdateDurations(

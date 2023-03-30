@@ -1928,9 +1928,8 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   std::unique_ptr<SurfaceAnimationManager> animation_manager =
       SurfaceAnimationManager::CreateWithSave(
-          CompositorFrameTransitionDirective(
-              navigation_id, /*sequence_id=*/1,
-              CompositorFrameTransitionDirective::Type::kSave),
+          CompositorFrameTransitionDirective::CreateSave(navigation_id,
+                                                         /*sequence_id=*/1, {}),
           surface, &shared_bitmap_manager_, base::DoNothing());
   ASSERT_TRUE(animation_manager);
 
@@ -1939,9 +1938,8 @@ TEST_F(CompositorFrameSinkSupportTest,
                                         std::move(animation_manager));
   EXPECT_TRUE(HasAnimationManagerForNavigation(navigation_id));
 
-  CompositorFrameTransitionDirective release_directive(
-      navigation_id, /*sequence_id=*/2,
-      CompositorFrameTransitionDirective::Type::kRelease);
+  auto release_directive = CompositorFrameTransitionDirective::CreateRelease(
+      navigation_id, /*sequence_id=*/2);
   ProcessCompositorFrameTransitionDirective(support_.get(), release_directive,
                                             surface);
   EXPECT_FALSE(HasAnimationManagerForNavigation(navigation_id));

@@ -11,6 +11,32 @@
 
 namespace viz {
 
+// static
+CompositorFrameTransitionDirective
+CompositorFrameTransitionDirective::CreateSave(
+    NavigationID navigation_id,
+    uint32_t sequence_id,
+    std::vector<SharedElement> shared_elements) {
+  return CompositorFrameTransitionDirective(
+      navigation_id, sequence_id, Type::kSave, std::move(shared_elements));
+}
+
+// static
+CompositorFrameTransitionDirective
+CompositorFrameTransitionDirective::CreateAnimate(NavigationID navigation_id,
+                                                  uint32_t sequence_id) {
+  return CompositorFrameTransitionDirective(navigation_id, sequence_id,
+                                            Type::kAnimateRenderer);
+}
+
+// static
+CompositorFrameTransitionDirective
+CompositorFrameTransitionDirective::CreateRelease(NavigationID navigation_id,
+                                                  uint32_t sequence_id) {
+  return CompositorFrameTransitionDirective(navigation_id, sequence_id,
+                                            Type::kRelease);
+}
+
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
     default;
 

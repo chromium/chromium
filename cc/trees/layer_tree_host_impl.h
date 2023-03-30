@@ -230,7 +230,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // The original BeginFrameArgs that triggered the latest update from the
     // main thread.
     viz::BeginFrameArgs origin_begin_main_frame_args;
+    // Indicates if there are SharedElementDrawQuads in this frame.
     bool has_shared_element_resources = false;
+    // Indicates if this frame has a save directive which will add copy requests
+    // for render passes in the Viz process.
+    bool has_view_transition_save_directive = false;
   };
 
   // A struct of data for a single UIResource, including the backing

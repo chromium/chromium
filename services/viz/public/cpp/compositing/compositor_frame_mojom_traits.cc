@@ -41,6 +41,12 @@ bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
   // Ensure that all render passes referenced by shared elements are present in
   // the CompositorFrame.
   for (const auto& directive : out->metadata.transition_directives) {
+    if (directive.type() !=
+        viz::CompositorFrameTransitionDirective::Type::kSave) {
+      DCHECK(directive.shared_elements().empty());
+      continue;
+    }
+
     for (const auto& shared_element : directive.shared_elements()) {
       if (shared_element.render_pass_id.is_null())
         continue;

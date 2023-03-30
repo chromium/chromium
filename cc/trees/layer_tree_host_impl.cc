@@ -105,6 +105,7 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -1326,6 +1327,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     }
   }
 
+  frame->has_view_transition_save_directive =
+      active_tree_->HasViewTransitionSaveRequest();
+
   // Damage rects for non-root passes aren't meaningful, so set them to be
   // equal to the output rect.
   for (size_t i = 0; i + 1 < frame->render_passes.size(); ++i) {
@@ -1666,6 +1670,9 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
   // A set of viz::RenderPassDrawQuads that we have seen (stored by the
   // RenderPasses they refer to).
   base::flat_map<viz::CompositorRenderPassId, int> pass_references;
+  // A set of viz::SharedElementDrawQuad references that we have seen.
+  base::flat_set<viz::ViewTransitionElementResourceId>
+      view_transition_quad_references;
 
   // Iterate RenderPasses in draw order, removing empty render passes (except
   // the root RenderPass).
@@ -1674,6 +1681,13 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
 
     // Remove orphan viz::RenderPassDrawQuads.
     for (auto it = pass->quad_list.begin(); it != pass->quad_list.end();) {
+      if (it->material == viz::DrawQuad::Material::kSharedElement) {
+        view_transition_quad_references.insert(
+            viz::SharedElementDrawQuad::MaterialCast(*it)->resource_id);
+        ++it;
+        continue;
+      }
+
       if (it->material != viz::DrawQuad::Material::kCompositorRenderPass) {
         ++it;
         continue;
@@ -1720,12 +1734,24 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
     // drop references to earlier RenderPasses allowing them to be removed to.
     viz::CompositorRenderPass* pass =
         frame->render_passes[frame->render_passes.size() - 2 - i].get();
-    if (!pass->copy_requests.empty() ||
-        pass->view_transition_element_resource_id.IsValid()) {
+
+    if (!pass->copy_requests.empty()) {
       continue;
     }
+
     if (pass_references[pass->id])
       continue;
+
+    // Retain render passes generating ViewTransition snapshots if they are
+    // referenced by a quad or this frame will process a save directive. We need
+    // to render and screenshot offscreen content as well, which won't be
+    // referenced by a quad.
+    if (pass->view_transition_element_resource_id.IsValid() &&
+        (frame->has_view_transition_save_directive ||
+         view_transition_quad_references.contains(
+             pass->view_transition_element_resource_id))) {
+      continue;
+    }
 
     for (auto it = pass->quad_list.begin(); it != pass->quad_list.end(); ++it) {
       if (const viz::CompositorRenderPassDrawQuad* quad =

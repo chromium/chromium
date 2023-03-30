@@ -63,16 +63,19 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     ViewTransitionElementResourceId view_transition_element_resource_id;
   };
 
+  // This is public only for mojo deserialization.
   CompositorFrameTransitionDirective();
 
-  // Constructs a new directive. Note that if type is `kSave`, the effect should
-  // be specified for a desired effect. These are ignored for the `kAnimate`
-  // type.
-  CompositorFrameTransitionDirective(
+  static CompositorFrameTransitionDirective CreateSave(
       NavigationID navigation_id,
       uint32_t sequence_id,
-      Type type,
-      std::vector<SharedElement> shared_elements = {});
+      std::vector<SharedElement> shared_elements);
+  static CompositorFrameTransitionDirective CreateAnimate(
+      NavigationID navigation_id,
+      uint32_t sequence_id);
+  static CompositorFrameTransitionDirective CreateRelease(
+      NavigationID navigation_id,
+      uint32_t sequence_id);
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
   ~CompositorFrameTransitionDirective();
@@ -96,6 +99,12 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   }
 
  private:
+  CompositorFrameTransitionDirective(
+      NavigationID navigation_id,
+      uint32_t sequence_id,
+      Type type,
+      std::vector<SharedElement> shared_elements = {});
+
   NavigationID navigation_id_;
 
   uint32_t sequence_id_ = 0;

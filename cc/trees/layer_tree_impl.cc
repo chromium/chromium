@@ -2944,6 +2944,16 @@ bool LayerTreeImpl::HasViewTransitionRequests() const {
   return !view_transition_requests_.empty();
 }
 
+bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
+  for (const auto& request : view_transition_requests_) {
+    if (request->type() == ViewTransitionRequest::Type::kSave) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool LayerTreeImpl::IsReadyToActivate() const {
   return host_impl_->IsReadyToActivate();
 }

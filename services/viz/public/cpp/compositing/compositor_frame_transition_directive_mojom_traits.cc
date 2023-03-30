@@ -83,9 +83,28 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return false;
   }
 
-  *out = viz::CompositorFrameTransitionDirective(
-      navigation_id ? *navigation_id : viz::NavigationID::Null(), sequence_id,
-      type, std::move(shared_elements));
+  // The renderer should never create a directive other than save with shared
+  // elements.
+  if (type != viz::CompositorFrameTransitionDirective::Type::kSave &&
+      !shared_elements.empty()) {
+    return false;
+  }
+
+  auto navigation_id_parsed = navigation_id.value_or(viz::NavigationID::Null());
+  switch (type) {
+    case viz::CompositorFrameTransitionDirective::Type::kSave:
+      *out = viz::CompositorFrameTransitionDirective::CreateSave(
+          navigation_id_parsed, sequence_id, std::move(shared_elements));
+      break;
+    case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+      *out = viz::CompositorFrameTransitionDirective::CreateAnimate(
+          navigation_id_parsed, sequence_id);
+      break;
+    case viz::CompositorFrameTransitionDirective::Type::kRelease:
+      *out = viz::CompositorFrameTransitionDirective::CreateRelease(
+          navigation_id_parsed, sequence_id);
+  }
+
   return true;
 }
 

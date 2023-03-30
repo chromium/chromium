@@ -19,8 +19,8 @@ namespace viz {
 namespace {
 
 std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult() {
-  CompositorFrameTransitionDirective directive(
-      NavigationID::Null(), 1, CompositorFrameTransitionDirective::Type::kSave);
+  auto directive = CompositorFrameTransitionDirective::CreateSave(
+      NavigationID::Null(), 1, {});
   auto frame = std::make_unique<SurfaceSavedFrame>(
       std::move(directive),
       base::BindRepeating([](const CompositorFrameTransitionDirective&) {}));
