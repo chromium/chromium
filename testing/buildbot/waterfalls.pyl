@@ -5628,7 +5628,7 @@
           'walleye',
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_common_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
           # we need to construct an APK instead of compile an exe).
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
@@ -5644,7 +5644,7 @@
           'walleye',
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_common_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
           # we need to construct an APK instead of compile an exe).
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
@@ -5660,7 +5660,7 @@
           'walleye',
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_common_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
           # we need to construct an APK instead of compile an exe).
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
@@ -5677,7 +5677,7 @@
           'linux-bionic'
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_host_gtests',
           'isolated_scripts': 'rust_native_tests',
         },
       },
@@ -5692,7 +5692,7 @@
           'linux-bionic'
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_host_gtests',
           'isolated_scripts': 'rust_native_tests',
         },
       },
@@ -5712,7 +5712,7 @@
           'xctest',
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_host_gtests',
           'isolated_scripts': 'rust_native_tests',
         },
       },
@@ -5728,7 +5728,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_host_gtests',
           'isolated_scripts': 'rust_native_tests',
         },
       },
@@ -5744,7 +5744,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'rust_gtests',
+          'gtest_tests': 'rust_host_gtests',
           'isolated_scripts': 'rust_native_tests',
         },
       },

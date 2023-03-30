@@ -194,9 +194,9 @@ pub fn build_rule_from_std_dep(
         crate_config.env.iter().chain(extra_config.all_config.env.iter()).cloned().collect();
 
     let extra_deps = crate_config
-        .extra_deps
+        .extra_gn_deps
         .iter()
-        .chain(extra_config.all_config.extra_deps.iter())
+        .chain(extra_config.all_config.extra_gn_deps.iter())
         .cloned()
         .map(|dep| RuleDep { cond: Condition::Always, rule: dep })
         .collect();
@@ -234,9 +234,16 @@ pub fn build_rule_from_std_dep(
         .map(|pki| pki.features.clone())
         .unwrap_or(vec![]);
 
+    let exclude_deps: Vec<String> = crate_config
+        .exclude_deps_in_gn
+        .iter()
+        .chain(extra_config.all_config.exclude_deps_in_gn.iter())
+        .cloned()
+        .collect();
+
     // Add only normal dependencies: we don't run unit tests, and we don't run
     // build scripts (instead manually configuring build flags and env vars).
-    for dep_of_dep in &dep.dependencies {
+    for dep_of_dep in dep.dependencies.iter().filter(|d| !exclude_deps.contains(&d.package_name)) {
         let cond = match &dep_of_dep.platform {
             None => Condition::Always,
             Some(p) => Condition::If(platform_to_condition(p)),

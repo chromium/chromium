@@ -33,13 +33,8 @@ declare_args() {
   # all Rust features enabled.
   enable_all_rust_features = false
 
-  # Use the Rust toolchain built in-tree. See //tools/rust. The toolchain comes
-  # with a prebuilt stdlib for the host platform.
-  #
-  # For now, we don't support cross-compilation at all, but it's in progress. To
-  # allow Rust on Android we have a prebuilt toolchain from the Android team,
-  # which is used when this variable is `false`.
-  use_chromium_rust_toolchain = target_os == host_os
+  # Use the Rust toolchain built in-tree. See //tools/rust.
+  use_chromium_rust_toolchain = true
 
   # Build libstd locally with GN and use that instead of the prebuilts, where
   # applicable. If this is false the prebuilt libstd will always be used. If
@@ -114,7 +109,7 @@ declare_args() {
   # Support for Rust mojo bindings. Needs bindgen.
   enable_rust_mojo = enable_all_rust_features
 
-  # Support for the 'gnrt' Rust tool
+  # Support for the 'gnrt' Rust tool.
   enable_rust_gnrt = enable_all_rust_features
 
   # Rust gtest interop
@@ -170,12 +165,6 @@ if (enable_rust) {
     rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
     use_unverified_rust_toolchain = true
   } else if (use_chromium_rust_toolchain) {
-    if (host_os != target_os) {
-      assert(
-          false,
-          "Attempt to use Chromium Rust toolchain on an unsupported platform")
-    }
-
     rust_sysroot = "//third_party/rust-toolchain"
     use_unverified_rust_toolchain = false
   } else {

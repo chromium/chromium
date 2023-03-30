@@ -13,15 +13,17 @@ group("rust") {
   deps = [ ":mojo_rust" ]
 }
 
-# Meta target to build test binaries, if supported.
-rust_unit_tests_group("mojo_rust_tests") {
-  deps = []
-  if (can_build_rust_unit_tests) {
-    deps += [
+# Build combined test runner, if Rust-native tests are supported.
+if (can_build_rust_unit_tests) {
+  rust_unit_tests_group("mojo_rust_tests") {
+    deps = [
       "//mojo/public/rust/tests:mojo_rust_encoding_tests",
       "//mojo/public/rust/tests:mojo_rust_integration_tests",
       "//mojo/public/rust/tests:mojo_rust_system_tests",
     ]
+  }
+} else {
+  group("mojo_rust_tests") {
   }
 }
 

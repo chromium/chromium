@@ -858,11 +858,11 @@ group("all_rust") {
         "//mojo/public/rust:mojo_rust_tests",
       ]
     }
-    if (enable_rust_gnrt) {
+
+    # gnrt is a developer tool run on developer machines. It is not needed when
+    # cross-compiling.
+    if (enable_rust_gnrt && host_os == target_os && host_cpu == target_cpu) {
       deps += [
-        # TODO(crbug.com/1291994): Determine whether it makes sense to build/run
-        # this even on Android. If not, remove this and figure out how to run it
-        # only on desktop testers.
         "//tools/crates/gnrt:gnrt_unittests",
         "//tools/crates/gnrt($host_toolchain)",
       ]
@@ -1028,11 +1028,11 @@ if (is_chromeos_ash) {
     if (use_v4l2_codec || use_vaapi) {
       data_deps += [
         "//components/chromeos_camera:jpeg_encode_accelerator_unittest",
+        "//media/gpu/chromeos:image_processor_test",
         "//media/gpu/test/:video_decode_accelerator_perf_tests",
         "//media/gpu/test/:video_decode_accelerator_tests",
         "//media/gpu/test/:video_encode_accelerator_perf_tests",
         "//media/gpu/test/:video_encode_accelerator_tests",
-        "//media/gpu/chromeos:image_processor_test",
       ]
       if (use_vaapi) {
         data_deps += [

@@ -4627,9 +4627,9 @@
       },
     },
 
-    'rust_gtests': {
+    # Rust tests run on all targets.
+    'rust_common_gtests': {
       'base_unittests': {},
-      'gnrt_unittests': {},
       'rust_gtest_interop_unittests': {},
       'test_cpp_including_rust_unittests': {
         'swarming': {},
@@ -4650,6 +4650,12 @@
         'swarming': {},
         'test': 'mojo_rust_tests',
       },
+    },
+
+    # Some Rust-related tooling is itself written in Rust. These tools are only
+    # run on build hosts.
+    'rust_tooling_gtests': {
+      'gnrt_unittests': {},
     },
 
     'site_isolation_android_fyi_gtests': {
@@ -6456,6 +6462,12 @@
       'monochrome_public_apk_checker_isolated_script',
       'telemetry_android_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts_android',
+    ],
+
+    # Rust tests run on non-cross builds.
+    'rust_host_gtests': [
+      'rust_common_gtests',
+      'rust_tooling_gtests',
     ],
 
     'sandboxed_chromium_memory_linux_gtests': [

@@ -791,7 +791,6 @@ cargo_crate("test") {
     ":getopts",
     ":panic_abort",
     ":panic_unwind",
-    ":proc_macro",
     ":std",
     "//build/rust/std:std_build_deps",
   ]
