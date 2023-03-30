@@ -353,6 +353,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptJsonParseWithSource,
                          "--harmony-json-parse-with-source",
                          "--no-harmony-json-parse-with-source");
+  SetV8FlagsIfOverridden(features::kJavaScriptArrayBufferTransfer,
+                         "--harmony-rab-gsab-transfer",
+                         "--no-harmony-rab-gsab-transfer");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");

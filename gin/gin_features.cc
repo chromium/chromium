@@ -181,6 +181,11 @@ BASE_FEATURE(kJavaScriptJsonParseWithSource,
              "JavaScriptJsonParseWithSource",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the ArrayBuffer transfer proposal.
+BASE_FEATURE(kJavaScriptArrayBufferTransfer,
+             "JavaScriptArrayBufferTransfer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:
