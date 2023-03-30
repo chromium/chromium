@@ -810,8 +810,7 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
     return;
   TRACE_EVENT0("omnibox",
                "AutocompleteController::GroupSuggestionsBySearchVsURL");
-  AutocompleteResult& result =
-      DebouncingEnabled() ? published_result_ : result_;
+  AutocompleteResult& result = const_cast<AutocompleteResult&>(this->result());
   const size_t num_elements = result.size();
   if (begin < 0 || end <= begin || end > num_elements) {
     DCHECK(false) << "Range [" << begin << "; " << end
