@@ -14,7 +14,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getSortedModifiers, isCustomizationDisabled} from './shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -32,25 +32,6 @@ export enum ViewState {
   VIEW,
   ADD,
   EDIT,
-}
-
-/**
- * Returns the converted modifier flag as a readable string.
- * TODO(jimmyxgong): Localize, replace with icon, or update strings.
- */
-function getModifierString(modifier: Modifier): string {
-  switch (modifier) {
-    case Modifier.SHIFT:
-      return 'shift';
-    case Modifier.CONTROL:
-      return 'ctrl';
-    case Modifier.ALT:
-      return 'alt';
-    case Modifier.COMMAND:
-      return 'meta';
-    default:
-      return '';
-  }
 }
 
 /**
@@ -143,19 +124,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       AcceleratorLookupManager.getInstance();
 
   private getModifiers(): string[] {
-    const modifiers: Modifier[] = [
-      Modifier.SHIFT,
-      Modifier.CONTROL,
-      Modifier.ALT,
-      Modifier.COMMAND,
-    ];
-    const modifierStrings: string[] = [];
-    for (const modifier of modifiers) {
-      if ((getAccelerator(this.acceleratorInfo)).modifiers & modifier) {
-        modifierStrings.push(getModifierString(modifier));
-      }
-    }
-    return getSortedModifiers(modifierStrings);
+    return getModifiersForAcceleratorInfo(this.acceleratorInfo);
   }
 
   protected onViewStateChanged(): void {

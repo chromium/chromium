@@ -24,7 +24,6 @@
     display: flex;
     flex-direction: row;
     height: 100%;
-    padding-inline-start: 16px;
     width: 100%;
   }
 
@@ -34,6 +33,7 @@
     flex: 1;
     margin-inline-end: 16px;
     overflow: hidden;
+    padding-inline-start: 16px;
     white-space: nowrap;
   }
 
@@ -45,6 +45,17 @@
     flex: 1;
     height: 100%;
     overflow: hidden;
+  }
+
+  .accelerator-keys {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .accelerator-text-divider {
+    color: var(--cros-text-color-secondary);
+    margin-inline: 4px 8px;
   }
 
   #actionIcon {
@@ -61,16 +72,37 @@
       selectable>
       <div id="description">[[getSearchResultDescription(searchResult)]]</div>
       <div id="accelerators">
-        <template is="dom-if" if="[[isDefaultLayout(searchResult)]]">
-          <!-- TODO(cambickel) Add standard accelerator keys here. -->
-          <div></div>
+        <template is="dom-if" if="[[isStandardLayout(searchResult)]]">
+          <template is="dom-repeat"
+              items="[[getStandardAcceleratorInfos(searchResult)]]"
+              as="acceleratorInfo" indexAs="index">
+            <div class="accelerator-keys">
+              <template is="dom-repeat"
+                  items="[[getStandardAcceleratorModifiers(acceleratorInfo)]]"
+                  as="modifierKey">
+                <input-key key="[[modifierKey]]" key-state="modifier-selected"
+                    narrow highlighted="[[selected]]">
+                </input-key>
+              </template>
+              <input-key
+                  key="[[getStandardAcceleratorKey(acceleratorInfo)]]"
+                  key-state="alpha-numeric-selected" narrow
+                  highlighted="[[selected]]">
+              </input-key>
+              <template is="dom-if"
+                  if="[[shouldShowTextDivider(index, searchResult)]]">
+                <div class="accelerator-text-divider">
+                  [[i18n('searchAcceleratorTextDivider')]]
+                </div>
+              </template>
+            </div>
+          </template>
         </template>
         <template is="dom-if" if="[[isTextLayout(searchResult)]]">
           <text-accelerator parts="[[getTextAcceleratorParts(searchResult)]]"
               highlighted="[[selected]]" narrow>
           </text-accelerator>
         </template>
-        <div id="gradient"></div>
       </div>
       <iron-icon id="actionIcon" icon="cr:arrow-forward"></iron-icon>
     </div>

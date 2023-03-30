@@ -392,6 +392,55 @@ export const fakeSearchResults: MojoSearchResult[] = [
 export const SnapWindowLeftSearchResult: MojoSearchResult =
     fakeSearchResults[0];
 
+export const TakeScreenshotSearchResult: MojoSearchResult = {
+  acceleratorLayoutInfo: {
+    category: AcceleratorCategory.kWindowsAndDesks,
+    subCategory: AcceleratorSubcategory.kDesks,
+    description:
+        stringToMojoString16('Take full screenshot or screen recording'),
+    style: LayoutStyle.kDefault,
+    source: AcceleratorSource.kAsh,
+    action: 2,
+  },
+  acceleratorInfos: [
+    {
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+      locked: false,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16('LaunchApplication1'),  // overview
+          accelerator: {
+            modifiers: Modifier.CONTROL,
+            keyCode: 0,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    },
+    {
+      type: AcceleratorType.kDefault,
+      state: AcceleratorState.kEnabled,
+      locked: false,
+      layoutProperties: {
+        standardAccelerator: {
+          keyDisplay: stringToMojoString16('PrintScreen'),  // screenshot
+          accelerator: {
+            modifiers: 0,
+            keyCode: 0,
+            keyState: 0,
+            timeStamp: fakeTimestamp,
+          },
+        },
+        textAccelerator: undefined,
+      },
+    },
+  ],
+  relevanceScore: 0.95,
+};
+
 export const CycleTabsTextSearchResult: MojoSearchResult = {
   acceleratorLayoutInfo: {
     category: AcceleratorCategory.kGeneral,

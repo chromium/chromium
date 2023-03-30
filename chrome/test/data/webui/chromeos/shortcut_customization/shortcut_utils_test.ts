@@ -7,8 +7,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {Accelerator, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getSortedModifiers, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
 
@@ -145,5 +145,35 @@ suite('shortcutUtilsTest', function() {
         getSortedModifiers(['shift', 'meta', 'ctrl', 'alt']);
     const expectedMultiple3: string[] = ['ctrl', 'alt', 'shift', 'meta'];
     assertTrue(areModifiersEqual(actualMultiple3, expectedMultiple3));
+  });
+
+  test('getModifierString', () => {
+    assertEquals('shift', getModifierString(Modifier.SHIFT));
+    assertEquals('ctrl', getModifierString(Modifier.CONTROL));
+    assertEquals('alt', getModifierString(Modifier.ALT));
+    assertEquals('meta', getModifierString(Modifier.COMMAND));
+  });
+
+  test('getModifiersForAcceleratorInfo', () => {
+    assertArrayEquals(
+        [],
+        getModifiersForAcceleratorInfo(createStandardAcceleratorInfo(
+            0, /*keyCode=*/ 221,
+            /*keyDisplay=*/ ']')));
+    assertArrayEquals(
+        ['alt'],
+        getModifiersForAcceleratorInfo(createStandardAcceleratorInfo(
+            Modifier.ALT, /*keyCode=*/ 221, /*keyDisplay=*/ ']')));
+    assertArrayEquals(
+        ['ctrl', 'alt'],
+        getModifiersForAcceleratorInfo(createStandardAcceleratorInfo(
+            Modifier.ALT | Modifier.CONTROL, /*keyCode=*/ 221,
+            /*keyDisplay=*/ ']')));
+    assertArrayEquals(
+        ['ctrl', 'alt', 'shift', 'meta'],
+        getModifiersForAcceleratorInfo(createStandardAcceleratorInfo(
+            Modifier.ALT | Modifier.CONTROL | Modifier.COMMAND | Modifier.SHIFT,
+            /*keyCode=*/ 221,
+            /*keyDisplay=*/ ']')));
   });
 });

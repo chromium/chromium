@@ -7,7 +7,7 @@ import '../strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, MojoAcceleratorInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 
 // Returns true if shortcut customization is disabled via the feature flag.
 export const isCustomizationDisabled = (): boolean => {
@@ -159,3 +159,42 @@ export const getSortedModifiers = (modifierStrings: string[]): string[] => {
   return modifierStrings.sort(
       (a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 };
+
+/**
+ * Returns the converted modifier flag as a readable string.
+ * TODO(jimmyxgong): Localize, replace with icon, or update strings.
+ */
+export function getModifierString(modifier: Modifier): string {
+  switch (modifier) {
+    case Modifier.SHIFT:
+      return 'shift';
+    case Modifier.CONTROL:
+      return 'ctrl';
+    case Modifier.ALT:
+      return 'alt';
+    case Modifier.COMMAND:
+      return 'meta';
+    default:
+      assertNotReached();
+  }
+}
+
+/**
+ * @returns the list of modifier keys for the given AcceleratorInfo.
+ */
+export function getModifiersForAcceleratorInfo(
+    acceleratorInfo: StandardAcceleratorInfo): string[] {
+  const modifiers: Modifier[] = [
+    Modifier.SHIFT,
+    Modifier.CONTROL,
+    Modifier.ALT,
+    Modifier.COMMAND,
+  ];
+  const modifierStrings: string[] = [];
+  for (const modifier of modifiers) {
+    if ((getAccelerator(acceleratorInfo)).modifiers & modifier) {
+      modifierStrings.push(getModifierString(modifier));
+    }
+  }
+  return getSortedModifiers(modifierStrings);
+}
