@@ -60,7 +60,8 @@ class _Generator(object):
       .Append('#include "base/values.h"')
       .Append(self._util_cc_helper.GetIncludePath())
       .Cblock(self._GenerateManifestKeysIncludes())
-      .Cblock(self._type_helper.GenerateIncludes(include_soft=True))
+      .Cblock(self._type_helper.GenerateIncludes(include_soft=True,
+          generate_error_messages=self._generate_error_messages))
       .Append()
       .Append('using base::UTF8ToUTF16;')
       .Append()
@@ -167,8 +168,13 @@ class _Generator(object):
         if cpp_namespace is None:  # only generate for top-level types
           c.Cblock(self._GenerateTypeFromValueDeprecated(
               classname_in_namespace, type_))
+
+        if type_.property_type is not PropertyType.CHOICES:
           c.Cblock(self._GenerateTypeFromValue(
-              classname_in_namespace, type_))
+            classname_in_namespace, type_, is_dict=True))
+
+        c.Cblock(self._GenerateTypeFromValue(
+          classname_in_namespace, type_, is_dict=False))
       if type_.origin.from_client:
         c.Cblock(self._GenerateTypeToValue(classname_in_namespace, type_))
 
@@ -458,33 +464,42 @@ class _Generator(object):
     c.Eblock('}')
     return c
 
-  def _GenerateTypeFromValue(self, cpp_namespace, type_):
+  def _GenerateTypeFromValue(self, cpp_namespace, type_, is_dict):
     classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
 
-    # Choice types are still supposed to receive a base::Value as argument, as
-    # they might be used to parse different json types.
-    in_value_type = ('base::Value'
-                  if type_.property_type is PropertyType.CHOICES else
-                  'base::Value::Dict')
+    return_type = self._type_helper.GetOptionalReturnType(
+        cpp_namespace, support_errors=self._generate_error_messages)
+
+    param_type = ('base::Value::Dict' if is_dict else 'base::Value')
 
     c = Code()
-    (c.Append('// static')
-      .Append('absl::optional<%s> %s::FromValue(%s) {' % (classname,
-        cpp_namespace, self._GenerateParams(
-          ('const %s& value' % in_value_type,))))
+    (c.Append(f'// static')
+      .Append('{return_type} '
+              '{classname}::FromValue(const {param_type}& value) {{'.format(
+                return_type=return_type,
+                classname=cpp_namespace,
+                param_type=param_type))
     )
     c.Sblock();
     # TODO(crbug.com/1354063): Once the deprecated version of this method is
     # removed, we should consider making Populate return an optional, rather
     # than using an out param.
-    c.Append('absl::optional<%s> out(absl::in_place);' % classname)
-    c.Append('bool result = Populate(%s);' %
-      self._GenerateArgs(('value', 'out.value()')))
     if self._generate_error_messages:
-      c.Append('DCHECK_EQ(result, error.empty());')
-    c.Sblock('if (!result)')
-    c.Append('return absl::nullopt;')
-    c.Eblock('return out;')
+      c.Append('std::u16string error;')
+
+    c.Append(f'{classname} out;')
+    c.Append('bool result = Populate(%s);' %
+      self._GenerateArgs(('value', 'out')))
+
+    c.Sblock('if (!result) {')
+    if self._generate_error_messages:
+      c.Append('DCHECK(!error.empty());')
+      c.Append('return base::unexpected(std::move(error));')
+    else:
+      c.Append('return absl::nullopt;')
+    c.Eblock('}')
+
+    c.Append('return out;')
     c.Eblock('}')
     return c
 
@@ -838,6 +853,8 @@ class _Generator(object):
         .Append()
         .Cblock(self._GenerateFunctionParamsCreate(function))
       )
+      if self._generate_error_messages:
+        c.Cblock(self._GenerateFunctionParamsCreateWithExpected(function))
 
     # Results::Create function
     if function.returns_async:
@@ -1026,6 +1043,33 @@ class _Generator(object):
     )
 
     return c
+
+  def _GenerateFunctionParamsCreateWithExpected(self, function):
+    """An overloaded added to `Create()` communinicating errors through
+    `base::expected`.
+    """
+    # TODO(crbug.com/1415174): This function is being temporarily added
+    # separately to allow us to migrate the places where error is being passed
+    # as an out param. Once that is done, this duplication should be deleted,
+    # and everything should be handled by a single Create function.
+    c = Code()
+
+    (c.Append('// static')
+      .Sblock('base::expected<Params, std::u16string> '
+          'Params::Create(const base::Value::List& args) {')
+    )
+
+    (c.Append('std::u16string error;')
+      .Append('auto result = Params::Create(args, error);')
+      .Sblock('if (!result) {')
+        .Append('DCHECK(!error.empty());')
+        .Append('return base::unexpected(std::move(error));')
+      .Eblock('}')
+      .Append('return std::move(result).value();')
+      .Eblock('}')
+      .Append())
+    return c
+
 
   def _GeneratePopulatePropertyFromValue(self,
                                          prop,

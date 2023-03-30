@@ -61,7 +61,9 @@ class _Generator(object):
       .Append('#include <vector>')
       .Append()
       .Append('#include "base/values.h"')
-      .Cblock(self._type_helper.GenerateIncludes(include_soft=include_soft))
+      .Cblock(self._type_helper.GenerateIncludes(
+        include_soft=include_soft,
+        generate_error_messages=self._generate_error_messages))
       .Append()
     )
 
@@ -291,13 +293,33 @@ class _Generator(object):
                 classname, self._GenerateParams(('const base::Value& value',),
                   error_as_ptr=True)))
           )
+
+        return_type = self._type_helper.GetOptionalReturnType(
+            classname, support_errors=self._generate_error_messages)
+
+        if type_.property_type is not PropertyType.CHOICES:
           (c.Append()
-            .Comment('Creates a %s object from a base::Value, or nullopt on '
-                     'failure.' % classname)
-            .Append('static absl::optional<%s> FromValue(%s);' % (
-                classname, self._GenerateParams(
-                  ('const %s& value' % value_type,))))
+            .Comment('Creates a {classname} object from a base::Value::Dict,'
+                      ' or {failure} on failure.'.format(
+                        classname=classname,
+                        failure=('unexpected'
+                          if self._generate_error_messages else 'nullopt')))
+            .Append('static {return_type} '
+                    'FromValue(const base::Value::Dict& value);'.format(
+                      return_type=return_type))
           )
+
+        (c.Append()
+            .Comment('Creates a {classname} object from a base::Value,'
+                      ' or {failure} on failure.'.format(
+                        classname=classname,
+                        failure=('unexpected'
+                          if self._generate_error_messages else 'nullopt')))
+          .Append('static {return_type} '
+                  'FromValue(const base::Value& value);'.format(
+                    return_type=return_type))
+        )
+
       if type_.origin.from_client:
         (c.Append()
           .Comment('Returns a new %s representing the serialized form of this'
@@ -375,10 +397,17 @@ class _Generator(object):
       return Code()
 
     c = Code()
-    (c.Sblock('struct Params {')
-      .Append('static absl::optional<Params> Create(%s);' %
-                  self._GenerateParams(
-                      ('const base::Value::List& args',)))
+    (c.Sblock('struct Params {'))
+    if self._generate_error_messages:
+      (c.Append('static base::expected<Params, std::u16string> '
+        'Create(const base::Value::List& args);')
+        .Comment('DEPRECATED: prefer the variant of this function '
+          'returning errors with `base::expected`.')
+      )
+
+    (c.Append('static absl::optional<Params> Create(%s);' %
+                self._GenerateParams(
+                    ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
       .Append('Params(Params&& rhs);')

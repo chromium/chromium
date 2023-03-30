@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -31,13 +32,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       base::JSONReader::Read(provider.ConsumeRandomLengthString());
   if (!value || !value->is_dict())
     return 0;
-  std::u16string error;
-  absl::optional<Rule> rule = Rule::FromValue(value->GetDict(), error);
-  if (!rule) {
-    CHECK(!error.empty());
+  base::expected<Rule, std::u16string> rule = Rule::FromValue(value->GetDict());
+  if (!rule.has_value()) {
     return 0;
   }
-  CHECK(error.empty());
 
   // Make a random `GURL`.
   const GURL url(provider.ConsumeRandomLengthString());

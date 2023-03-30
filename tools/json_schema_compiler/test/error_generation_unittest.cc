@@ -20,10 +20,7 @@ using json_schema_compiler::test_util::List;
 
 template <typename T, typename Value>
 std::u16string GetPopulateError(const Value& value) {
-  std::u16string error;
-  T test_type;
-  T::Populate(value, test_type, error);
-  return error;
+  return T::FromValue(value).error_or(std::u16string());
 }
 
 testing::AssertionResult EqualsUtf16(const std::string& expected,
@@ -79,16 +76,15 @@ TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
   {
     base::Value::List params_value;
     params_value.Append(5);
-    std::u16string error;
-    EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, error));
+    EXPECT_TRUE(errors::TestFunction::Params::Create(params_value).has_value());
   }
   {
     base::Value::List params_value;
     params_value.Append(5);
     params_value.Append(5);
-    std::u16string error;
-    EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, error));
-    EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2", error));
+    EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2",
+                            errors::TestFunction::Params::Create(params_value)
+                                .error_or(std::u16string())));
   }
 }
 
@@ -98,15 +94,14 @@ TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
   {
     base::Value::List params_value;
     params_value.Append(5);
-    std::u16string error;
-    EXPECT_TRUE(errors::TestFunction::Params::Create(params_value, error));
+    EXPECT_TRUE(errors::TestFunction::Params::Create(params_value).has_value());
   }
   {
     base::Value::List params_value;
     params_value.Append(base::Value());
-    std::u16string error;
-    EXPECT_FALSE(errors::TestFunction::Params::Create(params_value, error));
-    EXPECT_TRUE(EqualsUtf16("'num' is required", error));
+    EXPECT_TRUE(EqualsUtf16("'num' is required",
+                            errors::TestFunction::Params::Create(params_value)
+                                .error_or(std::u16string())));
   }
 }
 
@@ -131,15 +126,16 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
     std::u16string error;
     base::Value::List params_value;
     params_value.Append("Yeah!");
-    EXPECT_TRUE(errors::TestString::Params::Create(params_value, error));
+    EXPECT_TRUE(errors::TestString::Params::Create(params_value).has_value());
   }
   {
     base::Value::List params_value;
     params_value.Append(5);
     std::u16string error;
-    EXPECT_FALSE(errors::TestTypeInObject::Params::Create(params_value, error));
-    EXPECT_TRUE(EqualsUtf16("'paramObject': expected dictionary, got integer",
-        error));
+    EXPECT_TRUE(
+        EqualsUtf16("'paramObject': expected dictionary, got integer",
+                    errors::TestTypeInObject::Params::Create(params_value)
+                        .error_or(std::u16string())));
   }
 }
 
