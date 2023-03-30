@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& secure_google_url() const;
   const url::Origin& gaia_origin() const;
   GURL gaia_url() const;
-  const GURL& embedded_setup_chromeos_url(unsigned version) const;
+  const GURL& embedded_setup_chromeos_url() const;
   const GURL& embedded_setup_chromeos_kid_signup_url() const;
   const GURL& embedded_setup_chromeos_kid_signin_url() const;
   const GURL& embedded_setup_windows_url() const;
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL oauth_account_manager_origin_url_;
   GURL account_capabilities_origin_url_;
 
-  GURL embedded_setup_chromeos_url_v2_;
+  GURL embedded_setup_chromeos_url_;
   GURL embedded_setup_chromeos_kid_signup_url_;
   GURL embedded_setup_chromeos_kid_signin_url_;
   GURL embedded_setup_windows_url_;

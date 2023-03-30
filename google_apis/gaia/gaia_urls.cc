@@ -33,7 +33,7 @@ const char kDefaultAccountCapabilitiesBaseUrl[] =
     "https://accountcapabilities-pa.googleapis.com";
 
 // API calls from accounts.google.com
-const char kEmbeddedSetupChromeOsUrlSuffixV2[] = "embedded/setup/v2/chromeos";
+const char kEmbeddedSetupChromeOsUrlSuffix[] = "embedded/setup/v2/chromeos";
 const char kEmbeddedReauthChromeOsUrlSuffix[] = "embedded/reauth/chromeos";
 const char kEmbeddedSetupChromeOsKidSignupUrlSuffix[] =
     "embedded/setup/kidsignup/chromeos";
@@ -193,9 +193,8 @@ GURL GaiaUrls::gaia_url() const {
   return gaia_origin_.GetURL();
 }
 
-const GURL& GaiaUrls::embedded_setup_chromeos_url(unsigned version) const {
-  DCHECK_EQ(version, 2U);
-  return embedded_setup_chromeos_url_v2_;
+const GURL& GaiaUrls::embedded_setup_chromeos_url() const {
+  return embedded_setup_chromeos_url_;
 }
 
 const GURL& GaiaUrls::embedded_setup_chromeos_kid_signup_url() const {
@@ -350,8 +349,8 @@ void GaiaUrls::InitializeDefault() {
   CHECK(gaia_url.SchemeIsHTTPOrHTTPS());
 
   // URLs from |gaia_origin_|.
-  ResolveURLIfInvalid(&embedded_setup_chromeos_url_v2_, gaia_url,
-                      kEmbeddedSetupChromeOsUrlSuffixV2);
+  ResolveURLIfInvalid(&embedded_setup_chromeos_url_, gaia_url,
+                      kEmbeddedSetupChromeOsUrlSuffix);
   ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signup_url_, gaia_url,
                       kEmbeddedSetupChromeOsKidSignupUrlSuffix);
   ResolveURLIfInvalid(&embedded_setup_chromeos_kid_signin_url_, gaia_url,
@@ -422,7 +421,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_origin_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_chromeos_url_v2));
+  config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_chromeos_url));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(embedded_setup_chromeos_kid_signup_url));
   config->GetURLIfExists(

@@ -305,7 +305,7 @@ void FakeGaia::Initialize() {
                             HandleMultilogin);
 
   // Handles /embedded/setup/v2/chromeos GAIA call.
-  REGISTER_RESPONSE_HANDLER(gaia_urls->embedded_setup_chromeos_url(2),
+  REGISTER_RESPONSE_HANDLER(gaia_urls->embedded_setup_chromeos_url(),
                             HandleEmbeddedSetupChromeos);
 
   // Handles /embedded/setup/kidsignup/chromeos GAIA call.

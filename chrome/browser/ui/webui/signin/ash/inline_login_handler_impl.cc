@@ -267,7 +267,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
   const GaiaUrls* const gaia_urls = GaiaUrls::GetInstance();
   params.Set("clientId", gaia_urls->oauth2_chrome_client_id());
 
-  const GURL& url = gaia_urls->embedded_setup_chromeos_url(2U);
+  const GURL& url = gaia_urls->embedded_setup_chromeos_url();
   params.Set("gaiaPath", url.path().substr(1));
 
   absl::optional<std::string> version = chromeos::version_loader::GetVersion(

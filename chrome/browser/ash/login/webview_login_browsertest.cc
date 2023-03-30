@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
 
   // Make gaia landing page unreachable
   fake_gaia_.fake_gaia()->SetFixedResponse(
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2),
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(),
       net::HTTP_NOT_FOUND);
 
   // Click back to reload (unreachable) identifier page.
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest,
 
   // Return empty gaia page so that we do not re-enable buttons again.
   fake_gaia_.fake_gaia()->SetFixedResponse(
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(2), net::HTTP_OK,
+      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(), net::HTTP_OK,
       "<body>no-op gaia</body>");
   test::OobeJS().ExecuteAsync("$('gaia-signin').authenticator_.reload()");
 
