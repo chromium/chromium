@@ -73,8 +73,7 @@ class ElementInnerTextCollector final {
   static bool IsBeingRendered(const Node& node);
   // Returns true if used value of "display" is block-level.
   static bool IsDisplayBlockLevel(const Node&);
-  static bool ShouldEmitNewlineForTableRow(
-      const LayoutNGTableRowInterface& table_row);
+  static bool ShouldEmitNewlineForTableRow(const LayoutNGTableRow& table_row);
 
   const NGOffsetMapping* GetOffsetMapping(const LayoutText& layout_text);
   void ProcessChildren(const Node& node);
@@ -179,26 +178,25 @@ bool ElementInnerTextCollector::IsDisplayBlockLevel(const Node& node) {
 
 // static
 bool ElementInnerTextCollector::ShouldEmitNewlineForTableRow(
-    const LayoutNGTableRowInterface& table_row) {
-  const LayoutNGTableInterface* const table = table_row.TableInterface();
+    const LayoutNGTableRow& table_row) {
+  const LayoutNGTable* const table = table_row.Table();
   if (!table)
     return false;
-  if (table_row.NextRowInterface())
+  if (table_row.NextRow()) {
     return true;
+  }
   // For TABLE contains TBODY, TFOOTER, THEAD.
-  const LayoutNGTableSectionInterface* table_section =
-      table_row.SectionInterface();
+  const LayoutNGTableSection* table_section = table_row.Section();
   if (!table_section)
     return false;
-  // See |LayoutNGTable::NextSectionInterface()| and
-  // |PreviousSectionInterface()| for traversing |LayoutNGTableSection|.
-  for (const LayoutObject* runner =
-           table_section->ToLayoutObject()->NextSibling();
-       runner; runner = runner->NextSibling()) {
-    if (!runner->IsTableSection())
-      continue;
-    if (ToInterface<LayoutNGTableSectionInterface>(runner)->NumRows() > 0)
+  // See |LayoutNGTable::NextSection()| and
+  // |PreviousSection()| for traversing |LayoutNGTableSection|.
+  for (const LayoutObject* runner = table_section->NextSibling(); runner;
+       runner = runner->NextSibling()) {
+    const auto* section = DynamicTo<LayoutNGTableSection>(runner);
+    if (section && section->NumRows() > 0) {
       return true;
+    }
   }
   // No table row after |node|.
   return false;
@@ -319,10 +317,9 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   const LayoutObject& layout_object = *node.GetLayoutObject();
   if (style->Display() == EDisplay::kTableCell) {
     ProcessChildren(node);
-    if (layout_object.IsTableCell() &&
-        ToInterface<LayoutNGTableCellInterface>(layout_object)
-            .NextCellInterface())
+    if (layout_object.IsTableCell() && layout_object.NextSibling()) {
       result_.EmitTab();
+    }
     return;
   }
 
@@ -333,9 +330,9 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   if (style->Display() == EDisplay::kTableRow) {
     ProcessChildren(node);
     if (layout_object.IsTableRow() &&
-        ShouldEmitNewlineForTableRow(
-            ToInterface<LayoutNGTableRowInterface>(layout_object)))
+        ShouldEmitNewlineForTableRow(To<LayoutNGTableRow>(layout_object))) {
       result_.EmitNewline();
+    }
     return;
   }
 
