@@ -284,15 +284,15 @@ TEST(StatsTest, RecordModelExecutionResultForMultiOutput) {
   EXPECT_EQ(
       1,
       tester.GetBucketCount(
-          "SegmentationPlatform.ModelExecution.Result0.AdaptiveToolbar", 40));
+          "SegmentationPlatform.ModelExecution.Result.0.AdaptiveToolbar", 40));
   EXPECT_EQ(
       1,
       tester.GetBucketCount(
-          "SegmentationPlatform.ModelExecution.Result1.AdaptiveToolbar", 90));
+          "SegmentationPlatform.ModelExecution.Result.1.AdaptiveToolbar", 90));
   EXPECT_EQ(
       1,
       tester.GetBucketCount(
-          "SegmentationPlatform.ModelExecution.Result2.AdaptiveToolbar", 15));
+          "SegmentationPlatform.ModelExecution.Result.2.AdaptiveToolbar", 15));
 
   // Binned classifier is recorded as is.
   proto::SegmentationModelMetadata model_metadata;
@@ -304,7 +304,7 @@ TEST(StatsTest, RecordModelExecutionResultForMultiOutput) {
   EXPECT_EQ(
       1,
       tester.GetBucketCount(
-          "SegmentationPlatform.ModelExecution.Result0.PowerUserSegment", 5));
+          "SegmentationPlatform.ModelExecution.Result.0.PowerUserSegment", 5));
 }
 
 }  // namespace stats

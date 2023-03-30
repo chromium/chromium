@@ -457,7 +457,7 @@ void RecordModelExecutionResult(SegmentId segment_id,
   }
 
   for (size_t i = 0; i < result.size(); i++) {
-    std::string histogram_name = "SegmentationPlatform.ModelExecution.Result" +
+    std::string histogram_name = "SegmentationPlatform.ModelExecution.Result." +
                                  base::NumberToString(i) + "." +
                                  SegmentIdToHistogramVariant(segment_id);
     int scaled_model_score = is_probability_score ? result[i] * 100 : result[i];
