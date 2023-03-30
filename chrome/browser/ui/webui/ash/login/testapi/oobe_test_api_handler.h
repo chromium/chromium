@@ -34,7 +34,6 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void SkipPostLoginScreens();
   void LoginAsGuest();
   void ShowGaiaDialog();
-  void IsGaiaDialogVisible();
   void HandleGetPrimaryDisplayName(const std::string& callback_id);
 
   // Emulate that a USB Mouse and a USB Keyboard are connected for testing.

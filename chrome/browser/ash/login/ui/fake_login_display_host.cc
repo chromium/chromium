@@ -130,10 +130,6 @@ bool FakeLoginDisplayHost::IsUserAllowlisted(
 
 void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
-bool FakeLoginDisplayHost::IsGaiaDialogVisibleForTesting() {
-  return true;
-}
-
 void FakeLoginDisplayHost::ShowAllowlistCheckFailedError() {}
 
 void FakeLoginDisplayHost::ShowOsInstallScreen() {}

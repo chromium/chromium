@@ -942,10 +942,6 @@ export class OobeApiProvider {
       chrome.send('OobeTestApi.showGaiaDialog');
     };
 
-    this.isGaiaDialogVisible = function() {
-      chrome.send('OobeTestApi.isGaiaDialogVisible');
-    };
-
     this.getBrowseAsGuestButtonName = function() {
       return loadTimeData.getString('testapi_browseAsGuest');
     };

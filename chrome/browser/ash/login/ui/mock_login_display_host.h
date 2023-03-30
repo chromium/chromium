@@ -67,7 +67,6 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, StartKiosk, (const KioskAppId&, bool), (override));
   MOCK_METHOD(void, AttemptShowEnableConsumerKioskScreen, (), (override));
   MOCK_METHOD(void, ShowGaiaDialog, (const AccountId&), (override));
-  MOCK_METHOD(bool, IsGaiaDialogVisibleForTesting, (), (override));
   MOCK_METHOD(void, ShowOsInstallScreen, (), (override));
   MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void, ShowAllowlistCheckFailedError, (), (override));

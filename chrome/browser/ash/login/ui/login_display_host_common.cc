@@ -379,12 +379,6 @@ void LoginDisplayHostCommon::SetDisplayAndGivenName(
                                                         given_name);
 }
 
-bool LoginDisplayHostCommon::IsGaiaDialogVisibleForTesting() {
-  return IsOobeUIDialogVisible() &&
-         GetWizardController()->current_screen()->screen_id() ==
-             GaiaView::kScreenId;
-}
-
 void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
   StartWizard(GaiaView::kScreenId);
 
