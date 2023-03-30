@@ -257,18 +257,18 @@ public class TopToolbarOverlayMediatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
-    public void testVisibility_suppressToolbarCaptures_nativePage() {
-        Assert.assertTrue(mModel.get(TopToolbarOverlayProperties.VISIBLE));
+    public void testAnonymize_suppressToolbarCaptures_nativePage() {
+        Assert.assertFalse(mModel.get(TopToolbarOverlayProperties.ANONYMIZE));
         doReturn(true).when(mTab2).isNativePage();
 
         setTabSupplierTab(mTab2);
 
-        Assert.assertFalse(mModel.get(TopToolbarOverlayProperties.VISIBLE));
+        Assert.assertTrue(mModel.get(TopToolbarOverlayProperties.ANONYMIZE));
 
         verify(mTab2).addObserver(mTabObserverCaptor.capture());
         doReturn(false).when(mTab2).isNativePage();
         mTabObserverCaptor.getValue().onContentChanged(mTab2);
 
-        Assert.assertTrue(mModel.get(TopToolbarOverlayProperties.VISIBLE));
+        Assert.assertFalse(mModel.get(TopToolbarOverlayProperties.ANONYMIZE));
     }
 }

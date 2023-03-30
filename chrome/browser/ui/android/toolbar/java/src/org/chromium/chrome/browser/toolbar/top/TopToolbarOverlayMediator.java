@@ -75,9 +75,6 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    /** Whether the current page has a native implementation with Android views. */
-    private boolean mIsNativePage;
-
     TopToolbarOverlayMediator(PropertyModel model, Context context,
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
@@ -108,10 +105,10 @@ public class TopToolbarOverlayMediator {
         // properties including theme color.
         Callback<Tab> activityTabCallback = (tab) -> {
             if (tab == null) return;
-            mIsNativePage = tab.isNativePage();
             updateVisibility();
             updateThemeColor(tab);
             updateProgress();
+            updateAnonymize(tab);
         };
         mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
@@ -126,9 +123,9 @@ public class TopToolbarOverlayMediator {
 
             @Override
             public void onContentChanged(Tab tab) {
-                mIsNativePage = tab != null && tab.isNativePage();
                 updateVisibility();
                 updateThemeColor(tab);
+                updateAnonymize(tab);
             }
         }, activityTabCallback);
 
@@ -262,10 +259,14 @@ public class TopToolbarOverlayMediator {
             boolean visibility =
                     !BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsStateProvider)
                     && mIsOnValidLayout;
-            if (ToolbarFeatures.shouldSuppressCaptures()) {
-                visibility &= !mIsNativePage;
-            }
             mModel.set(TopToolbarOverlayProperties.VISIBLE, visibility);
+        }
+    }
+
+    private void updateAnonymize(Tab tab) {
+        if (!mIsVisibilityManuallyControlled && ToolbarFeatures.shouldSuppressCaptures()) {
+            boolean isNativePage = tab.isNativePage();
+            mModel.set(TopToolbarOverlayProperties.ANONYMIZE, isNativePage);
         }
     }
 
