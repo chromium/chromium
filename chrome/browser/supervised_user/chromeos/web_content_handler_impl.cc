@@ -106,6 +106,10 @@ void WebContentHandlerImpl::RequestLocalApproval(
   std::move(callback).Run(true);
 }
 
+bool WebContentHandlerImpl::IsMainFrame(int frame_id) {
+  return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id;
+}
+
 void WebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     supervised_user::SupervisedUserSettingsService& settings_service,
     const GURL& url,

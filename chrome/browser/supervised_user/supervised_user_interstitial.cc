@@ -301,10 +301,11 @@ void SupervisedUserInterstitial::OnInterstitialDone() {
 
 void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {
   RequestPermissionSource source;
-  if (web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id())
+  if (web_content_handler_->IsMainFrame(frame_id_)) {
     source = RequestPermissionSource::MAIN_FRAME;
-  else
+  } else {
     source = RequestPermissionSource::SUB_FRAME;
+  }
 
   UMA_HISTOGRAM_ENUMERATION(kInterstitialPermissionSourceHistogramName, source,
                             RequestPermissionSource::HISTOGRAM_BOUNDING_VALUE);

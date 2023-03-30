@@ -29,6 +29,7 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
   void RequestLocalApproval(const GURL& url,
                             const std::u16string& child_display_name,
                             ApprovalRequestInitiatedCallback callback) override;
+  bool IsMainFrame(int frame_id) override;
 
  private:
   void OnLocalApprovalRequestCompleted(

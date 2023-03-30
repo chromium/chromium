@@ -45,6 +45,12 @@ class WebContentHandler {
       const GURL& url,
       const std::u16string& child_display_name,
       ApprovalRequestInitiatedCallback callback) = 0;
+  // Returns true if the given frame is the primary main frame for the active
+  // page.
+  // TODO(b/273692421): Once all content-based methods are moved from the
+  // interstitial, frame_id will be moved from into WebContentHandler.
+  // WebContentHandler.
+  virtual bool IsMainFrame(int frame_id) = 0;
 
   static const char* GetLocalApprovalDurationMillisecondsHistogram();
   static const char* GetLocalApprovalResultHistogram();
