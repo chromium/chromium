@@ -63,6 +63,18 @@ void HotspotController::RestartHotspotIfActive() {
       hotspot_config::mojom::DisableReason::kRestart);
 }
 
+void HotspotController::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void HotspotController::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+bool HotspotController::HasObserver(Observer* observer) const {
+  return observer_list_.HasObserver(observer);
+}
+
 void HotspotController::ProcessRequestQueue() {
   if (queued_requests_.empty())
     return;
@@ -197,8 +209,14 @@ void HotspotController::CompleteCurrentRequest(
   if (result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
     if (current_request_->enabled) {
       NotifyHotspotTurnedOn(current_request_->wifi_turned_off);
+      for (auto& observer : observer_list_) {
+        observer.OnHotspotTurnedOn(current_request_->wifi_turned_off);
+      }
     } else {
       NotifyHotspotTurnedOff(current_request_->disable_reason.value());
+      for (auto& observer : observer_list_) {
+        observer.OnHotspotTurnedOff(current_request_->disable_reason.value());
+      }
     }
   }
   std::move(current_request_->callback).Run(result);
