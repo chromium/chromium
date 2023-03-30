@@ -27,7 +27,7 @@ bluetooth_socket::ReceiveError MapReceiveErrorReason(
     BluetoothApiSocket::ErrorReason value) {
   switch (value) {
     case BluetoothApiSocket::kDisconnected:
-      return bluetooth_socket::RECEIVE_ERROR_DISCONNECTED;
+      return bluetooth_socket::ReceiveError::kDisconnected;
     case BluetoothApiSocket::kNotConnected:
     // kNotConnected is impossible since a socket has to be connected to be
     // able to call Receive() on it.
@@ -37,7 +37,7 @@ bluetooth_socket::ReceiveError MapReceiveErrorReason(
     // handles this specific error.
     // fallthrough
     default:
-      return bluetooth_socket::RECEIVE_ERROR_SYSTEM_ERROR;
+      return bluetooth_socket::ReceiveError::kSystemError;
   }
 }
 
@@ -51,7 +51,7 @@ bluetooth_socket::AcceptError MapAcceptErrorReason(
     // able to call Accept() on it.
     // fallthrough
     default:
-      return bluetooth_socket::ACCEPT_ERROR_SYSTEM_ERROR;
+      return bluetooth_socket::AcceptError::kSystemError;
   }
 }
 
