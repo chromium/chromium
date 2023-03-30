@@ -264,9 +264,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       NGBlockNode container);
 
  private:
-  bool SweepLegacyCandidates(
-      const HeapHashSet<Member<const LayoutObject>>& placed_objects);
-
   const ContainingBlockInfo GetContainingBlockInfo(
       const NGLogicalOutOfFlowPositionedNode&);
 
@@ -298,8 +295,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   void LayoutCandidates(
       HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates,
-      const LayoutBox* only_layout,
-      HeapHashSet<Member<const LayoutObject>>* placed_objects);
+      const LayoutBox* only_layout);
 
   void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
@@ -450,16 +446,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   bool has_block_fragmentation_ = false;
   // A fixedpos containing block was found in an outer fragmentation context.
   bool outer_context_has_fixedpos_container_ = false;
-
-  // Set to true if there's a legacy flexbox inside a (non-containing) legacy
-  // object (so that it's found in LayoutBlock::PositionedObjects()). E.g.:
-  //
-  // <div style="position:relative;">
-  //   <div id="legacy" style="columns:2;">
-  //     <div style="display:flex; position:absolute;">
-  bool has_legacy_flex_box_ = false;
-
-  bool performing_extra_legacy_check_ = false;
 };
 
 }  // namespace blink

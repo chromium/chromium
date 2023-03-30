@@ -198,120 +198,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
       clear_scope(&candidates);
   container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
 
-  HeapHashSet<Member<const LayoutObject>> placed_objects;
-  LayoutCandidates(&candidates, only_layout, &placed_objects);
-
-  if (only_layout)
-    return;
-
-  // If we're in a block fragmentation context (or establishing one being a
-  // paginated root), we've already ruled out the possibility of having legacy
-  // objects in here. The code below would pick up every OOF candidate not in
-  // placed_objects, and treat them as a legacy object (even if they aren't
-  // one), while in fact it could be an NG object that we have finished laying
-  // out in an earlier fragmentainer. Just bail.
-  if (has_block_fragmentation_ || container_builder_->Node().IsPaginatedRoot())
-    return;
-
-  wtf_size_t prev_placed_objects_size = placed_objects.size();
-  bool did_get_same_object_count_once = false;
-  while (SweepLegacyCandidates(placed_objects)) {
-    container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
-
-    // We must have at least one new candidate, otherwise we shouldn't have
-    // entered this branch.
-    DCHECK_GT(candidates.size(), 0u);
-
-    LayoutCandidates(&candidates, only_layout, &placed_objects);
-
-    // Legacy currently has a bug where an OOF-positioned node is present
-    // within the current node's |LayoutBlock::PositionedObjects|, however it
-    // is not the containing-block for this node.
-    //
-    // This results in |LayoutDescendantCandidates| never performing layout on
-    // any additional objects.
-    wtf_size_t placed_objects_size = placed_objects.size();
-    if (prev_placed_objects_size == placed_objects_size) {
-      if (did_get_same_object_count_once || !has_legacy_flex_box_) {
-        NOTREACHED();
-        break;
-      }
-      // If we have an OOF legacy flex container with an (uncontained;
-      // e.g. fixed inside absolute positioned) OOF flex item inside, we'll
-      // allow one additional iteration, even if the object count is the
-      // same. In the first iteration the objects in
-      // LayoutBlock::PositionedObjects() were not in document order, and then
-      // corrected afterwards (before we get here). Only allow this to happen
-      // once, to avoid infinite loops for whatever reason, and good fortune.
-      did_get_same_object_count_once = true;
-    }
-    prev_placed_objects_size = placed_objects_size;
-  }
-}
-
-// Gather candidates that weren't present in the OOF candidates list.
-// This occurs when a candidate is separated from container by a legacy node.
-// E.g.
-// <div style="position: relative;">
-//   <div style="display: flex;">
-//     <div style="position: absolute;"></div>
-//   </div>
-// </div>
-// Returns false if no new candidates were found.
-bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
-    const HeapHashSet<Member<const LayoutObject>>& placed_objects) {
-  const auto* container_block =
-      DynamicTo<LayoutBlock>(container_builder_->GetLayoutObject());
-  if (!container_block)
-    return false;
-  TrackedLayoutBoxLinkedHashSet* legacy_objects =
-      container_block->PositionedObjects();
-
-  bool are_legacy_objects_already_placed = true;
-  if (legacy_objects) {
-    for (LayoutObject* legacy_object : *legacy_objects) {
-      if (!placed_objects.Contains(legacy_object)) {
-        are_legacy_objects_already_placed = false;
-        break;
-      }
-    }
-  }
-
-  if (!legacy_objects || are_legacy_objects_already_placed) {
-    if (!has_legacy_flex_box_ || performing_extra_legacy_check_)
-      return false;
-    // If there is an OOF legacy flex container, and PositionedObjects() are out
-    // of document order (which is something that can happen in the legacy
-    // engine when there's a fixed-positioned object inside an absolute-
-    // positioned object - and we should just live with that and eventually get
-    // rid of the legacy engine), we'll allow one more pass, in case there's a
-    // fixed-positioend OOF flex item inside an absolutely-positioned OOF flex
-    // container. Because at this point, PositionedObjects() should finally be
-    // in correct document order. Only allow one more additional pass, though,
-    // since we might get stuck in an infinite loop otherwise (for reasons
-    // currently unknown).
-    performing_extra_legacy_check_ = true;
-  }
-  bool candidate_added = false;
-  for (LayoutObject* legacy_object : *legacy_objects) {
-    if (placed_objects.Contains(legacy_object)) {
-      if (!performing_extra_legacy_check_ || !legacy_object->NeedsLayout())
-        continue;
-    }
-
-    LayoutBox* layout_box = To<LayoutBox>(legacy_object);
-    NGLogicalStaticPosition static_position =
-        LayoutBoxUtils::ComputeStaticPositionFromLegacy(
-            *layout_box,
-            container_builder_->Borders() + container_builder_->Scrollbar(),
-            container_builder_);
-
-    container_builder_->AddOutOfFlowLegacyCandidate(
-        NGBlockNode(layout_box), static_position,
-        DynamicTo<LayoutInline>(layout_box->Container()));
-    candidate_added = true;
-  }
-  return candidate_added;
+  LayoutCandidates(&candidates, only_layout);
 }
 
 void NGOutOfFlowLayoutPart::HandleFragmentation(
@@ -796,8 +683,7 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 
 void NGOutOfFlowLayoutPart::LayoutCandidates(
     HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates,
-    const LayoutBox* only_layout,
-    HeapHashSet<Member<const LayoutObject>>* placed_objects) {
+    const LayoutBox* only_layout) {
   const WritingModeConverter conainer_converter(
       container_builder_->GetWritingDirection(), container_builder_->Size());
   const NGFragmentItemsBuilder::ItemWithOffsetList* items = nullptr;
@@ -869,7 +755,6 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           if (result->PhysicalFragment().HasAnchorQueryToPropagate())
             anchor_queries->SetChildren(container_builder_->Children(), items);
         }
-        placed_objects->insert(layout_box);
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);
       }
