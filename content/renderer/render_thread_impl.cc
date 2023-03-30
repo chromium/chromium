@@ -1591,6 +1591,10 @@ void RenderThreadImpl::OnSystemColorsChanged(
     SystemColorsDidChange(aqua_color_variant, highlight_text_color,
                           highlight_color);
   }
+
+  // Let blink know it should invalidate and recalculate styles for elements
+  // that rely on system colors, such as the accent and highlight colors.
+  blink::SystemColorsChanged();
 #else
   NOTREACHED();
 #endif
