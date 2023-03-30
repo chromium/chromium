@@ -40,7 +40,9 @@ class PasskeyModel : public KeyedService {
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() = 0;
 
-  virtual base::flat_set<std::string> GetAllSyncIds() = 0;
+  virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
+  virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
+      const = 0;
   virtual std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) = 0;
   virtual bool DeletePasskeyForTesting(std::string sync_id) = 0;

@@ -5,10 +5,13 @@
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 
 #include "base/rand_util.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 
@@ -39,6 +42,44 @@ class WebAuthnCredentialsSyncIdEqualsChecker
 };
 
 }  // namespace
+
+LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
+                                                     Matcher matcher)
+    : SingleClientStatusChangeChecker(test()->GetSyncService(profile)),
+      profile_(profile),
+      matcher_(matcher) {}
+
+LocalPasskeysMatchChecker::~LocalPasskeysMatchChecker() = default;
+
+bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for local passkeys to match: ";
+  testing::StringMatchResultListener result_listener;
+  const bool matches = testing::ExplainMatchResult(
+      matcher_, GetModel(profile_).GetAllPasskeys(), &result_listener);
+  *os << result_listener.str();
+  return matches;
+}
+
+void LocalPasskeysMatchChecker::OnSyncCycleCompleted(
+    syncer::SyncService* sync) {
+  CheckExitCondition();
+}
+
+ServerPasskeysMatchChecker::ServerPasskeysMatchChecker(Matcher matcher)
+    : matcher_(matcher) {}
+
+ServerPasskeysMatchChecker::~ServerPasskeysMatchChecker() = default;
+
+bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for server passkeys to match: ";
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server()->GetSyncEntitiesByModelType(syncer::WEBAUTHN_CREDENTIAL);
+  testing::StringMatchResultListener result_listener;
+  const bool matches =
+      testing::ExplainMatchResult(matcher_, entities, &result_listener);
+  *os << result_listener.str();
+  return matches;
+}
 
 PasskeyModel& GetModel(int profile_idx) {
   return *PasskeyModelFactory::GetForProfile(test()->GetProfile(profile_idx));

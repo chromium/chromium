@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -196,11 +197,19 @@ PasskeySyncBridge::GetModelTypeControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }
 
-base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() {
+base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
   std::vector<std::string> sync_ids;
   std::transform(data_.begin(), data_.end(), std::back_inserter(sync_ids),
                  [](const auto& pair) { return pair.first; });
-  return base::flat_set<std::string>(std::move(sync_ids));
+  return base::flat_set<std::string>(base::sorted_unique, std::move(sync_ids));
+}
+
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetAllPasskeys() const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+  std::transform(data_.begin(), data_.end(), std::back_inserter(passkeys),
+                 [](const auto& pair) { return pair.second; });
+  return passkeys;
 }
 
 std::string PasskeySyncBridge::AddNewPasskeyForTesting(

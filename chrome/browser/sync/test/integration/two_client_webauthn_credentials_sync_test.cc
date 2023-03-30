@@ -32,7 +32,8 @@ class TwoClientWebAuthnCredentialsSyncTest : public SyncTest {
       syncer::kSyncWebauthnCredentials};
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest, AddAndDelete) {
+IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
+                       E2E_ENABLED(AddAndDelete)) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   PasskeyModel& model0 = GetModel(0);

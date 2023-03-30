@@ -22,8 +22,16 @@
 
 namespace {
 
-using webauthn_credentials_helper::GetModel;
+using testing::ElementsAre;
+using testing::IsEmpty;
+
+using webauthn_credentials_helper::EntityHasSyncId;
+using webauthn_credentials_helper::LocalPasskeysMatchChecker;
 using webauthn_credentials_helper::NewPasskey;
+using webauthn_credentials_helper::PasskeyHasSyncId;
+using webauthn_credentials_helper::ServerPasskeysMatchChecker;
+
+constexpr int kSingleProfile = 0;
 
 std::unique_ptr<syncer::PersistentUniqueClientEntity>
 CreateEntityWithCustomClientTagHash(
@@ -44,9 +52,88 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientWebAuthnCredentialsSyncTest() override = default;
 
+  // Injects a new WEBAUTHN_CREDENTIAL type server entity and returns the
+  // randomly generated `sync_id`.
+  std::string InjectPasskeyToFakeServer(
+      sync_pb::WebauthnCredentialSpecifics specifics) {
+    const std::string sync_id = specifics.sync_id();
+    sync_pb::EntitySpecifics entity;
+    *entity.mutable_webauthn_credential() = std::move(specifics);
+    fake_server_->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/"", /*client_tag=*/sync_id, entity,
+            /*creation_time=*/0,
+            /*last_modified_time=*/0));
+    return sync_id;
+  }
+
+  // Marks the WEBAUTHN_CREDENTIAL with `sync_id` as deleted on the server.
+  void DeletePasskeyFromFakeServer(const std::string& sync_id) {
+    const std::string client_tag_hash =
+        syncer::ClientTagHash::FromUnhashed(syncer::WEBAUTHN_CREDENTIAL,
+                                            sync_id)
+            .value();
+    fake_server_->InjectEntity(
+        syncer::PersistentTombstoneEntity::PersistentTombstoneEntity::CreateNew(
+            syncer::LoopbackServerEntity::CreateId(syncer::WEBAUTHN_CREDENTIAL,
+                                                   client_tag_hash),
+            client_tag_hash));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_{
       syncer::kSyncWebauthnCredentials};
+
+  PasskeyModel& GetModel() {
+    return webauthn_credentials_helper::GetModel(kSingleProfile);
+  }
 };
+
+// Adding a local passkey should sync to the server.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       UploadNewLocalPasskey) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
+  EXPECT_TRUE(
+      ServerPasskeysMatchChecker(ElementsAre(EntityHasSyncId(sync_id))).Wait());
+}
+
+// Adding a remote passkey should sync to the client.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DownloadNewServerPasskey) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
+  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile,
+                                        ElementsAre(PasskeyHasSyncId(sync_id)))
+                  .Wait());
+}
+
+// Deleting a local passkey should remove from the server.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       UploadLocalPasskeyDeletion) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
+  ASSERT_TRUE(
+      ServerPasskeysMatchChecker(ElementsAre(EntityHasSyncId(sync_id))).Wait());
+
+  GetModel().DeletePasskeyForTesting(sync_id);
+  EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
+}
+
+// Deleting a remote passkey should remove from the client.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DownloadServerPasskeyDeletion) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  const std::string sync_id = GetModel().AddNewPasskeyForTesting(NewPasskey());
+  ASSERT_TRUE(
+      ServerPasskeysMatchChecker(ElementsAre(EntityHasSyncId(sync_id))).Wait());
+
+  DeletePasskeyFromFakeServer(sync_id);
+  EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
+}
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        LegacySyncIdCompatibility) {
@@ -108,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   // Ensure the expected styles of client_tag_hash sync, but none of the invalid
   // ones do.
   ASSERT_TRUE(SetupSync());
-  EXPECT_THAT(GetModel(0).GetAllSyncIds(),
+  EXPECT_THAT(GetModel().GetAllSyncIds(),
               testing::UnorderedElementsAreArray(expected_sync_ids));
 }
 

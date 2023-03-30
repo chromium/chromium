@@ -50,7 +50,9 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   // PasskeyModel:
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() override;
-  base::flat_set<std::string> GetAllSyncIds() override;
+  base::flat_set<std::string> GetAllSyncIds() const override;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
+      const override;
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
   bool DeletePasskeyForTesting(std::string sync_id) override;
