@@ -2212,6 +2212,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Ethernet.Driver" enum="EthernetDriver"
+    expires_after="2023-12-31">
+  <owner>chuweih@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS metric that records the name of ethernet driver detected when an
+    ethernet network is started.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Ethernet.ExpiredLeaseLengthSeconds2"
     units="seconds" expires_after="2023-08-20">
   <owner>hugobenichi@google.com</owner>

@@ -32849,6 +32849,34 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="NO_NETWORK"/>
 </enum>
 
+<enum name="EthernetDriver">
+  <int value="0" label="unknown"/>
+  <int value="1" label="alx"/>
+  <int value="2" label="aqc111"/>
+  <int value="3" label="ax88179_178a"/>
+  <int value="4" label="cdc_eem"/>
+  <int value="5" label="cdc_ether"/>
+  <int value="6" label="cdc_mbim"/>
+  <int value="7" label="cdc_ncm"/>
+  <int value="8" label="dm9601"/>
+  <int value="9" label="e100"/>
+  <int value="10" label="e1000"/>
+  <int value="11" label="e1000e"/>
+  <int value="12" label="igb"/>
+  <int value="13" label="igbvf"/>
+  <int value="14" label="igc"/>
+  <int value="15" label="ipheth"/>
+  <int value="16" label="mcs7830"/>
+  <int value="17" label="pegasus"/>
+  <int value="18" label="r8152"/>
+  <int value="19" label="r8169"/>
+  <int value="20" label="rtl8150"/>
+  <int value="21" label="smsc"/>
+  <int value="22" label="smsc75xx"/>
+  <int value="23" label="smsc95xx"/>
+  <int value="24" label="usbnet"/>
+</enum>
+
 <enum name="EulaScreenUserAction">
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Accept button clicked"/>
