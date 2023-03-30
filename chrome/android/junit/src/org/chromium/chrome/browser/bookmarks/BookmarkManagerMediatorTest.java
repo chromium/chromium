@@ -222,4 +222,13 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolder2Id);
         Assert.assertTrue(mMediator.onBackPressed());
     }
+
+    @Test
+    public void testAttachmentChanges() {
+        mMediator.onAttachedToWindow();
+        verify(mBookmarkUndoController).setEnabled(true);
+
+        mMediator.onDetachedFromWindow();
+        verify(mBookmarkUndoController).setEnabled(false);
+    }
 }
