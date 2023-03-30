@@ -2154,7 +2154,7 @@ class ComputedStyle : public ComputedStyleBase,
     if (HasNonInitialBackdropFilter()) {
       return true;
     }
-    if (ViewTransitionName()) {
+    if (ViewTransitionName() || ElementIsViewTransitionParticipant()) {
       return true;
     }
     return false;
