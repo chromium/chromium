@@ -4678,6 +4678,23 @@
             ]
         }
     ],
+    "EnablePasswordsAccountStorage": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2",
+                    "enable_features": [
+                        "EnablePasswordsAccountStorage",
+                        "IndicateAccountStorageErrorInAccountCell",
+                        "IndicateSyncErrorInOverflowMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListDesktop": [
         {
             "platforms": [
