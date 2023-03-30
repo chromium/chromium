@@ -1453,6 +1453,9 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
       ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueDateOfLastActivity, 0xFFFFFFFF),
+            ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueDateOfLastRollcall, 5929), ERROR_SUCCESS);
   key.Close();
 
   ASSERT_EQ(
@@ -1463,6 +1466,8 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
       ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueDateOfLastActivity, L"5900"),
+            ERROR_SUCCESS);
   key.Close();
 
   if (IsSystemInstall(scope)) {
@@ -1541,12 +1546,16 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetAP(kNoPVAppId).empty());
   EXPECT_TRUE(persisted_data->GetBrandCode(kNoPVAppId).empty());
   EXPECT_TRUE(persisted_data->GetFingerprint(kNoPVAppId).empty());
+  EXPECT_FALSE(persisted_data->GetDateLastActive(kNoPVAppId));
+  EXPECT_FALSE(persisted_data->GetDateLastRollcall(kNoPVAppId));
 
   EXPECT_EQ(persisted_data->GetProductVersion(kChromeAppId),
             base::Version("99.0.0.1"));
   EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");
   EXPECT_EQ(persisted_data->GetBrandCode(kChromeAppId), "GGLS");
   EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
+  EXPECT_EQ(persisted_data->GetDateLastActive(kChromeAppId).value(), -1);
+  EXPECT_EQ(persisted_data->GetDateLastRollcall(kChromeAppId).value(), 5929);
 
   int count_entries = 0;
   if (IsSystemInstall(scope)) {
