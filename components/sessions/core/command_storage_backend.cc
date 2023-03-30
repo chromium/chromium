@@ -508,16 +508,17 @@ void CommandStorageBackend::AppendCommands(
     // `did_write_marker` should be false.
     DCHECK(!open_file_->did_write_marker);
     open_file_->did_write_marker = true;
-    if (last_file_with_valid_marker_) {
-      // `last_file_with_valid_marker_` is only set after a truncation, which
-      // signals a new path should be used and that the two paths should not
-      // be equal (TruncateOrOpenFile() assigns a new path every time it's
-      // called).
-      DCHECK_NE(*last_file_with_valid_marker_, open_file_->path);
-      base::DeleteFile(*last_file_with_valid_marker_);
-      last_file_with_valid_marker_.reset();
+    if (second_to_last_path_with_valid_marker_) {
+      // `last_or_current_path_with_valid_marker_` is only set after a
+      // truncation, which signals a new path should be used and that the two
+      // paths should not be equal (TruncateOrOpenFile() assigns a new path
+      // every time it's called).
+      CHECK_NE(*second_to_last_path_with_valid_marker_, open_file_->path);
+      base::DeleteFile(*second_to_last_path_with_valid_marker_);
     }
-    last_file_with_valid_marker_ = open_file_->path;
+    second_to_last_path_with_valid_marker_ =
+        std::move(last_or_current_path_with_valid_marker_);
+    last_or_current_path_with_valid_marker_ = open_file_->path;
   }
 
   // If `open_file_` is null, there was an error in writing.
@@ -582,10 +583,10 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
 
   // Move current session to last.
   absl::optional<SessionInfo> new_last_session_info;
-  if (last_file_with_valid_marker_) {
+  if (last_or_current_path_with_valid_marker_) {
     new_last_session_info =
-        SessionInfo{*last_file_with_valid_marker_, timestamp_};
-    last_file_with_valid_marker_.reset();
+        SessionInfo{*last_or_current_path_with_valid_marker_, timestamp_};
+    last_or_current_path_with_valid_marker_.reset();
   }
   last_session_info_ = new_last_session_info;
 

@@ -103,10 +103,7 @@ class SESSIONS_EXPORT CommandStorageBackend
     return open_file_ ? open_file_->path : base::FilePath();
   }
 
-  bool IsFileOpen() const {
-    return open_file_.get() != nullptr;
-    ;
-  }
+  bool IsFileOpen() const { return open_file_.get() != nullptr; }
 
   base::SequencedTaskRunner* owning_task_runner() {
     return base::RefCountedDeleteOnSequence<
@@ -283,7 +280,18 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Data for the last session. If unset, fallback to legacy session data.
   absl::optional<SessionInfo> last_session_info_;
 
-  absl::optional<base::FilePath> last_file_with_valid_marker_;
+  // Paths of the two most recently written files with a valid marker (the
+  // first of which may be the currently open file). When a new file is
+  // successfully opened and the initial set of commands is written,
+  // `last_or_current_path_with_valid_marker_` is set to the path. At this
+  // point the previous file (initial value of
+  // `last_or_current_path_with_valid_marker_`) is no longer needed, and can be
+  // deleted. As there is no guarantee the commands have actually been written
+  // to disk, we keep one additional file around.
+  // `second_to_last_path_with_valid_marker_` maintains the previous valid file
+  // with a marker.
+  absl::optional<base::FilePath> last_or_current_path_with_valid_marker_;
+  absl::optional<base::FilePath> second_to_last_path_with_valid_marker_;
 
   bool force_append_commands_to_fail_for_testing_ = false;
 };

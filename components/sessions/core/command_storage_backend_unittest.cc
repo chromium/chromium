@@ -758,13 +758,27 @@ TEST_F(CommandStorageBackendTest, NewFileOnTruncate) {
   backend->AppendCommands(std::move(commands), false, base::DoNothing());
   EXPECT_EQ(path1, backend->current_path());
 
-  // Path should change on truncate, and `path1` should be removed.
+  // Path should change on truncate, and `path1` should not be removed.
   commands.clear();
   commands.push_back(CreateCommandFromData(data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  EXPECT_TRUE(!backend->current_path().empty());
-  EXPECT_NE(path1, backend->current_path());
+  const base::FilePath path2 = backend->current_path();
+  EXPECT_TRUE(!path2.empty());
+  EXPECT_NE(path1, path2);
+  EXPECT_TRUE(base::PathExists(path1));
+  EXPECT_TRUE(base::PathExists(path2));
+
+  // Repeat. This time `path1` should be removed.
+  commands.clear();
+  commands.push_back(CreateCommandFromData(data));
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
+  const base::FilePath path3 = backend->current_path();
+  EXPECT_TRUE(!path3.empty());
+  EXPECT_NE(path1, path3);
+  EXPECT_NE(path2, path3);
   EXPECT_FALSE(base::PathExists(path1));
+  EXPECT_TRUE(base::PathExists(path2));
+  EXPECT_TRUE(base::PathExists(path3));
 }
 
 TEST_F(CommandStorageBackendTest, AppendCommandsCallbackRunOnError) {
