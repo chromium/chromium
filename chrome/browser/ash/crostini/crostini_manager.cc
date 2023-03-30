@@ -1005,10 +1005,12 @@ absl::optional<VmInfo> CrostiniManager::GetVmInfo(std::string vm_name) {
   return absl::nullopt;
 }
 
-void CrostiniManager::AddRunningVmForTesting(std::string vm_name) {
+void CrostiniManager::AddRunningVmForTesting(std::string vm_name,
+                                             uint32_t cid) {
+  guest_os::GuestId id(guest_os::VmType::TERMINA, vm_name, "");
   guest_os::GuestOsSessionTracker::GetForProfile(profile_)
       ->AddGuestForTesting(  // IN-TEST
-          guest_os::GuestId{guest_os::VmType::TERMINA, vm_name, "unused"});
+          id, guest_os::GuestInfo{id, cid, {}, {}, {}, {}});
   running_vms_[std::move(vm_name)] = VmInfo{VmState::STARTED};
 }
 
@@ -1180,13 +1182,13 @@ void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
                                                     ContainerInfo info,
                                                     bool notify) {
   auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  absl::optional<guest_os::GuestInfo> vm_info = tracker->GetInfo(
+      guest_os::GuestId{guest_os::VmType::TERMINA, vm_name, ""});
+  CHECK(vm_info);
   guest_os::GuestId id{guest_os::VmType::TERMINA, vm_name, info.name};
-  guest_os::GuestInfo guest_info{id,
-                                 0,
-                                 info.username,
-                                 info.homedir,
-                                 info.ipv4_address,
-                                 info.sftp_vsock_port};
+  guest_os::GuestInfo guest_info{
+      id,           vm_info->cid,      info.username,
+      info.homedir, info.ipv4_address, info.sftp_vsock_port};
   tracker->AddGuestForTesting(id, guest_info, notify);  // IN-TEST
 }
 

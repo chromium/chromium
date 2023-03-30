@@ -570,7 +570,7 @@ class CrostiniManager : public KeyedService,
   bool IsVmRunning(std::string vm_name);
   // Returns absl::nullopt if VM is not running.
   absl::optional<VmInfo> GetVmInfo(std::string vm_name);
-  void AddRunningVmForTesting(std::string vm_name);
+  void AddRunningVmForTesting(std::string vm_name, uint32_t cid = 0);
   void AddStoppingVmForTesting(std::string vm_name);
 
   void SetContainerOsRelease(const guest_os::GuestId& container_id,
