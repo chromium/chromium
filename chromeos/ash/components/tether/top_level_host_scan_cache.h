@@ -73,7 +73,8 @@ class TopLevelHostScanCache : public HostScanCache {
   HostScanCache* network_host_scan_cache_;
   PersistentHostScanCache* persistent_host_scan_cache_;
 
-  bool is_initializing_;
+  bool is_initializing_ = false;
+  bool is_shutting_down_ = false;
 
   // Maps from the Tether network GUID to a Timer object. While a scan result is
   // active in the cache, the corresponding Timer object starts running; if the

@@ -25,14 +25,14 @@ TopLevelHostScanCache::TopLevelHostScanCache(
     : timer_factory_(std::move(timer_factory)),
       active_host_(active_host),
       network_host_scan_cache_(network_host_scan_cache),
-      persistent_host_scan_cache_(persistent_host_scan_cache),
-      is_initializing_(false) {
+      persistent_host_scan_cache_(persistent_host_scan_cache) {
   InitializeFromPersistentCache();
 }
 
 TopLevelHostScanCache::~TopLevelHostScanCache() {
   DCHECK(ActiveHost::ActiveHostStatus::DISCONNECTED ==
          active_host_->GetActiveHostStatus());
+  is_shutting_down_ = true;
   for (const auto& tether_guid : GetTetherGuidsInCache())
     RemoveHostScanResult(tether_guid);
 }
@@ -108,8 +108,14 @@ std::unordered_set<std::string> TopLevelHostScanCache::GetTetherGuidsInCache() {
   std::unordered_set<std::string> tether_guids;
   for (const auto& entry : tether_guid_to_timer_map_)
     tether_guids.insert(entry.first);
-  DCHECK(tether_guids == persistent_host_scan_cache_->GetTetherGuidsInCache() &&
-         tether_guids == network_host_scan_cache_->GetTetherGuidsInCache());
+
+  CHECK(tether_guids == persistent_host_scan_cache_->GetTetherGuidsInCache());
+  // It is expected that `network_host_scan_cache` is empty during shutdown
+  // (but `tether_guid_to_timer_map_` may still contain recently seen hosts).
+  if (!is_shutting_down_) {
+    CHECK(tether_guids == network_host_scan_cache_->GetTetherGuidsInCache());
+  }
+
   return tether_guids;
 }
 
