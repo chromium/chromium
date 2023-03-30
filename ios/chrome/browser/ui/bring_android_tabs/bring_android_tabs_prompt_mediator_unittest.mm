@@ -95,10 +95,12 @@ class BringAndroidTabsPromptMediatorTest : public PlatformTest {
 TEST_F(BringAndroidTabsPromptMediatorTest, ShowPrompt) {
   base::HistogramTester histogram_tester;
   [delegate() bringAndroidTabsPromptViewControllerDidShow];
-  histogram_tester.ExpectUniqueSample(
-      bring_android_tabs::kTabCountHistogramName, 1, 1);
   EXPECT_TRUE(bring_android_tabs_service()->displayed());
   EXPECT_FALSE(bring_android_tabs_service()->interacted());
+  // Verify that no duplicate metric is logged in histogram.
+  [delegate() bringAndroidTabsPromptViewControllerDidShow];
+  histogram_tester.ExpectUniqueSample(
+      bring_android_tabs::kTabCountHistogramName, 1, 1);
 }
 
 // Tests when the prompt is displayed and the user taps "open tabs", the

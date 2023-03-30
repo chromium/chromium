@@ -22,6 +22,8 @@
   UrlLoadingBrowserAgent* _URLLoader;
   // Number of tabs active tabs from Android brought over.
   size_t _tabCount;
+  // Whether the prompt view controller had been shown.
+  BOOL _promptShown;
 }
 
 - (instancetype)
@@ -33,6 +35,7 @@
     _bringAndroidTabsService = service;
     _URLLoader = URLLoader;
     _tabCount = service->GetNumberOfAndroidTabs();
+    _promptShown = NO;
   }
   return self;
 }
@@ -40,9 +43,12 @@
 #pragma mark - BringAndroidTabsPromptViewControllerDelegate
 
 - (void)bringAndroidTabsPromptViewControllerDidShow {
-  base::UmaHistogramCounts1000(bring_android_tabs::kTabCountHistogramName,
-                               _tabCount);
-  _bringAndroidTabsService->OnBringAndroidTabsPromptDisplayed();
+  if (!_promptShown) {
+    base::UmaHistogramCounts1000(bring_android_tabs::kTabCountHistogramName,
+                                 _tabCount);
+    _bringAndroidTabsService->OnBringAndroidTabsPromptDisplayed();
+  }
+  _promptShown = YES;
 }
 
 - (void)bringAndroidTabsPromptViewControllerDidTapOpenAllButton {
