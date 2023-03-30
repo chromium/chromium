@@ -935,6 +935,16 @@ TEST_F(MediaStreamVideoSourceTest,
   sink2.DisconnectEncodedFromTrack();
 }
 
+TEST_F(MediaStreamVideoSourceTest, RemovesEncodedSinkWhenTrackStops) {
+  EXPECT_CALL(*mock_source(), OnEncodedSinkDisabled).Times(1);
+  WebMediaStreamTrack track = CreateTrack();
+  MockMediaStreamVideoSink sink;
+  sink.ConnectEncodedToTrack(track);
+  MediaStreamVideoTrack* native_track = MediaStreamVideoTrack::From(track);
+  native_track->Stop();
+  sink.DisconnectEncodedFromTrack();
+}
+
 TEST_F(MediaStreamVideoSourceTest, CapturingLinkSecureOnlyEncodedSinks) {
   InSequence s;
   EXPECT_CALL(*mock_source(), OnCapturingLinkSecured(false));

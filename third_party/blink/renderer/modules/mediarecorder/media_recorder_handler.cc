@@ -685,15 +685,11 @@ void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
 }
 
 void MediaRecorderHandler::OnSourceReadyStateChanged() {
-  for (const auto& track : video_tracks_) {
-    DCHECK(track->Source());
-    if (track->GetReadyState() != MediaStreamSource::kReadyStateEnded)
+  MediaStream* stream = ToMediaStream(media_stream_);
+  for (const auto& track : stream->getTracks()) {
+    if (track->readyState() != "ended") {
       return;
-  }
-  for (const auto& track : audio_tracks_) {
-    DCHECK(track->Source());
-    if (track->GetReadyState() != MediaStreamSource::kReadyStateEnded)
-      return;
+    }
   }
   // All tracks are ended, so stop the recorder in accordance with
   // https://www.w3.org/TR/mediastream-recording/#mediarecorder-methods.
