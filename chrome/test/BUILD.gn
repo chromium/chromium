@@ -9986,8 +9986,10 @@ if (!is_android) {
       }
       if (is_chromeos_ash) {
         sources += [ "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc" ]
+        sources += [ "//ash/drag_drop/drag_drop_interactive_uitest.cc" ]
         deps += [
           "//ash:ash",
+          "//ash:interactive_ui_test_support",
           "//chrome/browser/apps/app_service",
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",

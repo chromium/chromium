@@ -8,8 +8,7 @@
 
 #include "ash/drag_drop/draggable_test_view.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
-#include "ash/test/ui_controls_factory_ash.h"
+#include "ash/test/ash_interactive_ui_test_base.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +16,6 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/test/ui_controls_aura.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -79,43 +77,36 @@ views::Widget* CreateWidget(std::unique_ptr<views::View> contents_view,
   return widget;
 }
 
-void QuitLoop() {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
-void DragDropAcrossMultiDisplay_Step4() {
+void DragDropAcrossMultiDisplay_Step4(base::RepeatingClosure quit_closure) {
   ui_controls::SendMouseEventsNotifyWhenDone(ui_controls::LEFT, ui_controls::UP,
-                                             base::BindOnce(&QuitLoop));
+                                             quit_closure);
 }
 
-void DragDropAcrossMultiDisplay_Step3() {
+void DragDropAcrossMultiDisplay_Step3(base::RepeatingClosure quit_closure) {
   // Move to the edge of the 1st display so that the mouse
   // is moved to 2nd display by ash.
   ui_controls::SendMouseMoveNotifyWhenDone(
-      399, 10, base::BindOnce(&DragDropAcrossMultiDisplay_Step4));
+      399, 10, base::BindOnce(&DragDropAcrossMultiDisplay_Step4, quit_closure));
 }
 
-void DragDropAcrossMultiDisplay_Step2() {
+void DragDropAcrossMultiDisplay_Step2(base::RepeatingClosure quit_closure) {
   ui_controls::SendMouseMoveNotifyWhenDone(
-      20, 10, base::BindOnce(&DragDropAcrossMultiDisplay_Step3));
+      20, 10, base::BindOnce(&DragDropAcrossMultiDisplay_Step3, quit_closure));
 }
 
-void DragDropAcrossMultiDisplay_Step1() {
+void DragDropAcrossMultiDisplay_Step1(base::RepeatingClosure quit_closure) {
   ui_controls::SendMouseEventsNotifyWhenDone(
       ui_controls::LEFT, ui_controls::DOWN,
-      base::BindOnce(&DragDropAcrossMultiDisplay_Step2));
+      base::BindOnce(&DragDropAcrossMultiDisplay_Step2, quit_closure));
 }
 
 }  // namespace
 
-using DragDropTest = AshTestBase;
+using DragDropTest = AshInteractiveUITestBase;
 
 // Test if the mouse gets moved properly to another display
 // during drag & drop operation.
-// Test flaky on ChromeOS: crbug.com/1312727
-TEST_F(DragDropTest, DISABLED_DragDropAcrossMultiDisplay) {
-  ui_controls::InstallUIControlsAura(test::CreateAshUIControls());
-
+TEST_F(DragDropTest, DragDropAcrossMultiDisplay) {
   UpdateDisplay("400x300,400x300");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   auto draggable_view = std::make_unique<DraggableTestView>();
@@ -136,17 +127,18 @@ TEST_F(DragDropTest, DISABLED_DragDropAcrossMultiDisplay) {
   EXPECT_EQ(root_windows[0], source->GetNativeView()->GetRootWindow());
   EXPECT_EQ(root_windows[1], target->GetNativeView()->GetRootWindow());
 
+  base::RunLoop run_loop;
   ui_controls::SendMouseMoveNotifyWhenDone(
-      10, 10, base::BindOnce(&DragDropAcrossMultiDisplay_Step1));
+      10, 10,
+      base::BindOnce(&DragDropAcrossMultiDisplay_Step1,
+                     run_loop.QuitClosure()));
 
-  base::RunLoop().Run();
+  run_loop.Run();
 
   EXPECT_TRUE(target_view_ptr->dropped());
 
   source->Close();
   target->Close();
-
-  ui_controls::InstallUIControlsAura(nullptr);
 }
 
 }  // namespace ash

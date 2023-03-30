@@ -2960,7 +2960,6 @@ test("ash_unittests") {
     "drag_drop/drag_drop_capture_delegate_unittest.cc",
     "drag_drop/drag_drop_controller_unittest.cc",
     "drag_drop/drag_drop_tracker_unittest.cc",
-    "drag_drop/drag_drop_unittest.cc",
     "drag_drop/drag_image_view_unittest.cc",
     "drag_drop/tab_drag_drop_delegate_unittest.cc",
     "drag_drop/tab_drag_drop_windows_hider_unittest.cc",
@@ -3745,6 +3744,30 @@ test("ash_perftests") {
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/gl",
+  ]
+}
+
+static_library("interactive_ui_test_support") {
+  testonly = true
+  configs += [ "//build/config:precompiled_headers" ]
+  public_deps = [
+    ":test_support",
+    "//ash",
+  ]
+  sources = [
+    "test/ash_interactive_ui_test_base.cc",
+    "test/ash_interactive_ui_test_base.h",
+  ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//mojo/core/embedder",
+    "//skia",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/gl:test_support",
   ]
 }
 
