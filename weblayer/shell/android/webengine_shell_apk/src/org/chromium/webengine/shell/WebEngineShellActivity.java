@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebSandbox;
+import org.chromium.webengine.shell.topbar.CustomSpinner;
 import org.chromium.webengine.shell.topbar.TabEventsDelegate;
 import org.chromium.webengine.shell.topbar.TabEventsObserver;
 
@@ -73,7 +75,7 @@ public class WebEngineShellActivity
     private ProgressBar mProgressBar;
     private EditText mUrlBar;
     private Button mTabCountButton;
-    private Spinner mTabListSpinner;
+    private CustomSpinner mTabListSpinner;
     private ArrayAdapter<TabWrapper> mTabListAdapter;
 
     private ImageButton mReloadButton;
@@ -83,11 +85,16 @@ public class WebEngineShellActivity
     private DefaultObservers mDefaultTabListObserver;
 
     private int mSystemVisibilityToRestore;
+    private boolean mIsTabListOpen;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mIsTabListOpen = savedInstanceState.getBoolean("isTabListOpen");
+        }
         setContentView(R.layout.main);
+
         mContext = getApplicationContext();
         mDefaultTabListObserver = new DefaultObservers();
 
@@ -100,6 +107,7 @@ public class WebEngineShellActivity
         mReloadButton = findViewById(R.id.reload_button);
         mRefreshDrawable = getDrawable(R.drawable.ic_refresh);
         mStopDrawable = getDrawable(R.drawable.ic_stop);
+        setProgress(1.0);
 
         mUrlBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -134,7 +142,7 @@ public class WebEngineShellActivity
 
         mTabCountButton.setOnClickListener(v -> mTabListSpinner.performClick());
 
-        mTabListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mTabListSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 mTabListAdapter.getItem(pos).getTab().setActive();
@@ -197,10 +205,19 @@ public class WebEngineShellActivity
             mTabCountButton.setText(String.valueOf(getTabsCount()));
             mTabListAdapter = new ArrayAdapter<TabWrapper>(
                     this, android.R.layout.simple_spinner_dropdown_item);
-            for (Tab t : mTabManager.getAllTabs()) {
-                mTabListAdapter.add(new TabWrapper(t));
-            }
             mTabListSpinner.setAdapter(mTabListAdapter);
+
+            for (Tab t : mTabManager.getAllTabs()) {
+                TabWrapper tabWrapper = new TabWrapper(t);
+                mTabListAdapter.add(tabWrapper);
+                if (t.equals(mTabManager.getActiveTab())) {
+                    mTabListSpinner.setSelection(mTabListAdapter.getPosition(tabWrapper));
+                }
+            }
+
+            if (mIsTabListOpen) {
+                mTabListSpinner.performClick();
+            }
 
             for (Tab tab : mTabManager.getAllTabs()) {
                 tab.setFullscreenCallback(this);
@@ -229,13 +246,18 @@ public class WebEngineShellActivity
         mTabCountButton.setText(String.valueOf(getTabsCount()));
         mTabListAdapter =
                 new ArrayAdapter<TabWrapper>(this, android.R.layout.simple_spinner_dropdown_item);
-        for (Tab t : mTabManager.getAllTabs()) {
-            mTabListAdapter.add(new TabWrapper(t));
-        }
         mTabListSpinner.setAdapter(mTabListAdapter);
 
         mTabEventsDelegate = new TabEventsDelegate(mTabManager);
         mTabEventsDelegate.registerObserver(this);
+
+        for (Tab t : mTabManager.getAllTabs()) {
+            TabWrapper tabWrapper = new TabWrapper(t);
+            mTabListAdapter.add(tabWrapper);
+            if (t.equals(mTabManager.getActiveTab())) {
+                mTabListSpinner.setSelection(mTabListAdapter.getPosition(tabWrapper));
+            }
+        }
 
         activeTab.setFullscreenCallback(this);
         mTabManager.registerTabListObserver(new TabListObserver() {
@@ -301,6 +323,12 @@ public class WebEngineShellActivity
                 .setReorderingAllowed(true)
                 .add(R.id.fragment_container_view, webEngine.getFragment(), WEB_FRAGMENT_TAG)
                 .commit();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("isTabListOpen", mTabListSpinner.isOpen());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -409,11 +437,23 @@ public class WebEngineShellActivity
         }
     }
 
-    public int getTabsCount() {
+    int getTabsCount() {
         if (mTabManager == null) {
             return 0;
         }
         return mTabManager.getAllTabs().size();
+    }
+
+    void setProgress(double progress) {
+        int progressValue = (int) Math.rint(progress * 100);
+        if (progressValue != mProgressBar.getMax()) {
+            mReloadButton.setImageDrawable(mStopDrawable);
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            mReloadButton.setImageDrawable(mRefreshDrawable);
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+        mProgressBar.setProgress(progressValue);
     }
 
     @Override
@@ -453,15 +493,7 @@ public class WebEngineShellActivity
 
     @Override
     public void onLoadProgressChanged(double progress) {
-        int progressValue = (int) Math.rint(progress * 100);
-        if (progressValue != mProgressBar.getMax()) {
-            mReloadButton.setImageDrawable(mStopDrawable);
-            mProgressBar.setVisibility(View.VISIBLE);
-        } else {
-            mReloadButton.setImageDrawable(mRefreshDrawable);
-            mProgressBar.setVisibility(View.INVISIBLE);
-        }
-        mProgressBar.setProgress(progressValue);
+        setProgress(progress);
     }
 
     static class TabWrapper {

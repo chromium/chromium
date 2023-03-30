@@ -41,7 +41,7 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-        <Spinner
+        <org.chromium.webengine.shell.topbar.CustomSpinner
             android:id="@+id/tab_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
