@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -54,18 +53,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
   bool is_null() const { return mailbox_holder.mailbox.IsZero(); }
-
-  static TransferableResource MakeGpu(const gpu::Mailbox& mailbox,
-                                      uint32_t filter,
-                                      uint32_t texture_target,
-                                      const gpu::SyncToken& sync_token,
-                                      const gfx::Size& size,
-                                      ResourceFormat format,
-                                      bool is_overlay_candidate) {
-    return MakeGpu(mailbox, filter, texture_target, sync_token, size,
-                   SharedImageFormat::SinglePlane(format),
-                   is_overlay_candidate);
-  }
 
   static TransferableResource MakeSoftware(const SharedBitmapId& id,
                                            const gfx::Size& size,
