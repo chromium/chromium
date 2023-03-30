@@ -396,10 +396,6 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            const String& source_id,
                                            const String& stack_trace) {
   if (!message.IsNull()) {
-    // https://linear.app/replay/issue/RUN-824
-    recordreplay::Assert("[RUN-824] ChromeClientImpl::AddMessageToConsole %u %u %u",
-                         message.length(), source_id.length(), stack_trace.length());
-
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
         stack_trace);

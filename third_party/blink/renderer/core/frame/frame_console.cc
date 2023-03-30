@@ -75,9 +75,6 @@ void FrameConsole::ReportMessageToClient(
 
   String url = location->Url();
 
-  // https://linear.app/replay/issue/RUN-824
-  recordreplay::Assert("[RUN-824] FrameConsole::ReportMessageToClient #1 %u", url.length());
-
   String stack_trace;
   if (source == mojom::blink::ConsoleMessageSource::kConsoleApi) {
     if (!frame_->GetPage())

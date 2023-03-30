@@ -72,19 +72,6 @@ void WaitableEvent::Reset() {
 }
 
 void WaitableEvent::Signal() {
-  recordreplay::Diagnostic("[RUN-1551] WaitableEvent::Signal %d %d %d",
-                           record_replay_ordered_lock_id_,
-                           (int)send_right_.get(),
-                           recordreplay::AreEventsDisallowed());
-
-  RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
-
-  if (record_replay_ordered_lock_id_) {
-    recordreplay::Assert("[RUN-1551] WaitableEvent::Signal %d %d",
-                         record_replay_ordered_lock_id_,
-                         (int)send_right_.get());
-  }
-
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (!record_replay_ordered_lock_id_)
     disallow.emplace("WaitableEvent::Signal");
@@ -93,6 +80,12 @@ void WaitableEvent::Signal() {
   msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
   msg.header.msgh_size = sizeof(&msg);
   msg.header.msgh_remote_port = send_right_.get();
+
+  // Note: We have to be careful to not use any data from the event after
+  // ordering things here, because the thread we are signaling can wake up
+  // immediately after this call when replaying and may destroy the event.
+  RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
+
   // If the event is already signaled, this will time out because the queue
   // has a length of one.
   kern_return_t kr =

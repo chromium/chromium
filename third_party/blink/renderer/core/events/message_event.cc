@@ -311,8 +311,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
 ScriptValue MessageEvent::data(ScriptState* script_state) {
   is_data_dirty_ = false;
 
-  // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("MessageEvent::data %d", (int)data_type_);
+  recordreplay::Assert("[RUN-1618] MessageEvent::data %d", (int)data_type_);
 
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> value;
@@ -329,8 +328,7 @@ ScriptValue MessageEvent::data(ScriptState* script_state) {
       break;
 
     case MessageEvent::kDataTypeSerializedScriptValue:
-      // https://linear.app/replay/issue/RUN-885
-      recordreplay::Assert("MessageEvent::data #1 %d", !!data_as_serialized_script_value_);
+      recordreplay::Assert("[RUN-1618] MessageEvent::data #1 %d", !!data_as_serialized_script_value_);
 
       if (data_as_serialized_script_value_) {
         // The data is put on the V8 GC heap here, and therefore the V8 GC does

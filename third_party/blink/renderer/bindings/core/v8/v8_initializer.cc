@@ -171,9 +171,6 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
   std::unique_ptr<SourceLocation> location =
       CaptureSourceLocation(isolate, message, context);
 
-  // https://linear.app/replay/issue/RUN-824
-  recordreplay::Assert("[RUN-824] V8Initializer::MessageHandlerInMainThread #1 %u", location->Url().length());
-
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
