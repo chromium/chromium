@@ -2439,10 +2439,11 @@ void GpuImageDecodeCache::
     return;
   }
   ClientImageTransferCacheEntry image_entry(
-      yuv_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
-      image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
-      decoded_target_colorspace.get(),
-      image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(),
+      ClientImageTransferCacheEntry::Image(
+          yuv_pixmaps, image_data->yuva_pixmap_info->yuvaInfo().planeConfig(),
+          image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
+          decoded_target_colorspace.get(),
+          image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace()),
       image_data->needs_mips, target_color_params);
   if (!image_entry.IsValid())
     return;
@@ -2463,8 +2464,9 @@ void GpuImageDecodeCache::
   if (!image_data->decode.image()->peekPixels(&pixmap))
     return;
 
-  ClientImageTransferCacheEntry image_entry(&pixmap, image_data->needs_mips,
-                                            target_color_params);
+  ClientImageTransferCacheEntry image_entry(
+      ClientImageTransferCacheEntry::Image(&pixmap), image_data->needs_mips,
+      target_color_params);
   if (!image_entry.IsValid())
     return;
   InsertTransferCacheEntry(image_entry, image_data);

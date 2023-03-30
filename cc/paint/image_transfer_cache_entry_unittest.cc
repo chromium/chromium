@@ -237,9 +237,11 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
   ASSERT_TRUE(yuva_pixmaps.plane(0).erase(SkColors::kBlack, &top_color_rect));
 
   auto client_entry(std::make_unique<ClientImageTransferCacheEntry>(
-      yuva_pixmaps.planes().data(), yuva_info.planeConfig(),
-      yuva_info.subsampling(), nullptr /* decoded color space*/,
-      yuva_info.yuvColorSpace(), true /* needs_mips */, absl::nullopt));
+      ClientImageTransferCacheEntry::Image(
+          yuva_pixmaps.planes().data(), yuva_info.planeConfig(),
+          yuva_info.subsampling(), nullptr /* decoded color space*/,
+          yuva_info.yuvColorSpace()),
+      true /* needs_mips */, absl::nullopt));
   uint32_t size = client_entry->SerializedSize();
   std::vector<uint8_t> data(size);
   ASSERT_TRUE(client_entry->Serialize(
@@ -389,8 +391,10 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
-  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), true,
-                                             absl::nullopt);
+
+  ClientImageTransferCacheEntry client_entry(
+      ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), true,
+      absl::nullopt);
   std::vector<uint8_t> storage(client_entry.SerializedSize());
   client_entry.Serialize(base::make_span(storage.data(), storage.size()));
 
@@ -416,8 +420,9 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
-  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), false,
-                                             absl::nullopt);
+  ClientImageTransferCacheEntry client_entry(
+      ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), false,
+      absl::nullopt);
   std::vector<uint8_t> storage(client_entry.SerializedSize());
   client_entry.Serialize(base::make_span(storage.data(), storage.size()));
 

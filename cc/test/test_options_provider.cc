@@ -112,7 +112,8 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
   // Create a transfer cache entry for this image.
   TargetColorParams target_color_params;
   ClientImageTransferCacheEntry cache_entry(
-      &bitmap.pixmap(), false /* needs_mips */, target_color_params);
+      ClientImageTransferCacheEntry::Image(&bitmap.pixmap()),
+      false /* needs_mips */, target_color_params);
   std::vector<uint8_t> data;
   data.resize(cache_entry.SerializedSize());
   if (!cache_entry.Serialize(base::span<uint8_t>(data.data(), data.size()))) {
