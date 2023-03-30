@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/guid.h"
+#include "base/uuid.h"
 
 #include <stdint.h>
 
@@ -16,38 +16,38 @@
 
 namespace base {
 
-TEST(GUIDTest, DeprecatedGUIDCorrectlyFormatted) {
+TEST(UuidTest, DeprecatedUuidCorrectlyFormatted) {
   constexpr int kIterations = 10;
   for (int i = 0; i < kIterations; ++i) {
-    const std::string guid = GenerateGUID();
-    EXPECT_TRUE(IsValidGUID(guid));
-    EXPECT_TRUE(IsValidGUIDOutputString(guid));
-    EXPECT_TRUE(IsValidGUID(ToLowerASCII(guid)));
-    EXPECT_TRUE(IsValidGUID(ToUpperASCII(guid)));
+    const std::string guid = GenerateUuid();
+    EXPECT_TRUE(IsValidUuid(guid));
+    EXPECT_TRUE(IsValidUuidOutputString(guid));
+    EXPECT_TRUE(IsValidUuid(ToLowerASCII(guid)));
+    EXPECT_TRUE(IsValidUuid(ToUpperASCII(guid)));
   }
 }
 
-TEST(GUIDTest, DeprecatedGUIDBasicUniqueness) {
+TEST(UuidTest, DeprecatedUuidBasicUniqueness) {
   constexpr int kIterations = 10;
   for (int i = 0; i < kIterations; ++i) {
-    const std::string guid_str1 = GenerateGUID();
-    const std::string guid_str2 = GenerateGUID();
+    const std::string guid_str1 = GenerateUuid();
+    const std::string guid_str2 = GenerateUuid();
     EXPECT_EQ(36U, guid_str1.length());
     EXPECT_EQ(36U, guid_str2.length());
     EXPECT_NE(guid_str1, guid_str2);
 
-    const GUID guid1 = GUID::ParseCaseInsensitive(guid_str1);
+    const Uuid guid1 = Uuid::ParseCaseInsensitive(guid_str1);
     EXPECT_TRUE(guid1.is_valid());
-    const GUID guid2 = GUID::ParseCaseInsensitive(guid_str2);
+    const Uuid guid2 = Uuid::ParseCaseInsensitive(guid_str2);
     EXPECT_TRUE(guid2.is_valid());
   }
 }
 
 namespace {
 
-// The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
+// The format of Uuid version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
 // where y is one of [8, 9, a, b].
-bool IsValidV4(const GUID& guid) {
+bool IsValidV4(const Uuid& guid) {
   const std::string& lowercase = guid.AsLowercaseString();
   return guid.is_valid() && lowercase[14] == '4' &&
          (lowercase[19] == '8' || lowercase[19] == '9' ||
@@ -56,11 +56,11 @@ bool IsValidV4(const GUID& guid) {
 
 }  // namespace
 
-TEST(GUIDTest, GUIDBasicUniqueness) {
+TEST(UuidTest, UuidBasicUniqueness) {
   constexpr int kIterations = 10;
   for (int i = 0; i < kIterations; ++i) {
-    const GUID guid1 = GUID::GenerateRandomV4();
-    const GUID guid2 = GUID::GenerateRandomV4();
+    const Uuid guid1 = Uuid::GenerateRandomV4();
+    const Uuid guid2 = Uuid::GenerateRandomV4();
     EXPECT_NE(guid1, guid2);
     EXPECT_TRUE(guid1.is_valid());
     EXPECT_TRUE(IsValidV4(guid1));
@@ -71,30 +71,30 @@ TEST(GUIDTest, GUIDBasicUniqueness) {
 
 namespace {
 
-void TestGUIDValidity(StringPiece input, bool case_insensitive, bool strict) {
+void TestUuidValidity(StringPiece input, bool case_insensitive, bool strict) {
   SCOPED_TRACE(input);
   {
-    const GUID guid = GUID::ParseCaseInsensitive(input);
+    const Uuid guid = Uuid::ParseCaseInsensitive(input);
     EXPECT_EQ(case_insensitive, guid.is_valid());
   }
   {
-    const GUID guid = GUID::ParseLowercase(input);
+    const Uuid guid = Uuid::ParseLowercase(input);
     EXPECT_EQ(strict, guid.is_valid());
   }
 }
 
 }  // namespace
 
-TEST(GUIDTest, Validity) {
-  // Empty GUID is invalid.
-  EXPECT_FALSE(GUID().is_valid());
+TEST(UuidTest, Validity) {
+  // Empty Uuid is invalid.
+  EXPECT_FALSE(Uuid().is_valid());
 
   enum Parsability { kDoesntParse, kParsesCaseInsensitiveOnly, kAlwaysParses };
 
   static constexpr struct {
     StringPiece input;
     Parsability parsability;
-  } kGUIDValidity[] = {
+  } kUuidValidity[] = {
       {"invalid", kDoesntParse},
       {"0123456789ab-cdef-fedc-ba98-76543210", kDoesntParse},
       {"0123456789abcdeffedcba9876543210", kDoesntParse},
@@ -108,61 +108,61 @@ TEST(GUIDTest, Validity) {
       {"deadbeef-dead-beef-dead-beefdeadbeef", kAlwaysParses},
   };
 
-  for (const auto& validity : kGUIDValidity) {
+  for (const auto& validity : kUuidValidity) {
     const bool case_insensitive = validity.parsability != kDoesntParse;
     const bool strict = validity.parsability == kAlwaysParses;
-    TestGUIDValidity(validity.input, case_insensitive, strict);
+    TestUuidValidity(validity.input, case_insensitive, strict);
   }
 }
 
-TEST(GUIDTest, EqualityAndRoundTrip) {
+TEST(UuidTest, EqualityAndRoundTrip) {
   static constexpr char kCanonicalStr[] =
       "deadbeef-dead-4eef-bead-beefdeadbeef";
 
-  const GUID from_lower =
-      GUID::ParseCaseInsensitive(ToLowerASCII(kCanonicalStr));
+  const Uuid from_lower =
+      Uuid::ParseCaseInsensitive(ToLowerASCII(kCanonicalStr));
   EXPECT_EQ(kCanonicalStr, from_lower.AsLowercaseString());
 
-  const GUID from_upper =
-      GUID::ParseCaseInsensitive(ToUpperASCII(kCanonicalStr));
+  const Uuid from_upper =
+      Uuid::ParseCaseInsensitive(ToUpperASCII(kCanonicalStr));
   EXPECT_EQ(kCanonicalStr, from_upper.AsLowercaseString());
 
   EXPECT_EQ(from_lower, from_upper);
 
-  // Invalid GUIDs are equal.
-  EXPECT_EQ(GUID(), GUID());
+  // Invalid Uuids are equal.
+  EXPECT_EQ(Uuid(), Uuid());
 }
 
-TEST(GUIDTest, UnorderedSet) {
-  std::unordered_set<GUID, GUIDHash> guid_set;
+TEST(UuidTest, UnorderedSet) {
+  std::unordered_set<Uuid, UuidHash> guid_set;
 
-  static constexpr char kGUID1[] = "01234567-89ab-cdef-fedc-ba9876543210";
-  guid_set.insert(GUID::ParseCaseInsensitive(ToLowerASCII(kGUID1)));
+  static constexpr char kUuid1[] = "01234567-89ab-cdef-fedc-ba9876543210";
+  guid_set.insert(Uuid::ParseCaseInsensitive(ToLowerASCII(kUuid1)));
   EXPECT_EQ(1u, guid_set.size());
-  guid_set.insert(GUID::ParseCaseInsensitive(ToUpperASCII(kGUID1)));
+  guid_set.insert(Uuid::ParseCaseInsensitive(ToUpperASCII(kUuid1)));
   EXPECT_EQ(1u, guid_set.size());
 
-  static constexpr char kGUID2[] = "deadbeef-dead-beef-dead-beefdeadbeef";
-  guid_set.insert(GUID::ParseCaseInsensitive(ToLowerASCII(kGUID2)));
+  static constexpr char kUuid2[] = "deadbeef-dead-beef-dead-beefdeadbeef";
+  guid_set.insert(Uuid::ParseCaseInsensitive(ToLowerASCII(kUuid2)));
   EXPECT_EQ(2u, guid_set.size());
-  guid_set.insert(GUID::ParseCaseInsensitive(ToUpperASCII(kGUID2)));
+  guid_set.insert(Uuid::ParseCaseInsensitive(ToUpperASCII(kUuid2)));
   EXPECT_EQ(2u, guid_set.size());
 }
 
-TEST(GUIDTest, Set) {
-  std::set<GUID> guid_set;
+TEST(UuidTest, Set) {
+  std::set<Uuid> guid_set;
 
-  static constexpr char kGUID1[] = "01234567-89ab-cdef-0123-456789abcdef";
-  const GUID guid1 = GUID::ParseLowercase(kGUID1);
+  static constexpr char kUuid1[] = "01234567-89ab-cdef-0123-456789abcdef";
+  const Uuid guid1 = Uuid::ParseLowercase(kUuid1);
   ASSERT_TRUE(guid1.is_valid());
   guid_set.insert(guid1);
 
-  static constexpr char kGUID2[] = "deadbeef-dead-beef-dead-beefdeadbeef";
-  const GUID guid2 = GUID::ParseLowercase(kGUID2);
+  static constexpr char kUuid2[] = "deadbeef-dead-beef-dead-beefdeadbeef";
+  const Uuid guid2 = Uuid::ParseLowercase(kUuid2);
   ASSERT_TRUE(guid2.is_valid());
   guid_set.insert(guid2);
 
-  // Test that the order of the GUIDs was preserved.
+  // Test that the order of the Uuids was preserved.
   auto it = guid_set.begin();
   EXPECT_EQ(guid1, *it);
   ++it;
@@ -171,16 +171,16 @@ TEST(GUIDTest, Set) {
   EXPECT_EQ(guid_set.end(), it);
 }
 
-TEST(GUIDTest, Compare) {
-  static constexpr char kGUID[] = "21abd97f-73e8-4b88-9389-a9fee6abda5e";
-  static constexpr char kGUIDLess[] = "1e0dcaca-9e7c-4f4b-bcc6-e4c02b0c99df";
-  static constexpr char kGUIDGreater[] = "6eeb1bc8-186b-433c-9d6a-a827bc96b2d4";
+TEST(UuidTest, Compare) {
+  static constexpr char kUuid[] = "21abd97f-73e8-4b88-9389-a9fee6abda5e";
+  static constexpr char kUuidLess[] = "1e0dcaca-9e7c-4f4b-bcc6-e4c02b0c99df";
+  static constexpr char kUuidGreater[] = "6eeb1bc8-186b-433c-9d6a-a827bc96b2d4";
 
-  const GUID guid = GUID::ParseLowercase(kGUID);
-  const GUID guid_eq = GUID::ParseLowercase(kGUID);
-  const GUID guid_lt = GUID::ParseLowercase(kGUIDLess);
-  const GUID guid_gt = GUID::ParseLowercase(kGUIDGreater);
-  const GUID guid_invalid = GUID();
+  const Uuid guid = Uuid::ParseLowercase(kUuid);
+  const Uuid guid_eq = Uuid::ParseLowercase(kUuid);
+  const Uuid guid_lt = Uuid::ParseLowercase(kUuidLess);
+  const Uuid guid_gt = Uuid::ParseLowercase(kUuidGreater);
+  const Uuid guid_invalid = Uuid();
 
   EXPECT_TRUE(guid_eq == guid);
   EXPECT_FALSE(guid_eq != guid);
@@ -203,7 +203,7 @@ TEST(GUIDTest, Compare) {
   EXPECT_TRUE(guid_gt > guid);
   EXPECT_TRUE(guid_gt >= guid);
 
-  // Invalid GUIDs are the "least".
+  // Invalid Uuids are the "least".
   EXPECT_FALSE(guid_invalid == guid);
   EXPECT_TRUE(guid_invalid != guid);
   EXPECT_TRUE(guid_invalid < guid);
@@ -212,7 +212,7 @@ TEST(GUIDTest, Compare) {
   EXPECT_FALSE(guid_invalid >= guid);
 }
 
-TEST(GUIDTest, FormatRandomDataAsV4) {
+TEST(UuidTest, FormatRandomDataAsV4) {
   static constexpr uint64_t bytes1a[] = {0x0123456789abcdefull,
                                          0x5a5a5a5aa5a5a5a5ull};
   static constexpr uint64_t bytes1b[] = {bytes1a[0], bytes1a[1]};
@@ -221,21 +221,21 @@ TEST(GUIDTest, FormatRandomDataAsV4) {
   static constexpr uint64_t bytes3[] = {0xfffffffffffffffdull,
                                         0xfffffffffffffffcull};
 
-  const GUID guid1a =
-      GUID::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1a)));
-  const GUID guid1b =
-      GUID::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1b)));
-  const GUID guid2 =
-      GUID::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes2)));
-  const GUID guid3 =
-      GUID::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes3)));
+  const Uuid guid1a =
+      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1a)));
+  const Uuid guid1b =
+      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1b)));
+  const Uuid guid2 =
+      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes2)));
+  const Uuid guid3 =
+      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes3)));
 
   EXPECT_TRUE(guid1a.is_valid());
   EXPECT_TRUE(guid1b.is_valid());
   EXPECT_TRUE(guid2.is_valid());
   EXPECT_TRUE(guid3.is_valid());
 
-  // The same input should give the same GUID.
+  // The same input should give the same Uuid.
   EXPECT_EQ(guid1a, guid1b);
 
   EXPECT_NE(guid1a, guid2);

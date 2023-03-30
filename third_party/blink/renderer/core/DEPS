@@ -21,6 +21,7 @@ include_rules = [
     "+base/tracing",
     "+base/unguessable_token.h",
     "+base/values.h",
+    "+base/uuid.h",
     "+cc/animation/animation_host.h",
     "+cc/animation/animation_id_provider.h",
     "+cc/animation/animation_timeline.h",

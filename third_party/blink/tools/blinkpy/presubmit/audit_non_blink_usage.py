@@ -126,6 +126,7 @@ _CONFIG = [
             'base::UnguessableToken',
             'base::UnguessableTokenHash',
             'base::UnsafeSharedMemoryRegion',
+            'base::Uuid',
             'base::WeakPtr',
             'base::WeakPtrFactory',
             'base::WrapRefCounted',

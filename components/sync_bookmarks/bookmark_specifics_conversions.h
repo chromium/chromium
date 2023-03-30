@@ -9,11 +9,8 @@
 
 #include <string>
 
+#include "base/guid.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
-
-namespace base {
-class GUID;
-}  // namespace base
 
 namespace bookmarks {
 class BookmarkModel;

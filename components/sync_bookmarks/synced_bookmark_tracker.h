@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -21,10 +22,6 @@ namespace sync_pb {
 class BookmarkModelMetadata;
 class EntitySpecifics;
 }  // namespace sync_pb
-
-namespace base {
-class GUID;
-}  // namespace base
 
 namespace bookmarks {
 class BookmarkModel;

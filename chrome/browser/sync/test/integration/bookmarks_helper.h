@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -33,10 +34,6 @@
 
 class BookmarkUndoService;
 class GURL;
-
-namespace base {
-class GUID;
-}  // namespace base
 
 namespace bookmarks {
 class BookmarkModel;

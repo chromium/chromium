@@ -34,6 +34,7 @@ include_rules = [
     "+base/sequence_checker.h",
     "+base/trace_event/trace_event.h",
     "+base/unguessable_token.h",
+    "+base/uuid.h",
     "+media/audio",
     "+media/base",
     "+media/capture",

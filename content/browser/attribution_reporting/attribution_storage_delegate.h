@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/guid.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -17,10 +18,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class GUID;
-}  // namespace base
 
 namespace content {
 

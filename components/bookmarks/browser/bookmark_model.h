@@ -16,6 +16,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -35,7 +36,6 @@
 
 namespace base {
 class FilePath;
-class GUID;
 }
 
 namespace favicon_base {

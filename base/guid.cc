@@ -1,196 +1,22 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/guid.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include <ostream>
-
-#include "base/rand_util.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/types/pass_key.h"
-
+#include "base/uuid.h"
 namespace base {
 
-namespace {
-
-template <typename Char>
-constexpr bool IsLowerHexDigit(Char c) {
-  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
-}
-
-constexpr bool IsHyphenPosition(size_t i) {
-  return i == 8 || i == 13 || i == 18 || i == 23;
-}
-
-// Returns a canonical GUID string given that `input` is validly formatted
-// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, such that x is a hexadecimal digit.
-// If `strict`, x must be a lower-case hexadecimal digit.
-template <typename StringPieceType>
-std::string GetCanonicalGUIDInternal(StringPieceType input, bool strict) {
-  using CharType = typename StringPieceType::value_type;
-
-  constexpr size_t kGUIDLength = 36;
-  if (input.length() != kGUIDLength)
-    return std::string();
-
-  std::string lowercase_;
-  lowercase_.resize(kGUIDLength);
-  for (size_t i = 0; i < input.length(); ++i) {
-    CharType current = input[i];
-    if (IsHyphenPosition(i)) {
-      if (current != '-')
-        return std::string();
-      lowercase_[i] = '-';
-    } else {
-      if (strict ? !IsLowerHexDigit(current) : !IsHexDigit(current))
-        return std::string();
-      lowercase_[i] = static_cast<char>(ToLowerASCII(current));
-    }
-  }
-
-  return lowercase_;
-}
-
-}  // namespace
-
 std::string GenerateGUID() {
-  GUID guid = GUID::GenerateRandomV4();
-  return guid.AsLowercaseString();
+  return GenerateUuid();
 }
 
 bool IsValidGUID(StringPiece input) {
-  return !GetCanonicalGUIDInternal(input, /*strict=*/false).empty();
+  return IsValidUuid(input);
 }
 
 bool IsValidGUIDOutputString(StringPiece input) {
-  return !GetCanonicalGUIDInternal(input, /*strict=*/true).empty();
-}
-
-// static
-GUID GUID::GenerateRandomV4() {
-  uint8_t sixteen_bytes[kGuidV4InputLength];
-  // Use base::RandBytes instead of crypto::RandBytes, because crypto calls the
-  // base version directly, and to prevent the dependency from base/ to crypto/.
-  RandBytes(&sixteen_bytes, sizeof(sixteen_bytes));
-  return FormatRandomDataAsV4Impl(sixteen_bytes);
-}
-
-// static
-GUID GUID::FormatRandomDataAsV4(
-    base::span<const uint8_t, 16> input,
-    base::PassKey<content::FileSystemAccessManagerImpl> /*pass_key*/) {
-  return FormatRandomDataAsV4Impl(input);
-}
-
-// static
-GUID GUID::FormatRandomDataAsV4ForTesting(base::span<const uint8_t, 16> input) {
-  return FormatRandomDataAsV4Impl(input);
-}
-
-// static
-GUID GUID::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
-  DCHECK_EQ(input.size_bytes(), kGuidV4InputLength);
-
-  uint64_t sixteen_bytes[2];
-  memcpy(&sixteen_bytes, input.data(), sizeof(sixteen_bytes));
-
-  // Set the GUID to version 4 as described in RFC 4122, section 4.4.
-  // The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
-  // where y is one of [8, 9, a, b].
-
-  // Clear the version bits and set the version to 4:
-  sixteen_bytes[0] &= 0xffffffff'ffff0fffULL;
-  sixteen_bytes[0] |= 0x00000000'00004000ULL;
-
-  // Set the two most significant bits (bits 6 and 7) of the
-  // clock_seq_hi_and_reserved to zero and one, respectively:
-  sixteen_bytes[1] &= 0x3fffffff'ffffffffULL;
-  sixteen_bytes[1] |= 0x80000000'00000000ULL;
-
-  GUID guid;
-  guid.lowercase_ =
-      StringPrintf("%08x-%04x-%04x-%04x-%012llx",
-                   static_cast<uint32_t>(sixteen_bytes[0] >> 32),
-                   static_cast<uint32_t>((sixteen_bytes[0] >> 16) & 0x0000ffff),
-                   static_cast<uint32_t>(sixteen_bytes[0] & 0x0000ffff),
-                   static_cast<uint32_t>(sixteen_bytes[1] >> 48),
-                   sixteen_bytes[1] & 0x0000ffff'ffffffffULL);
-  return guid;
-}
-
-// static
-GUID GUID::ParseCaseInsensitive(StringPiece input) {
-  GUID guid;
-  guid.lowercase_ = GetCanonicalGUIDInternal(input, /*strict=*/false);
-  return guid;
-}
-
-// static
-GUID GUID::ParseCaseInsensitive(StringPiece16 input) {
-  GUID guid;
-  guid.lowercase_ = GetCanonicalGUIDInternal(input, /*strict=*/false);
-  return guid;
-}
-
-// static
-GUID GUID::ParseLowercase(StringPiece input) {
-  GUID guid;
-  guid.lowercase_ = GetCanonicalGUIDInternal(input, /*strict=*/true);
-  return guid;
-}
-
-// static
-GUID GUID::ParseLowercase(StringPiece16 input) {
-  GUID guid;
-  guid.lowercase_ = GetCanonicalGUIDInternal(input, /*strict=*/true);
-  return guid;
-}
-
-GUID::GUID() = default;
-
-GUID::GUID(const GUID& other) = default;
-
-GUID& GUID::operator=(const GUID& other) = default;
-
-GUID::GUID(GUID&& other) = default;
-
-GUID& GUID::operator=(GUID&& other) = default;
-
-const std::string& GUID::AsLowercaseString() const {
-  return lowercase_;
-}
-
-bool GUID::operator==(const GUID& other) const {
-  return AsLowercaseString() == other.AsLowercaseString();
-}
-
-bool GUID::operator!=(const GUID& other) const {
-  return !(*this == other);
-}
-
-bool GUID::operator<(const GUID& other) const {
-  return AsLowercaseString() < other.AsLowercaseString();
-}
-
-bool GUID::operator<=(const GUID& other) const {
-  return *this < other || *this == other;
-}
-
-bool GUID::operator>(const GUID& other) const {
-  return !(*this <= other);
-}
-
-bool GUID::operator>=(const GUID& other) const {
-  return !(*this < other);
-}
-
-std::ostream& operator<<(std::ostream& out, const GUID& guid) {
-  return out << guid.AsLowercaseString();
+  return IsValidUuidOutputString(input);
 }
 
 }  // namespace base

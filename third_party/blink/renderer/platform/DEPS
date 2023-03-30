@@ -63,6 +63,7 @@ include_rules = [
     "+base/trace_event",
     "+base/tracing",
     "+base/unguessable_token.h",
+    "+base/uuid.h",
     "+base/values.h",
     "+net/base/filename_util.h",
     "+net/http/http_util.h",

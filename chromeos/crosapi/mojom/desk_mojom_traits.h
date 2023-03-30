@@ -9,10 +9,6 @@
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
-namespace base {
-class GUID;
-}
-
 namespace mojo {
 
 template <>
