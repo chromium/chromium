@@ -313,14 +313,6 @@ export class CCATest {
   }
 
   /**
-   * Gets resolution of the preview video.
-   */
-  static getPreviewResolution(): Resolution {
-    const video = getPreviewVideo();
-    return new Resolution(video.videoWidth, video.videoHeight);
-  }
-
-  /**
    * Returns the screen orientation.
    */
   static getScreenOrientation(): OrientationType {
@@ -341,12 +333,12 @@ export class CCATest {
   }
 
   /**
-   * Gets width and height of the specified ui component.
+   * Gets rounded numbers of width and height of the specified ui component.
    */
   static getSize(component: UIComponent, index?: number): Resolution {
     const element = resolveVisibleElement(component, index);
     const {width, height} = element.getBoundingClientRect();
-    return new Resolution(width, height);
+    return new Resolution(Math.round(width), Math.round(height));
   }
 
   /**
