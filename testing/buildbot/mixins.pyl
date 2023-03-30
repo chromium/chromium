@@ -1336,6 +1336,7 @@
   'win10_amd_rx_5500_xt': {
     'swarming': {
       'dimensions': {
+        'display_attached': '1',
         'gpu': '1002:7340',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu.experimental',
@@ -1355,6 +1356,7 @@
   'win10_intel_uhd_630_experimental': {
     'swarming': {
       'dimensions': {
+        'display_attached': '1',
         'gpu': '8086:9bc5-31.0.101.2111',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu',
@@ -1364,6 +1366,7 @@
   'win10_intel_uhd_630_stable': {
     'swarming': {
       'dimensions': {
+        'display_attached': '1',
         'gpu': '8086:9bc5-31.0.101.2111',
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu',
@@ -1377,6 +1380,7 @@
       # to trigger tests on multiple configurations.
       'dimension_sets': [
         {
+          'display_attached': '1',
           'gpu': '8086:9bc5-31.0.101.2111',
           'os': 'Windows-10',
           'pool': 'chromium.tests.gpu',
@@ -1387,6 +1391,7 @@
   'win10_nvidia_gtx_1660_experimental': {
     'swarming': {
       'dimensions': {
+        'display_attached': '1',
         'gpu': '10de:2184-27.21.14.5638',
         'os': 'Windows-10-18363',
         'pool': 'chromium.tests.gpu',
@@ -1400,6 +1405,7 @@
     # this one, which is used by Dawn Win10 x64 Release (NVIDIA).
     'swarming': {
       'dimensions': {
+        'display_attached': '1',
         'gpu': '10de:2184-27.21.14.5638',
         'os': 'Windows-10-18363',
         'pool': 'chromium.tests.gpu',
@@ -1413,6 +1419,7 @@
     'swarming': {
       'dimension_sets': [
         {
+          'display_attached': '1',
           'gpu': '10de:2184-27.21.14.5638',
           'os': 'Windows-10-18363',
           'pool': 'chromium.tests.gpu',

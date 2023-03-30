@@ -2165,6 +2165,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2200,6 +2201,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2235,6 +2237,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2279,6 +2282,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2323,6 +2327,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2359,6 +2364,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2394,6 +2400,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2431,6 +2438,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2469,6 +2477,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
@@ -2506,6 +2515,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "display_attached": "1",
               "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
