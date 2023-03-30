@@ -254,6 +254,9 @@ class PermissionRequestManager
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
+  FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest, WeakDuplicateRequests);
+  FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest,
+                           WeakDuplicateRequestsAccept);
 
   explicit PermissionRequestManager(content::WebContents* web_contents);
 
@@ -328,6 +331,25 @@ class PermissionRequestManager
   // may or may not be the same object as |request|.
   PermissionRequest* GetExistingRequest(PermissionRequest* request) const;
 
+  // Returns an iterator into |duplicate_requests_|, points the matching list,
+  // or duplicate_requests_.end() if no match. The matching list contains all
+  // the weak requests which are duplicate of the given |request| (see
+  // |IsDuplicateOf|)
+  using WeakPermissionRequestList =
+      std::list<std::list<base::WeakPtr<PermissionRequest>>>;
+  WeakPermissionRequestList::iterator FindDuplicateRequestList(
+      PermissionRequest* request);
+
+  // Trigger |visitor| for each live weak request which matches the given
+  // request (see |IsDuplicateOf|) in the |duplicate_requests_|. Returns an
+  // iterator into |duplicate_requests_|, points the matching list, or
+  // duplicate_requests_.end() if no match.
+  using DuplicateRequestVisitor =
+      base::RepeatingCallback<void(const base::WeakPtr<PermissionRequest>&)>;
+  WeakPermissionRequestList::iterator VisitDuplicateRequests(
+      DuplicateRequestVisitor visitor,
+      PermissionRequest* request);
+
   // Calls PermissionGranted on a request and all its duplicates.
   void PermissionGrantedIncludingDuplicates(PermissionRequest* request,
                                             bool is_one_time);
@@ -393,10 +415,8 @@ class PermissionRequestManager
 
   PermissionRequestQueue pending_permission_requests_;
 
-  // Maps from the first request of a kind to subsequent requests that were
-  // duped against it.
-  std::unordered_multimap<PermissionRequest*, PermissionRequest*>
-      duplicate_requests_;
+  // Stores the weak pointers of duplicated requests in a 2D list.
+  WeakPermissionRequestList duplicate_requests_;
 
   // Maps each PermissionRequest currently in |requests_| or
   // |pending_permission_requests_| to which RenderFrameHost it originated from.

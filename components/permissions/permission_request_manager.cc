@@ -233,18 +233,25 @@ void PermissionRequestManager::AddRequest(
   }
 
   // Don't re-add an existing request or one with a duplicate text request.
-  PermissionRequest* existing_request = GetExistingRequest(request);
-  if (existing_request) {
+  if (auto* existing_request = GetExistingRequest(request)) {
+    if (request == existing_request) {
+      return;
+    }
+
     // |request| is a duplicate. Add it to |duplicate_requests_| unless it's the
     // same object as |existing_request| or an existing duplicate.
-    if (request == existing_request)
+    auto iter = FindDuplicateRequestList(existing_request);
+    if (iter == duplicate_requests_.end()) {
+      duplicate_requests_.push_back({request->GetWeakPtr()});
       return;
-    auto range = duplicate_requests_.equal_range(existing_request);
-    for (auto it = range.first; it != range.second; ++it) {
-      if (request == it->second)
-        return;
     }
-    duplicate_requests_.insert(std::make_pair(existing_request, request));
+
+    for (const auto& weak_request : (*iter)) {
+      if (weak_request && request == weak_request.get()) {
+        return;
+      }
+    }
+    iter->push_back(request->GetWeakPtr());
     return;
   }
 
@@ -1050,10 +1057,58 @@ void PermissionRequestManager::CleanUpRequests() {
 PermissionRequest* PermissionRequestManager::GetExistingRequest(
     PermissionRequest* request) const {
   for (PermissionRequest* existing_request : requests_) {
-    if (request->IsDuplicateOf(existing_request))
+    if (request->IsDuplicateOf(existing_request)) {
       return existing_request;
+    }
   }
   return pending_permission_requests_.FindDuplicate(request);
+}
+
+PermissionRequestManager::WeakPermissionRequestList::iterator
+PermissionRequestManager::FindDuplicateRequestList(PermissionRequest* request) {
+  for (auto request_list = duplicate_requests_.begin();
+       request_list != duplicate_requests_.end(); ++request_list) {
+    for (auto iter = request_list->begin(); iter != request_list->end();) {
+      // Remove any requests that have been destroyed.
+      const auto& weak_request = (*iter);
+      if (!weak_request) {
+        iter = request_list->erase(iter);
+        continue;
+      }
+
+      // The first valid request in the list will indicate whether all other
+      // members are duplicate or not.
+      if (weak_request->IsDuplicateOf(request)) {
+        return request_list;
+      }
+
+      break;
+    }
+  }
+
+  return duplicate_requests_.end();
+}
+
+PermissionRequestManager::WeakPermissionRequestList::iterator
+PermissionRequestManager::VisitDuplicateRequests(
+    DuplicateRequestVisitor visitor,
+    PermissionRequest* request) {
+  auto request_list = FindDuplicateRequestList(request);
+  if (request_list == duplicate_requests_.end()) {
+    return request_list;
+  }
+
+  for (auto iter = request_list->begin(); iter != request_list->end();) {
+    if (auto& weak_request = (*iter)) {
+      visitor.Run(weak_request);
+      ++iter;
+    } else {
+      // Remove any requests that have been destroyed.
+      iter = request_list->erase(iter);
+    }
+  }
+
+  return request_list;
 }
 
 void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
@@ -1063,9 +1118,14 @@ void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   request->PermissionGranted(is_one_time);
-  auto range = duplicate_requests_.equal_range(request);
-  for (auto it = range.first; it != range.second; ++it)
-    it->second->PermissionGranted(is_one_time);
+  VisitDuplicateRequests(
+      base::BindRepeating(
+          [](bool is_one_time,
+             const base::WeakPtr<PermissionRequest>& weak_request) {
+            weak_request->PermissionGranted(is_one_time);
+          },
+          is_one_time),
+      request);
 }
 
 void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
@@ -1074,9 +1134,12 @@ void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   request->PermissionDenied();
-  auto range = duplicate_requests_.equal_range(request);
-  for (auto it = range.first; it != range.second; ++it)
-    it->second->PermissionDenied();
+  VisitDuplicateRequests(
+      base::BindRepeating(
+          [](const base::WeakPtr<PermissionRequest>& weak_request) {
+            weak_request->PermissionDenied();
+          }),
+      request);
 }
 
 void PermissionRequestManager::CancelledIncludingDuplicates(
@@ -1086,9 +1149,14 @@ void PermissionRequestManager::CancelledIncludingDuplicates(
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
   request->Cancelled(is_final_decision);
-  auto range = duplicate_requests_.equal_range(request);
-  for (auto it = range.first; it != range.second; ++it)
-    it->second->Cancelled(is_final_decision);
+  VisitDuplicateRequests(
+      base::BindRepeating(
+          [](bool is_final,
+             const base::WeakPtr<PermissionRequest>& weak_request) {
+            weak_request->Cancelled(is_final);
+          },
+          is_final_decision),
+      request);
 }
 
 void PermissionRequestManager::RequestFinishedIncludingDuplicates(
@@ -1096,13 +1164,21 @@ void PermissionRequestManager::RequestFinishedIncludingDuplicates(
   DCHECK_EQ(1ul, base::ranges::count(requests_, request) +
                      pending_permission_requests_.Count(request))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
+  auto duplicate_list = VisitDuplicateRequests(
+      base::BindRepeating(
+          [](const base::WeakPtr<PermissionRequest>& weak_request) {
+            weak_request->RequestFinished();
+          }),
+      request);
+
+  // Note: beyond this point, |request| has probably been deleted, any
+  // dereference of |request| must be done prior this point.
   request->RequestFinished();
-  // Beyond this point, |request| has probably been deleted.
-  auto range = duplicate_requests_.equal_range(request);
-  for (auto it = range.first; it != range.second; ++it)
-    it->second->RequestFinished();
+
   // Additionally, we can now remove the duplicates.
-  duplicate_requests_.erase(request);
+  if (duplicate_list != duplicate_requests_.end()) {
+    duplicate_requests_.erase(duplicate_list);
+  }
 }
 
 void PermissionRequestManager::AddObserver(Observer* observer) {
