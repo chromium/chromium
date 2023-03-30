@@ -153,6 +153,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // stopped.
   void Stop();
 
+  // Lists the files and calculates the required space and free disk space. This
+  // doesn't pin any files and doesn't keep the space calculations up to date.
+  void CalculateRequiredSpace();
+
   // Gets the current progress status.
   Progress GetProgress() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -1920,9 +1920,8 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.ShouldPin(false);
   manager.SetCompletionCallback(completion_callback.Get());
-  manager.Start();
+  manager.CalculateRequiredSpace();
   run_loop.Run();
 
   const Progress progress = manager.GetProgress();
