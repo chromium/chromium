@@ -338,7 +338,8 @@ struct TestParams {
   std::string manufacturer_id_string;
   std::string product_id_string;
 
-  base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
+  base::flat_set<EdidParser::PrimaryMatrixPair>
+      supported_color_primary_matrix_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   absl::optional<gfx::Range> vertical_display_range_limits_;
@@ -580,7 +581,9 @@ struct TestParams {
      1487444765,
      "DEL",
      "4064",
-     {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
+     {{gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::MatrixID::BT709},
+      {gfx::ColorSpace::PrimaryID::SMPTE170M,
+       gfx::ColorSpace::MatrixID::SMPTE170M}},
      {},
      absl::nullopt,
      gfx::Range(49, 86),
@@ -724,8 +727,11 @@ struct TestParams {
      755395064,
      "SAM",
      "0DF6",
-     {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M,
-      gfx::ColorSpace::PrimaryID::BT2020},
+     {{gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::MatrixID::BT709},
+      {gfx::ColorSpace::PrimaryID::SMPTE170M,
+       gfx::ColorSpace::MatrixID::SMPTE170M},
+      {gfx::ColorSpace::PrimaryID::BT2020,
+       gfx::ColorSpace::MatrixID::BT2020_CL}},
      {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::TransferID::HLG},
      absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
@@ -804,8 +810,8 @@ TEST_P(EDIDParserTest, ParseEdids) {
   EXPECT_EQ(EdidParser::ProductIdToString(parser_.product_id()),
             GetParam().product_id_string);
 
-  EXPECT_EQ(GetParam().supported_color_primary_ids_,
-            parser_.supported_color_primary_ids());
+  EXPECT_EQ(GetParam().supported_color_primary_matrix_ids_,
+            parser_.supported_color_primary_matrix_ids());
   EXPECT_EQ(GetParam().supported_color_transfer_ids_,
             parser_.supported_color_transfer_ids());
 

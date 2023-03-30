@@ -20,6 +20,8 @@ component("util") {
 
   defines = [ "DISPLAY_UTIL_IMPLEMENTATION" ]
 
+  public_deps = [ "//ui/display:display_features" ]
+
   deps = [
     "//base",
     "//skia",

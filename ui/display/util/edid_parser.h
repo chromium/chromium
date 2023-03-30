@@ -57,9 +57,11 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   double gamma() const { return gamma_; }
   int32_t bits_per_channel() const { return bits_per_channel_; }
   const SkColorSpacePrimaries& primaries() const { return primaries_; }
-  const base::flat_set<gfx::ColorSpace::PrimaryID>&
-  supported_color_primary_ids() const {
-    return supported_color_primary_ids_;
+  using PrimaryMatrixPair =
+      std::pair<gfx::ColorSpace::PrimaryID, gfx::ColorSpace::MatrixID>;
+  const base::flat_set<PrimaryMatrixPair>& supported_color_primary_matrix_ids()
+      const {
+    return supported_color_primary_matrix_ids_;
   }
   const base::flat_set<gfx::ColorSpace::TransferID>&
   supported_color_transfer_ids() const {
@@ -137,7 +139,7 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   int bits_per_channel_;
   SkColorSpacePrimaries primaries_;
 
-  base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
+  base::flat_set<PrimaryMatrixPair> supported_color_primary_matrix_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
   absl::optional<gfx::Range> vertical_display_range_limits_;

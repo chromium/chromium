@@ -33,6 +33,11 @@ BASE_FEATURE(kUseHDRTransferFunction,
 #endif
 );
 
+// Enables using HDR10(PQ) mode if the monitor says it supports it.
+BASE_FEATURE(kEnableExternalDisplayHDR10Mode,
+             "EnableExternalDisplayHDR10Mode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 // This features allows listing all display modes of external displays in the

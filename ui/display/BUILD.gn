@@ -6,6 +6,19 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
+component("display_features") {
+  output_name = "display_features"
+  sources = [
+    "display_features.cc",
+    "display_features.h",
+  ]
+  defines = [ "IS_DISPLAY_FEATURES_IMPL" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
+}
+
 component("display") {
   sources = [
     "display.cc",
@@ -13,8 +26,6 @@ component("display") {
     "display_change_notifier.cc",
     "display_change_notifier.h",
     "display_export.h",
-    "display_features.cc",
-    "display_features.h",
     "display_finder.cc",
     "display_finder.h",
     "display_layout.cc",
@@ -90,6 +101,7 @@ component("display") {
   defines = [ "DISPLAY_IMPLEMENTATION" ]
 
   public_deps = [
+    ":display_features",
     "//ui/display/types",
     "//ui/gfx:color_space",
     "//ui/gfx:gfx",

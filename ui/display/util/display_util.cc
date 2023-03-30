@@ -16,6 +16,10 @@
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/icc_profile.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/display/display_features.h"
+#endif
+
 namespace display {
 
 namespace {
@@ -147,11 +151,32 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
   EmitEdidColorSpaceChecksOutcomeUma(EdidColorSpaceChecksOutcome::kSuccess);
 
   auto transfer_id = gfx::ColorSpace::TransferID::INVALID;
-  if (base::Contains(edid_parser.supported_color_primary_ids(),
-                     gfx::ColorSpace::PrimaryID::BT2020)) {
+  if (base::Contains(
+          edid_parser.supported_color_primary_matrix_ids(),
+          EdidParser::PrimaryMatrixPair(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::MatrixID::RGB)) ||
+      base::Contains(edid_parser.supported_color_primary_matrix_ids(),
+                     EdidParser::PrimaryMatrixPair(
+                         gfx::ColorSpace::PrimaryID::BT2020,
+                         gfx::ColorSpace::MatrixID::BT2020_CL)) ||
+      base::Contains(edid_parser.supported_color_primary_matrix_ids(),
+                     EdidParser::PrimaryMatrixPair(
+                         gfx::ColorSpace::PrimaryID::BT2020,
+                         gfx::ColorSpace::MatrixID::BT2020_NCL))) {
     if (base::Contains(edid_parser.supported_color_transfer_ids(),
                        gfx::ColorSpace::TransferID::PQ)) {
       transfer_id = gfx::ColorSpace::TransferID::PQ;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (base::FeatureList::IsEnabled(
+              display::features::kEnableExternalDisplayHDR10Mode) &&
+          base::Contains(
+              edid_parser.supported_color_primary_matrix_ids(),
+              EdidParser::PrimaryMatrixPair(gfx::ColorSpace::PrimaryID::BT2020,
+                                            gfx::ColorSpace::MatrixID::RGB))) {
+        // Returns HDR10(PQ) color space if the display can support it.
+        color_space_primaries = gfx::ColorSpace::PrimaryID::BT2020;
+      }
+#endif
     } else if (base::Contains(edid_parser.supported_color_transfer_ids(),
                               gfx::ColorSpace::TransferID::HLG)) {
       transfer_id = gfx::ColorSpace::TransferID::HLG;
@@ -317,6 +342,20 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     // is 1,000% of the SDR maximum luminance.
     constexpr float kHDRMaxLuminanceRelative = 10.f;
     display_color_spaces.SetHDRMaxLuminanceRelative(kHDRMaxLuminanceRelative);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (base::FeatureList::IsEnabled(
+            display::features::kEnableExternalDisplayHDR10Mode) &&
+        snapshot_color_space == gfx::ColorSpace::CreateHDR10()) {
+      // This forces the main ui plane to be always HDR10 regardless of
+      // ContentColorUsage.
+      display_color_spaces = gfx::DisplayColorSpaces(
+          gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::RGBA_1010102);
+      display_color_spaces.SetHDRMaxLuminanceRelative(
+          hdr_static_metadata->max /
+          display_color_spaces.GetSDRMaxLuminanceNits());
+    }
+#endif
   }
   return display_color_spaces;
 }
