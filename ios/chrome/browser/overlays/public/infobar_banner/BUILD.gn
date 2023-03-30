@@ -42,6 +42,7 @@ source_set("infobar_banner") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/permissions:infobar_delegate",
     "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",

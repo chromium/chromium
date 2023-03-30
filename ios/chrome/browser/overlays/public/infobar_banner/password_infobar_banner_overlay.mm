@@ -20,6 +20,7 @@
 #endif
 
 using infobars::InfoBar;
+using password_modal::PasswordAction;
 
 OVERLAY_USER_DATA_SETUP_IMPL(PasswordInfobarBannerOverlayRequestConfig);
 
@@ -55,6 +56,8 @@ PasswordInfobarBannerOverlayRequestConfig::
   }
   button_text_ = base::SysUTF16ToNSString(
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+  action_ = delegate->IsPasswordUpdate() ? PasswordAction::kUpdate
+                                         : PasswordAction::kSave;
 }
 
 PasswordInfobarBannerOverlayRequestConfig::

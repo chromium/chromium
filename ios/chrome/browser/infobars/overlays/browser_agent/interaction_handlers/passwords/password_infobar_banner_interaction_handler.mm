@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_banner_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -23,8 +24,11 @@
 PasswordInfobarBannerInteractionHandler::
     PasswordInfobarBannerInteractionHandler(
         Browser* browser,
+        password_modal::PasswordAction action_type,
         const OverlayRequestSupport* request_support)
-    : InfobarBannerInteractionHandler(request_support), browser_(browser) {}
+    : InfobarBannerInteractionHandler(request_support),
+      browser_(browser),
+      action_type_(action_type) {}
 
 PasswordInfobarBannerInteractionHandler::
     ~PasswordInfobarBannerInteractionHandler() = default;
@@ -52,7 +56,14 @@ void PasswordInfobarBannerInteractionHandler::MainButtonTapped(
                                                    PasswordSaved];
   }
 }
+
 #pragma mark - Private
+
+std::unique_ptr<InfobarBannerOverlayRequestCallbackInstaller>
+PasswordInfobarBannerInteractionHandler::CreateBannerInstaller() {
+  return std::make_unique<PasswordInfobarBannerOverlayRequestCallbackInstaller>(
+      this, action_type_);
+}
 
 IOSChromeSavePasswordInfoBarDelegate*
 PasswordInfobarBannerInteractionHandler::GetInfobarDelegate(

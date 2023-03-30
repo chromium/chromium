@@ -7,6 +7,8 @@ source_set("passwords") {
   sources = [
     "password_infobar_banner_interaction_handler.h",
     "password_infobar_banner_interaction_handler.mm",
+    "password_infobar_banner_overlay_request_callback_installer.h",
+    "password_infobar_banner_overlay_request_callback_installer.mm",
     "password_infobar_modal_interaction_handler.h",
     "password_infobar_modal_interaction_handler.mm",
     "password_infobar_modal_overlay_request_callback_installer.h",
@@ -36,6 +38,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "password_infobar_banner_interaction_handler_unittest.mm",
+    "password_infobar_banner_overlay_request_callback_installer_unittest.mm",
     "password_infobar_modal_interaction_handler_unittest.mm",
     "password_infobar_modal_overlay_request_callback_installer_unittest.mm",
   ]

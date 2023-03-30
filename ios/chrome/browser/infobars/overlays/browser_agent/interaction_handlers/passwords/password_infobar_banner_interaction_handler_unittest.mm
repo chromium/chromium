@@ -35,6 +35,7 @@ class PasswordInfobarBannerInteractionHandlerTest : public PlatformTest {
       : browser_state_(TestChromeBrowserState::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(browser_state_.get())),
         handler_(browser_.get(),
+                 password_modal::PasswordAction::kSave,
                  PasswordInfobarBannerOverlayRequestConfig::RequestSupport()) {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());

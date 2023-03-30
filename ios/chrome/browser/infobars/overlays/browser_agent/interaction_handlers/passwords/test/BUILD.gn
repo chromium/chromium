@@ -6,12 +6,15 @@ source_set("test") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "mock_password_infobar_banner_interaction_handler.h",
+    "mock_password_infobar_banner_interaction_handler.mm",
     "mock_password_infobar_modal_interaction_handler.h",
     "mock_password_infobar_modal_interaction_handler.mm",
   ]
   deps = [
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
     "//testing/gmock",
   ]
 }

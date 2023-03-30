@@ -7,6 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_user_data.h"
 
@@ -34,6 +35,8 @@ class PasswordInfobarBannerOverlayRequestConfig
   }
   // The text to show on the banner's confirm button.
   NSString* button_text() const { return button_text_; }
+  // The action to take with the password for the requested banner view.
+  password_modal::PasswordAction action() const { return action_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(PasswordInfobarBannerOverlayRequestConfig);
@@ -50,6 +53,7 @@ class PasswordInfobarBannerOverlayRequestConfig
   NSString* subtitle_ = nil;
   NSString* custom_accessibility_label_ = nil;
   NSString* button_text_ = nil;
+  password_modal::PasswordAction action_;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_PASSWORD_INFOBAR_BANNER_OVERLAY_H_
