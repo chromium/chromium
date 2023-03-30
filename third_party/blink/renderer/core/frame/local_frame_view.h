@@ -452,7 +452,7 @@ class CORE_EXPORT LocalFrameView final
     return is_tracking_raster_invalidations_;
   }
 
-  using ScrollableAreaSet = HeapHashSet<Member<PaintLayerScrollableArea>>;
+  using ScrollableAreaSet = HeapHashSet<Member<PaintLayerScrollableArea>, WTF::MemberHashRecordReplayId<PaintLayerScrollableArea>>;
   void AddScrollAnchoringScrollableArea(PaintLayerScrollableArea*);
   void RemoveScrollAnchoringScrollableArea(PaintLayerScrollableArea*);
   const ScrollableAreaSet* ScrollAnchoringScrollableAreas() const {
