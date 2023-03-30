@@ -610,6 +610,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingConfigHelper.java",
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingConversionHelper.java",
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingResponse.java",
+    "java/src/org/chromium/android_webview/variations/FastVariationsSeedSafeModeAction.java",
     "java/src/org/chromium/android_webview/variations/VariationsSeedLoader.java",
     "java/src/org/chromium/android_webview/variations/VariationsSeedSafeModeAction.java",
   ]
@@ -621,6 +622,7 @@ android_library("browser_java") {
     ":common_variations_java",
     ":resources",
     "//android_webview:common_platform_services_java",
+    "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
     "//base:jni_java",

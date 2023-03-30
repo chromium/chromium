@@ -4,6 +4,7 @@
 
 #include <fcntl.h>
 #include <jni.h>
+#include <memory>
 #include <string>
 
 #include "android_webview/browser/variations/variations_seed_loader.h"
@@ -23,6 +24,17 @@ namespace android_webview {
 
 AwVariationsSeed* g_seed = nullptr;
 
+namespace {
+bool IsSeedValid(AwVariationsSeed* seed) {
+  // Empty or incomplete protos should be considered invalid. An empty seed
+  // file is expected when we request a seed from the service, but no new seed
+  // is available. In that case, an empty seed file will have been created, but
+  // never written to.
+  return seed->has_signature() && seed->has_date() && seed->has_country() &&
+         seed->has_is_gzip_compressed() && seed->has_seed_data();
+}
+}  // namespace
+
 static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
     JNIEnv* env,
     const JavaParamRef<jstring>& seed_path) {
@@ -35,16 +47,32 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
     return false;
   }
 
-  // Empty or incomplete protos should be considered invalid. An empty seed
-  // file is expected when we request a seed from the service, but no new seed
-  // is available. In that case, an empty seed file will have been created, but
-  // never written to.
-  if (!seed->has_signature() || !seed->has_date() || !seed->has_country() ||
-      !seed->has_is_gzip_compressed() || !seed->has_seed_data()) {
+  if (IsSeedValid(seed.get())) {
+    g_seed = seed.release();
+    return true;
+  } else {
     return false;
   }
-  g_seed = seed.release();
-  return true;
+}
+
+static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
+    JNIEnv* env,
+    const JavaParamRef<jbyteArray>& seed_as_bytes) {
+  // Parse the proto.
+  std::unique_ptr<AwVariationsSeed> seed =
+      std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
+  jbyte* src_bytes = env->GetByteArrayElements(seed_as_bytes, nullptr);
+  if (!seed->ParseFromArray(src_bytes,
+                            env->GetArrayLength(seed_as_bytes.obj()))) {
+    return false;
+  }
+
+  if (IsSeedValid(seed.get())) {
+    g_seed = seed.release();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 static jlong JNI_VariationsSeedLoader_GetSavedSeedDate(JNIEnv* env) {

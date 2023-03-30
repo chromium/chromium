@@ -139,6 +139,22 @@ public class VariationsSeedLoader {
         return getCurrentTimeMillis() > seedFileTime + expirationDuration;
     }
 
+    public static boolean parseAndSaveSeedFile(File seedFile) {
+        if (!VariationsSeedLoaderJni.get().parseAndSaveSeedProto(seedFile.getPath())) {
+            VariationsUtils.debugLog("Failed reading seed file \"" + seedFile + '"');
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean parseAndSaveSeedProtoFromByteArray(byte[] seedAsByteArray) {
+        if (!VariationsSeedLoaderJni.get().parseAndSaveSeedProtoFromByteArray(seedAsByteArray)) {
+            VariationsUtils.debugLog("Failed reading seed as string");
+            return false;
+        }
+        return true;
+    }
+
     // Loads our local copy of the seed, if any, and then renames our local copy and/or requests a
     // new seed, if necessary.
     private class SeedLoadAndUpdateRunnable implements Runnable {
@@ -155,28 +171,20 @@ public class VariationsSeedLoader {
         private long mCurrentSeedDate = Long.MIN_VALUE;
         private long mSeedFileTime;
 
-        private boolean parseSeedFile(File seedFile) {
-            if (!VariationsSeedLoaderJni.get().parseAndSaveSeedProto(seedFile.getPath())) {
-                VariationsUtils.debugLog("Failed reading seed file \"" + seedFile + '"');
-                return false;
-            }
-            return true;
-        }
-
         private FutureTask<Boolean> mLoadTask = new FutureTask<>(() -> {
             File newSeedFile = VariationsUtils.getNewSeedFile();
             File oldSeedFile = VariationsUtils.getSeedFile();
 
             // First check for a new seed.
             boolean loadedSeed = false;
-            if (parseSeedFile(newSeedFile)) {
+            if (parseAndSaveSeedFile(newSeedFile)) {
                 loadedSeed = true;
                 mSeedFileTime = newSeedFile.lastModified();
 
                 // If a valid new seed was found, make a note to replace the old seed with
                 // the new seed. (Don't do it now, to avoid delaying FutureTask.get().)
                 mFoundNewSeed = true;
-            } else if (parseSeedFile(oldSeedFile)) { // If no new seed, check for an old one.
+            } else if (parseAndSaveSeedFile(oldSeedFile)) { // If no new seed, check for an old one.
                 loadedSeed = true;
                 mSeedFileTime = oldSeedFile.lastModified();
             }
@@ -390,6 +398,11 @@ public class VariationsSeedLoader {
         // memory for later use by native code if the parsing succeeded. Returns true if the loading
         // and parsing were successful.
         boolean parseAndSaveSeedProto(String path);
+
+        // Parses the AwVariationsSeed proto stored in the given byte array, saving it in
+        // memory for later use by native code if the parsing succeeded. Returns true if the loading
+        // and parsing were successful.
+        boolean parseAndSaveSeedProtoFromByteArray(byte[] seedAsByteArray);
 
         // Returns the timestamp in millis since unix epoch that the saved seed was generated on
         // the server. This value corresponds to the |date| field in the AwVariationsSeed proto.

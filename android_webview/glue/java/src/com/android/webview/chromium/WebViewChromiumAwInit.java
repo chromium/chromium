@@ -42,6 +42,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
+import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
@@ -204,7 +205,9 @@ public class WebViewChromiumAwInit {
 
             // finishVariationsInitLocked() must precede native initialization so the seed is
             // available when AwFeatureListCreator::SetUpFieldTrials() runs.
-            finishVariationsInitLocked();
+            if (!FastVariationsSeedSafeModeAction.hasRun()) {
+                finishVariationsInitLocked();
+            }
 
             AwBrowserProcess.start();
             AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(true /* updateMetricsConsent */);

@@ -47,6 +47,7 @@ import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.SafeModeController;
+import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -479,7 +480,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 }
             }
 
-            mAwInit.startVariationsInit();
+            if (!FastVariationsSeedSafeModeAction.hasRun()) {
+                mAwInit.startVariationsInit();
+            }
 
             mShouldDisableThreadChecking = shouldDisableThreadChecking(ctx);
 

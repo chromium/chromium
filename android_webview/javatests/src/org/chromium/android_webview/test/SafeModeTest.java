@@ -5,6 +5,8 @@
 package org.chromium.android_webview.test;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -30,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeController;
+import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.services.AwVariationsSeedFetcher;
@@ -42,8 +45,11 @@ import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoader;
 import org.chromium.android_webview.test.VariationsSeedLoaderTest.TestLoaderResult;
 import org.chromium.android_webview.test.services.ServiceConnectionHelper;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
+import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
+import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.BuildConfig;
@@ -53,6 +59,7 @@ import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,6 +111,10 @@ public class SafeModeTest {
 
         public void clear() {
             mJob = null;
+        }
+
+        public void assertScheduled() {
+            Assert.assertNotNull("No job scheduled", mJob);
         }
 
         public void assertNotScheduled() {
@@ -213,6 +224,8 @@ public class SafeModeTest {
     @Before
     public void setUp() throws Throwable {
         mTestSafeModeActionExecutionCounter = new AtomicInteger(0);
+        AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+        VariationsTestUtils.deleteSeeds();
     }
 
     @After
@@ -764,6 +777,166 @@ public class SafeModeTest {
         // this finishes without throwing, assume the list is in good shape (e.g., no duplicate
         // SafeModeAction IDs).
         SafeModeController.getInstance().registerActions(BrowserSafeModeActionList.sList);
+    }
+
+    @Test
+    @MediumTest
+    public void testFastVariations_executesSuccessWithLocalSeed() throws Exception {
+        try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            Assert.assertTrue("Seed file already exists", oldFile.createNewFile());
+            Assert.assertTrue("New seed file already exists", newFile.createNewFile());
+            VariationsTestUtils.writeMockSeed(oldFile);
+            VariationsTestUtils.writeMockSeed(newFile);
+            // Create time stamp file so the mitigation will use the local app directory instead
+            // of waiting for the ContentProvider to provide a seed for it.
+            VariationsUtils.updateStampTime();
+            FastVariationsSeedSafeModeAction action =
+                    new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
+            boolean success = action.execute();
+            Assert.assertTrue("VariationsSeedSafeModeAction should indicate success", success);
+
+            TestLoader loader = new TestLoader(new TestLoaderResult());
+            loader.startVariationsInit();
+            boolean loadedSeed = loader.finishVariationsInit();
+            Assert.assertTrue(
+                    "Did not load a variations seed even though it should have been available",
+                    loadedSeed);
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testFastVariations_executesFailureWithLocalSeedExpiredAndNoSeedFromContentProvider()
+            throws Exception {
+        long startingTime = 54000L;
+        AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+        AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
+        FastVariationsSeedSafeModeAction action =
+                new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
+
+        // Mimic embedded data directory that lives separately from nonembedded data directory for
+        // testing
+        File seedFileDirectory = new File(
+                PathUtils.getDataDirectory() + File.separator, "embedded-data-directory-for-test");
+        Assert.assertTrue("Seed file directory already exists", seedFileDirectory.mkdir());
+        File embeddedSeedFile =
+                new File(seedFileDirectory.getPath() + File.separator, "variations_seed");
+        Assert.assertTrue("Seed file already exists", embeddedSeedFile.createNewFile());
+        // mark the embedded seed file as expired
+        embeddedSeedFile.setLastModified(
+                startingTime + VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS + 1L);
+        FastVariationsSeedSafeModeAction.setAlternateSeedFilePath(embeddedSeedFile);
+
+        try {
+            boolean success = action.execute();
+            Assert.assertFalse("FastVariationsSeedSafeModeAction should indicate"
+                            + " failure with no variations seed",
+                    success);
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+            FileUtils.recursivelyDeleteFile(seedFileDirectory, FileUtils.DELETE_ALL);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testFastVariations_executesSuccessWithLocalSeedExpiredAndSeedFromContentProvider()
+            throws Exception {
+        long startingTime = 54000L;
+        AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+        AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
+        FastVariationsSeedSafeModeAction action =
+                new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
+
+        File nonEmbeddedSeedFile = VariationsUtils.getSeedFile();
+        Assert.assertTrue("Seed file already exists", nonEmbeddedSeedFile.createNewFile());
+        VariationsTestUtils.writeMockSeed(nonEmbeddedSeedFile);
+        // Mark the nonembedded seed file as unexpired
+        final Date date = mock(Date.class);
+        when(date.getTime()).thenReturn(startingTime + 1L);
+        AwVariationsSeedFetcher.setDateForTesting(date);
+        nonEmbeddedSeedFile.setLastModified(startingTime);
+
+        // Mimic embedded data directory that lives separately from nonembedded data directory for
+        // testing
+        File seedFileDirectory = new File(
+                PathUtils.getDataDirectory() + File.separator, "embedded-data-directory-for-test");
+        Assert.assertTrue("Seed file directory already exists", seedFileDirectory.mkdir());
+        File embeddedSeedFile =
+                new File(seedFileDirectory.getPath() + File.separator, "variations_seed");
+        Assert.assertTrue("Seed file already exists", embeddedSeedFile.createNewFile());
+        // mark the embedded seed file as expired
+        embeddedSeedFile.setLastModified(
+                startingTime + VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS + 1L);
+        FastVariationsSeedSafeModeAction.setAlternateSeedFilePath(embeddedSeedFile);
+
+        try {
+            setSafeMode(Arrays.asList(action.getId()));
+
+            boolean success = action.execute();
+            Assert.assertTrue("FastVariationsSeedSafeModeAction should not indicate"
+                            + " failure with variations seed in ContentProvider's data directory",
+                    success);
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+            FileUtils.recursivelyDeleteFile(seedFileDirectory, FileUtils.DELETE_ALL);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testFastVariations_executesSuccessWithLocalSeedAlmostExpired() throws Exception {
+        try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            Assert.assertTrue("Seed file already exists", oldFile.createNewFile());
+            Assert.assertTrue("New seed file already exists", newFile.createNewFile());
+            VariationsTestUtils.writeMockSeed(oldFile);
+            VariationsTestUtils.writeMockSeed(newFile);
+            // Create an almost expired time stamp file so the mitigation will not request a new
+            // seed from the ContentProvider
+            long now = new Date().getTime();
+            VariationsUtils.updateStampTime(
+                    now + VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS - 1);
+            FastVariationsSeedSafeModeAction action =
+                    new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
+            boolean success = action.execute();
+            Assert.assertTrue("VariationsSeedSafeModeAction should indicate success", success);
+
+            TestLoader loader = new TestLoader(new TestLoaderResult());
+            loader.startVariationsInit();
+            boolean loadedSeed = loader.finishVariationsInit();
+            Assert.assertTrue(
+                    "Did not load a variations seed even though it should have been available",
+                    loadedSeed);
+        } finally {
+            VariationsTestUtils.deleteSeeds();
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testFastVariations_failsWithoutVariationsSeed() throws Exception {
+        VariationsTestUtils.deleteSeeds(); // ensure no seed files exist
+        FastVariationsSeedSafeModeAction action =
+                new FastVariationsSeedSafeModeAction(TEST_WEBVIEW_PACKAGE_NAME);
+        long now = System.currentTimeMillis();
+        // Since no seed file exists in the embedding app directory, and the ContentProvider
+        // does not have a valid seed to return to the FastVariationsSeedSafeModeAction,
+        // it fails with no valid seed to load.
+        boolean success = action.execute();
+        Assert.assertFalse("FastVariationsSeedSafeModeAction should indicate"
+                        + " failure with no variations seed",
+                success);
+        TestLoader loader = new TestLoader(new TestLoaderResult());
+        loader.startVariationsInit();
+        boolean loadedSeed = loader.finishVariationsInit();
+        Assert.assertFalse(
+                "Loaded a variations seed even though it should not have one to load.", loadedSeed);
     }
 
     @Test
