@@ -227,7 +227,8 @@ int CreditCard::IconResourceId(const std::string& network) {
                                      : IDR_AUTOFILL_CC_DISCOVER;
   }
   if (network == kEloCard)
-    return IDR_AUTOFILL_CC_ELO;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_ELO
+                                     : IDR_AUTOFILL_CC_ELO;
   if (network == kJCBCard)
     return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_JCB
                                      : IDR_AUTOFILL_CC_JCB;

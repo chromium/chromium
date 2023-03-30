@@ -159,7 +159,8 @@ std::string CardNetworkToIconResourceIdString(const std::string& network) {
                          : "chrome://theme/IDR_AUTOFILL_CC_DISCOVER";
   }
   if (network == autofill::kEloCard) {
-    return "chrome://theme/IDR_AUTOFILL_CC_ELO";
+    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_ELO"
+                         : "chrome://theme/IDR_AUTOFILL_CC_ELO";
   }
   if (network == autofill::kJCBCard) {
     return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_JCB"

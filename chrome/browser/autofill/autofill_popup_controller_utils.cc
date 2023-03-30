@@ -59,7 +59,7 @@ DataResources kNewCardArtAndNetworkDataResources[] = {
     {kAmericanExpressCard, IDR_AUTOFILL_METADATA_CC_AMEX},
     {kDinersCard, IDR_AUTOFILL_METADATA_CC_DINERS},
     {kDiscoverCard, IDR_AUTOFILL_METADATA_CC_DISCOVER},
-    {kEloCard, IDR_AUTOFILL_CC_ELO},
+    {kEloCard, IDR_AUTOFILL_METADATA_CC_ELO},
     {kGenericCard, IDR_AUTOFILL_METADATA_CC_GENERIC},
     {kJCBCard, IDR_AUTOFILL_METADATA_CC_JCB},
     {kMasterCard, IDR_AUTOFILL_METADATA_CC_MASTERCARD},

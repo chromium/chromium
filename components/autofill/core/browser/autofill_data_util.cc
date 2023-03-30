@@ -60,24 +60,25 @@ const PaymentRequestData kPaymentRequestData[]{
 
 const PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
     {autofill::kAmericanExpressCard, "amex", IDR_AUTOFILL_METADATA_CC_AMEX,
-     IDR_AUTOFILL_METADATA_CC_AMEX},
+     IDS_AUTOFILL_CC_AMEX},
     {autofill::kDinersCard, "diners", IDR_AUTOFILL_METADATA_CC_DINERS,
-     IDR_AUTOFILL_METADATA_CC_DINERS},
+     IDS_AUTOFILL_CC_DINERS},
     {autofill::kDiscoverCard, "discover", IDR_AUTOFILL_METADATA_CC_DISCOVER,
-     IDR_AUTOFILL_METADATA_CC_DISCOVER},
-    {autofill::kEloCard, "elo", IDR_AUTOFILL_CC_ELO, IDS_AUTOFILL_CC_ELO},
+     IDS_AUTOFILL_CC_DISCOVER},
+    {autofill::kEloCard, "elo", IDR_AUTOFILL_METADATA_CC_ELO,
+     IDS_AUTOFILL_CC_ELO},
     {autofill::kJCBCard, "jcb", IDR_AUTOFILL_METADATA_CC_JCB,
-     IDR_AUTOFILL_METADATA_CC_JCB},
+     IDS_AUTOFILL_CC_JCB},
     {autofill::kMasterCard, "mastercard", IDR_AUTOFILL_METADATA_CC_MASTERCARD,
-     IDR_AUTOFILL_METADATA_CC_MASTERCARD},
+     IDS_AUTOFILL_CC_MASTERCARD},
     {autofill::kMirCard, "mir", IDR_AUTOFILL_METADATA_CC_MIR,
-     IDR_AUTOFILL_METADATA_CC_MIR},
+     IDS_AUTOFILL_CC_MIR},
     {autofill::kTroyCard, "troy", IDR_AUTOFILL_METADATA_CC_TROY,
-     IDR_AUTOFILL_METADATA_CC_TROY},
+     IDS_AUTOFILL_CC_TROY},
     {autofill::kUnionPay, "unionpay", IDR_AUTOFILL_METADATA_CC_UNIONPAY,
-     IDR_AUTOFILL_METADATA_CC_UNIONPAY},
+     IDS_AUTOFILL_CC_UNION_PAY},
     {autofill::kVisaCard, "visa", IDR_AUTOFILL_METADATA_CC_VISA,
-     IDR_AUTOFILL_METADATA_CC_VISA},
+     IDS_AUTOFILL_CC_VISA},
 };
 
 const PaymentRequestData kGenericPaymentRequestData = {
@@ -86,7 +87,7 @@ const PaymentRequestData kGenericPaymentRequestData = {
 
 const PaymentRequestData kGenericPaymentRequestDataForNewNetworkImages = {
     autofill::kGenericCard, "generic", IDR_AUTOFILL_METADATA_CC_GENERIC,
-    IDR_AUTOFILL_METADATA_CC_GENERIC};
+    IDS_AUTOFILL_CC_GENERIC};
 
 const char* const name_prefixes[] = {
     "1lt",     "1st", "2lt", "2nd",    "3rd",  "admiral", "capt",
