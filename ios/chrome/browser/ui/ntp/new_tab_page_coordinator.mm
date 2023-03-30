@@ -487,7 +487,11 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)locationBarDidResignFirstResponder {
-  [self.NTPViewController omniboxDidResignFirstResponder];
+  // Do not trigger defocus animation if the user is already navigating away
+  // from the NTP.
+  if (self.viewPresented) {
+    [self.NTPViewController omniboxDidResignFirstResponder];
+  }
 }
 
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide {
@@ -1682,14 +1686,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
         self.feedMetricsRecorder.feedControlDelegate = self;
         self.feedMetricsRecorder.followDelegate = self;
       }
-    } else {
-      // Unfocus omnibox, to prevent it from lingering when it should be
-      // dismissed (for example, when navigating away or when changing feed
-      // visibility). Do this after the MVC classes are deallocated so no reset
-      // animations are fired in response to this cancel.
-      id<OmniboxCommands> omniboxCommandHandler = HandlerForProtocol(
-          self.browser->GetCommandDispatcher(), OmniboxCommands);
-      [omniboxCommandHandler cancelOmniboxEdit];
     }
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
@@ -1701,6 +1697,15 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
   self.viewPresented = visible;
   [self updateVisible];
+
+  if (!self.browser->GetBrowserState()->IsOffTheRecord() && !visible) {
+    // Unfocus omnibox, to prevent it from lingering when it should be
+    // dismissed (for example, when navigating away or when changing feed
+    // visibility).
+    // Do this after updating `viewPresented` to prevent defocus animation from
+    // happening when already navigating away from NTP.
+    [self cancelOmniboxEdit];
+  }
 }
 
 - (BOOL)isSignInAllowed {
