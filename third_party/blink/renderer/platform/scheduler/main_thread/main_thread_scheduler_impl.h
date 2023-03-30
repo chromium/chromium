@@ -864,7 +864,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     recordreplay::unique_leaky_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
 
     std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
-    WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers;
+    WTF::HashSet<AgentGroupSchedulerImpl*, WTF::MemberHashRecordReplayId<AgentGroupSchedulerImpl>> agent_group_schedulers;
   };
 
   struct AnyThread {

@@ -51,6 +51,7 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
   DCHECK_EQ(default_task_queue_->GetAgentGroupScheduler(), this);
   agents_ = MakeGarbageCollected<HeapHashSet<WeakMember<Agent>, WTF::MemberHashRecordReplayId<Agent>>>();
   replay_agents_strong_ = MakeGarbageCollected<HeapHashSet<Member<Agent>>>();
+  record_replay_id_ = recordreplay::NewIdAnyThread("AgentGroupSchedulerImpl");
 }
 
 AgentGroupSchedulerImpl::~AgentGroupSchedulerImpl() {

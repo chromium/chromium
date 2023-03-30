@@ -52,6 +52,8 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
 
   void PerformMicrotaskCheckpoint();
 
+  int RecordReplayId() const { return record_replay_id_; }
+
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
@@ -66,6 +68,8 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
       replay_agents_strong_;
 
   BrowserInterfaceBrokerProxy broker_;
+
+  int record_replay_id_ = 0;
 };
 
 }  // namespace scheduler
