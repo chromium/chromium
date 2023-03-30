@@ -13,14 +13,14 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace utils = extension_function_test_utils;
+namespace utils = extensions::api_test_utils;
 
 namespace chromeos {
 
@@ -54,10 +54,11 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     const std::string arguments = base::StringPrintf(
         R"([{"serviceName": "name", "origin": "https://test.com", "tabId": %d}])",
         tab_id);
-    std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
-        function.get(), arguments, browser()));
+    absl::optional<base::Value> result =
+        utils::RunFunctionAndReturnSingleResult(function.get(), arguments,
+                                                profile());
 
-    ASSERT_TRUE(result.get());
+    ASSERT_TRUE(result);
     ASSERT_EQ(base::Value::Type::BOOLEAN, result->type());
 
     EXPECT_EQ(expected_result, result->GetBool());
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
       base::StringPrintf(
           R"([{"serviceName": "name", "origin": "invalid", "tabId": %d}])",
           tab_id),
-      browser());
+      profile());
 
   EXPECT_EQ("Invalid origin.", error);
   EXPECT_EQ(0, dialog_invocation_count());
@@ -166,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_NoTabIdSet) {
 
   std::string error = utils::RunFunctionAndReturnError(
       function.get(),
-      R"([{"serviceName": "name", "origin": "https://test.com"}])", browser());
+      R"([{"serviceName": "name", "origin": "https://test.com"}])", profile());
 
   EXPECT_EQ("Not called from an app window - the tabId is required.", error);
   EXPECT_EQ(0, dialog_invocation_count());
@@ -187,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
       R"([{"serviceName": "name", "origin": "https://test.com", "tabId": %d}])",
       tab_id);
   std::string error =
-      utils::RunFunctionAndReturnError(function.get(), arguments, browser());
+      utils::RunFunctionAndReturnError(function.get(), arguments, profile());
 
   EXPECT_EQ("Consent requested from an inactive tab.", error);
   EXPECT_EQ(0, dialog_invocation_count());
@@ -206,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_ClosedTab) {
       R"([{"serviceName": "name", "origin": "https://test.com", "tabId": %d}])",
       tab_id);
   std::string error =
-      utils::RunFunctionAndReturnError(function.get(), arguments, browser());
+      utils::RunFunctionAndReturnError(function.get(), arguments, profile());
 
   EXPECT_EQ("Tab not found.", error);
   EXPECT_EQ(0, dialog_invocation_count());
