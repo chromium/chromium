@@ -232,7 +232,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     if (!GetBoundsSpec(*options, &create_params, &error))
       return RespondNow(Error(std::move(error)));
 
-    if (options->type == app_window::WINDOW_TYPE_PANEL) {
+    if (options->type == app_window::WindowType::kPanel) {
       WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                      "Panels are no longer supported.");
     }
@@ -357,16 +357,16 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
 
     switch (options->state) {
-      case app_window::STATE_NONE:
-      case app_window::STATE_NORMAL:
+      case app_window::State::kNone:
+      case app_window::State::kNormal:
         break;
-      case app_window::STATE_FULLSCREEN:
+      case app_window::State::kFullscreen:
         create_params.state = ui::SHOW_STATE_FULLSCREEN;
         break;
-      case app_window::STATE_MAXIMIZED:
+      case app_window::State::kMaximized:
         create_params.state = ui::SHOW_STATE_MAXIMIZED;
         break;
-      case app_window::STATE_MINIMIZED:
+      case app_window::State::kMinimized:
         create_params.state = ui::SHOW_STATE_MINIMIZED;
         break;
     }
