@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task/task_executor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -43,7 +42,6 @@ namespace internal {
 // Default ThreadPoolInstance implementation. This class is thread-safe, except
 // for methods noted otherwise in thread_pool_instance.h.
 class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
-                                   public TaskExecutor,
                                    public ThreadGroup::Delegate,
                                    public PooledTaskRunnerDelegate {
  public:
@@ -82,20 +80,6 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   void BeginFizzlingBlockShutdownTasks() override;
   void EndFizzlingBlockShutdownTasks() override;
 
-  // TaskExecutor:
-  bool PostDelayedTask(const Location& from_here,
-                       const TaskTraits& traits,
-                       OnceClosure task,
-                       TimeDelta delay) override;
-
-#if BUILDFLAG(IS_WIN)
-  scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
-      const TaskTraits& traits,
-      SingleThreadTaskRunnerThreadMode thread_mode) override;
-#endif  // BUILDFLAG(IS_WIN)
-  scoped_refptr<UpdateableSequencedTaskRunner>
-  CreateUpdateableSequencedTaskRunner(const TaskTraits& traits);
-
   // PooledTaskRunnerDelegate:
   bool EnqueueJobTaskSource(scoped_refptr<JobTaskSource> task_source) override;
   void RemoveJobTaskSource(scoped_refptr<JobTaskSource> task_source) override;
@@ -121,12 +105,53 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // configuration param because only one internal test truly needs this.
   static void SetSynchronousThreadStartForTesting(bool enabled);
 
+  // Posts |task| with a |delay| and specific |traits|. |delay| can be zero. For
+  // one off tasks that don't require a TaskRunner. Returns false if the task
+  // definitely won't run because of current shutdown state.
+  bool PostDelayedTask(const Location& from_here,
+                       const TaskTraits& traits,
+                       OnceClosure task,
+                       TimeDelta delay);
+
+  // Returns a TaskRunner whose PostTask invocations result in scheduling tasks
+  // using |traits|. Tasks may run in any order and in parallel.
   scoped_refptr<TaskRunner> CreateTaskRunner(const TaskTraits& traits);
+
+  // Returns a SequencedTaskRunner whose PostTask invocations result in
+  // scheduling tasks using |traits|. Tasks run one at a time in posting order.
   scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
       const TaskTraits& traits);
+
+  // Returns a SingleThreadTaskRunner whose PostTask invocations result in
+  // scheduling tasks using |traits|. Tasks run on a single thread in posting
+  // order. If |traits| identifies an existing thread,
+  // SingleThreadTaskRunnerThreadMode::SHARED must be used.
   scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode);
+
+#if BUILDFLAG(IS_WIN)
+  // Returns a SingleThreadTaskRunner whose PostTask invocations result in
+  // scheduling tasks using |traits| in a COM Single-Threaded Apartment. Tasks
+  // run in the same Single-Threaded Apartment in posting order for the returned
+  // SingleThreadTaskRunner. If |traits| identifies an existing thread,
+  // SingleThreadTaskRunnerThreadMode::SHARED must be used.
+  scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
+      const TaskTraits& traits,
+      SingleThreadTaskRunnerThreadMode thread_mode);
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Returns a task runner whose PostTask invocations result in scheduling tasks
+  // using |traits|. The priority in |traits| can be updated at any time via
+  // UpdateableSequencedTaskRunner::UpdatePriority(). An update affects all
+  // tasks posted to the task runner that aren't running yet. Tasks run one at a
+  // time in posting order.
+  //
+  // |traits| requirements:
+  // - base::ThreadPolicy must be specified if the priority of the task runner
+  //   will ever be increased from BEST_EFFORT.
+  scoped_refptr<UpdateableSequencedTaskRunner>
+  CreateUpdateableSequencedTaskRunner(const TaskTraits& traits);
 
  private:
   // Invoked after |num_fences_| or |num_best_effort_fences_| is updated. Sets

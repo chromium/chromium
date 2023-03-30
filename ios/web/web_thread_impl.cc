@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_executor.h"
 #include "base/time/time.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread_delegate.h"
@@ -131,20 +130,10 @@ class WebThreadTaskRunner : public base::SingleThreadTaskRunner {
   WebThread::ID id_;
 };
 
-class WebThreadTaskExecutor : public base::TaskExecutor {
+class WebThreadTaskExecutor {
  public:
   WebThreadTaskExecutor() {}
-  ~WebThreadTaskExecutor() override {}
-
-  // base::TaskExecutor implementation.
-  bool PostDelayedTask(const base::Location& from_here,
-                       const base::TaskTraits& traits,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    return PostTaskHelper(
-        GetWebThreadIdentifier(traits), from_here, std::move(task), delay,
-        traits.GetExtension<WebTaskTraitsExtension>().nestable());
-  }
+  ~WebThreadTaskExecutor() {}
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       WebThread::ID identifier,
@@ -179,14 +168,10 @@ class WebThreadTaskExecutor : public base::TaskExecutor {
   static void CreateInstance() {
     DCHECK(!g_instance);
     g_instance = new WebThreadTaskExecutor();
-    base::RegisterTaskExecutor(WebTaskTraitsExtension::kExtensionId,
-                               g_instance);
   }
 
   static void ResetInstanceForTesting() {
     DCHECK(g_instance);
-    base::UnregisterTaskExecutorForTesting(
-        WebTaskTraitsExtension::kExtensionId);
     delete g_instance;
     g_instance = nullptr;
   }

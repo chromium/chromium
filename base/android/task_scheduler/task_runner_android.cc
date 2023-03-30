@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/task/task_executor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_impl.h"

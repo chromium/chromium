@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/task_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"

@@ -46,8 +46,6 @@ void SchedulerHelper::AttachToCurrentThread() {
   CheckOnValidThread();
   DCHECK(default_task_runner_)
       << "Must be invoked after InitDefaultTaskRunner().";
-  DCHECK(!simple_task_executor_.has_value());
-  simple_task_executor_.emplace(default_task_runner_);
 }
 
 SchedulerHelper::~SchedulerHelper() {
@@ -56,8 +54,6 @@ SchedulerHelper::~SchedulerHelper() {
 
 void SchedulerHelper::Shutdown() {
   CheckOnValidThread();
-  DCHECK(simple_task_executor_.has_value())
-      << "AttachToCurrentThread() was not invoked.";
   if (!sequence_manager_)
     return;
   ShutdownAllQueues();

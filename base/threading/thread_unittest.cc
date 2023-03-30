@@ -20,7 +20,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_executor.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
@@ -537,22 +536,6 @@ TEST_F(ThreadTest, FlushForTesting) {
 
   // Flushing a stopped thread should be a no-op.
   a.FlushForTesting();
-}
-
-TEST_F(ThreadTest, GetTaskExecutorForCurrentThread) {
-  Thread a("GetTaskExecutorForCurrentThread");
-  ASSERT_TRUE(a.Start());
-
-  base::WaitableEvent event;
-
-  a.task_runner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        EXPECT_THAT(base::GetTaskExecutorForCurrentThread(), NotNull());
-        event.Signal();
-      }));
-
-  event.Wait();
-  a.Stop();
 }
 
 namespace {

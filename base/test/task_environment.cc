@@ -29,7 +29,6 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
-#include "base/task/simple_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -430,7 +429,6 @@ TaskEnvironment::TaskEnvironment(
     if (mock_time_domain_) {
       sequence_manager_->SetTimeDomain(mock_time_domain_.get());
     }
-    simple_task_executor_ = std::make_unique<SimpleTaskExecutor>(task_runner_);
     CHECK(base::SingleThreadTaskRunner::HasCurrentDefault())
         << "SingleThreadTaskRunner::CurrentDefaultHandle should've been set "
            "now.";

@@ -26,7 +26,6 @@ namespace base {
 
 class Clock;
 class FileDescriptorWatcher;
-class SimpleTaskExecutor;
 class TickClock;
 
 namespace subtle {
@@ -500,9 +499,6 @@ class TaskEnvironment {
   std::unique_ptr<ScopedRunLoopTimeout> run_loop_timeout_;
 
   std::unique_ptr<bool> owns_instance_ = std::make_unique<bool>(true);
-
-  // To support base::CurrentThread().
-  std::unique_ptr<SimpleTaskExecutor> simple_task_executor_;
 
   std::unique_ptr<RunLoop> run_until_quit_loop_;
 

@@ -16,7 +16,6 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-class TaskExecutor;
 
 namespace sequence_manager {
 class SequenceManager;
@@ -41,9 +40,6 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
     return base::WrapUnique(new BrowserIOThreadDelegate(sequence_manager));
   }
 
-  // If called this must be done prior to calling BindToCurrentThread.
-  void SetTaskExecutor(base::TaskExecutor* task_executor);
-
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void BindToCurrentThread(base::TimerSlack timer_slack) override;
 
@@ -58,11 +54,7 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
   scoped_refptr<Handle> GetHandle() { return task_queues_->GetHandle(); }
 
  private:
-  class TLSMultiplexer;
-
   // Creates a sequence funneled BrowserIOThreadDelegate for use in testing.
-  // Installs TLSMultiplexer which allows ensures the right results for
-  // base::CurrentThread when running an "IO Thread" task.
   explicit BrowserIOThreadDelegate(
       base::sequence_manager::SequenceManager* sequence_manager);
 
@@ -79,13 +71,6 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
 
   std::unique_ptr<BrowserTaskQueues> task_queues_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-
-  // In unit tests the IO "thread" can be sequence funneled onto the main thread
-  // so we need to multiplex the TLS binding to ensure base::CurrentThread
-  // behaves as expected.
-  std::unique_ptr<TLSMultiplexer> tls_multiplexer_;
-
-  raw_ptr<base::TaskExecutor> task_executor_ = nullptr;
 };
 
 }  // namespace content

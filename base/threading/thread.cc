@@ -21,7 +21,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/task/simple_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
@@ -98,7 +97,6 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
     sequence_manager_->BindToMessagePump(
         std::move(message_pump_factory_).Run());
     sequence_manager_->SetTimerSlack(timer_slack);
-    simple_task_executor_.emplace(GetDefaultTaskRunner());
   }
 
  private:
@@ -106,7 +104,6 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
       sequence_manager_;
   scoped_refptr<sequence_manager::TaskQueue> default_task_queue_;
   OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory_;
-  absl::optional<SimpleTaskExecutor> simple_task_executor_;
 };
 
 }  // namespace internal

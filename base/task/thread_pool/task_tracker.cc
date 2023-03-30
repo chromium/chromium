@@ -25,7 +25,6 @@
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_executor.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"

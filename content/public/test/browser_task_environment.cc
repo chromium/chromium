@@ -193,7 +193,6 @@ void BrowserTaskEnvironment::Init() {
 
   BrowserTaskExecutor::CreateForTesting(std::move(browser_ui_thread_scheduler),
                                         std::move(browser_io_thread_delegate));
-  BrowserTaskExecutor::BindToUIThreadForTesting();
   DeferredInitFromSubclass(std::move(default_ui_task_runner));
 
   if (HasIOMainLoop()) {

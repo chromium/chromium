@@ -19,7 +19,6 @@
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_executor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2278,22 +2277,6 @@ TEST_F(MainThreadSchedulerImplTest,
   EXPECT_FALSE(HaveSeenABlockingGesture());
   ForceBlockingInputToBeExpectedSoon();
   EXPECT_FALSE(BlockingInputExpectedSoon());
-}
-
-TEST_F(MainThreadSchedulerImplTest,
-       GetTaskExecutorForCurrentThreadInPostedTask) {
-  base::TaskExecutor* task_executor = base::GetTaskExecutorForCurrentThread();
-  EXPECT_THAT(task_executor, NotNull());
-
-  base::RunLoop run_loop;
-
-  default_task_runner_->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        EXPECT_EQ(base::GetTaskExecutorForCurrentThread(), task_executor);
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
 }
 
 TEST_F(MainThreadSchedulerImplTest, TestBeginMainFrameNotExpectedUntil) {

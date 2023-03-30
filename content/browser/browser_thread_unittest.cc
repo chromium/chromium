@@ -77,7 +77,6 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
     ui_sequence_manager_->BindToMessagePump(
         base::MessagePump::Create(base::MessagePumpType::DEFAULT));
     ui_sequence_manager_->SetTimerSlack(timer_slack);
-    BrowserTaskExecutor::BindToUIThreadForTesting();
   }
 
  private:
