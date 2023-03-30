@@ -58,14 +58,14 @@ TEST_F(RulesetMatcherTest, BlockingRule) {
   };
 
   GURL google_url("http://google.com");
+  GURL yahoo_url("http://yahoo.com");
+
   RequestParams params;
   params.url = &google_url;
   params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
   params.is_third_party = true;
-
   EXPECT_TRUE(should_block_request(params));
 
-  GURL yahoo_url("http://yahoo.com");
   params.url = &yahoo_url;
   EXPECT_FALSE(should_block_request(params));
 }
