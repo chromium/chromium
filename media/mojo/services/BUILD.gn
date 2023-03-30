@@ -118,7 +118,11 @@ component("services") {
   } else if (is_win) {
     sources += [ "gpu_mojo_media_client_win.cc" ]
   } else if (use_vaapi || use_v4l2_codec) {
-    sources += [ "gpu_mojo_media_client_cros.cc" ]
+    if (is_linux) {
+      sources += [ "gpu_mojo_media_client_linux.cc" ]
+    } else {
+      sources += [ "gpu_mojo_media_client_cros.cc" ]
+    }
   } else {
     sources += [ "gpu_mojo_media_client_stubs.cc" ]
   }

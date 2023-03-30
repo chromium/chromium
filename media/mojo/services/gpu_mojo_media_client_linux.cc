@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/media_switches.h"
@@ -19,18 +18,9 @@ namespace media {
 
 namespace {
 
-std::vector<Fourcc> GetPreferredRenderableFourccs(
-    const gpu::GpuPreferences& gpu_preferences) {
-  return VideoDecoderPipeline::DefaultPreferredRenderableFourccs();
-}
-
-VideoDecoderType GetActualPlatformDecoderImplementation(
-    const gpu::GpuPreferences& gpu_preferences) {
-  // TODO(b/195769334): eventually, we may turn off USE_VAAPI and USE_V4L2_CODEC
-  // on LaCrOS if we delegate all video acceleration to ash-chrome. In those
-  // cases, GetActualPlatformDecoderImplementation() won't be able to determine
-  // the video API in LaCrOS.
-  if (gpu_preferences.disable_accelerated_video_decode) {
+VideoDecoderType GetPreferredLinuxDecoderImplementation() {
+  // VaapiVideoDecoder flag is required for both VDA and VaapiVideoDecoder.
+  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
     return VideoDecoderType::kUnknown;
   }
 
@@ -38,22 +28,104 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     return VideoDecoderType::kOutOfProcess;
   }
 
-  if (gpu_preferences.enable_chromeos_direct_video_decoder) {
-#if BUILDFLAG(USE_VAAPI)
-    return VideoDecoderType::kVaapi;
-#elif BUILDFLAG(USE_V4L2_CODEC)
-    return VideoDecoderType::kV4L2;
-#endif
+  // If direct video decoder is disabled, revert to using the VDA
+  // implementation.
+  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder)) {
+    return VideoDecoderType::kVda;
   }
-  return VideoDecoderType::kVda;
+  return VideoDecoderType::kVaapi;
+}
+
+std::vector<Fourcc> GetPreferredRenderableFourccs(
+    const gpu::GpuPreferences& gpu_preferences) {
+  std::vector<Fourcc> renderable_fourccs;
+#if BUILDFLAG(ENABLE_VULKAN)
+  // Support for zero-copy NV12 textures preferentially.
+  if (gpu_preferences.gr_context_type == gpu::GrContextType::kVulkan) {
+    renderable_fourccs.emplace_back(Fourcc::NV12);
+  }
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+  // Support 1-copy argb textures.
+  renderable_fourccs.emplace_back(Fourcc::AR24);
+
+  return renderable_fourccs;
+}
+
+VideoDecoderType GetActualPlatformDecoderImplementation(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GPUInfo& gpu_info) {
+  // On linux, VDA and Vaapi have GL restrictions.
+  switch (GetPreferredLinuxDecoderImplementation()) {
+    case VideoDecoderType::kUnknown:
+      return VideoDecoderType::kUnknown;
+    case VideoDecoderType::kOutOfProcess:
+      return VideoDecoderType::kOutOfProcess;
+    case VideoDecoderType::kVda: {
+      return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
+                 ? VideoDecoderType::kVda
+                 : VideoDecoderType::kUnknown;
+    }
+    case VideoDecoderType::kVaapi: {
+      // Allow VaapiVideoDecoder on GL.
+      if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
+        if (base::FeatureList::IsEnabled(kVaapiVideoDecodeLinuxGL)) {
+          return VideoDecoderType::kVaapi;
+        } else {
+          return VideoDecoderType::kUnknown;
+        }
+      }
+#if BUILDFLAG(ENABLE_VULKAN)
+      if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan) {
+        return VideoDecoderType::kUnknown;
+      }
+      if (!base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+        return VideoDecoderType::kUnknown;
+      }
+      if (!base::FeatureList::IsEnabled(features::kDefaultANGLEVulkan)) {
+        return VideoDecoderType::kUnknown;
+      }
+      // If Vulkan is active, check Vulkan info if VaapiVideoDecoder is allowed.
+      if (!gpu_info.vulkan_info.has_value()) {
+        return VideoDecoderType::kUnknown;
+      }
+      if (gpu_info.vulkan_info->physical_devices.empty()) {
+        return VideoDecoderType::kUnknown;
+      }
+      constexpr int kIntel = 0x8086;
+      const auto& device = gpu_info.vulkan_info->physical_devices[0];
+      switch (device.properties.vendorID) {
+        case kIntel: {
+          if (device.properties.driverVersion < VK_MAKE_VERSION(21, 1, 5)) {
+            return VideoDecoderType::kUnknown;
+          }
+          return VideoDecoderType::kVaapi;
+        }
+        default: {
+          // NVIDIA drivers have a broken implementation of most va_* methods,
+          // ARM & AMD aren't tested yet, and ImgTec/Qualcomm don't have a vaapi
+          // driver.
+          if (base::FeatureList::IsEnabled(kVaapiIgnoreDriverChecks)) {
+            return VideoDecoderType::kVaapi;
+          }
+          return VideoDecoderType::kUnknown;
+        }
+      }
+#else
+      return VideoDecoderType::kUnknown;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+    }
+    default:
+      return VideoDecoderType::kUnknown;
+  }
 }
 
 }  // namespace
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     VideoDecoderTraits& traits) {
-  const auto decoder_type =
-      GetActualPlatformDecoderImplementation(traits.gpu_preferences);
+  const auto decoder_type = GetActualPlatformDecoderImplementation(
+      traits.gpu_preferences, traits.gpu_info);
   // The browser process guarantees this CHECK.
   CHECK_EQ(!!traits.oop_video_decoder,
            (decoder_type == VideoDecoderType::kOutOfProcess));
@@ -99,9 +171,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
           VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
     }
-    default: {
+    default:
       return nullptr;
-    }
   }
 }
 
@@ -111,7 +182,7 @@ void NotifyPlatformDecoderSupport(
     mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
     base::OnceCallback<
         void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
-  switch (GetActualPlatformDecoderImplementation(gpu_preferences)) {
+  switch (GetActualPlatformDecoderImplementation(gpu_preferences, gpu_info)) {
     case VideoDecoderType::kOutOfProcess:
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2:
@@ -130,7 +201,9 @@ GetPlatformSupportedVideoDecoderConfigs(
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   VideoDecoderType decoder_implementation =
-      GetActualPlatformDecoderImplementation(gpu_preferences);
+      GetActualPlatformDecoderImplementation(gpu_preferences, gpu_info);
+  base::UmaHistogramEnumeration("Media.VaapiLinux.SupportedVideoDecoder",
+                                decoder_implementation);
   switch (decoder_implementation) {
     case VideoDecoderType::kVda:
       return std::move(get_vda_configs).Run();
@@ -151,7 +224,7 @@ VideoDecoderType GetPlatformDecoderImplementationType(
   // Determine the preferred decoder based purely on compile-time and run-time
   // flags. This is not intended to determine whether the selected decoder can
   // be successfully initialized or used to decode.
-  return GetActualPlatformDecoderImplementation(gpu_preferences);
+  return GetPreferredLinuxDecoderImplementation();
 }
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
@@ -164,9 +237,11 @@ std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
   return nullptr;
 }
 
+class CdmFactory {};
+
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
-  return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
+  return nullptr;
 }
 
 }  // namespace media
