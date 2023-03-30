@@ -411,8 +411,8 @@
             <div aria-hidden="true"
                 class$="[[getThumbnailContainerClass_(thumbnailImages_)]]"
                 id="thumbnailContainer"
-                on-click="onClickPreviewImage_"
-                on-keypress="onClickPreviewImage_">
+                on-click="onClickThumbnails_"
+                on-keypress="onClickThumbnails_">
               <template is="dom-repeat" items="[[thumbnailImages_]]">
                 <div class="thumbnail-item">
                   <img auto-src="[[item.url]]"

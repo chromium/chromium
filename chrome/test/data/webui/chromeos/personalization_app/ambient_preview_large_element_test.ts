@@ -206,7 +206,9 @@ suite('AmbientPreviewLargeTest', function() {
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
       PersonalizationRouter.instance = () => {
         return {
-          goToRoute(path: Paths, queryParams: Object = {}) {
+          goToRoute(path: Paths, queryParams: Object = {
+            scrollTo: 'topic-source-list',
+          }) {
             resolve([path, queryParams]);
             PersonalizationRouter.instance = original;
           },
@@ -220,7 +222,8 @@ suite('AmbientPreviewLargeTest', function() {
     const [path, queryParams] = await goToRoutePromise;
 
     assertEquals(Paths.AMBIENT, path, 'navigates to ambient subpage');
-    assertDeepEquals({}, queryParams, 'no query params set');
+    assertDeepEquals(
+        {scrollTo: 'topic-source-list'}, queryParams, 'query params set');
   });
 
   test('displays zero state message before UI change', async () => {

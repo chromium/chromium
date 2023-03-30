@@ -124,4 +124,10 @@ export class TopicSourceItem extends WithPersonalizationStore {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'topic-source-item': TopicSourceItem;
+  }
+}
+
 customElements.define(TopicSourceItem.is, TopicSourceItem);

@@ -81,7 +81,7 @@ export * from './../personalization_app.mojom-webui.js';
 export {PersonalizationBreadcrumb} from './personalization_breadcrumb_element.js';
 export {PersonalizationMain} from './personalization_main_element.js';
 export {reduce} from './personalization_reducers.js';
-export {Paths, PersonalizationRouter} from './personalization_router_element.js';
+export {Paths, PersonalizationRouter, QueryParams, ScrollableTarget} from './personalization_router_element.js';
 export {emptyState, PersonalizationState} from './personalization_state.js';
 export {PersonalizationStore} from './personalization_store.js';
 export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';

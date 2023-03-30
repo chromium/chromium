@@ -42,9 +42,23 @@ export class TopicSourceList extends WithPersonalizationStore {
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
 
+  override focus() {
+    const elem = this.shadowRoot!.querySelector('topic-source-item[checked]') as
+        HTMLElement;
+    if (elem) {
+      elem.focus();
+    }
+  }
+
   private isSelected_(
       topicSource: TopicSource, selectedTopicSource: TopicSource) {
     return selectedTopicSource === topicSource;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'topic-source-list': TopicSourceList;
   }
 }
 

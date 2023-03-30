@@ -20,7 +20,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
-import {Paths} from '../personalization_router_element.js';
+import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
@@ -67,6 +67,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Boolean,
         computed:
             'computeLoading_(ambientModeEnabled_, albums_, temperatureUnit_, topicSource_)',
+        observer: 'onLoadingChanged_',
       },
       isPersonalizationJellyEnabled_: {
         type: Boolean,
@@ -131,6 +132,22 @@ export class AmbientSubpage extends WithPersonalizationStore {
   override disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener('focus', this.onFocus_);
+  }
+
+  // Scroll down to the topic source list.
+  private scrollToTopicSourceList_() {
+    const elem = this.shadowRoot!.querySelector('topic-source-list');
+    if (elem) {
+      elem.scrollIntoView();
+      elem.focus();
+    }
+  }
+
+  private onLoadingChanged_(value: boolean) {
+    if (!value && !!this.queryParams &&
+        this.queryParams['scrollTo'] === ScrollableTarget.TOPIC_SOURCE_LIST) {
+      afterNextRender(this, () => this.scrollToTopicSourceList_());
+    }
   }
 
   private onClickAmbientModeButton_(event: Event) {

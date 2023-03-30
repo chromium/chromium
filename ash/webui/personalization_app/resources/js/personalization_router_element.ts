@@ -30,12 +30,17 @@ export enum Paths {
   USER = '/user',
 }
 
+export enum ScrollableTarget {
+  TOPIC_SOURCE_LIST = 'topic-source-list'
+}
+
 export interface QueryParams {
   id?: string;
   googlePhotosAlbumId?: string;
   // If present, expected to always be 'true'.
   googlePhotosAlbumIsShared?: 'true';
   topicSource?: string;
+  scrollTo?: ScrollableTarget;
 }
 
 export function isPathValid(path: string|null): boolean {
