@@ -212,6 +212,8 @@ static_library("content_shell_lib") {
 
   if (is_ios) {
     sources += [
+      "browser/shell_file_select_helper.cc",
+      "browser/shell_file_select_helper.h",
       "browser/shell_platform_delegate_ios.mm",
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]

@@ -36,13 +36,13 @@ bool ShellPlatformDelegate::ShouldAllowRunningInsecureContent(Shell* shell) {
   return false;
 }
 
-// TODO(crbug.com/1412107: Move it to each platform's delegate for the shell
-// that supports file dialogs.
+#if !BUILDFLAG(IS_IOS)
 void ShellPlatformDelegate::RunFileChooser(
     RenderFrameHost* render_frame_host,
     scoped_refptr<FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   listener->FileSelectionCanceled();
 }
+#endif
 
 }  // namespace content

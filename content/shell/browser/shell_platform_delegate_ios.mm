@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_config.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_file_select_helper.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -599,6 +600,14 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
 
   [shell_data.window resignKeyWindow];
   return true;  // The performClose() will do the destruction of Shell.
+}
+
+void ShellPlatformDelegate::RunFileChooser(
+    RenderFrameHost* render_frame_host,
+    scoped_refptr<FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  ShellFileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                        params);
 }
 
 void ShellPlatformDelegate::ToggleFullscreenModeForTab(
