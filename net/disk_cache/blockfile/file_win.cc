@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -42,8 +42,8 @@ static_assert(offsetof(MyOverlapped, context_) == 0,
               "should start with overlapped");
 
 // Helper class to handle the IO completion notifications from the message loop.
-class CompletionHandler : public base::MessagePumpForIO::IOHandler,
-                          public base::RefCounted<CompletionHandler> {
+class CompletionHandler final : public base::MessagePumpForIO::IOHandler,
+                                public base::RefCounted<CompletionHandler> {
  public:
   CompletionHandler() : base::MessagePumpForIO::IOHandler(FROM_HERE) {}
   static CompletionHandler* Get();
@@ -61,25 +61,10 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
                      DWORD error) override;
 };
 
-class CompletionHandlerHolder {
- public:
-  CompletionHandlerHolder()
-      : completion_handler_(base::MakeRefCounted<CompletionHandler>()) {}
-
-  CompletionHandler* completion_handler() { return completion_handler_.get(); }
-
- private:
-  scoped_refptr<CompletionHandler> completion_handler_;
-};
-
-static base::LazyInstance<CompletionHandlerHolder>::DestructorAtExit
-    g_completion_handler_holder = LAZY_INSTANCE_INITIALIZER;
-
 CompletionHandler* CompletionHandler::Get() {
-  if (auto* holder = g_completion_handler_holder.Pointer()) {
-    return holder->completion_handler();
-  }
-  return nullptr;
+  static base::NoDestructor<scoped_refptr<CompletionHandler>> handler(
+      base::MakeRefCounted<CompletionHandler>());
+  return handler->get();
 }
 
 void CompletionHandler::OnIOCompleted(
