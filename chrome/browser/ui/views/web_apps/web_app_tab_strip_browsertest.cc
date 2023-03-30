@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -736,6 +737,42 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, TabbedModeMediaCSS) {
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
   ASSERT_FALSE(EvalJs(web_contents, match_media_standalone).ExtractBool());
   ASSERT_TRUE(EvalJs(web_contents, match_media_tabbed).ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
+                       CloseTabCommandDisabledForHomeTab) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  chrome::BrowserCommandController* commandController =
+      app_browser->command_controller();
+  // Close tab command should be enabled since the home tab is the only tab.
+  EXPECT_TRUE(commandController->IsCommandEnabled(IDC_CLOSE_TAB));
+
+  // Open a new tab.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  EXPECT_EQ(tab_strip->count(), 2);
+
+  // Close tab command should be enabled since this is not the home tab.
+  EXPECT_TRUE(commandController->IsCommandEnabled(IDC_CLOSE_TAB));
+
+  tab_strip->ActivateTabAt(0);
+
+  // Close tab command should not be enabled for home tab when there are
+  // multiple tabs open.
+  EXPECT_FALSE(commandController->IsCommandEnabled(IDC_CLOSE_TAB));
 }
 
 }  // namespace web_app

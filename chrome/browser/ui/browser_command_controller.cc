@@ -167,6 +167,12 @@ bool CanOpenFile(Browser* browser) {
   return true;
 }
 
+bool IsPinnedHomeTab(Browser* browser) {
+  return web_app::AppBrowserController::IsWebApp(browser) &&
+         web_app::IsPinnedHomeTab(browser->tab_strip_model(),
+                                  browser->tab_strip_model()->active_index());
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1019,6 +1025,13 @@ void BrowserCommandController::OnSigninAllowedPrefChange() {
 
 // BrowserCommandController, TabStripModelObserver implementation:
 
+void BrowserCommandController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  UpdateCommandsForTabStripStateChanged();
+}
+
 void BrowserCommandController::TabBlockedStateChanged(
     content::WebContents* contents,
     int index) {
@@ -1394,13 +1407,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
                              ->GetWebExposedIsolationLevel() >=
                          WebExposedIsolationLevel::kMaybeIsolatedApplication;
-  bool is_pinned_home_tab =
-      web_app::AppBrowserController::IsWebApp(browser_) &&
-      web_app::IsPinnedHomeTab(browser_->tab_strip_model(),
-                               browser_->tab_strip_model()->active_index());
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_IN_CHROME,
-      IsWebAppOrCustomTab() && !is_isolated_app && !is_pinned_home_tab);
+      IsWebAppOrCustomTab() && !is_isolated_app && !IsPinnedHomeTab(browser_));
 
   command_updater_.UpdateCommandEnabled(
       IDC_TOGGLE_REQUEST_TABLET_SITE,
@@ -1743,6 +1752,12 @@ void BrowserCommandController::UpdateCommandsForWebContentsFocus() {
   command_updater_.UpdateCommandEnabled(IDC_CARET_BROWSING_TOGGLE,
                                         CanToggleCaretBrowsing(browser_));
 #endif  // BUILDFLAG(IS_MAC)
+}
+
+void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
+  command_updater_.UpdateCommandEnabled(
+      IDC_CLOSE_TAB,
+      !IsPinnedHomeTab(browser_) || browser_->tab_strip_model()->count() == 1);
 }
 
 BrowserWindow* BrowserCommandController::window() {
