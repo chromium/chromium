@@ -8,9 +8,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,6 +29,9 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/platform_style.h"
@@ -33,6 +39,12 @@
 
 using content::WebContents;
 using security_state::SecurityLevel;
+
+namespace {
+constexpr int kDefaultInternalSpacing = 8;
+constexpr int kDefaultInternalSpacingTouchUI = 10;
+constexpr int kDefaultInternalSpacingChromeRefresh = 4;
+}  // namespace
 
 LocationIconView::LocationIconView(
     const gfx::FontList& font_list,
@@ -49,6 +61,12 @@ LocationIconView::LocationIconView(
   label()->SetAutoColorReadabilityEnabled(false);
 
   SetAccessibleProperties(/*is_initialization*/ true);
+  if (features::IsChromeRefresh2023()) {
+    ConfigureInkdropForRefresh2023(this, kColorPageInfoIconHover,
+                                   kColorPageInfoIconPressed);
+  }
+
+  UpdateBorder();
 }
 
 LocationIconView::~LocationIconView() {}
@@ -71,7 +89,7 @@ SkColor LocationIconView::GetForegroundColor() const {
 }
 
 bool LocationIconView::ShouldShowSeparator() const {
-  return ShouldShowLabel();
+  return !features::IsChromeRefresh2023() && ShouldShowLabel();
 }
 
 bool LocationIconView::ShowBubble(const ui::Event& event) {
@@ -129,6 +147,19 @@ bool LocationIconView::GetShowText() const {
   }
 
   return !location_bar_model->GetSecureDisplayText().empty();
+}
+
+int LocationIconView::GetInternalSpacing() const {
+  if (image()->GetPreferredSize().IsEmpty()) {
+    return 0;
+  }
+
+  return (ui::TouchUiController::Get()->touch_ui()
+              ? kDefaultInternalSpacingTouchUI
+              : (features::IsChromeRefresh2023()
+                     ? kDefaultInternalSpacingChromeRefresh
+                     : kDefaultInternalSpacing)) +
+         GetExtraInternalSpacing();
 }
 
 const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
@@ -240,6 +271,11 @@ void LocationIconView::Update(bool suppress_animations) {
   UpdateIcon();
   SetAccessibleProperties(/*is_initialization*/ false);
 
+  if (features::IsChromeRefresh2023()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
+        height() / 2));
+  }
   // The label text color may have changed in response to changes in security
   // level.
   UpdateLabelColors();
@@ -289,6 +325,20 @@ bool LocationIconView::IsTriggerableEvent(const ui::Event& event) {
   }
 
   return IconLabelBubbleView::IsTriggerableEvent(event);
+}
+
+void LocationIconView::UpdateBorder() {
+  // Bubbles are given the full internal height of the location bar so that all
+  // child views in the location bar have the same height. The visible height of
+  // the bubble should be smaller, so use an empty border to shrink down the
+  // content bounds so the background gets painted correctly.
+  if (features::IsChromeRefresh2023()) {
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+        GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).top(),
+        GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).left())));
+  } else {
+    IconLabelBubbleView::UpdateBorder();
+  }
 }
 
 gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(

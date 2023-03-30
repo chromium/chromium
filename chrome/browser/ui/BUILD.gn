@@ -4817,6 +4817,8 @@ static_library("ui") {
       "views/location_bar/location_bar_bubble_delegate_view.h",
       "views/location_bar/location_bar_layout.cc",
       "views/location_bar/location_bar_layout.h",
+      "views/location_bar/location_bar_util.cc",
+      "views/location_bar/location_bar_util.h",
       "views/location_bar/location_bar_view.cc",
       "views/location_bar/location_bar_view.h",
       "views/location_bar/location_icon_view.cc",

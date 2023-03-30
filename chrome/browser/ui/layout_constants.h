@@ -43,6 +43,17 @@ enum LayoutConstant {
   // The height to be occupied by the LocationBar.
   LOCATION_BAR_HEIGHT,
 
+  // The vertical margins from the page info icon
+  LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING,
+
+  // The leading edge space in the omnibox from the LHS icons used in Chrome
+  // with the chrome refresh flag.
+  LOCATION_BAR_LEADING_DECORATION_EDGE_PADDING,
+
+  // The trailing edge space in the omnibox from the RHS icons used in Chrome
+  // with the chrome refresh flag.
+  LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING,
+
   // The size of the icons used inside the LocationBar.
   // TODO(crbug.com/1399991): Deprecate this after the size of all location bar
   // icons have moved to
@@ -125,6 +136,14 @@ enum LayoutInset {
   // LOCATION_BAR_ELEMENT_PADDING, but this region is not part of the icon view
   // (e.g. does not highlight on hover).
   LOCATION_BAR_ICON_INTERIOR_PADDING,
+
+  // The page info icon in the location bar has different insets than the other
+  // icons with chrome refresh flag.
+  LOCATION_BAR_PAGE_INFO_ICON_PADDING,
+
+  // The page action icons in the location bar have different insets than the
+  // other icons with chrome refresh flag.
+  LOCATION_BAR_PAGE_ACTION_ICON_PADDING,
 
   // The padding inside the border of a toolbar action view button.
   TOOLBAR_ACTION_VIEW,

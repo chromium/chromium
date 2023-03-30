@@ -82,6 +82,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxChipForegroundLowVisibility] = {
       ui::kColorSysOnSurfaceSubtle};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysOnSurface};
+  mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorPageActionIconPressed] = {
+      ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
+  mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
+  mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorToolbar] = {ui::kColorSysBase};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] = {
       ui::kColorSysStateHoverOnSubtle};

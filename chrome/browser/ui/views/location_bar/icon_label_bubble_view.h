@@ -175,6 +175,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   gfx::Size GetSizeForLabelWidth(int label_width) const;
 
+  // Sets the border padding around this view.
+  virtual void UpdateBorder();
+
   // Set up for icons that animate their labels in. Animating out is initiated
   // manually.
   void SetUpForAnimation();
@@ -206,19 +209,19 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // the animation is set to fully shown or fully hidden.
   void ResetSlideAnimation(bool show);
 
-  // Slide animation for label.
-  gfx::SlideAnimation slide_animation_{this};
-
- private:
-  class HighlightPathGenerator;
-
   // Spacing between the image and the label.
-  int GetInternalSpacing() const;
+  virtual int GetInternalSpacing() const;
 
   // Subclasses that want extra spacing added to the internal spacing can
   // override this method. This may be used when we want to align the label text
   // to the suggestion text, like in the SelectedKeywordView.
   virtual int GetExtraInternalSpacing() const;
+
+  // Slide animation for label.
+  gfx::SlideAnimation slide_animation_{this};
+
+ private:
+  class HighlightPathGenerator;
 
   // Returns the width after the icon and before the separator. If the
   // separator is not shown, and ShouldShowExtraEndSpace() is false, this
@@ -240,9 +243,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Gets the highlight path for ink drops and focus rings using the current
   // bounds and separator visibility.
   SkPath GetHighlightPath() const;
-
-  // Sets the border padding around this view.
-  void UpdateBorder();
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_;
 

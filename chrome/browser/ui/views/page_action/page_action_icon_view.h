@@ -205,7 +205,7 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual void UpdateImpl() = 0;
 
  private:
-  void UpdateBorder();
+  void UpdatePageActionIconBorder();
 
   void InstallLoadingIndicator();
 

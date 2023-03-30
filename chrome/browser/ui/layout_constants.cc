@@ -11,6 +11,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/insets.h"
 
 int GetLayoutConstant(LayoutConstant constant) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
@@ -37,6 +38,12 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 3;
     case LOCATION_BAR_ELEMENT_PADDING:
       return touch_ui ? 3 : 2;
+    case LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING:
+      return touch_ui ? 3 : 5;
+    case LOCATION_BAR_LEADING_DECORATION_EDGE_PADDING:
+      return touch_ui ? 3 : 5;
+    case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
+      return touch_ui ? 3 : 12;
     case LOCATION_BAR_HEIGHT:
       if (base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateHeight) ||
           base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
@@ -102,6 +109,12 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
 
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
+
+    case LOCATION_BAR_PAGE_INFO_ICON_PADDING:
+      return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 4);
+
+    case LOCATION_BAR_PAGE_ACTION_ICON_PADDING:
+      return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(2, 2);
 
     case TOOLBAR_ACTION_VIEW: {
       // TODO(afakhry): Unify all toolbar button sizes on all platforms.

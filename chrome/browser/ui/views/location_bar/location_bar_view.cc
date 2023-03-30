@@ -348,7 +348,7 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
 
   params.icon_color = icon_color;
-  params.between_icon_spacing = 0;
+  params.between_icon_spacing = features::IsChromeRefresh2023() ? 8 : 0;
   params.font_list = &font_list;
   params.browser = browser_;
   params.command_updater = command_updater();
@@ -605,7 +605,19 @@ void LocationBarView::Layout() {
   // to position our child views in this case, because other things may be
   // positioned relative to them (e.g. the "bookmark added" bubble if the user
   // hits ctrl-d).
-  const int vertical_padding = GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int vertical_padding =
+      features::IsChromeRefresh2023()
+          ? GetLayoutConstant(LOCATION_BAR_PAGE_INFO_ICON_VERTICAL_PADDING)
+          : GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING);
+  const int leading_decorations_edge_padding =
+      features::IsChromeRefresh2023()
+          ? GetLayoutConstant(LOCATION_BAR_LEADING_DECORATION_EDGE_PADDING)
+          : edge_padding;
+  const int trailing_decorations_edge_padding =
+      features::IsChromeRefresh2023()
+          ? GetLayoutConstant(LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING)
+          : edge_padding;
+
   const int location_height = std::max(height() - (vertical_padding * 2), 0);
   // The largest fraction of the omnibox that can be taken by the EV or search
   // label/chip.
@@ -614,15 +626,15 @@ void LocationBarView::Layout() {
   if (chip_controller_ && chip_controller_->chip()->GetVisible() &&
       !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, edge_padding,
+                                      0, leading_decorations_edge_padding,
                                       chip_controller_->chip());
   }
 
   location_icon_view_->SetVisible(false);
   if (ShouldShowKeywordBubble()) {
-    leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      kLeadingDecorationMaxFraction,
-                                      edge_padding, selected_keyword_view_);
+    leading_decorations.AddDecoration(
+        vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
+        leading_decorations_edge_padding, selected_keyword_view_);
     if (selected_keyword_view_->GetKeyword() != keyword) {
       selected_keyword_view_->SetKeyword(keyword);
       const TemplateURL* template_url =
@@ -649,20 +661,21 @@ void LocationBarView::Layout() {
   } else if (location_icon_view_->GetShowText() &&
              !ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);
-    leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      kLeadingDecorationMaxFraction,
-                                      edge_padding, location_icon_view_);
+    leading_decorations.AddDecoration(
+        vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
+        leading_decorations_edge_padding, location_icon_view_);
   } else if (!ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, edge_padding, location_icon_view_);
+                                      0, leading_decorations_edge_padding,
+                                      location_icon_view_);
   }
 
-  auto add_trailing_decoration = [&trailing_decorations, vertical_padding,
-                                  location_height, edge_padding](View* view) {
+  auto add_trailing_decoration = [&](View* view) {
     if (view->GetVisible()) {
-      trailing_decorations.AddDecoration(vertical_padding, location_height,
-                                         false, 0, edge_padding, view);
+      trailing_decorations.AddDecoration(
+          vertical_padding, location_height, false, 0,
+          trailing_decorations_edge_padding, view);
     }
   };
 

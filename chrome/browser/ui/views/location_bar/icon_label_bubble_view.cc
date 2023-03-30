@@ -451,6 +451,16 @@ gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
   return gfx::Size(GetWidthBetween(min_width, max_width), image_size.height());
 }
 
+void IconLabelBubbleView::UpdateBorder() {
+  // Bubbles are given the full internal height of the location bar so that all
+  // child views in the location bar have the same height. The visible height of
+  // the bubble should be smaller, so use an empty border to shrink down the
+  // content bounds so the background gets painted correctly.
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+      GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
+      GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left())));
+}
+
 int IconLabelBubbleView::GetInternalSpacing() const {
   if (image()->GetPreferredSize().IsEmpty())
     return 0;
@@ -601,16 +611,6 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
   const SkRect rect = RectToSkRect(highlight_bounds);
 
   return SkPath().addRoundRect(rect, corner_radius, corner_radius);
-}
-
-void IconLabelBubbleView::UpdateBorder() {
-  // Bubbles are given the full internal height of the location bar so that all
-  // child views in the location bar have the same height. The visible height of
-  // the bubble should be smaller, so use an empty border to shrink down the
-  // content bounds so the background gets painted correctly.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-      GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left())));
 }
 
 BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)

@@ -7,23 +7,23 @@
 #include <utility>
 
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cascading_property.h"
@@ -41,7 +41,9 @@ int PageActionIconView::Delegate::GetPageActionIconSize() const {
 
 gfx::Insets PageActionIconView::Delegate::GetPageActionIconInsets(
     const PageActionIconView* icon_view) const {
-  return GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING);
+  return features::IsChromeRefresh2023()
+             ? GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING)
+             : GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING);
 }
 
 bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
@@ -71,11 +73,17 @@ PageActionIconView::PageActionIconView(
 
   image()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+
+  if (features::IsChromeRefresh2023()) {
+    ConfigureInkdropForRefresh2023(this, kColorPageActionIconHover,
+                                   kColorPageActionIconPressed);
+  }
+
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
-  UpdateBorder();
+  UpdatePageActionIconBorder();
 }
 
 PageActionIconView::~PageActionIconView() = default;
@@ -129,7 +137,7 @@ void PageActionIconView::ViewHierarchyChanged(
   View::ViewHierarchyChanged(details);
   if (details.is_add && details.child == this) {
     UpdateIconImage();
-    UpdateBorder();
+    UpdatePageActionIconBorder();
   }
 }
 
@@ -277,7 +285,7 @@ content::WebContents* PageActionIconView::GetWebContents() const {
   return delegate_->GetWebContentsForPageActionIconView();
 }
 
-void PageActionIconView::UpdateBorder() {
+void PageActionIconView::UpdatePageActionIconBorder() {
   const gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
   if (new_insets != GetInsets())
     SetBorder(views::CreateEmptyBorder(new_insets));
