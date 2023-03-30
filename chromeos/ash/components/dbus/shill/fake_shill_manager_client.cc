@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
@@ -483,14 +484,23 @@ void FakeShillManagerClient::GetService(const base::Value::Dict& properties,
 void FakeShillManagerClient::ScanAndConnectToBestServices(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
+  connect_to_best_services_callbacks_ =
+      std::make_tuple(std::move(callback), std::move(error_callback));
+  RequestScan(shill::kTypeWifi, base::DoNothing(),
+              base::BindOnce(&LogErrorCallback));
+}
+
+void FakeShillManagerClient::ContinueConnectToBestServices(
+    ConnectToBestServicesCallbacks connect_to_best_services_callbacks) {
   if (best_service_.empty()) {
     VLOG(1) << "No 'best' service set.";
     return;
   }
 
-  ShillServiceClient::Get()->Connect(dbus::ObjectPath(best_service_),
-                                     std::move(callback),
-                                     std::move(error_callback));
+  ShillServiceClient::Get()->Connect(
+      dbus::ObjectPath(best_service_),
+      std::move(std::get<0>(connect_to_best_services_callbacks)),
+      std::move(std::get<1>(connect_to_best_services_callbacks)));
 }
 
 void FakeShillManagerClient::AddPasspointCredentials(
@@ -1283,6 +1293,16 @@ void FakeShillManagerClient::ScanCompleted(const std::string& device_path) {
         /*notify_changed=*/true);
   }
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
+  if (connect_to_best_services_callbacks_) {
+    // Use PostTask so the ScanAndConnectToBestServices callback is executed
+    // after the Scanning property change has been dispatched.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeShillManagerClient::ContinueConnectToBestServices,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(connect_to_best_services_callbacks_.value())));
+    connect_to_best_services_callbacks_.reset();
+  }
 }
 
 void FakeShillManagerClient::ParseCommandLineSwitch() {

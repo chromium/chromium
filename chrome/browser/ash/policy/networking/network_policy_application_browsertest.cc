@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -70,6 +71,7 @@ using ::testing::SizeIs;
 
 constexpr char kUserProfilePath[] = "user_profile";
 constexpr char kSharedProfilePath[] = "/profile/default";
+constexpr char kDeviceWifiPath[] = "/device/wifi1";
 constexpr char kServiceEth[] = "/service/0";
 constexpr char kServiceWifi1[] = "/service/1";
 constexpr char kServiceWifi2[] = "/service/2";
@@ -183,6 +185,13 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
   void WaitForNonEmptyValue() {
     WaitForValue(base::BindRepeating(
         [](const std::string& value) { return !value.empty(); }));
+  }
+
+  void WaitForValue(const std::string& expected_value) {
+    WaitForValue(
+        base::BindLambdaForTesting([expected_value](const std::string& value) {
+          return value == expected_value;
+        }));
   }
 
  private:
@@ -481,9 +490,11 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     shill_device_client_test_->ClearDevices();
     shill_profile_client_test_->ClearProfiles();
 
+    shill_manager_client_test_->SetWifiServicesVisibleByDefault(false);
+
     shill_manager_client_test_->AddTechnology(shill::kTypeWifi,
                                               true /* enabled */);
-    shill_device_client_test_->AddDevice("/device/wifi1", shill::kTypeWifi,
+    shill_device_client_test_->AddDevice(kDeviceWifiPath, shill::kTypeWifi,
                                          "stub_wifi_device1");
     shill_profile_client_test_->AddProfile(kSharedProfilePath, "");
     shill_service_client_test_->ClearServices();
@@ -690,6 +701,17 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         wifi_service.value());
   }
 
+  void SetServiceVisibility(const std::string& guid, bool visible) {
+    absl::optional<std::string> wifi_service;
+    wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
+    if (wifi_service->empty()) {
+      ADD_FAILURE() << "No wifi service found for: " << guid;
+      return;
+    }
+    shill_service_client_test_->SetServiceProperty(
+        wifi_service.value(), shill::kVisibleProperty, base::Value(visible));
+  }
+
   const std::string GetTestUserHash() {
     return user_manager::UserManager::Get()
         ->FindUser(test_account_id_)
@@ -737,6 +759,16 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     shill_service_client_test_->SetServiceProperty(
         kServiceWifi1, shill::kSecurityClassProperty,
         base::Value(shill::kSecurityClass8021x));
+  }
+
+  void SimulateWifiScanCompleted() {
+    shill_device_client_test_->SetDeviceProperty(
+        kDeviceWifiPath, shill::kScanningProperty, base::Value(true),
+        /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+    shill_device_client_test_->SetDeviceProperty(
+        kDeviceWifiPath, shill::kScanningProperty, base::Value(false),
+        /*notify_changed=*/true);
   }
 
   // Unowned pointers -- just pointers to the singleton instances.
@@ -1109,6 +1141,290 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi3));
     EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi4));
   }
+}
+
+// Behavior of AllowOnlyPolicyNetworksToConnectIfAvailable when no policy
+// networks are configured.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       OnlyPolicyIfAvailable_NotConfigured) {
+  constexpr char kGuidWifi1[] = "wifi_orig_guid_1";
+  constexpr char kGuidWifi2[] = "wifi_orig_guid_2";
+
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(), {kGuidWifi1, kGuidWifi2});
+  AddPskWifiService(kServiceWifi1, kGuidWifi1, "WifiOne", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifi2, "WifiTwo", shill::kStateIdle);
+  available_waiter.Wait();
+
+  // Check that initially no policies applied and CrosNetworkStateProperties
+  // has no prohibited networks.
+  {
+    EXPECT_FALSE(CrosNetworkConfigGetGlobalPolicy()
+                     ->allow_only_policy_wifi_networks_to_connect);
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  }
+
+  // Apply device ONC policy
+  {
+    const char kDeviceONC[] = R"(
+        {
+          "GlobalNetworkConfiguration": {
+            "AllowOnlyPolicyNetworksToConnectIfAvailable": true
+          },
+          "NetworkConfigurations": [ ]
+        })";
+    SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
+
+    EXPECT_TRUE(CrosNetworkConfigGetGlobalPolicy()
+                    ->allow_only_policy_wifi_networks_to_connect_if_available);
+  }
+
+  // Manually connecting to a non-policy network must be possible.
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+
+  ConnectToService(kServiceWifi1);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+
+  // Sign-in a user and apply user without ONC policy.
+  {
+    LoginUser(test_account_id_);
+    const std::string user_hash = GetTestUserHash();
+    shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+  }
+
+  // WiFi1 should still be connected.
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+}
+
+// Behavior of AllowOnlyPolicyNetworksToConnectIfAvailable when no policy
+// networks are visible initially, then after user login user login, a
+// policy-provided network becomes visible. After that the policy-provided
+// network becomes not visible again.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       OnlyPolicyIfAvailable_VisibleBackAndForth) {
+  constexpr char kGuidWifi1[] = "wifi_orig_guid_1";
+  constexpr char kGuidWifi2[] = "wifi_orig_guid_2";
+
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(), {kGuidWifi1, kGuidWifi2});
+  AddPskWifiService(kServiceWifi1, kGuidWifi1, "WifiOne", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifi2, "WifiTwo", shill::kStateIdle);
+  available_waiter.Wait();
+
+  // Check that initially no policies applied and CrosNetworkStateProperties
+  // has no prohibited networks.
+  {
+    EXPECT_FALSE(CrosNetworkConfigGetGlobalPolicy()
+                     ->allow_only_policy_wifi_networks_to_connect);
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  }
+
+  // Apply device ONC policy
+  {
+    const char kDeviceONC[] = R"(
+        {
+          "GlobalNetworkConfiguration": {
+            "AllowOnlyPolicyNetworksToConnectIfAvailable": true
+          },
+          "NetworkConfigurations": [
+            {
+              "GUID": "wifi_policy_1",
+              "Name": "PolicyDeviceLevelWifi",
+              "Type": "WiFi",
+              "WiFi": {
+                "HiddenSSID": false,
+                "Passphrase": "DeviceLevelWifiPwd",
+                "SSID": "PolicyDeviceLevelWifi",
+                "Security": "WPA-PSK"
+              }
+            }
+          ]
+        })";
+    SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
+
+    EXPECT_TRUE(CrosNetworkConfigGetGlobalPolicy()
+                    ->allow_only_policy_wifi_networks_to_connect_if_available);
+  }
+
+  // Manually connecting to a non-policy network must be possible.
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
+
+  ConnectToService(kServiceWifi1);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient("wifi_policy_1"), shill::kStateIdle);
+
+  // Sign-in a user and apply user ONC policy for another unavailable network.
+  {
+    LoginUser(test_account_id_);
+    const std::string user_hash = GetTestUserHash();
+    shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+
+    const char kUserONC[] = R"(
+        {
+          "NetworkConfigurations": [
+            {
+              "GUID": "wifi_policy_2",
+              "Name": "UserLevelWifi",
+              "Type": "WiFi",
+              "WiFi": {
+                "HiddenSSID": false,
+                "Passphrase": "UserLevelWifiPwd",
+                "SSID": "PolicyUserLevelWifi",
+                "Security": "WPA-PSK"
+              }
+            }
+          ]
+        })";
+
+    SetUserOpenNetworkConfiguration(user_hash, kUserONC,
+                                    /*wait_applied=*/true);
+  }
+
+  // WiFi1 should still be connected.
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_2"));
+
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient("wifi_policy_1"), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient("wifi_policy_2"), shill::kStateIdle);
+
+  {
+    // Now the policy-provided network becomes visible in a wifi scan.
+    // Expect that wifi_policy_2 connects.
+    absl::optional<std::string> user_policy_wifi_service_path =
+        shill_service_client_test_->FindServiceMatchingGUID("wifi_policy_2");
+    ASSERT_TRUE(user_policy_wifi_service_path);
+    ServiceConnectedWaiter wifi_connected_waiter(
+        shill_service_client_test_, user_policy_wifi_service_path.value());
+    SetServiceVisibility("wifi_policy_2", true);
+    SimulateWifiScanCompleted();
+
+    wifi_connected_waiter.Wait();
+  }
+
+  // Expects that the non-policy WiFi services are now prohibited.
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_2"));
+
+  // Note that we're intentionally not verifying the service state because fake
+  // shill does not reset the service state to idle when a disconnect would
+  // happen in real life due to connecting to another service.
+  // TODO(b/276358423): Change the default connect behavior to do that.
+
+  // Now the policy-provided network becomes invisible again, and no network is
+  // prohibited anymore.
+  SetServiceVisibility("wifi_policy_2", false);
+  SimulateWifiScanCompleted();
+
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_2"));
+}
+
+// Behavior of AllowOnlyPolicyNetworksToConnectIfAvailable when a device policy
+// network is visible on user login.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       OnlyPolicyIfAvailable_DeviceNetworkVisibleOnLogin) {
+  constexpr char kGuidWifi1[] = "wifi_orig_guid_1";
+  constexpr char kGuidWifi2[] = "wifi_orig_guid_2";
+
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(), {kGuidWifi1, kGuidWifi2});
+  AddPskWifiService(kServiceWifi1, kGuidWifi1, "WifiOne", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifi2, "WifiTwo", shill::kStateIdle);
+  available_waiter.Wait();
+
+  // Check that initially no policies applied and CrosNetworkStateProperties
+  // has no prohibited networks.
+  {
+    EXPECT_FALSE(CrosNetworkConfigGetGlobalPolicy()
+                     ->allow_only_policy_wifi_networks_to_connect);
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  }
+
+  // Apply device ONC policy
+  {
+    const char kDeviceONC[] = R"(
+        {
+          "GlobalNetworkConfiguration": {
+            "AllowOnlyPolicyNetworksToConnectIfAvailable": true
+          },
+          "NetworkConfigurations": [
+            {
+              "GUID": "wifi_policy_1",
+              "Name": "PolicyDeviceLevelWifi",
+              "Type": "WiFi",
+              "WiFi": {
+                "HiddenSSID": false,
+                "Passphrase": "DeviceLevelWifiPwd",
+                "SSID": "PolicyDeviceLevelWifi",
+                "Security": "WPA-PSK"
+              }
+            }
+          ]
+        })";
+    SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
+
+    EXPECT_TRUE(CrosNetworkConfigGetGlobalPolicy()
+                    ->allow_only_policy_wifi_networks_to_connect_if_available);
+  }
+  // Make the device policy network visible.
+  SetServiceVisibility("wifi_policy_1", true);
+
+  // Manually connecting to a non-policy network must be possible (this is still
+  // on the sign-in screen).
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
+
+  ConnectToService(kServiceWifi1);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient("wifi_policy_1"), shill::kStateIdle);
+
+  // Sign-in a user. The device policy network should connect because the
+  // AllowOnlyPolicyNetworksToConnectIfAvailable became effective on user login.
+  {
+    absl::optional<std::string> policy_wifi_service_path =
+        shill_service_client_test_->FindServiceMatchingGUID("wifi_policy_1");
+    ASSERT_TRUE(policy_wifi_service_path);
+    ServiceConnectedWaiter wifi_connected_waiter(
+        shill_service_client_test_, policy_wifi_service_path.value());
+
+    shill_manager_client_test_->SetBestServiceToConnect(
+        policy_wifi_service_path.value());
+    LoginUser(test_account_id_);
+    const std::string user_hash = GetTestUserHash();
+    shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+
+    wifi_connected_waiter.Wait();
+  }
+
+  // Expects that the non-policy WiFi services are now prohibited.
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
 }
 
 // Checks the edge case where a policy with GUID {same_guid} applies to network
