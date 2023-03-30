@@ -35,7 +35,7 @@ void FakeSyncMojoService::DEPRECATED_BindSyncedSessionClient(
 
 void FakeSyncMojoService::CreateSyncedSessionClient(
     CreateSyncedSessionClientCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(fake_synced_session_client_ash_.CreateRemote());
 }
 
 void FakeSyncMojoService::BindReceiver(
