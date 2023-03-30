@@ -254091,7 +254091,7 @@
         ]
        ],
        "propagate-text-decoration.html": [
-        "9bdbbef0c274fd09e25722c04edeb0cb40693d67",
+        "83608402c12a99086f3fee9043d580f6664c3294",
         [
          null,
          [
@@ -254100,7 +254100,23 @@
            "=="
           ]
          ],
-         {}
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              40
+             ],
+             [
+              0,
+              50
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ]
       },
@@ -381285,7 +381301,7 @@
     ],
     "resources": {
      "partitioned-estimate-usage-details-caches-helper-frame.html": [
-      "13786d7ceafca799bd44c20482085278283303ca",
+      "0679c1decf55835a0de37a9e64f12647da2a6c0a",
       []
      ],
      "partitioned-estimate-usage-details-indexeddb-helper-frame.html": [
@@ -381312,7 +381328,7 @@
      []
     ],
     "helpers.js": [
-     "01a9d9f0ce6fe67a3977e9a8c2e8b7fbb961f957",
+     "728b098087e4ab3c67bb8cfd88126ffcf9f4315d",
      []
     ],
     "requestStorageAccess-ABA.tentative.sub.https.window.js.ini": [
@@ -499545,6 +499561,13 @@
    },
    "fledge": {
     "tentative": {
+     "insecure-context.window.js": [
+      "9016277b73139d050e3d688c3f21cb40048464e2",
+      [
+       "fledge/tentative/insecure-context.window.html",
+       {}
+      ]
+     ],
      "join-leave-ad-interest-group.https.sub.window.js": [
       "9c8433219fdf8fda4ecfe05357472f666e235e1b",
       [
@@ -600240,7 +600263,7 @@
      ]
     ],
     "partitioned-estimate-usage-details-caches.tentative.https.sub.html": [
-     "2eac826eb10d2ec99b5b5e927b0e28d5ea2c825d",
+     "dc2af7c213c549534f23929bbea210527d1a1f99",
      [
       null,
       {}
@@ -600566,7 +600589,7 @@
      ]
     ],
     "requestStorageAccess-insecure.sub.window.js": [
-     "34d275b5ae88b3017c775a62a03aae16bdc0d18b",
+     "6131456b4ab9cc78ab73cedd68552e79a2f9a4d4",
      [
       "storage-access-api/requestStorageAccess-insecure.sub.window.html",
       {
@@ -600654,7 +600677,7 @@
      ]
     ],
     "requestStorageAccess-non-fully-active.sub.https.window.js": [
-     "b3aa19c25c0f097f9eacc9922634867c52a7b04e",
+     "18f451975ad313f64c068d464953d9a14afb8bf2",
      [
       "storage-access-api/requestStorageAccess-non-fully-active.sub.https.window.html",
       {
@@ -600698,7 +600721,7 @@
      ]
     ],
     "requestStorageAccess.sub.https.window.js": [
-     "eb8870b774dd5fa7c191dec715c931f94f54cacc",
+     "79108ff6b86c6f3c50420aa8965bc88517ce3a8b",
      [
       "storage-access-api/requestStorageAccess.sub.https.window.html",
       {
@@ -608225,7 +608248,7 @@
    "top-level-storage-access-api": {
     "tentative": {
      "requestStorageAccessFor-insecure.sub.window.js": [
-      "cd8e78f8f4bdcc5fbe023df372fa24c091d9e039",
+      "dc66cee6eb31f26f8c28a564ae0182cc923d3716",
       [
        "top-level-storage-access-api/tentative/requestStorageAccessFor-insecure.sub.window.html",
        {
@@ -608247,7 +608270,7 @@
       ]
      ],
      "requestStorageAccessFor.sub.https.window.js": [
-      "1d8f22bb982fd6f9022bd0b9d686a1f1cfbf917c",
+      "03d9c2822235d0c65c8d3b2d8e204d28bd6da136",
       [
        "top-level-storage-access-api/tentative/requestStorageAccessFor.sub.https.window.html",
        {
