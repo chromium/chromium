@@ -121,6 +121,8 @@ try_.orchestrator_builder(
     coverage_test_types = ["overall", "unit"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 5,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -402,6 +404,10 @@ try_.orchestrator_builder(
     compilator = "ios-simulator-compilator",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 5,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
