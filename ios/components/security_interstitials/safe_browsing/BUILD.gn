@@ -41,7 +41,6 @@ source_set("safe_browsing") {
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/safe_browsing/ios/browser/password_protection",
     "//components/security_interstitials/core:unsafe_resource",
-    "//components/security_interstitials/core:unsafe_resource",
     "//ios/components/cookie_util",
     "//ios/components/security_interstitials/safe_browsing:util",
     "//ios/net",

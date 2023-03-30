@@ -61,7 +61,6 @@ source_set("badges") {
     "//components/password_manager/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:badge",
     "//ios/chrome/browser/infobars:public",

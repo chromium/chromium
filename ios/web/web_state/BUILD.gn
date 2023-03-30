@@ -24,7 +24,6 @@ source_set("web_state") {
     "//ios/web/public/session",
     "//ios/web/public/webui",
     "//ios/web/security",
-    "//ios/web/security",
     "//ios/web/session",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",

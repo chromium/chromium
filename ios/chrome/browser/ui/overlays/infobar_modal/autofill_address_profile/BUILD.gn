@@ -52,7 +52,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:modals",
     "//ios/chrome/browser/ui/infobars/modals/test",
     "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/overlays/test",
     "//testing/gmock",
     "//testing/gtest",

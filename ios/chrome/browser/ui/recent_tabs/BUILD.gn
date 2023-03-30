@@ -103,7 +103,6 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/table_view:cells_constants",

@@ -74,7 +74,6 @@ source_set("download_unittests") {
     "//ios/web/public/test",
     "//ios/web/public/test:download_test_utils",
     "//ios/web/public/test:test_fixture",
-    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/test/fakes",
     "//net",

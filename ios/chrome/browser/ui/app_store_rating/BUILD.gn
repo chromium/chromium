@@ -55,7 +55,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",

@@ -89,7 +89,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/bookmarks:test_support",
-    "//ios/chrome/browser/bookmarks:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",

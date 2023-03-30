@@ -6,7 +6,6 @@ source_set("scoped_ui_blocker") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "scoped_ui_blocker.h",
-    "scoped_ui_blocker.h",
     "scoped_ui_blocker.mm",
     "ui_blocker_manager.h",
     "ui_blocker_target.h",

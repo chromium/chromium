@@ -32,7 +32,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//testing/gtest",
     "//third_party/ocmock",
   ]
 }

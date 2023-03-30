@@ -47,8 +47,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/permissions:infobar_delegate",
     "//ios/chrome/test:test_support",
     "//ios/web/common",
-    "//ios/web/common",
-    "//ios/web/public/permissions",
     "//ios/web/public/permissions",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

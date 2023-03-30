@@ -29,7 +29,6 @@ source_set("web_content_area") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/ui/dialogs",

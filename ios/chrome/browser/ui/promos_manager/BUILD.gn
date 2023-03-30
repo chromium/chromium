@@ -69,7 +69,6 @@ source_set("promos_manager") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/shared/public/commands",
