@@ -302,8 +302,9 @@ prefs when the profile is loaded.  -->
 
 <histogram base="true" name="Signin.CookieJar.SignedInCountWithPrimary"
     units="accounts" expires_after="2023-08-08">
-  <owner>jkrcal@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
 <!-- Name completed by histogram_suffixes name="UnconsentedPrimaryAccountType" -->
 
   <summary>
@@ -976,10 +977,11 @@ should be kept to monitor/debug signin Multilogin issues-->
 </histogram>
 
 <histogram name="Signin.Reconciler.Trigger.{Operation}"
-    enum="SigninReconcilerTrigger" expires_after="2023-05-02">
+    enum="SigninReconcilerTrigger" expires_after="2024-05-02">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Recorded when the account reconcilor tries to change the cookie to match the
     tokens and performs a {Operation} operation. Records the event which
