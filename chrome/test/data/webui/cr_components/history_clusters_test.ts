@@ -244,5 +244,18 @@ suite('history-clusters', () => {
     const imageUrl = icon.getImageUrlForTesting();
     assertTrue(!!imageUrl);
     assertEquals('https://example.com/image.png', imageUrl.url);
+
+    // Verify that the icon's image can be cleared.
+    imageServiceHandler.reset();
+    imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
+      result: null,
+    }));
+    icon.url = {url: 'https://something-different.com'};
+    const [newClientId, newPageUrl] =
+        await imageServiceHandler.whenCalled('getPageImageUrl');
+    assertEquals(PageImageServiceClientId.Journeys, newClientId);
+    assertTrue(!!newPageUrl);
+    assertEquals('https://something-different.com', newPageUrl.url);
+    assertTrue(!icon.getImageUrlForTesting());
   });
 });

@@ -54,7 +54,7 @@ class PageFavicon extends PolymerElement {
        */
       style: {
         type: String,
-        computed: `computeStyle_(url, imageUrl)`,
+        computed: `computeStyle_(url, imageUrl_)`,
         reflectToAttribute: true,
       },
 
@@ -135,6 +135,10 @@ class PageFavicon extends PolymerElement {
                 {suggestImages: true, optimizationGuideImages: true});
     if (result) {
       this.imageUrl_ = result.imageUrl;
+    } else {
+      // We must reset imageUrl_ to null, because sometimes the Virtual DOM will
+      // reuse the same element for the infinite scrolling list.
+      this.imageUrl_ = null;
     }
   }
 }
