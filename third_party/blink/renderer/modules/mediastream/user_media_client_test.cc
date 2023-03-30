@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -31,6 +30,8 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/display/screen_info.h"
 
@@ -408,8 +408,11 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
                 WrapWeakPersistent(this)),
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         media_stream_device_observer_(std::move(media_stream_device_observer)),
-        media_devices_dispatcher_(std::move(media_devices_dispatcher)),
+        media_devices_dispatcher_(frame->DomWindow()),
         state_(state) {
+    media_devices_dispatcher_.Bind(
+        std::move(media_devices_dispatcher),
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     SetMediaStreamDeviceObserverForTesting(media_stream_device_observer_.get());
   }
 
@@ -508,6 +511,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(media_devices_dispatcher_);
     visitor->Trace(last_generated_descriptor_);
     UserMediaProcessor::Trace(visitor);
   }
@@ -521,8 +525,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   }
 
   std::unique_ptr<WebMediaStreamDeviceObserver> media_stream_device_observer_;
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<blink::mojom::blink::MediaDevicesDispatcherHost>
+  HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
   MockMediaStreamVideoCapturerSource* video_source_ = nullptr;
   MockLocalMediaStreamAudioSource* local_audio_source_ = nullptr;
