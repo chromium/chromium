@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_CHROMEOS_VIDEO_DECODER_PIPELINE_H_
 #define MEDIA_GPU_CHROMEOS_VIDEO_DECODER_PIPELINE_H_
 
+#include <atomic>
 #include <memory>
 
 #include "base/functional/callback_forward.h"
@@ -388,6 +389,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // True if the decoder needs bitstream conversion before decoding.
   bool needs_bitstream_conversion_
       GUARDED_BY_CONTEXT(client_sequence_checker_) = false;
+
+  // |oop_decoder_can_read_without_stalling_| is accessed from multiple
+  // sequences: it's set on the decoder sequence for every frame we get from the
+  // |decoder_|, and it's read on the client sequence.
+  std::atomic<bool> oop_decoder_can_read_without_stalling_;
 
   // Set to true when any unexpected error occurs.
   bool has_error_ GUARDED_BY_CONTEXT(decoder_sequence_checker_) = false;

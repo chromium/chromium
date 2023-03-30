@@ -182,6 +182,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  bool can_read_without_stalling_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   // This is to indicate we should perform transcryption before sending the data
   // to the video decoder utility process.
   bool needs_transcryption_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

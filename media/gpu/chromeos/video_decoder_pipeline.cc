@@ -321,6 +321,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
       renderable_fourccs_(std::move(renderable_fourccs)),
       media_log_(std::move(media_log)),
       create_decoder_function_cb_(std::move(create_decoder_function_cb)),
+      oop_decoder_can_read_without_stalling_(false),
       uses_oop_video_decoder_(uses_oop_video_decoder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
@@ -412,6 +413,11 @@ bool VideoDecoderPipeline::NeedsBitstreamConversion() const {
 
 bool VideoDecoderPipeline::CanReadWithoutStalling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+
+  if (uses_oop_video_decoder_) {
+    return oop_decoder_can_read_without_stalling_.load(
+        std::memory_order_seq_cst);
+  }
 
   // TODO(mcasas): also query |decoder_|.
   return main_frame_pool_ && !main_frame_pool_->IsExhausted();
@@ -674,6 +680,11 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(frame_converter_);
   DVLOGF(4);
+
+  if (uses_oop_video_decoder_) {
+    oop_decoder_can_read_without_stalling_.store(
+        decoder_->CanReadWithoutStalling(), std::memory_order_seq_cst);
+  }
 
   if (image_processor_) {
     image_processor_->Process(

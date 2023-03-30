@@ -629,9 +629,22 @@ bool OOPVideoDecoder::NeedsBitstreamConversion() const {
 }
 
 bool OOPVideoDecoder::CanReadWithoutStalling() const {
-  NOTIMPLEMENTED();
-  NOTREACHED();
-  return true;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!init_cb_);
+  // TODO(b/220915557): according to the VideoDecoder interface, no VideoDecoder
+  // calls should be made before the reset callback is executed. In theory, this
+  // includes CanReadWithoutStalling(). However, asserting this through the
+  // commented CHECK(!reset_cb_) below causes a crash because we need to call
+  // CanReadWithoutStalling() in the frame output callback
+  // (VideoDecoderPipeline::OnFrameDecoded()) which can happen in an in-progress
+  // Reset(). It's likely that the VideoDecoder restriction expressed above does
+  // not include CanReadWithoutStalling() because
+  // MojoVideoDecoderService::OnDecoderOutput() (a frame output callback)
+  // already calls VideoDecoder::CanReadWithoutStalling(). If so, then we should
+  // update the VideoDecoder::Reset() documentation.
+  // CHECK(!reset_cb_);
+  CHECK(!has_error_);
+  return can_read_without_stalling_;
 }
 
 int OOPVideoDecoder::GetMaxDecodeRequests() const {
@@ -693,6 +706,8 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   // According to the media::VideoDecoder API, |output_cb_| should not be
   // supplied with EOS frames. The mojo traits guarantee this DCHECK.
   DCHECK(!frame->metadata().end_of_stream);
+
+  can_read_without_stalling_ = can_read_without_stalling;
 
   // TODO(b/220915557): validate |frame|.
   if (output_cb_)
