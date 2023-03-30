@@ -99,7 +99,7 @@ interface DriveFs {
 
   // Establish communication session between extension and DriveFS.
   CreateNativeHostSession(ExtensionConnectionParams params,
-      pending_receiver<NativeMessagingHost> session,
+      pending_receiver<NativeMessagingHost> host,
       pending_remote<NativeMessagingPort> port);
 
   // Find the files corresponding to Drive's item IDs provided.
@@ -120,7 +120,7 @@ interface DriveFs {
   // Retrieves a list of paths being synced.
   GetSyncingPaths() => (FileError error, array<mojo_base.mojom.FilePath> paths);
 
-  // Tells DriveFS to update its cached pin states of hosted files (once).
+  // Tells DriveFS to poll and update the pin state of hosted files.
   PollHostedFilePinStates();
 
   // Returns the total and free space available in the user's Drive and their
@@ -157,7 +157,8 @@ interface DriveFsDelegate {
   // browser should try to mount again after the specified interval.
   OnUnmounted(mojo_base.mojom.TimeDelta? retry_delay);
 
-  // Invoked when the syncing status changes.
+  // Invoked when the syncing status changes for items that are being tracked by
+  // the streaming stack.
   OnSyncingStatusUpdate(SyncingStatus status);
 
   // Invoked when server-side file changes are received.
@@ -550,7 +551,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
-// Next MinVersion: 5
+// Next MinVersion: 6
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -606,8 +607,8 @@ struct QueryParameters {
   // the query, the "mime_type" will be merged into this "mime_types" field.
   [MinVersion=2] array<string>? mime_types;
 
-  // Only show results that are in the users "My drive" directory excluding
-  // others such as Team drives and trashed files.
+  // Only show results that are in the user's "My drive" directory, or in the
+  // directory specified by `parent_stable_id`.
   [MinVersion=3] bool my_drive_results_only = false;
 
   // Possible way of comparing between document dates and dates specified
@@ -631,6 +632,9 @@ struct QueryParameters {
   // modified_time_operator is kGreaterThan we only show files with
   // modified time T greater than the one specified in this field.
   [MinVersion=4] mojo_base.mojom.Time? modified_time;
+
+  // The stable ID of the parent directory to search for.
+  [MinVersion=5] int64 parent_stable_id = 0;
 };
 
 // TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
@@ -756,8 +760,8 @@ interface HttpDelegate {
   // See |URLLoaderClient::OnStartLoadingResponseBody'
   OnReceiveBody(handle<data_pipe_consumer> response_body);
 
-  // Called once after the URLLoader is done.
-  // NOTE: There may still be data remaining in the data pipe, so destruction
+  // Called once after the |URLLoader| is done.
+  // NOTE: There may still be data remaining in the data pipe, so completion
   // should be deferred until all data is read.
   // See |URLLoaderClient::OnComplete|
   OnRequestComplete(HttpCompletionStatus status);
