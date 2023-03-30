@@ -747,8 +747,15 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
   if (app_service_intent->activity_name.has_value()) {
     crosapi_intent->activity_name = app_service_intent->activity_name.value();
   }
-  if (app_service_intent->data.has_value())
+  if (app_service_intent->data.has_value()) {
     crosapi_intent->data = app_service_intent->data.value();
+  }
+  if (app_service_intent->ui_bypassed.has_value()) {
+    crosapi_intent->ui_bypassed = app_service_intent->ui_bypassed.value();
+  }
+  if (!app_service_intent->extras.empty()) {
+    crosapi_intent->extras = app_service_intent->extras;
+  }
 
   return crosapi_intent;
 }
@@ -796,8 +803,15 @@ apps::IntentPtr CreateAppServiceIntentFromCrosapi(
   if (crosapi_intent->activity_name.has_value()) {
     app_service_intent->activity_name = crosapi_intent->activity_name.value();
   }
-  if (crosapi_intent->data.has_value())
+  if (crosapi_intent->data.has_value()) {
     app_service_intent->data = crosapi_intent->data.value();
+  }
+  if (crosapi_intent->ui_bypassed.has_value()) {
+    app_service_intent->ui_bypassed = crosapi_intent->ui_bypassed.value();
+  }
+  if (crosapi_intent->extras.has_value()) {
+    app_service_intent->extras = crosapi_intent->extras.value();
+  }
 
   return app_service_intent;
 }

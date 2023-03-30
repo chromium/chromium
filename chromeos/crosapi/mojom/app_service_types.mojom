@@ -360,6 +360,8 @@ struct Intent {
   // The activity for the app to launch.
   [MinVersion=13] string? activity_name@6;
   [MinVersion=14] string? data@7;
+  [MinVersion=15] bool? ui_bypassed@8; // Whether or not the user saw the UI.
+  [MinVersion=15] map<string, string>? extras@9;  // Optional string extras.
 };
 
 [Stable, Extensible]

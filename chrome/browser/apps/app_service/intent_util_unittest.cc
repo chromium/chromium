@@ -699,6 +699,23 @@ TEST_F(IntentUtilsTest, CrosapiIntentConversion) {
   converted_intent =
       apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
   EXPECT_EQ(*original_intent, *converted_intent);
+
+  // Test intent with all params (except for files) filled in at once.
+  // `files` param requires profile which is null in this unit test.
+  original_intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                                   GURL("www.google.com"));
+  original_intent->share_text = "text";
+  original_intent->share_title = "title";
+  original_intent->activity_name = "com.android.vending.AssetBrowserActivity";
+  original_intent->data = "geo:0,0?q=1600%20amphitheatre%20parkway";
+  original_intent->ui_bypassed = true;
+  original_intent->extras = base::flat_map<std::string, std::string>{
+      {"android.intent.extra.TESTING", "testing"}};
+  crosapi_intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(original_intent, nullptr);
+  converted_intent =
+      apps_util::CreateAppServiceIntentFromCrosapi(crosapi_intent, nullptr);
+  EXPECT_EQ(*original_intent, *converted_intent);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
