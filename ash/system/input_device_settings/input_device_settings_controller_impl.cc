@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
@@ -144,6 +145,7 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
 
 void InputDeviceSettingsControllerImpl::Init() {
   Shell::Get()->session_controller()->AddObserver(this);
+  InitializePolicyHandler();
   keyboard_notifier_ =
       std::make_unique<InputDeviceNotifier<mojom::KeyboardPtr>>(
           &keyboards_,
@@ -166,6 +168,18 @@ void InputDeviceSettingsControllerImpl::Init() {
           base::BindRepeating(
               &InputDeviceSettingsControllerImpl::OnPointingStickListUpdated,
               base::Unretained(this)));
+}
+
+void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
+  policy_handler_ =
+      std::make_unique<InputDeviceSettingsPolicyHandler>(base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged,
+          base::Unretained(this)));
+
+  // Only initialize the policy handler when in an active user session.
+  if (active_pref_service_) {
+    policy_handler_->Initialize(active_pref_service_);
+  }
 }
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
@@ -193,11 +207,12 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
   active_pref_service_ = pref_service;
+  InitializePolicyHandler();
 
   // Device settings must be refreshed when the user pref service is updated,
-  // but all dependencies of `InputDeviceSettingsControllerImpl` must be updated
-  // due to the active pref service change first. Therefore, schedule a task so
-  // other dependencies are updated first.
+  // but all dependencies of `InputDeviceSettingsControllerImpl` must be
+  // updated due to the active pref service change first. Therefore, schedule
+  // a task so other dependencies are updated first.
   if (!settings_refresh_pending_) {
     settings_refresh_pending_ = true;
     sequenced_task_runner_->PostTask(
@@ -230,6 +245,11 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
         active_pref_service_, pointing_stick.get());
     DispatchPointingStickSettingsChanged(id);
   }
+}
+
+void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
+  // TODO(dpad): Implement re-initialization of keyboard settings when the
+  // policies change.
 }
 
 const mojom::KeyboardSettings*
@@ -357,8 +377,8 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     return;
   }
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can apply
-  // to the given device.
+  // TODO(dpad): Validate incoming settings to make sure the settings can
+  // apply to the given device.
   auto& found_touchpad = *found_touchpad_iter->second;
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
@@ -386,8 +406,8 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
     return;
   }
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can apply
-  // to the given device.
+  // TODO(dpad): Validate incoming settings to make sure the settings can
+  // apply to the given device.
   auto& found_mouse = *found_mouse_iter->second;
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(active_pref_service_, found_mouse);
@@ -414,15 +434,15 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
     return;
   }
 
-  // TODO(dpad): Validate incoming settings to make sure the settings can apply
-  // to the given device.
+  // TODO(dpad): Validate incoming settings to make sure the settings can
+  // apply to the given device.
   auto& found_pointing_stick = *found_pointing_stick_iter->second;
   found_pointing_stick.settings = settings.Clone();
   pointing_stick_pref_handler_->UpdatePointingStickSettings(
       active_pref_service_, found_pointing_stick);
   DispatchPointingStickSettingsChanged(id);
-  // Check the list of pointing sticks to see if any have the same |device_key|.
-  // If so, their settings need to also be updated.
+  // Check the list of pointing sticks to see if any have the same
+  // |device_key|. If so, their settings need to also be updated.
   for (const auto& [device_id, pointing_stick] : pointing_sticks_) {
     if (device_id != found_pointing_stick.id &&
         pointing_stick->device_key == found_pointing_stick.device_key) {
@@ -557,8 +577,8 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     std::vector<ui::InputDevice> keyboards_to_add,
     std::vector<DeviceId> keyboard_ids_to_remove) {
   for (const auto& keyboard : keyboards_to_add) {
-    // Get initial settings from the pref manager and generate our local storage
-    // of the device.
+    // Get initial settings from the pref manager and generate our local
+    // storage of the device.
     auto mojom_keyboard = BuildMojomKeyboard(keyboard);
     keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
                                                        mojom_keyboard.get());

@@ -7,6 +7,25 @@ module ash.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "ui/chromeos/events/mojom/modifier_key.mojom";
 
+// The current status of the enterprise policy for the stated setting.
+enum PolicyStatus {
+  kManaged,
+  kRecommended
+};
+
+// Represents an enterprise policy that has a status via `PolicyStatus` and a
+// boolean value.
+struct InputDeviceSettingsPolicy {
+  PolicyStatus policy_status;
+  bool value;
+};
+
+// Represents the current set of keyboard enterprise policies. All members are
+// optional. When null, there is no enterprise policy set for the given setting.
+struct KeyboardPolicies {
+  InputDeviceSettingsPolicy? top_row_are_fkeys_policy;
+};
+
 // MetaKey denotes all the possible options deducable from the users external or
 // internal keyboard. Used to show the correct key to the user in the settings
 // UI.

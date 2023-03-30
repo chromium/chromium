@@ -6,6 +6,8 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_POLICY_HANDLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/functional/callback_forward.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -14,7 +16,10 @@ namespace ash {
 
 class ASH_EXPORT InputDeviceSettingsPolicyHandler {
  public:
-  InputDeviceSettingsPolicyHandler();
+  using EnterprisePolicyCallback = base::RepeatingClosure;
+
+  explicit InputDeviceSettingsPolicyHandler(
+      EnterprisePolicyCallback keyboard_policy_callback);
   InputDeviceSettingsPolicyHandler(const InputDeviceSettingsPolicyHandler&) =
       delete;
   InputDeviceSettingsPolicyHandler& operator=(
@@ -23,9 +28,20 @@ class ASH_EXPORT InputDeviceSettingsPolicyHandler {
 
   void Initialize(PrefService* pref_service);
 
+  const mojom::KeyboardPolicies& keyboard_policies() const {
+    return keyboard_policies_;
+  }
+
  private:
+  void RefreshKeyboardPolicies(bool notify);
+  void RefreshMousePolicies(bool notify);
+
   void OnKeyboardPoliciesChanged(const std::string& pref_name);
   void OnMousePoliciesChanged(const std::string& pref_name);
+
+  EnterprisePolicyCallback keyboard_policy_callback_;
+
+  mojom::KeyboardPolicies keyboard_policies_;
 
   // Used to track preferences which may be controlled by enterprise policies.
   PrefChangeRegistrar pref_change_registrar_;
