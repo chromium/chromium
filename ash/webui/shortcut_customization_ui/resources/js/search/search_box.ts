@@ -90,17 +90,24 @@ export class SearchBoxElement extends SearchBoxElementBase {
        * Used by FocusRowMixin to track if the list has been blurred.
        */
       listBlurred: Boolean,
+
+      /**
+       * Value is proxied through to cr-toolbar-search-field. When true, the
+       * search field will show a processing spinner.
+       */
+      spinnerActive: Boolean,
     };
   }
 
+  hasSearchQuery: boolean;
   searchResults: MojoSearchResult[];
   shouldShowDropdown: boolean;
-  hasSearchQuery: true;
   private lastFocused: HTMLElement|null;
   private listBlurred: boolean;
   private searchResultsExist: boolean;
   private selectedItem: MojoSearchResult;
   private shortcutSearchHandler: ShortcutSearchHandlerInterface;
+  private spinnerActive: boolean;
 
   constructor() {
     super();
@@ -112,6 +119,9 @@ export class SearchBoxElement extends SearchBoxElementBase {
 
     this.addEventListener('blur', this.onBlur);
     this.addEventListener('keydown', this.onKeyDown);
+    // This event is fired (after a short debounce) from the
+    // cr-toolbar-search-field when the input changes.
+    this.addEventListener('search-changed', this.onSearchChanged);
   }
 
   override connectedCallback(): void {
@@ -139,6 +149,11 @@ export class SearchBoxElement extends SearchBoxElementBase {
     return strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
         .getSearchInput()
         .value;
+  }
+
+  private onSearchChanged(): void {
+    this.hasSearchQuery = !!this.getCurrentQuery();
+    this.fetchSearchResults(this.getCurrentQuery());
   }
 
   /**
@@ -192,16 +207,6 @@ export class SearchBoxElement extends SearchBoxElementBase {
   }
 
   private onKeyDown(e: KeyboardEvent): void {
-    // TODO(cambickel): Query the search results as user is typing. Add some
-    // debouncing to the search input in the future.
-    if (e.key === 'Enter') {
-      this.shouldShowDropdown = true;
-      const query: string = this.getCurrentQuery();
-      this.hasSearchQuery = true;
-      this.fetchSearchResults(query);
-      return;
-    }
-
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       // Do not impact the position of <cr-toolbar-search-field>'s caret.
       e.preventDefault();
@@ -280,13 +285,30 @@ export class SearchBoxElement extends SearchBoxElementBase {
       return;
     }
 
+    this.spinnerActive = true;
+
     this.shortcutSearchHandler
         .search(stringToMojoString16(query), MAX_NUM_RESULTS)
-        .then((result) => {
-          this.searchResults = result.results;
+        .then((response) => {
+          this.onSearchResultsReceived(query, response.results);
           this.dispatchEvent(new CustomEvent(
               'search-results-fetched', {bubbles: true, composed: true}));
         });
+  }
+
+  private onSearchResultsReceived(query: string, results: MojoSearchResult[]):
+      void {
+    if (query !== this.getCurrentQuery()) {
+      // Received search results are invalid as the query has since changed.
+      return;
+    }
+
+    this.spinnerActive = false;
+    this.searchResults = results;
+
+    // This invalidates whatever SearchResultRow element was previously focused,
+    // since it's likely that the element has been removed after the search.
+    this.lastFocused = null;
   }
 }
 

@@ -92,7 +92,8 @@
 
 <!-- TODO(longbowei): Localize string -->
 <cr-toolbar-search-field id="search" label="Search for keyboard shortcuts"
-    on-search-icon-clicked="onSearchIconClicked">
+    on-search-icon-clicked="onSearchIconClicked"
+    spinner-active="[[spinnerActive]]">
 </cr-toolbar-search-field>
 <iron-dropdown id="searchResults" opened="[[shouldShowDropdown]]"
     allow-outside-scroll no-cancel-on-outside-click>

@@ -86,10 +86,9 @@ suite('searchBoxTest', function() {
         !!searchFieldElement,
         'SearchFieldElement was not initialized before simulating search.');
 
-    // Pressing enter will invoke shortcut search.
+    // Setting the value of the search field searches for the query after a
+    // short period of time.
     searchFieldElement.setValue(query);
-    searchFieldElement.dispatchEvent(
-        new KeyboardEvent('keydown', {'key': 'Enter'}));
 
     if (query) {
       await waitForSearchResultsFetched();
