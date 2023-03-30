@@ -766,8 +766,8 @@
   },
   {
     "name": "block-insecure-private-network-requests",
-    "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 114
+    "owners": [ "titouan", "lyf", "chrome-security-owp-team@google.com" ],
+    "expiry_milestone": 118
   },
   {
     "name": "bluetooth-coredump",
