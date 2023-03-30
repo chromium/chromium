@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -106,6 +107,20 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
     Callback callback_;
   };
 
+  // This is used to ensure that multiple overlapping elements anchored on this
+  // button correctly handle highlighting.
+  class VIEWS_EXPORT ScopedAnchorHighlight {
+   public:
+    explicit ScopedAnchorHighlight(base::WeakPtr<Button> button);
+    ~ScopedAnchorHighlight();
+
+    ScopedAnchorHighlight(ScopedAnchorHighlight&&);
+    ScopedAnchorHighlight& operator=(ScopedAnchorHighlight&&);
+
+   private:
+    base::WeakPtr<Button> button_;
+  };
+
   static constexpr ButtonState kButtonStates[STATE_COUNT] = {
       ButtonState::STATE_NORMAL, ButtonState::STATE_HOVERED,
       ButtonState::STATE_PRESSED, ButtonState::STATE_DISABLED};
@@ -182,6 +197,12 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Highlights the ink drop for the button.
   void SetHighlighted(bool highlighted);
+
+  // Menus, bubbles, and IPH should call this when they anchor. This ensures
+  // that highlighting is handled correctly with multiple anchored elements.
+  // TODO(crbug/1428097): Migrate callers of SetHighlighted to this function,
+  // where appropriate.
+  ScopedAnchorHighlight AddAnchorHighlight();
 
   base::CallbackListSubscription AddStateChangedCallback(
       PropertyChangedCallback callback);
@@ -292,11 +313,16 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // Getter used by metadata only.
   const PressedCallback& GetCallback() const { return callback_; }
 
+  base::WeakPtr<Button> GetWeakPtr();
+
  private:
   friend class test::ButtonTestApi;
+  friend class ScopedAnchorHighlight;
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
 
   void OnEnabledChanged();
+
+  void ReleaseAnchorHighlight();
 
   // The text shown in a tooltip.
   std::u16string tooltip_text_;
@@ -349,6 +375,10 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   base::CallbackListSubscription enabled_changed_subscription_{
       AddEnabledChangedCallback(base::BindRepeating(&Button::OnEnabledChanged,
                                                     base::Unretained(this)))};
+
+  size_t anchor_count_ = 0;
+
+  base::WeakPtrFactory<Button> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, View)
