@@ -49,6 +49,8 @@ class BookmarkNode;
 - (const bookmarks::BookmarkNode*)selectedFolderNode;
 // Whether to display the cloud slashed icon beside the folders.
 - (BOOL)shouldDisplayCloudIconForProfileBookmarks;
+// Whether to show the account bookmarks section.
+- (BOOL)shouldShowAccountBookmarks;
 
 @end
 

@@ -513,6 +513,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE" desc="Text shown for the undo button. [Length: 30em.] [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE" desc="This string appears on a page of saved bookmarks. It is the heading for a category. The categories indicate where a bookmark is saved: in this string, the bookmarks are saved in the user's Google Account. This is a shortened version of the noun phrase: 'Bookmarks in your Google Account'. If your language permits it, you can omit 'Bookmarks' because it is already at the top of the page. [Length: 40em.] [iOS only]" meaning="Bookmarks in your Google Account">
+        In Your Google Account
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE" desc="This string appears on a page of saved bookmarks. It is the heading for a category. The categories indicate where a bookmark is saved: in this string, the bookmarks are saved locally on the user's device. This is a shortened version of the noun phrase: 'Bookmarks that are only on your device'. If your language permits it, you can omit 'Bookmarks' because it is already at the top of the page. [Length: 40em.] [iOS only]" meaning="Bookmarks that are only on your device">
+        Only on This Device
+      </message>
       <message name="IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL" desc="Accessibility label of the cloud.slash icon in the bookmark views on Folder. For voice over only, not in UI. [iOS only]">
         <ph name="FOLDER_NAME">$1<ex>new folder</ex></ph>. Only on this device.
       </message>

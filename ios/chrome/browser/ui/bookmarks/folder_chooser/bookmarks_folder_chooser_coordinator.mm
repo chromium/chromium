@@ -12,8 +12,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
@@ -111,16 +113,25 @@
 - (void)start {
   [super start];
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  bookmarks::BookmarkModel* model =
+  bookmarks::BookmarkModel* profileModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
+  // TODO(crbug.com/1428045): Hook up the correct `accountModel` after the
+  // backend work is finished.
+  bookmarks::BookmarkModel* accountModel =
+      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)
+          ? profileModel
+          : nullptr;
   _mediator = [[BookmarksFolderChooserMediator alloc]
-      initWithBookmarkModel:model
-                editedNodes:std::move(_hiddenNodes)
-           syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
-                                browserState)
-                syncService:SyncServiceFactory::GetForBrowserState(
-                                browserState)];
+      initWithProfileBookmarkModel:profileModel
+              accountBookmarkModel:accountModel
+                       editedNodes:std::move(_hiddenNodes)
+             authenticationService:AuthenticationServiceFactory::
+                                       GetForBrowserState(browserState)
+                  syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
+                                       browserState)
+                       syncService:SyncServiceFactory::GetForBrowserState(
+                                       browserState)];
   _hiddenNodes.clear();
   _mediator.delegate = self;
   _mediator.selectedFolderNode = _selectedFolder;
