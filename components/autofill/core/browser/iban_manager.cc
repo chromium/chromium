@@ -43,22 +43,25 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     }
   }
 
-  if (personal_data_manager_) {
-    std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
-    if (!ibans.empty()) {
-      // Rank the IBANs by ranking score (see AutoFillDataModel for details).
-      base::Time comparison_time = AutofillClock::Now();
-      if (ibans.size() > 1) {
-        base::ranges::sort(
-            ibans, [comparison_time](const IBAN* iban0, const IBAN* iban1) {
-              return iban0->HasGreaterRankingThan(iban1, comparison_time);
-            });
-      }
-      SendIBANSuggestions(
-          ibans, QueryHandler(field.global_id(), autoselect_first_suggestion,
-                              field.value, handler));
-      return true;
+  if (!personal_data_manager_ ||
+      !personal_data_manager_->IsAutofillCreditCardEnabled()) {
+    return false;
+  }
+
+  std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
+  if (!ibans.empty()) {
+    // Rank the IBANs by ranking score (see AutoFillDataModel for details).
+    base::Time comparison_time = AutofillClock::Now();
+    if (ibans.size() > 1) {
+      base::ranges::sort(
+          ibans, [comparison_time](const IBAN* iban0, const IBAN* iban1) {
+            return iban0->HasGreaterRankingThan(iban1, comparison_time);
+          });
     }
+    SendIBANSuggestions(
+        ibans, QueryHandler(field.global_id(), autoselect_first_suggestion,
+                            field.value, handler));
+    return true;
   }
   return false;
 }
