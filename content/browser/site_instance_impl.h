@@ -209,9 +209,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // process-per-site model should be used.
   bool ShouldUseProcessPerSite() const;
 
-  // Checks if |current_process| can be reused for this SiteInstance, and
-  // sets |process_| to |current_process| if so.
-  void ReuseCurrentProcessIfPossible(RenderProcessHost* current_process);
+  // Checks if |existing_process| can be reused for this SiteInstance, and
+  // sets |process_| to |existing_process| if so.
+  void ReuseExistingProcessIfPossible(RenderProcessHost* existing_process);
 
   // Whether the SiteInstance is created for a service worker. If this flag
   // is true, when a new process is created for this SiteInstance or a randomly

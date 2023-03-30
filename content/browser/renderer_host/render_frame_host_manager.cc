@@ -326,7 +326,7 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
         if (RenderProcessHost* default_process =
                 rfhi->GetSiteInstance()
                     ->GetDefaultProcessForBrowsingInstance()) {
-          site_instance->ReuseCurrentProcessIfPossible(default_process);
+          site_instance->ReuseExistingProcessIfPossible(default_process);
           if (site_instance->HasProcess())
             return RenderFrameHost::FrameIterationAction::kStop;
         }
@@ -2343,7 +2343,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // Note: process reuse might not be possible in some cases, e.g. for
   // cross-site navigations when the current SiteInstance needs a dedicated
   // process.  This will be enforced by the checks inside
-  // ReuseCurrentProcessIfPossible().
+  // ReuseExistingProcessIfPossible().
   RenderProcessHost* process_to_reuse = nullptr;
 
   // Process-reuse cases include:
@@ -2423,7 +2423,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   if (process_to_reuse) {
     DCHECK(frame_tree_node_->IsMainFrame());
-    new_instance->ReuseCurrentProcessIfPossible(process_to_reuse);
+    new_instance->ReuseExistingProcessIfPossible(process_to_reuse);
   }
 
   // We want fenced frame BrowsingInstances to share the same default

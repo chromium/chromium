@@ -49,7 +49,7 @@ class SiteInstanceGroupManager final : private RenderProcessHostObserver {
   // called once for each SiteInstance.
   // Also sets the RenderProcessHost and AgentSchedulingGroupHost for the group.
   // TODO(crbug.com/1291351): Remove the `process` parameter. Currently it's
-  // required due to SiteInstanceImpl::ReuseCurrentProcessIfPossible. This
+  // required due to SiteInstanceImpl::ReuseExistingProcessIfPossible. This
   // function could instead take a hint for which process the caller would like
   // to use if possible. This will be needed before a group can have multiple
   // SiteInstances. When this change happens, this should be renamed as it can

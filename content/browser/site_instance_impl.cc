@@ -260,7 +260,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
         browser_context, embedder_site_instance->GetStoragePartitionConfig()));
   }
   DCHECK_EQ(embedder_site_instance->IsGuest(), site_instance->IsGuest());
-  site_instance->ReuseCurrentProcessIfPossible(
+  site_instance->ReuseExistingProcessIfPossible(
       embedder_site_instance->GetProcess());
   return site_instance;
 }
@@ -395,29 +395,30 @@ bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
   return has_site_ && site_info_.ShouldUseProcessPerSite(browser_context);
 }
 
-void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
-    RenderProcessHost* current_process) {
+void SiteInstanceImpl::ReuseExistingProcessIfPossible(
+    RenderProcessHost* existing_process) {
   if (HasProcess())
     return;
 
-  // We should not reuse the current process if the destination uses
+  // We should not reuse `existing_process` if the destination uses
   // process-per-site. Note that this includes the case where the process for
-  // the site is not there yet (so we're going to create a new process).
-  // Note also that this does not apply for the reverse case: if the current
-  // process is used for a process-per-site site, it is ok to reuse this for the
-  // new page (regardless of the site).
+  // the site is not there yet (so we're going to create a new process).  Note
+  // also that this does not apply for the reverse case: if the existing process
+  // is used for a process-per-site site, it is ok to reuse this for the new
+  // page (regardless of the site).
   if (ShouldUseProcessPerSite())
     return;
 
   // Do not reuse the process if it's not suitable for this SiteInstance. For
   // example, this won't allow reusing a process if it's locked to a site that's
   // different from this SiteInstance's site.
-  if (!RenderProcessHostImpl::MayReuseAndIsSuitable(current_process, this))
+  if (!RenderProcessHostImpl::MayReuseAndIsSuitable(existing_process, this)) {
     return;
+  }
 
   // TODO(crbug.com/1055779): Don't try to reuse process if either of the
   // SiteInstances are cross-origin isolated (uses COOP/COEP).
-  SetProcessInternal(current_process);
+  SetProcessInternal(existing_process);
 }
 
 void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
