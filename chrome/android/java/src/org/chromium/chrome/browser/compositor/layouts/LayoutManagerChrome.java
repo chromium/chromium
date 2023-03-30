@@ -538,7 +538,7 @@ public class LayoutManagerChrome
             mScrollDirection = computeScrollDirection(dx, dy);
             if (mScrollDirection == ScrollDirection.UNKNOWN) return;
 
-            if (mSupportSwipeDown && (mOverviewLayout != null || mTabSwitcherLayout != null)
+            if (mSupportSwipeDown && isTabSwitcherReady()
                     && mScrollDirection == ScrollDirection.DOWN) {
                 RecordUserAction.record("MobileToolbarSwipeOpenStackView");
                 showLayout(LayoutType.TAB_SWITCHER, true);
@@ -603,10 +603,19 @@ public class LayoutManagerChrome
 
             if (direction == ScrollDirection.DOWN) {
                 boolean isAccessibility = ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-                return (mOverviewLayout != null || mTabSwitcherLayout != null) && !isAccessibility;
+                return isTabSwitcherReady() && !isAccessibility;
             }
 
             return direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT;
+        }
+
+        /**
+         * @return Whether or not we are ready to show the GTS layout.
+         */
+        private boolean isTabSwitcherReady() {
+            // On tablets, attempting to show the GTS while it's null will trigger its creation.
+            return mOverviewLayout != null || mTabSwitcherLayout != null
+                    || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext());
         }
     }
 
