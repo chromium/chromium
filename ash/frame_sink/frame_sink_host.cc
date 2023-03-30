@@ -34,18 +34,41 @@ void FrameSinkHost::SetPresentationCallback(PresentationCallback callback) {
 }
 
 void FrameSinkHost::Init(aura::Window* host_window) {
-  DCHECK(!frame_sink_holder_);
+  InitInternal(host_window, host_window->CreateLayerTreeFrameSink());
+}
+
+void FrameSinkHost::InitForTesting(
+    aura::Window* host_window,
+    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
+  InitInternal(host_window, std::move(layer_tree_frame_sink));
+}
+
+void FrameSinkHost::InitInternal(
+    aura::Window* host_window,
+    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
+  SetHostWindow(host_window);
+  InitFrameSinkHolder(host_window, std::move(layer_tree_frame_sink));
+}
+
+void FrameSinkHost::InitFrameSinkHolder(
+    aura::Window* host_window,
+    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
+  DCHECK(!frame_sink_holder_) << "FrameSinkHost is already initialized.";
+
+  frame_sink_holder_ = std::make_unique<FrameSinkHolder>(
+      std::move(layer_tree_frame_sink),
+      base::BindRepeating(&FrameSinkHost::CreateCompositorFrame,
+                          base::Unretained(this)));
+}
+
+void FrameSinkHost::SetHostWindow(aura::Window* host_window) {
+  DCHECK(!host_window_) << "FrameSinkHost is already initialized.";
   DCHECK(host_window);
   DCHECK(host_window->parent()) << "Before calling Init(), host_window must be "
                                    "added to the window hierarchy first.";
+
   host_window_ = host_window;
-
   host_window_->AddObserver(this);
-
-  frame_sink_holder_ = std::make_unique<FrameSinkHolder>(
-      host_window_->CreateLayerTreeFrameSink(),
-      base::BindRepeating(&FrameSinkHost::CreateCompositorFrame,
-                          base::Unretained(this)));
 }
 
 void FrameSinkHost::UpdateSurface(const gfx::Rect& content_rect,
