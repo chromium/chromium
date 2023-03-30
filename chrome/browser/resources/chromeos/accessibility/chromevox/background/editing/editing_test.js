@@ -1667,9 +1667,8 @@ AX_TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(accessibility): flaky; https://crbug.com/1342870.
 AX_TEST_F(
-    'ChromeVoxEditingTest', 'DISABLED_MoveByWordSuggestions', async function() {
+    'ChromeVoxEditingTest', 'MoveByWordSuggestions', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <div contenteditable="true" role="textbox">
