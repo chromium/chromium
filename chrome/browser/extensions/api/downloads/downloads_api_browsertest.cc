@@ -40,7 +40,6 @@
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/extensions/api/downloads_internal/downloads_internal_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -71,6 +70,7 @@
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "net/base/data_url.h"
@@ -629,48 +629,48 @@ class DownloadExtensionTest : public ExtensionApiTest {
     return RunFunctionInternal(second_extension_, function, args);
   }
 
-  api_test_utils::RunFunctionFlags GetFlags() {
+  api_test_utils::FunctionMode GetRunMode() {
     return current_browser()->profile()->IsOffTheRecord()
-               ? api_test_utils::INCLUDE_INCOGNITO
-               : api_test_utils::NONE;
+               ? api_test_utils::FunctionMode::kIncognito
+               : api_test_utils::FunctionMode::kNone;
   }
 
-  // extension_function_test_utils::RunFunction*() only uses browser for its
+  // api_test_utils::RunFunction*() only uses browser for its
   // profile(), so pass it the on-record browser so that it always uses the
   // on-record profile to match real-life behavior.
 
-  std::unique_ptr<base::Value> RunFunctionAndReturnResult(
+  absl::optional<base::Value> RunFunctionAndReturnResult(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args) {
     SetUpExtensionFunction(extension_, function.get());
-    return extension_function_test_utils::RunFunctionAndReturnSingleResult(
-        function.get(), args, current_browser(), GetFlags());
+    return api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), args, current_browser()->profile(), GetRunMode());
   }
 
   std::string RunFunctionAndReturnError(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args) {
     SetUpExtensionFunction(extension_, function.get());
-    return extension_function_test_utils::RunFunctionAndReturnError(
-        function.get(), args, current_browser(), GetFlags());
+    return api_test_utils::RunFunctionAndReturnError(
+        function.get(), args, current_browser()->profile(), GetRunMode());
   }
 
   std::string RunFunctionAndReturnErrorInSecondExtension(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args) {
     SetUpExtensionFunction(second_extension_, function.get());
-    return extension_function_test_utils::RunFunctionAndReturnError(
-        function.get(), args, current_browser(), GetFlags());
+    return api_test_utils::RunFunctionAndReturnError(
+        function.get(), args, current_browser()->profile(), GetRunMode());
   }
 
   bool RunFunctionAndReturnString(scoped_refptr<ExtensionFunction> function,
                                   const std::string& args,
                                   std::string* result_string) {
     SetUpExtensionFunction(extension_, function.get());
-    std::unique_ptr<base::Value> result(
-        RunFunctionAndReturnResult(function, args));
-    EXPECT_TRUE(result.get());
-    if (result.get() && result->is_string()) {
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnResult(function, args);
+    EXPECT_TRUE(result);
+    if (result && result->is_string()) {
       *result_string = result->GetString();
       return true;
     }
@@ -717,8 +717,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
                            const std::string& args) {
     scoped_refptr<ExtensionFunction> delete_function(function);
     SetUpExtensionFunction(extension, function);
-    bool result = extension_function_test_utils::RunFunction(
-        function.get(), args, current_browser(), GetFlags());
+    bool result = api_test_utils::RunFunction(
+        function.get(), args, current_browser()->profile(), GetRunMode());
     if (!result) {
       LOG(ERROR) << function->GetError();
     }
@@ -1111,9 +1111,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_STREQ(errors::kInvalidId, error.c_str());
 
   int id = download_item->GetId();
-  std::unique_ptr<base::Value> result(
+  absl::optional<base::Value> result =
       RunFunctionAndReturnResult(base::MakeRefCounted<DownloadsEraseFunction>(),
-                                 base::StringPrintf("[{\"id\": %d}]", id)));
+                                 base::StringPrintf("[{\"id\": %d}]", id));
   DownloadManager::DownloadVector items;
   GetCurrentManager()->GetAllDownloads(&items);
   EXPECT_EQ(0UL, items.size());
@@ -1261,9 +1261,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ScopedCancellingItem item(CreateFirstSlowTestDownload());
   ASSERT_TRUE(item.get());
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
-      base::MakeRefCounted<DownloadsSearchFunction>(), "[{}]"));
-  ASSERT_TRUE(result.get());
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
+      base::MakeRefCounted<DownloadsSearchFunction>(), "[{}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 }
@@ -1280,9 +1280,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, FileExistenceCheckAfterSearch) {
   base::DeleteFile(download_item->GetTargetFilePath());
 
   ASSERT_FALSE(download_item->GetFileExternallyRemoved());
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
-      base::MakeRefCounted<DownloadsSearchFunction>(), "[{}]"));
-  ASSERT_TRUE(result.get());
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
+      base::MakeRefCounted<DownloadsSearchFunction>(), "[{}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 
@@ -1328,10 +1328,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(CreateHistoryDownloads(kHistoryInfo, std::size(kHistoryInfo),
                                      &all_downloads));
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
-      "[{\"filenameRegex\": \"foobar\"}]"));
-  ASSERT_TRUE(result.get());
+      "[{\"filenameRegex\": \"foobar\"}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
   const base::Value& item_value = result->GetList()[0];
@@ -1348,10 +1348,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_SearchId) {
   CreateTwoDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
-      base::StringPrintf("[{\"id\": %u}]", items[0]->GetId())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"id\": %u}]", items[0]->GetId()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
   const base::Value& item_value = result->GetList()[0];
@@ -1369,10 +1369,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   CreateTwoDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
-      "[{\"id\": 0, \"filename\": \"foobar\"}]"));
-  ASSERT_TRUE(result.get());
+      "[{\"id\": 0, \"filename\": \"foobar\"}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(0UL, result->GetList().size());
 }
@@ -1389,10 +1389,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(
       CreateHistoryDownloads(kHistoryInfo, std::size(kHistoryInfo), &items));
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
-      "[{\"orderBy\": [\"filename\"]}]"));
-  ASSERT_TRUE(result.get());
+      "[{\"orderBy\": [\"filename\"]}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(2UL, result->GetList().size());
   const base::Value& item0_value = result->GetList()[0];
@@ -1420,9 +1420,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(
       CreateHistoryDownloads(kHistoryInfo, std::size(kHistoryInfo), &items));
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
-      base::MakeRefCounted<DownloadsSearchFunction>(), "[{\"orderBy\": []}]"));
-  ASSERT_TRUE(result.get());
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
+      base::MakeRefCounted<DownloadsSearchFunction>(), "[{\"orderBy\": []}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(2UL, result->GetList().size());
   const base::Value& item0_value = result->GetList()[0];
@@ -1454,10 +1454,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(
       CreateHistoryDownloads(kHistoryInfo, std::size(kHistoryInfo), &items));
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
-      "[{\"danger\": \"content\"}]"));
-  ASSERT_TRUE(result.get());
+      "[{\"danger\": \"content\"}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 }
@@ -1471,10 +1471,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   items[0]->Cancel(true);
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
-      "[{\"state\": \"in_progress\"}]"));
-  ASSERT_TRUE(result.get());
+      "[{\"state\": \"in_progress\"}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 }
@@ -1486,9 +1486,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   CreateTwoDownloads(&items);
   ScopedItemVectorCanceller delete_items(&items);
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
-      base::MakeRefCounted<DownloadsSearchFunction>(), "[{\"limit\": 1}]"));
-  ASSERT_TRUE(result.get());
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
+      base::MakeRefCounted<DownloadsSearchFunction>(), "[{\"limit\": 1}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 }
@@ -1527,14 +1527,14 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(
       CreateHistoryDownloads(kHistoryInfo, std::size(kHistoryInfo), &items));
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(),
       "[{"
       "\"state\": \"complete\", "
       "\"danger\": \"content\", "
       "\"orderBy\": [\"filename\"], "
-      "\"limit\": 1}]"));
-  ASSERT_TRUE(result.get());
+      "\"limit\": 1}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
   const base::Value& item_value = result->GetList()[0];
@@ -1551,7 +1551,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito) {
-  std::unique_ptr<base::Value> result_value;
+  absl::optional<base::Value> result_value;
   std::string error;
   std::string result_string;
 
@@ -1575,7 +1575,7 @@ IN_PROC_BROWSER_TEST_F(
   GoOffTheRecord();
   result_value = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(), "[{}]");
-  ASSERT_TRUE(result_value.get());
+  ASSERT_TRUE(result_value);
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(2UL, result_value->GetList().size());
   {
@@ -1604,7 +1604,7 @@ IN_PROC_BROWSER_TEST_F(
   GoOnTheRecord();
   result_value = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsSearchFunction>(), "[{}]");
-  ASSERT_TRUE(result_value.get());
+  ASSERT_TRUE(result_value);
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(1UL, result_value->GetList().size());
   {
@@ -1714,10 +1714,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   GoOnTheRecord();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -1768,10 +1768,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   GoOnTheRecord();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.spec().c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.spec().c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -1819,10 +1819,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -1865,11 +1865,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   GoOnTheRecord();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\", \"filename\": \"foo%%bar\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -1953,10 +1953,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   const GURL download_url = embedded_test_server()->GetURL(kThirdDownloadUrl);
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.spec().c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.spec().c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -2097,12 +2097,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"sub/dir/ect/ory.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2178,10 +2178,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   GoOnTheRecord();
 
   int result_id = -1;
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      "[{\"url\": \"javascript:document.write(\\\"hello\\\");\"}]"));
-  ASSERT_TRUE(result.get());
+      "[{\"url\": \"javascript:document.write(\\\"hello\\\");\"}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2194,7 +2194,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       "[{\"url\": \"javascript:return false;\"}]");
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -2214,10 +2214,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       embedded_test_server()->GetURL("/slow?0#fragment").spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2257,10 +2257,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = "data:text/plain,hello";
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2297,7 +2297,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       base::StringPrintf(
           "[{\"url\": \"%s\",  \"conflictAction\": \"overwrite\"}]",
           download_url.c_str()));
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -2337,12 +2337,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = "data:text/plain,hello";
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"data.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2385,12 +2385,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   download_url += "C:/";
 #endif
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"file.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2435,12 +2435,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       embedded_test_server()->GetURL("/auth-basic").spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"auth-basic-fail.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2470,15 +2470,15 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
           .spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"headers-succeed.txt\","
                          "  \"headers\": ["
                          "    {\"name\": \"Foo\", \"value\": \"bar\"},"
                          "    {\"name\": \"Qx\", \"value\":\"yo\"}]}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2527,12 +2527,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
           .spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"headers-fail.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2564,15 +2564,15 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   static const char kAuthorization[] = "dXNlcm5hbWU6c2VjcmV0";
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"auth-basic-succeed.txt\","
                          "  \"headers\": [{"
                          "    \"name\": \"Authorization\","
                          "    \"value\": \"Basic %s\"}]}]",
-                         download_url.c_str(), kAuthorization)));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str(), kAuthorization));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2611,14 +2611,14 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                                  .spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"filename\": \"post-succeed.txt\","
                          "  \"method\": \"POST\","
                          "  \"body\": \"BODY\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2667,13 +2667,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                                  .spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"body\": \"BODY\","
                          "  \"filename\": \"post-get.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2708,13 +2708,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                                  .spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\","
                          "  \"method\": \"POST\","
                          "  \"filename\": \"post-nobody.txt\"}]",
-                         download_url.c_str())));
-  ASSERT_TRUE(result.get());
+                         download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2747,10 +2747,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       embedded_test_server()->GetURL("/download-known-size").spec();
   GoOnTheRecord();
 
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2809,10 +2809,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       strlen(kPayloadData)));
 
   // Now download it.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
 
@@ -2859,10 +2859,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2927,10 +2927,10 @@ IN_PROC_BROWSER_TEST_F(
       0);
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -2983,10 +2983,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3054,10 +3054,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf(R"([{"url": "%s"}])", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf(R"([{"url": "%s"}])", download_url.c_str()));
+  ASSERT_TRUE(result);
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
   ASSERT_TRUE(item);
@@ -3082,10 +3082,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(item->GetTargetFilePath().empty());
   ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
 
-  std::unique_ptr<base::Value> determine_result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> determine_result(RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsInternalDetermineFilenameFunction>(),
       base::StringPrintf(R"([%d, "", "uniquify"])", result_id)));
-  EXPECT_FALSE(determine_result.get());  // No return value.
+  EXPECT_FALSE(determine_result);  // No return value.
 }
 
 // Tests that overriding a safe file extension to a dangerous extension will not
@@ -3100,10 +3100,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3161,10 +3161,10 @@ IN_PROC_BROWSER_TEST_F(
 
   std::string download_url = "data:application/x-shockwave-flash,";
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3234,10 +3234,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3296,10 +3296,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3358,10 +3358,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3421,10 +3421,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3483,10 +3483,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3545,10 +3545,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3607,10 +3607,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3671,10 +3671,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3734,10 +3734,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3788,7 +3788,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -3849,10 +3849,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -3903,7 +3903,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -3976,10 +3976,10 @@ IN_PROC_BROWSER_TEST_F(
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -4041,10 +4041,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start an on-record download.
   GoOnTheRecord();
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -4107,7 +4107,7 @@ IN_PROC_BROWSER_TEST_F(
   result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -4182,10 +4182,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start an on-record download.
   GoOnTheRecord();
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -4248,7 +4248,7 @@ IN_PROC_BROWSER_TEST_F(
   result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
-  ASSERT_TRUE(result.get());
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
   item = GetCurrentManager()->GetDownload(result_id);
@@ -4507,11 +4507,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   // DownloadDangerPrompt is created, pretend that the user clicks the Accept
   // button; wait until the download completes.
   LoadExtension("downloads_split");
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
       "[{\"url\": \"data:application/x-shockwave-flash,\", \"filename\": "
-      "\"dangerous.swf\"}]"));
-  ASSERT_TRUE(result.get());
+      "\"dangerous.swf\"}]");
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
@@ -4547,10 +4547,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
 
   // Start downloading a file.
-  std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
+  absl::optional<base::Value> result = RunFunctionAndReturnResult(
       base::MakeRefCounted<DownloadsDownloadFunction>(),
-      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str())));
-  ASSERT_TRUE(result.get());
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
+  ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
   int result_id = result->GetInt();
   DownloadItem* item = GetCurrentManager()->GetDownload(result_id);
