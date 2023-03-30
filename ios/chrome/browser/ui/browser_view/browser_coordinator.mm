@@ -2134,14 +2134,17 @@ enum class ToolbarKind {
 
 #pragma mark - PasswordsAccountStorageNoticeCommands
 
-- (void)showPasswordsAccountStorageNoticeWithDismissalHandler:
-    (void (^)())dismissalHandler {
+- (void)showPasswordsAccountStorageNoticeForEntryPoint:
+            (PasswordsAccountStorageNoticeEntryPoint)entryPoint
+                                      dismissalHandler:
+                                          (void (^)())dismissalHandler {
   DCHECK(dismissalHandler);
   DCHECK(!self.passwordsAccountStorageNoticeCoordinator);
   self.passwordsAccountStorageNoticeCoordinator =
       [[PasswordsAccountStorageNoticeCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
+                          entryPoint:entryPoint
                     dismissalHandler:dismissalHandler];
   [self.passwordsAccountStorageNoticeCoordinator start];
 }

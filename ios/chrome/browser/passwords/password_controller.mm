@@ -497,12 +497,30 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
   __weak __typeof(self) weakSelf = self;
   __block std::unique_ptr<PasswordFormManagerForUI> blockForm = std::move(form);
-  [self showAccountStorageNotice:^{
-    // No need to handle opt-outs here, the infobar adapts the strings.
-    [weakSelf showInfoBarForForm:std::move(blockForm)
-                     infoBarType:infobarType
-                          manual:manual];
-  }];
+  const auto entryPoint =
+      infobarType == PasswordInfoBarType::SAVE
+          ? PasswordsAccountStorageNoticeEntryPoint::kSave
+          : PasswordsAccountStorageNoticeEntryPoint::kUpdate;
+  [self showAccountStorageNoticeAndMarkShown:entryPoint
+                                  completion:^{
+                                    // No need to handle opt-outs here, the
+                                    // infobar adapts the strings.
+                                    [weakSelf
+                                        showInfoBarForForm:std::move(blockForm)
+                                               infoBarType:infobarType
+                                                    manual:manual];
+                                  }];
+}
+
+- (void)showAccountStorageNoticeAndMarkShown:
+            (PasswordsAccountStorageNoticeEntryPoint)entryPoint
+                                  completion:(void (^)())completion {
+  CHECK([self shouldShowAccountStorageNotice]);
+  self.browserState->GetPrefs()->SetBoolean(
+      password_manager::prefs::kAccountStorageNoticeShown, true);
+  [HandlerForProtocol(self.dispatcher, PasswordsAccountStorageNoticeCommands)
+      showPasswordsAccountStorageNoticeForEntryPoint:entryPoint
+                                    dismissalHandler:completion];
 }
 
 #pragma mark - SharedPasswordControllerDelegate
@@ -532,11 +550,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 - (void)showAccountStorageNotice:(void (^)())completion {
-  CHECK([self shouldShowAccountStorageNotice]);
-  self.browserState->GetPrefs()->SetBoolean(
-      password_manager::prefs::kAccountStorageNoticeShown, true);
-  [HandlerForProtocol(self.dispatcher, PasswordsAccountStorageNoticeCommands)
-      showPasswordsAccountStorageNoticeWithDismissalHandler:completion];
+  [self showAccountStorageNoticeAndMarkShown:
+            PasswordsAccountStorageNoticeEntryPoint::kFill
+                                  completion:completion];
 }
 
 @end
