@@ -1336,9 +1336,9 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
             {
               const auto& event = manager->pending_os_events_.front();
               manager->attribution_os_level_manager_->Register(
-                  event, is_debug_key_allowed);
-              manager->NotifyOsRegistration(event, is_debug_key_allowed,
-                                            OsRegistrationResult::kPassedToOs);
+                  event, is_debug_key_allowed,
+                  base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
+                                 manager, event, is_debug_key_allowed));
             }
 
             manager->pending_os_events_.pop_front();
@@ -1357,6 +1357,15 @@ void AttributionManagerImpl::NotifyOsRegistration(
   for (auto& observer : observers_) {
     observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
   }
+}
+
+void AttributionManagerImpl::OnOsRegistration(
+    const OsRegistration& registration,
+    bool is_debug_key_allowed,
+    bool success) {
+  NotifyOsRegistration(registration, is_debug_key_allowed,
+                       success ? OsRegistrationResult::kPassedToOs
+                               : OsRegistrationResult::kRejectedByOs);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

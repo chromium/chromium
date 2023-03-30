@@ -231,7 +231,9 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
 
   MOCK_METHOD(void,
               Register,
-              (const OsRegistration&, bool is_debug_key_allowed),
+              (const OsRegistration&,
+               bool is_debug_key_allowed,
+               base::OnceCallback<void(bool success)> callback),
               (override));
 
   MOCK_METHOD(void,
@@ -1149,26 +1151,26 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
                                         AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/true));
+                         /*is_debug_key_allowed=*/true, _));
 
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
                                         AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/false));
+                         /*is_debug_key_allowed=*/false, _));
   }
 
   // Dropped due to the URL being opaque.
   EXPECT_CALL(*os_level_manager_ptr,
               Register(OsRegistration(kRegistrationUrl3, kTopLevelOrigin3,
                                       AttributionInputEvent()),
-                       _))
+                       _, _))
       .Times(0);
 
   // Prohibited by policy below.
   EXPECT_CALL(*os_level_manager_ptr,
               Register(OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
                                       AttributionInputEvent()),
-                       _))
+                       _, _))
       .Times(0);
 
   attribution_manager_->HandleOsRegistration(
@@ -1224,26 +1226,26 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
                                         /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/true));
+                         /*is_debug_key_allowed=*/true, _));
 
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
                                         /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/false));
+                         /*is_debug_key_allowed=*/false, _));
   }
 
   // Dropped due to the URL being opaque.
   EXPECT_CALL(*os_level_manager_ptr,
               Register(OsRegistration(kRegistrationUrl3, kTopLevelOrigin3,
                                       /*input_event=*/absl::nullopt),
-                       _))
+                       _, _))
       .Times(0);
 
   // Prohibited by policy below.
   EXPECT_CALL(*os_level_manager_ptr,
               Register(OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
                                       /*input_event=*/absl::nullopt),
-                       _))
+                       _, _))
       .Times(0);
 
   attribution_manager_->HandleOsRegistration(

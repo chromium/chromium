@@ -261,6 +261,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OverrideOsLevelManagerForTesting(
       std::unique_ptr<AttributionOsLevelManager>);
   void ProcessNextOsEvent();
+  void OnOsRegistration(const OsRegistration&,
+                        bool is_debug_key_allowed,
+                        bool success);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Never null.

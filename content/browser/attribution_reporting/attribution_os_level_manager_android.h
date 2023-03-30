@@ -56,7 +56,9 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
   AttributionOsLevelManagerAndroid& operator=(
       AttributionOsLevelManagerAndroid&&) = delete;
 
-  void Register(const OsRegistration&, bool is_debug_key_allowed) override;
+  void Register(const OsRegistration&,
+                bool is_debug_key_allowed,
+                base::OnceCallback<void(bool success)>) override;
 
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
@@ -66,8 +68,9 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
 
-  // This is exposed to JNI and therefore has to be public.
+  // These are exposed to JNI and therefore have to be public.
   void OnDataDeletionCompleted(JNIEnv* env, jint request_id);
+  void OnRegistrationCompleted(JNIEnv* env, jint request_id, bool success);
 
  private:
   void InitializeOsSupport() VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -75,8 +78,10 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
   base::flat_map<int, base::OnceClosure> pending_data_deletion_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  int next_pending_data_deletion_callback_id_
-      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::flat_map<int, base::OnceCallback<void(bool success)>>
+      pending_registration_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  int next_callback_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::android::ScopedJavaGlobalRef<jobject> jobj_
       GUARDED_BY_CONTEXT(sequence_checker_);

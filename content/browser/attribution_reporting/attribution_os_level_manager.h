@@ -29,7 +29,9 @@ class AttributionOsLevelManager {
  public:
   virtual ~AttributionOsLevelManager() = default;
 
-  virtual void Register(const OsRegistration&, bool is_debug_key_allowed) = 0;
+  virtual void Register(const OsRegistration&,
+                        bool is_debug_key_allowed,
+                        base::OnceCallback<void(bool success)>) = 0;
 
   // Clears storage data with the OS.
   // Note that `done` is not run if `AttributionOsLevelManager` is destroyed

@@ -54,26 +54,53 @@ public class AttributionOsLevelManager {
         return mManager;
     }
 
+    private void onRegistrationCompleted(int requestId, boolean success) {
+        if (mNativePtr != 0) {
+            AttributionOsLevelManagerJni.get().onRegistrationCompleted(
+                    mNativePtr, requestId, success);
+        }
+    }
+
+    private void addRegistrationFutureCallback(int requestId, ListenableFuture<?> future) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
+        Futures.addCallback(future, new FutureCallback<Object>() {
+            @Override
+            public void onSuccess(Object result) {
+                onRegistrationCompleted(requestId, /*success=*/true);
+            }
+            @Override
+            public void onFailure(Throwable thrown) {
+                Log.w(TAG, "Failed to register", thrown);
+                onRegistrationCompleted(requestId, /*success=*/false);
+            }
+        }, ContextUtils.getApplicationContext().getMainExecutor());
+    }
+
     /**
      * Registers a web attribution source with native, see `registerWebSourceAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
     @CalledByNative
-    private void registerAttributionSource(GURL registrationUrl, GURL topLevelOrigin,
+    private void registerAttributionSource(int requestId, GURL registrationUrl, GURL topLevelOrigin,
             boolean isDebugKeyAllowed, MotionEvent event) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onRegistrationCompleted(requestId, /*success=*/false);
             return;
         }
         MeasurementManagerFutures mm = getManager();
         if (mm == null) {
+            onRegistrationCompleted(requestId, /*success=*/false);
             return;
         }
-        mm.registerWebSourceAsync(new WebSourceRegistrationRequest(
+        ListenableFuture<?> future = mm.registerWebSourceAsync(new WebSourceRegistrationRequest(
                 Arrays.asList(new WebSourceParams(
                         Uri.parse(registrationUrl.getSpec()), isDebugKeyAllowed)),
                 Uri.parse(topLevelOrigin.getSpec()), /*inputEvent=*/event,
                 /*appDestination=*/null, /*webDestination=*/null,
                 /*verifiedDestination=*/null));
+        addRegistrationFutureCallback(requestId, future);
     }
 
     /**
@@ -82,19 +109,22 @@ public class AttributionOsLevelManager {
      */
     @CalledByNative
     private void registerAttributionTrigger(
-            GURL registrationUrl, GURL topLevelOrigin, boolean isDebugKeyAllowed) {
+            int requestId, GURL registrationUrl, GURL topLevelOrigin, boolean isDebugKeyAllowed) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onRegistrationCompleted(requestId, /*success=*/false);
             return;
         }
 
         MeasurementManagerFutures mm = getManager();
         if (mm == null) {
+            onRegistrationCompleted(requestId, /*success=*/false);
             return;
         }
-        mm.registerWebTriggerAsync(new WebTriggerRegistrationRequest(
+        ListenableFuture<?> future = mm.registerWebTriggerAsync(new WebTriggerRegistrationRequest(
                 Arrays.asList(new WebTriggerParams(
                         Uri.parse(registrationUrl.getSpec()), isDebugKeyAllowed)),
                 Uri.parse(topLevelOrigin.getSpec())));
+        addRegistrationFutureCallback(requestId, future);
     }
 
     private void onDataDeletionCompleted(int requestId) {
@@ -197,6 +227,8 @@ public class AttributionOsLevelManager {
     @NativeMethods
     interface Natives {
         void onDataDeletionCompleted(long nativeAttributionOsLevelManagerAndroid, int requestId);
+        void onRegistrationCompleted(
+                long nativeAttributionOsLevelManagerAndroid, int requestId, boolean success);
         void onMeasurementStateReturned(int state);
     }
 }

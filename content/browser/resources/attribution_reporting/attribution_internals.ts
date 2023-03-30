@@ -742,6 +742,9 @@ class OsRegistration {
       case OsRegistrationResult.kExcessiveQueueSize:
         this.result = 'Excessive queue size';
         break;
+      case OsRegistrationResult.kRejectedByOs:
+        this.result = 'Rejected by OS';
+        break;
       default:
         assertNotReached();
     }

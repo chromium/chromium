@@ -152,10 +152,14 @@ AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
 
 void AttributionOsLevelManagerAndroid::Register(
     const OsRegistration& registration,
-    bool is_debug_key_allowed) {
+    bool is_debug_key_allowed,
+    base::OnceCallback<void(bool sucess)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  int request_id = next_callback_id_++;
+  pending_registration_callbacks_.emplace(request_id, std::move(callback));
 
   auto registration_url =
       url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
@@ -166,12 +170,13 @@ void AttributionOsLevelManagerAndroid::Register(
     case attribution_reporting::mojom::OsRegistrationType::kSource:
       DCHECK(registration.input_event.has_value());
       Java_AttributionOsLevelManager_registerAttributionSource(
-          env, jobj_, registration_url, top_level_origin, is_debug_key_allowed,
-          registration.input_event->input_event);
+          env, jobj_, request_id, registration_url, top_level_origin,
+          is_debug_key_allowed, registration.input_event->input_event);
       break;
     case attribution_reporting::mojom::OsRegistrationType::kTrigger:
       Java_AttributionOsLevelManager_registerAttributionTrigger(
-          env, jobj_, registration_url, top_level_origin, is_debug_key_allowed);
+          env, jobj_, request_id, registration_url, top_level_origin,
+          is_debug_key_allowed);
       break;
   }
 }
@@ -194,7 +199,7 @@ void AttributionOsLevelManagerAndroid::ClearData(
         return url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
       });
 
-  int request_id = next_pending_data_deletion_callback_id_++;
+  int request_id = next_callback_id_++;
   pending_data_deletion_callbacks_.emplace(request_id, std::move(done));
 
   Java_AttributionOsLevelManager_deleteRegistrations(
@@ -218,6 +223,20 @@ void AttributionOsLevelManagerAndroid::InitializeOsSupport() {
 
   Java_AttributionOsLevelManager_getMeasurementApiStatus(
       base::android::AttachCurrentThread(), jobj_);
+}
+
+void AttributionOsLevelManagerAndroid::OnRegistrationCompleted(JNIEnv* env,
+                                                               jint request_id,
+                                                               bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = pending_registration_callbacks_.find(request_id);
+  if (it == pending_registration_callbacks_.end()) {
+    return;
+  }
+
+  std::move(it->second).Run(success);
+  pending_registration_callbacks_.erase(it);
 }
 
 void AttributionOsLevelManagerAndroid::OnDataDeletionCompleted(
