@@ -6670,6 +6670,110 @@
           "14c18",
           "--xctest"
         ],
+        "isolate_name": "gfx_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gfx_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
+        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone X",
+          "--version",
+          "16.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14c18",
+          "--xctest"
+        ],
+        "isolate_name": "gfx_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gfx_unittests iPhone X 16.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
+        "variant_id": "iPhone X 16.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Pro (12.9-inch) (3rd generation)",
+          "--version",
+          "16.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14c18",
+          "--xctest"
+        ],
         "isolate_name": "gl_unittests",
         "merge": {
           "args": [],
@@ -6760,6 +6864,110 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/gl:gl_unittests/",
+        "variant_id": "iPhone X 16.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Pro (12.9-inch) (3rd generation)",
+          "--version",
+          "16.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14c18",
+          "--xctest"
+        ],
+        "isolate_name": "google_apis_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "google_apis_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
+        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone X",
+          "--version",
+          "16.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14c18",
+          "--xctest"
+        ],
+        "isolate_name": "google_apis_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "google_apis_unittests iPhone X 16.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone X 16.2"
       },
       {
@@ -7280,6 +7488,110 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://skia:skia_unittests/",
+        "variant_id": "iPhone X 16.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Pro (12.9-inch) (3rd generation)",
+          "--version",
+          "16.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14c18",
+          "--xctest"
+        ],
+        "isolate_name": "sql_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "sql_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://sql:sql_unittests/",
+        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone X",
+          "--version",
+          "16.2",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14c18",
+          "--xctest"
+        ],
+        "isolate_name": "sql_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "sql_unittests iPhone X 16.2",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:5468d28877d7106d8ab4f7e23b784578ffc86aff"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14c18",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_2",
+              "path": "Runtime-ios-16.2"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone X 16.2"
       },
       {
