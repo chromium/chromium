@@ -5,9 +5,7 @@
 #include "extensions/browser/offscreen_document_host.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -21,8 +19,6 @@ OffscreenDocumentHost::OffscreenDocumentHost(
                     site_instance,
                     url,
                     mojom::ViewType::kOffscreenDocument) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsOffscreenDocuments));
   DCHECK_EQ(url::Origin::Create(url), extension.origin());
   DCHECK_GE(extension.manifest_version(), 3);
 }

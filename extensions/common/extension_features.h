@@ -66,8 +66,6 @@ BASE_DECLARE_FEATURE(kExtensionsMenuAccessControl);
 
 BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
 
-BASE_DECLARE_FEATURE(kExtensionsOffscreenDocuments);
-
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);

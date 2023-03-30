@@ -99,11 +99,6 @@ BASE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites,
              "ExtensionsMenuAccessControlWithPermittedSitesName",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The feature enabling offscreen documents in Manifest V3 extensions.
-BASE_FEATURE(kExtensionsOffscreenDocuments,
-             "ExtensionsOffscreenDocuments",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Forces requests to go through WebRequestProxyingURLLoaderFactory.
 BASE_FEATURE(kForceWebRequestProxyForTest,
              "ForceWebRequestProxyForTest",

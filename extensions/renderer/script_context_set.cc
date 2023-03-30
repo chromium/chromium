@@ -4,14 +4,12 @@
 
 #include "extensions/renderer/script_context_set.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/script_context.h"
@@ -58,11 +56,6 @@ ScriptContext* ScriptContextSet::Register(
         ExtensionFrameHelper::Get(render_frame);
     DCHECK(frame_helper);
     view_type = frame_helper->view_type();
-    // We should only find an offscreen document if the corresponding feature
-    // is enabled.
-    DCHECK(base::FeatureList::IsEnabled(
-               extensions_features::kExtensionsOffscreenDocuments) ||
-           view_type != mojom::ViewType::kOffscreenDocument);
   }
   GURL frame_url = ScriptContext::GetDocumentLoaderURLForFrame(frame);
   Feature::Context context_type = ClassifyJavaScriptContext(
