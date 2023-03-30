@@ -12,9 +12,9 @@
 #include "ash/test_shell_delegate.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/tutorial_controller.h"
+#include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/tutorial_identifier.h"
@@ -27,21 +27,9 @@ namespace {
 // Aliases.
 using testing::_;
 using testing::Eq;
-using testing::NiceMock;
+using testing::StrictMock;
 using user_education::TutorialDescription;
 using user_education::TutorialIdentifier;
-
-// MockTutorialController ------------------------------------------------------
-
-// TODO(http://b/275616974): Remove after implementing production controller(s).
-class MockTutorialController : public TutorialController {
- public:
-  // TutorialController:
-  MOCK_METHOD((std::map<TutorialIdentifier, TutorialDescription>),
-              GetTutorialDescriptions,
-              (),
-              (override));
-};
 
 }  // namespace
 
@@ -81,7 +69,7 @@ class UserEducationControllerTest
 
   // Returns the mocked delegate which facilitates communication between Ash and
   // user education services in the browser.
-  NiceMock<MockUserEducationDelegate>* user_education_delegate() {
+  StrictMock<MockUserEducationDelegate>* user_education_delegate() {
     return user_education_delegate_;
   }
 
@@ -95,7 +83,7 @@ class UserEducationControllerTest
         [&]() -> std::unique_ptr<UserEducationDelegate> {
           EXPECT_EQ(user_education_delegate_, nullptr);
           auto user_education_delegate =
-              std::make_unique<NiceMock<MockUserEducationDelegate>>();
+              std::make_unique<StrictMock<MockUserEducationDelegate>>();
           user_education_delegate_ = user_education_delegate.get();
           return user_education_delegate;
         }));
@@ -103,7 +91,7 @@ class UserEducationControllerTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  NiceMock<MockUserEducationDelegate>* user_education_delegate_ = nullptr;
+  StrictMock<MockUserEducationDelegate>* user_education_delegate_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -122,6 +110,11 @@ TEST_P(UserEducationControllerTest, Exists) {
                                                   IsWelcomeTourEnabled());
 }
 
+// Verifies that the Welcome Tour controller exists iff the feature is enabled.
+TEST_P(UserEducationControllerTest, WelcomeTourControllerExists) {
+  EXPECT_EQ(!!WelcomeTourController::Get(), IsWelcomeTourEnabled());
+}
+
 // Verifies that tutorials are registered when the primary user session is
 // added. Note that this test is skipped if the controller does not exist.
 TEST_P(UserEducationControllerTest, RegistersTutorials) {
@@ -137,37 +130,14 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
   // Create and cache an account ID for the primary user.
   AccountId primary_user_account_id = AccountId::FromUserEmail("primary@test");
 
-  // Mock multiple tutorial controllers.
-  // TODO(http://b/275616974): Remove after implementing prod controller(s).
-  std::vector<NiceMock<MockTutorialController>*> tutorial_controllers;
-  for (size_t i = 0u; i < 2u; ++i) {
-    tutorial_controllers.emplace_back(
-        user_education_controller->AddTutorialControllerForTesting(
-            std::make_unique<NiceMock<MockTutorialController>>()));
-    ASSERT_TRUE(tutorial_controllers.back());
-
-    // Instantiate multiple tutorial identifiers for each controller.
-    std::vector<TutorialIdentifier> tutorial_ids;
-    for (size_t j = 0u; j < 2u; ++j) {
-      tutorial_ids.emplace_back(base::UnguessableToken::Create().ToString());
-    }
-
-    // Configure each controller to return a description for each identifier.
-    ON_CALL(*tutorial_controllers.back(), GetTutorialDescriptions)
-        .WillByDefault(testing::Invoke([tutorial_ids]() {
-          std::map<TutorialIdentifier, TutorialDescription>
-              tutorial_descriptions_by_id;
-          for (const auto& tutorial_id : tutorial_ids) {
-            tutorial_descriptions_by_id.emplace(
-                std::piecewise_construct, std::forward_as_tuple(tutorial_id),
-                std::forward_as_tuple());
-          }
-          return tutorial_descriptions_by_id;
-        }));
-
-    // Expect the user education delegate to register all tutorials with user
-    // education services in the browser for the primary user session.
-    for (const auto& tutorial_id : tutorial_ids) {
+  // Expect Welcome Tour tutorials to be registered with user education services
+  // in the browser if and only if the Welcome Tour feature is enabled.
+  if (IsWelcomeTourEnabled()) {
+    auto* welcome_tour_controller = WelcomeTourController::Get();
+    ASSERT_TRUE(welcome_tour_controller);
+    for (const auto& [tutorial_id, ignore] :
+         static_cast<TutorialController*>(welcome_tour_controller)
+             ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
           RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _));

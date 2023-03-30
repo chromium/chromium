@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/check_op.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
@@ -28,20 +27,8 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   ~UserEducationController() override;
 
   // Returns the singleton instance owned by `Shell`.
+  // NOTE: Exists if and only if user education features are enabled.
   static UserEducationController* Get();
-
-  // TODO(http://b/275616974): Remove after implementing prod controller(s).
-  template <typename TutorialControllerType>
-  TutorialControllerType* AddTutorialControllerForTesting(
-      std::unique_ptr<TutorialControllerType> tutorial_controller) {
-    // Ensure that all tutorial controllers have been added prior to the primary
-    // user session being added. Otherwise, the tutorials for those controllers
-    // will not be registered with user education services in the browser.
-    CHECK(session_observation_.IsObserving());
-    auto* tutorial_controller_ptr = tutorial_controller.get();
-    tutorial_controllers_.emplace(std::move(tutorial_controller));
-    return tutorial_controller_ptr;
-  }
 
  private:
   // SessionObserver:

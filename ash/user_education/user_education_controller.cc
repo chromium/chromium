@@ -4,12 +4,14 @@
 
 #include "ash/user_education/user_education_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_delegate.h"
+#include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -47,8 +49,12 @@ bool IsPrimaryAccountId(const AccountId& account_id) {
 UserEducationController::UserEducationController(
     std::unique_ptr<UserEducationDelegate> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK_EQ(g_instance, nullptr);
+  CHECK_EQ(g_instance, nullptr);
   g_instance = this;
+
+  if (features::IsWelcomeTourEnabled()) {
+    tutorial_controllers_.emplace(std::make_unique<WelcomeTourController>());
+  }
 
   auto* session_controller = Shell::Get()->session_controller();
   session_observation_.Observe(session_controller);
@@ -58,7 +64,7 @@ UserEducationController::UserEducationController(
 }
 
 UserEducationController::~UserEducationController() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
