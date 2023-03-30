@@ -76,16 +76,16 @@ TEST_F(DTSUtilTest, GetDTSSamplesPerFrameTest) {
 TEST_F(DTSUtilTest, WrapDTSWithIEC61937IncorrectInputTest) {
   constexpr uint8_t short_input[2048 - 7] = {0};
   constexpr uint8_t long_input[2048 + 3] = {0};
-  std::vector<const uint8_t> input_data;
+  std::vector<uint8_t> input_data;
   std::vector<uint8_t> output_data(2048);
 
-  input_data = std::vector<const uint8_t>(short_input,
-                                          short_input + sizeof(short_input));
+  input_data =
+      std::vector<uint8_t>(short_input, short_input + sizeof(short_input));
   EXPECT_EQ(0, media::dts::WrapDTSWithIEC61937(input_data, output_data,
                                                AudioCodec::kDTS));
 
   input_data =
-      std::vector<const uint8_t>(long_input, long_input + sizeof(long_input));
+      std::vector<uint8_t>(long_input, long_input + sizeof(long_input));
   EXPECT_EQ(0, media::dts::WrapDTSWithIEC61937(input_data, output_data,
                                                AudioCodec::kDTS));
 }
