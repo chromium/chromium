@@ -400,8 +400,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public void onHide() {
         if (mIsInitializedWithNative) {
+            mStartSurfaceMediator.mayRecordHomepageSessionEnd();
             if (mTasksSurface != null) {
-                mStartSurfaceMediator.mayRecordHomepageSessionEnd();
                 mTasksSurface.onHide();
             }
             if (mSecondaryTasksSurface != null) {
