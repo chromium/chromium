@@ -1243,13 +1243,10 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
   }
 }
 
-// Since there are so many permutations, this test is fairly slow. Therefore, it
-// is disabled and will be turned on to check during development.
-
-TEST_F(TouchExplorationTest, DISABLED_AllFingerPermutations) {
+TEST_F(TouchExplorationTest, AllFingerPermutations) {
   SwitchTouchExplorationMode(true);
   SuppressVLOGs(true);
-  // We will test all permutations of events from three different fingers
+  // We will test all permutations of events from one finger
   // to ensure that we return to NO_FINGERS_DOWN when fingers have been
   // released.
   std::vector<std::unique_ptr<ui::TouchEvent>> all_events;
@@ -1257,110 +1254,113 @@ TEST_F(TouchExplorationTest, DISABLED_AllFingerPermutations) {
   // A copy of all events list which can be modified without destrying events.
   std::vector<ui::TouchEvent*> queued_events;
 
-  for (int touch_id = 0; touch_id < 3; touch_id++) {
+  for (int touch_id = 0; touch_id < 3; ++touch_id) {
+    all_events.clear();
     int x = 10 * touch_id + 1;
     int y = 10 * touch_id + 2;
     all_events.push_back(std::make_unique<ui::TouchEvent>(
         ui::ET_TOUCH_PRESSED, gfx::Point(x++, y++), Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, touch_id)));
-    queued_events.push_back(all_events.back().get());
     all_events.push_back(std::make_unique<ui::TouchEvent>(
         ui::ET_TOUCH_MOVED, gfx::Point(x++, y++), Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, touch_id)));
-    queued_events.push_back(all_events.back().get());
     all_events.push_back(std::make_unique<ui::TouchEvent>(
         ui::ET_TOUCH_RELEASED, gfx::Point(x, y), Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, touch_id)));
-    queued_events.push_back(all_events.back().get());
-  }
 
-  // I'm going to explain this algorithm, and use an example in parentheses.
-  // The example will be all permutations of a b c d.
-  // There are four letters and 4! = 24 permutations.
-  const int num_events = all_events.size();
-  const int num_permutations = Factorial(num_events);
+    // I'm going to explain this algorithm, and use an example in parentheses.
+    // The example will be all permutations of a b c d.
+    // There are four letters and 4! = 24 permutations.
+    const int num_events = all_events.size();
+    const int num_permutations = Factorial(num_events);
 
-  for (int p = 0; p < num_permutations; p++) {
-    std::vector<bool> fingers_pressed(3, false);
+    for (int p = 0; p < num_permutations; p++) {
+      std::vector<bool> fingers_pressed(3, false);
 
-    int current_num_permutations = num_permutations;
-    for (int events_left = num_events; events_left > 0; events_left--) {
-      // |p| indexes to each permutation when there are num_permutations
-      // permutations. (e.g. 0 is abcd, 1 is abdc, 2 is acbd, 3 is acdb...)
-      // But how do we find the index for the current number of permutations?
-      // To find the permutation within the part of the sequence we're
-      // currently looking at, we need a number between 0 and
-      // |current_num_permutations| - 1.
-      // (e.g. if we already chose the first letter, there are 3! = 6
-      // options left, so we do p % 6. So |current_permutation| would go
-      // from 0 to 5 and then reset to 0 again, for all combinations of
-      // whichever three letters are remaining, as we loop through the
-      // permutations)
-      int current_permutation = p % current_num_permutations;
-
-      // Since this is is the total number of permutations starting with
-      // this event and including future events, there could be multiple
-      // values of current_permutation that will generate the same event
-      // in this iteration.
-      // (e.g. If we chose 'a' but have b c d to choose from, we choose b when
-      // |current_permutation| = 0, 1 and c when |current_permutation| = 2, 3.
-      // Note that each letter gets two numbers, which is the next
-      // current_num_permutations, 2! for the two letters left.)
-
-      // Branching out from the first event, there are num_permutations
-      // permutations, and each value of |p| is associated with one of these
-      // permutations. However, once the first event is chosen, there
-      // are now |num_events| - 1 events left, so the number of permutations
-      // for the rest of the events changes, and will always be equal to
-      // the factorial of the events_left.
-      // (e.g. There are 3! = 6 permutations that start with 'a', so if we
-      // start with 'a' there will be 6 ways to then choose from b c d.)
-      // So we now set-up for the next iteration by setting
-      // current_num_permutations to the factorial of the next number of
-      // events left.
-      current_num_permutations /= events_left;
-
-      // To figure out what current event we want to choose, we integer
-      // divide the current permutation by the next current_num_permutations.
-      // (e.g. If there are 4 letters a b c d and 24 permutations, we divide
-      // by 24/4 = 6. Values 0 to 5 when divided by 6 equals 0, so the first
-      // 6 permutations start with 'a', and the last 6 will start with 'd'.
-      // Note that there are 6 that start with 'a' because there are 6
-      // permutations for the next three letters that follow 'a'.)
-      int index = current_permutation / current_num_permutations;
-
-      ui::TouchEvent* next_dispatch = queued_events[index];
-      ASSERT_TRUE(next_dispatch != NULL);
-
-      // |next_dispatch| has to be put in this container so that its time
-      // stamp can be changed to this point in the test, when it is being
-      // dispatched..
-      ui::EventTestApi test_dispatch(next_dispatch);
-      test_dispatch.set_time_stamp(Now());
-      generator_->Dispatch(next_dispatch);
-      queued_events.erase(queued_events.begin() + index);
-
-      // Keep track of what fingers have been pressed, to release
-      // only those fingers at the end, so the check for being in
-      // no fingers down can be accurate.
-      if (next_dispatch->type() == ui::ET_TOUCH_PRESSED) {
-        fingers_pressed[next_dispatch->pointer_details().id] = true;
-      } else if (next_dispatch->type() == ui::ET_TOUCH_RELEASED) {
-        fingers_pressed[next_dispatch->pointer_details().id] = false;
+      // Initialize queued_events.
+      for (size_t i = 0; i < all_events.size(); ++i) {
+        queued_events.push_back(all_events[i].get());
       }
-    }
-    ASSERT_EQ(queued_events.size(), 0u);
 
-    // Release fingers recorded as pressed.
-    for (int j = 0; j < int(fingers_pressed.size()); j++) {
-      if (fingers_pressed[j] == true) {
-        generator_->ReleaseTouchId(j);
-        fingers_pressed[j] = false;
+      int current_num_permutations = num_permutations;
+      for (int events_left = num_events; events_left > 0; events_left--) {
+        // |p| indexes to each permutation when there are num_permutations
+        // permutations. (e.g. 0 is abcd, 1 is abdc, 2 is acbd, 3 is acdb...)
+        // But how do we find the index for the current number of permutations?
+        // To find the permutation within the part of the sequence we're
+        // currently looking at, we need a number between 0 and
+        // |current_num_permutations| - 1.
+        // (e.g. if we already chose the first letter, there are 3! = 6
+        // options left, so we do p % 6. So |current_permutation| would go
+        // from 0 to 5 and then reset to 0 again, for all combinations of
+        // whichever three letters are remaining, as we loop through the
+        // permutations)
+        int current_permutation = p % current_num_permutations;
+
+        // Since this is is the total number of permutations starting with
+        // this event and including future events, there could be multiple
+        // values of current_permutation that will generate the same event
+        // in this iteration.
+        // (e.g. If we chose 'a' but have b c d to choose from, we choose b when
+        // |current_permutation| = 0, 1 and c when |current_permutation| = 2, 3.
+        // Note that each letter gets two numbers, which is the next
+        // current_num_permutations, 2! for the two letters left.)
+
+        // Branching out from the first event, there are num_permutations
+        // permutations, and each value of |p| is associated with one of these
+        // permutations. However, once the first event is chosen, there
+        // are now |num_events| - 1 events left, so the number of permutations
+        // for the rest of the events changes, and will always be equal to
+        // the factorial of the events_left.
+        // (e.g. There are 3! = 6 permutations that start with 'a', so if we
+        // start with 'a' there will be 6 ways to then choose from b c d.)
+        // So we now set-up for the next iteration by setting
+        // current_num_permutations to the factorial of the next number of
+        // events left.
+        current_num_permutations /= events_left;
+
+        // To figure out what current event we want to choose, we integer
+        // divide the current permutation by the next current_num_permutations.
+        // (e.g. If there are 4 letters a b c d and 24 permutations, we divide
+        // by 24/4 = 6. Values 0 to 5 when divided by 6 equals 0, so the first
+        // 6 permutations start with 'a', and the last 6 will start with 'd'.
+        // Note that there are 6 that start with 'a' because there are 6
+        // permutations for the next three letters that follow 'a'.)
+        int index = current_permutation / current_num_permutations;
+
+        ui::TouchEvent* next_dispatch = queued_events[index];
+        ASSERT_TRUE(next_dispatch != NULL);
+
+        // |next_dispatch| has to be put in this container so that its time
+        // stamp can be changed to this point in the test, when it is being
+        // dispatched..
+        ui::EventTestApi test_dispatch(next_dispatch);
+        test_dispatch.set_time_stamp(Now());
+        generator_->Dispatch(next_dispatch);
+        queued_events.erase(queued_events.begin() + index);
+
+        // Keep track of what fingers have been pressed, to release
+        // only those fingers at the end, so the check for being in
+        // no fingers down can be accurate.
+        if (next_dispatch->type() == ui::ET_TOUCH_PRESSED) {
+          fingers_pressed[next_dispatch->pointer_details().id] = true;
+        } else if (next_dispatch->type() == ui::ET_TOUCH_RELEASED) {
+          fingers_pressed[next_dispatch->pointer_details().id] = false;
+        }
       }
+      ASSERT_EQ(queued_events.size(), 0u);
+
+      // Release fingers recorded as pressed.
+      for (int j = 0; j < int(fingers_pressed.size()); j++) {
+        if (fingers_pressed[j] == true) {
+          generator_->ReleaseTouchId(j);
+          fingers_pressed[j] = false;
+        }
+      }
+      AdvanceSimulatedTimePastPotentialTapDelay();
+      EXPECT_TRUE(IsInNoFingersDownState());
+      ClearCapturedAndGestureEvents();
     }
-    AdvanceSimulatedTimePastPotentialTapDelay();
-    EXPECT_TRUE(IsInNoFingersDownState());
-    ClearCapturedAndGestureEvents();
   }
 }
 
