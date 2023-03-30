@@ -650,17 +650,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         ThreadUtils.postOnUiThread(mAccountTrackerService::onAccountsChanged);
     }
 
-    @VisibleForTesting
-    IdentityMutator getIdentityMutatorForTesting() {
-        return mIdentityMutator;
-    }
-
     /**
      * Contains all the state needed for signin. This forces signin flow state to be
      * cleared atomically, and all final fields to be set upon initialization.
      */
     private static class SignInState {
         private final @SigninAccessPoint Integer mAccessPoint;
+        private final boolean mShouldTurnSyncOn;
         final SignInCallback mCallback;
 
         /**
@@ -684,7 +680,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
         static SignInState createForSignin(Account account, @Nullable SignInCallback callback) {
-            return new SignInState(null, account, callback);
+            return new SignInState(null, account, callback, false);
         }
 
         /**
@@ -696,15 +692,16 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
          */
         static SignInState createForSigninAndEnableSync(@SigninAccessPoint int accessPoint,
                 Account account, @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, account, callback);
+            return new SignInState(accessPoint, account, callback, true);
         }
 
         private SignInState(@SigninAccessPoint Integer accessPoint, Account account,
-                @Nullable SignInCallback callback) {
+                @Nullable SignInCallback callback, boolean shouldTurnSyncOn) {
             assert account != null : "Account must be set and valid to progress.";
             mAccessPoint = accessPoint;
             mAccount = account;
             mCallback = callback;
+            mShouldTurnSyncOn = shouldTurnSyncOn;
         }
 
         /**
@@ -721,7 +718,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
          * Whether this sign-in flow should also turn on sync.
          */
         boolean shouldTurnSyncOn() {
-            return mAccessPoint != null;
+            return mShouldTurnSyncOn;
         }
     }
 
