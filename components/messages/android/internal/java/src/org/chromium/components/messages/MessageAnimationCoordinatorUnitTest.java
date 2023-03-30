@@ -356,6 +356,39 @@ public class MessageAnimationCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    /**
+     * Test replacing back message.
+     * [m1, m2] -> [m1, m3]
+     */
+    @Test
+    @SmallTest
+    public void testReplacingBack() {
+        MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
+        MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
+        MessageState m3 = buildMessageState();
+        setMessageIdentifier(m3, 3);
+
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
+        InOrder inOrder = Mockito.inOrder(m1.handler, m2.handler);
+        inOrder.verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        inOrder.verify(m2.handler).show(Position.FRONT, Position.BACK);
+
+        // When transiting from [m1, m2] -> [m1, m3], finish this into two steps:
+        // [m1, m2] -> [m1, null] -> [m1, m3]
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m3), false, () -> {});
+        verify(m2.handler).hide(eq(Position.BACK), eq(Position.FRONT), anyBoolean());
+        verify(m3.handler, never()).show(anyInt(), anyInt());
+        var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
+
+        mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m3), false, () -> {});
+        verify(m3.handler).show(Position.FRONT, Position.BACK);
+        currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
+        Assert.assertArrayEquals(new MessageState[] {m1, m3}, currentMessages.toArray());
+    }
+
     // Test pushing front message to back.
     // [m1, null] -> [m2, m1]
     @Test
