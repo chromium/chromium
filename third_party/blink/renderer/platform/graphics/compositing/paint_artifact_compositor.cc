@@ -1227,15 +1227,17 @@ size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
   return result;
 }
 
-void PaintArtifactCompositor::SetScrollbarNeedsDisplay(
+bool PaintArtifactCompositor::SetScrollbarNeedsDisplay(
     CompositorElementId element_id) {
   for (auto& pending_layer : pending_layers_) {
     if (pending_layer.GetCompositingType() == PendingLayer::kScrollbarLayer &&
         pending_layer.CcLayer().element_id() == element_id) {
       pending_layer.CcLayer().SetNeedsDisplay();
-      return;
+      return true;
     }
   }
+  // The scrollbar isn't correctly composited.
+  return false;
 }
 
 void LayerListBuilder::Add(scoped_refptr<cc::Layer> layer) {

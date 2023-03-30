@@ -2900,8 +2900,10 @@ bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
     return false;
   }
   if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): We may composite all scrollbars, or assume they
-    // are before PaintArtifactCompositor::Update().
+    // In CompositeScrollAfterPaint, compositing of scrollbar is decided
+    // in PaintArtifactCompositor. We assume compositing here so that paint
+    // invalidation will be skipped here. We'll invalidate raster if needed
+    // after paint, without paint invalidation.
     return true;
   }
   return NeedsCompositedScrolling();

@@ -52,6 +52,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
   // scrollbar.
   PaintRecord Paint() const;
 
+  bool NeedsUpdateDisplay() const;
+
   // Create or reuse the cc scrollbar layer, for composited scrollbar.
   scoped_refptr<cc::ScrollbarLayerBase> CreateOrReuseLayer(
       cc::ScrollbarLayerBase* existing_layer) const;

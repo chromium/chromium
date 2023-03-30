@@ -40,11 +40,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
 
 PaintRecord ScrollbarDisplayItem::Paint() const {
   DCHECK(!IsTombstone());
-  auto* scrollbar = data_->scrollbar_.get();
-  if (!data_->record_.empty()) {
-    DCHECK(!scrollbar->NeedsRepaintPart(
-        cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS));
-    DCHECK(!scrollbar->NeedsRepaintPart(cc::ScrollbarPart::THUMB));
+  if (!data_->record_.empty() && !NeedsUpdateDisplay()) {
     return data_->record_;
   }
 
@@ -52,14 +48,20 @@ PaintRecord ScrollbarDisplayItem::Paint() const {
   const gfx::Rect& rect = VisualRect();
   recorder.beginRecording();
   auto* canvas = recorder.getRecordingCanvas();
+  auto* scrollbar = data_->scrollbar_.get();
   scrollbar->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
                        rect);
-  gfx::Rect thumb_rect = data_->scrollbar_->ThumbRect();
+  gfx::Rect thumb_rect = scrollbar->ThumbRect();
   thumb_rect.Offset(rect.OffsetFromOrigin());
   scrollbar->PaintPart(canvas, cc::ScrollbarPart::THUMB, thumb_rect);
 
+  scrollbar->ClearNeedsUpdateDisplay();
   data_->record_ = recorder.finishRecordingAsPicture();
   return data_->record_;
+}
+
+bool ScrollbarDisplayItem::NeedsUpdateDisplay() const {
+  return data_->scrollbar_->NeedsUpdateDisplay();
 }
 
 scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
@@ -84,9 +86,13 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
       gfx::Vector2dF(VisualRect().OffsetFromOrigin()));
   layer->SetBounds(VisualRect().size());
 
-  if (scrollbar->NeedsRepaintPart(cc::ScrollbarPart::THUMB) ||
-      scrollbar->NeedsRepaintPart(cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS))
+  // TODO(crbug.com/1414885): This may be duplicate with
+  // ScrollableArea::ScrollableArea::SetScrollbarNeedsPaintInvalidation()
+  // which calls PaintArtifactCompositor::SetScrollbarNeedsDisplay().
+  if (NeedsUpdateDisplay()) {
     layer->SetNeedsDisplay();
+    scrollbar->ClearNeedsUpdateDisplay();
+  }
   return layer;
 }
 

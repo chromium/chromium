@@ -254,7 +254,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
-  void SetScrollbarNeedsDisplay(CompositorElementId element_id);
+  // Invalidates the scrollbar layer. Returns true if the scrollbar layer is
+  // found by `element_id`.
+  bool SetScrollbarNeedsDisplay(CompositorElementId element_id);
 
  private:
   // Collects the PaintChunks into groups which will end up in the same

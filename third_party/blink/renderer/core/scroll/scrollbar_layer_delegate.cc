@@ -116,6 +116,14 @@ bool ScrollbarLayerDelegate::NeedsRepaintPart(cc::ScrollbarPart part) const {
   return scrollbar_->TrackNeedsRepaint();
 }
 
+bool ScrollbarLayerDelegate::NeedsUpdateDisplay() const {
+  return scrollbar_->NeedsUpdateDisplay();
+}
+
+void ScrollbarLayerDelegate::ClearNeedsUpdateDisplay() {
+  scrollbar_->ClearNeedsUpdateDisplay();
+}
+
 bool ScrollbarLayerDelegate::UsesNinePatchThumbResource() const {
   return scrollbar_->GetTheme().UsesNinePatchThumbResource();
 }

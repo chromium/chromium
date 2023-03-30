@@ -176,6 +176,12 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool ThumbNeedsRepaint() const { return thumb_needs_repaint_; }
   void ClearThumbNeedsRepaint() { thumb_needs_repaint_ = false; }
 
+  // Returns true if either the track or the thumb needs repaint, or the thumb
+  // moved (which doesn't need to repaint the track or the thumb in some
+  // scrollbar themes).
+  bool NeedsUpdateDisplay() const { return needs_update_display_; }
+  void ClearNeedsUpdateDisplay() { needs_update_display_ = false; }
+
   // DisplayItemClient.
   String DebugName() const final {
     return orientation_ == kHorizontalScrollbar ? "HorizontalScrollbar"
@@ -257,8 +263,10 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool ThumbWillBeUnderMouse() const;
   bool DeltaWillScroll(ScrollOffset delta) const;
 
-  bool track_needs_repaint_;
-  bool thumb_needs_repaint_;
+  bool track_needs_repaint_ = true;
+  bool thumb_needs_repaint_ = true;
+  bool needs_update_display_ = true;
+
   bool injected_gesture_scroll_begin_;
 
   // This is set based on the event modifiers. In scenarios like scrolling or

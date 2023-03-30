@@ -67,8 +67,6 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
                     this,
                     &Scrollbar::AutoscrollTimerFired),
       elastic_overscroll_(0),
-      track_needs_repaint_(true),
-      thumb_needs_repaint_(true),
       injected_gesture_scroll_begin_(false),
       scrollbar_manipulation_in_progress_on_cc_thread_(false),
       style_source_(style_source) {
@@ -849,6 +847,7 @@ float Scrollbar::ScrollableAreaTargetPos() const {
 }
 
 void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
+  needs_update_display_ = true;
   if (theme_.ShouldRepaintAllPartsOnInvalidation())
     invalid_parts = kAllParts;
   if (invalid_parts & ~kThumbPart)

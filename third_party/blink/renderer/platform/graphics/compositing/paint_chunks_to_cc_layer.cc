@@ -901,6 +901,7 @@ class LayerPropertiesUpdater {
   void UpdateTouchActionRegion(const HitTestData&);
   void UpdateWheelEventRegion(const HitTestData&);
   void UpdateNonFastScrollableRegion(const HitTestData&);
+  void UpdateForNonCompositedScrollbar(const ScrollbarDisplayItem&);
   void UpdateRegionCaptureData(const RegionCaptureData&);
   gfx::Point MapSelectionBoundPoint(const gfx::Point&) const;
   cc::LayerSelectionBound PaintedSelectionBoundToLayerSelectionBound(
@@ -920,6 +921,10 @@ class LayerPropertiesUpdater {
 
 void LayerPropertiesUpdater::UpdateTouchActionRegion(
     const HitTestData& hit_test_data) {
+  if (hit_test_data.touch_action_rects.empty()) {
+    return;
+  }
+
   // If the element has an horizontal scrollable ancestor (including itself), we
   // need to disable cursor control by setting the bit kInternalPanXScrolls.
   TouchAction disable_cursor_control = TouchAction::kNone;
@@ -969,22 +974,55 @@ void LayerPropertiesUpdater::UpdateNonFastScrollableRegion(
     return;
   }
 
-  // Skip the scroll hit test rect if it is for scrolling this cc::Layer.
+  // A scroll hit test rect contributes to the non-fast scrollable region if
+  // - the scroll_translation pointer is null, or
+  // - the scroll node is not composited.
   if (const auto scroll_translation = hit_test_data.scroll_translation) {
     const auto* scroll_node = scroll_translation->ScrollNode();
     DCHECK(scroll_node);
-    // TODO(crbug.com/1222613): Remove this when we fix the root cause.
+    // TODO(crbug.com/1230615): Remove this when we fix the root cause.
     if (!scroll_node) {
       return;
     }
     auto scroll_element_id = scroll_node->GetCompositorElementId();
     if (layer_.element_id() == scroll_element_id) {
+      // layer_ is the composited layer of the scroll hit test chunk.
       return;
     }
   }
 
   non_fast_scrollable_region_.Union(
       chunk_to_layer_mapper_.MapVisualRect(hit_test_data.scroll_hit_test_rect));
+}
+
+const ScrollbarDisplayItem* NonCompositedScrollbarDisplayItem(
+    PaintChunkIterator chunk_it,
+    const cc::Layer& layer) {
+  if (chunk_it->size() != 1) {
+    return nullptr;
+  }
+  const auto* scrollbar =
+      DynamicTo<ScrollbarDisplayItem>(*chunk_it.DisplayItems().begin());
+  if (!scrollbar) {
+    return nullptr;
+  }
+  if (scrollbar->ElementId() == layer.element_id()) {
+    // layer_ is the composited layer of the scrollbar.
+    return nullptr;
+  }
+  return scrollbar;
+}
+
+void LayerPropertiesUpdater::UpdateForNonCompositedScrollbar(
+    const ScrollbarDisplayItem& scrollbar) {
+  // A non-composited scrollbar contributes to the non-fast scrolling region
+  // and the touch action region.
+  gfx::Rect rect = chunk_to_layer_mapper_.MapVisualRect(scrollbar.VisualRect());
+  if (rect.IsEmpty()) {
+    return;
+  }
+  non_fast_scrollable_region_.Union(rect);
+  touch_action_region_.Union(TouchAction::kNone, rect);
 }
 
 void LayerPropertiesUpdater::UpdateRegionCaptureData(
@@ -1030,9 +1068,12 @@ void LayerPropertiesUpdater::UpdateLayerSelection(
 
 void LayerPropertiesUpdater::Update() {
   bool any_selection_was_painted = false;
-  for (const auto& chunk : chunks_) {
-    if ((!selection_only_ &&
-         (chunk.hit_test_data || chunk.region_capture_data)) ||
+  for (auto it = chunks_.begin(); it != chunks_.end(); ++it) {
+    const PaintChunk& chunk = *it;
+    const auto* non_composited_scrollbar =
+        NonCompositedScrollbarDisplayItem(it, layer_);
+    if ((!selection_only_ && (chunk.hit_test_data || non_composited_scrollbar ||
+                              chunk.region_capture_data)) ||
         chunk.layer_selection_data) {
       chunk_to_layer_mapper_.SwitchToChunk(chunk);
     }
@@ -1041,6 +1082,9 @@ void LayerPropertiesUpdater::Update() {
         UpdateTouchActionRegion(*chunk.hit_test_data);
         UpdateWheelEventRegion(*chunk.hit_test_data);
         UpdateNonFastScrollableRegion(*chunk.hit_test_data);
+      }
+      if (non_composited_scrollbar) {
+        UpdateForNonCompositedScrollbar(*non_composited_scrollbar);
       }
       if (chunk.region_capture_data) {
         UpdateRegionCaptureData(*chunk.region_capture_data);

@@ -256,7 +256,7 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
 
   const auto* properties =
       GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
-  DCHECK(properties);
+  CHECK(properties);
   auto type = scrollbar.Orientation() == kHorizontalScrollbar
                   ? DisplayItem::kScrollbarHorizontal
                   : DisplayItem::kScrollbarVertical;
@@ -268,18 +268,19 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
                              type);
   }
 
-  if (scrollbar.IsCustomScrollbar())
+  if (scrollbar.IsCustomScrollbar()) {
     scrollbar.Paint(context, paint_offset);
-  else
+    // Custom scrollbars need main thread hit testing. The hit test rect will
+    // contribute to the non-fast scrollable region of the containing layer.
+    if (GetScrollableArea().GetLayoutBox()->StyleRef().VisibleToHitTesting()) {
+      context.GetPaintController().RecordScrollHitTestData(
+          scrollbar, DisplayItem::kScrollbarHitTest, nullptr, visual_rect);
+    }
+  } else {
+    // If the scrollbar turns out to be not composited, PaintChunksToCcLayer
+    // will add its visual rect into the containing layer's non-fast scrollable
+    // region.
     PaintNativeScrollbar(context, scrollbar, visual_rect);
-
-  // cc::ScrollbarController can only handle interactions with composited native
-  // scrollbars. For any other scrollbar, prevent the composited-scroll hit test
-  // from succeeding, and send touch events to the main thread for thumb drags.
-  if (!GetScrollableArea().ShouldDirectlyCompositeScrollbar(scrollbar) &&
-      GetScrollableArea().GetLayoutBox()->StyleRef().VisibleToHitTesting()) {
-    context.GetPaintController().RecordScrollHitTestData(
-        scrollbar, DisplayItem::kScrollbarHitTest, nullptr, visual_rect);
   }
 }
 

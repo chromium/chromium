@@ -129,8 +129,14 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
   auto* property_trees = host.property_trees();
   auto* cc_scroll_node = property_trees->scroll_tree_mutable().Node(
       scroll_node->CcNodeId(property_trees->sequence_number()));
-  if (!cc_scroll_node)
+  if (!cc_scroll_node ||
+      // TODO(wangxianzhu): For now non-composited scroll offset change needs
+      // full update to issue raster invalidations and repaint scrollbars.
+      // We can directly update non-composited scroll offset once we implement
+      // raster-inducing scroll for both scrolling contents and scrollbars.
+      !cc_scroll_node->is_composited) {
     return false;
+  }
 
   auto* cc_transform = property_trees->transform_tree_mutable().Node(
       transform.CcNodeId(property_trees->sequence_number()));

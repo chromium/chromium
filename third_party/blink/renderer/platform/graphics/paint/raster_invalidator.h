@@ -38,13 +38,11 @@ class PLATFORM_EXPORT RasterInvalidator {
 
   // Generate raster invalidations for a subset of the paint chunks in the
   // paint artifact.
-  void Generate(
-      RasterInvalidationFunction,
-      const PaintChunkSubset&,
-      const gfx::Vector2dF& layer_offset,
-      const gfx::Size& layer_bounds,
-      const PropertyTreeState& layer_state,
-      DisplayItemClientId layer_client_id = kInvalidDisplayItemClientId);
+  void Generate(RasterInvalidationFunction,
+                const PaintChunkSubset&,
+                const gfx::Vector2dF& layer_offset,
+                const gfx::Size& layer_bounds,
+                const PropertyTreeState& layer_state);
 
   // Called when we repainted PaintArtifact but a ContentLayerClientImpl doesn't
   // have anything changed. We just need to let |old_paint_artifact_| point to

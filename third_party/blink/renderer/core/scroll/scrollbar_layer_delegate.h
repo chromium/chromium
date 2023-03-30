@@ -39,6 +39,8 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
 
   float Opacity() const override;
   bool NeedsRepaintPart(cc::ScrollbarPart part) const override;
+  bool NeedsUpdateDisplay() const override;
+  void ClearNeedsUpdateDisplay() override;
   bool HasTickmarks() const override;
   void PaintPart(cc::PaintCanvas* canvas,
                  cc::ScrollbarPart part,

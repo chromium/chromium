@@ -67,6 +67,14 @@ bool FakeScrollbar::NeedsRepaintPart(ScrollbarPart part) const {
   return needs_repaint_track_;
 }
 
+bool FakeScrollbar::NeedsUpdateDisplay() const {
+  return needs_update_display_;
+}
+
+void FakeScrollbar::ClearNeedsUpdateDisplay() {
+  needs_update_display_ = false;
+}
+
 bool FakeScrollbar::HasTickmarks() const {
   return has_tickmarks_;
 }

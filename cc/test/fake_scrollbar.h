@@ -33,6 +33,8 @@ class FakeScrollbar : public Scrollbar {
   gfx::Rect TrackRect() const override;
   float Opacity() const override;
   bool NeedsRepaintPart(ScrollbarPart part) const override;
+  bool NeedsUpdateDisplay() const override;
+  void ClearNeedsUpdateDisplay() override;
   bool HasTickmarks() const override;
   void PaintPart(PaintCanvas* canvas,
                  ScrollbarPart part,
@@ -81,6 +83,7 @@ class FakeScrollbar : public Scrollbar {
   float thumb_opacity_ = 1;
   bool needs_repaint_thumb_ = true;
   bool needs_repaint_track_ = true;
+  bool needs_update_display_ = true;
   gfx::Rect track_rect_{0, 0, 100, 10};
   gfx::Rect back_button_rect_;
   gfx::Rect forward_button_rect_;

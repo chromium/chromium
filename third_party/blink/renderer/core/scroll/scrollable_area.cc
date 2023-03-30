@@ -688,14 +688,25 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
   else
     vertical_scrollbar_needs_paint_invalidation_ = true;
 
+  // Invalidate the scrollbar directly if it's already composited.
   // GetLayoutBox() may be null in some unit tests.
   if (auto* box = GetLayoutBox()) {
     auto* frame_view = GetLayoutBox()->GetFrameView();
     if (auto* compositor = frame_view->GetPaintArtifactCompositor()) {
-      compositor->SetScrollbarNeedsDisplay(GetScrollbarElementId(orientation));
+      if (compositor->SetScrollbarNeedsDisplay(
+              GetScrollbarElementId(orientation))) {
+        if (auto* scrollbar = GetScrollbar(orientation)) {
+          scrollbar->ClearNeedsUpdateDisplay();
+        }
+      }
     }
   }
 
+  // TODO(crbug.com/1414885): we don't need to invalidate paint of scrollbar
+  // for changes inside of the scrollbar. We'll invalidate raster if needed
+  // after paint. We can remove some of paint invalidation code in this class,
+  // and move remaining paint invalidation code into
+  // PaintLayerScrollableArea and Scrollbar.
   ScrollControlWasSetNeedsPaintInvalidation();
 }
 
