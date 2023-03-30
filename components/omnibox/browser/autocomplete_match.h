@@ -714,8 +714,6 @@ struct AutocompleteMatch {
 
   // If true, UI-level code should swap the contents and description fields
   // before displaying.
-  // This field is set when matches are appended to autocomplete results via
-  // |AutocompleteResult::AppendMatches| rather than when matches are created.
   bool swap_contents_and_description = false;
 
   // A rich-format version of the display for the dropdown.

@@ -956,7 +956,21 @@ void AutocompleteController::UpdateResult(
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
       continue;
+
+    // Append the new matches and conditionally set a swap bit. This logic
+    // was previously within `AppendMatches` but here is the only place
+    // where it's still needed, and even this should ideally be cleaned up.
+    size_t match_index = result_.size();
     result_.AppendMatches(provider->matches());
+    for (; match_index < result_.size(); match_index++) {
+      AutocompleteMatch* match = result_.match_at(match_index);
+      if (!match->description.empty() &&
+          !AutocompleteMatch::IsSearchType(match->type) &&
+          match->type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
+        match->swap_contents_and_description = true;
+      }
+    }
+
     result_.MergeSuggestionGroupsMap(provider->suggestion_groups_map());
   }
 
@@ -1426,7 +1440,9 @@ void AutocompleteController::SetStartStopTimerDurationForTesting(
 
 size_t AutocompleteController::InjectAdHocMatch(AutocompleteMatch match) {
   size_t index = result_.size();
-  result_.AppendMatches({std::move(match)}, true);
+  // Append the match exactly as it is provided, with no change to
+  // `swap_contents_and_description`.
+  result_.AppendMatches({std::move(match)});
   NotifyChanged();
   return index;
 }

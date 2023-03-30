@@ -96,8 +96,7 @@ class AutocompleteResult {
                           AutocompleteResult* old_matches);
 
   // Adds a new set of matches to the result set.  Does not re-sort.
-  // When `preserve` is true, the matches are appended without modifications.
-  void AppendMatches(const ACMatches& matches, bool preserve = false);
+  void AppendMatches(const ACMatches& matches);
 
   // Removes duplicates, puts the list in sorted order and culls to leave only
   // the best GetMaxMatches() matches. Sets the default match to the best match
