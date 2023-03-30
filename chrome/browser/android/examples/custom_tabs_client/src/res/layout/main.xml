@@ -371,6 +371,50 @@
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
 
+        <!-- Decoration type -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/decoration_type_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/decoration_type_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/decoration_type_shadow_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/decoration_type_shadow_text"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/decoration_type_divider_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/decoration_type_divider_text"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/decoration_type_none_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/decoration_type_none_text"
+                    style="?attr/materialButtonOutlinedStyle" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

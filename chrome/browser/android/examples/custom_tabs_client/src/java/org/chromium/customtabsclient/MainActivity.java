@@ -78,6 +78,7 @@ public class MainActivity
     private static final String SHARED_PREF_SIDE_SHEET_POSITION = "SideSheetPosition";
     private static final String SHARED_PREF_SIDE_SHEET_ANIMATION = "SideSheetAnimation";
     private static final String SHARED_PREF_COLOR = "Color";
+    private static final String SHARED_PREF_DECORATION = "Decoration";
     private static final String SHARED_PREF_HEIGHT = "Height";
     private static final String SHARED_PREF_WIDTH = "Width";
     private static final String SHARED_PREF_BREAKPOINT = "Breakpoint";
@@ -127,6 +128,7 @@ public class MainActivity
     private MediaPlayer mMediaPlayer;
     private MaterialButtonToggleGroup mCloseButtonPositionToggle;
     private MaterialButtonToggleGroup mCloseButtonIcon;
+    private MaterialButtonToggleGroup mDecorationType;
     private MaterialButtonToggleGroup mThemeButton;
     private MaterialButtonToggleGroup mSideSheetPositionToggle;
     private MaterialButtonToggleGroup mSideSheetAnimationToggle;
@@ -158,6 +160,14 @@ public class MainActivity
 
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_POSITION =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_POSITION";
+
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT = 0;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE = 1;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW = 2;
+    public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER = 3;
+
+    public static final String EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE =
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_DECORATION_TYPE";
 
     public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT = 0;
     public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM = 1;
@@ -434,6 +444,18 @@ public class MainActivity
                 ? R.id.side_sheet_side_button
                 : R.id.side_sheet_bottom_button;
         mSideSheetAnimationToggle.check(sideSheetAnimationType);
+
+        mDecorationType = findViewById(R.id.decoration_type_toggle);
+        if (mSharedPref.getInt(SHARED_PREF_DECORATION, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW)
+                == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW) {
+            mDecorationType.check(R.id.decoration_type_shadow_button);
+        } else if (mSharedPref.getInt(
+                           SHARED_PREF_DECORATION, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW)
+                == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER) {
+            mDecorationType.check(R.id.decoration_type_divider_button);
+        } else {
+            mDecorationType.check(R.id.decoration_type_none_button);
+        }
     }
 
     private void initializeCornerRadiusSlider() {
@@ -684,6 +706,12 @@ public class MainActivity
                 mSideSheetAnimationToggle.getCheckedButtonId() == R.id.side_sheet_side_button
                 ? ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
                 : ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
+        int decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+        if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_divider_button) {
+            decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+        } else if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_none_button) {
+            decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+        }
 
         if (viewId == R.id.connect_button) {
             if (mSharedPref.getStringSet(SHARED_PREF_SITES, null) != null) {
@@ -797,6 +825,8 @@ public class MainActivity
                         EXTRA_ACTIVITY_SIDE_SHEET_POSITION, sideSheetPosition);
                 customTabsIntent.intent.putExtra(
                         EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, sideSheetAnimation);
+                customTabsIntent.intent.putExtra(
+                        EXTRA_ACTIVITY_SIDE_SHEEET_DECORATION_TYPE, decorationType);
             } else {
                 editor.putString(SHARED_PREF_CCT,
                         mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
@@ -844,6 +874,7 @@ public class MainActivity
                     mPcctHeightResizableCheckbox.isChecked() ? CHECKED : UNCHECKED);
             editor.putInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON,
                     mSideSheetMaxButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
+            editor.putInt(SHARED_PREF_DECORATION, decorationType);
             editor.apply();
         }
     }

@@ -62,4 +62,8 @@
     <string name="cct_type">CCT Type:</string>
     <string name="background_interact_text">Interact with Background App</string>
     <string name="side_sheet_max_button_text">Add Max Button(SideSheet only)</string>
+    <string name="decoration_type_text">Decoration Type</string>
+    <string name="decoration_type_shadow_text">Shadow</string>
+    <string name="decoration_type_divider_text">Divider</string>
+    <string name="decoration_type_none_text">None</string>
 </resources>
