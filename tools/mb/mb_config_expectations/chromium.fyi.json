@@ -1059,6 +1059,17 @@
       "use_remoteexec": true
     }
   },
+  "mac-osxbeta-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  },
   "mac-perfetto-rel": {
     "gn_args": {
       "dcheck_always_on": false,
