@@ -975,7 +975,7 @@ const base::FeatureParam<int> kInterestGroupStorageMaxOwners{
 const base::FeatureParam<int> kInterestGroupStorageMaxGroupsPerOwner{
     &kInterestGroupStorage, "max_groups_per_owner", 1000};
 const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
-    &kInterestGroupStorage, "max_ops_before_maintenance", 1000000};
+    &kInterestGroupStorage, "max_ops_before_maintenance", 1000};
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
