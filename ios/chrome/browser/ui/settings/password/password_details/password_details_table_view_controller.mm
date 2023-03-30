@@ -814,7 +814,7 @@ const int kMinNoteCharAmountForWarning = 901;
                                  handler:showPasswordHandler];
   } else {
     DCHECK(self.handler);
-    [self.handler showPasscodeDialog];
+    [self.handler showPasscodeDialogForReason:PasscodeDialogReasonShowPassword];
   }
 }
 
@@ -1362,6 +1362,8 @@ const int kMinNoteCharAmountForWarning = 901;
   }
 
   if (![self.reauthModule canAttemptReauth]) {
+    [self.handler
+        showPasscodeDialogForReason:PasscodeDialogReasonMovePasswordToAccount];
     return;
   }
   __weak __typeof(self) weakSelf = self;
