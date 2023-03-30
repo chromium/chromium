@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
   void SetNetworkSynchronized(bool network_synchronized) override;
   void NotifyObserversSystemClockUpdated() override;
   void SetServiceIsAvailable(bool is_available) override;
+  void DisableService() override;
 
   // SystemClockClient overrides
   void AddObserver(Observer* observer) override;
@@ -44,6 +45,7 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
 
  private:
   bool is_available_ = true;
+  bool is_enabled_ = true;
   bool network_synchronized_ = false;
 
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>

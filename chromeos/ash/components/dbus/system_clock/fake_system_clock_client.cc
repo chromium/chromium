@@ -29,10 +29,22 @@ void FakeSystemClockClient::SetServiceIsAvailable(bool is_available) {
   if (!is_available_)
     return;
 
+  is_enabled_ = true;
+
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(callbacks_);
   for (auto& callback : callbacks)
     std::move(callback).Run(true);
+}
+
+void FakeSystemClockClient::DisableService() {
+  is_enabled_ = false;
+
+  std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback> callbacks;
+  callbacks.swap(callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(false);
+  }
 }
 
 void FakeSystemClockClient::AddObserver(Observer* observer) {
@@ -61,13 +73,13 @@ void FakeSystemClockClient::GetLastSyncInfo(GetLastSyncInfoCallback callback) {
 void FakeSystemClockClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) {
   // Parent controls when callbacks are fired.
-  if (!is_available_) {
+  if (!is_available_ && is_enabled_) {
     callbacks_.push_back(std::move(callback));
     return;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE, base::BindOnce(std::move(callback), is_enabled_));
 }
 
 SystemClockClient::TestInterface* FakeSystemClockClient::GetTestInterface() {

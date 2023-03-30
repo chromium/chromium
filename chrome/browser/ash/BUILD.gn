@@ -5415,6 +5415,7 @@ source_set("unit_tests") {
     "policy/enrollment/auto_enrollment_controller_unittest.cc",
     "policy/enrollment/auto_enrollment_type_checker_unittest.cc",
     "policy/enrollment/enrollment_config_unittest.cc",
+    "policy/enrollment/enrollment_state_fetcher_unittest.cc",
     "policy/enrollment/psm/construct_rlwe_id_unittest.cc",
     "policy/enrollment/psm/rlwe_dmserver_client_impl_unittest.cc",
     "policy/enrollment/psm/rlwe_test_support_unittest.cc",

@@ -709,8 +709,8 @@ class EnrollmentStateFetcherImpl::Sequence {
         context_(std::move(context)) {}
 
   void Start() {
-    if (!AutoEnrollmentTypeChecker::IsEnabled()) {
-      VLOG(1) << "Enrollment disabled via flags";
+    if (!AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
+      VLOG(1) << "Unified state determination is disabled";
       return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
     }
 

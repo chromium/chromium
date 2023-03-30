@@ -50,6 +50,13 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockClient {
     // WaitForServiceToBeAvailable will pile up, until |is_available| is set
     // back to true.
     virtual void SetServiceIsAvailable(bool is_available) = 0;
+
+    // Configures service to be permanently disabled. Callbacks passed to
+    // WaitForServiceToBeAvailable are immediately invoked with
+    // |service_is_available| set to false. This includes any callbacks that
+    // piled up after SetServiceIsAvailable(false). To enable service again,
+    // invoke SetServiceIsAvailable(true);
+    virtual void DisableService() = 0;
   };
 
   // Creates and initializes the global instance. |bus| must not be null.
