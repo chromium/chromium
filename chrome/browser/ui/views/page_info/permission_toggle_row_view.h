@@ -7,12 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;
-class PageInfoRowView;
 class PageInfoNavigationHandler;
 
 namespace views {
@@ -41,6 +41,10 @@ class PermissionToggleRowView : public views::View {
   void AddObserver(PermissionToggleRowViewObserver* observer);
   void PermissionChanged();
   void ResetPermission();
+
+  const std::u16string& GetRowTitleForTesting() const {
+    return row_view_->GetTitleForTesting();
+  }
 
  private:
   friend class test::PageInfoBubbleViewTestApi;

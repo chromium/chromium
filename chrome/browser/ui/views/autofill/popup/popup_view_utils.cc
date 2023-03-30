@@ -9,10 +9,10 @@
 #include "base/cxx17_backports.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -304,7 +304,7 @@ bool BoundsOverlapWithOpenPermissionsPrompt(
 
   views::View* const permission_bubble_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier,
+          kPermissionPromptBubbleElementId,
           views::ElementTrackerViews::GetInstance()->GetContextForView(
               browser_view));
   if (!permission_bubble_view) {
