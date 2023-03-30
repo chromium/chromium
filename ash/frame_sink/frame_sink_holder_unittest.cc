@@ -10,6 +10,8 @@
 
 #include "ash/frame_sink/frame_sink_holder_test_api.h"
 #include "ash/frame_sink/frame_sink_host.h"
+#include "ash/frame_sink/test/test_begin_frame_source.h"
+#include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -18,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -80,80 +81,6 @@ class TestFrameFactory {
   std::vector<viz::ResourceId> latest_frame_resources_;
   gfx::Size latest_frame_size_;
   float latest_frame_dsf_ = 1.0;
-};
-
-// Create fake BeginFrameArgs.
-viz::BeginFrameArgs CreateFakeBeginFrameArgs() {
-  auto interval = base::Milliseconds(16);
-  base::TimeTicks now = base::TimeTicks::Now();
-  auto deadline = now + interval;
-
-  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, 1u, /*sequence_number=*/2u, now, deadline, interval,
-      viz::BeginFrameArgs::NORMAL);
-
-  return args;
-}
-
-class TestLayerTreeFrameSink : public cc::LayerTreeFrameSink {
- public:
-  TestLayerTreeFrameSink()
-      : LayerTreeFrameSink(/*context_provider=*/nullptr,
-                           /*worker_context_provider_wrapper=*/nullptr,
-                           /*compositor_task_runner=*/nullptr,
-                           /*gpu_memory_buffer_manager=*/nullptr) {}
-
-  TestLayerTreeFrameSink(const TestLayerTreeFrameSink&) = delete;
-  TestLayerTreeFrameSink& operator=(const TestLayerTreeFrameSink&) = delete;
-
-  ~TestLayerTreeFrameSink() override = default;
-
-  void SubmitCompositorFrame(viz::CompositorFrame frame,
-                             bool hit_test_data_changed) override {
-    for (auto resource : frame.resource_list) {
-      resources_in_use_.push_back(resource);
-    }
-
-    latest_frame_ = std::move(frame);
-    frames_received_++;
-  }
-
-  void DidNotProduceFrame(const viz::BeginFrameAck& ack,
-                          cc::FrameSkippedReason reason) override {
-    latest_frame_skipped_reason_ = reason;
-  }
-
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override {}
-
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
-
-  void GetFrameResourcesToReturn(
-      std::vector<viz::ReturnedResource>& return_resources) {
-    for (auto resource : resources_in_use_) {
-      return_resources.push_back(resource.ToReturnedResource());
-    }
-  }
-
-  cc::FrameSkippedReason GetLatestFrameSkippedReason() {
-    return latest_frame_skipped_reason_;
-  }
-
-  const viz::CompositorFrame& GetLatestFrame() { return latest_frame_; }
-
-  void ResetLatestFrameState() {
-    latest_frame_skipped_reason_ = cc::FrameSkippedReason::kDrawThrottled;
-    latest_frame_ = viz::CompositorFrame();
-  }
-
-  int num_frames_received() const { return frames_received_; }
-
- private:
-  std::vector<viz::TransferableResource> resources_in_use_;
-  cc::FrameSkippedReason latest_frame_skipped_reason_ =
-      cc::FrameSkippedReason::kDrawThrottled;
-  viz::CompositorFrame latest_frame_;
-  int frames_received_ = 0;
 };
 
 MATCHER_P(IsBeginFrameAckEqual, value, "") {
@@ -222,24 +149,25 @@ TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyBeforeFirstFrameRequested) {
 
   // Confirm that FrameSinkHolder did not submit any frame yet.
   EXPECT_TRUE(test_api.LastSubmittedFrameSize().IsEmpty());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 0);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 0);
 
   // FrameSinkHolder has pending a frame that will be sent out asynchronously.
   EXPECT_TRUE(test_api.IsPendingFrame());
 
   // Asynchronous frame request.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   ASSERT_TRUE(test_api.IsFirstFrameRequested());
   EXPECT_FALSE(test_api.IsPendingFrame());
   EXPECT_TRUE(test_api.IsPendingFrameAck());
 
   // LayerTreeFrameSink received the frame.
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // Manual BeginFrameAck is used for synchronous frames only.
-  EXPECT_THAT(layer_tree_frame_sink_->GetLatestFrame().metadata.begin_frame_ack,
-              testing::Not(IsBeginFrameAckEqual(
-                  viz::BeginFrameAck::CreateManualAckWithDamage())));
+  EXPECT_THAT(
+      layer_tree_frame_sink_->GetLatestReceivedFrame().metadata.begin_frame_ack,
+      testing::Not(IsBeginFrameAckEqual(
+          viz::BeginFrameAck::CreateManualAckWithDamage())));
 
   frame_sink_holder_->DidReceiveCompositorFrameAck();
   EXPECT_FALSE(test_api.IsPendingFrameAck());
@@ -249,13 +177,13 @@ TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyBeforeFirstFrameRequested) {
   // Now that FrameSinkHolder has received the requested for the first frame, it
   // can now submit frames synchronously.
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 2);
   EXPECT_EQ(test_api.LastSubmittedFrameSize(),
-            layer_tree_frame_sink_->GetLatestFrame().size_in_pixels());
+            layer_tree_frame_sink_->GetLatestReceivedFrame().size_in_pixels());
 
   // Manual BeginFrameAck is used only for synchronously submitted frames.
   EXPECT_THAT(
-      layer_tree_frame_sink_->GetLatestFrame().metadata.begin_frame_ack,
+      layer_tree_frame_sink_->GetLatestReceivedFrame().metadata.begin_frame_ack,
       IsBeginFrameAckEqual(viz::BeginFrameAck::CreateManualAckWithDamage()));
 }
 
@@ -266,20 +194,20 @@ TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyWhilePendingFrameAck) {
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
 
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
   EXPECT_TRUE(test_api.IsPendingFrameAck());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   frame_factory_->SetFrameMetaData(gfx::Size(200, 200), 1.0);
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   // This confirms that FrameSinkHolder did not submit frame synchronously,
   // since it has not received frame ack for the last frame.
-  EXPECT_EQ(layer_tree_frame_sink_->GetLatestFrame().size_in_pixels(),
+  EXPECT_EQ(layer_tree_frame_sink_->GetLatestReceivedFrame().size_in_pixels(),
             gfx::Size(100, 100));
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // FrameSinkHolder fell to asynchronous frame submission.
   EXPECT_TRUE(test_api.IsPendingFrame());
@@ -288,11 +216,12 @@ TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyWhilePendingFrameAck) {
 TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequests_NoAutoUpdate) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
 
-  // FrameSinkHolder has no request tp submit a frame.
-  EXPECT_EQ(layer_tree_frame_sink_->GetLatestFrameSkippedReason(),
-            cc::FrameSkippedReason::kNoDamage);
+  // FrameSinkHolder has no request to submit a frame.
+  auto skipped_reason = layer_tree_frame_sink_->GetLatestFrameSkippedReason();
+  ASSERT_TRUE(skipped_reason.has_value());
+  EXPECT_EQ(skipped_reason, cc::FrameSkippedReason::kNoDamage);
 
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
@@ -300,23 +229,27 @@ TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequests_NoAutoUpdate) {
   EXPECT_TRUE(test_api.IsPendingFrame());
 
   // This time FrameSinkHolder has a request to submit frame asynchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // Asynchronously submitted frames will not have manual BeginFrameAck.
-  EXPECT_THAT(layer_tree_frame_sink_->GetLatestFrame().metadata.begin_frame_ack,
-              testing::Not(IsBeginFrameAckEqual(
-                  viz::BeginFrameAck::CreateManualAckWithDamage())));
+  EXPECT_THAT(
+      layer_tree_frame_sink_->GetLatestReceivedFrame().metadata.begin_frame_ack,
+      testing::Not(IsBeginFrameAckEqual(
+          viz::BeginFrameAck::CreateManualAckWithDamage())));
   EXPECT_FALSE(test_api.IsPendingFrame());
   EXPECT_TRUE(test_api.IsPendingFrameAck());
 
   layer_tree_frame_sink_->ResetLatestFrameState();
 
   // FrameSinkHolder did not submit a frame since it is still waiting for ack.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->GetLatestFrameSkippedReason(),
-            cc::FrameSkippedReason::kWaitingOnMain);
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+
+  skipped_reason = layer_tree_frame_sink_->GetLatestFrameSkippedReason();
+  ASSERT_TRUE(skipped_reason.has_value());
+  EXPECT_EQ(skipped_reason, cc::FrameSkippedReason::kWaitingOnMain);
+
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // Received ack.
   frame_sink_holder_->DidReceiveCompositorFrameAck();
@@ -326,10 +259,13 @@ TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequests_NoAutoUpdate) {
 
   // FrameSinkHolder did not submit anything because it did not have any pending
   // request.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->GetLatestFrameSkippedReason(),
-            cc::FrameSkippedReason::kNoDamage);
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+
+  skipped_reason = layer_tree_frame_sink_->GetLatestFrameSkippedReason();
+  ASSERT_TRUE(skipped_reason.has_value());
+  EXPECT_EQ(skipped_reason, cc::FrameSkippedReason::kNoDamage);
+
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // FrameSinkHolder has an async request again.
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/false);
@@ -339,13 +275,14 @@ TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequests_NoAutoUpdate) {
   layer_tree_frame_sink_->ResetLatestFrameState();
 
   // FrameSinkHolder should now submit a new frame.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
 
   // Asynchronously submitted frames will not have manual begin_frame_ack.
-  EXPECT_THAT(layer_tree_frame_sink_->GetLatestFrame().metadata.begin_frame_ack,
-              testing::Not(IsBeginFrameAckEqual(
-                  viz::BeginFrameAck::CreateManualAckWithDamage())));
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+  EXPECT_THAT(
+      layer_tree_frame_sink_->GetLatestReceivedFrame().metadata.begin_frame_ack,
+      testing::Not(IsBeginFrameAckEqual(
+          viz::BeginFrameAck::CreateManualAckWithDamage())));
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 2);
   EXPECT_FALSE(test_api.IsPendingFrame());
   EXPECT_TRUE(test_api.IsPendingFrameAck());
 }
@@ -362,9 +299,9 @@ TEST_F(FrameSinkHolderTest, DontSubmitNewFramesWhenWaitingToDeleteSinkHolder) {
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // The lifetime of frame_sink_holder has been extended since there are still
   // some exported resources.
@@ -374,15 +311,15 @@ TEST_F(FrameSinkHolderTest, DontSubmitNewFramesWhenWaitingToDeleteSinkHolder) {
   ASSERT_TRUE(holder_weak_ptr_);
 
   // During deletion FrameSinkHolder submits a empty frame.
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 2);
 
   layer_tree_frame_sink_->ResetLatestFrameState();
 
-  holder_weak_ptr_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  holder_weak_ptr_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
 
   // Confirms that FrameSinkHolder did not submit a new frame on asynchronous
   // request.
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 2);
 }
 
 TEST_F(FrameSinkHolderTest,
@@ -391,7 +328,7 @@ TEST_F(FrameSinkHolderTest,
 
   // Confirms that FrameSinkHolder has not submitted any frames yet.
   EXPECT_TRUE(test_api.LastSubmittedFrameSize().IsEmpty());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 0);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 0);
 
   // FrameSinkHolder will get deleted straight away since it has not submitted
   // any resources to the display compositor.
@@ -418,12 +355,12 @@ TEST_F(FrameSinkHolderTest, ExtendLifeTimeOfHolderToRootWindow) {
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   // Confirms that FrameSinkHolder has not submitted any frames.
   EXPECT_FALSE(test_api.LastSubmittedFrameSize().IsEmpty());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // Since FrameSinkHolder has not received the resources back from display
   // compositor, it extend its lifetime.
@@ -441,38 +378,38 @@ TEST_F(FrameSinkHolderTest, KeepSubmittingFrameWhenAutoUpdateIsOn) {
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Request a frame.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
 
   // Since auto_fresh_mode is off, FrameSinkHolder did not submit any frame as
   // there was not request for a frame submission.
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 0);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 0);
 
   // Request a frame again. FrameSinkHolder should not submit a frame.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 0);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 0);
 
   frame_sink_holder_->SetAutoUpdateMode(/*mode=*/true);
 
   // After auto_fresh_mode on, when compositor requests for a frame,
   // FrameSinkHolder should submit a frame.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // FrameSinkHolder should not submit a new frame sas it has no received an
   // ack from the compositor,
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   // Receive an ack.
   frame_sink_holder_->DidReceiveCompositorFrameAck();
 
   // In auto_fresh mode, FrameSinkHolder will keep on submitting frames
   // asynchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 2);
   frame_sink_holder_->DidReceiveCompositorFrameAck();
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 3);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 3);
 }
 
 TEST_F(FrameSinkHolderTest, DeleteHolderAfterReclaimingAllResources) {
@@ -489,7 +426,7 @@ TEST_F(FrameSinkHolderTest, DeleteHolderAfterReclaimingAllResources) {
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   EXPECT_FALSE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
@@ -522,7 +459,7 @@ TEST_F(FrameSinkHolderTest, LayerTreeFrameSinkLost) {
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   EXPECT_EQ(GetResourceManager().exported_resources_count(), 1u);
@@ -547,7 +484,7 @@ TEST_F(FrameSinkHolderTest,
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   EXPECT_FALSE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
@@ -579,7 +516,7 @@ TEST_F(FrameSinkHolderTest,
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   // Confirms we have an exported resource.
@@ -619,12 +556,12 @@ TEST_F(FrameSinkHolderTest,
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
   // frames synchronously.
-  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   // Confirms that FrameSinkHolder has submitted a frame.
   EXPECT_FALSE(test_api.LastSubmittedFrameSize().IsEmpty());
-  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
 
   std::vector<viz::ReturnedResource> to_be_returned_resources;
   layer_tree_frame_sink_->GetFrameResourcesToReturn(to_be_returned_resources);
