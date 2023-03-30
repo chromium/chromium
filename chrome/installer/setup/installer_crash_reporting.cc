@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +21,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/setup/installer_crash_reporter_client.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
@@ -43,9 +45,14 @@ const char* OperationToString(InstallerState::Operation operation) {
   return "";
 }
 
-// Retrieve the SYSTEM version of TEMP. We do this instead of GetTempPath so
-// that both elevated and SYSTEM runs share the same directory.
+// Returns the path returned by `installer::GetSecureSystemTemp` if available.
+// Otherwise, retrieves the SYSTEM version of TEMP. We do this instead of
+// GetTempPath so that both elevated and SYSTEM runs share the same directory.
 bool GetSystemTemp(base::FilePath* temp) {
+  if (GetSecureSystemTemp(temp)) {
+    return true;
+  }
+
   base::win::RegKey reg_key(
       HKEY_LOCAL_MACHINE,
       L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",

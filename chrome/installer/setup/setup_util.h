@@ -176,6 +176,15 @@ void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& new_version,
                                    WorkItemList* list);
 
+// Retrieves the path `%systemroot%\SystemTemp`, if available, else retrieves
+// `%programfiles%`.
+// Returns the path in `temp` and `true` if the path is writable by the caller,
+// which is usually only when the caller is running as admin or system.
+// Returns `false` otherwise.
+// Both paths are only accessible to admin and system processes, and are
+// therefore secure.
+bool GetSecureSystemTemp(base::FilePath* temp);
+
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_SETUP_SETUP_UTIL_H_
