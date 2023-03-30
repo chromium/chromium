@@ -170,11 +170,9 @@ TEST_F(WaylandZAuraOutputManagerTest, SuccessiveServerEventsUpdateMetrics) {
 // the output is destroyed.
 TEST_F(WaylandZAuraOutputManagerTest, MetricsStateErasedWhenOutputDestroyed) {
   const WaylandOutput::Id output_id = primary_output()->output_id();
-  const auto sample_metrics = GetSampleMetrics();
 
-  // Send the sample metrics, an entry should be created in the manager.
-  EXPECT_EQ(nullptr, aura_output_manager()->GetOutputMetrics(output_id));
-  SendSampleMetrics(sample_metrics);
+  // The sample metrics should already have been populated when the output was
+  // initially bound.
   EXPECT_NE(nullptr, aura_output_manager()->GetOutputMetrics(output_id));
 
   // Destroy the output, the entry should be removed from the manager.

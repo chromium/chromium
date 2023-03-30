@@ -125,7 +125,10 @@ class TestWaylandServerThread : public base::Thread,
   }
 
   TestOutput* CreateAndInitializeOutput(TestOutputMetrics metrics = {}) {
-    auto output = std::make_unique<TestOutput>(std::move(metrics));
+    auto output = std::make_unique<TestOutput>(
+        base::BindRepeating(&TestWaylandServerThread::OnTestOutputMetricsFlush,
+                            base::Unretained(this)),
+        std::move(metrics));
     if (output_.aura_shell_enabled()) {
       output->set_aura_shell_enabled();
     }
@@ -135,6 +138,12 @@ class TestWaylandServerThread : public base::Thread,
     globals_.push_back(std::move(output));
     return output_ptr;
   }
+
+  // Called when the Flush() is called for a TestOutput associated with
+  // `output_resource`. When called sends the corresponding events for the
+  // `metrics` to clients of the zaura_output_manager.
+  void OnTestOutputMetricsFlush(wl_resource* output_resource,
+                                const TestOutputMetrics& metrics);
 
   TestDataDeviceManager* data_device_manager() { return &data_device_manager_; }
   TestSeat* seat() { return &seat_; }

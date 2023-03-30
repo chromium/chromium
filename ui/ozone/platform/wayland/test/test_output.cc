@@ -17,10 +17,13 @@ namespace {
 constexpr uint32_t kOutputVersion = 2;
 }
 
-TestOutput::TestOutput() : TestOutput(TestOutputMetrics()) {}
+TestOutput::TestOutput(FlushMetricsCallback flush_metrics_callback)
+    : TestOutput(std::move(flush_metrics_callback), TestOutputMetrics()) {}
 
-TestOutput::TestOutput(TestOutputMetrics metrics)
+TestOutput::TestOutput(FlushMetricsCallback flush_metrics_callback,
+                       TestOutputMetrics metrics)
     : GlobalObject(&wl_output_interface, nullptr, kOutputVersion),
+      flush_metrics_callback_(std::move(flush_metrics_callback)),
       metrics_(std::move(metrics)) {}
 
 TestOutput::~TestOutput() = default;
@@ -87,6 +90,8 @@ int64_t TestOutput::GetDisplayId() const {
 }
 
 void TestOutput::Flush() {
+  flush_metrics_callback_.Run(resource(), metrics_);
+
   constexpr char kUnknownMake[] = "unknown_make";
   constexpr char kUnknownModel[] = "unknown_model";
 

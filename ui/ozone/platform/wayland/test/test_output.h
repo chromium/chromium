@@ -8,6 +8,7 @@
 #include <wayland-server-protocol.h>
 #include <cstdint>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -15,6 +16,8 @@
 #include "ui/ozone/platform/wayland/test/test_output_metrics.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output.h"
+
+struct wl_resource;
 
 namespace wl {
 
@@ -24,8 +27,17 @@ namespace wl {
 // default.
 class TestOutput : public GlobalObject {
  public:
-  TestOutput();
-  explicit TestOutput(TestOutputMetrics metrics);
+  // A callback that allows clients to respond to a Flush() of a given
+  // TestOutput's metrics_. This is called immediately before Flush() sends
+  // metrics events to clients. The output_resource is the wl_resource
+  // associated with this output.
+  using FlushMetricsCallback =
+      base::RepeatingCallback<void(wl_resource* output_resource,
+                                   const TestOutputMetrics& metrics)>;
+
+  explicit TestOutput(FlushMetricsCallback flush_metrics_callback);
+  TestOutput(FlushMetricsCallback flush_metrics_callback,
+             TestOutputMetrics metrics);
   TestOutput(const TestOutput&) = delete;
   TestOutput& operator=(const TestOutput&) = delete;
   ~TestOutput() override;
@@ -83,6 +95,9 @@ class TestOutput : public GlobalObject {
   // bound or when output extensions are created). If this is set `Flush()` must
   // be explicitly called to propagate pending metrics.
   bool suppress_implicit_flush_ = false;
+
+  // Called immediately before Flush() sends metrics events to clients.
+  FlushMetricsCallback flush_metrics_callback_;
 
   TestOutputMetrics metrics_;
 

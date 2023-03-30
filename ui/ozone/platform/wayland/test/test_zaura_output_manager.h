@@ -7,7 +7,10 @@
 
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
+struct wl_resource;
+
 namespace wl {
+struct TestOutputMetrics;
 
 class TestZAuraOutputManager : public GlobalObject {
  public:
@@ -15,6 +18,10 @@ class TestZAuraOutputManager : public GlobalObject {
   TestZAuraOutputManager(const TestZAuraOutputManager&) = delete;
   TestZAuraOutputManager& operator=(const TestZAuraOutputManager&) = delete;
   ~TestZAuraOutputManager() override;
+
+  // Propagates events for metrics to bound clients for the output.
+  void SendOutputMetrics(wl_resource* output_resource,
+                         const TestOutputMetrics& metrics);
 };
 
 }  // namespace wl
