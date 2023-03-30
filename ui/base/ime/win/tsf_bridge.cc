@@ -493,6 +493,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
       TEXT_INPUT_TYPE_PASSWORD,  TEXT_INPUT_TYPE_SEARCH,
       TEXT_INPUT_TYPE_EMAIL,     TEXT_INPUT_TYPE_NUMBER,
       TEXT_INPUT_TYPE_TELEPHONE, TEXT_INPUT_TYPE_URL,
+      TEXT_INPUT_TYPE_TEXT_AREA,
   };
   for (size_t i = 0; i < std::size(kTextInputTypes); ++i) {
     const TextInputType input_type = kTextInputTypes[i];

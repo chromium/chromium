@@ -19,6 +19,7 @@ Textarea::Textarea() {
   GetRenderText()->SetMultiline(true);
   GetRenderText()->SetVerticalAlignment(gfx::ALIGN_TOP);
   GetRenderText()->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
+  SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_TEXT_AREA);
 }
 
 size_t Textarea::GetNumLines() {
