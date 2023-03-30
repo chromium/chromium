@@ -13,8 +13,14 @@
     BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
   ]);
 
-  const jsLiveLocation = await BindingsTestRunner.createDebuggerLiveLocation('js', 'sourcemap-script.js');
-  const cssLiveLocation = await BindingsTestRunner.createCSSLiveLocation('css', 'sourcemap-style.css');
+  const jsLiveLocation = await BindingsTestRunner.createDebuggerLiveLocation(
+      'js', 'sourcemap-script.js', undefined, undefined,
+      /* dumpOnUpdate= */ false);
+  await BindingsTestRunner.dumpLocation(jsLiveLocation, '[ CREATE ]');
+  const cssLiveLocation = await BindingsTestRunner.createCSSLiveLocation(
+      'css', 'sourcemap-style.css', undefined, undefined,
+      /* dumpOnUpdate= */ false);
+  await BindingsTestRunner.dumpLocation(cssLiveLocation, '[ CREATE ]');
 
   TestRunner.markStep('navigateMainFrame');
   const url = TestRunner.url('resources/empty-page.html');

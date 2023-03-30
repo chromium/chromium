@@ -6,11 +6,6 @@ Running: attachFrame
 [ CREATE ]  LiveLocation-css: http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-sass.scss:0:0
 
 Running: navigateMainFrame
-[ UPDATE ]  LiveLocation-css: null
-[ UPDATE ]  LiveLocation-css: null
-[ UPDATE ]  LiveLocation-js: http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-script.js:0:0
-[ UPDATE ]  LiveLocation-js: debugger:///VM[XXX] sourcemap-script.js:0:0
-[ UPDATE ]  LiveLocation-js: debugger:///VM[XXX] sourcemap-script.js:0:0
 [  GET   ]  LiveLocation-js: null
 [  GET   ]  LiveLocation-css: null
 
