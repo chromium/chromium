@@ -212,7 +212,8 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
     return;
   }
 
-  const std::string* agent_id = result->FindStringPath(kAgentIdJwtPropertyKey);
+  const base::Value::Dict& result_dict = result->GetDict();
+  const std::string* agent_id = result_dict.FindString(kAgentIdJwtPropertyKey);
   if (!agent_id) {
     LogCrowdStrikeParsingError(SignalsParsingError::kMissingRequiredProperty);
     std::move(callback).Run(absl::nullopt,
@@ -224,7 +225,7 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
   identifiers.agent_id = *agent_id;
 
   const std::string* customer_id =
-      result->FindStringPath(kCustomerIdJwtPropertyKey);
+      result_dict.FindString(kCustomerIdJwtPropertyKey);
   if (customer_id) {
     identifiers.customer_id = *customer_id;
   }
