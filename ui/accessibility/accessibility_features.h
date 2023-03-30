@@ -68,6 +68,13 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kTextBasedAudioDescription);
 // enabled.
 AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 
+// Returns true if the accessibility code should use experimental optimization
+// techniques in the AXTree::Unserialize method.
+AX_BASE_EXPORT bool IsUnserializeOptimizationsEnabled();
+
+// Enables an experimental implementation in AXTree for performance tests.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityUnserializeOptimizations);
+
 #if BUILDFLAG(IS_WIN)
 // Enables an experimental Chrome-specific accessibility COM API
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);

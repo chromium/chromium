@@ -94,6 +94,15 @@ bool IsTextBasedAudioDescriptionEnabled() {
   return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
 }
 
+bool IsUnserializeOptimizationsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityUnserializeOptimizations);
+}
+
+BASE_FEATURE(kAccessibilityUnserializeOptimizations,
+             "AccessibilityUnserializeOptimizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",

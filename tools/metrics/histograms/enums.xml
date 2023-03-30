@@ -59549,6 +59549,8 @@ from previous Chrome versions.
   <int value="-1217425153" label="ChromeHomeClearUrlOnOpen:enabled"/>
   <int value="-1216837777" label="clear-data-reduction-proxy-data-savings"/>
   <int value="-1216570731" label="OfflineHome:enabled"/>
+  <int value="-1215163628"
+      label="AccessibilityUnserializeOptimizations:disabled"/>
   <int value="-1214870820" label="EnableNewStyleLauncher:enabled"/>
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
@@ -60587,6 +60589,8 @@ from previous Chrome versions.
       label="AutofillPreventOverridingPrefilledValues:disabled"/>
   <int value="-644402170"
       label="AccessibilityAcceleratorNotificationsTimeout:enabled"/>
+  <int value="-643702496"
+      label="AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>

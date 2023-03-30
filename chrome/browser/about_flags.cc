@@ -9905,6 +9905,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableEmailOtpForVcnYellowPath)},
 
+    {"enable-accessibility-unserialize-optimizations",
+     flag_descriptions::kAccessibilityUnserializeOptimizationsName,
+     flag_descriptions::kAccessibilityUnserializeOptimizationsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kAccessibilityUnserializeOptimizations)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
