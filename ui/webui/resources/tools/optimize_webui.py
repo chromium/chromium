@@ -25,7 +25,6 @@ import node_modules
 # These files are already combined and minified.
 _BASE_EXCLUDES = []
 for excluded_file in [
-    'resources/polymer/v1_0/web-animations-js/web-animations-next-lite.min.js',
     'resources/mojo/mojo/public/js/bindings.js',
     'resources/mojo/mojo/public/mojom/base/time.mojom-lite.js',
     'resources/polymer/v3_0/polymer/polymer_bundled.min.js',
