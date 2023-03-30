@@ -382,20 +382,16 @@ void TextAutosizer::BeginLayout(LayoutBlock* block,
 
   DCHECK(!cluster_stack_.empty());
 
-  // Cells in auto-layout tables are handled separately by inflateAutoTable.
+  // Cells in auto-layout tables are handled separately by InflateAutoTable.
+  auto* cell = DynamicTo<LayoutNGTableCell>(block);
   bool is_auto_table_cell =
-      block->IsTableCell() && !ToInterface<LayoutNGTableCellInterface>(block)
-                                   ->TableInterface()
-                                   ->ToLayoutObject()
-                                   ->StyleRef()
-                                   .IsFixedTableLayout();
+      cell && !cell->Table()->StyleRef().IsFixedTableLayout();
   if (!is_auto_table_cell && !cluster_stack_.empty())
     Inflate(block, layouter);
 }
 
-void TextAutosizer::InflateAutoTable(LayoutNGTableInterface* table_interface) {
-  DCHECK(table_interface);
-  const LayoutBlock* table = To<LayoutBlock>(table_interface->ToLayoutObject());
+void TextAutosizer::InflateAutoTable(LayoutNGTable* table) {
+  DCHECK(table);
   DCHECK(!table->StyleRef().IsFixedTableLayout());
   DCHECK(table->ContainingBlock());
 
@@ -405,23 +401,22 @@ void TextAutosizer::InflateAutoTable(LayoutNGTableInterface* table_interface) {
 
   // Pre-inflate cells that have enough text so that their inflated preferred
   // widths will be used for column sizing.
-  for (LayoutObject* section = table->FirstChild(); section;
-       section = section->NextSibling()) {
-    if (!section->IsTableSection())
+  for (LayoutObject* child = table->FirstChild(); child;
+       child = child->NextSibling()) {
+    auto* section = DynamicTo<LayoutNGTableSection>(child);
+    if (!section) {
       continue;
-    for (const LayoutNGTableRowInterface* row =
-             ToInterface<LayoutNGTableSectionInterface>(section)
-                 ->FirstRowInterface();
-         row; row = row->NextRowInterface()) {
-      for (LayoutNGTableCellInterface* cell = row->FirstCellInterface(); cell;
-           cell = cell->NextCellInterface()) {
-        LayoutBlock* cell_layout_object =
-            To<LayoutBlock>(cell->ToMutableLayoutObject());
-        if (!cell_layout_object->NeedsLayout())
+    }
+    for (const LayoutNGTableRow* row = section->FirstRow(); row;
+         row = row->NextRow()) {
+      for (LayoutNGTableCell* cell = row->FirstCell(); cell;
+           cell = cell->NextCell()) {
+        if (!cell->NeedsLayout()) {
           continue;
-        BeginLayout(cell_layout_object, nullptr);
-        Inflate(cell_layout_object, nullptr, kDescendToInnerBlocks);
-        EndLayout(cell_layout_object);
+        }
+        BeginLayout(cell, nullptr);
+        Inflate(cell, nullptr, kDescendToInnerBlocks);
+        EndLayout(cell);
       }
     }
   }
@@ -1441,8 +1436,8 @@ TextAutosizer::LayoutScope::~LayoutScope() {
     text_autosizer_->EndLayout(block_);
 }
 
-TextAutosizer::TableLayoutScope::TableLayoutScope(LayoutNGTableInterface* table)
-    : LayoutScope(To<LayoutBlock>(table->ToMutableLayoutObject())) {
+TextAutosizer::TableLayoutScope::TableLayoutScope(LayoutNGTable* table)
+    : LayoutScope(table) {
   if (text_autosizer_) {
     DCHECK(text_autosizer_->ShouldHandleLayout());
     text_autosizer_->InflateAutoTable(table);
