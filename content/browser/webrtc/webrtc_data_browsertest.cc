@@ -43,7 +43,7 @@ class MAYBE_WebRtcDataBrowserTest : public WebRtcContentBrowserTestBase {
 
  protected:
   // Convenience function since most peerconnection-call.html tests just load
-  // the page, kick off some javascript and wait for the title to change to OK.
+  // the page, and execute some javascript.
   void MakeTypicalPeerConnectionCall(const std::string& javascript) {
     MakeTypicalCall(javascript, "/media/peerconnection-call-data.html");
   }

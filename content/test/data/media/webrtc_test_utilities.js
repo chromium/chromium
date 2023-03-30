@@ -9,20 +9,9 @@ const VIDEO_TAG_HEIGHT = 240;
 // Fake video capture background green is of value 135.
 const COLOR_BACKGROUND_GREEN = 135;
 
-// Logs a success message to the console, and returns a success string.
+// Logs a success message to the console.
 function logSuccess() {
   console.log('Test Success');
-  return 'OK';
-}
-
-// Converts the given argument to an error stack.
-function toStackTrace(reason) {
-  if (reason instanceof Error) {
-    var error = reason;
-  } else {
-    var error = new Error(reason);
-  }
-  return error.stack;
 }
 
 function detectVideoPlayingWithExpectedResolution(

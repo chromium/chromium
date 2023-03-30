@@ -20,8 +20,7 @@
       promiseSctpDataChannelExchange({reliable: true}),
       negotiate(),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function callWithSctpDataAndMedia() {
@@ -34,8 +33,7 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
     ])
-    .then(logSuccess)
-    .catch(toStackTrace)
+    .then(logSuccess);
   }
 
   // This function is used for setting up a test that:

@@ -33,8 +33,7 @@
           return ensureAudioPlaying(gSecondConnection);
         }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function setupCallAndPromiseAudioPlaying(constraints) {
@@ -51,8 +50,7 @@
 
   function callAndEnsureAudioIsPlaying(constraints) {
     return setupCallAndPromiseAudioPlaying(constraints)
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   function enableRemoteVideo(peerConnection, enabled) {
@@ -86,8 +84,7 @@
       })
       .then(() => ensureSilence(gSecondConnection));
     })
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function callAndEnsureLocalAudioTrackMutingWorks(constraints) {
@@ -101,8 +98,7 @@
       })
       .then(() => ensureSilence(gSecondConnection));
     })
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function callAndEnsureAudioTrackUnmutingWorks(constraints) {
@@ -121,16 +117,14 @@
       })
       .then(() => ensureAudioPlaying(gSecondConnection));
     })
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function callAndEnsureLocalVideoMutingDoesntMuteAudio(constraints) {
     return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableLocalVideo(gFirstConnection, false);
       return ensureAudioPlaying(gSecondConnection)
-          .then(logSuccess)
-          .catch(toStackTrace);
+          .then(logSuccess);
     });
   }
 
@@ -138,8 +132,7 @@
     return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableRemoteVideo(gSecondConnection, false);
       return ensureAudioPlaying(gSecondConnection)
-          .then(logSuccess)
-          .catch(toStackTrace);
+          .then(logSuccess);
     });
   }
 

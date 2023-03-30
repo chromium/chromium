@@ -54,7 +54,7 @@
         .then(logSuccess)
         .catch(() => {
           window.document.title = 'Denied';
-          return toStackTrace('failed');
+          throw new Error('failed');
         });
   }
 
@@ -69,8 +69,7 @@
   function getUserMediaAndExpectSuccess(constraints) {
     console.log('Calling getUserMediaAndExpectSuccess.');
     return navigator.mediaDevices.getUserMedia(constraints)
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   // Requests getusermedia and expects it to fail. The error name is returned
@@ -79,9 +78,8 @@
     console.log('Calling getUserMediaAndExpectFailure.');
     return navigator.mediaDevices.getUserMedia(constraints)
         .then(stream => {
-          return toStackTrace('Unexpectedly succeeded getUserMedia.');
-        })
-        .catch(error => error.name);
+          throw new Error('Unexpectedly succeeded getUserMedia.');
+        }, (err) => err.name)
   }
 
   function renderClonedMediastreamAndStop(constraints, waitTimeInSeconds) {
@@ -95,8 +93,7 @@
                           duplicate.getVideoTracks()[0].id);
           return detectVideoInLocalView1(stream)
               .then(logSuccess);
-        })
-        .catch(toStackTrace);
+        });
   }
 
   function renderDuplicatedMediastreamAndStop(constraints, waitTimeInSeconds) {
@@ -110,8 +107,7 @@
                        duplicate.getVideoTracks()[0].id);
           return detectVideoInLocalView1(duplicate)
               .then(logSuccess);
-        })
-        .catch(toStackTrace);
+        });
   }
 
   function renderSameTrackMediastreamAndStop(constraints, waitTimeInSeconds) {
@@ -126,8 +122,7 @@
                        duplicate.getVideoTracks()[0].id);
           return detectVideoInLocalView1(duplicate)
               .then(logSuccess);
-        })
-        .catch(toStackTrace);
+        });
   }
 
   function renderClonedTrackMediastreamAndStop(constraints, waitTimeInSeconds) {
@@ -142,8 +137,7 @@
                           duplicate.getVideoTracks()[0].id)
           return detectVideoInLocalView1(duplicate)
               .then(logSuccess);
-        })
-        .catch(toStackTrace);
+        });
   }
 
   function getUserMediaAndRenderInSeveralVideoTags() {
@@ -191,8 +185,7 @@
           return detectVideoPlaying(id);
         })
         .then(logSuccess);
-    })
-    .catch(toStackTrace);
+    });
   }
 
   // Gets a video stream up, analyses it and returns the aspect ratio to the
@@ -200,8 +193,7 @@
   function getUserMediaAndAnalyseAndStop(constraints) {
     console.log('Calling getUserMediaAndAnalyseAndStop.');
     return navigator.mediaDevices.getUserMedia(constraints)
-        .then(displayDetectAndAnalyzeVideo)
-        .catch(toStackTrace);
+        .then(displayDetectAndAnalyzeVideo);
   }
 
   // This test that a MediaStream can be cloned and that the clone can
@@ -209,8 +201,7 @@
   function getUserMediaAndClone() {
     console.log('Calling getUserMediaAndClone.');
     return navigator.mediaDevices.getUserMedia({video: true, audio: true})
-        .then(createAndRenderClone)
-        .catch(toStackTrace);
+        .then(createAndRenderClone);
   }
 
   // Creates two MediaStream and renders them locally. When the video of both
@@ -239,8 +230,7 @@
           stream1.getVideoTracks()[0].stop();
           return detectVideoStopped('local-view-1');
         })
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   function twoGetUserMedia(constraints1, constraints2) {
@@ -261,13 +251,12 @@
         .then((aspectRatio) => {
           result = result + '-' + aspectRatio;
           return result;
-        })
-        .catch(toStackTrace);
+        });
   }
 
   function getUserMediaInIframeAndCloseInSuccessCb(constraints) {
     var iframe = document.createElement('iframe');
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iframe.onload = onIframeLoaded;
       document.body.appendChild(iframe);
       iframe.src = window.location;
@@ -286,14 +275,14 @@
                 resolve(logSuccess());
               }, 0);
             })
-            .catch(err => resolve(toStackTrace(err)));
+            .catch(reject);
       }
     });
   }
 
   function getUserMediaInIframeAndCloseInFailureCb(constraints) {
     var iframe = document.createElement('iframe');
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       iframe.onload = onIframeLoaded;
       document.body.appendChild(iframe);
       iframe.src = window.location;
@@ -302,7 +291,7 @@
         var iframe  = window.document.querySelector('iframe');
         iframe.contentWindow.navigator.mediaDevices.getUserMedia(constraints)
             .then(stream => {
-              resolve(toStackTrace('GetUserMedia call succeeded unexpectedly.'));
+              reject(new Error('GetUserMedia call succeeded unexpectedly.'));
             })
             .catch(error => {
               // Remove the iframe from the parent within the callback scope.
@@ -373,12 +362,12 @@
     var attempt = 0;
     var maxAttempts = 10;
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       var detectorFunction = function() {
         var width = videoElement.videoWidth;
         var height = videoElement.videoHeight;
         if (width == 0 || height == 0)
-          return resolve(toStackTrace(("VideoElement width and height set to 0.")));
+          return reject(new Error(("VideoElement width and height set to 0.")));
 
         canvas.width = width;
         canvas.height = height;
@@ -418,7 +407,7 @@
             maxLightGreenPixelsY == height / 2) {
           if (++attempt > maxAttempts) {
             clearInterval(detectorInterval);
-            return resolve(toStackTrace("Aspect ratio corrupted. X " + maxLightGreenPixelsX  +
+            return reject(new Error("Aspect ratio corrupted. X " + maxLightGreenPixelsX  +
                     " Y " + maxLightGreenPixelsY + " width " + width +
                     " height " + height));
           }
@@ -448,7 +437,7 @@
         return logSuccess();
       })
       .catch(_ => {
-        return toStackTrace("getUserMedia failed")
+        throw new Error("getUserMedia failed")
       });
   }
 
@@ -463,7 +452,7 @@
         return logSuccess();
       })
       .catch(_ => {
-        return toStackTrace("getUserMedia failed")
+        throw new Error("getUserMedia failed")
       });
   }
 
@@ -487,8 +476,7 @@
             stream.getAudioTracks()[0].stop();
             return logSuccess();
           })
-      })
-      .catch(toStackTrace);
+      });
   }
 
   function srcObjectAddVideoTrack() {
@@ -497,7 +485,7 @@
     assertEquals(video.srcObject, null);
     return navigator.mediaDevices.getUserMedia({audio: true, video: true})
       .then(stream => {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
           video.onplaying = function () {
             video.onplaying = null;
             resolve();
@@ -508,7 +496,7 @@
           console.log("playing");
           return new Promise(resolve => {
             video.onloadstart = function() {
-              resolve(toStackTrace("loadstart should not be called"));
+              reject(new Error("loadstart should not be called"));
             }
 
             video.onresize = function() {
@@ -524,8 +512,7 @@
             video.srcObject.addTrack(stream.getVideoTracks()[0]);
           });
         })
-      })
-      .catch(toStackTrace);
+      });
   }
 
   async function srcObjectReplaceInactiveTracks() {
@@ -543,9 +530,9 @@
         video.srcObject = stream;
       });
 
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         video.onloadstart = () => {
-          resolve(toStackTrace("loadstart should not be fired"));
+          reject(new Error("loadstart should not be fired"));
         }
 
         assertNotEquals(video.srcObject, null);
@@ -559,11 +546,11 @@
           assertEquals(video.networkState, HTMLMediaElement.NETWORK_IDLE);
           setTimeout(() => resolve(logSuccess()), 100);
           if (++onprogress_calls > 1)
-            resolve(toStackTrace('progress should not be fired more than once'));
+            reject(new Error('progress should not be fired more than once'));
         }
       });
     } catch (err) {
-      return toStackTrace('getUserMedia() failed');
+      throw new Error('getUserMedia() failed');
     }
   }
 
@@ -581,9 +568,9 @@
           video.srcObject = stream;
         })
         .then(() => {
-          return new Promise(resolve => {
+          return new Promise((resolve, reject) => {
             video.onloadstart = function() {
-              resolve(toStackTrace("loadstart should not be called"));
+              reject(new Error("loadstart should not be called"));
             }
 
             video.onresize = function() {
@@ -599,8 +586,7 @@
             stream.removeTrack(stream.getVideoTracks()[0]);
           });
         });
-      })
-    .catch(toStackTrace);
+      });
   }
 
   function srcObjectRemoveFirstOfTwoVideoTracks() {
@@ -660,8 +646,7 @@
         assertNotEquals(video.videoWidth, canvas_width)
         assertNotEquals(video.videoHeight, canvas_height)
         return logSuccess()
-      })
-      .catch(toStackTrace);
+      });
   }
 
   function srcObjectReassignSameObject() {
@@ -687,8 +672,7 @@
           // Reassigning the same object should trigger the load algorithm.
           video.srcObject = video.srcObject;
         });
-      })
-    .catch(toStackTrace);
+      });
   }
 
   function applyConstraintsVideo() {
@@ -711,12 +695,11 @@
           track.stop();
           return logSuccess();
         });
-      })
-      .catch(toStackTrace);
+      });
   }
 
   function applyConstraintsVideoTwoStreams() {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       navigator.mediaDevices.getUserMedia({
           video:{
               width:{exact:640},
@@ -726,8 +709,8 @@
           assertEquals(stream.getVideoTracks().length, 1);
           let track1 = stream.getVideoTracks()[0];
           let deviceId1 = track1.getSettings().deviceId;
-          track1.onmute = () => resolve(toStackTrace("Unexpected mute of track1"));
-          track1.onunmute = () => resolve(toStackTrace("Unexpected unmute of track1"));
+          track1.onmute = () => reject(new Error("Unexpected mute of track1"));
+          track1.onunmute = () => reject(new Error("Unexpected unmute of track1"));
           return navigator.mediaDevices.getUserMedia({
               video:{
                   deviceId: {exact: deviceId1},
@@ -736,8 +719,8 @@
               }
           }).then(stream2 => {
               let track2 = stream2.getVideoTracks()[0];
-              track2.onmute = () => resolve(toStackTrace("Unexpected mute of track2"));
-              track2.onunmute = () => resolve(toStackTrace("Unexpected unmute of track2"));
+              track2.onmute = () => reject(new Error("Unexpected mute of track2"));
+              track2.onunmute = () => reject(new Error("Unexpected unmute of track2"));
               return track1.applyConstraints({
                 width: {exact: 639},
                 height: {exact: 479}
@@ -758,7 +741,7 @@
               });
             })
         })
-        .catch((err) => resolve(toStackTrace(err)));
+        .catch(reject);
     });
   }
 
@@ -774,8 +757,8 @@
         return track.applyConstraints({
           width: {exact: 1000000},
         }).then(()=> {
-          return toStackTrace("applyConstraints succeeded with impossible constraints");
-        }).catch(e => {
+          throw new Error("applyConstraints succeeded with impossible constraints");
+        }, e => {
           assertEquals(e.name, "OverconstrainedError");
           assertEquals(e.constraint, "width");
           assertTrue(!!e.message);
@@ -786,8 +769,7 @@
           track.stop();
           return logSuccess();
         });
-      })
-      .catch(toStackTrace);
+      });
   }
 
   function applyConstraintsNonDevice() {
@@ -808,7 +790,7 @@
     var video = document.createElement('video');
     video.autoplay = true;
     assertEquals(video.srcObject, null);
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       video.onloadedmetadata = () => {
         assertEquals(video.videoWidth, canvas_width);
         assertEquals(video.videoHeight, canvas_height);
@@ -819,7 +801,7 @@
           assertEquals(video.videoHeight, new_height);
           canvas_track.applyConstraints({width: {min: canvas_width + 1}})
             .then(() => {
-              resolve(toStackTrace("applyConstraints() should not succeed at setting the " +
+              reject(new Error("applyConstraints() should not succeed at setting the " +
                       "track size to a value greater than the source size."));
             })
             .catch(e => {
@@ -833,7 +815,7 @@
             ctx.lineTo(100,100);
             ctx.stroke();
           })
-          .catch(e => resolve(toStackTrace("Unexpected error: " + e)));
+          .catch(e => reject(new Error("Unexpected error: " + e)));
       }
       video.srcObject = canvas_stream;
     });
@@ -842,7 +824,7 @@
   function concurrentGetUserMediaStop() {
     var num_stopped = 0;
     const N = 250;
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       for (var i = 0; i < N; i++) {
         navigator.mediaDevices.getUserMedia({video: true}).then(s => {
           setTimeout(() => {
@@ -850,7 +832,7 @@
             if (++num_stopped == N)
               resolve(logSuccess());
           }, 1);
-        }).catch(err => resolve(toStackTrace(err)));
+        }).catch(reject);
       }
     });
   }
@@ -868,7 +850,7 @@
     return navigator.mediaDevices.getUserMedia({video: true}).then(s => {
       s.getVideoTracks()[0].stop();
       return logSuccess();
-    }).catch(toStackTrace);
+    });
   }
 
   async function getUserMediaEchoCancellationOnAndOff() {
@@ -892,7 +874,7 @@
       assertFalse(streams.getAudioTracks()[0].getSettings().echoCancellation);
       return logSuccess();
     } catch(err) {
-      return toStackTrace('getUserMedia() failed, error: ' + err.message);
+      throw new Error('getUserMedia() failed, error: ' + err.message);
     }
   }
 
@@ -919,7 +901,7 @@
       assertFalse(streams.getAudioTracks()[0].getSettings().echoCancellation);
       return logSuccess();
     } catch(err) {
-      return toStackTrace('getUserMedia() failed, error: ' + err.message);
+      throw new Error('getUserMedia() failed, error: ' + err.message);
     }
   }
 
@@ -946,7 +928,7 @@
 
       return logSuccess();
     } catch (err) {
-      return toStackTrace('getUserMedia() failed');
+      throw new Error('getUserMedia() failed');
     }
   }
 
@@ -961,7 +943,7 @@
       assertEquals(stream.getAudioTracks()[0].readyState, "live");
       return logSuccess();
     } catch(err) {
-      return toStackTrace('getUserMedia() failed');
+      throw new Error('getUserMedia() failed');
     }
   }
 

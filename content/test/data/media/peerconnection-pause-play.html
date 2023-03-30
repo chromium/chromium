@@ -41,8 +41,7 @@ class TestRunner {
           this.startTime = Date.now();
           return this.pauseAndPlayLoop();
         })
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   pauseAndPlayLoop() {

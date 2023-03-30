@@ -139,7 +139,7 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
       int expected_device_count) {
     const std::string javascript_to_execute = base::StringPrintf(
         kEnumerateVideoCaptureDevicesAndVerify, expected_device_count);
-    ASSERT_EQ("OK", EvalJs(shell(), javascript_to_execute));
+    ASSERT_TRUE(ExecJs(shell(), javascript_to_execute));
   }
 
   void RegisterForDeviceChangeEventInRenderer() {
@@ -147,7 +147,7 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
   }
 
   void WaitForDeviceChangeEventInRenderer() {
-    ASSERT_EQ("OK", EvalJs(shell(), kWaitForDeviceChangeEvent));
+    ASSERT_TRUE(ExecJs(shell(), kWaitForDeviceChangeEvent));
   }
 
   void ResetHasReceivedChangedEventFlag() {

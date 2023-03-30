@@ -21,7 +21,7 @@ async function startVideoCaptureAndVerifySize(video_width, video_height) {
   try {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
   } catch (err) {
-    return failedCallback(err);
+    throw getUserMediaError(err);
   }
   return waitForVideoStreamToSatisfyRequirementFunction(
       stream, detectVideoWithDimensionPlaying, video_width, video_height);
@@ -41,7 +41,7 @@ async function startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithS
     }
   });
   if (target_device == null) {
-    return toStackTrace(
+    throw new Error(
         'No video input device was found with label = Virtual ' +
         'Device');
   }
@@ -57,7 +57,7 @@ async function startVideoCaptureFromVirtualDeviceAndVerifyUniformColorVideoWithS
     stream =
       await navigator.mediaDevices.getUserMedia(device_specific_constraints);
   } catch (err) {
-    return failedCallback(err);
+    throw getUserMediaError(err);
   }
   return waitForVideoStreamToSatisfyRequirementFunction(
             stream, detectUniformColorVideoWithDimensionPlaying, video_width,
@@ -77,15 +77,15 @@ function enumerateVideoCaptureDevicesAndVerifyCount(expected_count) {
     if (actual_count == expected_count) {
       return logSuccess();
     } else {
-      return toStackTrace(
+      throw new Error(
           'Device count ' + actual_count + ' did not match expectation of ' +
           expected_count);
     }
   });
 }
 
-function failedCallback(error) {
-  return toStackTrace('GetUserMedia call failed with code ' + error.code);
+function getUserMediaError(error) {
+  return new Error('GetUserMedia call failed with code ' + error.code);
 }
 
 async function waitForVideoStreamToSatisfyRequirementFunction(
@@ -101,7 +101,7 @@ async function waitForVideoStreamToSatisfyRequirementFunction(
 
   var videoTracks = stream.getVideoTracks();
   if (videoTracks.length == 0) {
-    return toStackTrace('Did not receive any video tracks');
+    throw new Error('Did not receive any video tracks');
   }
   var videoTrack = videoTracks[0];
   videoTrack.onended = function() {
@@ -112,7 +112,7 @@ async function waitForVideoStreamToSatisfyRequirementFunction(
   if (localView.videoWidth == video_width) {
     return logSuccess();
   } else {
-    return toStackTrace('Video has unexpected width.');
+    throw new Error('Video has unexpected width.');
   }
 }
 
@@ -125,7 +125,7 @@ function verifyHasReceivedTrackEndedEvent() {
   if (hasReceivedTrackEndedEvent) {
     return logSuccess();
   } else {
-    return toStackTrace('Did not receive ended event from track.');
+    throw new Error('Did not receive ended event from track.');
   }
 }
 

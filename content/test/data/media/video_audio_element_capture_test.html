@@ -23,9 +23,9 @@ function testCaptureFromMediaElement(filename,
                                 : document.getElementById('video');
   assertTrue(element, 'Error resolving tag');
 
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     element.onerror = function(e) {
-      resolve(toStackTrace("error playing back [" + filename + "] " + e));
+      reject(new Error("error playing back [" + filename + "] " + e));
     };
 
     element.preload = "auto"; // Ensures element doesn't suspend on load.
@@ -42,7 +42,7 @@ function testCaptureFromMediaElement(filename,
       assertTrue(recorder, 'Error creating recorder out of the MediaStream');
 
       recorder.onerror = function(e) {
-        resolve(toStackTrace("error recording [" + filename + "] " + e));
+        reject(new Error("error recording [" + filename + "] " + e));
       };
 
       recorder.ondataavailable = function(event) {

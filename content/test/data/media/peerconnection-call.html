@@ -24,8 +24,7 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function oldStyleCall() {
@@ -38,8 +37,7 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Hang up a call.
@@ -71,8 +69,7 @@
         return detectBlackVideo('remote-view-1');
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Test that we can setup call with an audio and video track and check that
@@ -90,8 +87,7 @@
       detectVideoPlayingWithExpectedResolution(
           'remote-view-2', expected_width, expected_height, alignment)
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
 
@@ -111,8 +107,7 @@
         return detectVideoPlaying('remote-view-2');
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // The second set of constraints should request video (e.g. video:true) since
@@ -135,8 +130,7 @@
           detectVideoPlaying('remote-view-1')]);
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // First makes a call between pc1 and pc2 where a stream is sent from pc1 to
@@ -167,8 +161,7 @@
         ]);
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // First makes a call between pc1 and pc2, and then construct a new media
@@ -194,8 +187,7 @@
         return detectVideoPlaying('remote-view-2')
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Test that we can setup call with an audio and video track and
@@ -210,8 +202,7 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-1')
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Test that we can't setup a call with an unsupported video codec
@@ -222,14 +213,15 @@
     return navigator.mediaDevices.getUserMedia({audio: true, video: true})
         .then(addStreamToBothConnectionsAndNegotiate)
         .then(
-          () => toStackTrace('Expected to fail, but succeeded'),
+          () => {
+            throw new Error('Expected to fail, but succeeded');
+          },
           (error) => {
           var expectedMsg = "Failed to set local offer sdp: Failed to set local " +
               "video description recv parameters for m-section with mid='1'.";
           assertEquals(expectedMsg, error.message);
           return logSuccess();
-        })
-        .catch(toStackTrace);
+        });
   }
 
   // Test that we can't setup a call if one peer does not support encryption
@@ -239,15 +231,14 @@
     return navigator.mediaDevices.getUserMedia({audio: true, video: true})
         .then(addStreamToBothConnectionsAndNegotiate)
         .then(() => {
-          return toStackTrace('Expected to fail, but succeeded');
+          throw new Error('Expected to fail, but succeeded');
         }, (error) => {
           // Note: Per spec, error should be 'IllegalModificationError'
           // https://crbug.com/823036
           var expectedError = 'OperationError';
           assertEquals(expectedError, error.name);
           return logSuccess();
-        })
-        .catch(toStackTrace);
+        });
   }
 
   // Test that we can negotiate a call with an SDP offer that includes a
@@ -261,8 +252,7 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-1')
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Test that we can setup call and send DTMF.
@@ -290,8 +280,7 @@
         });
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   function testCreateOfferOptions() {
@@ -307,8 +296,7 @@
           assertNotEquals(-1, offer.sdp.search('m=video'));
 
           return logSuccess();
-        })
-        .catch(toStackTrace);
+        });
   }
 
   function enableRemoteVideo(peerConnection, enabled) {
@@ -340,8 +328,7 @@
         })
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Test call with a new Video MediaStream that has been created based on a
@@ -355,8 +342,7 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-1')
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Loads this page inside itself using an iframe, and ensures we can make a
@@ -432,8 +418,7 @@
           verifyHasOneAudioAndVideoTrack(
               gSecondConnection.getRemoteStreams()[1]);
           })
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   function createConnections() {
@@ -526,10 +511,9 @@
       if (hasLoopbackCandidate) {
         return logSuccess();
       } else {
-        return toStackTrace('expect to see non-default host interface');
+        throw new Error('expect to see non-default host interface');
       }
-    })
-    .catch(toStackTrace);
+    });
   }
 
   function callWithNoCandidateExpected() {
@@ -538,8 +522,7 @@
     .then(function(candidates) {
       assertEquals(candidates.length, 0);
       return logSuccess();
-    })
-    .catch(toStackTrace);
+    });
   }
 
   function callAndExpectNonLoopbackCandidates() {
@@ -555,8 +538,7 @@
       }
       assertTrue(hasCandidate, 'expect to see at least one candidate');
       return logSuccess();
-    })
-    .catch(toStackTrace);
+    });
   }
 
   function removeMsid(offerSdp) {
@@ -619,8 +601,7 @@
           });
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // Makes a call between pc1 and pc2 and check that the remote video tracks
@@ -646,8 +627,7 @@
         });
       }),
     ])
-    .then(logSuccess)
-    .catch(toStackTrace);
+    .then(logSuccess);
   }
 
   // TODO(crbug.com/988432): This test is a temporary replacement for:
@@ -729,8 +709,7 @@
           assertEquals(1, numCodecs);
           assertTrue(hasH264, JSON.stringify(supported_codecs));
           return logSuccess();
-        })
-        .catch(toStackTrace);
+        });
   }
 
   </script>

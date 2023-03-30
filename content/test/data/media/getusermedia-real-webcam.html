@@ -11,7 +11,7 @@
     try {
       stream = await navigator.mediaDevices.getUserMedia(constraints);
     } catch (err) {
-      return toStackTrace('GetUserMedia call failed with code ' + error.code);
+      throw new Error('GetUserMedia call failed with code ' + error.code);
     }
     var localView = $('local-view');
     localView.srcObject = stream;

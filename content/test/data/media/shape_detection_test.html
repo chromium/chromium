@@ -33,7 +33,7 @@
       })
       .catch(error => {
         console.error(error.message);
-        return error.message;
+        throw error;
       });
 
     img.src = url;

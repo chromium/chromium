@@ -36,31 +36,27 @@
       });
     }
 
-    try {
-      let onCompletePromise = waitForState('complete');
-      await createOfferAndSetLocalDescription();
-      await onCompletePromise;
-      onCompletePromise = waitForState('complete');
-      // Policy changed.
-      gPeerConnection.setConfiguration(
-          {iceServers:[], iceTransportPolicy:'relay', bundlePolicy:'balanced',
-            rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:1});
-      await createOfferAndSetLocalDescription();
-      await onCompletePromise;
-      // Only wait for 'gathering', since it will take a while for the requests to
-      // 'foo.invalid' to time out.
-      const onGatheringPromise = waitForState('gathering');
-      // Servers changed.
-      gPeerConnection.setConfiguration(
-          {iceServers:[{urls:'stun:foo.invalid'}], iceTransportPolicy:'all',
-            bundlePolicy:'balanced', rtcpMuxPolicy:'require', certificates:[],
-            iceCandidatePoolSize:1});
-      await createOfferAndSetLocalDescription();
-      await onGatheringPromise;
-      return logSuccess();
-    } catch (err) {
-      return toStackTrace(err);
-    }
+    let onCompletePromise = waitForState('complete');
+    await createOfferAndSetLocalDescription();
+    await onCompletePromise;
+    onCompletePromise = waitForState('complete');
+    // Policy changed.
+    gPeerConnection.setConfiguration(
+        {iceServers:[], iceTransportPolicy:'relay', bundlePolicy:'balanced',
+          rtcpMuxPolicy:'require', certificates:[], iceCandidatePoolSize:1});
+    await createOfferAndSetLocalDescription();
+    await onCompletePromise;
+    // Only wait for 'gathering', since it will take a while for the requests to
+    // 'foo.invalid' to time out.
+    const onGatheringPromise = waitForState('gathering');
+    // Servers changed.
+    gPeerConnection.setConfiguration(
+        {iceServers:[{urls:'stun:foo.invalid'}], iceTransportPolicy:'all',
+          bundlePolicy:'balanced', rtcpMuxPolicy:'require', certificates:[],
+          iceCandidatePoolSize:1});
+    await createOfferAndSetLocalDescription();
+    await onGatheringPromise;
+    return logSuccess();
   }
 
   async function testSetConfigurationErrors() {

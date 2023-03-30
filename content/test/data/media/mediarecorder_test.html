@@ -126,10 +126,7 @@ function testStartAndRecorderState() {
               return startEventReceived;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that the MediaRecorder's stop() function will effectively cause the
@@ -153,10 +150,7 @@ function testStartStopAndRecorderState() {
               return stopEventReceived;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that when MediaRecorder's start(0) function is called, some data is
@@ -193,10 +187,7 @@ function testStartAndDataAvailable(mimeType) {
         assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
             ' empty blobs, there should be no such empty blobs.');
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that when MediaRecorder's start(timeSlice) is called, some data
@@ -234,8 +225,7 @@ function testStartWithTimeSlice(mimeType) {
         assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
             ' empty blobs, there should be no such empty blobs.');
       })
-      .then(logSuccess)
-      .catch(function(err) { return toStackTrace(err.toString()); });
+      .then(logSuccess);
 }
 
 
@@ -265,10 +255,7 @@ function testResumeAndRecorderState() {
               return resumeEventReceived;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that is it not possible to resume an inactive MediaRecorder.
@@ -281,8 +268,7 @@ function testIllegalResumeThrowsDOMError() {
         assertThrows(function() {recorder.resume()}, 'Calling resume() in' +
             ' inactive state should cause a DOM error');
       })
-      .then(logSuccess)
-      .catch(toStackTrace);
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder sends data blobs when resume() is called.
@@ -321,10 +307,7 @@ function testResumeAndDataAvailable(mimeType) {
         assertTrue(emptyBlobs == 0, 'Recording has ' + emptyBlobs +
             ' empty blobs, there should be no such empty blobs.');
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that when paused the recorder will transition |state| to |paused| and
@@ -348,10 +331,7 @@ function testPauseAndRecorderState() {
               return pauseEventReceived;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that is is possible to stop a paused MediaRecorder and that the |state|
@@ -366,10 +346,7 @@ function testPauseStopAndRecorderState() {
         recorder.stop();
         assertEquals('inactive', recorder.state);
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that no dataavailable event is fired after MediaRecorder's pause()
@@ -390,10 +367,7 @@ function testPausePreventsDataavailableFromBeingFired() {
           waitDuration(2000),
         ]);
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder's pause() throws an exception if |state| is not
@@ -407,8 +381,7 @@ function testIllegalPauseThrowsDOMError() {
         assertThrows(function() {recorder.pause()}, 'Calling pause() in' +
             ' inactive state should cause a DOM error');
       })
-      .then(logSuccess)
-      .catch(toStackTrace);
+      .then(logSuccess);
 }
 
 // Tests that a remote peer connection stream can be successfully recorded.
@@ -440,10 +413,7 @@ function testRecordRemotePeerConnection(mimeType) {
               return videoSize > 0 && timeStamps.length > 100;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder's start() throws an exception if |state| is
@@ -457,8 +427,7 @@ function testIllegalStartInRecordingStateThrowsDOMError() {
         assertThrows(function() {recorder.start()}, 'Calling start() in' +
             ' recording state should cause a DOM error');
       })
-      .then(logSuccess)
-      .catch(toStackTrace);
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder's start() throws an exception if |state| is
@@ -473,8 +442,7 @@ function testIllegalStartInPausedStateThrowsDOMError() {
         assertThrows(function() {recorder.start()}, 'Calling start() in' +
             ' paused state should cause a DOM error');
       })
-      .then(logSuccess)
-      .catch(toStackTrace);
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder can record a 2 Channel audio stream.
@@ -508,9 +476,6 @@ function testTwoChannelAudio() {
       .then(function() {
         console.log('audioSize', audioSize);
         return logSuccess();
-      })
-      .catch(function(err) {
-        return toStackTrace(err.toString());
       });
 }
 
@@ -549,10 +514,7 @@ function testRecordWithTransparency(mimeType) {
               return recordedEvents > NUMBER_OF_EVENTS_TO_RECORD;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder's requestData() throws an exception if |state| is
@@ -567,8 +529,7 @@ function testIllegalRequestDataThrowsDOMError() {
             'Calling requestdata() in inactive state should throw a DOM ' +
             'Exception');
       })
-      .then(logSuccess)
-      .catch(toStackTrace);
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder fires an Error Event when the associated MediaStream
@@ -595,10 +556,7 @@ function testAddingTrackToMediaStreamFiresErrorEvent() {
               return errorEventReceived;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 // Tests that MediaRecorder fires an Error Event when the associated MediaStream
@@ -624,10 +582,7 @@ function testRemovingTrackFromMediaStreamFiresErrorEvent() {
               return errorEventReceived;
             });
       })
-      .then(logSuccess)
-      .catch(function(err) {
-        return toStackTrace(err.toString());
-      });
+      .then(logSuccess);
 }
 
 </script>

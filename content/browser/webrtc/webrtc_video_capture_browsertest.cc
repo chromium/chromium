@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Start video capture and wait until it started rendering
-  ASSERT_EQ("OK", EvalJs(shell(), kStartVideoCaptureAndVerifySize));
+  ASSERT_TRUE(ExecJs(shell(), kStartVideoCaptureAndVerifySize));
 
   // Simulate crash in video capture process
   mojo::Remote<video_capture::mojom::TestingControls> service_controls;
@@ -94,11 +94,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureBrowserTest,
   service_controls->Crash();
 
   // Wait for video element to turn black
-  ASSERT_EQ("OK", EvalJs(shell(), kWaitForVideoToTurnBlack));
-  ASSERT_EQ("OK", EvalJs(shell(), kVerifyHasReceivedTrackEndedEvent));
+  ASSERT_TRUE(ExecJs(shell(), kWaitForVideoToTurnBlack));
+  ASSERT_TRUE(ExecJs(shell(), kVerifyHasReceivedTrackEndedEvent));
 
   // Start capturing again and expect it to work.
-  ASSERT_EQ("OK", EvalJs(shell(), kStartVideoCaptureAndVerifySize));
+  ASSERT_TRUE(ExecJs(shell(), kStartVideoCaptureAndVerifySize));
 }
 
 }  // namespace content

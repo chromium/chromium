@@ -65,11 +65,6 @@ void WebRtcContentBrowserTestBase::AppendUseFakeUIForMediaStreamFlag() {
       switches::kUseFakeUIForMediaStream);
 }
 
-std::string WebRtcContentBrowserTestBase::EvalJsInShell(
-    const std::string& javascript) {
-  return EvalJs(shell(), javascript).ExtractString();
-}
-
 void WebRtcContentBrowserTestBase::MakeTypicalCall(
     const std::string& javascript,
     const std::string& html_file) {
@@ -79,14 +74,7 @@ void WebRtcContentBrowserTestBase::MakeTypicalCall(
   GURL url(embedded_test_server()->GetURL(html_file));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  std::string result = EvalJs(shell(), javascript).ExtractString();
-  if (result != "OK") {
-    if (result.empty())
-      result = "(nothing)";
-    printf("From javascript: %s\nWhen executing '%s'\n", result.c_str(),
-           javascript.c_str());
-    FAIL();
-  }
+  EXPECT_TRUE(ExecJs(shell(), javascript));
 }
 
  std::string WebRtcContentBrowserTestBase::GenerateGetUserMediaCall(

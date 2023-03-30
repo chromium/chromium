@@ -19,7 +19,7 @@ function takePhoto(imageCapture) {
     })
     .catch(error => {
       console.log("takePhoto failed with " + error)
-      return toStackTrace("takePhoto failed with " + error);
+      throw new Error("takePhoto failed with " + error);
     });
 }
 
@@ -51,7 +51,7 @@ async function openCamera() {
     return takePhoto(imageCapture);
   } catch(error) {
     console.log("getUserMedia failed with " + error)
-    return toStackTrace("getUserMedia failed with " + error);
+    throw new Error("getUserMedia failed with " + error);
   }
 }
 

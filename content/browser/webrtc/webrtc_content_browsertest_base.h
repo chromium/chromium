@@ -24,10 +24,6 @@ class WebRtcContentBrowserTestBase : public ContentBrowserTest {
   // Helper function to append "--use-fake-ui-for-media-stream".
   void AppendUseFakeUIForMediaStreamFlag();
 
-  // Evaluates `javascript` in `shell()`. The result of the evaluation is the
-  // last-evaluated statement, which must be a string.
-  std::string EvalJsInShell(const std::string& javascript);
-
   // Execute a typical javascript call after having started the webserver.
   void MakeTypicalCall(const std::string& javascript,
                        const std::string& html_file);

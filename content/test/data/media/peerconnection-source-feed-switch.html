@@ -48,8 +48,7 @@ class TestRunner {
           this.startTime = Date.now();
           return this.switchFeedLoop();
         })
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   switchFeedLoop() {

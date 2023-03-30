@@ -46,8 +46,7 @@ class TestRunner {
           this.startTime = Date.now();
           return this.switchResolutionLoop();
         })
-        .then(logSuccess)
-        .catch(toStackTrace);
+        .then(logSuccess);
   }
 
   switchResolutionLoop() {

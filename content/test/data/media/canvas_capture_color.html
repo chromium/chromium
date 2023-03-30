@@ -112,43 +112,28 @@ function connectStream(contextType) {
 async function testCanvas2DCaptureColors(alphaContext) {
   connectStream('2d');
 
-  try {
-    await doCanvasCaptureAndCheckRgba('2d', RED, alphaContext)
-    await doCanvasCaptureAndCheckRgba('2d', GREEN, alphaContext);
-    await doCanvasCaptureAndCheckRgba('2d', BLUE, alphaContext);
-    await doCanvasCaptureAndCheckRgba('2d', RED_WITH_ALPHA, alphaContext);
-    await doCanvasCaptureAndCheckRgba('2d', GREEN_WITH_ALPHA, alphaContext);
-    await doCanvasCaptureAndCheckRgba('2d', BLUE_WITH_ALPHA, alphaContext);
-    return 'OK';
-  } catch (err) {
-    return err;
-  }
+  await doCanvasCaptureAndCheckRgba('2d', RED, alphaContext)
+  await doCanvasCaptureAndCheckRgba('2d', GREEN, alphaContext);
+  await doCanvasCaptureAndCheckRgba('2d', BLUE, alphaContext);
+  await doCanvasCaptureAndCheckRgba('2d', RED_WITH_ALPHA, alphaContext);
+  await doCanvasCaptureAndCheckRgba('2d', GREEN_WITH_ALPHA, alphaContext);
+  await doCanvasCaptureAndCheckRgba('2d', BLUE_WITH_ALPHA, alphaContext);
 }
 
 async function testCanvasWebGLCaptureOpaqueColors(alphaContext) {
   connectStream('webgl');
 
-  try {
-    await doCanvasCaptureAndCheckRgba('webgl', RED, alphaContext)
-    await doCanvasCaptureAndCheckRgba('webgl', GREEN, alphaContext);
-    await doCanvasCaptureAndCheckRgba('webgl', BLUE, alphaContext);
-    return 'OK';
-  } catch (err) {
-    return err;
-  }
+  await doCanvasCaptureAndCheckRgba('webgl', RED, alphaContext)
+  await doCanvasCaptureAndCheckRgba('webgl', GREEN, alphaContext);
+  await doCanvasCaptureAndCheckRgba('webgl', BLUE, alphaContext);
 }
 
 async function testCanvasWebGLCaptureAlphaColors(alphaContext) {
   connectStream('webgl');
 
-  try {
-    await doCanvasCaptureAndCheckRgba('webgl', RED_WITH_ALPHA, alphaContext)
-    await doCanvasCaptureAndCheckRgba('webgl', GREEN_WITH_ALPHA, alphaContext);
-    await doCanvasCaptureAndCheckRgba('webgl', BLUE_WITH_ALPHA, alphaContext);
-    return 'OK';
-  } catch (err) {
-    return err;
-  }
+  await doCanvasCaptureAndCheckRgba('webgl', RED_WITH_ALPHA, alphaContext)
+  await doCanvasCaptureAndCheckRgba('webgl', GREEN_WITH_ALPHA, alphaContext);
+  await doCanvasCaptureAndCheckRgba('webgl', BLUE_WITH_ALPHA, alphaContext);
 }
 
 // Forces a context loss between captured frames and checks if capture continues
@@ -158,17 +143,12 @@ async function testCanvas2DContextLoss(alphaContext) {
   connectStream(contextType);
   var canvas = document.getElementById('canvas-' + contextType);
 
-  try {
-    await doCanvasCaptureAndCheckRgba(contextType, RED, alphaContext)
-    internals.forceLoseCanvasContext(canvas, "2d")
-    // For the canvas to realize its Graphics context was lost we must try
-    // to use the contents of the canvas.
-    var imageData = canvas.getContext(contextType).getImageData(0, 0, 1, 1);
-    await doCanvasCaptureAndCheckRgba(contextType, BLUE, alphaContext);
-    return 'OK';
-  } catch (err) {
-    return err;
-  }
+  await doCanvasCaptureAndCheckRgba(contextType, RED, alphaContext)
+  internals.forceLoseCanvasContext(canvas, "2d")
+  // For the canvas to realize its Graphics context was lost we must try
+  // to use the contents of the canvas.
+  var imageData = canvas.getContext(contextType).getImageData(0, 0, 1, 1);
+  await doCanvasCaptureAndCheckRgba(contextType, BLUE, alphaContext);
 }
 
 // This function fills a canvas with one rgba color and canvas-captures it
