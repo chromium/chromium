@@ -50,9 +50,12 @@ constexpr int kIconSize = 16;
 constexpr int kDetailRowHeight = 44;
 constexpr int kMaxLinesVisibleFromPasswordNote = 7;
 
-void WriteToClipboard(const std::u16string& text) {
+void WriteToClipboard(const std::u16string& text, bool is_confidential) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(text);
+  if (is_confidential) {
+    scw.MarkAsConfidential();
+  }
 }
 
 // Computes the margins of each row. This adjusts the left margin equal to the
@@ -384,7 +387,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                                  username_label->GetText()));
   if (!password_form.username_value.empty()) {
     auto copy_username_button_callback =
-        base::BindRepeating(&WriteToClipboard, password_form.username_value)
+        base::BindRepeating(&WriteToClipboard, password_form.username_value,
+                            /*is_confidential=*/false)
             .Then(on_activity_callback_)
             .Then(base::BindRepeating(
                 &password_manager::metrics_util::
@@ -423,7 +427,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     return;
   }
   auto copy_password_button_callback =
-      base::BindRepeating(&WriteToClipboard, password_form.password_value)
+      base::BindRepeating(&WriteToClipboard, password_form.password_value,
+                          /*is_confidential=*/true)
           .Then(on_activity_callback_)
           .Then(base::BindRepeating(
               &password_manager::metrics_util::
