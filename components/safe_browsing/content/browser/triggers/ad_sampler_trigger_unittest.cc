@@ -122,7 +122,7 @@ TEST_F(AdSamplerTriggerTest, TriggerDisabledBySamplingFrequency) {
                                       NO_SAMPLE_AD_SKIPPED_FOR_FREQUENCY, 2);
 }
 
-TEST_F(AdSamplerTriggerTest, DISABLED_PageWithNoAds) {
+TEST_F(AdSamplerTriggerTest, PageWithNoAds) {
   // Make sure the trigger doesn't fire when there are no ads on the page.
   CreateTriggerWithFrequency(/*denominator=*/1);
 
