@@ -1347,7 +1347,7 @@ unsigned AXLayoutObject::ColumnSpan() const {
 
 unsigned AXLayoutObject::RowSpan() const {
   auto* cell = DynamicTo<LayoutNGTableCell>(GetLayoutObject());
-  return cell ? cell->ResolvedRowSpan() : AXNodeObject::ColumnSpan();
+  return cell ? cell->ResolvedRowSpan() : AXNodeObject::RowSpan();
 }
 
 ax::mojom::blink::SortDirection AXLayoutObject::GetSortDirection() const {
