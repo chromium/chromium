@@ -121,9 +121,9 @@ class TabListViewBinder {
             selectableTabListView.setOnClickListener(onClickListener);
             selectableTabListView.setOnLongClickListener(onLongClickListener);
 
+            // The row should act as one large button.
             ImageView endButton = selectableTabListView.findViewById(R.id.end_button);
-            endButton.setOnClickListener(onClickListener);
-            endButton.setOnLongClickListener(onLongClickListener);
+            endButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
             selectableTabListView.setSelectionDelegate(
