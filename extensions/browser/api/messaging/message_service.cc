@@ -875,13 +875,28 @@ void MessageService::EnqueuePendingMessageForLazyBackgroundLoad(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto pending = pending_lazy_context_channels_.find(channel_id);
-  if (pending != pending_lazy_context_channels_.end()) {
-    const LazyContextId& context_id = pending->second;
-    context_id.GetTaskQueue()->AddPendingTask(
-        context_id,
-        base::BindOnce(&MessageService::PendingLazyContextPostMessage,
-                       weak_factory_.GetWeakPtr(), source_port_id, message));
+  // The message corresponds to an unknown channel. This could happen if
+  // renderers shut down in various racy fashions. Drop the message on the
+  // floor.
+  if (pending == pending_lazy_context_channels_.end()) {
+    return;
   }
+
+  const LazyContextId& context_id = pending->second;
+  ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
+  if (!registry->enabled_extensions().Contains(context_id.extension_id())) {
+    // Similarly, the extension might have been unloaded. Again, drop the
+    // message on the floor. Possible fix for https://crbug.com/1428987.
+    // TODO(devlin): Would it make sense to instead clean up
+    // `pending_lazy_context_channels_` on extension unload instead? If this
+    // fixes the bug above, investigate.
+    return;
+  }
+
+  context_id.GetTaskQueue()->AddPendingTask(
+      context_id,
+      base::BindOnce(&MessageService::PendingLazyContextPostMessage,
+                     weak_factory_.GetWeakPtr(), source_port_id, message));
 }
 
 void MessageService::DispatchMessage(const PortId& source_port_id,
