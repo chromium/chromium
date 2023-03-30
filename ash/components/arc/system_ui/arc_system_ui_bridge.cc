@@ -9,10 +9,12 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
@@ -38,6 +40,25 @@ class ArcSystemUIBridgeFactory
   ~ArcSystemUIBridgeFactory() override = default;
 };
 
+// Converts a `ash::ColorScheme` to the equivalent `mojom::ThemeStyleType`.
+mojom::ThemeStyleType ToThemeStyle(ash::ColorScheme scheme) {
+  switch (scheme) {
+    // In ChromeOS, static is a color that's not from the wallpaper and palettes
+    // are always tonal.
+    case ash::ColorScheme::kStatic:
+    case ash::ColorScheme::kTonalSpot:
+      return mojom::ThemeStyleType::TONAL_SPOT;
+    case ash::ColorScheme::kNeutral:
+      LOG(WARNING)
+          << "Neutral not implemented in Android. Fall back to Tonal Spot.";
+      return mojom::ThemeStyleType::TONAL_SPOT;
+    case ash::ColorScheme::kExpressive:
+      return mojom::ThemeStyleType::EXPRESSIVE;
+    case ash::ColorScheme::kVibrant:
+      return mojom::ThemeStyleType::VIBRANT;
+  }
+}
+
 }  // namespace
 
 // static
@@ -55,43 +76,63 @@ ArcSystemUIBridge* ArcSystemUIBridge::GetForBrowserContextForTesting(
 ArcSystemUIBridge::ArcSystemUIBridge(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
-  // `dark_light_mode_controller` might be nullptr in unit tests.
-  if (auto* dark_light_mode_controller =
-          ash::DarkLightModeControllerImpl::Get()) {
-    dark_light_mode_controller->AddObserver(this);
-  }
   arc_bridge_service_->system_ui()->AddObserver(this);
 }
 
 ArcSystemUIBridge::~ArcSystemUIBridge() {
-  // `dark_light_mode_controller` might be nullptr in unit tests.
-  if (auto* dark_light_mode_controller =
-          ash::DarkLightModeControllerImpl::Get()) {
-    dark_light_mode_controller->RemoveObserver(this);
+  if (color_palette_controller_) {
+    // Only detach if we actually started listening.
+    color_palette_controller_->RemoveObserver(this);
   }
   arc_bridge_service_->system_ui()->RemoveObserver(this);
 }
 
 void ArcSystemUIBridge::OnConnectionReady() {
-  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
-  bool dark_theme_status = false;
-  // Checking to see if the flag is enabled because provider returns dark
-  // mode when the flag is default.
-  if (dark_light_mode_controller && ash::features::IsDarkLightModeEnabled())
-    dark_theme_status = dark_light_mode_controller->IsDarkModeEnabled();
-
-  if (!ArcSystemUIBridge::SendDeviceDarkThemeState(dark_theme_status)) {
-    LOG(ERROR) << "OnConnectionReady failed to get System UI instance for "
-                  "initial dark theme status : "
-               << dark_theme_status;
+  if (!color_palette_controller_) {
+    color_palette_controller_ = ash::Shell::Get()->color_palette_controller();
+    CHECK(color_palette_controller_);
+    color_palette_controller_->AddObserver(this);
   }
+
+  const auto seed = color_palette_controller_->GetCurrentSeed();
+  OnColorPaletteChanging(seed);
 }
 
-void ArcSystemUIBridge::OnColorModeChanged(bool dark_theme_status) {
-  if (!ArcSystemUIBridge::SendDeviceDarkThemeState(dark_theme_status)) {
-    LOG(ERROR) << "OnColorModeChanged failed to get System UI instance for "
-                  "the change in dark theme status to : "
-               << dark_theme_status;
+void ArcSystemUIBridge::OnColorPaletteChanging(
+    const ash::ColorPaletteSeed& in_seed) {
+  // Make a copy so we can modify the seed for backward compatibility.
+  ash::ColorPaletteSeed seed = in_seed;
+  if (!chromeos::features::IsJellyEnabled()) {
+    // Force scheme and seed color to the defaults if Jelly is disabled.
+    seed.scheme = ash::ColorScheme::kTonalSpot;
+    seed.seed_color = gfx::kGoogleBlue400;
+  }
+
+  if (previous_seed_ == seed) {
+    // Skip sending identical events
+    return;
+  }
+
+  // Save the previous value to detect changes.
+  auto old_previous = std::move(previous_seed_);
+  // Save the current value for future comparisons.
+  previous_seed_.emplace(seed);
+
+  if (!old_previous || seed.color_mode != old_previous->color_mode) {
+    bool dark_theme =
+        seed.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+    if (!SendDeviceDarkThemeState(dark_theme)) {
+      LOG(ERROR) << "Failed to send theme status of: " << dark_theme;
+      return;
+    }
+  }
+
+  if (!old_previous || seed.seed_color != old_previous->seed_color ||
+      seed.scheme != old_previous->scheme) {
+    if (!SendOverlayColor(seed.seed_color, ToThemeStyle(seed.scheme))) {
+      LOG(ERROR) << "Failed to send overlay color information for seed change.";
+      return;
+    }
   }
 }
 
@@ -113,6 +154,7 @@ bool ArcSystemUIBridge::SendOverlayColor(uint32_t source_color,
   if (!system_ui_instance)
     return false;
   system_ui_instance->SetOverlayColor(source_color, theme_style);
+
   return true;
 }
 

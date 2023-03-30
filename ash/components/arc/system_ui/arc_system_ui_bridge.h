@@ -8,8 +8,8 @@
 #include "ash/components/arc/mojom/system_ui.mojom-shared.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "ash/public/cpp/style/color_mode_observer.h"
-#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/color_palette_controller.h"
+#include "base/check_is_test.h"
 #include "base/gtest_prod_util.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -25,7 +25,7 @@ class ArcBridgeService;
 // This class notifies the Chrome OS side dark theme state to Android.
 class ArcSystemUIBridge : public KeyedService,
                           public ConnectionObserver<mojom::SystemUiInstance>,
-                          public ash::ColorModeObserver {
+                          public ash::ColorPaletteController::Observer {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -45,12 +45,18 @@ class ArcSystemUIBridge : public KeyedService,
   // ConnectionObserver<mojom::SystemUiInstance> override:
   void OnConnectionReady() override;
 
-  // ash::ColorModeObserver override:
-  void OnColorModeChanged(bool dark_theme_status) override;
+  // ash::ColorPaletteController::Observer override:
+  void OnColorPaletteChanging(const ash::ColorPaletteSeed& seed) override;
 
   // Sends the device overlay color and the {@link mojom::ThemeStyleType}.
   bool SendOverlayColor(uint32_t source_color,
                         mojom::ThemeStyleType theme_style);
+
+  void SetColorPaletteControllerForTesting(
+      ash::ColorPaletteController* controller) {
+    CHECK_IS_TEST();
+    color_palette_controller_ = controller;
+  }
 
   static void EnsureFactoryBuilt();
 
@@ -61,6 +67,10 @@ class ArcSystemUIBridge : public KeyedService,
 
   THREAD_CHECKER(thread_checker_);
 
+  // The most recent seed sent to ARC.
+  absl::optional<const ash::ColorPaletteSeed> previous_seed_;
+  ash::ColorPaletteController* color_palette_controller_ =
+      nullptr;                                  // Owned by Shell.
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 
