@@ -23390,10 +23390,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="InitialSourceLanguageInContentLanguages" enum="Boolean">
     <summary>
-      Signals whether the initial source language is in the list of the user's
-      content languages. The user's content languages loosely match with the
-      languages the user has translated to before or has blocked for
-      translation.
+      Whether or not the initial source language is in the user's never
+      translate language list. By default the UI language, languages the user
+      has translated to, and languages added to the content languages are on the
+      never tranlsate list. However, users can add or remove languages manually
+      as well.
     </summary>
   </metric>
   <metric name="InitialState" enum="TranslateState">

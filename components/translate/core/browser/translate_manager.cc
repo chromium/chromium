@@ -130,7 +130,7 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   InitTranslateEvent(page_language_code, target_lang, *translate_prefs);
 
   // Logs the initial source and target languages, as well as whether the
-  // initial source language is in the user's content language.
+  // initial source language is blocked (i.e. on the never translate list).
   GetActiveTranslateMetricsLogger()->LogInitialSourceLanguage(
       page_language_code,
       translate_prefs->IsBlockedLanguage(page_language_code));

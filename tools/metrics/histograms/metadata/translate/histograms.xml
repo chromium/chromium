@@ -542,8 +542,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-language@google.com</owner>
   <summary>
     Whether or not the initial source language of this page load is in the
-    user's content language. The user's content languages loosely match the
-    languages that the user has translated to before or blocked for translation.
+    user's never translate language list. By default the UI language, languages
+    the user has translated to, and languages added to the content languages are
+    on the never tranlsate list. However, users can add or remove languages
+    manually as well.
+
     This value is logged once the page load is completed or the first time
     Chrome is backgrounded during the course of the page load, whichever comes
     first.
