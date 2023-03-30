@@ -12,6 +12,12 @@ import static org.chromium.net.CronetTestRule.getContext;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,25 +52,41 @@ public class CronetStressTest {
     @LargeTest
     @OnlyRunNativeCronet
     public void testLargeNumberOfUploads() throws Exception {
+        Random random = new Random();
         final int kNumRequest = 1000;
         final int kNumRequestHeaders = 100;
         final int kNumUploadBytes = 1000;
-        final byte[] b = new byte[kNumUploadBytes];
-        for (int i = 0; i < kNumRequest; i++) {
-            TestUrlRequestCallback callback = new TestUrlRequestCallback();
-            UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    NativeTestServer.getEchoAllHeadersURL(), callback, callback.getExecutor());
-            for (int j = 0; j < kNumRequestHeaders; j++) {
-                builder.addHeader("header" + j, Integer.toString(j));
+        final byte[] b = new byte[kNumUploadBytes * kNumRequest];
+        random.nextBytes(b);
+        List<TestUrlRequestCallback> callbacks = new ArrayList<>(kNumRequest);
+
+        ExecutorService callbackExecutor = Executors.newSingleThreadExecutor();
+        try {
+            for (int i = 0; i < kNumRequest; i++) {
+                TestUrlRequestCallback callback = new TestUrlRequestCallback(callbackExecutor);
+                UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                        NativeTestServer.getEchoAllHeadersURL(), callback, callback.getExecutor());
+                for (int j = 0; j < kNumRequestHeaders; j++) {
+                    builder.addHeader("header" + j, Integer.toString(j));
+                }
+                builder.addHeader("content-type", "useless/string");
+                builder.setUploadDataProvider(
+                        UploadDataProviders.create(
+                                b,
+                                i * kNumUploadBytes,
+                                kNumUploadBytes),
+                        callback.getExecutor());
+                UrlRequest request = builder.build();
+                request.start();
+                callbacks.add(callback);
             }
-            builder.addHeader("content-type", "useless/string");
-            builder.setUploadDataProvider(
-                    UploadDataProviders.create(b, 0, kNumUploadBytes), callback.getExecutor());
-            UrlRequest request = builder.build();
-            request.start();
-            callback.blockForDone();
-            callback.shutdownExecutor();
-            assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+
+            for (TestUrlRequestCallback callback : callbacks) {
+                callback.blockForDone();
+                assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+            }
+        } finally {
+            callbackExecutor.shutdown();
         }
     }
 }
