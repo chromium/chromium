@@ -952,8 +952,7 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
     const network::mojom::URLResponseHead& response_head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!prefetch_container ||
-      !base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
+  if (!prefetch_container) {
     return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
   }
 
@@ -963,7 +962,8 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
 
   prefetch_container->AddRedirectHop(redirect_info.new_url);
 
-  if (redirect_info.new_method != "GET" || !response_head.headers ||
+  if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects) ||
+      redirect_info.new_method != "GET" || !response_head.headers ||
       response_head.headers->response_code() < 300 ||
       response_head.headers->response_code() >= 400) {
     active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
