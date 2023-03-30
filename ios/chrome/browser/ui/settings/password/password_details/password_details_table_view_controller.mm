@@ -498,6 +498,13 @@ const int kMinNoteCharAmountForWarning = 901;
         [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
+    case PasswordDetailsItemTypeNote: {
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+      TableViewMultiLineTextEditCell* textFieldCell =
+          base::mac::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+      [textFieldCell.textView becomeFirstResponder];
+      break;
+    }
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeDeleteButton:
     case PasswordDetailsItemTypeMoveToAccountButton:
@@ -533,7 +540,8 @@ const int kMinNoteCharAmountForWarning = 901;
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
-  return !self.editing;
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  return !self.editing || itemType == PasswordDetailsItemTypeNote;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -610,7 +618,10 @@ const int kMinNoteCharAmountForWarning = 901;
       [cell setTag:indexPath.section];
       break;
     }
-    case PasswordDetailsItemTypeNote:
+    case PasswordDetailsItemTypeNote: {
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    }
     case PasswordDetailsItemTypeNoteFooter:
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:

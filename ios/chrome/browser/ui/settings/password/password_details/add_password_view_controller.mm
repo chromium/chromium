@@ -381,6 +381,14 @@ const int kMinNoteCharAmountForWarning = 901;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  if (itemType == ItemTypeNote) {
+    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    TableViewMultiLineTextEditCell* textFieldCell =
+        base::mac::ObjCCastStrict<TableViewMultiLineTextEditCell>(cell);
+    [textFieldCell.textView becomeFirstResponder];
+    return;
+  }
+
   if (itemType != ItemTypeDuplicateCredentialButton) {
     return;
   }
@@ -406,7 +414,8 @@ const int kMinNoteCharAmountForWarning = 901;
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  return itemType == ItemTypeDuplicateCredentialButton;
+  return itemType == ItemTypeDuplicateCredentialButton ||
+         itemType == ItemTypeNote;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -470,10 +479,14 @@ const int kMinNoteCharAmountForWarning = 901;
       textFieldCell.textField.delegate = self;
       break;
     }
-    case ItemTypeDuplicateCredentialButton:
+    case ItemTypeDuplicateCredentialButton: {
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
-    case ItemTypeNote:
+    }
+    case ItemTypeNote: {
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    }
     case ItemTypeDuplicateCredentialMessage:
     case ItemTypeFooter:
       break;
