@@ -104,7 +104,7 @@ class MediaPlayerImplTest : public testing::Test {
   std::unique_ptr<MediaPlayerImpl> player_impl_;
 };
 
-// Verify that the |on_disconnect| closure is invoked if the client disconnects.
+// Verify that the `on_disconnect` closure is invoked if the client disconnects.
 TEST_F(MediaPlayerImplTest, OnDisconnectCalledOnDisconnect) {
   base::RunLoop run_loop;
   player_impl_ = std::make_unique<MediaPlayerImpl>(
@@ -113,7 +113,7 @@ TEST_F(MediaPlayerImplTest, OnDisconnectCalledOnDisconnect) {
   run_loop.Run();
 }
 
-// Verify that the |on_disconnect| closure is invoked if the client calls the
+// Verify that the `on_disconnect` closure is invoked if the client calls the
 // WatchInfoChange() API incorrectly.
 TEST_F(MediaPlayerImplTest, ClientDisconnectedOnBadApiUsage) {
   base::RunLoop on_disconnected_loop;
@@ -143,6 +143,21 @@ TEST_F(MediaPlayerImplTest, ClientDisconnectedOnBadApiUsage) {
   // Wait for both on-disconnected and player error handler to be invoked.
   on_disconnected_loop.Run();
   player_error_loop.Run();
+}
+
+// Verify that the completer is Closed on destruction of `MediaPlayerImpl`.
+// Otherwise it will trigger a CHECK for failing to reply.
+TEST_F(MediaPlayerImplTest, WatchInfoChangeAsyncCompleterClosedOnDestruction) {
+  player_impl_ = std::make_unique<MediaPlayerImpl>(
+      &fake_session_, std::move(player_server_end_),
+      MakeExpectedNotRunClosure(FROM_HERE));
+  player_->WatchInfoChange().Then([](auto result) {});
+  // The first call always replies immediately, so call a second call to hold a
+  // pending completer.
+  player_->WatchInfoChange().Then([](auto result) {});
+
+  // Pump the message loop to process the WatchInfoChange() call.
+  base::RunLoop().RunUntilIdle();
 }
 
 // Verify that the first WatchInfoChange() registers the observer.

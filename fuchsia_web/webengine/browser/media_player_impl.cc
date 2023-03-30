@@ -103,7 +103,11 @@ MediaPlayerImpl::MediaPlayerImpl(
   pending_info_delta_.local(true);
 }
 
-MediaPlayerImpl::~MediaPlayerImpl() = default;
+MediaPlayerImpl::~MediaPlayerImpl() {
+  if (pending_info_change_callback_) {
+    pending_info_change_callback_->Close(ZX_ERR_PEER_CLOSED);
+  }
+}
 
 void MediaPlayerImpl::WatchInfoChange(
     MediaPlayerImpl::WatchInfoChangeCompleter::Sync& completer) {
