@@ -55,6 +55,8 @@ _IGNORE_WARNINGS = (
     r'Proguard configuration rule does not match anything:.*class android\.',
     # TODO(crbug.com/1303951): Don't ignore all such warnings.
     r'Proguard configuration rule does not match anything:',
+    # TODO(agrieve): Remove once we update to U SDK.
+    r'OnBackAnimationCallback',
 )
 
 _SKIPPED_CLASS_FILE_NAMES = (
