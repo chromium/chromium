@@ -1854,7 +1854,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R114-15399.0.0",
+        "cros_img": "dedede-release/R114-15400.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1870,7 +1870,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R113-15378.0.0",
+        "cros_img": "dedede-release/R113-15393.6.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1902,7 +1902,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R111-15329.52.0",
+        "cros_img": "dedede-release/R111-15329.59.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1934,7 +1934,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R113-15389.0.0",
+        "cros_img": "eve-release/R113-15393.6.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1966,7 +1966,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R111-15329.52.0",
+        "cros_img": "eve-release/R111-15329.59.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2017,7 +2017,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R114-15399.0.0",
+        "cros_img": "jacuzzi-release/R114-15400.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -2033,7 +2033,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R113-15389.0.0",
+        "cros_img": "jacuzzi-release/R113-15393.6.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2065,7 +2065,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R111-15329.52.0",
+        "cros_img": "jacuzzi-release/R111-15329.59.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2116,7 +2116,7 @@
       {
         "args": [],
         "cros_board": "herobrine",
-        "cros_img": "herobrine-release/R114-15399.0.0",
+        "cros_img": "herobrine-release/R114-15400.0.0",
         "name": "lacros_all_tast_tests HEROBRINE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
