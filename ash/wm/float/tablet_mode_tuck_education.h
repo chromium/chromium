@@ -5,6 +5,9 @@
 #ifndef ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
 #define ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
 
+#include "ash/ash_export.h"
+#include "base/time/clock.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -14,25 +17,40 @@ namespace ash {
 // This class is responsible for educating users about the tuck gesture when
 // a window is floated in tablet mode. It shows a nudge with text indicating the
 // gesture to tuck, and bounces the floated window twice.
-class TabletModeTuckEducation : public aura::WindowObserver {
+class ASH_EXPORT TabletModeTuckEducation : public aura::WindowObserver {
  public:
   explicit TabletModeTuckEducation(aura::Window* floated_window);
   TabletModeTuckEducation(const TabletModeTuckEducation&) = delete;
   TabletModeTuckEducation& operator=(const TabletModeTuckEducation&) = delete;
   ~TabletModeTuckEducation() override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Returns false if the tuck education has been shown 3 or more times or
+  // within the last 24 hours, and true otherwise.
+  static bool CanActivateTuckEducation();
+
+  // Sets the nudge count to its maximum value so it doesn't appear anymore.
+  static void OnWindowTucked();
+
   // aura::WindowObserver:
   void OnWindowTransformed(aura::Window* window,
                            ui::PropertyChangeReason reason) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TabletWindowFloatTest, EducationPreferences);
+
   // Activates the tuck education nudge and bounce animations for
-  // `floated_window`.
+  // `floated_window` if it has not already been shown 3 times or within the
+  // last 24 hours.
   void ActivateTuckEducation();
 
   // Dismisses the nudge if it is still active, and cleans up all related
   // pointers.
   void DismissNudge();
+
+  // Used to control the clock in a test setting.
+  static void SetOverrideClockForTesting(base::Clock* test_clock);
 
   // The widget that contains the `RoundedLabel`.
   views::UniqueWidgetPtr nudge_widget_;

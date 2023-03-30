@@ -24,6 +24,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/float/scoped_window_tucker.h"
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
+#include "ash/wm/float/tablet_mode_tuck_education.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -37,10 +38,13 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/clock.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
@@ -48,6 +52,7 @@
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -1011,6 +1016,37 @@ class TabletWindowFloatTest : public WindowFloatTest,
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
+// Test class used to keep track of the amount of times the tuck education nudge
+// has appeared.
+class NudgeCounter : public aura::WindowObserver {
+ public:
+  NudgeCounter() {
+    window_observation_.Observe(Shell::Get()->GetPrimaryRootWindow());
+  }
+  NudgeCounter(const NudgeCounter&) = delete;
+  NudgeCounter& operator=(const NudgeCounter&) = delete;
+  ~NudgeCounter() override = default;
+
+  int nudge_count() const { return nudge_count_; }
+
+  // aura::WindowObserver:
+  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override {
+    if (params.target->GetName() == "TuckEducationNudgeWidget" &&
+        params.new_parent) {
+      nudge_count_++;
+    }
+  }
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+  }
+
+ private:
+  int nudge_count_ = 0;
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
 TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
   auto window1 = CreateFloatedWindow();
 
@@ -1838,6 +1874,41 @@ TEST_F(TabletWindowFloatTest, BasicTuckNudge) {
 
   // TODO(hewer): Add a callback to check that the nudge has properly dismissed
   // after the bounce animations and timer have ended.
+}
+
+TEST_F(TabletWindowFloatTest, EducationPreferences) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::SimpleTestClock test_clock;
+  TabletModeTuckEducation::SetOverrideClockForTesting(&test_clock);
+
+  // Advance clock so we aren't at zero time.
+  test_clock.Advance(base::Hours(25));
+
+  NudgeCounter nudge_counter;
+
+  // Float the nudge three times, count should increment each time.
+  for (int i = 0; i < 3; i++) {
+    std::unique_ptr<aura::Window> window = CreateAppWindow();
+
+    // Float window using accelerator.
+    PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+    ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+    // Close window and advance time so nudge can be shown again.
+    window.reset();
+    test_clock.Advance(base::Hours(25));
+  }
+
+  EXPECT_EQ(3, nudge_counter.nudge_count());
+
+  // Float the window once more.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  window.reset();
+
+  // Counter should not increment as nudge was not shown.
+  EXPECT_EQ(3, nudge_counter.nudge_count());
 }
 
 using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;

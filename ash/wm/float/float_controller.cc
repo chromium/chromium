@@ -152,7 +152,8 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     if (desk->is_active())
       float_start_time_ = base::TimeTicks::Now();
 
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+        TabletModeTuckEducation::CanActivateTuckEducation()) {
       tuck_education_ =
           std::make_unique<TabletModeTuckEducation>(floated_window);
     }
@@ -195,6 +196,10 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     scoped_window_tucker_ =
         std::make_unique<ScopedWindowTucker>(floated_window_, left);
     scoped_window_tucker_->AnimateTuck();
+
+    // Education doesn't need to happen after the user has successfully tucked
+    // once.
+    TabletModeTuckEducation::OnWindowTucked();
   }
 
   void OnUntuckAnimationEnded() { scoped_window_tucker_.reset(); }

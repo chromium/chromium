@@ -4,11 +4,13 @@
 
 #include "ash/wm/float/tablet_mode_tuck_education.h"
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_label.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -48,6 +50,26 @@ constexpr int kLabelPadding = 8;
 constexpr int kLabelHeight = 28;
 constexpr float kRoundedDivisor = 2.f;
 
+// The nudge will not be shown if it already been shown 3 times, or if 24 hours
+// have not yet passed since it was last shown.
+constexpr int kNudgeMaxShownCount = 3;
+constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
+
+// The name of an integer pref that counts the number of times we have shown
+// the nudge.
+const char kTuckEducationShownCount[] =
+    "ash.wm_nudge.tuck_education_nudge_count";
+// The name of a time pref that stores the time we last showed the nudge.
+const char kTuckEducationLastShown[] =
+    "ash.wm_nudge.tuck_education_nudge_last_shown";
+
+// Clock that can be overridden for testing.
+base::Clock* g_clock_override = nullptr;
+
+base::Time GetTime() {
+  return g_clock_override ? g_clock_override->Now() : base::Time::Now();
+}
+
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.name = "TuckEducationNudgeWidget";
@@ -79,6 +101,41 @@ TabletModeTuckEducation::TabletModeTuckEducation(aura::Window* floated_window) {
 
 TabletModeTuckEducation::~TabletModeTuckEducation() = default;
 
+// static
+void TabletModeTuckEducation::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kTuckEducationShownCount, 0);
+  registry->RegisterTimePref(kTuckEducationLastShown, base::Time());
+}
+
+// static
+bool TabletModeTuckEducation::CanActivateTuckEducation() {
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(pref_service);
+  // Nudge has already been shown three times. No need to educate anymore.
+  if (pref_service->GetInteger(kTuckEducationShownCount) >=
+      kNudgeMaxShownCount) {
+    return false;
+  }
+
+  // Nudge has been shown within the last 24 hours already.
+  if (GetTime() - pref_service->GetTime(kTuckEducationLastShown) <
+      kNudgeTimeBetweenShown) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
+void TabletModeTuckEducation::OnWindowTucked() {
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  // Set the count to the maximum value so the education doesn't show anymore.
+  pref_service->SetInteger(kTuckEducationShownCount, kNudgeMaxShownCount);
+}
+
 void TabletModeTuckEducation::OnWindowTransformed(
     aura::Window* window,
     ui::PropertyChangeReason reason) {
@@ -97,9 +154,6 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
   // No need to observe for the transform animation (crossfade) to finish as
   // soon as it has happened once.
   window_observation_.Reset();
-
-  // TODO(b/275255478): Add checks so the nudge only shows 3 times max with at
-  // least 24h between.
 
   nudge_widget_ = CreateWidget(window_);
 
@@ -162,6 +216,14 @@ void TabletModeTuckEducation::ActivateTuckEducation() {
       .Then()
       .SetDuration(kNudgeFadeDuration)
       .SetOpacity(nudge_widget_->GetLayer(), 0.0f, gfx::Tween::LINEAR);
+
+  // Update the preferences.
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetInteger(
+      kTuckEducationShownCount,
+      pref_service->GetInteger(kTuckEducationShownCount) + 1);
+  pref_service->SetTime(kTuckEducationLastShown, base::Time());
 }
 
 void TabletModeTuckEducation::DismissNudge() {
@@ -174,6 +236,12 @@ void TabletModeTuckEducation::DismissNudge() {
 
   // TODO(b/275420014): Destroy `this` once animations finish as no more actions
   // need to be performed.
+}
+
+// static
+void TabletModeTuckEducation::SetOverrideClockForTesting(
+    base::Clock* test_clock) {
+  g_clock_override = test_clock;
 }
 
 }  // namespace ash
