@@ -433,6 +433,17 @@ BASE_FEATURE(kWebUIOmniboxPopup,
              "WebUIOmniboxPopup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox "expanded state" height is increased from 42 px to 44 px.
+BASE_FEATURE(kExpandedStateHeight,
+             "OmniboxExpandedStateHeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Omnibox "expanded state" corner radius is increased from 8px to
+// 16px.
+BASE_FEATURE(kExpandedStateShape,
+             "OmniboxExpandedStateShape",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 BASE_FEATURE(kOmniboxAssistantVoiceSearch,

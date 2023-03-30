@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -11,9 +12,11 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -226,9 +229,13 @@ int RoundedOmniboxResultsFrame::GetNonResultSectionHeight() {
 
 // static
 gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
-  return ui::TouchUiController::Get()->touch_ui()
-             ? gfx::Insets::TLBR(6, 1, 5, 1)
-             : gfx::Insets::VH(4, 6);
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    return gfx::Insets::TLBR(6, 1, 5, 1);
+  } else if (base::FeatureList::IsEnabled(omnibox::kExpandedStateHeight) ||
+             base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+    return gfx::Insets::VH(5, 6);
+  }
+  return gfx::Insets::VH(4, 6);
 }
 
 // static

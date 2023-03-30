@@ -1160,6 +1160,12 @@ extern const char kOmniboxClosePopupWithEscapeDescription[];
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 
+extern const char kOmniboxCR23ExpandedStateHeightName[];
+extern const char kOmniboxCR23ExpandedStateHeightDescription[];
+
+extern const char kOmniboxCR23ExpandedStateShapeName[];
+extern const char kOmniboxCR23ExpandedStateShapeDescription[];
+
 extern const char kOmniboxDefaultBrowserPedalName[];
 extern const char kOmniboxDefaultBrowserPedalDescription[];
 

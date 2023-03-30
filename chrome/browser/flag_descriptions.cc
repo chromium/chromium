@@ -2068,6 +2068,16 @@ const char kOmniboxConsumesImeInsetsDescription[] =
     "When enabled, the Android Omnibox will directly handle IME (keyboard) "
     "inset changes while visible.";
 
+const char kOmniboxCR23ExpandedStateHeightName[] =
+    "Omnibox Expanded State Height";
+const char kOmniboxCR23ExpandedStateHeightDescription[] =
+    "Updates Omnibox expanded state height to comply with CR23 guidelines.";
+
+const char kOmniboxCR23ExpandedStateShapeName[] =
+    "Omnibox Expanded State Shape";
+const char kOmniboxCR23ExpandedStateShapeDescription[] =
+    "Updates Omnibox expanded state shape to comply with CR23 guidelines.";
+
 const char kOmniboxDefaultBrowserPedalName[] = "Omnibox Default Browser Pedal";
 const char kOmniboxDefaultBrowserPedalDescription[] =
     "Enables a pedal that helps the user 'set default browser'.";

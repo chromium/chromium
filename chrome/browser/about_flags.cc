@@ -5716,6 +5716,16 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
 
+    {"omnibox-cr23-expanded-state-height",
+     flag_descriptions::kOmniboxCR23ExpandedStateHeightName,
+     flag_descriptions::kOmniboxCR23ExpandedStateHeightDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kExpandedStateHeight)},
+
+    {"omnibox-cr23-expanded-state-shape",
+     flag_descriptions::kOmniboxCR23ExpandedStateShapeName,
+     flag_descriptions::kOmniboxCR23ExpandedStateShapeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kExpandedStateShape)},
+
     {"omnibox-gm3-steady-state-background-color",
      flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorName,
      flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorDescription,

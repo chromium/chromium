@@ -101,6 +101,8 @@ BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesOnSrp);
 BASE_DECLARE_FEATURE(kSquareSuggestIcons);
 BASE_DECLARE_FEATURE(kUniformRowHeight);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
+BASE_DECLARE_FEATURE(kExpandedStateHeight);
+BASE_DECLARE_FEATURE(kExpandedStateShape);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

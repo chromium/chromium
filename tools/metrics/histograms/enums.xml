@@ -58104,6 +58104,7 @@ from previous Chrome versions.
   <int value="-1988127107" label="UseNotificationCompatBuilder:enabled"/>
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
+  <int value="-1987283524" label="OmniboxExpandedStateShape:disabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
   <int value="-1985025593" label="file-manager-enable-new-gallery"/>
@@ -62429,6 +62430,7 @@ from previous Chrome versions.
   <int value="373275338" label="AndroidPartnerCustomizationPhenotype:disabled"/>
   <int value="373531060" label="MacCoreLocationBackend:enabled"/>
   <int value="373578344" label="SafeBrowsingSecuritySectionUIAndroid:enabled"/>
+  <int value="373805498" label="OmniboxExpandedStateShape:enabled"/>
   <int value="375032683" label="CellularAllowPerNetworkRoaming:enabled"/>
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
   <int value="375785554" label="UserActivationV2:disabled"/>
@@ -64758,6 +64760,7 @@ from previous Chrome versions.
   <int value="1675848452" label="BluetoothQualityReport:disabled"/>
   <int value="1677167062" label="AutomaticPasswordGeneration:enabled"/>
   <int value="1677258310" label="DragAppsInTabletMode:disabled"/>
+  <int value="1677610330" label="OmniboxExpandedStateHeight:enabled"/>
   <int value="1678259296" label="ChromeWhatsNewInMainMenuNewBadge:enabled"/>
   <int value="1678866761" label="SystemLatinPhysicalTyping:disabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>
@@ -65280,6 +65283,7 @@ from previous Chrome versions.
   <int value="1946358032" label="SwapClankShareHubRows:disabled"/>
   <int value="1947350992" label="drop-sync-credential:disabled"/>
   <int value="1948509466" label="PasswordChangeAccountStoreUsers:disabled"/>
+  <int value="1948753119" label="OmniboxExpandedStateHeight:disabled"/>
   <int value="1948978490" label="PaintPreviewDemo:disabled"/>
   <int value="1949019439"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:disabled"/>
