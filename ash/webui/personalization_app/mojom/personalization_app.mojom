@@ -554,6 +554,13 @@ enum TopicSource {
 
   // Art related sources in Backdrop server.
   kArtGallery = 1,
+
+  // For all video screensavers. No images are actually used when rendering
+  // these screensavers themselves, but it has the same requirements as other
+  // sources from the personalization app's POV (preview images, etc). Each
+  // possible video option is the equivalent of an "album" in other topic
+  // sources.
+  kVideo = 2,
 };
 
 // Temperature unit for screensaver weather section.
@@ -634,12 +641,16 @@ interface AmbientProvider {
   SetAnimationTheme(AnimationTheme animation_theme);
 
   // Sets the ambient mode topic source.
+  //
+  // SPECIAL NOTE: If |SetAnimationTheme(kVideo)| is called, the provider's
+  // topic source is automatically set to |kVideo| internally. Calling
+  // |SetTopicSource()| with a non-video |topic_source| afterwards is an error.
   SetTopicSource(TopicSource topic_source);
 
   // Sets the ambient mode temperature unit.
   SetTemperatureUnit(TemperatureUnit temperature_unit);
 
-  // Sets one album as selected or not.
+  // Sets one album as selected or not. See note above |SetTopicSource()|.
   SetAlbumSelected(string id, TopicSource topic_source, bool selected);
 
   // Record that the user viewed the Ambient mode page.

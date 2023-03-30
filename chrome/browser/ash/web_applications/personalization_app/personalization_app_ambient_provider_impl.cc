@@ -229,6 +229,9 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       art_setting->enabled = selected;
       break;
     }
+    case AmbientModeTopicSource::kVideo:
+      NOTIMPLEMENTED();
+      break;
   }
 
   UpdateSettings();

@@ -22,13 +22,17 @@ ASH_PUBLIC_EXPORT extern const char kAmbientModeStreetArtAlbumId[];
 ASH_PUBLIC_EXPORT extern const char kAmbientModeCapturedOnPixelAlbumId[];
 
 // Enumeration of the topic source, i.e. where the photos come from.
-// Values need to stay in sync with the |topicSource_| in ambient_mode_page.js.
-// Art gallery is a super set of art related topic sources in Backdrop service.
+// Values need to stay in sync with the |TopicSource| in
+// personalization_app.mojom. Art gallery is a super set of art related topic
+// sources in Backdrop service.
+// TODO(b/276349995): Deprecate this and use
+// ash::personalization_app::mojom::TopicSource directly.
 enum class AmbientModeTopicSource {
   kMinValue = 0,
   kGooglePhotos = kMinValue,
   kArtGallery = 1,
-  kMaxValue = kArtGallery
+  kVideo = 2,
+  kMaxValue = kVideo
 };
 
 // Subsettings of Art gallery.

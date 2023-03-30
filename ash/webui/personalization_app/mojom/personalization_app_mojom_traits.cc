@@ -442,6 +442,8 @@ EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::ToMojom(
       return MojomTopicSource::kGooglePhotos;
     case ash::AmbientModeTopicSource::kArtGallery:
       return MojomTopicSource::kArtGallery;
+    case ash::AmbientModeTopicSource::kVideo:
+      return MojomTopicSource::kVideo;
   }
 }
 
@@ -454,6 +456,9 @@ bool EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::FromMojom(
       return true;
     case MojomTopicSource::kArtGallery:
       *output = ash::AmbientModeTopicSource::kArtGallery;
+      return true;
+    case MojomTopicSource::kVideo:
+      *output = ash::AmbientModeTopicSource::kVideo;
       return true;
   }
   NOTREACHED();
