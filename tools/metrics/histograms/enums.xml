@@ -23540,6 +23540,15 @@ metrics consent we also won't be able to send UMA metrics. -->
     Disk space was not above the 2GB target, but was above the minimum needed.
     Decided not to proceed further with more aggressive cleanups.
   </int>
+  <int value="12" label="Some ephemeral user profiles cleaned above target">
+    Ephemeral users were enabled. Removed all profiles except those currently
+    mounted, belonging to the owner or non-ephemeral. Succesfully freed space
+    above 2GB target.
+  </int>
+  <int value="13" label="Some ephemeral user profiles cleaned">
+    Ephemeral users were enabled. Removed all profiles except those currently
+    mounted, belonging to the owner or non-ephemeral.
+  </int>
 </enum>
 
 <enum name="CryptohomeDiskCleanupResult">
