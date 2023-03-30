@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_base.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_base.h"
 
 #include <algorithm>
 #include <sstream>
@@ -31,13 +31,15 @@ const char kIsWaitingForResultKeyName[] = "w";
 
 }  // namespace
 
-NearbyShareSchedulerBase::NearbyShareSchedulerBase(bool retry_failures,
-                                                   bool require_connectivity,
-                                                   const std::string& pref_name,
-                                                   PrefService* pref_service,
-                                                   OnRequestCallback callback,
-                                                   const base::Clock* clock)
-    : NearbyShareScheduler(std::move(callback)),
+namespace ash::nearby {
+
+NearbySchedulerBase::NearbySchedulerBase(bool retry_failures,
+                                         bool require_connectivity,
+                                         const std::string& pref_name,
+                                         PrefService* pref_service,
+                                         OnRequestCallback callback,
+                                         const base::Clock* clock)
+    : NearbyScheduler(std::move(callback)),
       retry_failures_(retry_failures),
       require_connectivity_(require_connectivity),
       pref_name_(pref_name),
@@ -52,20 +54,20 @@ NearbyShareSchedulerBase::NearbyShareSchedulerBase(bool retry_failures,
   }
 }
 
-NearbyShareSchedulerBase::~NearbyShareSchedulerBase() {
+NearbySchedulerBase::~NearbySchedulerBase() {
   if (require_connectivity_) {
     content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
         this);
   }
 }
 
-void NearbyShareSchedulerBase::MakeImmediateRequest() {
+void NearbySchedulerBase::MakeImmediateRequest() {
   timer_.Stop();
   SetHasPendingImmediateRequest(true);
   Reschedule();
 }
 
-void NearbyShareSchedulerBase::HandleResult(bool success) {
+void NearbySchedulerBase::HandleResult(bool success) {
   base::Time now = clock_->Now();
   SetLastAttemptTime(now);
 
@@ -84,7 +86,7 @@ void NearbyShareSchedulerBase::HandleResult(bool success) {
   PrintSchedulerState();
 }
 
-void NearbyShareSchedulerBase::Reschedule() {
+void NearbySchedulerBase::Reschedule() {
   if (!is_running()) {
     return;
   }
@@ -97,18 +99,17 @@ void NearbyShareSchedulerBase::Reschedule() {
   }
 
   timer_.Start(FROM_HERE, *delay,
-               base::BindOnce(&NearbyShareSchedulerBase::OnTimerFired,
+               base::BindOnce(&NearbySchedulerBase::OnTimerFired,
                               base::Unretained(this)));
 }
 
-absl::optional<base::Time> NearbyShareSchedulerBase::GetLastSuccessTime()
-    const {
+absl::optional<base::Time> NearbySchedulerBase::GetLastSuccessTime() const {
   return base::ValueToTime(
       pref_service_->GetDict(pref_name_).Find(kLastSuccessTimeKeyName));
 }
 
-absl::optional<base::TimeDelta>
-NearbyShareSchedulerBase::GetTimeUntilNextRequest() const {
+absl::optional<base::TimeDelta> NearbySchedulerBase::GetTimeUntilNextRequest()
+    const {
   if (!is_running() || IsWaitingForResult()) {
     return absl::nullopt;
   }
@@ -129,13 +130,13 @@ NearbyShareSchedulerBase::GetTimeUntilNextRequest() const {
   return TimeUntilRecurringRequest(now);
 }
 
-bool NearbyShareSchedulerBase::IsWaitingForResult() const {
+bool NearbySchedulerBase::IsWaitingForResult() const {
   return pref_service_->GetDict(pref_name_)
       .FindBool(kIsWaitingForResultKeyName)
       .value_or(false);
 }
 
-size_t NearbyShareSchedulerBase::GetNumConsecutiveFailures() const {
+size_t NearbySchedulerBase::GetNumConsecutiveFailures() const {
   const std::string* str = pref_service_->GetDict(pref_name_)
                                .FindString(kNumConsecutiveFailuresKeyName);
   if (!str) {
@@ -150,18 +151,18 @@ size_t NearbyShareSchedulerBase::GetNumConsecutiveFailures() const {
   return num_failures;
 }
 
-void NearbyShareSchedulerBase::OnStart() {
+void NearbySchedulerBase::OnStart() {
   Reschedule();
   // TODO (b/274978630): Re-add logging once CD_LOG is implemented
   // (see go/np-plumbing).
   PrintSchedulerState();
 }
 
-void NearbyShareSchedulerBase::OnStop() {
+void NearbySchedulerBase::OnStop() {
   timer_.Stop();
 }
 
-void NearbyShareSchedulerBase::OnConnectionChanged(
+void NearbySchedulerBase::OnConnectionChanged(
     network::mojom::ConnectionType type) {
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
     return;
@@ -170,55 +171,51 @@ void NearbyShareSchedulerBase::OnConnectionChanged(
   Reschedule();
 }
 
-absl::optional<base::Time> NearbyShareSchedulerBase::GetLastAttemptTime()
-    const {
+absl::optional<base::Time> NearbySchedulerBase::GetLastAttemptTime() const {
   return base::ValueToTime(
       pref_service_->GetDict(pref_name_).Find(kLastAttemptTimeKeyName));
 }
 
-bool NearbyShareSchedulerBase::HasPendingImmediateRequest() const {
+bool NearbySchedulerBase::HasPendingImmediateRequest() const {
   return pref_service_->GetDict(pref_name_)
       .FindBool(kHasPendingImmediateRequestKeyName)
       .value_or(false);
 }
 
-void NearbyShareSchedulerBase::SetLastAttemptTime(
-    base::Time last_attempt_time) {
+void NearbySchedulerBase::SetLastAttemptTime(base::Time last_attempt_time) {
   ScopedDictPrefUpdate(pref_service_, pref_name_)
       ->Set(kLastAttemptTimeKeyName, base::TimeToValue(last_attempt_time));
 }
 
-void NearbyShareSchedulerBase::SetLastSuccessTime(
-    base::Time last_success_time) {
+void NearbySchedulerBase::SetLastSuccessTime(base::Time last_success_time) {
   ScopedDictPrefUpdate(pref_service_, pref_name_)
       ->Set(kLastSuccessTimeKeyName, base::TimeToValue(last_success_time));
 }
 
-void NearbyShareSchedulerBase::SetNumConsecutiveFailures(size_t num_failures) {
+void NearbySchedulerBase::SetNumConsecutiveFailures(size_t num_failures) {
   ScopedDictPrefUpdate(pref_service_, pref_name_)
       ->Set(kNumConsecutiveFailuresKeyName, base::NumberToString(num_failures));
 }
 
-void NearbyShareSchedulerBase::SetHasPendingImmediateRequest(
+void NearbySchedulerBase::SetHasPendingImmediateRequest(
     bool has_pending_immediate_request) {
   ScopedDictPrefUpdate(pref_service_, pref_name_)
       ->Set(kHasPendingImmediateRequestKeyName, has_pending_immediate_request);
 }
 
-void NearbyShareSchedulerBase::SetIsWaitingForResult(
-    bool is_waiting_for_result) {
+void NearbySchedulerBase::SetIsWaitingForResult(bool is_waiting_for_result) {
   ScopedDictPrefUpdate(pref_service_, pref_name_)
       ->Set(kIsWaitingForResultKeyName, is_waiting_for_result);
 }
 
-void NearbyShareSchedulerBase::InitializePersistedRequest() {
+void NearbySchedulerBase::InitializePersistedRequest() {
   if (IsWaitingForResult()) {
     SetHasPendingImmediateRequest(true);
     SetIsWaitingForResult(false);
   }
 }
 
-absl::optional<base::TimeDelta> NearbyShareSchedulerBase::TimeUntilRetry(
+absl::optional<base::TimeDelta> NearbySchedulerBase::TimeUntilRetry(
     base::Time now) const {
   if (!retry_failures_) {
     return absl::nullopt;
@@ -242,7 +239,7 @@ absl::optional<base::TimeDelta> NearbyShareSchedulerBase::TimeUntilRetry(
   return std::max(kZeroTimeDelta, delay - time_elapsed_since_last_attempt);
 }
 
-void NearbyShareSchedulerBase::OnTimerFired() {
+void NearbySchedulerBase::OnTimerFired() {
   DCHECK(is_running());
   if (require_connectivity_ &&
       content::GetNetworkConnectionTracker()->IsOffline()) {
@@ -254,7 +251,7 @@ void NearbyShareSchedulerBase::OnTimerFired() {
   NotifyOfRequest();
 }
 
-void NearbyShareSchedulerBase::PrintSchedulerState() const {
+void NearbySchedulerBase::PrintSchedulerState() const {
   absl::optional<base::Time> last_attempt_time = GetLastAttemptTime();
   absl::optional<base::Time> last_success_time = GetLastSuccessTime();
   absl::optional<base::TimeDelta> time_until_next_request =
@@ -297,3 +294,5 @@ void NearbyShareSchedulerBase::PrintSchedulerState() const {
   // TODO (b/274978630): Re-add logging once CD_LOG is implemented
   // (see go/np-plumbing).
 }
+
+}  // namespace ash::nearby

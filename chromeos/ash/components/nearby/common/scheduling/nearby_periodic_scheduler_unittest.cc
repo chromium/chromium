@@ -7,7 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_periodic_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_periodic_scheduler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -21,13 +21,15 @@ constexpr base::TimeDelta kTestRequestPeriod = base::Minutes(123);
 
 }  // namespace
 
-class NearbySharePeriodicSchedulerTest : public ::testing::Test {
+namespace ash::nearby {
+
+class NearbyPeriodicSchedulerTest : public ::testing::Test {
  protected:
-  NearbySharePeriodicSchedulerTest()
+  NearbyPeriodicSchedulerTest()
       : network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {}
 
-  ~NearbySharePeriodicSchedulerTest() override = default;
+  ~NearbyPeriodicSchedulerTest() override = default;
 
   void SetUp() override {
     content::SetNetworkConnectionTrackerForTesting(
@@ -36,7 +38,7 @@ class NearbySharePeriodicSchedulerTest : public ::testing::Test {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);
 
-    scheduler_ = std::make_unique<NearbySharePeriodicScheduler>(
+    scheduler_ = std::make_unique<NearbyPeriodicScheduler>(
         kTestRequestPeriod, /*retry_failures=*/true,
         /*require_connectivity=*/true, kTestPrefName, &pref_service_,
         base::DoNothing(), task_environment_.GetMockClock());
@@ -49,7 +51,7 @@ class NearbySharePeriodicSchedulerTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  NearbyShareScheduler* scheduler() { return scheduler_.get(); }
+  NearbyScheduler* scheduler() { return scheduler_.get(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -57,10 +59,10 @@ class NearbySharePeriodicSchedulerTest : public ::testing::Test {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<NearbyShareScheduler> scheduler_;
+  std::unique_ptr<NearbyScheduler> scheduler_;
 };
 
-TEST_F(NearbySharePeriodicSchedulerTest, PeriodicRequest) {
+TEST_F(NearbyPeriodicSchedulerTest, PeriodicRequest) {
   // Set Now() to something nontrivial.
   FastForward(base::Days(100));
 
@@ -80,3 +82,5 @@ TEST_F(NearbySharePeriodicSchedulerTest, PeriodicRequest) {
   EXPECT_EQ(kTestRequestPeriod - elapsed_time,
             scheduler()->GetTimeUntilNextRequest());
 }
+
+}  // namespace ash::nearby

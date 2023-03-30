@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_H_
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace ash::nearby {
 
 // Schedules tasks and alerts the owner when a request is ready. Scheduling
 // begins after Start() is called, and scheduling is stopped via Stop().
@@ -16,12 +18,12 @@
 // MakeImmediateRequest(). When an request attempt has completed--successfully
 // or not--the owner should invoke HandleResult() so the scheduler can process
 // the attempt outcomes and schedule future attempts if necessary.
-class NearbyShareScheduler {
+class NearbyScheduler {
  public:
   using OnRequestCallback = base::RepeatingCallback<void()>;
 
-  explicit NearbyShareScheduler(OnRequestCallback callback);
-  virtual ~NearbyShareScheduler();
+  explicit NearbyScheduler(OnRequestCallback callback);
+  virtual ~NearbyScheduler();
 
   void Start();
   void Stop();
@@ -69,4 +71,6 @@ class NearbyShareScheduler {
   OnRequestCallback callback_;
 };
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_H_
+}  // namespace ash::nearby
+
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_H_

@@ -28,7 +28,6 @@
 class NearbyShareClient;
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
-class NearbyShareScheduler;
 class PrefService;
 
 namespace device {
@@ -38,6 +37,10 @@ class BluetoothAdapter;
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
+
+namespace ash::nearby {
+class NearbyScheduler;
+}  // namespace ash::nearby
 
 namespace nearbyshare {
 namespace proto {
@@ -191,13 +194,14 @@ class NearbyShareCertificateManagerImpl
   NearbyShareClientFactory* client_factory_ = nullptr;
   const base::Clock* clock_;
   std::unique_ptr<NearbyShareCertificateStorage> certificate_storage_;
-  std::unique_ptr<NearbyShareScheduler>
+  std::unique_ptr<ash::nearby::NearbyScheduler>
       private_certificate_expiration_scheduler_;
-  std::unique_ptr<NearbyShareScheduler>
+  std::unique_ptr<ash::nearby::NearbyScheduler>
       public_certificate_expiration_scheduler_;
-  std::unique_ptr<NearbyShareScheduler>
+  std::unique_ptr<ash::nearby::NearbyScheduler>
       upload_local_device_certificates_scheduler_;
-  std::unique_ptr<NearbyShareScheduler> download_public_certificates_scheduler_;
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      download_public_certificates_scheduler_;
   std::unique_ptr<NearbyShareClient> client_;
   base::WeakPtrFactory<NearbyShareCertificateManagerImpl> weak_ptr_factory_{
       this};

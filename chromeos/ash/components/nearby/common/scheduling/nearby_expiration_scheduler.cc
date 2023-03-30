@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_expiration_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_expiration_scheduler.h"
 
 #include <utility>
 
-NearbyShareExpirationScheduler::NearbyShareExpirationScheduler(
+namespace ash::nearby {
+
+NearbyExpirationScheduler::NearbyExpirationScheduler(
     ExpirationTimeFunctor expiration_time_functor,
     bool retry_failures,
     bool require_connectivity,
@@ -14,19 +16,18 @@ NearbyShareExpirationScheduler::NearbyShareExpirationScheduler(
     PrefService* pref_service,
     OnRequestCallback on_request_callback,
     const base::Clock* clock)
-    : NearbyShareSchedulerBase(retry_failures,
-                               require_connectivity,
-                               pref_name,
-                               pref_service,
-                               std::move(on_request_callback),
-                               clock),
+    : NearbySchedulerBase(retry_failures,
+                          require_connectivity,
+                          pref_name,
+                          pref_service,
+                          std::move(on_request_callback),
+                          clock),
       expiration_time_functor_(std::move(expiration_time_functor)) {}
 
-NearbyShareExpirationScheduler::~NearbyShareExpirationScheduler() = default;
+NearbyExpirationScheduler::~NearbyExpirationScheduler() = default;
 
 absl::optional<base::TimeDelta>
-NearbyShareExpirationScheduler::TimeUntilRecurringRequest(
-    base::Time now) const {
+NearbyExpirationScheduler::TimeUntilRecurringRequest(base::Time now) const {
   absl::optional<base::Time> expiration_time = expiration_time_functor_.Run();
   if (!expiration_time) {
     return absl::nullopt;
@@ -38,3 +39,5 @@ NearbyShareExpirationScheduler::TimeUntilRecurringRequest(
 
   return *expiration_time - now;
 }
+
+}  // namespace ash::nearby

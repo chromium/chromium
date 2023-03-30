@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 
 #include <utility>
 
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_on_demand_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_periodic_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_on_demand_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_periodic_scheduler.h"
+
+namespace ash::nearby {
 
 // static
-NearbyShareSchedulerFactory* NearbyShareSchedulerFactory::test_factory_ =
-    nullptr;
+NearbySchedulerFactory* NearbySchedulerFactory::test_factory_ = nullptr;
 
 // static
-std::unique_ptr<NearbyShareScheduler>
-NearbyShareSchedulerFactory::CreateExpirationScheduler(
-    NearbyShareExpirationScheduler::ExpirationTimeFunctor
-        expiration_time_functor,
+std::unique_ptr<NearbyScheduler>
+NearbySchedulerFactory::CreateExpirationScheduler(
+    NearbyExpirationScheduler::ExpirationTimeFunctor expiration_time_functor,
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
     PrefService* pref_service,
-    NearbyShareScheduler::OnRequestCallback on_request_callback,
+    NearbyScheduler::OnRequestCallback on_request_callback,
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateExpirationSchedulerInstance(
@@ -31,19 +31,19 @@ NearbyShareSchedulerFactory::CreateExpirationScheduler(
         std::move(on_request_callback), clock);
   }
 
-  return std::make_unique<NearbyShareExpirationScheduler>(
+  return std::make_unique<NearbyExpirationScheduler>(
       std::move(expiration_time_functor), retry_failures, require_connectivity,
       pref_name, pref_service, std::move(on_request_callback), clock);
 }
 
 // static
-std::unique_ptr<NearbyShareScheduler>
-NearbyShareSchedulerFactory::CreateOnDemandScheduler(
+std::unique_ptr<NearbyScheduler>
+NearbySchedulerFactory::CreateOnDemandScheduler(
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
     PrefService* pref_service,
-    NearbyShareScheduler::OnRequestCallback callback,
+    NearbyScheduler::OnRequestCallback callback,
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateOnDemandSchedulerInstance(
@@ -51,20 +51,20 @@ NearbyShareSchedulerFactory::CreateOnDemandScheduler(
         std::move(callback), clock);
   }
 
-  return std::make_unique<NearbyShareOnDemandScheduler>(
+  return std::make_unique<NearbyOnDemandScheduler>(
       retry_failures, require_connectivity, pref_name, pref_service,
       std::move(callback), clock);
 }
 
 // static
-std::unique_ptr<NearbyShareScheduler>
-NearbyShareSchedulerFactory::CreatePeriodicScheduler(
+std::unique_ptr<NearbyScheduler>
+NearbySchedulerFactory::CreatePeriodicScheduler(
     base::TimeDelta request_period,
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
     PrefService* pref_service,
-    NearbyShareScheduler::OnRequestCallback callback,
+    NearbyScheduler::OnRequestCallback callback,
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreatePeriodicSchedulerInstance(
@@ -72,15 +72,17 @@ NearbyShareSchedulerFactory::CreatePeriodicScheduler(
         pref_service, std::move(callback), clock);
   }
 
-  return std::make_unique<NearbySharePeriodicScheduler>(
+  return std::make_unique<NearbyPeriodicScheduler>(
       request_period, retry_failures, require_connectivity, pref_name,
       pref_service, std::move(callback), clock);
 }
 
 // static
-void NearbyShareSchedulerFactory::SetFactoryForTesting(
-    NearbyShareSchedulerFactory* test_factory) {
+void NearbySchedulerFactory::SetFactoryForTesting(
+    NearbySchedulerFactory* test_factory) {
   test_factory_ = test_factory;
 }
 
-NearbyShareSchedulerFactory::~NearbyShareSchedulerFactory() = default;
+NearbySchedulerFactory::~NearbySchedulerFactory() = default;
+
+}  // namespace ash::nearby

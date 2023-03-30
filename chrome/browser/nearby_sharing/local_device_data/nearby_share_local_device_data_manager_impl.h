@@ -19,8 +19,11 @@
 class NearbyShareClientFactory;
 class NearbyShareDeviceDataUpdater;
 class NearbyShareProfileInfoProvider;
-class NearbyShareScheduler;
 class PrefService;
+
+namespace ash::nearby {
+class NearbyScheduler;
+}  // namespace ash::nearby
 
 // Implementation of NearbyShareLocalDeviceDataManager that persists device data
 // in prefs. All RPC-related calls are guarded by a timeout, so callbacks are
@@ -98,7 +101,7 @@ class NearbyShareLocalDeviceDataManagerImpl
   PrefService* pref_service_ = nullptr;
   NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
-  std::unique_ptr<NearbyShareScheduler> download_device_data_scheduler_;
+  std::unique_ptr<ash::nearby::NearbyScheduler> download_device_data_scheduler_;
   std::string default_device_name_;
 };
 

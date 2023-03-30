@@ -22,9 +22,9 @@
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler_factory.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-test-utils.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -221,7 +221,8 @@ class NearbyShareContactManagerImplTest
 
   void SetUp() override {
     RegisterNearbySharingPrefs(pref_service_.registry());
-    NearbyShareSchedulerFactory::SetFactoryForTesting(&scheduler_factory_);
+    ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(
+        &scheduler_factory_);
     NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(
         &downloader_factory_);
     profile_info_provider_.set_profile_user_name(kTestProfileUserName);
@@ -242,7 +243,7 @@ class NearbyShareContactManagerImplTest
     manager_awaiter_.reset();
     manager_->RemoveObserver(this);
     manager_.reset();
-    NearbyShareSchedulerFactory::SetFactoryForTesting(nullptr);
+    ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
     NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
@@ -403,13 +404,13 @@ class NearbyShareContactManagerImplTest
     return downloader_factory_.instances().back();
   }
 
-  FakeNearbyShareScheduler* periodic_upload_scheduler() {
+  ash::nearby::FakeNearbyScheduler* periodic_upload_scheduler() {
     return scheduler_factory_.pref_name_to_periodic_instance()
         .at(prefs::kNearbySharingSchedulerPeriodicContactUploadPrefName)
         .fake_scheduler;
   }
 
-  FakeNearbyShareScheduler* download_and_upload_scheduler() {
+  ash::nearby::FakeNearbyScheduler* download_and_upload_scheduler() {
     return scheduler_factory_.pref_name_to_periodic_instance()
         .at(prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName)
         .fake_scheduler;
@@ -417,7 +418,7 @@ class NearbyShareContactManagerImplTest
 
   // Verify scheduler input parameters.
   void VerifySchedulerInitialization() {
-    FakeNearbyShareSchedulerFactory::PeriodicInstance
+    ash::nearby::FakeNearbySchedulerFactory::PeriodicInstance
         download_and_upload_scheduler_instance =
             scheduler_factory_.pref_name_to_periodic_instance().at(
                 prefs::kNearbySharingSchedulerContactDownloadAndUploadPrefName);
@@ -429,7 +430,7 @@ class NearbyShareContactManagerImplTest
     EXPECT_EQ(&pref_service_,
               download_and_upload_scheduler_instance.pref_service);
 
-    FakeNearbyShareSchedulerFactory::PeriodicInstance
+    ash::nearby::FakeNearbySchedulerFactory::PeriodicInstance
         periodic_upload_scheduler_instance =
             scheduler_factory_.pref_name_to_periodic_instance().at(
                 prefs::kNearbySharingSchedulerPeriodicContactUploadPrefName);
@@ -487,7 +488,7 @@ class NearbyShareContactManagerImplTest
   FakeNearbyShareClientFactory http_client_factory_;
   FakeNearbyShareLocalDeviceDataManager local_device_data_manager_;
   FakeNearbyShareProfileInfoProvider profile_info_provider_;
-  FakeNearbyShareSchedulerFactory scheduler_factory_;
+  ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
   FakeNearbyShareContactDownloader::Factory downloader_factory_;
   std::unique_ptr<NearbyShareContactManager> manager_;
   std::unique_ptr<nearby_share::mojom::ContactManagerAsyncWaiter>

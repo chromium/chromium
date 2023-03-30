@@ -26,7 +26,7 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_service.h"
@@ -270,7 +270,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
           proto_database_provider,
           profile_path)),
       private_certificate_expiration_scheduler_(
-          NearbyShareSchedulerFactory::CreateExpirationScheduler(
+          ash::nearby::NearbySchedulerFactory::CreateExpirationScheduler(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       NextPrivateCertificateExpirationTime,
                                   base::Unretained(this)),
@@ -284,7 +284,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   base::Unretained(this)),
               clock_)),
       public_certificate_expiration_scheduler_(
-          NearbyShareSchedulerFactory::CreateExpirationScheduler(
+          ash::nearby::NearbySchedulerFactory::CreateExpirationScheduler(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       NextPublicCertificateExpirationTime,
                                   base::Unretained(this)),
@@ -297,7 +297,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   base::Unretained(this)),
               clock_)),
       upload_local_device_certificates_scheduler_(
-          NearbyShareSchedulerFactory::CreateOnDemandScheduler(
+          ash::nearby::NearbySchedulerFactory::CreateOnDemandScheduler(
               /*retry_failures=*/true,
               /*require_connectivity=*/true,
               prefs::
@@ -308,7 +308,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   base::Unretained(this)),
               clock_)),
       download_public_certificates_scheduler_(
-          NearbyShareSchedulerFactory::CreatePeriodicScheduler(
+          ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
               kNearbySharePublicCertificateDownloadPeriod,
               /*retry_failures=*/true,
               /*require_connectivity=*/true,

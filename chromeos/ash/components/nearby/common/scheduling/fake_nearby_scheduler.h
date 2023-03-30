@@ -2,25 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_H_
 
 #include <vector>
 
 #include "base/time/time.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// A fake implementation of NearbyShareScheduler that allows the user to set all
+namespace ash::nearby {
+
+// A fake implementation of NearbyScheduler that allows the user to set all
 // scheduling data. It tracks the number of immediate requests and the handled
 // results. The on-request callback can be invoked using
 // InvokeRequestCallback().
-class FakeNearbyShareScheduler : public NearbyShareScheduler {
+class FakeNearbyScheduler : public NearbyScheduler {
  public:
-  explicit FakeNearbyShareScheduler(OnRequestCallback callback);
-  ~FakeNearbyShareScheduler() override;
+  explicit FakeNearbyScheduler(OnRequestCallback callback);
+  ~FakeNearbyScheduler() override;
 
-  // NearbyShareScheduler:
+  // NearbyScheduler:
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
   void Reschedule() override;
@@ -41,7 +43,7 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   const std::vector<bool>& handled_results() const { return handled_results_; }
 
  private:
-  // NearbyShareScheduler:
+  // NearbyScheduler:
   void OnStart() override;
   void OnStop() override;
 
@@ -55,4 +57,6 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   size_t num_consecutive_failures_ = 0;
 };
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
+}  // namespace ash::nearby
+
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_H_

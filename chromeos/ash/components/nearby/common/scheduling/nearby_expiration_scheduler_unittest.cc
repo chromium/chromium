@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_expiration_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_expiration_scheduler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -26,13 +26,15 @@ constexpr base::TimeDelta kTestExpirationTimeFromInitalNow = base::Minutes(123);
 
 }  // namespace
 
-class NearbyShareExpirationSchedulerTest : public ::testing::Test {
+namespace ash::nearby {
+
+class NearbyExpirationSchedulerTest : public ::testing::Test {
  protected:
-  NearbyShareExpirationSchedulerTest()
+  NearbyExpirationSchedulerTest()
       : network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {}
 
-  ~NearbyShareExpirationSchedulerTest() override = default;
+  ~NearbyExpirationSchedulerTest() override = default;
 
   void SetUp() override {
     content::SetNetworkConnectionTrackerForTesting(
@@ -44,9 +46,9 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);
 
-    scheduler_ = std::make_unique<NearbyShareExpirationScheduler>(
+    scheduler_ = std::make_unique<NearbyExpirationScheduler>(
         base::BindRepeating(
-            &NearbyShareExpirationSchedulerTest::TestExpirationTimeFunctor,
+            &NearbyExpirationSchedulerTest::TestExpirationTimeFunctor,
             base::Unretained(this)),
         /*retry_failures=*/true, /*require_connectivity=*/true, kTestPrefName,
         &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
@@ -64,7 +66,7 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
   }
 
   absl::optional<base::Time> expiration_time_;
-  NearbyShareScheduler* scheduler() { return scheduler_.get(); }
+  NearbyScheduler* scheduler() { return scheduler_.get(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -72,10 +74,10 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<NearbyShareScheduler> scheduler_;
+  std::unique_ptr<NearbyScheduler> scheduler_;
 };
 
-TEST_F(NearbyShareExpirationSchedulerTest, ExpirationRequest) {
+TEST_F(NearbyExpirationSchedulerTest, ExpirationRequest) {
   scheduler()->Start();
 
   // Let 5 minutes elapse since the start time just to make sure the time to the
@@ -85,7 +87,7 @@ TEST_F(NearbyShareExpirationSchedulerTest, ExpirationRequest) {
   EXPECT_EQ(*expiration_time_ - Now(), scheduler()->GetTimeUntilNextRequest());
 }
 
-TEST_F(NearbyShareExpirationSchedulerTest, Reschedule) {
+TEST_F(NearbyExpirationSchedulerTest, Reschedule) {
   scheduler()->Start();
   FastForward(base::Minutes(5));
 
@@ -101,8 +103,10 @@ TEST_F(NearbyShareExpirationSchedulerTest, Reschedule) {
             scheduler()->GetTimeUntilNextRequest());
 }
 
-TEST_F(NearbyShareExpirationSchedulerTest, NullExpirationTime) {
+TEST_F(NearbyExpirationSchedulerTest, NullExpirationTime) {
   expiration_time_.reset();
   scheduler()->Start();
   EXPECT_EQ(absl::nullopt, scheduler()->GetTimeUntilNextRequest());
 }
+
+}  // namespace ash::nearby

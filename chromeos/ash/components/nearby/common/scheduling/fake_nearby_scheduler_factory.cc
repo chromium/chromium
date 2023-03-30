@@ -2,32 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
 
 #include <utility>
 
-FakeNearbyShareSchedulerFactory::ExpirationInstance::ExpirationInstance() =
-    default;
+namespace ash::nearby {
 
-FakeNearbyShareSchedulerFactory::ExpirationInstance::ExpirationInstance(
+FakeNearbySchedulerFactory::ExpirationInstance::ExpirationInstance() = default;
+
+FakeNearbySchedulerFactory::ExpirationInstance::ExpirationInstance(
     ExpirationInstance&&) = default;
 
-FakeNearbyShareSchedulerFactory::ExpirationInstance::~ExpirationInstance() =
-    default;
+FakeNearbySchedulerFactory::ExpirationInstance::~ExpirationInstance() = default;
 
-FakeNearbyShareSchedulerFactory::FakeNearbyShareSchedulerFactory() = default;
+FakeNearbySchedulerFactory::FakeNearbySchedulerFactory() = default;
 
-FakeNearbyShareSchedulerFactory::~FakeNearbyShareSchedulerFactory() = default;
+FakeNearbySchedulerFactory::~FakeNearbySchedulerFactory() = default;
 
-std::unique_ptr<NearbyShareScheduler>
-FakeNearbyShareSchedulerFactory::CreateExpirationSchedulerInstance(
-    NearbyShareExpirationScheduler::ExpirationTimeFunctor
-        expiration_time_functor,
+std::unique_ptr<NearbyScheduler>
+FakeNearbySchedulerFactory::CreateExpirationSchedulerInstance(
+    NearbyExpirationScheduler::ExpirationTimeFunctor expiration_time_functor,
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
     PrefService* pref_service,
-    NearbyShareScheduler::OnRequestCallback on_request_callback,
+    NearbyScheduler::OnRequestCallback on_request_callback,
     const base::Clock* clock) {
   ExpirationInstance instance;
   instance.expiration_time_functor = std::move(expiration_time_functor);
@@ -36,8 +35,8 @@ FakeNearbyShareSchedulerFactory::CreateExpirationSchedulerInstance(
   instance.pref_service = pref_service;
   instance.clock = clock;
 
-  auto scheduler = std::make_unique<FakeNearbyShareScheduler>(
-      std::move(on_request_callback));
+  auto scheduler =
+      std::make_unique<FakeNearbyScheduler>(std::move(on_request_callback));
   instance.fake_scheduler = scheduler.get();
 
   pref_name_to_expiration_instance_.erase(pref_name);
@@ -46,13 +45,13 @@ FakeNearbyShareSchedulerFactory::CreateExpirationSchedulerInstance(
   return scheduler;
 }
 
-std::unique_ptr<NearbyShareScheduler>
-FakeNearbyShareSchedulerFactory::CreateOnDemandSchedulerInstance(
+std::unique_ptr<NearbyScheduler>
+FakeNearbySchedulerFactory::CreateOnDemandSchedulerInstance(
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
     PrefService* pref_service,
-    NearbyShareScheduler::OnRequestCallback callback,
+    NearbyScheduler::OnRequestCallback callback,
     const base::Clock* clock) {
   OnDemandInstance instance;
   instance.retry_failures = retry_failures;
@@ -60,8 +59,7 @@ FakeNearbyShareSchedulerFactory::CreateOnDemandSchedulerInstance(
   instance.pref_service = pref_service;
   instance.clock = clock;
 
-  auto scheduler =
-      std::make_unique<FakeNearbyShareScheduler>(std::move(callback));
+  auto scheduler = std::make_unique<FakeNearbyScheduler>(std::move(callback));
   instance.fake_scheduler = scheduler.get();
 
   pref_name_to_on_demand_instance_.erase(pref_name);
@@ -70,14 +68,14 @@ FakeNearbyShareSchedulerFactory::CreateOnDemandSchedulerInstance(
   return scheduler;
 }
 
-std::unique_ptr<NearbyShareScheduler>
-FakeNearbyShareSchedulerFactory::CreatePeriodicSchedulerInstance(
+std::unique_ptr<NearbyScheduler>
+FakeNearbySchedulerFactory::CreatePeriodicSchedulerInstance(
     base::TimeDelta request_period,
     bool retry_failures,
     bool require_connectivity,
     const std::string& pref_name,
     PrefService* pref_service,
-    NearbyShareScheduler::OnRequestCallback callback,
+    NearbyScheduler::OnRequestCallback callback,
     const base::Clock* clock) {
   PeriodicInstance instance;
   instance.request_period = request_period;
@@ -86,8 +84,7 @@ FakeNearbyShareSchedulerFactory::CreatePeriodicSchedulerInstance(
   instance.pref_service = pref_service;
   instance.clock = clock;
 
-  auto scheduler =
-      std::make_unique<FakeNearbyShareScheduler>(std::move(callback));
+  auto scheduler = std::make_unique<FakeNearbyScheduler>(std::move(callback));
   instance.fake_scheduler = scheduler.get();
 
   pref_name_to_periodic_instance_.erase(pref_name);
@@ -95,3 +92,5 @@ FakeNearbyShareSchedulerFactory::CreatePeriodicSchedulerInstance(
 
   return scheduler;
 }
+
+}  // namespace ash::nearby

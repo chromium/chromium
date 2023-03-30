@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_base.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -21,16 +21,20 @@ namespace {
 
 const char kTestPrefName[] = "test_pref_name";
 
-// Copied from nearby_share_scheduler_impl.cc.
+// Copied from nearby_scheduler_impl.cc.
 constexpr base::TimeDelta kZeroTimeDelta = base::Seconds(0);
 constexpr base::TimeDelta kBaseRetryDelay = base::Seconds(5);
 constexpr base::TimeDelta kMaxRetryDelay = base::Hours(1);
 
 constexpr base::TimeDelta kTestTimeUntilRecurringRequest = base::Minutes(123);
 
-class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
+}  // namespace
+
+namespace ash::nearby {
+
+class NearbySchedulerBaseForTest : public NearbySchedulerBase {
  public:
-  NearbyShareSchedulerBaseForTest(
+  NearbySchedulerBaseForTest(
       absl::optional<base::TimeDelta> time_until_recurring_request,
       bool retry_failures,
       bool require_connectivity,
@@ -38,15 +42,15 @@ class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
       PrefService* pref_service,
       OnRequestCallback callback,
       const base::Clock* clock)
-      : NearbyShareSchedulerBase(retry_failures,
-                                 require_connectivity,
-                                 pref_name,
-                                 pref_service,
-                                 std::move(callback),
-                                 clock),
+      : NearbySchedulerBase(retry_failures,
+                            require_connectivity,
+                            pref_name,
+                            pref_service,
+                            std::move(callback),
+                            clock),
         time_until_recurring_request_(time_until_recurring_request) {}
 
-  ~NearbyShareSchedulerBaseForTest() override = default;
+  ~NearbySchedulerBaseForTest() override = default;
 
  private:
   absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
@@ -57,15 +61,13 @@ class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
   absl::optional<base::TimeDelta> time_until_recurring_request_;
 };
 
-}  // namespace
-
-class NearbyShareSchedulerBaseTest : public ::testing::Test {
+class NearbySchedulerBaseTest : public ::testing::Test {
  protected:
-  NearbyShareSchedulerBaseTest()
+  NearbySchedulerBaseTest()
       : network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {}
 
-  ~NearbyShareSchedulerBaseTest() override = default;
+  ~NearbySchedulerBaseTest() override = default;
 
   void SetUp() override {
     content::SetNetworkConnectionTrackerForTesting(
@@ -81,10 +83,10 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
       bool require_connectivity,
       absl::optional<base::TimeDelta> time_until_recurring_request =
           kTestTimeUntilRecurringRequest) {
-    scheduler_ = std::make_unique<NearbyShareSchedulerBaseForTest>(
+    scheduler_ = std::make_unique<NearbySchedulerBaseForTest>(
         time_until_recurring_request, retry_failures, require_connectivity,
         kTestPrefName, &pref_service_,
-        base::BindRepeating(&NearbyShareSchedulerBaseTest::OnRequestCallback,
+        base::BindRepeating(&NearbySchedulerBaseTest::OnRequestCallback,
                             base::Unretained(this)),
         task_environment_.GetMockClock());
   }
@@ -138,7 +140,7 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
   }
 
   size_t on_request_call_count() const { return on_request_call_count_; }
-  NearbyShareScheduler* scheduler() { return scheduler_.get(); }
+  NearbyScheduler* scheduler() { return scheduler_.get(); }
 
  private:
   size_t on_request_call_count_ = 0;
@@ -147,10 +149,10 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<NearbyShareScheduler> scheduler_;
+  std::unique_ptr<NearbyScheduler> scheduler_;
 };
 
-TEST_F(NearbyShareSchedulerBaseTest, ImmediateRequest) {
+TEST_F(NearbySchedulerBaseTest, ImmediateRequest) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   StartScheduling();
   scheduler()->MakeImmediateRequest();
@@ -160,7 +162,7 @@ TEST_F(NearbyShareSchedulerBaseTest, ImmediateRequest) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, RecurringRequest) {
+TEST_F(NearbySchedulerBaseTest, RecurringRequest) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   StartScheduling();
   EXPECT_EQ(kTestTimeUntilRecurringRequest,
@@ -172,7 +174,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RecurringRequest) {
             scheduler()->GetTimeUntilNextRequest());
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, NoRecurringRequest) {
+TEST_F(NearbySchedulerBaseTest, NoRecurringRequest) {
   // The flavor of the schedule does not schedule recurring requests.
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true,
                   /*time_until_recurring_request=*/absl::nullopt);
@@ -186,7 +188,7 @@ TEST_F(NearbyShareSchedulerBaseTest, NoRecurringRequest) {
   EXPECT_FALSE(scheduler()->GetTimeUntilNextRequest());
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, SchedulingNotStarted) {
+TEST_F(NearbySchedulerBaseTest, SchedulingNotStarted) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   EXPECT_FALSE(scheduler()->is_running());
   EXPECT_FALSE(scheduler()->GetTimeUntilNextRequest());
@@ -202,7 +204,7 @@ TEST_F(NearbyShareSchedulerBaseTest, SchedulingNotStarted) {
   EXPECT_FALSE(scheduler()->IsWaitingForResult());
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, DoNotRetryFailures) {
+TEST_F(NearbySchedulerBaseTest, DoNotRetryFailures) {
   CreateScheduler(/*retry_failures=*/false, /*require_connectivity=*/true);
   StartScheduling();
 
@@ -223,7 +225,7 @@ TEST_F(NearbyShareSchedulerBaseTest, DoNotRetryFailures) {
   EXPECT_EQ(2u, scheduler()->GetNumConsecutiveFailures());
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, FailureRetry) {
+TEST_F(NearbySchedulerBaseTest, FailureRetry) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   StartScheduling();
   scheduler()->MakeImmediateRequest();
@@ -247,8 +249,7 @@ TEST_F(NearbyShareSchedulerBaseTest, FailureRetry) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest,
-       FailureRetry_InterruptWithImmediateAttempt) {
+TEST_F(NearbySchedulerBaseTest, FailureRetry_InterruptWithImmediateAttempt) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   StartScheduling();
   scheduler()->MakeImmediateRequest();
@@ -280,7 +281,7 @@ TEST_F(NearbyShareSchedulerBaseTest,
   EXPECT_EQ(num_failures + 1, scheduler()->GetNumConsecutiveFailures());
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, ConnectivityChange_RequiresConnectivity) {
+TEST_F(NearbySchedulerBaseTest, ConnectivityChange_RequiresConnectivity) {
   SetNetworkConnection(/*online=*/false);
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();
@@ -301,8 +302,7 @@ TEST_F(NearbyShareSchedulerBaseTest, ConnectivityChange_RequiresConnectivity) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest,
-       ConnectivityChange_DoesNotRequireConnectivity) {
+TEST_F(NearbySchedulerBaseTest, ConnectivityChange_DoesNotRequireConnectivity) {
   SetNetworkConnection(/*online=*/false);
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/false);
   scheduler()->MakeImmediateRequest();
@@ -314,7 +314,7 @@ TEST_F(NearbyShareSchedulerBaseTest,
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, StopScheduling_BeforeTimerFires) {
+TEST_F(NearbySchedulerBaseTest, StopScheduling_BeforeTimerFires) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();
 
@@ -336,7 +336,7 @@ TEST_F(NearbyShareSchedulerBaseTest, StopScheduling_BeforeTimerFires) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, StopScheduling_BeforeResultIsHandled) {
+TEST_F(NearbySchedulerBaseTest, StopScheduling_BeforeResultIsHandled) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();
 
@@ -353,7 +353,7 @@ TEST_F(NearbyShareSchedulerBaseTest, StopScheduling_BeforeResultIsHandled) {
   EXPECT_FALSE(scheduler()->GetTimeUntilNextRequest());
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_InProgress) {
+TEST_F(NearbySchedulerBaseTest, RestoreRequest_InProgress) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();
   StartScheduling();
@@ -373,7 +373,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_InProgress) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_Immediate) {
+TEST_F(NearbySchedulerBaseTest, RestoreRequest_Pending_Immediate) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();
   StartScheduling();
@@ -391,7 +391,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_Immediate) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
+TEST_F(NearbySchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();
   StartScheduling();
@@ -422,7 +422,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
   FinishPendingRequest(/*success=*/true);
 }
 
-TEST_F(NearbyShareSchedulerBaseTest, RestoreSchedulingData) {
+TEST_F(NearbySchedulerBaseTest, RestoreSchedulingData) {
   // Succeed immediately, then fail once before destroying scheduler.
   base::Time expected_last_success_time = Now() + base::Seconds(100);
   FastForward(expected_last_success_time - Now());
@@ -444,3 +444,5 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreSchedulingData) {
   EXPECT_EQ(kBaseRetryDelay, scheduler()->GetTimeUntilNextRequest());
   EXPECT_EQ(1u, scheduler()->GetNumConsecutiveFailures());
 }
+
+}  // namespace ash::nearby

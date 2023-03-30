@@ -2,36 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_FACTORY_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_FACTORY_H_
 
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
-#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_expiration_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_expiration_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 
-class NearbyShareScheduler;
 class PrefService;
 
-// A fake NearbyShareScheduler factory that creates instances of
-// FakeNearbyShareScheduler instead of expiration, on-demand, or periodic
+namespace ash::nearby {
+
+class NearbyScheduler;
+
+// A fake NearbyScheduler factory that creates instances of
+// FakeNearbyScheduler instead of expiration, on-demand, or periodic
 // scheduler. It stores the factory input parameters as well as a raw pointer to
 // the fake scheduler for each instance created.
-class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
+class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
  public:
   struct ExpirationInstance {
     ExpirationInstance();
     ExpirationInstance(ExpirationInstance&&);
     ~ExpirationInstance();
 
-    FakeNearbyShareScheduler* fake_scheduler = nullptr;
-    NearbyShareExpirationScheduler::ExpirationTimeFunctor
-        expiration_time_functor;
+    FakeNearbyScheduler* fake_scheduler = nullptr;
+    NearbyExpirationScheduler::ExpirationTimeFunctor expiration_time_functor;
     bool retry_failures;
     bool require_connectivity;
     PrefService* pref_service = nullptr;
@@ -39,7 +41,7 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
   };
 
   struct OnDemandInstance {
-    FakeNearbyShareScheduler* fake_scheduler = nullptr;
+    FakeNearbyScheduler* fake_scheduler = nullptr;
     bool retry_failures;
     bool require_connectivity;
     PrefService* pref_service = nullptr;
@@ -47,7 +49,7 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
   };
 
   struct PeriodicInstance {
-    FakeNearbyShareScheduler* fake_scheduler = nullptr;
+    FakeNearbyScheduler* fake_scheduler = nullptr;
     base::TimeDelta request_period;
     bool retry_failures;
     bool require_connectivity;
@@ -55,8 +57,8 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
     const base::Clock* clock = nullptr;
   };
 
-  FakeNearbyShareSchedulerFactory();
-  ~FakeNearbyShareSchedulerFactory() override;
+  FakeNearbySchedulerFactory();
+  ~FakeNearbySchedulerFactory() override;
 
   const std::map<std::string, ExpirationInstance>&
   pref_name_to_expiration_instance() const {
@@ -74,30 +76,29 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
   }
 
  private:
-  // NearbyShareSchedulerFactory:
-  std::unique_ptr<NearbyShareScheduler> CreateExpirationSchedulerInstance(
-      NearbyShareExpirationScheduler::ExpirationTimeFunctor
-          expiration_time_functor,
+  // NearbySchedulerFactory:
+  std::unique_ptr<NearbyScheduler> CreateExpirationSchedulerInstance(
+      NearbyExpirationScheduler::ExpirationTimeFunctor expiration_time_functor,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,
       PrefService* pref_service,
-      NearbyShareScheduler::OnRequestCallback on_request_callback,
+      NearbyScheduler::OnRequestCallback on_request_callback,
       const base::Clock* clock) override;
-  std::unique_ptr<NearbyShareScheduler> CreateOnDemandSchedulerInstance(
+  std::unique_ptr<NearbyScheduler> CreateOnDemandSchedulerInstance(
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,
       PrefService* pref_service,
-      NearbyShareScheduler::OnRequestCallback callback,
+      NearbyScheduler::OnRequestCallback callback,
       const base::Clock* clock) override;
-  std::unique_ptr<NearbyShareScheduler> CreatePeriodicSchedulerInstance(
+  std::unique_ptr<NearbyScheduler> CreatePeriodicSchedulerInstance(
       base::TimeDelta request_period,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,
       PrefService* pref_service,
-      NearbyShareScheduler::OnRequestCallback callback,
+      NearbyScheduler::OnRequestCallback callback,
       const base::Clock* clock) override;
 
   std::map<std::string, ExpirationInstance> pref_name_to_expiration_instance_;
@@ -105,4 +106,6 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
   std::map<std::string, PeriodicInstance> pref_name_to_periodic_instance_;
 };
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
+}  // namespace ash::nearby
+
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SCHEDULER_FACTORY_H_

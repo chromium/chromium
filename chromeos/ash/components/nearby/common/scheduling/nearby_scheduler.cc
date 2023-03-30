@@ -2,27 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
 
 #include <utility>
 
-NearbyShareScheduler::NearbyShareScheduler(OnRequestCallback callback)
+namespace ash::nearby {
+NearbyScheduler::NearbyScheduler(OnRequestCallback callback)
     : callback_(std::move(callback)) {}
 
-NearbyShareScheduler::~NearbyShareScheduler() = default;
+NearbyScheduler::~NearbyScheduler() = default;
 
-void NearbyShareScheduler::Start() {
+void NearbyScheduler::Start() {
   DCHECK(!is_running_);
   is_running_ = true;
   OnStart();
 }
 
-void NearbyShareScheduler::Stop() {
+void NearbyScheduler::Stop() {
   DCHECK(is_running_);
   is_running_ = false;
   OnStop();
 }
 
-void NearbyShareScheduler::NotifyOfRequest() {
+void NearbyScheduler::NotifyOfRequest() {
   callback_.Run();
 }
+
+}  // namespace ash::nearby

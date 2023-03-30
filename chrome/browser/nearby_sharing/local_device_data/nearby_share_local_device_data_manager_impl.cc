@@ -20,8 +20,8 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -97,7 +97,7 @@ NearbyShareLocalDeviceDataManagerImpl::NearbyShareLocalDeviceDataManagerImpl(
           kUpdateDeviceDataTimeout,
           http_client_factory)),
       download_device_data_scheduler_(
-          NearbyShareSchedulerFactory::CreatePeriodicScheduler(
+          ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
               kDeviceDataDownloadPeriod,
               /*retry_failures=*/true,
               /*require_connectivity=*/true,

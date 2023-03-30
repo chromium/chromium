@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_BASE_H_
 
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,7 +20,9 @@ class Clock;
 
 class PrefService;
 
-// A base NearbyShareScheduler implementation that persists scheduling data.
+namespace ash::nearby {
+
+// A base NearbyScheduler implementation that persists scheduling data.
 // Requests made before scheduling has started, while another attempt is in
 // progress, or while offline are cached and rescheduled as soon as possible.
 // Likewise, when the scheduler is stopped or destroyed, scheduling data is
@@ -35,11 +37,11 @@ class PrefService;
 //
 // Derived classes must override TimeUntilRecurringRequest() to establish the
 // desired recurring request behavior of the scheduler.
-class NearbyShareSchedulerBase
-    : public NearbyShareScheduler,
+class NearbySchedulerBase
+    : public NearbyScheduler,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  ~NearbyShareSchedulerBase() override;
+  ~NearbySchedulerBase() override;
 
  protected:
   // |retry_failures|: Whether or not automatically retry failures using
@@ -51,18 +53,18 @@ class NearbyShareSchedulerBase
   // |pref_service|: The pref service used to persist scheduling data.
   // |callback|: The function invoked to alert the owner that a request is due.
   // |clock|: The clock used to determine timer delays.
-  NearbyShareSchedulerBase(bool retry_failures,
-                           bool require_connectivity,
-                           const std::string& pref_name,
-                           PrefService* pref_service,
-                           OnRequestCallback callback,
-                           const base::Clock* clock);
+  NearbySchedulerBase(bool retry_failures,
+                      bool require_connectivity,
+                      const std::string& pref_name,
+                      PrefService* pref_service,
+                      OnRequestCallback callback,
+                      const base::Clock* clock);
 
   // The time to wait until the next regularly recurring request.
   virtual absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const = 0;
 
-  // NearbyShareScheduler:
+  // NearbyScheduler:
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
   void Reschedule() override;
@@ -111,4 +113,6 @@ class NearbyShareSchedulerBase
   base::OneShotTimer timer_;
 };
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
+}  // namespace ash::nearby
+
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SCHEDULER_BASE_H_

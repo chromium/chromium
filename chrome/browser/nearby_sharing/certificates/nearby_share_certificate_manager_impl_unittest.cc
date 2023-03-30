@@ -14,7 +14,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
-#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -64,7 +64,8 @@ class NearbyShareCertificateManagerImplTest
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kNearbySharingSchedulerDownloadPublicCertificatesPrefName);
 
-    NearbyShareSchedulerFactory::SetFactoryForTesting(&scheduler_factory_);
+    ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(
+        &scheduler_factory_);
     NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(
         &cert_store_factory_);
 
@@ -128,7 +129,7 @@ class NearbyShareCertificateManagerImplTest
 
   void TearDown() override {
     cert_manager_->RemoveObserver(this);
-    NearbyShareSchedulerFactory::SetFactoryForTesting(nullptr);
+    ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
     NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
@@ -396,10 +397,10 @@ class NearbyShareCertificateManagerImplTest
   }
 
   FakeNearbyShareCertificateStorage* cert_store_;
-  FakeNearbyShareScheduler* private_cert_exp_scheduler_;
-  FakeNearbyShareScheduler* public_cert_exp_scheduler_;
-  FakeNearbyShareScheduler* upload_scheduler_;
-  FakeNearbyShareScheduler* download_scheduler_;
+  ash::nearby::FakeNearbyScheduler* private_cert_exp_scheduler_;
+  ash::nearby::FakeNearbyScheduler* public_cert_exp_scheduler_;
+  ash::nearby::FakeNearbyScheduler* upload_scheduler_;
+  ash::nearby::FakeNearbyScheduler* download_scheduler_;
   bool is_bluetooth_adapter_present_ = true;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
@@ -412,7 +413,7 @@ class NearbyShareCertificateManagerImplTest
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeNearbyShareClientFactory client_factory_;
-  FakeNearbyShareSchedulerFactory scheduler_factory_;
+  ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
   FakeNearbyShareCertificateStorage::Factory cert_store_factory_;
   std::unique_ptr<FakeNearbyShareLocalDeviceDataManager>
       local_device_data_manager_;

@@ -20,8 +20,8 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -205,7 +205,7 @@ NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
       local_device_data_manager_(local_device_data_manager),
       profile_info_provider_(profile_info_provider),
       periodic_contact_upload_scheduler_(
-          NearbyShareSchedulerFactory::CreatePeriodicScheduler(
+          ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
               kContactUploadPeriod,
               /*retry_failures=*/false,
               /*require_connectivity=*/true,
@@ -215,7 +215,7 @@ NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
                                       OnPeriodicContactsUploadRequested,
                                   base::Unretained(this)))),
       contact_download_and_upload_scheduler_(
-          NearbyShareSchedulerFactory::CreatePeriodicScheduler(
+          ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
               kContactDownloadPeriod,
               /*retry_failures=*/true,
               /*require_connectivity=*/true,

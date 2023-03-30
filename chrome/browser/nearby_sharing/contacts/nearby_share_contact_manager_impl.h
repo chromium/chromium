@@ -20,8 +20,11 @@ class NearbyShareClientFactory;
 class NearbyShareContactDownloader;
 class NearbyShareLocalDeviceDataManager;
 class NearbyShareProfileInfoProvider;
-class NearbyShareScheduler;
 class PrefService;
+
+namespace ash::nearby {
+class NearbyScheduler;
+}  // namespace ash::nearby
 
 // Implementation of NearbyShareContactManager that persists the set of allowed
 // contact IDs--for selected-contacts visiblity mode--in prefs. All other
@@ -109,8 +112,10 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   NearbyShareClientFactory* http_client_factory_ = nullptr;
   NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
   NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;
-  std::unique_ptr<NearbyShareScheduler> periodic_contact_upload_scheduler_;
-  std::unique_ptr<NearbyShareScheduler> contact_download_and_upload_scheduler_;
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      periodic_contact_upload_scheduler_;
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      contact_download_and_upload_scheduler_;
   std::unique_ptr<NearbyShareContactDownloader> contact_downloader_;
   mojo::RemoteSet<nearby_share::mojom::DownloadContactsObserver> observers_set_;
   mojo::ReceiverSet<nearby_share::mojom::ContactManager> receiver_set_;
