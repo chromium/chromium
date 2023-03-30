@@ -18,6 +18,7 @@ import android.content.Intent;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -69,6 +71,8 @@ public final class SearchEngineChoiceNotificationTest {
     private TemplateUrl mInitialSearchEngine;
     @Mock
     private TemplateUrl mAlternativeSearchEngine;
+    @Mock
+    private Profile mProfile;
     @Captor
     private ArgumentCaptor<Snackbar> mSnackbarArgument;
     @Mock
@@ -82,6 +86,7 @@ public final class SearchEngineChoiceNotificationTest {
         UmaRecorderHolder.resetForTesting();
 
         // Sets up appropriate responses from Template URL service.
+        Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         doReturn(TEST_ALTERNATIVE_ENGINE).when(mAlternativeSearchEngine).getKeyword();
         doReturn(SearchEngineType.SEARCH_ENGINE_DUCKDUCKGO)
@@ -94,6 +99,12 @@ public final class SearchEngineChoiceNotificationTest {
         doReturn(mInitialSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
+    }
+
+    @After
+    public void tearDown() {
+        Profile.setLastUsedProfileForTesting(null);
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test
