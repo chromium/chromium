@@ -29,6 +29,20 @@ source_set("events") {
   }
 }
 
+source_set("event_manager") {
+  sources = [
+    "event_manager.cc",
+    "event_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+}
+
 function_registration("api_registration") {
   sources = chromeos_system_extensions_api_schema_sources
   impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api/events"

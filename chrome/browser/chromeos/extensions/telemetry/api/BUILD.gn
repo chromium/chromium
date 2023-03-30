@@ -7,6 +7,15 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
+source_set("keyed_service_factory") {
+  sources = [
+    "telemetry_extension_api_browser_context_keyed_service_factories.cc",
+    "telemetry_extension_api_browser_context_keyed_service_factories.h",
+  ]
+
+  deps = [ "events:event_manager" ]
+}
+
 source_set("browser_tests") {
   testonly = true
 

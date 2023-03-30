@@ -6608,7 +6608,10 @@ static_library("browser") {
       ]
     }
     if (is_chromeos) {
-      deps += [ "//chromeos/crosapi/mojom" ]
+      deps += [
+        "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
+        "//chromeos/crosapi/mojom",
+      ]
     }
     if (is_linux || is_chromeos) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
