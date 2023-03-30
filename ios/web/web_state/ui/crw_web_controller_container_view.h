@@ -51,7 +51,7 @@
     NS_DESIGNATED_INITIALIZER;
 
 // CRWWebControllerContainerView should be initialized via
-// `-initWithContentViewProxy:`.
+// `-initWithDelegate:`.
 - (instancetype)initWithCoder:(NSCoder*)decoder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
