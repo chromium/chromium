@@ -109,6 +109,9 @@ enum LayoutConstant {
   // Additional horizontal padding between the elements in the toolbar.
   TOOLBAR_ELEMENT_PADDING,
 
+  // Default margin of the toolbar icons set by the layout manager.
+  TOOLBAR_ICON_DEFAULT_MARGIN,
+
   // The horizontal space between most items in the toolbar.
   TOOLBAR_STANDARD_SPACING,
 

@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -329,9 +330,7 @@ void ToolbarButton::UpdateIconsWithColors(const gfx::VectorIcon& icon,
                                           SkColor hovered_color,
                                           SkColor pressed_color,
                                           SkColor disabled_color) {
-  const int icon_size = ui::TouchUiController::Get()->touch_ui()
-                            ? kDefaultTouchableIconSize
-                            : kDefaultIconSize;
+  const int icon_size = GetIconSize();
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(icon, normal_color, icon_size));
   SetImageModel(ButtonState::STATE_HOVERED,
@@ -340,6 +339,15 @@ void ToolbarButton::UpdateIconsWithColors(const gfx::VectorIcon& icon,
                 ui::ImageModel::FromVectorIcon(icon, pressed_color, icon_size));
   SetImageModel(Button::STATE_DISABLED, ui::ImageModel::FromVectorIcon(
                                             icon, disabled_color, icon_size));
+}
+
+int ToolbarButton::GetIconSize() const {
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    return kDefaultTouchableIconSize;
+  }
+
+  return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
+                                         : kDefaultIconSize;
 }
 
 void ToolbarButton::SetVectorIcon(const gfx::VectorIcon& icon) {

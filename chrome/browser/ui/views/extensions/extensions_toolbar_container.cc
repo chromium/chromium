@@ -38,6 +38,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -166,6 +167,10 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
     // Do not flip the Extensions icon in RTL.
     extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
     extensions_button_->SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
+    if (features::IsChromeRefresh2023()) {
+      GetTargetLayoutManager()->SetDefault(views::kMarginsKey,
+                                           gfx::Insets::VH(0, 2));
+    }
   }
 
   AddMainItem(main_item);

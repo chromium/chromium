@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
@@ -147,6 +148,9 @@ class ToolbarButton : public views::LabelButton,
   // This color is typically used for the icon and text of toolbar buttons.
   virtual SkColor GetForegroundColor(ButtonState state) const;
 
+  // Returns the icon size of the toolbar button
+  virtual int GetIconSize() const;
+
   // Updates the images using the given icons and specific colors.
   void UpdateIconsWithColors(const gfx::VectorIcon& icon,
                              SkColor normal_color,
@@ -155,6 +159,7 @@ class ToolbarButton : public views::LabelButton,
                              SkColor disabled_color);
 
   static constexpr int kDefaultIconSize = 16;
+  static constexpr int kDefaultIconSizeChromeRefresh = 20;
   static constexpr int kDefaultTouchableIconSize = 24;
 
  private:

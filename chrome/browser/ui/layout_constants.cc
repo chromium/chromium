@@ -80,11 +80,25 @@ int GetLayoutConstant(LayoutConstant constant) {
         return 0;
       return 1;
     case TOOLBAR_BUTTON_HEIGHT:
-      return touch_ui ? 48 : 28;
+      if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+        return touch_ui ? 48 : 34;
+      } else {
+        return touch_ui ? 48 : 28;
+      }
     case TOOLBAR_ELEMENT_PADDING:
       return touch_ui ? 0 : 4;
+    case TOOLBAR_ICON_DEFAULT_MARGIN:
+      if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+        return touch_ui ? 0 : 2;
+      } else {
+        return GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+      }
     case TOOLBAR_STANDARD_SPACING:
-      return touch_ui ? 12 : 8;
+      if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+        return touch_ui ? 12 : 9;
+      } else {
+        return touch_ui ? 12 : 8;
+      }
     case PAGE_INFO_ICON_SIZE:
       return 16;
     case DOWNLOAD_ICON_SIZE:
@@ -126,7 +140,11 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       return gfx::Insets(touch_ui ? 12 : 6);
 
     case TOOLBAR_INTERIOR_MARGIN:
-      return touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8);
+      if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+        return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 3);
+      } else {
+        return touch_ui ? gfx::Insets() : gfx::Insets::VH(4, 8);
+      }
 
     case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
       return gfx::Insets::VH(4, 0);

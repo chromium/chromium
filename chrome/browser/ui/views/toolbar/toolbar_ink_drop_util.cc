@@ -12,12 +12,14 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -82,4 +84,35 @@ void ConfigureInkDropForToolbar(views::Button* host) {
       kToolbarInkDropHighlightVisibleAlpha / float{SK_AlphaOPAQUE});
   views::InkDrop::Get(host)->SetBaseColorCallback(
       base::BindRepeating(&GetToolbarInkDropBaseColor, host));
+
+  if (features::IsChromeRefresh2023()) {
+    views::InkDrop::Get(host)->SetLayerRegion(views::LayerRegion::kAbove);
+    views::InkDrop::Get(host)->SetCreateRippleCallback(base::BindRepeating(
+        [](views::Button* host) -> std::unique_ptr<views::InkDropRipple> {
+          const SkColor pressed_color =
+              host->GetColorProvider()->GetColor(kColorToolbarInkDropRipple);
+          const float pressed_alpha = SkColorGetA(pressed_color);
+
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              views::InkDrop::Get(host), host->size(),
+              host->GetLocalBounds().CenterPoint(),
+              SkColorSetA(pressed_color, SK_AlphaOPAQUE),
+              pressed_alpha / SK_AlphaOPAQUE);
+        },
+        host));
+    views::InkDrop::Get(host)->SetCreateHighlightCallback(base::BindRepeating(
+        [](views::Button* host) {
+          const SkColor hover_color =
+              host->GetColorProvider()->GetColor(kColorToolbarInkDrop);
+          const float hover_alpha = SkColorGetA(hover_color);
+
+          auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
+              host->size(), host->height() / 2,
+              gfx::PointF(host->GetLocalBounds().CenterPoint()),
+              SkColorSetA(hover_color, SK_AlphaOPAQUE));
+          ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
+          return ink_drop_highlight;
+        },
+        host));
+  }
 }

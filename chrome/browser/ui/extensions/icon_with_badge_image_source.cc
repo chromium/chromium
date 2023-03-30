@@ -204,11 +204,14 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
   cc::PaintFlags cutout_flags = rect_flags;
   cutout_flags.setBlendMode(SkBlendMode::kClear);
   constexpr int kOuterCornerRadius = 3;
+  const int corner_radius_for_badge_background_rect =
+      features::IsChromeRefresh2023() ? kOuterCornerRadius + 1
+                                      : kOuterCornerRadius - 1;
   canvas->DrawRoundRect(cutout_rect, kOuterCornerRadius, cutout_flags);
 
   // Paint the backdrop.
-  canvas->DrawRoundRect(badge_background_rect_, kOuterCornerRadius - 1,
-                        rect_flags);
+  canvas->DrawRoundRect(badge_background_rect_,
+                        corner_radius_for_badge_background_rect, rect_flags);
 
   // Paint the text.
   badge_text_->Draw(canvas);

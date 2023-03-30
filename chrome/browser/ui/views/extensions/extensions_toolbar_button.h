@@ -47,7 +47,7 @@ class ExtensionsToolbarButton : public ToolbarButton,
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
-  int GetIconSize() const;
+  int GetIconSize() const override;
 
   // A lock to keep the button pressed when a popup is visible.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;

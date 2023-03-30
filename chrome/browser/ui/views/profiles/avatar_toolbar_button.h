@@ -62,6 +62,7 @@ class AvatarToolbarButton : public ToolbarButton {
   void OnThemeChanged() override;
   void UpdateIcon() override;
   void Layout() override;
+  int GetIconSize() const override;
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);

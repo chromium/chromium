@@ -42,6 +42,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -303,9 +304,7 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
 ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     ButtonState state,
     const gfx::Image& gaia_account_image) const {
-  const int icon_size = ui::TouchUiController::Get()->touch_ui()
-                            ? kDefaultTouchableIconSize
-                            : kIconSizeForNonTouchUi;
+  const int icon_size = GetIconSize();
   SkColor icon_color = GetForegroundColor(state);
 
   switch (delegate_->GetState()) {
@@ -331,9 +330,20 @@ void AvatarToolbarButton::SetInsets() {
   // In non-touch mode we use a larger-than-normal icon size for avatars so we
   // need to compensate it by smaller insets.
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  gfx::Insets layout_insets(
-      touch_ui ? 0 : (kDefaultIconSize - kIconSizeForNonTouchUi) / 2);
+  gfx::Insets layout_insets((touch_ui || features::IsChromeRefresh2023())
+                                ? 0
+                                : (kDefaultIconSize - kIconSizeForNonTouchUi) /
+                                      2);
   SetLayoutInsetDelta(layout_insets);
+}
+
+int AvatarToolbarButton::GetIconSize() const {
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    return kDefaultTouchableIconSize;
+  }
+
+  return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
+                                         : kIconSizeForNonTouchUi;
 }
 
 BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)
