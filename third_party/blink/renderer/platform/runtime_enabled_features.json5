@@ -2829,13 +2829,6 @@
       name: "RTCEncodedVideoFrameClone",
       status: "experimental",
     },
-    // Enables the use of the RTCIceTransport with extensions.
-    {
-      name: "RTCIceTransportExtension",
-      origin_trial_feature_name: "RTCQuicTransport",
-      status: "experimental",
-      base_feature: "none",
-    },
     // Legacy callback-based getStats() has limited availability unless this
     // Deprecation Trial is enabled.
     // TODO(https://crbug.com/822696): Remove when origin trial ends.
@@ -2851,13 +2844,6 @@
     {
       name: "RTCLegacyTrackStats",
       origin_trial_feature_name: "RTCLegacyTrackStats",
-      status: "experimental",
-      base_feature: "none",
-    },
-    // Enables the use of the RTCQuicTransport object.
-    {
-      name: "RTCQuicTransport",
-      origin_trial_feature_name: "RTCQuicTransport",
       status: "experimental",
       base_feature: "none",
     },
