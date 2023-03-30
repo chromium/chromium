@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{Action}AuthBlockType"
-    enum="CryptohomeAuthBlockType" expires_after="2023-04-11">
+    enum="CryptohomeAuthBlockType" expires_after="2023-10-11">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
