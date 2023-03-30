@@ -126,6 +126,14 @@ class DCLayerTree {
     return video_swap_chains_.size();
   }
 
+  size_t GetDcompLayerCountForTesting() const {
+    return visual_tree_ ? visual_tree_->GetDcompLayerCountForTesting() : 0;
+  }
+  IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
+    return visual_tree_ ? visual_tree_->GetContentVisualForTesting(index)
+                        : nullptr;
+  }
+
   void SetFrameRate(float frame_rate);
 
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
@@ -167,6 +175,12 @@ class DCLayerTree {
                                           gfx::Transform* transform,
                                           gfx::Point* offset,
                                           gfx::Rect* clip_rect) const;
+    size_t GetDcompLayerCountForTesting() const {
+      return visual_subtrees_.size();
+    }
+    IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
+      return visual_subtrees_[index]->content_visual();
+    }
     // Returns true if the tree is optimized.
     // TODO(http://crbug.com/1380822): Implement tree optimization where the
     // tree is built incrementally and does not require full rebuild.
@@ -199,7 +213,9 @@ class DCLayerTree {
       IDCompositionVisual2* content_visual() const {
         return content_visual_.Get();
       }
-
+      IUnknown* dcomp_visual_content() const {
+        return dcomp_visual_content_.Get();
+      }
       void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
                                             gfx::Point* offset,
                                             gfx::Rect* clip_rect) const;
