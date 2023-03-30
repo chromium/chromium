@@ -178,6 +178,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownTargetArea) {
   DismissMenu(GetMultitaskMenu());
 
   // Start swipe down from the bottom of the target area.
+  // TODO(sophiewen): Replace this with `kHitRegionSize.height()`.
   GenerateScroll(window->bounds().CenterPoint().x(), 15, kMenuDragPoint);
   ASSERT_TRUE(GetMultitaskMenu());
   DismissMenu(GetMultitaskMenu());
@@ -227,13 +228,8 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInSplitView) {
   ASSERT_TRUE(multitask_menu_view);
   ASSERT_TRUE(left_bounds.Contains(multitask_menu_view->GetBoundsInScreen()));
 
-  // Swipe down on the right window. Since it isn't active, no menu is shown.
+  // Swipe down on the right window. Test that it shows the menu.
   gfx::Rect right_bounds(window2->bounds());
-  GenerateScroll(right_bounds.CenterPoint().x(), 0, 150);
-  ASSERT_FALSE(GetMultitaskMenu());
-
-  // Activate the right window. Now swipe down will show the menu.
-  wm::ActivateWindow(window2.get());
   GenerateScroll(right_bounds.CenterPoint().x(), 0, 150);
   multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
   ASSERT_TRUE(multitask_menu_view);

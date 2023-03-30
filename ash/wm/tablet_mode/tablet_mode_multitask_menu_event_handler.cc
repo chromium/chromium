@@ -22,12 +22,8 @@ namespace ash {
 
 namespace {
 
-// The dimensions of the area that can activate the multitask menu.
-constexpr gfx::SizeF kTargetAreaSize(200.f, 16.f);
-
-// The minimum distance a touch has to be moved by before it is considered to be
-// a drag on the menu.
-constexpr int kDragYThreshold = 8;
+// The dimensions of the region that can activate the multitask menu.
+constexpr gfx::SizeF kHitRegionSize(200.f, 100.f);
 
 }  // namespace
 
@@ -61,103 +57,91 @@ void TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu() {
   multitask_menu_.reset();
 }
 
-void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
-  // The event target may be the active window, multitask menu, or multitask
-  // cue, so convert to screen coordinates for consistency.
+void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
+    ui::GestureEvent* event) {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  auto* window_state = WindowState::Get(active_window);
+  // No-op if there is no multitask menu and no active window that can open the
+  // menu. If the menu is open, the checks in the second condition do not apply
+  // since the menu is the active window.
+  if (!multitask_menu_ && (!active_window || window_state->IsFloated() ||
+                           !window_state->CanMaximize())) {
+    return;
+  }
+
   aura::Window* target = static_cast<aura::Window*>(event->target());
   gfx::PointF screen_location = event->location_f();
   wm::ConvertPointToScreen(target, &screen_location);
 
+  // If the menu is closed, only handle events inside the target area that might
+  // open the menu.
+  const gfx::RectF window_bounds(active_window->GetBoundsInScreen());
+  gfx::RectF hit_region(window_bounds);
+  hit_region.ClampToCenteredSize(kHitRegionSize);
+  hit_region.set_y(window_bounds.y());
+  if (!multitask_menu_ && !hit_region.Contains(screen_location)) {
+    return;
+  }
+
+  // Save the window coordinates to pass to the menu.
+  gfx::PointF window_location = event->location_f();
+  aura::Window::ConvertPointToTarget(target, active_window, &window_location);
+
+  const ui::GestureEventDetails details = event->details();
   switch (event->type()) {
-    case ui::ET_TOUCH_PRESSED: {
-      aura::Window* active_window = window_util::GetActiveWindow();
-      // Only process events on the active window, since the target might not
-      // be the active window yet and we don't want to handle before window
-      // activation.
-      if (!CanProcessEvent(active_window)) {
-        initial_drag_data_.reset();
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      if (std::fabs(details.scroll_y_hint()) <
+          std::fabs(details.scroll_x_hint())) {
         return;
       }
-      const gfx::RectF window_bounds(active_window->GetBoundsInScreen());
-      gfx::RectF target_area(window_bounds);
-      target_area.ClampToCenteredSize(kTargetAreaSize);
-      target_area.set_y(window_bounds.y());
-      if (!multitask_menu_ && target_area.Contains(screen_location)) {
-        // On the first touch, we don't know yet if this touch will turn into a
-        // drag, but mark `SetHandled()` to avoid turning into a long press.
-        initial_drag_data_ =
-            InitialDragData{screen_location, /*is_drag=*/false};
+      if (is_drag_active_) {
+        return;
+      }
+      if (details.scroll_y_hint() > 0) {
+        // If the menu hasn't been created yet and scroll down begins inside the
+        // target area, start a drag.
+        MaybeCreateMultitaskMenu(active_window);
+        multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
+        event->SetHandled();
+        is_drag_active_ = true;
+      } else if (details.scroll_y_hint() < 0 && multitask_menu_ &&
+                 gfx::RectF(
+                     multitask_menu_->widget()->GetWindowBoundsInScreen())
+                     .Contains(screen_location)) {
+        // If the menu is open and scroll up begins, only handle events inside
+        // the menu to avoid consuming scroll events outside the menu.
+        multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
+        event->SetHandled();
+        is_drag_active_ = true;
+      }
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      if (is_drag_active_) {
+        multitask_menu_->UpdateDrag(window_location.y(),
+                                    /*down=*/details.scroll_y() > 0);
         event->SetHandled();
       }
-      if (multitask_menu_ &&
-          gfx::RectF(multitask_menu_->widget()->GetWindowBoundsInScreen())
-              .Contains(screen_location)) {
-        initial_drag_data_ =
-            InitialDragData{screen_location, /*is_drag=*/false};
-        // Do not mark `SetHandled()` since the press may be on a button.
-      }
       break;
-    }
-    case ui::ET_TOUCH_MOVED: {
-      if (!initial_drag_data_) {
-        return;
-      }
-      const gfx::Vector2dF scroll =
-          screen_location - initial_drag_data_->initial_location;
-      if (multitask_menu_ && std::fabs(scroll.y()) < kDragYThreshold) {
-        // The scroll might not have moved enough for us to process a drag yet.
-        return;
-      }
-      const bool down = scroll.y() >= 0;
-      // Save the window coordinates to pass to the menu. For us to arrive here
-      // the event target must be the active window now.
-      gfx::PointF window_location = event->location_f();
-      aura::Window* active_window = window_util::GetActiveWindow();
-      aura::Window::ConvertPointToTarget(target, active_window,
-                                         &window_location);
-
-      if (!multitask_menu_) {
-        if (!down) {
-          // If no menu is shown and we drag up, do nothing.
-          initial_drag_data_.reset();
-          return;
-        }
-        MaybeCreateMultitaskMenu(active_window);
-      }
-      if (!initial_drag_data_->is_drag) {
-        // If this is the first move after the touch, begin a drag. Note that
-        // `initial_location` was saved in screen coordinates, so we must
-        // convert to window coordinates to pass to the menu.
-        gfx::PointF initial_location = initial_drag_data_->initial_location;
-        wm::ConvertPointFromScreen(target, &initial_location);
-        multitask_menu_->BeginDrag(initial_location.y(), down);
-      }
-      multitask_menu_->UpdateDrag(window_location.y(), down);
-      event->SetHandled();
-      // Reset `initial_drag_data_->is_drag` so we don't handle it in
-      // ET_TOUCH_RELEASED.
-      initial_drag_data_->is_drag = true;
-      break;
-    }
-    case ui::ET_TOUCH_RELEASED:
-      if (!initial_drag_data_) {
-        return;
-      }
-      if (!initial_drag_data_->is_drag) {
-        // If the touch was pressed and released immediately without dragging,
-        // it may have been a press in the target area and we do not handle
-        // here.
-        initial_drag_data_.reset();
-        return;
-      }
-      if (multitask_menu_) {
+    case ui::ET_GESTURE_SCROLL_END:
+      // If an unsupported gesture is sent, make sure we reset `is_drag_active_`
+      // to stop consuming events.
+      if (is_drag_active_) {
         multitask_menu_->EndDrag();
+        event->SetHandled();
+        is_drag_active_ = false;
       }
-      initial_drag_data_.reset();
-      event->SetHandled();
       break;
-    case ui::ET_TOUCH_CANCELLED:
-      initial_drag_data_.reset();
+    case ui::ET_SCROLL_FLING_START:
+      if (!is_drag_active_) {
+        return;
+      }
+      // Normally ET_GESTURE_SCROLL_BEGIN will fire first and have already
+      // created the multitask menu, however occasionally ET_SCROLL_FLING_START
+      // may fire first (https://crbug.com/821237).
+      MaybeCreateMultitaskMenu(active_window);
+      multitask_menu_->Animate(details.velocity_y() > 0);
+      event->SetHandled();
+      is_drag_active_ = false;
       break;
     default:
       break;

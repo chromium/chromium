@@ -37,27 +37,21 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   void ResetMultitaskMenu();
 
   // ui::EventHandler:
-  void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   TabletModeMultitaskCue* multitask_cue_for_testing() {
     return multitask_cue_.get();
   }
 
  private:
-  // Drag data needed to process menu events. `initial_location` is the initial
-  // touch in screen coordinates, and `is_drag` indicates whether this was
-  // actually a drag, since the touch may have pressed and released immediately.
-  struct InitialDragData {
-    gfx::PointF initial_location;
-    bool is_drag;
-  };
+  // True while a drag to open or close the menu is in progress. Needed to
+  // consume GestureScrollBegin, GestureScrollUpdate, and GestureScrollEnd
+  // events in order.
+  bool is_drag_active_ = false;
 
   bool CanProcessEvent(aura::Window* window) const;
 
   void MaybeCreateMultitaskMenu(aura::Window* active_window);
-
-  // Valid if we may need to handle the event.
-  absl::optional<InitialDragData> initial_drag_data_;
 
   // Creates a draggable bar when app windows are activated.
   std::unique_ptr<TabletModeMultitaskCue> multitask_cue_;
