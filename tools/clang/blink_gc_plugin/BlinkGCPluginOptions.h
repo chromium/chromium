@@ -58,11 +58,6 @@ struct BlinkGCPluginOptions {
   // fields checker.
   bool forbid_associated_remote_receiver = false;
 
-  // Enables checks of this plugin for code under the pdfium directory.
-  // TODO(chromium:1421576): Enable by default once all errors in pdfium have
-  // been resolved.
-  bool enable_checks_for_pdfium_directory = false;
-
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;
