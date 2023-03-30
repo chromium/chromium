@@ -10,6 +10,7 @@
 #ifndef BASE_FUNCTIONAL_CALLBACK_HELPERS_H_
 #define BASE_FUNCTIONAL_CALLBACK_HELPERS_H_
 
+#include <atomic>
 #include <memory>
 #include <ostream>
 #include <type_traits>
@@ -90,7 +91,7 @@ class OnceCallbackHolder final {
   }
 
  private:
-  std::atomic<bool> has_run_;
+  std::atomic<bool> has_run_{false};
   base::OnceCallback<void(Args...)> callback_;
   const bool ignore_extra_runs_;
 };
