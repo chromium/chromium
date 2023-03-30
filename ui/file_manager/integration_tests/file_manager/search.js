@@ -604,7 +604,7 @@ testcase.resetSearchOptionsOnFolderChange = async () => {
 
   // Check the defaults.
   chrome.test.assertEq(
-      'This folder', await getSelectedOptionText(appId, 'location'));
+      'Downloads', await getSelectedOptionText(appId, 'location'));
   chrome.test.assertEq(
       'Any time', await getSelectedOptionText(appId, 'recency'));
   chrome.test.assertEq('All types', await getSelectedOptionText(appId, 'type'));
@@ -624,7 +624,7 @@ testcase.resetSearchOptionsOnFolderChange = async () => {
 
   // Check that we are back to defaults.
   chrome.test.assertEq(
-      'This folder', await getSelectedOptionText(appId, 'location'));
+      'photos', await getSelectedOptionText(appId, 'location'));
   chrome.test.assertEq(
       'Any time', await getSelectedOptionText(appId, 'recency'));
   chrome.test.assertEq('All types', await getSelectedOptionText(appId, 'type'));

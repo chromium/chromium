@@ -230,18 +230,6 @@ export class LocalSearchContentScanner extends ContentScanner {
 }
 
 /**
- * What we consider to be local (this chromebook) volume types.
- * TODO(b:273843598) Refine this list.
- */
-const LOCAL_VOLUME_TYPES = new Set([
-  VolumeManagerCommon.VolumeType.DOWNLOADS,
-  VolumeManagerCommon.VolumeType.REMOVABLE,
-  VolumeManagerCommon.VolumeType.CROSTINI,
-  VolumeManagerCommon.VolumeType.MY_FILES,
-  VolumeManagerCommon.VolumeType.ANDROID_FILES,
-]);
-
-/**
  * A content scanner capable of scanning both the local file system and Google
  * Drive. When created you need to specify the root type, current entry
  * in the directory tree, the search query and options. The `rootType` together
@@ -293,49 +281,36 @@ export class SearchV2ContentScanner extends ContentScanner {
     }
   }
 
-  isSearchingRoot_() {
-    if (this.options_.location === SearchLocation.EVERYWHERE ||
-        this.options_.location === SearchLocation.THIS_CHROMEBOOK) {
-      return true;
-    }
-  }
-
   /**
-   * @returns {boolean} Whether or not the local (MY_FILES) search should
-   *     be performed.
-   * @private
+   * @param {!FilesAppEntry|DirectoryEntry} dirEntry
+   * @return {!Array<!DirectoryEntry>}
    */
-  isSearchingLocal_() {
-    if (this.isSearchingRoot_()) {
-      return true;
+  getRoots_(dirEntry) {
+    const typeName = dirEntry.type_name;
+    if (typeName === 'EntryList' || typeName == 'VolumeEntry') {
+      const allRoots = [dirEntry].concat(
+          /** @type {EntryList} */ (dirEntry).getUIChildren());
+      return allRoots.filter(entry => !util.isFakeEntry(entry))
+          .map(entry => entry.filesystem.root);
     }
-    if (this.options_.location === SearchLocation.THIS_FOLDER) {
-      return (this.rootType_ !== VolumeManagerCommon.RootType.DRIVE);
+    return [dirEntry];
+  }
+
+  getRootOfEntry_() {
+    if (this.entry_.filesystem) {
+      return this.entry_.filesystem.root;
     }
-    return false;
+    return this.entry_;
   }
 
   /**
-   * @returns {boolean} Whether or not the Google Drive search should
-   *     be performed.
-   * @private
-   */
-  isSearchingDrive_() {
-    if (this.options_.location === SearchLocation.EVERYWHERE) {
-      return true;
-    }
-    if (this.options_.location === SearchLocation.THIS_FOLDER) {
-      return (this.rootType_ === VolumeManagerCommon.RootType.DRIVE);
-    }
-    return false;
-  }
-
-  /**
+   * Creates a single promise that, when fulfilled, returns a non-null array of
+   * file entries. The array may be empty.
    * @param {!chrome.fileManagerPrivate.SearchMetadataParams} params
    * @return {!Promise<!Array<!Entry>>}
    * @private
    */
-  makeLocalSearchPromise_(params) {
+  makeFileSearchPromise_(params) {
     return new Promise((resolve, reject) => {
       metrics.startInterval('Search.Local.Latency');
       chrome.fileManagerPrivate.searchFiles(
@@ -359,47 +334,17 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
-   * @param {!FilesAppEntry|DirectoryEntry} dirEntry
-   * @return {!Array<!DirectoryEntry>}
-   */
-  getRoots_(dirEntry) {
-    const typeName = dirEntry.type_name;
-    if (typeName === 'EntryList' || typeName == 'VolumeEntry') {
-      const allRoots = [dirEntry].concat(
-          /** @type {EntryList} */ (dirEntry).getUIChildren());
-      return allRoots.filter(entry => !util.isFakeEntry(entry))
-          .map(entry => entry.filesystem.root);
-    }
-    return [dirEntry];
-  }
-
-  /**
-   * Returns a list of roots for local search, when searching from
-   * the root of the file system.
-   * @return {!Array<DirectoryEntry>}
-   * @private
-   */
-  getLocalRootList_() {
-    const localRootDirs = [];
-    const volumeInfoList = this.volumeManager_.volumeInfoList;
-    for (let index = 0; index < volumeInfoList.length; ++index) {
-      const volumeInfo = volumeInfoList.item(index);
-      if (LOCAL_VOLUME_TYPES.has(volumeInfo.volumeType)) {
-        const root = volumeInfo.displayRoot;
-        localRootDirs.push(...this.getRoots_(root));
-      }
-    }
-    return localRootDirs;
-  }
-
-  /**
+   * For the given set of `folders` holding directory entries, creates an array
+   * of promises that, when fulfilled, return an array of entries in those
+   * directories.
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
    * @param {number} maxResults
-   * @return {!Array<!Promise<!Array<Entry>>>}
+   * @param {!Array<!DirectoryEntry>} folders
+   * @return {!Array<!Promise<!Array<!Entry>>>}
    * @private
    */
-  createLocalSearch_(modifiedTimestamp, category, maxResults) {
+  makeFileSearchPromiseList_(modifiedTimestamp, category, maxResults, folders) {
     /** @type {!chrome.fileManagerPrivate.SearchMetadataParams} */
     const baseParams = {
       query: this.query_,
@@ -408,14 +353,8 @@ export class SearchV2ContentScanner extends ContentScanner {
       timestamp: modifiedTimestamp,
       category: category,
     };
-    let searchDirList = [];
-    if (this.isSearchingRoot_()) {
-      searchDirList = this.getLocalRootList_();
-    } else {
-      searchDirList = this.getRoots_(this.entry_);
-    }
-    return searchDirList.map(
-        searchDir => this.makeLocalSearchPromise_(
+    return folders.map(
+        searchDir => this.makeFileSearchPromise_(
             /** @type {!chrome.fileManagerPrivate.SearchMetadataParams} */ ({
               ...baseParams,
               rootDir: searchDir,
@@ -423,6 +362,50 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
+   * Returns an array of promises that, when fulfilled, return an array of
+   * entries matching the current query, modified timestamp, and category for
+   * folders located under My files.
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Array<Promise<!Array<Entry>>>}
+   * @private
+   */
+  createMyFilesSearch_(modifiedTimestamp, category, maxResults) {
+    const myFiles = this.volumeManager_.getCurrentProfileVolumeInfo(
+        VolumeManagerCommon.VolumeType.DOWNLOADS);
+    return this.makeFileSearchPromiseList_(
+        modifiedTimestamp, category, maxResults,
+        this.getRoots_(myFiles.displayRoot));
+  }
+
+  /**
+   * Returns an array of promises that, when fulfilled, return an array of
+   * entries matching the current query, modified timestamp, and category for
+   * all known removable drives.
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Array<!Promise<!Array<Entry>>>}
+   * @private
+   */
+  createRemovablesSearch_(modifiedTimestamp, category, maxResults) {
+    const removableRootDirs = [];
+    const volumeInfoList = this.volumeManager_.volumeInfoList;
+    for (let index = 0; index < volumeInfoList.length; ++index) {
+      const volumeInfo = volumeInfoList.item(index);
+      if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.REMOVABLE) {
+        removableRootDirs.push(...this.getRoots_(volumeInfo.displayRoot));
+      }
+    }
+    return this.makeFileSearchPromiseList_(
+        modifiedTimestamp, category, maxResults, removableRootDirs);
+  }
+
+  /**
+   * Returns a promise that, when fulfilled, returns an array of file entries
+   * matching the current query, modified timestamp and category for files
+   * located on Drive.
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
    * @return {Promise<!Array<Entry>>}
@@ -456,6 +439,40 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Array<Promise<!Array<Entry>>>}
+   * @private
+   */
+  createDirectorySearch_(modifiedTimestamp, category, maxResults) {
+    if (this.rootType_ === VolumeManagerCommon.RootType.DRIVE) {
+      return [this.createDriveSearch_(modifiedTimestamp, category)];
+    }
+
+    const searchDir = this.options_.location == SearchLocation.THIS_FOLDER ?
+        this.entry_ :
+        this.getRootOfEntry_();
+    return this.makeFileSearchPromiseList_(
+        modifiedTimestamp, category, maxResults, this.getRoots_(searchDir));
+  }
+
+  /**
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Array<Promise<!Array<Entry>>>}
+   * @private
+   */
+  createEverywhereSearch_(modifiedTimestamp, category, maxResults) {
+    return [
+      ...this.createMyFilesSearch_(modifiedTimestamp, category, maxResults),
+      ...this.createRemovablesSearch_(modifiedTimestamp, category, maxResults),
+      this.createDriveSearch_(modifiedTimestamp, category),
+    ];
+  }
+
+  /**
    * Starts the file name search.
    * @override
    */
@@ -464,14 +481,12 @@ export class SearchV2ContentScanner extends ContentScanner {
       invalidateCache = false) {
     const category = this.getDesiredCategory_();
     const timestamp = getEarliestTimestamp(this.options_.recency, new Date());
+    const maxResults = 100;
 
-    const searchPromises = [];
-    if (this.isSearchingLocal_()) {
-      searchPromises.push(...this.createLocalSearch_(timestamp, category, 100));
-    }
-    if (this.isSearchingDrive_()) {
-      searchPromises.push(this.createDriveSearch_(timestamp, category));
-    }
+    const searchPromises =
+        this.options_.location === SearchLocation.EVERYWHERE ?
+        this.createEverywhereSearch_(timestamp, category, maxResults) :
+        this.createDirectorySearch_(timestamp, category, maxResults);
 
     if (!searchPromises) {
       console.warn(
@@ -484,8 +499,10 @@ export class SearchV2ContentScanner extends ContentScanner {
         if (result.status === 'rejected') {
           errorCallback(/** @type {DOMError} */ (result.reason));
         } else if (result.status === 'fulfilled') {
-          entriesCallback(result.value);
-          resultCount += result.value.length;
+          if (result.value) {
+            entriesCallback(result.value);
+            resultCount += result.value.length;
+          }
         }
       }
       successCallback();

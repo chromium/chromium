@@ -878,8 +878,8 @@
   <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_EVERYWHERE" desc="Text shown in search options if search is run in all locations">
     Everywhere
   </message>
-  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_THIS_CHROMEBOOK" desc="Text shown in search options if search is run on the local chromebook only">
-    This Chromebook
+  <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_THIS_VOLUME" desc="Text shown in search options if search is run at the root of unlabeled volume">
+    This volume
   </message>
   <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_LOCATION_THIS_FOLDER" desc="Text shown in search options if search is run in the current folder only">
     This folder

@@ -222,7 +222,7 @@ export let CurrentDirectory;
  */
 export const SearchLocation = {
   EVERYWHERE: 'everywhere',
-  THIS_CHROMEBOOK: 'this_chromebook',
+  ROOT_FOLDER: 'root_folder',
   THIS_FOLDER: 'this_folder',
 };
 

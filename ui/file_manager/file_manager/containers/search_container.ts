@@ -15,6 +15,7 @@ import {clearSearch, updateSearch} from '../state/actions.js';
 import {getDefaultSearchOptions, getStore, Store} from '../state/store.js';
 import {XfPathDisplayElement} from '../widgets/xf_path_display.js';
 import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
+import {XfOption} from '../widgets/xf_select.js';
 
 /**
  * @fileoverview
@@ -254,7 +255,7 @@ export class SearchContainer extends EventTarget {
       const status = search.status;
       if (status === PropStatus.STARTED && query &&
           dir?.rootType !== VolumeManagerCommon.RootType.RECENT) {
-        this.showOptions_();
+        this.showOptions_(state);
         this.showPathDisplay_();
       }
     }
@@ -301,14 +302,9 @@ export class SearchContainer extends EventTarget {
    * Hides the element that allows users to manipulate search options.
    */
   private hideOptions_() {
-    const element = this.getSearchOptionsElement_();
-    if (element) {
-      element.hidden = true;
-      // Reset options so that we always start searching with the defaults.
-      this.currentOptions_ = getDefaultSearchOptions();
-      element.getLocationSelector().value = this.currentOptions_.location;
-      element.getRecencySelector().value = this.currentOptions_.recency;
-      element.getFileTypeSelector().value = this.currentOptions_.type;
+    if (this.searchOptions_) {
+      this.searchOptions_.remove();
+      this.searchOptions_ = null;
     }
   }
 
@@ -316,10 +312,10 @@ export class SearchContainer extends EventTarget {
    * Shows or creates the element that allows the user to manipulate search
    * options.
    */
-  private showOptions_() {
+  private showOptions_(state: State) {
     let element = this.getSearchOptionsElement_();
     if (!element) {
-      element = this.createSearchOptionsElement_();
+      element = this.createSearchOptionsElement_(state);
     }
     element.hidden = false;
   }
@@ -368,26 +364,56 @@ export class SearchContainer extends EventTarget {
     return this.searchOptions_;
   }
 
-  private createSearchOptionsElement_(): XfSearchOptionsElement {
-    const element = document.createElement('xf-search-options');
-    this.optionsContainer_.appendChild(element);
-
-    element.id = 'search-options';
-    element.getLocationSelector().options = [
+  /**
+   * Creates location options. These always consist of 'Everywhere' and the
+   * local folder. However, if the local folder has a parent, that is different
+   * from it, we also add the parent between Everywhere and the local folder.
+   */
+  private createLocationOptions_(state: State): XfOption[] {
+    const dir = state.currentDirectory;
+    const dirPath = dir?.pathComponents || [];
+    const options: XfOption[] = [
       {
         value: SearchLocation.EVERYWHERE,
         text: str('SEARCH_OPTIONS_LOCATION_EVERYWHERE'),
-      },
-      {
-        value: SearchLocation.THIS_CHROMEBOOK,
-        text: str('SEARCH_OPTIONS_LOCATION_THIS_CHROMEBOOK'),
-      },
-      {
-        value: SearchLocation.THIS_FOLDER,
-        text: str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
-        default: true,
+        default: !dirPath,
       },
     ];
+    if (dirPath) {
+      if (dir?.rootType === VolumeManagerCommon.RootType.DRIVE) {
+        // For Google Drive we currently do not have the ability to search a
+        // specific folder. Thus the only options shown, when the user is
+        // triggering search from a location in Drive, is Everywhere (set up
+        // above) and Drive.
+        options.push({
+          value: SearchLocation.ROOT_FOLDER,
+          text: str('DRIVE_DIRECTORY_LABEL'),
+          default: true,
+        });
+      } else {
+        options.push({
+          value: SearchLocation.ROOT_FOLDER,
+          text: dirPath[0]?.label || str('SEARCH_OPTIONS_LOCATION_THIS_VOLUME'),
+          default: dirPath.length === 1,
+        });
+        if (dirPath.length > 1) {
+          options.push({
+            value: SearchLocation.THIS_FOLDER,
+            text: dirPath[dirPath.length - 1]?.label ||
+                str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
+            default: true,
+          });
+        }
+      }
+    }
+    return options;
+  }
+
+  private createSearchOptionsElement_(state: State): XfSearchOptionsElement {
+    const element = document.createElement('xf-search-options');
+    this.optionsContainer_.appendChild(element);
+    element.id = 'search-options';
+    element.getLocationSelector().options = this.createLocationOptions_(state);
     element.getRecencySelector().options = [
       {
         value: SearchRecency.ANYTIME,
