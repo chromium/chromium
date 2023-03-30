@@ -336,6 +336,9 @@ extern const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion;
 // Feature params for code-based Rule-based Discount (RBD).
 extern const char kCodeBasedRuleDiscountParam[];
 extern const base::FeatureParam<bool> kCodeBasedRuleDiscount;
+extern const char kCodeBasedRuleDiscountCouponDeletionTimeParam[];
+extern const base::FeatureParam<base::TimeDelta>
+    kCodeBasedRuleDiscountCouponDeletionTime;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

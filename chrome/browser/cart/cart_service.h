@@ -255,6 +255,8 @@ class CartService : public history::HistoryServiceObserver,
       base::OnceCallback<void(bool)> callback,
       bool success,
       std::vector<CartDB::KeyAndValue> proto_pairs);
+  void CheckCartExistenceAfterDeletion(GURL url);
+  void MaybeDeleteCoupons(GURL url, bool has_cart);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<CartDB> cart_db_;

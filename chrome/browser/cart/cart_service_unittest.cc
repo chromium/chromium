@@ -2396,12 +2396,39 @@ class CartServiceCouponTest : public CartServiceTest {
   MockCouponService coupon_service_;
 };
 
-TEST_F(CartServiceCouponTest, TestDeleteCartWithCoupon) {
+TEST_F(CartServiceCouponTest,
+       TestDeleteCartWithCoupon_NotDeleteCouponImmediately) {
   const GURL& url = GURL(kMockMerchantURLA);
-  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(2);
-
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(0);
+  // Coupons are not deleted until deletion time is reached.
   service_->DeleteCart(url, true);
-  service_->DeleteCart(url, false);
+  task_environment_.FastForwardBy(
+      commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get() -
+      base::Seconds(2));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(CartServiceCouponTest,
+       TestDeleteCartWithCoupon_DeleteCouponForActualDeletion) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(1);
+  // Coupons are deleted when the cart is actually deleted.
+  service_->DeleteCart(url, true);
+  task_environment_.FastForwardBy(
+      commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(CartServiceCouponTest,
+       TestDeleteCartWithCoupon_NotDeleteCouponForCanceledDeletion) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(0);
+  // Coupons are never deleted when the cart is not actually deleted.
+  service_->DeleteCart(url, true);
+  service_->AddCart(url, absl::nullopt, kMockProtoA);
+  task_environment_.FastForwardBy(
+      commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get());
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CartServiceCouponTest, TestClearCoupons) {
