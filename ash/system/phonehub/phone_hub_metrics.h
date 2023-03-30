@@ -6,8 +6,12 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
 
 namespace ash::phone_hub_metrics {
+
+using RecentAppsUiState =
+    phonehub::RecentAppsInteractionHandler::RecentAppsUiState;
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
 enum class InterstitialScreenEvent {
@@ -94,6 +98,15 @@ enum class MoreAppsButtonLoadingState {
   kMaxValue = kMoreAppsButtonLoaded
 };
 
+// Keep in sync with RecentAppsViewUiState in
+// tools/metrics/histograms/enums.xml.
+enum class RecentAppsViewUiState {
+  kLoading = 0,
+  kError = 1,
+  kApps = 2,
+  kMaxValue = kApps,
+};
+
 enum class CameraRollMediaType { kPhoto = 0, kVideo = 1, kMaxValue = kVideo };
 
 // Logs an |event| occurring for the given |interstitial_screen|.
@@ -136,12 +149,15 @@ void LogCameraRollContextMenuDownload(int index, CameraRollMediaType mediaType);
 void LogCameraRollContentPresent();
 
 // Logs if the glimmer animation was shown or not (more apps button was shown
-// instead) when Phone Hub is opened
+// instead) when Phone Hub is opened.
 void LogMoreAppsButtonAnimationOnShow(MoreAppsButtonLoadingState loading_state);
 
 // Logs the time latency from initializing the More Apps button and when we
-// receive/load the full apps list
+// receive/load the full apps list.
 void LogMoreAppsButtonFullAppsLatency(const base::TimeDelta latency);
+
+// Logs the recent apps UI state when the Phone Hub bubble is opened.
+void LogRecentAppsStateOnBubbleOpened(RecentAppsUiState ui_state);
 
 }  // namespace ash::phone_hub_metrics
 

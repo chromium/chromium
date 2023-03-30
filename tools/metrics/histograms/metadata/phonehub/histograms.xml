@@ -497,6 +497,16 @@ chromium-metrics-reviews@google.com.
   <summary>Event logged after the user clicks on a quick action.</summary>
 </histogram>
 
+<histogram name="PhoneHub.RecentApps.State.OnBubbleOpened"
+    enum="RecentAppsViewUiState" expires_after="2023-08-13">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Logs the recent apps UI state when the Phone Hub bubble is opened.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"
     expires_after="2023-06-11">
   <owner>jonmann@chromium.org</owner>

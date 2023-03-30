@@ -213,4 +213,27 @@ void LogMoreAppsButtonFullAppsLatency(const base::TimeDelta latency) {
   base::UmaHistogramTimes("PhoneHub.LauncherButton.Loading.Latency", latency);
 }
 
+void LogRecentAppsStateOnBubbleOpened(RecentAppsUiState ui_state) {
+  switch (ui_state) {
+    case RecentAppsUiState::HIDDEN:
+      [[fallthrough]];
+    case RecentAppsUiState::PLACEHOLDER_VIEW:
+      break;
+    case RecentAppsUiState::LOADING:
+      base::UmaHistogramEnumeration("PhoneHub.RecentApps.State.OnBubbleOpened",
+                                    RecentAppsViewUiState::kLoading);
+      break;
+    case RecentAppsUiState::CONNECTION_FAILED:
+      base::UmaHistogramEnumeration("PhoneHub.RecentApps.State.OnBubbleOpened",
+                                    RecentAppsViewUiState::kError);
+      break;
+    case RecentAppsUiState::ITEMS_VISIBLE:
+      base::UmaHistogramEnumeration("PhoneHub.RecentApps.State.OnBubbleOpened",
+                                    RecentAppsViewUiState::kApps);
+      break;
+    default:
+      break;
+  }
+}
+
 }  // namespace ash::phone_hub_metrics

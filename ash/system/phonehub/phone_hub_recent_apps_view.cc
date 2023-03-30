@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "ash/system/phonehub/phone_hub_app_loading_icon.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_more_apps_button.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -22,6 +23,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/cxx17_backports.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -218,6 +220,9 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
     loading_view_ =
         recent_apps_content->AddChildView(std::make_unique<LoadingView>());
   }
+
+  phone_hub_metrics::LogRecentAppsStateOnBubbleOpened(
+      recent_apps_interaction_handler_->ui_state());
 
   Update();
   recent_apps_interaction_handler_->AddObserver(this);
