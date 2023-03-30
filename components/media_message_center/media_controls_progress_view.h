@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view.h"
 
 namespace media_session {
@@ -36,8 +37,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   void UpdateProgress(const media_session::MediaPosition& media_position);
 
   void SetForegroundColor(SkColor color);
+  void SetForegroundColorId(ui::ColorId color_id);
   void SetBackgroundColor(SkColor color);
+  void SetBackgroundColorId(ui::ColorId color_id);
   void SetTextColor(SkColor color);
+  void SetTextColorId(ui::ColorId color_id);
 
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
