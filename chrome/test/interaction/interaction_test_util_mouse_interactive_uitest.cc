@@ -22,7 +22,9 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
-class InteractionTestUtilMouseUiTest : public InProcessBrowserTest {
+class InteractionTestUtilMouseUiTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   InteractionTestUtilMouseUiTest() = default;
   ~InteractionTestUtilMouseUiTest() override = default;
@@ -33,6 +35,7 @@ class InteractionTestUtilMouseUiTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     mouse_ = std::make_unique<Mouse>(
         BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
+    CHECK(mouse_->SetTouchMode(GetParam()));
   }
 
   void TearDownOnMainThread() override {
@@ -44,7 +47,17 @@ class InteractionTestUtilMouseUiTest : public InProcessBrowserTest {
   std::unique_ptr<Mouse> mouse_;
 };
 
-IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, MoveAndClick) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+INSTANTIATE_TEST_SUITE_P(TouchMode,
+                         InteractionTestUtilMouseUiTest,
+                         testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(TouchMode,
+                         InteractionTestUtilMouseUiTest,
+                         testing::Values(false));
+#endif
+
+IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, MoveAndClick) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
@@ -83,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, MoveAndClick) {
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, GestureAborted) {
+IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, GestureAborted) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
@@ -122,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, GestureAborted) {
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, Drag) {
+IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, Drag) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 

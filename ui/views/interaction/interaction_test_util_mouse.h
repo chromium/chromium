@@ -58,6 +58,36 @@ class InteractionTestUtilMouse {
   static MouseGestures DragAndHold(gfx::Point destination);
   static MouseGestures DragAndRelease(gfx::Point destination);
 
+  // Set or get touch mode.
+  //
+  // `SetTouchMode(true)` returns false if touch is not supported. If it
+  // succeeds, subsequent mouse inputs will be converted to equivalent touch
+  // inputs.
+  //
+  // Notes:
+  //  - This is an experimental feature and the API is subject to change.
+  //     - See tracking bug at crbug.com/1428292 for current status.
+  //  - Currently only Ash Chrome is supported.
+  //  - Hover is not yet supported, only tap [up/down] and drag.
+  //    - Moves without a finger down affect the next tap input but do not send
+  //      events.
+  //
+  // To use this in an InteractiveViewsTest or InteractiveBrowserTest, use the
+  // following syntax:
+  //
+  //   Check([this](){ return test_impl().mouse_util().SetTouchMode(true); })
+  //
+  // Afterwards, you can use mouse verbs as normal and they will convert to
+  // equivalent touch inputs. We suggest using `Check()` so that the test will
+  // fail if it's accidentally run on a system that doesn't yet support it.
+  //
+  // Alternatively, you can write a parameterized test which selectively tries
+  // the test in touch-on and touch-off modes for platforms that support it, but
+  // only in touch-off mode for those that don't. In these cases, the `Check()`
+  // above changes to something like `...SetTouchMode(GetParam())`.
+  bool SetTouchMode(bool touch_mode);
+  bool GetTouchMode() const;
+
   // Perform the gesture or gestures specified, returns true on success.
   template <typename... Args>
   bool PerformGestures(gfx::NativeWindow window_hint, Args... gestures);
@@ -97,6 +127,16 @@ class InteractionTestUtilMouse {
 
   // Whether the current sequence is canceled.
   bool canceled_ = false;
+
+  // Whether we're in touch mode. In touch mode, touch events are sent instead
+  // of mouse events. Moves without fingers down will not send events (but see
+  // `touch_hover_point_` below).
+  bool touch_mode_ = false;
+
+  // Tracks the next place touch input should take place. It is affected by all
+  // moves, regardless of whether any fingers are down, and you can use MoveTo
+  // with no fingers to reposition the point.
+  gfx::Point touch_hover_point_;
 
 #if defined(USE_AURA)
   // Whether the mouse is currently being dragged.
