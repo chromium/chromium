@@ -29,18 +29,17 @@ constexpr char kTestProfile2[] = "profile2";
 
 }  // namespace
 
-class FamilyLinkUserMetricsProviderTest : public testing::Test {
+class FamilyLinkUserMetricsProviderTestLegacy : public testing::Test {
  protected:
-  FamilyLinkUserMetricsProviderTest()
-      : test_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  FamilyLinkUserMetricsProviderTestLegacy() = default;
 
   void SetUp() override {
-    ASSERT_TRUE(test_profile_manager_.SetUp());
     EnableAccountCapabilitiesFetches(identity_manager());
-    metrics_provider()->skip_active_browser_count_for_unittesting_ = true;
   }
 
-  void TearDown() override { test_profile_manager_.DeleteAllTestingProfiles(); }
+  void TearDown() override {
+    metrics_provider()->OnIdentityManagerShutdown(identity_manager());
+  }
 
   signin::IdentityManager* identity_manager() {
     return identity_test_env()->identity_manager();
@@ -54,39 +53,13 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     return &metrics_provider_;
   }
 
-  TestingProfileManager* test_profile_manager() {
-    return &test_profile_manager_;
-  }
-
-  void CreateTestingProfile(const std::string& test_email,
-                            const std::string& test_profile,
-                            bool is_subject_to_parental_controls,
-                            bool can_stop_parental_supervision) {
-    Profile* profile = test_profile_manager()->CreateTestingProfile(
-        test_profile, IdentityTestEnvironmentProfileAdaptor::
-                          GetIdentityTestEnvironmentFactories());
-    EnableAccountCapabilitiesFetches(
-        IdentityManagerFactory::GetForProfile(profile));
-    AccountInfo account = signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(profile), test_email,
-        signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account.capabilities);
-    mutator.set_is_subject_to_parental_controls(
-        is_subject_to_parental_controls);
-    mutator.set_can_stop_parental_supervision(can_stop_parental_supervision);
-    signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForProfile(profile), account);
-  }
-
  private:
-  content::BrowserTaskEnvironment task_environment_;
-
+  base::test::SingleThreadTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   FamilyLinkUserMetricsProvider metrics_provider_;
-  TestingProfileManager test_profile_manager_;
 };
 
-TEST_F(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy, UserWithUnknownCapabilities) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -98,10 +71,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
   histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       /*expected_count=*/0);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy, AdultUser) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -123,10 +95,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kUnsupervised,
       /*expected_bucket_count=*/1);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy, UserWithOptionalSupervision) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -150,10 +121,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kSupervisionEnabledByUser,
       /*expected_bucket_count=*/1);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy, UserWithRequiredSupervision) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -176,11 +146,10 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kSupervisionEnabledByPolicy,
-      /*count=*/1);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
+      /*expected_bucket_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy,
        MetricsProviderInitAfterPrimaryAccountAdded) {
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -194,10 +163,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectTotalCount(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       /*expected_count=*/0);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy,
        MetricsProviderInitAfterPrimaryAccountWithCapabilitiesAdded) {
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -217,10 +185,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kUnsupervised,
       /*expected_bucket_count=*/1);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest, SetChildAsPrimaryAccount) {
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy, SetChildAsPrimaryAccount) {
   // Add child account to the device as a secondary account. This allows us to
   // simulate a cached account state once we set the account as primary.
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
@@ -250,10 +217,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, SetChildAsPrimaryAccount) {
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kSupervisionEnabledByPolicy,
       /*expected_bucket_count=*/1);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
+TEST_F(FamilyLinkUserMetricsProviderTestLegacy, ClearLogOnUserSignout) {
   metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
@@ -279,14 +245,73 @@ TEST_F(FamilyLinkUserMetricsProviderTest, ClearLogOnUserSignout) {
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kUnsupervised,
       /*expected_bucket_count=*/1);
-  metrics_provider()->OnIdentityManagerShutdown(identity_manager());
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
-       ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
-  base::test::ScopedFeatureList feature{
-      kExtendFamilyLinkUserLogSegmentToAllPlatforms};
+class FamilyLinkUserMetricsProviderTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ protected:
+  FamilyLinkUserMetricsProviderTest()
+      : test_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
+  void SetUp() override {
+    ASSERT_TRUE(test_profile_manager_.SetUp());
+    metrics_provider()->skip_active_browser_count_for_unittesting_ = true;
+
+    bool enable_extended_family_link_user_log_segment = GetParam();
+    if (enable_extended_family_link_user_log_segment) {
+      feature_list_.InitWithFeatures(
+          {kExtendFamilyLinkUserLogSegmentToAllPlatforms}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {kExtendFamilyLinkUserLogSegmentToAllPlatforms}, {});
+    }
+  }
+
+  void TearDown() override { test_profile_manager_.DeleteAllTestingProfiles(); }
+
+  FamilyLinkUserMetricsProvider* metrics_provider() {
+    return &metrics_provider_;
+  }
+
+  TestingProfileManager* test_profile_manager() {
+    return &test_profile_manager_;
+  }
+
+  void CreateTestingProfile(const std::string& test_email,
+                            const std::string& test_profile,
+                            bool is_subject_to_parental_controls,
+                            bool can_stop_parental_supervision) {
+    Profile* profile = test_profile_manager()->CreateTestingProfile(
+        test_profile, IdentityTestEnvironmentProfileAdaptor::
+                          GetIdentityTestEnvironmentFactories());
+
+    EnableAccountCapabilitiesFetches(
+        IdentityManagerFactory::GetForProfile(profile));
+    AccountInfo account = signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile), test_email,
+        signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account.capabilities);
+    mutator.set_is_subject_to_parental_controls(
+        is_subject_to_parental_controls);
+    mutator.set_can_stop_parental_supervision(can_stop_parental_supervision);
+    signin::UpdateAccountInfoForAccount(
+        IdentityManagerFactory::GetForProfile(profile), account);
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  FamilyLinkUserMetricsProvider metrics_provider_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingProfileManager test_profile_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FamilyLinkUserMetricsProviderTest,
+                         testing::Bool());
+
+TEST_P(FamilyLinkUserMetricsProviderTest,
+       ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
   Profile* profile = test_profile_manager()->CreateTestingProfile(
       kTestProfile, IdentityTestEnvironmentProfileAdaptor::
                         GetIdentityTestEnvironmentFactories());
@@ -304,11 +329,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_count=*/0);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_P(FamilyLinkUserMetricsProviderTest,
        ProfileWithRequiredSupervisionLoggedAsSupervisionEnabledByPolicy) {
-  base::test::ScopedFeatureList feature{
-      kExtendFamilyLinkUserLogSegmentToAllPlatforms};
-
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
@@ -323,11 +345,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_P(FamilyLinkUserMetricsProviderTest,
        ProfileWithOptionalSupervisionLoggedSupervisionEnabledByUser) {
-  base::test::ScopedFeatureList feature{
-      kExtendFamilyLinkUserLogSegmentToAllPlatforms};
-
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
@@ -342,11 +361,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_P(FamilyLinkUserMetricsProviderTest,
        ProfileWithAdultUserLoggedAsUnsupervised) {
-  base::test::ScopedFeatureList feature{
-      kExtendFamilyLinkUserLogSegmentToAllPlatforms};
-
   // Adult profile
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
@@ -361,11 +377,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_P(FamilyLinkUserMetricsProviderTest,
        ProfilesWithMixedSupervisedUsersLoggedAsMixedProfile) {
-  base::test::ScopedFeatureList feature{
-      kExtendFamilyLinkUserLogSegmentToAllPlatforms};
-
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
@@ -383,13 +396,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_P(FamilyLinkUserMetricsProviderTest,
        ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfile) {
-  base::test::ScopedFeatureList feature{
-      kExtendFamilyLinkUserLogSegmentToAllPlatforms};
-
   // Adult profile
-
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
                        /*can_stop_parental_supervision=*/false);
@@ -412,7 +421,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       /*expected_count=*/1);
 }
 
-TEST_F(FamilyLinkUserMetricsProviderTest,
+TEST_P(FamilyLinkUserMetricsProviderTest,
        NoProfilesAddedShouldNotLogHistogram) {
   base::test::ScopedFeatureList feature{
       kExtendFamilyLinkUserLogSegmentToAllPlatforms};
