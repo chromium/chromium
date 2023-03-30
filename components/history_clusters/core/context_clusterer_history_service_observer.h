@@ -54,6 +54,9 @@ struct InProgressCluster {
   // The vector of visits that have not been persisted yet. Note that each entry
   // only contains the minimum required to persist a cluster visit.
   std::vector<history::ClusterVisit> unpersisted_visits;
+  // Whether this cluster was meant to be cleaned up but is being held for
+  // persistence.
+  bool cleaned_up = false;
 };
 
 // A HistoryServiceObserver responsible for grouping visits into clusters.

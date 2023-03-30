@@ -301,6 +301,62 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
+       StillPersistsClusterEvenIfClusterIdComesBackWayLater) {
+  SetPersistenceExpectedConfig();
+  int64_t cluster_id = 123;
+
+  {
+    base::HistogramTester histogram_tester;
+
+    EXPECT_CALL(*history_service_,
+                ReserveNextClusterId(base::test::IsNotNullCallback(), _))
+        .WillOnce(Invoke(history_service_.get(),
+                         &MockHistoryService::CaptureClusterIdCallback));
+    base::Time now =
+        Now() - GetConfig().cluster_navigation_time_cutoff - base::Minutes(1);
+    VisitURL(GURL("https://example.com"), 1, now);
+
+    // Force a cleanup pass.
+    MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
+
+    // Should not actually clean up any clusters.
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 1, 1);
+    // Though it should have been up for clean up.
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 1, 1);
+  }
+
+  // Now, run the cluster id callback and make sure visits get persisted.
+  std::vector<history::ClusterVisit> got_cluster_visits;
+  EXPECT_CALL(
+      *history_service_,
+      AddVisitsToCluster(cluster_id, _, base::test::IsNotNullCallback(), _))
+      .WillOnce(
+          DoAll(SaveArg<1>(&got_cluster_visits),
+                Invoke(history_service_.get(),
+                       &MockHistoryService::RunAddVisitsToClusterCallback)));
+  history_service_->RunLastClusterIdCallbackWithClusterId(cluster_id);
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Force a cleanup pass.
+    MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
+
+    // Cluster should have already been cleaned up.
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.ContextClusterer.NumClusters.AtCleanUp", 0);
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.ContextClusterer.NumClusters.CleanedUp", 0);
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.ContextClusterer.NumClusters.PostCleanUp", 0);
+  }
+}
+
+TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterTwoVisitsTiedByReferringVisit) {
   base::HistogramTester histogram_tester;
 

@@ -22,6 +22,10 @@ namespace {
 bool ShouldAddVisitToCluster(const history::VisitRow& new_visit,
                              const std::u16string& search_terms,
                              const InProgressCluster& in_progress_cluster) {
+  if (in_progress_cluster.cleaned_up) {
+    return false;
+  }
+
   if ((new_visit.visit_time - in_progress_cluster.last_visit_time) >
       GetConfig().cluster_navigation_time_cutoff) {
     return false;
@@ -367,17 +371,29 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
 void ContextClustererHistoryServiceObserver::FinalizeCluster(
     int64_t cluster_id) {
   DCHECK(in_progress_clusters_.find(cluster_id) != in_progress_clusters_.end());
-
-  // Delete relevant visits from in-progress maps.
   auto& cluster = in_progress_clusters_.at(cluster_id);
-  for (const auto& visit_url : cluster.visit_urls) {
-    visit_url_to_cluster_map_.erase(visit_url);
-  }
-  for (const auto visit_id : cluster.visit_ids) {
-    visit_id_to_cluster_map_.erase(visit_id);
+
+  // Delete relevant visits from in-progress maps. However, if the cluster was
+  // already meant for clean up, the entries should have been deleted already
+  // and anything in these maps are from newer clusters.
+  if (!cluster.cleaned_up) {
+    for (const auto& visit_url : cluster.visit_urls) {
+      visit_url_to_cluster_map_.erase(visit_url);
+    }
+    for (const auto visit_id : cluster.visit_ids) {
+      visit_id_to_cluster_map_.erase(visit_id);
+    }
   }
 
-  in_progress_clusters_.erase(cluster_id);
+  // Only delete the cluster if the persisted cluster ID is not needed because
+  // clusters are not being persisted or the persisted cluster ID has been
+  // received.
+  if (!ShouldUseNavigationContextClustersFromPersistence() ||
+      cluster.persisted_cluster_id != 0) {
+    in_progress_clusters_.erase(cluster_id);
+  } else {
+    cluster.cleaned_up = true;
+  }
 }
 
 void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
@@ -388,6 +404,9 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
                         start_time);
 
   auto cluster_it = in_progress_clusters_.find(cluster_id);
+  // This is expected to always emit false, but keeping this histogram here to
+  // ensure that there are no additional cases for why a cluster would be
+  // cleaned up before it is ready to be persisted.
   base::UmaHistogramBoolean(
       "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
       cluster_it == in_progress_clusters_.end());
@@ -408,6 +427,10 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
   // This is safe to clear here as the vector should have already been copied to
   // the history DB thread in `AddVisitsToCluster()`.
   cluster_it->second.unpersisted_visits.clear();
+
+  if (cluster_it->second.cleaned_up) {
+    FinalizeCluster(cluster_id);
+  }
 }
 
 history::ClusterVisit
