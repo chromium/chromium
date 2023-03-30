@@ -176,6 +176,11 @@ BASE_FEATURE(kJavaScriptRegExpUnicodeSets,
              "JavaScriptRegExpUnicodeSets",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the JSON.parse with source proposal.
+BASE_FEATURE(kJavaScriptJsonParseWithSource,
+             "JavaScriptJsonParseWithSource",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // WebAssembly features.
 
 // Enable support for the WebAssembly tail-call proposal:

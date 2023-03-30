@@ -350,6 +350,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptRegExpUnicodeSets,
                          "--harmony-regexp-unicode-sets",
                          "--no-harmony-regexp-unicode-sets");
+  SetV8FlagsIfOverridden(features::kJavaScriptJsonParseWithSource,
+                         "--harmony-json-parse-with-source",
+                         "--no-harmony-json-parse-with-source");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
