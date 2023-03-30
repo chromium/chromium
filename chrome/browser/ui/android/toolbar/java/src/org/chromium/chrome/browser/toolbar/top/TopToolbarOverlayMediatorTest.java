@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -252,5 +253,22 @@ public class TopToolbarOverlayMediatorTest {
                 "View should be invisible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
 
         mMediator.setVisibilityManuallyControlledForTesting(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testVisibility_suppressToolbarCaptures_nativePage() {
+        Assert.assertTrue(mModel.get(TopToolbarOverlayProperties.VISIBLE));
+        doReturn(true).when(mTab2).isNativePage();
+
+        setTabSupplierTab(mTab2);
+
+        Assert.assertFalse(mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        verify(mTab2).addObserver(mTabObserverCaptor.capture());
+        doReturn(false).when(mTab2).isNativePage();
+        mTabObserverCaptor.getValue().onContentChanged(mTab2);
+
+        Assert.assertTrue(mModel.get(TopToolbarOverlayProperties.VISIBLE));
     }
 }

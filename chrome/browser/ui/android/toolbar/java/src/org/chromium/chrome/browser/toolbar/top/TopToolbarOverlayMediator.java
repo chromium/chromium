@@ -75,6 +75,9 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
+    /** Whether the current page has a native implementation with Android views. */
+    private boolean mIsNativePage;
+
     TopToolbarOverlayMediator(PropertyModel model, Context context,
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
@@ -89,14 +92,13 @@ public class TopToolbarOverlayMediator {
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mModel = model;
         mIsVisibilityManuallyControlled = manualVisibilityControl;
-
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
         updateVisibility();
 
         mSceneChangeObserver = new LayoutStateObserver() {
             @Override
-            public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
-                mIsOnValidLayout = (layout & layoutsToShowOn) > 0;
+            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+                mIsOnValidLayout = (layoutType & layoutsToShowOn) > 0;
                 updateVisibility();
             }
         };
@@ -106,6 +108,7 @@ public class TopToolbarOverlayMediator {
         // properties including theme color.
         Callback<Tab> activityTabCallback = (tab) -> {
             if (tab == null) return;
+            mIsNativePage = tab.isNativePage();
             updateVisibility();
             updateThemeColor(tab);
             updateProgress();
@@ -123,6 +126,7 @@ public class TopToolbarOverlayMediator {
 
             @Override
             public void onContentChanged(Tab tab) {
+                mIsNativePage = tab != null && tab.isNativePage();
                 updateVisibility();
                 updateThemeColor(tab);
             }
@@ -255,9 +259,13 @@ public class TopToolbarOverlayMediator {
         if (mIsVisibilityManuallyControlled) {
             mModel.set(TopToolbarOverlayProperties.VISIBLE, mManualVisibility && mIsOnValidLayout);
         } else {
-            mModel.set(TopToolbarOverlayProperties.VISIBLE,
+            boolean visibility =
                     !BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsStateProvider)
-                            && mIsOnValidLayout);
+                    && mIsOnValidLayout;
+            if (ToolbarFeatures.shouldSuppressCaptures()) {
+                visibility &= !mIsNativePage;
+            }
+            mModel.set(TopToolbarOverlayProperties.VISIBLE, visibility);
         }
     }
 
