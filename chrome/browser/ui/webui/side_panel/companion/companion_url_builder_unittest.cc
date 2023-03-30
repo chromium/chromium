@@ -7,12 +7,12 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
-#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
 #include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,12 +32,6 @@ class MockSigninDelegate : public SigninDelegate {
   MOCK_METHOD0(StartSigninFlow, void());
 };
 
-class MockMsbbDelegate : public MsbbDelegate {
- public:
-  MOCK_METHOD1(EnableMsbb, void(bool));
-  MOCK_METHOD0(IsMsbbEnabled, bool());
-};
-
 }  // namespace
 
 class CompanionUrlBuilderTest : public testing::Test {
@@ -46,15 +40,20 @@ class CompanionUrlBuilderTest : public testing::Test {
   ~CompanionUrlBuilderTest() override = default;
 
   void SetUp() override {
+    pref_service_.registry()->RegisterBooleanPref(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        false);
+
     PromoHandler::RegisterProfilePrefs(pref_service_.registry());
-    EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
-        .WillRepeatedly(testing::Return(true));
 
     pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
+    pref_service_.SetUserPref(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        base::Value(true));
     EXPECT_CALL(signin_delegate_, AllowedSignin())
         .WillRepeatedly(testing::Return(false));
-    url_builder_ = std::make_unique<CompanionUrlBuilder>(
-        &pref_service_, &signin_delegate_, &msbb_delegate_);
+    url_builder_ = std::make_unique<CompanionUrlBuilder>(&pref_service_,
+                                                         &signin_delegate_);
   }
 
  protected:
@@ -87,13 +86,14 @@ class CompanionUrlBuilderTest : public testing::Test {
 
   TestingPrefServiceSimple pref_service_;
   MockSigninDelegate signin_delegate_;
-  MockMsbbDelegate msbb_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
 };
 
 TEST_F(CompanionUrlBuilderTest, MsbbOff) {
-  EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
-      .WillRepeatedly(testing::Return(false));
+  pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
+  pref_service_.SetUserPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::Value(false));
   pref_service_.SetUserPref(kSigninPromoDeclinedCountPref, base::Value(1));
 
   GURL page_url(kValidUrl);
@@ -119,8 +119,6 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_CALL(signin_delegate_, AllowedSignin())
       .WillRepeatedly(testing::Return(true));
   GURL page_url(kValidUrl);
-  EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
-      .WillRepeatedly(testing::Return(true));
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
 
   std::string value;
@@ -159,9 +157,6 @@ TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {
 }
 
 TEST_F(CompanionUrlBuilderTest, ValidPageUrls) {
-  EXPECT_CALL(msbb_delegate_, IsMsbbEnabled())
-      .WillRepeatedly(testing::Return(true));
-
   VerifyPageUrlSent(GURL(kValidUrl), true);
   VerifyPageUrlSent(GURL("chrome://new-tab"), false);
   VerifyPageUrlSent(GURL("https://192.168.0.1"), false);

@@ -15,9 +15,6 @@ class MsbbDelegate {
 
   // Enable the setting for make searches and browsing better.
   virtual void EnableMsbb(bool enable_msbb) = 0;
-
-  // Whether the setting is enabled for make searches and browsing better.
-  virtual bool IsMsbbEnabled() = 0;
 };
 
 }  // namespace companion

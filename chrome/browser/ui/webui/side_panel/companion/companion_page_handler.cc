@@ -9,9 +9,9 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion_permission_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_url_builder.h"
-#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -41,18 +41,22 @@ CompanionPageHandler::CompanionPageHandler(
       signin_delegate_(SigninDelegate::Create(browser->profile())),
       url_builder_(
           std::make_unique<CompanionUrlBuilder>(browser->profile()->GetPrefs(),
-                                                signin_delegate_.get(),
-                                                this)) {
+                                                signin_delegate_.get())),
+      promo_handler_(
+          std::make_unique<PromoHandler>(browser->profile()->GetPrefs(),
+                                         signin_delegate_.get(),
+                                         this)) {
   DCHECK(browser);
-  promo_handler_ = std::make_unique<PromoHandler>(
-      browser->profile()->GetPrefs(), signin_delegate_.get(), this);
   NotifyURLChanged();
 }
 
 CompanionPageHandler::~CompanionPageHandler() = default;
 
 void CompanionPageHandler::PrimaryPageChanged(content::Page& page) {
-  if (!IsMsbbEnabled()) {
+  // Only notify the companion UI the page changed if we can share
+  // information about the page by user consent.
+  if (IsUserPermittedToSharePageInfoWithCompanion(
+          browser_->profile()->GetPrefs())) {
     return;
   }
   NotifyURLChanged();
@@ -99,15 +103,6 @@ void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* consent_service = UnifiedConsentServiceFactory::GetForProfile(profile);
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(enable_msbb);
-}
-
-bool CompanionPageHandler::IsMsbbEnabled() {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper> helper =
-      unified_consent::UrlKeyedDataCollectionConsentHelper::
-          NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs());
-  return helper->IsEnabled();
 }
 
 }  // namespace companion

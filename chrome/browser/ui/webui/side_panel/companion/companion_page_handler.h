@@ -32,7 +32,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
                              public content::WebContentsObserver,
                              public MsbbDelegate {
  public:
-  explicit CompanionPageHandler(
+  CompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
       mojo::PendingRemote<side_panel::mojom::CompanionPage> page,
       Browser* browser,
@@ -53,7 +53,6 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
  private:
   // MsbbDelegate overrides.
   void EnableMsbb(bool enable_msbb) override;
-  bool IsMsbbEnabled() override;
 
   // Notifies the companion page of the visible URL when the active tab has
   // changed or when the primary page has changed on the active tab.

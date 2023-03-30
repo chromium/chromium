@@ -10,7 +10,6 @@
 
 class PrefService;
 namespace companion {
-class MsbbDelegate;
 class SigninDelegate;
 
 // Utility to build URL for the search companion request. The URL contains
@@ -20,8 +19,7 @@ class SigninDelegate;
 class CompanionUrlBuilder {
  public:
   CompanionUrlBuilder(PrefService* pref_service,
-                      SigninDelegate* signin_delegate,
-                      MsbbDelegate* msbb_delegate);
+                      SigninDelegate* signin_delegate);
   CompanionUrlBuilder(const CompanionUrlBuilder&) = delete;
   CompanionUrlBuilder& operator=(const CompanionUrlBuilder&) = delete;
   ~CompanionUrlBuilder();
@@ -37,7 +35,6 @@ class CompanionUrlBuilder {
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<SigninDelegate> signin_delegate_;
-  raw_ptr<MsbbDelegate> msbb_delegate_;
 };
 
 }  // namespace companion

@@ -6,8 +6,8 @@
 
 #include "base/base64.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion_permission_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/constants.h"
-#include "chrome/browser/ui/webui/side_panel/companion/msbb_delegate.h"
 #include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_service.h"
@@ -57,20 +57,16 @@ bool IsValidPageURLForCompanion(const GURL& url) {
 }  // namespace
 
 CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
-                                         SigninDelegate* signin_delegate,
-                                         MsbbDelegate* msbb_delegate)
-    : pref_service_(pref_service),
-      signin_delegate_(signin_delegate),
-      msbb_delegate_(msbb_delegate) {}
+                                         SigninDelegate* signin_delegate)
+    : pref_service_(pref_service), signin_delegate_(signin_delegate) {}
 
 CompanionUrlBuilder::~CompanionUrlBuilder() = default;
 
 GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
   // Fill the protobuf with the required query params.
   companion::proto::QueryParams url_params;
-  bool is_msbb_enabled = msbb_delegate_->IsMsbbEnabled();
-  url_params.set_has_msbb_enabled(is_msbb_enabled);
-
+  bool is_msbb_enabled =
+      IsUserPermittedToSharePageInfoWithCompanion(pref_service_);
   if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
     url_params.set_page_url(page_url.spec());
   }
