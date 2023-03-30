@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -181,6 +182,37 @@ struct StructTraits<gfx::mojom::QuaternionDataView, gfx::Quaternion> {
     out->set_y(data.y());
     out->set_z(data.z());
     out->set_w(data.w());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<gfx::mojom::QuadFDataView, gfx::QuadF> {
+  static gfx::PointF p1(const gfx::QuadF& q) { return q.p1(); }
+  static gfx::PointF p2(const gfx::QuadF& q) { return q.p2(); }
+  static gfx::PointF p3(const gfx::QuadF& q) { return q.p3(); }
+  static gfx::PointF p4(const gfx::QuadF& q) { return q.p4(); }
+  static bool Read(gfx::mojom::QuadFDataView data, gfx::QuadF* out) {
+    gfx::PointF p1;
+    if (!data.ReadP1(&p1)) {
+      return false;
+    }
+    out->set_p1(p1);
+    gfx::PointF p2;
+    if (!data.ReadP2(&p2)) {
+      return false;
+    }
+    out->set_p2(p2);
+    gfx::PointF p3;
+    if (!data.ReadP3(&p3)) {
+      return false;
+    }
+    out->set_p3(p3);
+    gfx::PointF p4;
+    if (!data.ReadP4(&p4)) {
+      return false;
+    }
+    out->set_p4(p4);
     return true;
   }
 };

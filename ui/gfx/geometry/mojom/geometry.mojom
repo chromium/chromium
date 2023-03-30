@@ -86,3 +86,10 @@ struct Quaternion {
   double z;
   double w;
 };
+
+struct QuadF {
+  PointF p1;
+  PointF p2;
+  PointF p3;
+  PointF p4;
+};

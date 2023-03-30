@@ -88,6 +88,10 @@ class GeometryStructTraitsTest : public testing::Test,
     std::move(callback).Run(q);
   }
 
+  void EchoQuadF(const QuadF& q, EchoQuadFCallback callback) override {
+    std::move(callback).Run(q);
+  }
+
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<GeometryTraitsTestService> traits_test_receivers_;
 };
@@ -259,6 +263,22 @@ TEST_F(GeometryStructTraitsTest, Quaternion) {
   EXPECT_EQ(y, output.y());
   EXPECT_EQ(z, output.z());
   EXPECT_EQ(w, output.w());
+}
+
+TEST_F(GeometryStructTraitsTest, QuadF) {
+  const PointF p1(1234.5, 6789.6);
+  const PointF p2(-31415.9, 27182.8);
+  const PointF p3(5432.1, -5678);
+  const PointF p4(-2468.0, -3579.1);
+  gfx::QuadF input(p1, p2, p3, p4);
+  mojo::Remote<mojom::GeometryTraitsTestService> remote = GetTraitsTestRemote();
+  gfx::QuadF output;
+  remote->EchoQuadF(input, &output);
+  EXPECT_EQ(p1, output.p1());
+  EXPECT_EQ(p2, output.p2());
+  EXPECT_EQ(p3, output.p3());
+  EXPECT_EQ(p4, output.p4());
+  EXPECT_EQ(input, output);
 }
 
 }  // namespace gfx

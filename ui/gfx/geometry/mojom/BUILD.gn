@@ -51,6 +51,10 @@ mojom("mojom") {
         cpp = "::gfx::InsetsF"
       },
       {
+        mojom = "gfx.mojom.QuadF"
+        cpp = "::gfx::QuadF"
+      },
+      {
         mojom = "gfx.mojom.Quaternion"
         cpp = "::gfx::Quaternion"
       },
