@@ -72,9 +72,6 @@ void FakeUpstartClient::RestartAuthPolicyService() {
   FakeAuthPolicyClient::Get()->SetStarted(true);
 }
 
-void FakeUpstartClient::StartLacrosChrome(
-    const std::vector<std::string>& upstart_env) {}
-
 void FakeUpstartClient::StartMediaAnalytics(
     const std::vector<std::string>& /* upstart_env */,
     chromeos::VoidDBusMethodCallback callback) {

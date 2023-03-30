@@ -41,7 +41,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
                chromeos::VoidDBusMethodCallback callback) override;
   void StartAuthPolicyService() override;
   void RestartAuthPolicyService() override;
-  void StartLacrosChrome(const std::vector<std::string>& upstart_env) override;
   void StartMediaAnalytics(const std::vector<std::string>& upstart_env,
                            chromeos::VoidDBusMethodCallback callback) override;
   void RestartMediaAnalytics(
