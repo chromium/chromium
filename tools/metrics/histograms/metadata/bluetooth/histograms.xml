@@ -451,6 +451,7 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="FastPairDeviceType">
     <variant name="HeadphonesDeviceType" summary="Device Type: Headphones"/>
+    <variant name="InputDeviceDeviceType" summary="Device Type: Input Device"/>
     <variant name="SpeakerDeviceType" summary="Device Type: Speaker"/>
     <variant name="TrueWirelessHeadphonesDeviceType"
         summary="Device Type: True Wireless Headphones"/>
@@ -1243,6 +1244,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FastPairDeviceType">
     <variant name="HeadphonesDeviceType" summary="Device Type: Headphones"/>
+    <variant name="InputDeviceDeviceType" summary="Device Type: Input Device"/>
     <variant name="SpeakerDeviceType" summary="Device Type: Speaker"/>
     <variant name="TrueWirelessHeadphonesDeviceType"
         summary="Device Type: True Wireless Headphones"/>

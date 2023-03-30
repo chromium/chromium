@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
@@ -35,6 +36,11 @@ constexpr char kNearbyShareModelId[] = "fc128e";
 constexpr int kMaxParseModelIdRetryCount = 5;
 
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
+  if (ash::features::IsFastPairHIDEnabled() &&
+      device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
+    return true;
+  }
+
   // TODO: Filter out based on solidified Fast Pair configuration list once
   // available.
   return device.device_type() == nearby::fastpair::DeviceType::HEADPHONES ||
