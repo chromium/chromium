@@ -132,8 +132,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   static void FilterWebExposedCSSPropertiesIntoVector(
       const ExecutionContext*,
       const CSSPropertyID*,
-      size_t length,
-      Vector<const CSSProperty*>&);
+      wtf_size_t length,
+      Vector<const CSSProperty*>&,
+      bool (*predicate)(const CSSProperty&) = nullptr);
 
   enum Flag : Flags {
     kInterpolable = 1 << 0,

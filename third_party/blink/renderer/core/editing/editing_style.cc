@@ -106,13 +106,10 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
   if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
-        std::size(kStaticEditingProperties), properties);
-    for (wtf_size_t index = 0; index < properties.size(); index++) {
-      if (properties[index]->IDEquals(CSSPropertyID::kTextDecoration)) {
-        properties.EraseAt(index);
-        break;
-      }
-    }
+        std::size(kStaticEditingProperties), properties,
+        [](const CSSProperty& property) {
+          return !property.IDEquals(CSSPropertyID::kTextDecoration);
+        });
   }
   return properties;
 }
@@ -123,14 +120,8 @@ static const Vector<const CSSProperty*>& InheritableEditingProperties(
   if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
-        std::size(kStaticEditingProperties), properties);
-    for (wtf_size_t index = 0; index < properties.size();) {
-      if (!properties[index]->IsInherited()) {
-        properties.EraseAt(index);
-        continue;
-      }
-      ++index;
-    }
+        std::size(kStaticEditingProperties), properties,
+        [](const CSSProperty& property) { return property.IsInherited(); });
   }
   return properties;
 }
