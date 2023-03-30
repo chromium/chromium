@@ -235,10 +235,15 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   void MergeDataWithMetadataForDebugging(AllNodesCallback callback,
                                          std::unique_ptr<DataBatch> batch);
 
-  // Checks for valid persisted state. Resets state (incl. the persisted data)
+  // Verifies that the persisted ModelTypeState (in `entity_tracker_`) is valid.
+  // May modify the state (incl. the persisted data) or even clear it entirely
   // if it is invalid.
-  void CheckForInvalidPersistedModelTypeState();
-  bool CheckForInvalidPersistedMetadata(const MetadataBatch& metadata);
+  void ClearPersistedMetadataIfInconsistentWithActivationRequest();
+
+  // Verifies that the passed-in metadata (ModelTypeState plus entity metadata)
+  // is valid, and clears it (incl. the persisted data) if not. Returns whether
+  // the metadata was cleared.
+  bool ClearPersistedMetadataIfInvalid(const MetadataBatch& metadata);
 
   // Reports error and records a metric about |site| where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);

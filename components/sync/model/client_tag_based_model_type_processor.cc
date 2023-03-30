@@ -109,20 +109,20 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
     batch->SetModelTypeState(model_type_state);
   }
 
-  if (CheckForInvalidPersistedMetadata(*batch)) {
+  if (ClearPersistedMetadataIfInvalid(*batch)) {
+    DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
+                << ModelTypeToDebugString(type_) << ". Start over fresh.";
+  } else {
     if (IsInitialSyncAtLeastPartiallyDone(
             model_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
           model_type_state, batch->TakeAllMetadata());
     } else {
       // If initial sync isn't done, there must be no entity metadata (if there
-      // was, CheckForInvalidPersistedMetadata() would've detected the
+      // was, ClearPersistedMetadataIfInvalid() would've detected the
       // inconsistency).
       DCHECK(batch->GetAllMetadata().empty());
     }
-  } else {
-    DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
-                << ModelTypeToDebugString(type_) << ". Start over fresh.";
   }
 
   DCHECK(model_ready_to_sync_);
@@ -149,7 +149,7 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
   }
   DCHECK(!pending_clear_metadata_);
 
-  CheckForInvalidPersistedModelTypeState();
+  ClearPersistedMetadataIfInconsistentWithActivationRequest();
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   if (!entity_tracker_) {
@@ -1240,7 +1240,7 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   std::move(callback).Run(type_, std::move(all_nodes));
 }
 
-bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
+bool ClientTagBasedModelTypeProcessor::ClearPersistedMetadataIfInvalid(
     const MetadataBatch& metadata) {
   // The entity tracker must not have been created before the metadata was
   // validated.
@@ -1263,10 +1263,10 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
       ClearAllProvidedMetadataAndResetState(metadata_map);
       // Not having `entity_tracker_` results in doing the initial sync again.
       CHECK(!entity_tracker_);
-      return false;
+      return true;
     }
     // Else: There was nothing to clear.
-    return true;
+    return false;
   }
 
   // Check that there's no entity metadata unless the initial sync is at least
@@ -1281,7 +1281,7 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
     CHECK(!entity_tracker_);
-    return false;
+    return true;
   }
 
   // Check that there are no duplicate client tags.
@@ -1298,14 +1298,14 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
     CHECK(!entity_tracker_);
-    return false;
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 void ClientTagBasedModelTypeProcessor::
-    CheckForInvalidPersistedModelTypeState() {
+    ClearPersistedMetadataIfInconsistentWithActivationRequest() {
   if (!entity_tracker_) {
     return;
   }
@@ -1315,6 +1315,8 @@ void ClientTagBasedModelTypeProcessor::
   // Check for a mismatch in authenticated account id. The id can change after
   // restart (and this does not mean the account has changed, this is checked
   // later here by cache_guid mismatch). Easy to fix in place.
+  // TODO(crbug.com/1423326): This doesn't fit the method name. It's also not
+  // clear if this codepath is even required
   if (model_type_state.authenticated_account_id() !=
       activation_request_.authenticated_account_id.ToString()) {
     sync_pb::ModelTypeState update_model_type_state = model_type_state;

@@ -709,9 +709,8 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
 absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // `change_processor()->IsTrackingMetadata()` may be false if
-  // the sync database is invalid and CheckForInvalidPersistedMetadata()
-  // is resetting it.
+  // `change_processor()->IsTrackingMetadata()` may be false if the sync
+  // metadata is invalid and ClearPersistedMetadataIfInvalid() is resetting it.
 
   auto update_local_data = std::make_unique<RegistryUpdateData>();
   std::vector<AppId> apps_display_mode_changed;
