@@ -975,11 +975,12 @@ def _ParseCommandArguments():
       '-p',
       '--profdata-file',
       type=str,
+      action='append'
       required=False,
-      help='Path to profdata file to use for generating code coverage reports. '
-      'This can be useful if you generated the profdata file seperately in '
-      'your own test harness. This option is ignored if run command(s) are '
-      'already provided above using -c/--command option.')
+      help='Path(s) to profdata file(s) to use for generating code coverage reports. '
+       'This can be useful if you generated the profdata file seperately in '
+       'your own test harness. This option is ignored if run command(s) are '
+       'already provided above using -c/--command option.')
 
   arg_parser.add_argument(
       '-f',
@@ -1119,8 +1120,15 @@ def Main():
         args.targets, args.command, args.jobs)
     binary_paths = [_GetBinaryPath(command) for command in args.command]
   else:
-    # An input prof-data file is already provided. Just calculate binary paths.
-    profdata_file_path = args.profdata_file
+    # An input prof-data file(s) is already provided.
+    if len(args.profdata_file) == 1:
+      # If it's just one input file, use as-is.
+      profdata_file_path = args.profdata_file
+    else:
+      # Otherwise, there are multiple profdata files and we need to merge them.
+      profdata_file_path = _CreateCoverageProfileDataFromTargetProfDataFiles(args.profdata_file)
+    # Since input prof-data files were provided, we only need to calculate the
+    # binary paths from here.
     binary_paths = _GetBinaryPathsFromTargets(args.targets, args.build_dir)
 
   # If the checkout uses the hermetic xcode binaries, then otool must be
