@@ -317,29 +317,30 @@ TEST_F(EncryptedReportingJobConfigurationTest, ValidatePayload) {
       RequestPayloadBuilder().Build(), kDmToken, kClientId,
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
   auto* payload = GetPayload(&configuration);
+  const base::Value::Dict& payload_dict = payload->GetDict();
   EXPECT_FALSE(GetDeviceName().empty());
-  EXPECT_EQ(
-      *payload->FindStringPath(ReportingJobConfigurationBase::
-                                   DeviceDictionaryBuilder::GetNamePath()),
-      GetDeviceName());
-  EXPECT_EQ(
-      *payload->FindStringPath(ReportingJobConfigurationBase::
-                                   DeviceDictionaryBuilder::GetClientIdPath()),
-      kClientId);
-  EXPECT_EQ(*payload->FindStringPath(
+  EXPECT_EQ(*payload_dict.FindStringByDottedPath(
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetNamePath()),
+            GetDeviceName());
+  EXPECT_EQ(*payload_dict.FindStringByDottedPath(
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetClientIdPath()),
+            kClientId);
+  EXPECT_EQ(*payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                     GetOSPlatformPath()),
             GetOSPlatform());
-  EXPECT_EQ(
-      *payload->FindStringPath(ReportingJobConfigurationBase::
-                                   DeviceDictionaryBuilder::GetOSVersionPath()),
-      GetOSVersion());
+  EXPECT_EQ(*payload_dict.FindStringByDottedPath(
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetOSVersionPath()),
+            GetOSVersion());
 
-  EXPECT_EQ(*payload->FindStringPath(
+  EXPECT_EQ(*payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                     GetMachineUserPath()),
             GetOSUsername());
-  EXPECT_EQ(*payload->FindStringPath(
+  EXPECT_EQ(*payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                     GetChromeVersionPath()),
             version_info::GetVersionNumber());
@@ -471,7 +472,9 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
 
   // Ensure the payload includes the path and value.
   base::Value* payload = GetPayload(&configuration);
-  std::string* good_result = payload->FindStringPath(kTestKey);
+  const base::Value::Dict& payload_dict = payload->GetDict();
+  const std::string* good_result =
+      payload_dict.FindStringByDottedPath(kTestKey);
   ASSERT_THAT(good_result, NotNull());
   EXPECT_THAT(*good_result, StrEq(kTestValue));
 
@@ -482,11 +485,12 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
 
   // Ensure that the path is removed from the payload.
   payload = GetPayload(&configuration);
-  const std::string* bad_result = payload->FindStringPath(kBadTestKey);
+  const std::string* bad_result =
+      payload_dict.FindStringByDottedPath(kBadTestKey);
   EXPECT_THAT(bad_result, IsNull());
 
   // Ensure that adding a bad path hasn't destroyed the good path.
-  good_result = payload->FindStringPath(kTestKey);
+  good_result = payload_dict.FindStringByDottedPath(kTestKey);
   EXPECT_THAT(good_result, NotNull());
   EXPECT_EQ(*good_result, kTestValue);
 
@@ -495,7 +499,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
   context = GenerateContext(kTestKey, kUpdatedTestValue);
   configuration.UpdateContext(std::move(context));
   payload = GetPayload(&configuration);
-  good_result = payload->FindStringPath(kTestKey);
+  good_result = payload_dict.FindStringByDottedPath(kTestKey);
   ASSERT_THAT(good_result, NotNull());
   EXPECT_EQ(*good_result, kUpdatedTestValue);
 }

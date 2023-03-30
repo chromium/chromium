@@ -180,31 +180,32 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
   absl::optional<base::Value> payload =
       base::JSONReader::Read(configuration_->GetPayload());
   EXPECT_TRUE(payload.has_value());
-  EXPECT_EQ(kDummyToken, *payload->FindStringPath(
+  const base::Value::Dict& payload_dict = payload->GetDict();
+  EXPECT_EQ(kDummyToken, *payload_dict.FindStringByDottedPath(
                              ReportingJobConfigurationBase::
                                  DeviceDictionaryBuilder::GetDMTokenPath()));
-  EXPECT_EQ(
-      client_.client_id(),
-      *payload->FindStringPath(ReportingJobConfigurationBase::
-                                   DeviceDictionaryBuilder::GetClientIdPath()));
+  EXPECT_EQ(client_.client_id(),
+            *payload_dict.FindStringByDottedPath(
+                ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                    GetClientIdPath()));
   EXPECT_EQ(GetOSUsername(),
-            *payload->FindStringPath(
+            *payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                     GetMachineUserPath()));
   EXPECT_EQ(version_info::GetVersionNumber(),
-            *payload->FindStringPath(
+            *payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                     GetChromeVersionPath()));
   EXPECT_EQ(GetOSPlatform(),
-            *payload->FindStringPath(
+            *payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                     GetOSPlatformPath()));
   EXPECT_EQ(GetOSVersion(),
-            *payload->FindStringPath(
+            *payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                     GetOSVersionPath()));
   EXPECT_FALSE(GetDeviceName().empty());
-  EXPECT_EQ(GetDeviceName(), *payload->FindStringPath(
+  EXPECT_EQ(GetDeviceName(), *payload_dict.FindStringByDottedPath(
                                  ReportingJobConfigurationBase::
                                      DeviceDictionaryBuilder::GetNamePath()));
 

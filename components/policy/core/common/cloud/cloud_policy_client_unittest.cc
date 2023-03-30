@@ -1831,58 +1831,59 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
 
   absl::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
   ASSERT_TRUE(payload);
+  const base::Value::Dict& payload_dict = payload->GetDict();
 
   ASSERT_FALSE(policy::GetDeviceName().empty());
   EXPECT_EQ(version_info::GetVersionNumber(),
-            *payload->FindStringPath(
+            *payload_dict.FindStringByDottedPath(
                 ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                     GetChromeVersionPath()));
 
   if (include_device_info()) {
-    EXPECT_EQ(kDMToken, *payload->FindStringPath(
+    EXPECT_EQ(kDMToken, *payload_dict.FindStringByDottedPath(
                             ReportingJobConfigurationBase::
                                 DeviceDictionaryBuilder::GetDMTokenPath()));
-    EXPECT_EQ(client_id_, *payload->FindStringPath(
+    EXPECT_EQ(client_id_, *payload_dict.FindStringByDottedPath(
                               ReportingJobConfigurationBase::
                                   DeviceDictionaryBuilder::GetClientIdPath()));
     EXPECT_EQ(policy::GetOSUsername(),
-              *payload->FindStringPath(
+              *payload_dict.FindStringByDottedPath(
                   ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                       GetMachineUserPath()));
     EXPECT_EQ(GetOSPlatform(),
-              *payload->FindStringPath(
+              *payload_dict.FindStringByDottedPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetOSPlatformPath()));
     EXPECT_EQ(GetOSVersion(),
-              *payload->FindStringPath(
+              *payload_dict.FindStringByDottedPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetOSVersionPath()));
-    EXPECT_EQ(
-        policy::GetDeviceName(),
-        *payload->FindStringPath(ReportingJobConfigurationBase::
-                                     DeviceDictionaryBuilder::GetNamePath()));
+    EXPECT_EQ(policy::GetDeviceName(),
+              *payload_dict.FindStringByDottedPath(
+                  ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+                      GetNamePath()));
   } else {
-    EXPECT_FALSE(
-        payload->FindStringPath(ReportingJobConfigurationBase::
-                                    DeviceDictionaryBuilder::GetDMTokenPath()));
-    EXPECT_FALSE(payload->FindStringPath(
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
+        ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            GetDMTokenPath()));
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::DeviceDictionaryBuilder::
             GetClientIdPath()));
-    EXPECT_FALSE(payload->FindStringPath(
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::BrowserDictionaryBuilder::
             GetMachineUserPath()));
-    EXPECT_FALSE(payload->FindStringPath(
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::DeviceDictionaryBuilder::
             GetOSPlatformPath()));
-    EXPECT_FALSE(payload->FindStringPath(
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::DeviceDictionaryBuilder::
             GetOSVersionPath()));
-    EXPECT_FALSE(payload->FindStringPath(
+    EXPECT_FALSE(payload_dict.FindStringByDottedPath(
         ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNamePath()));
   }
 
-  base::Value* events =
-      payload->FindPath(RealtimeReportingJobConfiguration::kEventListKey);
+  const base::Value* events =
+      payload_dict.Find(RealtimeReportingJobConfiguration::kEventListKey);
   EXPECT_EQ(base::Value::Type::LIST, events->type());
   EXPECT_EQ(1u, events->GetList().size());
 }
@@ -1949,18 +1950,20 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
   absl::optional<base::Value> payload =
       base::JSONReader::Read(job_config->GetPayload());
   ASSERT_TRUE(payload);
+  const base::Value::Dict& payload_dict = payload->GetDict();
 
-  ASSERT_EQ("name2@gmail.com", *payload->FindStringPath("profile.gaiaEmail"));
-  ASSERT_EQ("User-Agent2", *payload->FindStringPath("browser.userAgent"));
-  ASSERT_EQ("Profile 1", *payload->FindStringPath("profile.profileName"));
+  ASSERT_EQ("name2@gmail.com",
+            *payload_dict.FindStringByDottedPath("profile.gaiaEmail"));
+  ASSERT_EQ("User-Agent2",
+            *payload_dict.FindStringByDottedPath("browser.userAgent"));
+  ASSERT_EQ("Profile 1",
+            *payload_dict.FindStringByDottedPath("profile.profileName"));
   ASSERT_EQ("C:\\User Data\\Profile 1",
-            *payload->FindStringPath("profile.profilePath"));
-  ASSERT_EQ("1.0.0.0", *payload->FindStringPath("browser.version"));
-  ASSERT_EQ(
-      2u,
-      payload->FindListPath(RealtimeReportingJobConfiguration::kEventListKey)
-          ->GetList()
-          .size());
+            *payload_dict.FindStringByDottedPath("profile.profilePath"));
+  ASSERT_EQ("1.0.0.0", *payload_dict.FindStringByDottedPath("browser.version"));
+  ASSERT_EQ(2u, payload_dict
+                    .FindList(RealtimeReportingJobConfiguration::kEventListKey)
+                    ->size());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
