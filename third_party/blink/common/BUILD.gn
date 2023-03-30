@@ -9,6 +9,10 @@ import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 blink_python_runner("make_generated_permissions_policy_features") {
   script = "../renderer/build/scripts/make_permissions_policy_features.py"
 
@@ -364,6 +368,9 @@ test("blink_common_unittests") {
   if (is_android) {
     deps += [ "//media/base/android:media_java" ]
   }
+  if (is_ios) {
+    bundle_deps = [ ":blink_common_unittests_pak_bundle_data" ]
+  }
 
   if (is_fuchsia) {
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for
@@ -475,6 +482,13 @@ source_set("common_unittests_sources") {
 
 group("common_unittests_data") {
   data = [ "page_state/test_data/" ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("blink_common_unittests_pak_bundle_data") {
+    testonly = true
+    filelist_name = "blink_common_unittests_bundle_data.filelist"
+  }
 }
 
 static_library("test_support") {
