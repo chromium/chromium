@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/unexportable_keys/unexportable_key_service.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -30,19 +30,20 @@ constexpr BackgroundTaskPriority kTaskPriority =
 
 }  // namespace
 
-class UnexportableKeyServiceTest : public testing::Test {
+class UnexportableKeyServiceImplTest : public testing::Test {
  public:
-  UnexportableKeyServiceTest()
+  UnexportableKeyServiceImplTest()
       : task_manager_(std::make_unique<UnexportableKeyTaskManager>()),
-        service_(std::make_unique<UnexportableKeyService>(*task_manager_)) {}
+        service_(std::make_unique<UnexportableKeyServiceImpl>(*task_manager_)) {
+  }
 
-  UnexportableKeyService& service() { return *service_; }
+  UnexportableKeyServiceImpl& service() { return *service_; }
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   void ResetService() {
     task_manager_ = std::make_unique<UnexportableKeyTaskManager>();
-    service_ = std::make_unique<UnexportableKeyService>(*task_manager_);
+    service_ = std::make_unique<UnexportableKeyServiceImpl>(*task_manager_);
   }
 
  private:
@@ -52,10 +53,10 @@ class UnexportableKeyServiceTest : public testing::Test {
                     // called.
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   std::unique_ptr<UnexportableKeyTaskManager> task_manager_;
-  std::unique_ptr<UnexportableKeyService> service_;
+  std::unique_ptr<UnexportableKeyServiceImpl> service_;
 };
 
-TEST_F(UnexportableKeyServiceTest, GenerateKey) {
+TEST_F(UnexportableKeyServiceImplTest, GenerateKey) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           future.GetCallback());
@@ -72,7 +73,7 @@ TEST_F(UnexportableKeyServiceTest, GenerateKey) {
               testing::Contains(service().GetAlgorithm(*key_id)));
 }
 
-TEST_F(UnexportableKeyServiceTest, GenerateKeyMultiplePendingRequests) {
+TEST_F(UnexportableKeyServiceImplTest, GenerateKeyMultiplePendingRequests) {
   constexpr size_t kPendingRequests = 5;
   std::array<base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>,
              kPendingRequests>
@@ -100,7 +101,7 @@ TEST_F(UnexportableKeyServiceTest, GenerateKeyMultiplePendingRequests) {
   EXPECT_EQ(key_ids.size(), kPendingRequests);
 }
 
-TEST_F(UnexportableKeyServiceTest, GenerateKeyFails) {
+TEST_F(UnexportableKeyServiceImplTest, GenerateKeyFails) {
   // RSA is not supported by the mock key provider, so the key generation should
   // fail.
   auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA256};
@@ -112,7 +113,7 @@ TEST_F(UnexportableKeyServiceTest, GenerateKeyFails) {
             base::unexpected(ServiceError::kAlgorithmNotSupported));
 }
 
-TEST_F(UnexportableKeyServiceTest, FromWrappedKey) {
+TEST_F(UnexportableKeyServiceImplTest, FromWrappedKey) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -135,7 +136,7 @@ TEST_F(UnexportableKeyServiceTest, FromWrappedKey) {
   EXPECT_TRUE(from_wrapped_future.Get().has_value());
 }
 
-TEST_F(UnexportableKeyServiceTest, FromWrappedKeyMultiplePendingRequests) {
+TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyMultiplePendingRequests) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -171,7 +172,8 @@ TEST_F(UnexportableKeyServiceTest, FromWrappedKeyMultiplePendingRequests) {
   }
 }
 
-TEST_F(UnexportableKeyServiceTest, FromWrappedKeyMultiplePendingRequestsFail) {
+TEST_F(UnexportableKeyServiceImplTest,
+       FromWrappedKeyMultiplePendingRequestsFail) {
   std::vector<uint8_t> empty_wrapped_key;
   constexpr size_t kPendingRequests = 5;
   std::array<base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>>,
@@ -192,7 +194,8 @@ TEST_F(UnexportableKeyServiceTest, FromWrappedKeyMultiplePendingRequestsFail) {
   }
 }
 
-TEST_F(UnexportableKeyServiceTest, FromWrappedKeyReturnsTheSameIdWhenExists) {
+TEST_F(UnexportableKeyServiceImplTest,
+       FromWrappedKeyReturnsTheSameIdWhenExists) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -215,7 +218,7 @@ TEST_F(UnexportableKeyServiceTest, FromWrappedKeyReturnsTheSameIdWhenExists) {
   EXPECT_EQ(key_id, unwrapped_key_id);
 }
 
-TEST_F(UnexportableKeyServiceTest, Sign) {
+TEST_F(UnexportableKeyServiceImplTest, Sign) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -233,7 +236,7 @@ TEST_F(UnexportableKeyServiceTest, Sign) {
   EXPECT_TRUE(sign_future.Get().has_value());
 }
 
-TEST_F(UnexportableKeyServiceTest, NonExistingKeyId) {
+TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
   UnexportableKeyId fake_key_id;
 
   // `service()` does not return any info about non-existing key ID.

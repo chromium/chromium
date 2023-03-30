@@ -13,8 +13,9 @@ static_library("unexportable_keys") {
     "ref_counted_unexportable_signing_key.h",
     "service_error.h",
     "unexportable_key_id.h",
-    "unexportable_key_service.cc",
     "unexportable_key_service.h",
+    "unexportable_key_service_impl.cc",
+    "unexportable_key_service_impl.h",
     "unexportable_key_task_manager.cc",
     "unexportable_key_task_manager.h",
     "unexportable_key_tasks.cc",
@@ -29,16 +30,28 @@ static_library("unexportable_keys") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_unexportable_key_service.cc",
+    "fake_unexportable_key_service.h",
+  ]
+
+  deps = [ ":unexportable_keys" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "background_long_task_scheduler_unittest.cc",
-    "unexportable_key_service_unittest.cc",
+    "unexportable_key_service_impl_unittest.cc",
     "unexportable_key_task_manager_unittest.cc",
   ]
 
   deps = [
+    ":test_support",
     ":unexportable_keys",
     "//base/test:test_support",
     "//crypto:test_support",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/unexportable_keys/unexportable_key_service.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -107,24 +107,24 @@ MaybePendingUnexportableKeyId::GetCallbacks() {
 
 }  // namespace
 
-UnexportableKeyService::UnexportableKeyService(
+UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
     UnexportableKeyTaskManager& task_manager)
     : task_manager_(task_manager) {}
 
-UnexportableKeyService::~UnexportableKeyService() = default;
+UnexportableKeyServiceImpl::~UnexportableKeyServiceImpl() = default;
 
-void UnexportableKeyService::GenerateSigningKeySlowlyAsync(
+void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
   task_manager_->GenerateSigningKeySlowlyAsync(
       acceptable_algorithms, priority,
-      base::BindOnce(&UnexportableKeyService::OnKeyGenerated,
+      base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGenerated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void UnexportableKeyService::FromWrappedSigningKeySlowlyAsync(
+void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
     base::span<const uint8_t> wrapped_key,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
@@ -148,12 +148,12 @@ void UnexportableKeyService::FromWrappedSigningKeySlowlyAsync(
     // below.
     task_manager_->FromWrappedSigningKeySlowlyAsync(
         wrapped_key, priority,
-        base::BindOnce(&UnexportableKeyService::OnKeyCreatedFromWrappedKey,
+        base::BindOnce(&UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey,
                        weak_ptr_factory_.GetWeakPtr(), it));
   }
 }
 
-void UnexportableKeyService::SignSlowlyAsync(
+void UnexportableKeyServiceImpl::SignSlowlyAsync(
     const UnexportableKeyId& key_id,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
@@ -168,7 +168,7 @@ void UnexportableKeyService::SignSlowlyAsync(
 }
 
 ServiceErrorOr<std::vector<uint8_t>>
-UnexportableKeyService::GetSubjectPublicKeyInfo(
+UnexportableKeyServiceImpl::GetSubjectPublicKeyInfo(
     UnexportableKeyId key_id) const {
   auto it = key_by_key_id_.find(key_id);
   if (it == key_by_key_id_.end()) {
@@ -177,7 +177,7 @@ UnexportableKeyService::GetSubjectPublicKeyInfo(
   return it->second->key().GetSubjectPublicKeyInfo();
 }
 
-ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyService::GetWrappedKey(
+ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyServiceImpl::GetWrappedKey(
     UnexportableKeyId key_id) const {
   auto it = key_by_key_id_.find(key_id);
   if (it == key_by_key_id_.end()) {
@@ -187,7 +187,7 @@ ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyService::GetWrappedKey(
 }
 
 ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
-UnexportableKeyService::GetAlgorithm(UnexportableKeyId key_id) const {
+UnexportableKeyServiceImpl::GetAlgorithm(UnexportableKeyId key_id) const {
   auto it = key_by_key_id_.find(key_id);
   if (it == key_by_key_id_.end()) {
     return base::unexpected(ServiceError::kKeyNotFound);
@@ -195,7 +195,7 @@ UnexportableKeyService::GetAlgorithm(UnexportableKeyId key_id) const {
   return it->second->key().Algorithm();
 }
 
-void UnexportableKeyService::OnKeyGenerated(
+void UnexportableKeyServiceImpl::OnKeyGenerated(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> client_callback,
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
@@ -226,7 +226,7 @@ void UnexportableKeyService::OnKeyGenerated(
   std::move(client_callback).Run(key_id);
 }
 
-void UnexportableKeyService::OnKeyCreatedFromWrappedKey(
+void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     WrappedKeyMap::iterator pending_entry_it,
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
