@@ -9742,6 +9742,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForHardwareVideo)},
 
+    {"use-multi-plane-format-for-software-video",
+     flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoName,
+     flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForSoftwareVideo)},
+
     {"policy-merge-multi-source",
      flag_descriptions::kPolicyMergeMultiSourceName,
      flag_descriptions::kPolicyMergeMultiSourceDescription, kOsAll,

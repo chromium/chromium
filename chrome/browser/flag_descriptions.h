@@ -1988,6 +1988,9 @@ extern const char kPassthroughYuvRgbConversionDescription[];
 extern const char kUseMultiPlaneFormatForHardwareVideoName[];
 extern const char kUseMultiPlaneFormatForHardwareVideoDescription[];
 
+extern const char kUseMultiPlaneFormatForSoftwareVideoName[];
+extern const char kUseMultiPlaneFormatForSoftwareVideoDescription[];
+
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];
 
