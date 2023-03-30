@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
@@ -27,6 +28,10 @@ const int kDefaultPollingIntervalMilliseconds = 10 * 1000;           // 10s
 const int kNoChangePollingIntervalMilliseconds = 2 * 60 * 1000;      // 2 mins
 const int kTwoNoChangePollingIntervalMilliseconds = 10 * 60 * 1000;  // 10 mins
 const int kNoWifiPollingIntervalMilliseconds = 20 * 1000;            // 20s
+
+// The mobile location service (MLS) imposes a hard-coded limit on the number of
+// access points that can be used to generate a position estimate.
+constexpr size_t kApUseLimit = 20;
 
 // Returns the Wi-Fi access point data from ChromeOS, or `nullopt` if the
 // NetworkHandler is not started or failed to acquire fresh data.
@@ -53,6 +58,16 @@ absl::optional<WifiData> GetWifiData() {
   if (age_ms > kTwoNoChangePollingIntervalMilliseconds * 2) {
     return absl::nullopt;
   }
+
+  // Sort AP sightings by age, most recent first.
+  base::ranges::sort(access_points, base::ranges::greater(),
+                     &ash::WifiAccessPoint::timestamp);
+
+  // Truncate to kApUseLimit.
+  if (access_points.size() > kApUseLimit) {
+    access_points.resize(kApUseLimit);
+  }
+
   WifiData wifi_data;
   for (const auto& access_point : access_points) {
     AccessPointData ap_data;
