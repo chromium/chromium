@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
-#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
@@ -167,7 +166,6 @@ void InputDeviceSettingsControllerImpl::Init() {
           base::BindRepeating(
               &InputDeviceSettingsControllerImpl::OnPointingStickListUpdated,
               base::Unretained(this)));
-  metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
@@ -215,7 +213,6 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
   for (const auto& [id, keyboard] : keyboards_) {
     keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
                                                        keyboard.get());
-    metrics_manager_->RecordKeyboardInitialMetrics(*keyboard);
     DispatchKeyboardSettingsChanged(id);
   }
   for (const auto& [id, touchpad] : touchpads_) {
@@ -565,7 +562,6 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     auto mojom_keyboard = BuildMojomKeyboard(keyboard);
     keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
                                                        mojom_keyboard.get());
-    metrics_manager_->RecordKeyboardInitialMetrics(*mojom_keyboard);
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
   }
