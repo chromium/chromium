@@ -2836,14 +2836,6 @@
       status: "experimental",
       base_feature: "none",
     },
-    // Enables the use of the Insertable Streams legacy API.
-    // TODO(https://crbug.com/1119801): Remove when the origin trial ends.
-    {
-      name: "RTCInsertableStreams",
-      origin_trial_feature_name: "RTCInsertableStreams",
-      status: "experimental",
-      base_feature: "none",
-    },
     // Legacy callback-based getStats() has limited availability unless this
     // Deprecation Trial is enabled.
     // TODO(https://crbug.com/822696): Remove when origin trial ends.
