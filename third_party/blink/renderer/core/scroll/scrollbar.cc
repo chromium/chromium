@@ -889,7 +889,7 @@ EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
 }
 
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
-  return scrollable_area_->UsedColorScheme();
+  return scrollable_area_->UsedColorSchemeScrollbars();
 }
 
 STATIC_ASSERT_ENUM(kWebScrollbarOverlayColorThemeDark,

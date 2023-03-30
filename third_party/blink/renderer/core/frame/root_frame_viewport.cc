@@ -340,8 +340,8 @@ mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {
   return LayoutViewport().ScrollBehaviorStyle();
 }
 
-mojom::blink::ColorScheme RootFrameViewport::UsedColorScheme() const {
-  return LayoutViewport().UsedColorScheme();
+mojom::blink::ColorScheme RootFrameViewport::UsedColorSchemeScrollbars() const {
+  return LayoutViewport().UsedColorSchemeScrollbars();
 }
 
 ScrollOffset RootFrameViewport::ClampToUserScrollableOffset(

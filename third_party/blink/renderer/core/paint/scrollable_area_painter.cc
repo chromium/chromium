@@ -348,7 +348,7 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
 
   theme->PaintScrollCorner(context, GetScrollableArea().VerticalScrollbar(),
                            client, visual_rect,
-                           GetScrollableArea().UsedColorScheme());
+                           GetScrollableArea().UsedColorSchemeScrollbars());
 }
 
 PaintLayerScrollableArea& ScrollableAreaPainter::GetScrollableArea() const {

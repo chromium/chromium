@@ -238,7 +238,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner()
       const override;
-  mojom::blink::ColorScheme UsedColorScheme() const override;
+  mojom::blink::ColorScheme UsedColorSchemeScrollbars() const override;
   ScrollbarTheme& GetPageScrollbarTheme() const override;
   bool VisualViewportSuppliesScrollbars() const override;
   const Document* GetDocument() const override;

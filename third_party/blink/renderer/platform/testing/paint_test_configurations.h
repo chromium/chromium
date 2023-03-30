@@ -20,20 +20,24 @@ enum {
   kScrollUnification = 1 << 1,
   kSolidColorLayers = 1 << 2,
   kCompositeScrollAfterPaint = 1 << 3,
+  kUsedColorSchemeRootScrollbars = 1 << 4,
 };
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
       private ScopedSolidColorLayersForTest,
-      private ScopedCompositeScrollAfterPaintForTest {
+      private ScopedCompositeScrollAfterPaintForTest,
+      private ScopedUsedColorSchemeRootScrollbarsForTest {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
                                                     kUnderInvalidationChecking),
         ScopedSolidColorLayersForTest(GetParam() & kSolidColorLayers),
         ScopedCompositeScrollAfterPaintForTest(GetParam() &
-                                               kCompositeScrollAfterPaint) {
+                                               kCompositeScrollAfterPaint),
+        ScopedUsedColorSchemeRootScrollbarsForTest(
+            GetParam() & kUsedColorSchemeRootScrollbars) {
     if (GetParam() & kScrollUnification) {
       feature_list_.InitAndEnableFeature(::features::kScrollUnification);
     } else {
@@ -61,11 +65,12 @@ class PaintTestConfigurations
 //    // TODO(crbug.com/1414885): Fix this test.
 //    return;
 //  }
-#define INSTANTIATE_PAINT_TEST_SUITE_P(test_class)                \
-  INSTANTIATE_TEST_SUITE_P(                                       \
-      All, test_class,                                            \
-      ::testing::Values(0, kScrollUnification, kSolidColorLayers, \
-                        kScrollUnification | kCompositeScrollAfterPaint))
+#define INSTANTIATE_PAINT_TEST_SUITE_P(test_class)                       \
+  INSTANTIATE_TEST_SUITE_P(                                              \
+      All, test_class,                                                   \
+      ::testing::Values(0, kScrollUnification, kSolidColorLayers,        \
+                        kScrollUnification | kCompositeScrollAfterPaint, \
+                        kUsedColorSchemeRootScrollbars))
 
 }  // namespace blink
 

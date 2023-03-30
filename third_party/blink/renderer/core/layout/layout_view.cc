@@ -949,8 +949,8 @@ void LayoutView::StyleDidChange(StyleDifference diff,
   if (frame.IsMainFrame() && visual_viewport.IsActiveViewport()) {
     // |VisualViewport::UsedColorScheme| depends on the LayoutView's used
     // color scheme.
-    if (!old_style ||
-        old_style->UsedColorScheme() != visual_viewport.UsedColorScheme()) {
+    if (!old_style || old_style->UsedColorScheme() !=
+                          visual_viewport.UsedColorSchemeScrollbars()) {
       visual_viewport.UsedColorSchemeChanged();
     }
   }

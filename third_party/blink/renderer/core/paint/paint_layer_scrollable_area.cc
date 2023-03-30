@@ -60,9 +60,11 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
+#include "third_party/blink/renderer/core/css/color_scheme_flags.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -1225,7 +1227,22 @@ mojom::blink::ScrollBehavior PaintLayerScrollableArea::ScrollBehaviorStyle()
   return GetLayoutBox()->StyleRef().GetScrollBehavior();
 }
 
-mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorScheme() const {
+mojom::blink::ColorScheme PaintLayerScrollableArea::UsedColorSchemeScrollbars()
+    const {
+  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled() &&
+      GetLayoutBox()->IsGlobalRootScroller() &&
+      !GetPageScrollbarTheme().UsesOverlayScrollbars()) {
+    const Document& document = GetLayoutBox()->GetDocument();
+    if (document.documentElement() &&
+        document.documentElement()->ComputedStyleRef().ColorScheme().empty() &&
+        document.GetStyleEngine().GetPageColorSchemes() ==
+            static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal) &&
+        document.GetPreferredColorScheme() ==
+            mojom::blink::PreferredColorScheme::kDark) {
+      return mojom::blink::ColorScheme::kDark;
+    }
+  }
+
   return GetLayoutBox()->StyleRef().UsedColorScheme();
 }
 
@@ -1311,7 +1328,8 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
 
   UpdateScrollCornerStyle();
 
-  if (!old_style || old_style->UsedColorScheme() != UsedColorScheme() ||
+  if (!old_style ||
+      old_style->UsedColorScheme() != UsedColorSchemeScrollbars() ||
       old_style->ScrollbarWidth() !=
           GetLayoutBox()->StyleRef().ScrollbarWidth()) {
     SetScrollControlsNeedFullPaintInvalidation();

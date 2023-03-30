@@ -1607,4 +1607,147 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
   EXPECT_TRUE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
 }
 
+TEST_P(MAYBE_PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsDark) {
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    // TODO(crbug.com/1414885): Fix this test.
+    return;
+  }
+
+  USE_NON_OVERLAY_SCROLLBARS();
+
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      body { height: 1000px; }
+      .container { overflow-y: scroll; width: 100px; height: 100px; }
+      .scrollable { height: 400px; }
+      #dark { color-scheme: light dark; }
+    </style>
+
+    <div id="dark" class="container">
+      <div class="scrollable"></div>
+    </div>
+    <div id="normal" class="container">
+      <div class="scrollable"></div>
+    </div>
+  )HTML");
+
+  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
+            mojom::blink::PreferredColorScheme::kLight);
+
+  const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
+  ASSERT_TRUE(root_scrollable_area);
+  const auto* non_root_scrollable_area_dark =
+      GetPaintLayerByElementId("dark")->GetScrollableArea();
+  ASSERT_TRUE(non_root_scrollable_area_dark);
+  const auto* non_root_scrollable_area_normal =
+      GetPaintLayerByElementId("normal")->GetScrollableArea();
+  ASSERT_TRUE(non_root_scrollable_area_normal);
+
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+  EXPECT_EQ(non_root_scrollable_area_dark->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+  EXPECT_EQ(non_root_scrollable_area_normal->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+
+  // Change color scheme to dark.
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  UpdateAllLifecyclePhasesForTest();
+
+  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
+    EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+              mojom::blink::ColorScheme::kDark);
+  } else {
+    EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+              mojom::blink::ColorScheme::kLight);
+  }
+  EXPECT_EQ(non_root_scrollable_area_dark->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kDark);
+  EXPECT_EQ(non_root_scrollable_area_normal->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+}
+
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       UsedColorSchemeRootScrollbarsMetaLightDark) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
+  SetHtmlInnerHTML(R"HTML(
+    <meta name="color-scheme" content="light dark">
+    <style>
+      html { height: 1000px; }
+    </style>
+  )HTML");
+
+  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
+            mojom::blink::PreferredColorScheme::kLight);
+
+  const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
+  ASSERT_TRUE(root_scrollable_area);
+
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+
+  // Change color scheme to dark.
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kDark);
+}
+
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       UsedColorSchemeRootScrollbarsHtmlLight) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
+  SetHtmlInnerHTML(R"HTML(
+    <meta name="color-scheme" content="dark">
+    <style>
+      html { height: 1000px; color-scheme: light; }
+    </style>
+  )HTML");
+
+  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
+            mojom::blink::PreferredColorScheme::kLight);
+
+  const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
+  ASSERT_TRUE(root_scrollable_area);
+
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+
+  // Change color scheme to dark.
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kLight);
+}
+
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       UsedColorSchemeRootScrollbarsBodyLight) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
+  SetHtmlInnerHTML(R"HTML(
+    <meta name="color-scheme" content="dark">
+    <style>
+      body { height: 1000px; color-scheme: light; }
+    </style>
+  )HTML");
+
+  ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
+            mojom::blink::PreferredColorScheme::kLight);
+
+  const auto* root_scrollable_area = GetLayoutView().GetScrollableArea();
+  ASSERT_TRUE(root_scrollable_area);
+
+  EXPECT_EQ(root_scrollable_area->UsedColorSchemeScrollbars(),
+            mojom::blink::ColorScheme::kDark);
+}
+
 }  // namespace blink

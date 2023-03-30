@@ -116,7 +116,7 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
                                                : user_input_scrollable_y_;
   }
   bool ScheduleAnimation() override { return true; }
-  mojom::blink::ColorScheme UsedColorScheme() const override {
+  mojom::blink::ColorScheme UsedColorSchemeScrollbars() const override {
     return mojom::blink::ColorScheme::kLight;
   }
 

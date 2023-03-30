@@ -921,7 +921,7 @@ scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
   return LocalMainFrame().GetTaskRunner(TaskType::kInternalDefault);
 }
 
-mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
+mojom::blink::ColorScheme VisualViewport::UsedColorSchemeScrollbars() const {
   DCHECK(IsActiveViewport());
   if (Document* main_document = LocalMainFrame().GetDocument())
     return main_document->GetLayoutView()->StyleRef().UsedColorScheme();

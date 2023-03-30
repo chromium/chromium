@@ -114,7 +114,7 @@ class CORE_EXPORT RootFrameViewport final
   void UpdateCompositorScrollAnimations() override;
   void CancelProgrammaticScrollAnimation() override;
   mojom::blink::ScrollBehavior ScrollBehaviorStyle() const override;
-  mojom::blink::ColorScheme UsedColorScheme() const override;
+  mojom::blink::ColorScheme UsedColorSchemeScrollbars() const override;
   void ClearScrollableArea() override;
   LayoutBox* GetLayoutBox() const override;
   gfx::QuadF LocalToVisibleContentQuad(const gfx::QuadF&,

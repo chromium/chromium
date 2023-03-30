@@ -85,7 +85,7 @@ class MockScrollableAreaForAnimatorTest
   MOCK_CONST_METHOD0(ScrollbarsCanBeActive, bool());
   MOCK_METHOD0(RegisterForAnimation, void());
   MOCK_METHOD0(ScheduleAnimation, bool());
-  MOCK_CONST_METHOD0(UsedColorScheme, mojom::blink::ColorScheme());
+  MOCK_CONST_METHOD0(UsedColorSchemeScrollbars, mojom::blink::ColorScheme());
 
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }

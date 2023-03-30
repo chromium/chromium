@@ -481,7 +481,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return mojom::blink::ScrollBehavior::kInstant;
   }
 
-  virtual mojom::blink::ColorScheme UsedColorScheme() const = 0;
+  virtual mojom::blink::ColorScheme UsedColorSchemeScrollbars() const = 0;
 
   // Subtracts space occupied by this ScrollableArea's scrollbars.
   // Does nothing if overlay scrollbars are enabled.
