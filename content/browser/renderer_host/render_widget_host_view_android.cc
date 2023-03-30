@@ -2227,36 +2227,16 @@ void RenderWidgetHostViewAndroid::SendKeyEvent(
 }
 
 void RenderWidgetHostViewAndroid::SendMouseEvent(
-    const ui::MotionEventAndroid& motion_event,
-    int action_button) {
-  blink::WebInputEvent::Type webMouseEventType =
-      ui::ToWebMouseEventType(motion_event.GetAction());
-
-  if (webMouseEventType == blink::WebInputEvent::Type::kUndefined)
-    return;
-
-  if (webMouseEventType == blink::WebInputEvent::Type::kMouseDown)
-    UpdateMouseState(action_button, motion_event.GetX(0), motion_event.GetY(0));
-
-  int click_count = 0;
-
-  if (webMouseEventType == blink::WebInputEvent::Type::kMouseDown ||
-      webMouseEventType == blink::WebInputEvent::Type::kMouseUp)
-    click_count = (action_button == ui::MotionEventAndroid::BUTTON_PRIMARY)
-                      ? left_click_count_
-                      : 1;
-
-  blink::WebMouseEvent mouse_event = WebMouseEventBuilder::Build(
-      motion_event, webMouseEventType, click_count, action_button);
-
+    const blink::WebMouseEvent& event,
+    const ui::LatencyInfo& info) {
   if (!host() || !host()->delegate())
     return;
 
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
-        this, &mouse_event, ui::LatencyInfo());
+    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(this, &event,
+                                                               info);
   } else {
-    host()->ForwardMouseEvent(mouse_event);
+    host()->ForwardMouseEventWithLatencyInfo(event, info);
   }
 }
 
@@ -2553,7 +2533,32 @@ bool RenderWidgetHostViewAndroid::OnMouseEvent(
   }
 
   RecordToolTypeForActionDown(event);
-  SendMouseEvent(event, event.GetActionButton());
+
+  blink::WebInputEvent::Type webMouseEventType =
+      ui::ToWebMouseEventType(action);
+
+  if (webMouseEventType == blink::WebInputEvent::Type::kUndefined) {
+    return false;
+  }
+
+  int action_button = event.GetActionButton();
+  if (webMouseEventType == blink::WebInputEvent::Type::kMouseDown) {
+    UpdateMouseState(action_button, event.GetX(0), event.GetY(0));
+  }
+
+  int click_count = 0;
+
+  if (webMouseEventType == blink::WebInputEvent::Type::kMouseDown ||
+      webMouseEventType == blink::WebInputEvent::Type::kMouseUp) {
+    click_count = (action_button == ui::MotionEventAndroid::BUTTON_PRIMARY)
+                      ? left_click_count_
+                      : 1;
+  }
+
+  SendMouseEvent(WebMouseEventBuilder::Build(event, webMouseEventType,
+                                             click_count, action_button),
+                 ui::LatencyInfo());
+
   return true;
 }
 

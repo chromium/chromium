@@ -126,8 +126,8 @@ void SyntheticGestureTargetAndroid::DispatchWebGestureEventToPlatform(
 
 void SyntheticGestureTargetAndroid::DispatchWebMouseEventToPlatform(
     const WebMouseEvent& web_mouse,
-    const ui::LatencyInfo&) {
-  CHECK(false);
+    const ui::LatencyInfo& info) {
+  GetView()->SendMouseEvent(web_mouse, info);
 }
 
 content::mojom::GestureSourceType

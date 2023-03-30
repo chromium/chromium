@@ -91,7 +91,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewBase* view) override;
 
   void RouteMouseEvent(RenderWidgetHostViewBase* root_view,
-                       blink::WebMouseEvent* event,
+                       const blink::WebMouseEvent* event,
                        const ui::LatencyInfo& latency);
   void RouteMouseWheelEvent(RenderWidgetHostViewBase* root_view,
                             blink::WebMouseWheelEvent* event,

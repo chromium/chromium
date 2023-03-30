@@ -595,7 +595,7 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindViewAtLocation(
 
 void RenderWidgetHostInputEventRouter::RouteMouseEvent(
     RenderWidgetHostViewBase* root_view,
-    blink::WebMouseEvent* event,
+    const blink::WebMouseEvent* event,
     const ui::LatencyInfo& latency) {
   event_targeter_->FindTargetAndDispatch(root_view, *event, latency);
 }

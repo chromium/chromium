@@ -33,6 +33,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -265,7 +266,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // example, returns black during screen rotation.
   absl::optional<SkColor> GetCachedBackgroundColor();
   void SendKeyEvent(const NativeWebKeyboardEvent& event);
-  void SendMouseEvent(const ui::MotionEventAndroid&, int action_button);
+  void SendMouseEvent(const blink::WebMouseEvent& event,
+                      const ui::LatencyInfo& info);
   void SendMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   void SendGestureEvent(const blink::WebGestureEvent& event);
   bool ShowSelectionMenu(RenderFrameHost* render_frame_host,
