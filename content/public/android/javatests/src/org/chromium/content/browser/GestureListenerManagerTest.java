@@ -21,6 +21,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -92,6 +93,7 @@ public class GestureListenerManagerTest {
     @Test
     @LargeTest
     @Feature({"Browser"})
+    @DisabledTest(message = "https://crbug.com/1324302")
     public void testOnScrollOffsetOrExtentChanged() throws Throwable {
         mActivityTestRule.launchContentShellWithUrl("about:blank");
         WebContents webContents = mActivityTestRule.getWebContents();
