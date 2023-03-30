@@ -587,7 +587,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     const target = evt.target;
     const fromDesktop = target.root.role === RoleType.DESKTOP;
     const onDesktop =
-        ChromeVoxRange.current.start.node.root.role === RoleType.DESKTOP;
+        ChromeVoxRange.current?.start.node.root.role === RoleType.DESKTOP;
     const isSlider = target.role === RoleType.SLIDER;
 
     // TODO(accessibility): get rid of callers who use value changes on list
