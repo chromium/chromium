@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Should be known: '(scripting)' assert_true: expected true got false
+FAIL Should be known: '(scripting: enabled)' assert_true: expected true got false
+FAIL Should be known: '(scripting: initial-only)' assert_true: expected true got false
+FAIL Should be known: '(scripting: none)' assert_true: expected true got false
+PASS Should be parseable: '(scripting: 0)'
+PASS Should be unknown: '(scripting: 0)'
+PASS Should be parseable: '(scripting: 10px)'
+PASS Should be unknown: '(scripting: 10px)'
+PASS Should be parseable: '(scripting: invalid)'
+PASS Should be unknown: '(scripting: invalid)'
+FAIL Check that scripting currently matches 'enabled' assert_true: expected true got false
+FAIL Check that scripting currently evaluates to true in the boolean context assert_true: expected true got false
+Harness: the test ran to completion.
+

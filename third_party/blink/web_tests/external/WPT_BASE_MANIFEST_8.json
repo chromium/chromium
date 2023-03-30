@@ -147605,7 +147605,7 @@
        ]
       ],
       "clip-path-text-001.svg": [
-       "35f9fa00f0c4d9608bf8a6b2fa5e91cff430fd6c",
+       "6d850b993a66cf5cbff33e34703f8252c5f49db5",
        [
         null,
         [
@@ -147618,7 +147618,7 @@
        ]
       ],
       "clip-path-text-002.svg": [
-       "d6ae1479415142df85d9360b6de6bde8cef24e04",
+       "f40d13c40d4e0cf07ef9dfd8a8a6aa15d89f90ba",
        [
         null,
         [
@@ -147631,7 +147631,7 @@
        ]
       ],
       "clip-path-text-003.svg": [
-       "ec7a613f9c524df6397f5de8537a26b257443bae",
+       "7a5e9e7d82c99b161c8b6e175dc6b1030bf2c611",
        [
         null,
         [
@@ -147644,7 +147644,7 @@
        ]
       ],
       "clip-path-text-004.svg": [
-       "7adbfa2d574c1c2e284325e1d3a713b90443adce",
+       "2389320677d8b7c725892e32fa1060fd33d50766",
        [
         null,
         [
@@ -147657,7 +147657,7 @@
        ]
       ],
       "clip-path-text-005.svg": [
-       "152f4018354f06237e7296fe72b5a0672a193f88",
+       "487e2fead873755404790926938c8bd39ff64d9b",
        [
         null,
         [
@@ -243000,6 +243000,32 @@
        {}
       ]
      ],
+     "scripting-print-noscript.html": [
+      "701013bd7151fcb05b16c033542aef5e150763a2",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/scripting-print-noscript-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scripting-print-script.html": [
+      "25f064ba2040053f225d5cd4494468537564af42",
+      [
+       null,
+       [
+        [
+         "/css/mediaqueries/scripting-print-script-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "viewport-script-dynamic.html": [
       "7433877972b09b3a03cd9f8a11dcd3efd1aa01d6",
       [
@@ -268174,6 +268200,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "0757ef7b988a995fdf91cd0a1c13b6ba1e34c68a",
+     []
+    ],
+    "mtime.json": [
+     "0f28ceabde1682494f23bddb5c4d918aaa4b829d",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -306871,15 +306907,15 @@
         []
        ],
        "clip-path-text-001-ref.svg": [
-        "4b3f84b8d866100e9f0e9000fd0f28a2264eeed7",
+        "f13bb8ba44f7f032d429ad3b68163bfb4a2dc259",
         []
        ],
        "clip-path-text-002-ref.svg": [
-        "fccd7638af0199b56710d9487f2ae6953788ec3b",
+        "d51fd55b4b9fbb47f501470a9189c4da2d149d30",
         []
        ],
        "clip-path-text-003-ref.svg": [
-        "fa2cb815e101438d21ed9bec69f1b9d4e451c7e3",
+        "254f361d3e3be2fbfa608d40f9cc50ac0ccd5885",
         []
        ],
        "mask-and-nested-clip-path-ref.svg": [
@@ -324312,7 +324348,7 @@
        []
       ],
       "kind-of-widget-fallback-color-input-border-block-end-color-001.html.ini": [
-       "e4d7c9810c12ae33877de85ce12a03389d9a1e33",
+       "ff428f0d2fb4cb85deecd123c54dcef65c487207",
        []
       ],
       "kind-of-widget-fallback-color-input-border-block-start-width-001.html.ini": [
@@ -324320,7 +324356,7 @@
        []
       ],
       "kind-of-widget-fallback-color-input-border-bottom-left-radius-001.html.ini": [
-       "6f8cad0d45ca247eeff266835eb6a715958cc254",
+       "8fdc45a4a68385a5b17ac303b3d8cb28ca125190",
        []
       ],
       "kind-of-widget-fallback-color-input-border-bottom-style-001.html.ini": [
@@ -324353,6 +324389,10 @@
       ],
       "kind-of-widget-fallback-input-button-background-origin-001.html.ini": [
        "c8c5d4bcfd0e3c15615900ace6af3b50627c69f6",
+       []
+      ],
+      "kind-of-widget-fallback-input-button-background-position-001.html.ini": [
+       "e228e12ad38adc3626c6528e2c1cc340d79e3906",
        []
       ],
       "kind-of-widget-fallback-input-button-background-size-001.html.ini": [
@@ -324443,6 +324483,10 @@
        "4c3c8c359dada68fde75e2e51aa3b0528208089f",
        []
       ],
+      "kind-of-widget-fallback-input-search-border-left-color-001.html.ini": [
+       "f044a6ba3bada9fd4bfc94ce390a6e43c830a805",
+       []
+      ],
       "kind-of-widget-fallback-input-search-border-left-style-001.html.ini": [
        "0a8d9de411e0bbb86ed17cfb635a7c6d532d2765",
        []
@@ -324472,7 +324516,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-text-background-image-001.html.ini": [
-       "11937e99183f1e2bc3021880f525ee12bac9637c",
+       "68eb5401116bcb3fea8d12b43107389d566e6dc5",
        []
       ],
       "kind-of-widget-fallback-input-search-text-border-block-end-style-001.html.ini": [
@@ -324501,6 +324545,10 @@
       ],
       "kind-of-widget-fallback-input-search-text-border-end-end-radius-001.html.ini": [
        "697b05b022bee8c7b3d8ac9869f1593a5860b6ef",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-text-border-image-repeat-001.html.ini": [
+       "467aa0c5bee84aaebd3614ddd2cedaa3059b6b9c",
        []
       ],
       "kind-of-widget-fallback-input-search-text-border-image-source-001.html.ini": [
@@ -324917,6 +324965,10 @@
       ],
       "kind-of-widget-fallback-textarea-border-bottom-style-001.html.ini": [
        "af35e10a345ac468050b8db9bd1ed4cc7344704a",
+       []
+      ],
+      "kind-of-widget-fallback-textarea-border-bottom-width-001.html.ini": [
+       "19c68eb3c13c2ab78d927e87fa1ae0a20a0748c1",
        []
       ],
       "kind-of-widget-fallback-textarea-border-start-start-radius-001.html.ini": [
@@ -332434,6 +332486,30 @@
        []
       ]
      },
+     "scripting-expected.txt": [
+      "b24009718e8958e6e753249b691b1bce2d3f47f0",
+      []
+     ],
+     "scripting-print-noscript-ref.html": [
+      "d0bf78f8d592995eb6b28b068e9be7af1b6b7802",
+      []
+     ],
+     "scripting-print-noscript.html.ini": [
+      "f8256a3571751ec315c9743226636d05fdff3667",
+      []
+     ],
+     "scripting-print-script-ref.html": [
+      "0e3b6fc3e59a4b9a9d291927d5253ce84c8a603e",
+      []
+     ],
+     "scripting-print-script.html.ini": [
+      "2143b97f4b4b810d80150c326dd0484d02280623",
+      []
+     ],
+     "scripting.html.ini": [
+      "cfe3783f2c342e818eff0077d5181ea7b045f362",
+      []
+     ],
      "support": {
       "media_queries_iframe.html": [
        "890eb6c46113afbaf1dc88188c52a791623590a8",
@@ -334895,6 +334971,10 @@
        "9dcbad261d843dfd35cf50ef9bacb2001611902f",
        []
       ],
+      "overscroll-deltas.html.ini": [
+       "34c5f53bdc4e416acfd7fd590cb0e68a97244737",
+       []
+      ],
       "overscroll-event-fired-to-scrolled-element.html.ini": [
        "588a9516a51761be39865a6e82ee0a9bca2c1fa3",
        []
@@ -334911,8 +334991,16 @@
        "dd2b3639d504d03b2957d30924900373d18e6e89",
        []
       ],
+      "scrollend-event-fired-to-document.html.ini": [
+       "1560f1354f6bb01d60c46b2914f74567fa5ecbce",
+       []
+      ],
       "scrollend-event-fired-to-element-with-overscroll-behavior.html.ini": [
        "d9aedc09af735735baef3ef043f31c20e5f70156",
+       []
+      ],
+      "scrollend-event-fired-to-window.html.ini": [
+       "13a6854334a26f69b2228bdad16a9161a9d194c9",
        []
       ],
       "scrollend-event-for-user-scroll.html.ini": [
@@ -376227,6 +376315,14 @@
      "3f8456354bd08a3cb87e767ca0eb508603f45f1b",
      []
     ],
+    "basic-dedicated-worker.https-expected.txt": [
+     "4368988f928ade4687216800afebc47d4745fe14",
+     []
+    ],
+    "basic-dedicated-worker.https.html.ini": [
+     "d38df7b60850eedbf0856165e1d200c74dd46b85",
+     []
+    ],
     "basic-popup-and-iframe-tests.https-expected.txt": [
      "712c701f4f7230566278fd0df2cf7d350dab8707",
      []
@@ -376248,11 +376344,11 @@
      []
     ],
     "basic-shared-worker.https-expected.txt": [
-     "4533f5207be78d65133954c7384d2746c9671f10",
+     "f4ff4fccb89b2f30102091ae5039b57f88193373",
      []
     ],
     "basic-shared-worker.https.html.ini": [
-     "959936438a3a821569569e9a974baf0280ae3ca5",
+     "850afee0178ddded1af505a96d676ffa10c4222c",
      []
     ],
     "postMessage-helper.html": [
@@ -442183,7 +442279,7 @@
        ]
       ],
       "image-set-parsing.html": [
-       "fc4eed0c7ecd91ab9ae4c0884b46d1d1e42ac4dc",
+       "c33652a5fd21cbc2092df31df05fe23e7527f2bb",
        [
         null,
         {}
@@ -462016,6 +462112,13 @@
      ],
      "relative-units-005.html": [
       "8b344743dfc854563cc0ff42ac91cff6ea5d3112",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scripting.html": [
+      "5606b9fc6802ce98246c6a4eb13f4f90bd60aa05",
       [
        null,
        {}
@@ -591020,7 +591123,7 @@
      ]
     ],
     "basic-dedicated-worker.https.html": [
-     "e794755cdf91d8369c8f4b54387d9cab4565615c",
+     "17c9345146faf3a2ad57f91e494f8905b6491c94",
      [
       null,
       {}
@@ -591048,7 +591151,7 @@
      ]
     ],
     "basic-shared-worker.https.html": [
-     "e7c78383a8266bd160dcfc9747b69ebe56530295",
+     "7c43cd965f66de62f082b2d2dd8cd552a125ac6e",
      [
       null,
       {}
