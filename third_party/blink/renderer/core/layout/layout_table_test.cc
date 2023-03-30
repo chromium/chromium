@@ -13,11 +13,8 @@ namespace {
 
 class LayoutTableTest : public RenderingTest {
  protected:
-  LayoutBlock* GetTableByElementId(const char* id) {
-    return To<LayoutBlock>(GetLayoutObjectByElementId(id));
-  }
-  LayoutNGTableInterface* GetTableInterfaceByElementId(const char* id) {
-    return ToInterface<LayoutNGTableInterface>(GetLayoutObjectByElementId(id));
+  LayoutNGTable* GetTableByElementId(const char* id) {
+    return To<LayoutNGTable>(GetLayoutObjectByElementId(id));
   }
 };
 
@@ -270,32 +267,29 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
       <thead id='head'></thead>
     <table>
   )HTML");
-  auto* table = GetTableInterfaceByElementId("table");
-  auto* head_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("head"));
-  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("body"));
+  auto* table = GetTableByElementId("table");
+  auto* head_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("head"));
+  auto* body_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("body"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(head_section);
   ASSERT_TRUE(body_section);
 
-  EXPECT_EQ(head_section, table->FirstSectionInterface());
-  EXPECT_EQ(body_section, table->LastSectionInterface());
+  EXPECT_EQ(head_section, table->FirstSection());
+  EXPECT_EQ(body_section, table->LastSection());
 
   EXPECT_EQ(body_section,
-            table->NextSectionInterface(head_section, kDoNotSkipEmptySections));
-  EXPECT_EQ(nullptr,
-            table->NextSectionInterface(body_section, kDoNotSkipEmptySections));
+            table->NextSection(head_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr, table->NextSection(body_section, kDoNotSkipEmptySections));
 
-  EXPECT_EQ(body_section, table->FirstNonEmptySectionInterface());
-  EXPECT_EQ(body_section, table->LastNonEmptySectionInterface());
+  EXPECT_EQ(body_section, table->FirstNonEmptySection());
+  EXPECT_EQ(body_section, table->LastNonEmptySection());
 
-  EXPECT_EQ(nullptr,
-            table->PreviousSectionInterface(head_section, kSkipEmptySections));
-  EXPECT_EQ(nullptr,
-            table->PreviousSectionInterface(body_section, kSkipEmptySections));
-  EXPECT_EQ(head_section, table->PreviousSectionInterface(
-                              body_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr, table->PreviousSection(head_section, kSkipEmptySections));
+  EXPECT_EQ(nullptr, table->PreviousSection(body_section, kSkipEmptySections));
+  EXPECT_EQ(head_section,
+            table->PreviousSection(body_section, kDoNotSkipEmptySections));
 }
 
 TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
@@ -305,32 +299,29 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
       <tbody id='body'><tr><td>Body</td></tr></tbody>
     <table>
   )HTML");
-  auto* table = GetTableInterfaceByElementId("table");
-  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("body"));
-  auto* foot_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("foot"));
+  auto* table = GetTableByElementId("table");
+  auto* body_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("body"));
+  auto* foot_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("foot"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(body_section);
   ASSERT_TRUE(foot_section);
 
-  EXPECT_EQ(body_section, table->FirstSectionInterface());
-  EXPECT_EQ(foot_section, table->LastSectionInterface());
+  EXPECT_EQ(body_section, table->FirstSection());
+  EXPECT_EQ(foot_section, table->LastSection());
 
-  EXPECT_EQ(nullptr,
-            table->NextSectionInterface(body_section, kSkipEmptySections));
+  EXPECT_EQ(nullptr, table->NextSection(body_section, kSkipEmptySections));
   EXPECT_EQ(foot_section,
-            table->NextSectionInterface(body_section, kDoNotSkipEmptySections));
-  EXPECT_EQ(nullptr,
-            table->NextSectionInterface(foot_section, kDoNotSkipEmptySections));
+            table->NextSection(body_section, kDoNotSkipEmptySections));
+  EXPECT_EQ(nullptr, table->NextSection(foot_section, kDoNotSkipEmptySections));
 
-  EXPECT_EQ(body_section, table->FirstNonEmptySectionInterface());
-  EXPECT_EQ(body_section, table->LastNonEmptySectionInterface());
+  EXPECT_EQ(body_section, table->FirstNonEmptySection());
+  EXPECT_EQ(body_section, table->LastNonEmptySection());
 
   EXPECT_EQ(body_section,
-            table->PreviousSectionInterface(foot_section, kSkipEmptySections));
-  EXPECT_EQ(nullptr,
-            table->PreviousSectionInterface(body_section, kSkipEmptySections));
+            table->PreviousSection(foot_section, kSkipEmptySections));
+  EXPECT_EQ(nullptr, table->PreviousSection(body_section, kSkipEmptySections));
 }
 
 TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
@@ -341,33 +332,31 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
       <tbody id='body'><tr><td>Body</td></tr></tbody>
     <table>
   )HTML");
-  auto* table = GetTableInterfaceByElementId("table");
-  auto* head_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("head"));
-  auto* body_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("body"));
-  auto* foot_section = ToInterface<LayoutNGTableSectionInterface>(
-      GetLayoutObjectByElementId("foot"));
+  auto* table = GetTableByElementId("table");
+  auto* head_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("head"));
+  auto* body_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("body"));
+  auto* foot_section =
+      To<LayoutNGTableSection>(GetLayoutObjectByElementId("foot"));
   ASSERT_TRUE(table);
   ASSERT_TRUE(head_section);
   ASSERT_TRUE(body_section);
   ASSERT_TRUE(foot_section);
 
-  EXPECT_EQ(head_section, table->FirstSectionInterface());
-  EXPECT_EQ(foot_section, table->LastSectionInterface());
+  EXPECT_EQ(head_section, table->FirstSection());
+  EXPECT_EQ(foot_section, table->LastSection());
+
+  EXPECT_EQ(body_section, table->NextSection(head_section, kSkipEmptySections));
+  EXPECT_EQ(foot_section, table->NextSection(body_section, kSkipEmptySections));
+
+  EXPECT_EQ(head_section, table->FirstNonEmptySection());
+  EXPECT_EQ(foot_section, table->LastNonEmptySection());
 
   EXPECT_EQ(body_section,
-            table->NextSectionInterface(head_section, kSkipEmptySections));
-  EXPECT_EQ(foot_section,
-            table->NextSectionInterface(body_section, kSkipEmptySections));
-
-  EXPECT_EQ(head_section, table->FirstNonEmptySectionInterface());
-  EXPECT_EQ(foot_section, table->LastNonEmptySectionInterface());
-
-  EXPECT_EQ(body_section,
-            table->PreviousSectionInterface(foot_section, kSkipEmptySections));
+            table->PreviousSection(foot_section, kSkipEmptySections));
   EXPECT_EQ(head_section,
-            table->PreviousSectionInterface(body_section, kSkipEmptySections));
+            table->PreviousSection(body_section, kSkipEmptySections));
 }
 
 TEST_F(LayoutTableTest, VisualOverflowCleared) {

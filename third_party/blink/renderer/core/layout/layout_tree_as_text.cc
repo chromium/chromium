@@ -261,8 +261,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
   }
 
   if (o.IsTableCell()) {
-    const LayoutNGTableCellInterface& c =
-        ToInterface<LayoutNGTableCellInterface>(o);
+    const auto& c = To<LayoutNGTableCell>(o);
     ts << " [r=" << c.RowIndex() << " c=" << c.AbsoluteColumnIndex()
        << " rs=" << c.ResolvedRowSpan() << " cs=" << c.ColSpan() << "]";
   }

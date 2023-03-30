@@ -42,8 +42,7 @@
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -84,13 +83,12 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
 void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
   // FIXME: The table code should handle that automatically. If not,
   // we should fix it and remove the table part checks.
-  if (box->IsTable()) {
-    // Because we may have added some sections with already computed column
-    // structures, we need to sync the table structure with them now. This
-    // avoids crashes when adding new cells to the table.
-    ToInterface<LayoutNGTableInterface>(box)->ForceSectionsRecalc();
-  } else if (box->IsTableSection()) {
-    ToInterface<LayoutNGTableSectionInterface>(box)->SetNeedsCellRecalc();
+  if (auto* section = DynamicTo<LayoutNGTableSection>(box)) {
+    // TODO(1229581): Is this necessary? It just does a SetNeedsLayout(). We
+    // might as well just do the
+    // SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation() thing
+    // below, I suppose?
+    section->SetNeedsCellRecalc();
   }
 
   box->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(

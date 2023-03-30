@@ -4932,30 +4932,26 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
   } else if (IsHorizontalWritingMode() != cb->IsHorizontalWritingMode()) {
     available_height =
         containing_block_child->ContainingBlockLogicalWidthForContent();
-  } else if (cb->IsTableCell()) {
+  } else if (auto* cell = DynamicTo<LayoutNGTableCell>(cb)) {
     if (!skipped_auto_height_containing_block) {
       // Table cells violate what the CSS spec says to do with heights.
       // Basically we don't care if the cell specified a height or not. We just
       // always make ourselves be a percentage of the cell's current content
       // height.
-      if (!cb->HasOverrideLogicalHeight()) {
+      if (!cell->HasOverrideLogicalHeight()) {
         // https://drafts.csswg.org/css-tables-3/#row-layout:
         // For the purpose of calculating [the minimum height of a row],
         // descendants of table cells whose height depends on percentages
         // of their parent cell's height are considered to have an auto
         // height if they have overflow set to visible or hidden or if
         // they are replaced elements, and a 0px height if they have not.
-        const LayoutNGTableCellInterface* cell =
-            ToInterface<LayoutNGTableCellInterface>(cb);
         if (StyleRef().OverflowY() != EOverflow::kVisible &&
             StyleRef().OverflowY() != EOverflow::kHidden &&
             !ShouldBeConsideredAsReplaced() &&
-            (!cb->StyleRef().LogicalHeight().IsAuto() || !cell->TableInterface()
-                                                              ->ToLayoutObject()
-                                                              ->StyleRef()
-                                                              .LogicalHeight()
-                                                              .IsAuto()))
+            (!cell->StyleRef().LogicalHeight().IsAuto() ||
+             !cell->Table()->StyleRef().LogicalHeight().IsAuto())) {
           return LayoutUnit();
+        }
         return LayoutUnit(-1);
       }
       available_height = cb->OverrideLogicalHeight() -

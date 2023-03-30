@@ -71,8 +71,7 @@ void DumpToTracedValue(const LayoutObject& object,
     // Table layout might be dirty if traceGeometry is false.
     // See https://crbug.com/664271 .
     if (trace_geometry) {
-      const LayoutNGTableCellInterface& c =
-          ToInterface<LayoutNGTableCellInterface>(object);
+      const auto& c = To<LayoutNGTableCell>(object);
       traced_value->SetDouble("row", c.RowIndex());
       traced_value->SetDouble("col", c.AbsoluteColumnIndex());
       if (c.ResolvedRowSpan() != 1)
