@@ -20,5 +20,6 @@ public final class NonembeddedSafeModeActionsList {
      */
     public static final SafeModeAction[] sList = {
             new ComponentUpdaterResetSafeModeAction(),
+            new NonEmbeddedFastVariationsSeedSafeModeAction(),
     };
 }

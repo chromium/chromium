@@ -132,6 +132,9 @@
     <!-- End of Developer UI related components -->
     <!-- Components for SafeMode, make sure that any changes in these components reflect
          the corresponding original components in nonembedded/java/AndroidManifest.xml -->
+    <provider android:name="org.chromium.android_webview.services.SafeModeVariationsSeedContentProvider"
+              android:exported="true"
+              android:authorities="org.chromium.android_webview.shell.SafeModeVariationsSeedContentProvider"/>
     <provider android:name="org.chromium.android_webview.services.SafeModeContentProvider"
               android:exported="true"
               android:authorities="org.chromium.android_webview.shell.SafeModeContentProvider"/>

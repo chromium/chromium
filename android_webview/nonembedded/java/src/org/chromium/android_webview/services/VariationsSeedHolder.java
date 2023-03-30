@@ -10,6 +10,7 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.Log;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
@@ -17,6 +18,9 @@ import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInf
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * VariationsSeedHolder is a singleton which manages the local copy of the variations seed - both
@@ -44,6 +48,9 @@ public class VariationsSeedHolder {
     private SeedInfo mSeed;
     // Set true when we fail to load a seed, to prevent future loads until SeedUpdater runs.
     private boolean mFailedReadingSeed;
+
+    private SafeModeSeedUpdater mSafeModeSeedUpdater = new SafeModeSeedUpdater();
+    private Date mDate = new Date();
 
     // A Runnable which handles an individual request for the seed. Must run on mSeedThread.
     private class SeedWriter implements Runnable {
@@ -131,7 +138,7 @@ public class VariationsSeedHolder {
         mSeedHandler = new Handler(mSeedThread.getLooper());
     }
 
-    /* package */ static VariationsSeedHolder getInstance() {
+    public static VariationsSeedHolder getInstance() {
         return sInstance;
     }
 
@@ -150,4 +157,73 @@ public class VariationsSeedHolder {
 
     // overridden by tests
     public void onWriteFinished() {}
+
+    /**
+     * A seed updater class tailored to update Variations seeds specifically for SafeMode scenarios
+     */
+    private class SafeModeSeedUpdater {
+        // Stores a list of requests to notify the requester, SafeModeVariationsSeedContentProvider,
+        // as soon as the Variations Fast Fetch Mode seed is fresh, where fresh is considered to be
+        // < 15 minutes old.
+        private final Queue<Runnable> mSafeModeVariationsSeedContentProviderCallback =
+                new LinkedList<Runnable>();
+
+        public void hasSeedUpdateCompletedAsync(Runnable r) {
+            mSafeModeVariationsSeedContentProviderCallback.add(r);
+            if (isSeedFileFresh()) {
+                reportSeedUpdateCompletion();
+            }
+        }
+
+        public void reportSeedUpdateCompletion() {
+            while (!mSafeModeVariationsSeedContentProviderCallback.isEmpty()) {
+                mSafeModeVariationsSeedContentProviderCallback.poll().run();
+            }
+        }
+
+        // Provides a way for the caller to update the seed files from the current thread instead of
+        // the seed thread. This allowls the caller to block its current thread and wait for the
+        // seed files to update.
+        public boolean updateSeedFilesSynchronously(SeedInfo curInfo) {
+            File newSeedFile = VariationsUtils.getNewSeedFile();
+            FileOutputStream out;
+            try {
+                out = new FileOutputStream(newSeedFile);
+                if (!VariationsUtils.writeSeed(out, curInfo)) {
+                    Log.e(TAG, "Failed to write seed file " + newSeedFile + " for update");
+                }
+                VariationsUtils.replaceOldWithNewSeed();
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "Failed to open seed file " + newSeedFile + " for update");
+                return false;
+            }
+            reportSeedUpdateCompletion();
+            return true;
+        }
+    }
+
+    public void hasSeedUpdateCompletedAsync(Runnable r) {
+        mSafeModeSeedUpdater.hasSeedUpdateCompletedAsync(r);
+    }
+
+    public boolean updateSeedFilesSynchronously(SeedInfo curInfo) {
+        return mSafeModeSeedUpdater.updateSeedFilesSynchronously(curInfo);
+    }
+
+    @VisibleForTesting
+    public boolean isSeedFileFresh() {
+        long currTimestamp = getCurrentTimestamp();
+        return (VariationsUtils.getSeedFile().lastModified() > 0
+                && (currTimestamp - VariationsUtils.getSeedFile().lastModified())
+                        < VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
+    }
+
+    @VisibleForTesting
+    public void setDateForTesting(Date date) {
+        mDate = date;
+    }
+
+    private long getCurrentTimestamp() {
+        return mDate.getTime();
+    }
 }

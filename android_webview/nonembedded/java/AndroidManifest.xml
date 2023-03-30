@@ -133,6 +133,12 @@ by a child template that "extends" this file.
                       tools:ignore="ExportedContentProvider" />
             <!-- If you change this component make sure to update the corresponding copy in
                  test/shell/AndroidManifest.xml-->
+            <provider android:name="org.chromium.android_webview.services.SafeModeVariationsSeedContentProvider"
+                      android:visibleToInstantApps="true"
+                      android:exported="true"
+                      android:authorities="{{ manifest_package }}.SafeModeVariationsSeedContentProvider"
+                      android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
+                      tools:ignore="ExportedContentProvider" />
             <provider android:name="org.chromium.android_webview.services.SafeModeContentProvider"
                       android:visibleToInstantApps="true"
                       android:exported="true"

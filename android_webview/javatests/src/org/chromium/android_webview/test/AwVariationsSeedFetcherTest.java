@@ -130,19 +130,20 @@ public class AwVariationsSeedFetcherTest {
         public int fetchResult;
 
         @Override
-        public SeedFetchInfo downloadContent(@VariationsSeedFetcher.VariationsPlatform int platform,
-                String restrictMode, String milestone, String channel, SeedInfo curSeedInfo) {
-            Assert.assertEquals(VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW, platform);
-            Assert.assertTrue(Integer.parseInt(milestone) > 0);
+        public SeedFetchInfo downloadContent(
+                VariationsSeedFetcher.SeedFetchParameters params, SeedInfo currInfo) {
+            Assert.assertEquals(
+                    VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW, params.getPlatform());
+            Assert.assertTrue(Integer.parseInt(params.getMilestone()) > 0);
             mClock.timestamp += DOWNLOAD_DURATION;
 
             SeedFetchInfo fetchInfo = new SeedFetchInfo();
             // Pretend the servers-side |serialNumber| equals |SAVED_VARIATIONS_SEED_SERIAL_NUMBER|
             // and return |HTTP_NOT_MODIFIED|
-            if (curSeedInfo != null
-                    && curSeedInfo.getParsedVariationsSeed().getSerialNumber().equals(
+            if (currInfo != null
+                    && currInfo.getParsedVariationsSeed().getSerialNumber().equals(
                             SAVED_VARIATIONS_SEED_SERIAL_NUMBER)) {
-                fetchInfo.seedInfo = curSeedInfo;
+                fetchInfo.seedInfo = currInfo;
                 fetchInfo.seedInfo.date = getDateTime().newDate().getTime();
                 fetchInfo.seedFetchResult = HTTP_NOT_MODIFIED;
             } else {
@@ -155,8 +156,8 @@ public class AwVariationsSeedFetcherTest {
     // A test VariationsSeedFetcher that fails all seed requests.
     private class FailingVariationsSeedFetcher extends VariationsSeedFetcher {
         @Override
-        public SeedFetchInfo downloadContent(@VariationsSeedFetcher.VariationsPlatform int platform,
-                String restrictMode, String milestone, String channel, SeedInfo curSeedInfo) {
+        public SeedFetchInfo downloadContent(
+                VariationsSeedFetcher.SeedFetchParameters params, SeedInfo currInfo) {
             SeedFetchInfo fetchInfo = new SeedFetchInfo();
             fetchInfo.seedFetchResult = -1;
             return fetchInfo;
@@ -226,6 +227,30 @@ public class AwVariationsSeedFetcherTest {
         try {
             AwVariationsSeedFetcher.scheduleIfNeeded();
             mScheduler.assertScheduled();
+        } finally {
+            mScheduler.clear();
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testScheduleWithCorrectFastModeSettings() {
+        try {
+            AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
+            AwVariationsSeedFetcher.scheduleIfNeeded();
+            mScheduler.assertScheduled();
+            JobInfo pendingJob = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertTrue("Fast mode should disabled.",
+                    !pendingJob.getExtras().getBoolean(
+                            AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
+            mScheduler.clear();
+
+            AwVariationsSeedFetcher.scheduleIfNeeded(/*requireFastMode=*/true);
+            mScheduler.assertScheduled();
+            pendingJob = mScheduler.getPendingJob(JOB_ID);
+            Assert.assertTrue("Fast mode should enabled.",
+                    pendingJob.getExtras().getBoolean(
+                            AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
         } finally {
             mScheduler.clear();
         }

@@ -4,6 +4,11 @@
 
 package org.chromium.android_webview.test;
 
+import static org.hamcrest.Matchers.greaterThan;
+
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobWorkItem;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +32,8 @@ import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.services.AwVariationsSeedFetcher;
+import org.chromium.android_webview.services.NonEmbeddedFastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.services.NonEmbeddedSafeModeAction;
 import org.chromium.android_webview.services.NonEmbeddedSafeModeActionsSetupCleanup;
 import org.chromium.android_webview.services.SafeModeService;
@@ -40,12 +47,16 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.BuildConfig;
+import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -80,6 +91,122 @@ public class SafeModeTest {
 
     private AtomicInteger mTestSafeModeActionExecutionCounter;
 
+    private TestJobScheduler mScheduler = new TestJobScheduler();
+    private TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int HTTP_NOT_MODIFIED = 304;
+    private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
+
+    // A test JobScheduler which only holds one job, and never does anything with it.
+    private class TestJobScheduler extends JobScheduler {
+        public JobInfo mJob;
+        public QueueContainer mQueueContainer = new QueueContainer();
+
+        public void clear() {
+            mJob = null;
+        }
+
+        public void assertNotScheduled() {
+            Assert.assertNull("Job should not have been scheduled", mJob);
+        }
+
+        public void assertScheduled(int jobId) {
+            Assert.assertEquals("No job scheduled", mJob.getId(), jobId);
+        }
+
+        @Override
+        public void cancel(int jobId) {
+            if (mJob == null) return;
+            if (mJob.getId() == jobId) mJob = null;
+        }
+
+        @Override
+        public void cancelAll() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int enqueue(JobInfo job, JobWorkItem work) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<JobInfo> getAllPendingJobs() {
+            ArrayList<JobInfo> list = new ArrayList<>();
+            if (mJob != null) list.add(mJob);
+            return list;
+        }
+
+        @Override
+        public JobInfo getPendingJob(int jobId) {
+            if (mJob != null && mJob.getId() == jobId) return mJob;
+            return null;
+        }
+
+        @Override
+        public int schedule(JobInfo job) {
+            Assert.assertTrue("Job scheduled with wrong ID", JOB_ID == job.getId());
+            mJob = job;
+            mQueueContainer.notifyCalled(job);
+            return JobScheduler.RESULT_SUCCESS;
+        }
+
+        public JobInfo waitForMessageCallback() throws Exception {
+            return mQueueContainer.waitForMessageCallback();
+        }
+    }
+
+    private static class QueueContainer {
+        private LinkedBlockingQueue<JobInfo> mQueue = new LinkedBlockingQueue<>();
+
+        public void notifyCalled(JobInfo job) {
+            try {
+                mQueue.add(job);
+            } catch (IllegalStateException e) {
+                // We expect this add operation will always succeed since the default capacity of
+                // the queue is Integer.MAX_VALUE.
+            }
+        }
+
+        public JobInfo waitForMessageCallback() throws Exception {
+            return AwActivityTestRule.waitForNextQueueElement(mQueue);
+        }
+
+        public boolean isQueueEmpty() {
+            return mQueue.isEmpty();
+        }
+    }
+
+    // A test VariationsSeedFetcher which doesn't actually download seeds, but verifies the request
+    // parameters.
+    private class TestVariationsSeedFetcher extends VariationsSeedFetcher {
+        private static final String SAVED_VARIATIONS_SEED_SERIAL_NUMBER = "savedSerialNumber";
+
+        public int fetchResult;
+
+        @Override
+        public SeedFetchInfo downloadContent(
+                VariationsSeedFetcher.SeedFetchParameters params, SeedInfo currInfo) {
+            Assert.assertEquals(
+                    VariationsSeedFetcher.VariationsPlatform.ANDROID_WEBVIEW, params.getPlatform());
+            Assert.assertThat(Integer.parseInt(params.getMilestone()), greaterThan(0));
+
+            SeedFetchInfo fetchInfo = new SeedFetchInfo();
+            // Pretend the servers-side |serialNumber| equals |SAVED_VARIATIONS_SEED_SERIAL_NUMBER|
+            // and return |HTTP_NOT_MODIFIED|
+            if (currInfo != null
+                    && currInfo.getParsedVariationsSeed().getSerialNumber().equals(
+                            SAVED_VARIATIONS_SEED_SERIAL_NUMBER)) {
+                fetchInfo.seedInfo = currInfo;
+                fetchInfo.seedInfo.date = getDateTime().newDate().getTime();
+                fetchInfo.seedFetchResult = HTTP_NOT_MODIFIED;
+            } else {
+                fetchInfo.seedFetchResult = fetchResult;
+            }
+            return fetchInfo;
+        }
+    }
+
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
@@ -100,6 +227,7 @@ public class SafeModeTest {
         SafeModeController.getInstance().unregisterActionsForTesting();
 
         SafeModeService.clearSharedPrefsForTesting();
+        mScheduler.cancel(JOB_ID);
     }
 
     @Test
@@ -151,12 +279,7 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testSafeModeState_enableWithService() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
-        }
+        setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
 
         Assert.assertTrue("SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
@@ -166,21 +289,12 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testSafeModeState_disableWithService() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
-        }
+        setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
 
         Assert.assertTrue("SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
 
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList());
-        }
+        setSafeMode(Arrays.asList());
 
         Assert.assertFalse("SafeMode should be re-disabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
@@ -199,13 +313,8 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_singleAction() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         Assert.assertTrue("SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
@@ -218,13 +327,8 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_multipleActions() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME, variationsActionId));
-        }
+        setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME, variationsActionId));
 
         Assert.assertTrue("SafeMode should be enabled",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
@@ -237,15 +341,10 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableAfter30Days() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
         SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         final long beforeTimeLimitMs =
                 initialStartTimeMs + SafeModeService.SAFE_MODE_ENABLED_TIME_LIMIT_MS - 1L;
@@ -273,15 +372,10 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableIfTimestampInFuture() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
         SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         // If the user manually sets their clock backward in time, then the time delta will be
         // negative. This case should also be treated as expired.
@@ -300,24 +394,15 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_extendTimeoutWithDuplicateConfig() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
         SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         // Send a duplicate config after 1 day to extend the SafeMode timeout for another 30 days.
         final long duplicateConfigTimeMs = initialStartTimeMs + TimeUnit.DAYS.toMillis(1);
         SafeModeService.setClockForTesting(() -> { return duplicateConfigTimeMs; });
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         // 30 days after the original timeout
         final long firstTimeLimitMs =
@@ -341,13 +426,8 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableIfMissingTimestamp() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         // If for some reason LAST_MODIFIED_TIME_KEY is unexpectedly missing, SafeMode should
         // disable itself.
@@ -365,13 +445,8 @@ public class SafeModeTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableIfMissingActions() throws Throwable {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
-        try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
-            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
-            service.setSafeMode(Arrays.asList(variationsActionId));
-        }
+        setSafeMode(Arrays.asList(variationsActionId));
 
         // If for some reason SAFEMODE_ACTIONS_KEY is unexpectedly missing (or the empty set),
         // SafeMode should disable itself.
@@ -1048,6 +1123,28 @@ public class SafeModeTest {
                 "Test action 3 should be activated once", 1, testAction3.getActivatedCallCount());
         Assert.assertEquals("Test action 3 should be deactivated once", 1,
                 testAction3.getDeactivatedCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeActionList_turnOffSafeModeSeedFetch() throws Throwable {
+        AwVariationsSeedFetcher.setUseZeroJitterForTesting(true);
+        NonEmbeddedFastVariationsSeedSafeModeAction testAction =
+                new NonEmbeddedFastVariationsSeedSafeModeAction();
+        AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
+
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
+        SafeModeAction[] actions = SafeModeController.getInstance().getRegisteredActions();
+        Assert.assertThat("Actions list should not be empty", actions.length, greaterThan(0));
+
+        mScheduler.assertNotScheduled();
+        setSafeMode(Arrays.asList(testAction.getId()));
+        mScheduler.waitForMessageCallback();
+        mScheduler.assertScheduled(JOB_ID);
+
+        setSafeMode(Arrays.asList());
+        mScheduler.assertNotScheduled();
     }
 
     private void setSafeMode(List<String> actions) throws RemoteException {

@@ -199,6 +199,13 @@
         android:process=":webview_service"
         android:visibleToInstantApps="true">
     </provider>  # DIFF-ANCHOR: ecfff997
+    <provider  # DIFF-ANCHOR: c41df08d
+        android:name="org.chromium.android_webview.services.SafeModeVariationsSeedContentProvider"
+        android:authorities="$PACKAGE.SafeModeVariationsSeedContentProvider"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </provider>  # DIFF-ANCHOR: c41df08d
     <provider  # DIFF-ANCHOR: b73a881a
         android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
         android:authorities="$PACKAGE.DownloadFileProvider"

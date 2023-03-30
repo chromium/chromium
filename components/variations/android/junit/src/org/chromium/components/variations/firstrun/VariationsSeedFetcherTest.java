@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -73,8 +74,7 @@ public class VariationsSeedFetcherTest {
         mConnection = mock(HttpURLConnection.class);
         doReturn(mConnection)
                 .when(mFetcher)
-                .getServerConnection(VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict,
-                        sMilestone, sChannel);
+                .getServerConnection(any(VariationsSeedFetcher.SeedFetchParameters.class));
         mPrefs = ContextUtils.getAppSharedPreferences();
         UmaRecorderHolder.resetForTesting();
     }
@@ -135,9 +135,14 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
         when(mConnection.getHeaderField("IM")).thenReturn("x-bm");
 
-        SeedFetchInfo seedFetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, null);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, /*currInfo=*/null);
 
         assertEquals("Should be logged as requested and received", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -158,9 +163,14 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
         when(mConnection.getHeaderField("IM")).thenReturn("");
 
-        SeedFetchInfo seedFetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, null);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, /*currInfo=*/null);
 
         assertEquals("Should be logged as requested but not received", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -180,9 +190,14 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
         when(mConnection.getHeaderField("IM")).thenReturn("x-bm");
 
-        SeedFetchInfo seedFetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, null);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, /*currInfo=*/null);
 
         assertEquals("Should be logged as not requested but received", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -202,9 +217,14 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
         when(mConnection.getHeaderField("IM")).thenReturn("");
 
-        SeedFetchInfo seedFetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, null);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, /*currInfo=*/null);
 
         assertEquals("Should be logged as not requested and not received", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -225,9 +245,14 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_NOT_MODIFIED);
         when(mConnection.getHeaderField("IM")).thenReturn("x-bm");
 
-        SeedFetchInfo seedFetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, null);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, /*currInfo=*/null);
 
         assertEquals("Should not log Variations.FirstRun.DeltaCompression", 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -266,9 +291,14 @@ public class VariationsSeedFetcherTest {
                                       .build();
         curSeedInfo.seedData = seed.toByteArray();
 
-        SeedFetchInfo seedFetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, curSeedInfo);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, curSeedInfo);
 
         assertEquals(seedFetchInfo.seedFetchResult, HttpURLConnection.HTTP_NOT_MODIFIED);
 
@@ -292,8 +322,15 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getInputStream())
                 .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
 
-        mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict,
-                sMilestone, sChannel, null);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, /*currInfo=*/null);
+
         assertEquals("Should be logged as InvalidImHeader", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM,
@@ -316,8 +353,15 @@ public class VariationsSeedFetcherTest {
         SeedInfo seed = new SeedInfo();
         seed.seedData = ApiCompatibilityUtils.getBytesUtf8("bogusDeltaPatch");
 
-        mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict,
-                sMilestone, sChannel, seed);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, seed);
+
         assertEquals("Should not be logged as invalidImHeader", 0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM,
@@ -373,9 +417,14 @@ public class VariationsSeedFetcherTest {
         SeedInfo seed = new SeedInfo();
         seed.seedData = Base64.decode(base64BeforeSeed, Base64.NO_WRAP);
 
-        SeedFetchInfo fetchInfo =
-                mFetcher.downloadContent(VariationsSeedFetcher.VariationsPlatform.ANDROID,
-                        sRestrict, sMilestone, sChannel, seed);
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo fetchInfo = mFetcher.downloadContent(params, seed);
 
         // Check the counters.
         assertEquals("Should not be logged as invalidImHeader", 0,
@@ -462,8 +511,16 @@ public class VariationsSeedFetcherTest {
      */
     @Test
     public void testGetConnectionString_HasParams() {
-        String urlString = mFetcher.getConnectionString(
-                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, sChannel);
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID;
+        VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
 
         // Has the params.
         assertTrue(urlString, urlString.contains("restrict"));
@@ -476,26 +533,80 @@ public class VariationsSeedFetcherTest {
         assertTrue(urlString, urlString.contains(sMilestone));
         assertTrue(urlString, urlString.contains(sChannel));
 
-        urlString = mFetcher.getConnectionString(
-                VariationsSeedFetcher.VariationsPlatform.ANDROID, "", sMilestone, sChannel);
+        params = VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                         .setPlatform(platform)
+                         .setRestrictMode("")
+                         .setMilestone(sMilestone)
+                         .setChannel(sChannel)
+                         .build();
+        urlString = mFetcher.getConnectionString(params);
         assertFalse(urlString.contains("restrict"));
         assertTrue(urlString.contains("osname"));
         assertTrue(urlString.contains("milestone"));
         assertTrue(urlString.contains("channel"));
 
-        urlString = mFetcher.getConnectionString(
-                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, "", sChannel);
+        params = VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                         .setPlatform(platform)
+                         .setRestrictMode(sRestrict)
+                         .setMilestone("")
+                         .setChannel(sChannel)
+                         .build();
+        urlString = mFetcher.getConnectionString(params);
         assertTrue(urlString.contains("restrict"));
         assertTrue(urlString.contains("osname"));
         assertFalse(urlString.contains("milestone"));
         assertTrue(urlString.contains("channel"));
 
-        urlString = mFetcher.getConnectionString(
-                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, "");
+        params = VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                         .setPlatform(platform)
+                         .setRestrictMode(sRestrict)
+                         .setMilestone(sMilestone)
+                         .setChannel("")
+                         .build();
+        urlString = mFetcher.getConnectionString(params);
         assertTrue(urlString.contains("restrict"));
         assertTrue(urlString.contains("osname"));
         assertTrue(urlString.contains("milestone"));
         assertFalse(urlString.contains("channel"));
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#getConnectionString()} has non-fast-finch URl
+     * params.
+     */
+    @Test
+    public void testGetConnectionString_DoesNotHaveFastFinchParam() {
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID;
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
+        assertFalse(urlString.contains("fastfinch"));
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#getConnectionString()} has fast-finch URl
+     * params.
+     */
+    @Test
+    public void testGetConnectionString_HasFastFinchParam() {
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID;
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .setIsFastFetchMode(true)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
+        assertTrue(urlString.contains("fastfinch"));
     }
 
     /**
@@ -505,8 +616,16 @@ public class VariationsSeedFetcherTest {
     @Test
     @CommandLineFlags.Add(VariationsSwitches.FAKE_VARIATIONS_CHANNEL + "=stable")
     public void testGetConnectionString_HonorsChannelCommandlineSwitch() {
-        String urlString = mFetcher.getConnectionString(
-                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, sChannel);
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID;
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
 
         // The URL should have a channel param.
         assertTrue(urlString, urlString.contains("channel"));
@@ -522,8 +641,16 @@ public class VariationsSeedFetcherTest {
     @Test
     @CommandLineFlags.Add(VariationsSwitches.VARIATIONS_SERVER_URL + "=http://localhost:8080/seed")
     public void testGetConnectionString_HonorsServerUrlCommandlineSwitch() {
-        String urlString = mFetcher.getConnectionString(
-                VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, sChannel);
+        @VariationsSeedFetcher.VariationsPlatform
+        int platform = VariationsSeedFetcher.VariationsPlatform.ANDROID;
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(platform)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        String urlString = mFetcher.getConnectionString(params);
 
         // The URL should start with the variations server URL passed as a switch.
         assertTrue(urlString, urlString.startsWith("http://localhost:8080/seed"));
