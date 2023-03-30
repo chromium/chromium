@@ -1821,7 +1821,7 @@ void TileManager::ActivationStateAsValueInto(
   state->SetInteger("soft_memory_limit",
                     global_state_.soft_memory_limit_in_bytes);
   state->SetInteger("hard_memory_limit",
-                    global_state_.soft_memory_limit_in_bytes);
+                    global_state_.hard_memory_limit_in_bytes);
   state->SetInteger("pending_required_for_activation_callback_id",
                     pending_required_for_activation_callback_id_);
   state->SetInteger("current_memory_usage",
