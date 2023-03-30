@@ -280,7 +280,7 @@ void UninstallKeystone(UpdaterScope scope) {
   }
 }
 
-void MigrateKeystoneApps(
+bool MigrateKeystoneApps(
     const base::FilePath& keystone_path,
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
@@ -292,6 +292,9 @@ void MigrateKeystoneApps(
                                   .Append(
                                       FILE_PATH_LITERAL("Keystone.ticketstore"))
                                   .AsUTF8Unsafe())];
+    if (!store) {
+      return false;
+    }
 
     CountingMetricsStore* metrics_store =
         [CountingMetricsStore storeAtPath:keystone_path];
@@ -334,6 +337,7 @@ void MigrateKeystoneApps(
       register_callback.Run(registration);
     }
   }
+  return true;
 }
 
 }  // namespace updater

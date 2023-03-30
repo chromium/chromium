@@ -24,8 +24,9 @@ bool InstallKeystone(UpdaterScope scope);
 void UninstallKeystone(UpdaterScope scope);
 
 // `Calls register_callback` with data from Keystone's ticket store if needed.
-// This is a best-effort operation, tickets with errors are not migrated.
-void MigrateKeystoneApps(
+// This is a best-effort operation, tickets with errors are not migrated, but
+// a complete parsing failure will be result in returning false.
+bool MigrateKeystoneApps(
     const base::FilePath& keystone_path,
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback);

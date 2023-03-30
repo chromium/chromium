@@ -16,10 +16,8 @@ bool AppServerPosix::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
   // TODO(crbug.com/1250524): This must not run concurrently with Keystone.
-  MigrateKeystoneApps(GetKeystoneFolderPath(updater_scope()).value(),
-                      register_callback);
-
-  return true;
+  return MigrateKeystoneApps(GetKeystoneFolderPath(updater_scope()).value(),
+                             register_callback);
 }
 
 scoped_refptr<App> MakeAppServer() {

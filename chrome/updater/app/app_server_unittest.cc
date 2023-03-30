@@ -153,8 +153,8 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
 
     // Expect the app to SwapInNewVersion and then Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
-    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
@@ -228,8 +228,8 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
 
     // Expect the app to SwapInNewVersion and Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
-    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }

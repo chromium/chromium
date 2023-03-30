@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -40,6 +42,9 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   if (!storeData) {
     VLOG(0) << "Failed to load ticket store at "
             << base::SysNSStringToUTF8(path) << ": " << error;
+    SCOPED_CRASH_KEY_STRING32("updater ticket error", "error",
+                              "Failed to load ticket store.");
+    base::debug::DumpWithoutCrashing();
     return nil;
   }
   if (!storeData.length) {
@@ -53,6 +58,9 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   if (!unpacker) {
     VLOG(0) << base::SysNSStringToUTF8(
         [NSString stringWithFormat:@"Ticket error %@", error]);
+    SCOPED_CRASH_KEY_STRING32("updater ticket error", "error",
+                              "Failed to initialize unpacker.");
+    base::debug::DumpWithoutCrashing();
     return nil;
   }
   unpacker.requiresSecureCoding = YES;
@@ -61,16 +69,26 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
                             [KSPathExistenceChecker class],
                             [KSLaunchServicesExistenceChecker class],
                             [KSSpotlightExistenceChecker class],
-                            [NSArray class], [NSURL class], nil];
+                            [NSArray class], [NSSet class], [NSURL class], nil];
   store = [unpacker decodeObjectOfClasses:classes
                                    forKey:NSKeyedArchiveRootObjectKey];
   [unpacker finishDecoding];
-  if (!store || ![store isKindOfClass:[NSDictionary class]]) {
-    VLOG(0) << "Ticket store is not a dictionary.";
-    return nil;
-  }
   if (unpacker.error) {
     VLOG(0) << "Error unpacking ticket store: " << unpacker.error;
+    SCOPED_CRASH_KEY_STRING32(
+        "updater ticket error", "description",
+        base::SysNSStringToUTF8([unpacker.error localizedDescription]));
+    SCOPED_CRASH_KEY_STRING32(
+        "updater ticket error", "reason",
+        base::SysNSStringToUTF8([unpacker.error localizedFailureReason]));
+    base::debug::DumpWithoutCrashing();
+    return nil;
+  }
+  if (!store || ![store isKindOfClass:[NSDictionary class]]) {
+    VLOG(0) << "Ticket store is not a dictionary.";
+    SCOPED_CRASH_KEY_STRING32("updater ticket error", "error",
+                              "store is nil or not an NSDictionary.");
+    base::debug::DumpWithoutCrashing();
     return nil;
   }
   return store;

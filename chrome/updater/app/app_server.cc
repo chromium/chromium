@@ -164,9 +164,6 @@ void AppServer::FirstTaskRun() {
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
-  if (!SwapInNewVersion()) {
-    return false;
-  }
   if (!global_prefs->GetMigratedLegacyUpdaters()) {
     if (!MigrateLegacyUpdaters(base::BindRepeating(
             &PersistedData::RegisterApp,
@@ -175,6 +172,9 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
       return false;
     }
     global_prefs->SetMigratedLegacyUpdaters();
+  }
+  if (!SwapInNewVersion()) {
+    return false;
   }
   global_prefs->SetActiveVersion(kUpdaterVersion);
   global_prefs->SetSwapping(false);
