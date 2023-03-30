@@ -8,7 +8,6 @@
 import {BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {LogType} from '../../common/log_types.js';
-import {SettingsManager} from '../../common/settings_manager.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {LogStore} from '../logging/log_store.js';
 
@@ -54,12 +53,7 @@ export class BrailleBackground {
       return;
     }
 
-    if (SettingsManager.getBoolean('enableBrailleLogging')) {
-      const logStr = 'Braille "' + params.text.toString() + '"';
-      LogStore.instance.writeTextLog(logStr, LogType.BRAILLE);
-      console.log(logStr);
-    }
-
+    LogStore.instance.writeBrailleLog(params.text.toString());
     this.setContent_(params, null);
   }
 

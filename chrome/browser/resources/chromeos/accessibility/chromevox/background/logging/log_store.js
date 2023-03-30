@@ -8,7 +8,9 @@
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {BaseLog, LogType, TextLog, TreeLog} from '../../common/log_types.js';
+import {SettingsManager} from '../../common/settings_manager.js';
 import {TreeDumper} from '../../common/tree_dumper.js';
+import {ChromeVoxPrefs} from '../prefs.js';
 
 const Action = BridgeConstants.LogStore.Action;
 const TARGET = BridgeConstants.LogStore.TARGET;
@@ -76,6 +78,14 @@ export class LogStore {
       returnLogs.push(this.logs_[index]);
     }
     return returnLogs;
+  }
+
+  /** @param {string} text The text string written to the braille display. */
+  writeBrailleLog(text) {
+    if (SettingsManager.getBoolean(ChromeVoxPrefs.loggingPrefs.BRAILLE)) {
+      const logStr = `Braille "${text}"`;
+      this.writeTextLog(logStr, LogType.BRAILLE);
+    }
   }
 
   /**

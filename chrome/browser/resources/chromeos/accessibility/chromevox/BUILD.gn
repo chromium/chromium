@@ -431,6 +431,7 @@ if (is_chromeos_ash) {
       "background/background_test.js",
       "background/braille/braille_display_manager_test.js",
       "background/braille/braille_input_handler_test.js",
+      "background/braille/braille_test.js",
       "background/braille/braille_translator_manager_test.js",
       "background/braille/liblouis_test.js",
       "background/color_test.js",
