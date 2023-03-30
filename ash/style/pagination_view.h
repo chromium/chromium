@@ -25,12 +25,12 @@ class PaginationModel;
 // to the corresponding page. There is a maximum number of visible indicators.
 // If the number of total pages exceeds the visible maximum, two arrow-shaped
 // overflow buttons will be shown on both sides. The arrow buttons can also
-// control pagination. The layout of a pagination view with arrow buttons is
-// like below:
+// control pagination. The layout of a horizontal pagination view with arrow
+// buttons is like below:
 //                   +---+---+---+---+---+---+---+
 //                   | < | o | o | o | o | o | > |
 //                   +-|-+---+---+-|-+---+---+-|-+
-//            left arrow button    |    right arrow button
+//            backward arrow button    |    forward arrow button
 //                             indicator
 //
 // When a page is selected, a selector dot (a solid circle) will move to the
@@ -45,10 +45,16 @@ class ASH_EXPORT PaginationView : public views::View,
  public:
   METADATA_HEADER(PaginationView);
 
+  enum class Orientation {
+    kHorizontal,
+    kVertical,
+  };
+
   // A paginaition view only binds with one pagination model, but the pagination
   // model may control multiple views. Therefore, pagination model should
   // outlive the pagination view.
-  explicit PaginationView(PaginationModel* model);
+  explicit PaginationView(PaginationModel* model,
+                          Orientation orientation = Orientation::kHorizontal);
   PaginationView(const PaginationView&) = delete;
   PaginationView& operator=(const PaginationView*) = delete;
   ~PaginationView() override;
@@ -66,7 +72,7 @@ class ASH_EXPORT PaginationView : public views::View,
   void CreateArrowButtons();
   void RemoveArrowButtons();
   void UpdateArrowButtonsVisiblity();
-  void OnArrowButtonPressed(bool left, const ui::Event& event);
+  void OnArrowButtonPressed(bool forward, const ui::Event& event);
   void MaybeSetUpScroll();
 
   void CreateSelectorDot();
@@ -84,6 +90,7 @@ class ASH_EXPORT PaginationView : public views::View,
   void TransitionChanged() override;
 
   base::raw_ptr<PaginationModel> const model_;
+  const Orientation orientation_;
 
   // The scroll view with an indicator container as its contents. The scroll
   // view is owned by this and the container is owned by the scroll view.
@@ -94,8 +101,8 @@ class ASH_EXPORT PaginationView : public views::View,
   base::raw_ptr<SelectorDotView> selector_dot_ = nullptr;
 
   // The arrow buttons owned by this.
-  base::raw_ptr<views::ImageButton> left_arrow_button_ = nullptr;
-  base::raw_ptr<views::ImageButton> right_arrow_button_ = nullptr;
+  base::raw_ptr<views::ImageButton> backward_arrow_button_ = nullptr;
+  base::raw_ptr<views::ImageButton> forward_arrow_button_ = nullptr;
 
   base::ScopedObservation<PaginationModel, PaginationModelObserver>
       model_observation_{this};

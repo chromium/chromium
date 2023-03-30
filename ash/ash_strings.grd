@@ -6446,10 +6446,10 @@ New install
       </message>
 
       <!-- pagination view -->
-      <message name="IDS_ASH_PAGINATION_LEFT_ARROW_TOOLTIP" desc="The tooltip text used for pagination left arrow button." >
+      <message name="IDS_ASH_PAGINATION_BACKWARD_ARROW_TOOLTIP" desc="The tooltip text used for pagination backward arrow button." >
         Previous page
       </message>
-      <message name="IDS_ASH_PAGINATION_RIGHT_ARROW_TOOLTIP" desc="The tooltip text used for pagination right arrow button." >
+      <message name="IDS_ASH_PAGINATION_FORWARD_ARROW_TOOLTIP" desc="The tooltip text used for pagination forward arrow button." >
         Next page
       </message>
 
