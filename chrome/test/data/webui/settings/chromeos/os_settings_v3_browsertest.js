@@ -341,14 +341,19 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
- [
-   'InternetDetailSubpage', 'internet_detail_subpage_tests.js',
-   {enabled: ['ash::features::kApnRevamp']}
- ],
  ['InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js'],
  [
    'InternetPage', 'internet_page_tests.js',
    {enabled: ['ash::features::kApnRevamp']}
+ ],
+ [
+   'InternetPageInternetDetailSubpage',
+   'internet_page/internet_detail_subpage_tests.js',
+   {enabled: ['ash::features::kApnRevamp']}
+ ],
+ [
+   'InternetPageNetworkSummaryItem',
+   'internet_page/network_summary_item_test.js'
  ],
  [
    'InternetPageTetherConnectionDialog',
@@ -408,7 +413,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.js'],
  ['NetworkProxySection', 'network_proxy_section_test.js'],
  ['NetworkSummary', 'network_summary_test.js'],
- ['NetworkSummaryItem', 'network_summary_item_test.js'],
  ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  [

@@ -65,7 +65,6 @@ build_webui_tests("build") {
     "input_page_test.js",
     "internet_config_test.js",
     "internet_detail_menu_test.js",
-    "internet_detail_subpage_tests.js",
     "internet_known_networks_subpage_tests.js",
     "internet_page_tests.js",
     "internet_subpage_tests.js",
@@ -95,7 +94,6 @@ build_webui_tests("build") {
     "network_always_on_vpn_test.js",
     "network_device_info_dialog_test.js",
     "network_proxy_section_test.js",
-    "network_summary_item_test.js",
     "network_summary_test.js",
     "onc_mojo_test.ts",
     "os_a11y_page_tests.js",
@@ -140,7 +138,6 @@ build_webui_tests("build") {
     "test_cups_printers_browser_proxy.js",
     "test_device_name_browser_proxy.js",
     "test_guest_os_browser_proxy.js",
-    "test_internet_page_browser_proxy.js",
     "test_kerberos_accounts_browser_proxy.js",
     "test_metrics_consent_browser_proxy.js",
     "test_multidevice_browser_proxy.js",
@@ -207,6 +204,9 @@ build_webui_tests("build") {
     "device_page/per_device_touchpad_test.ts",
     "device_page/test_device_page_browser_proxy.ts",
 
+    "internet_page/internet_detail_subpage_tests.js",
+    "internet_page/network_summary_item_test.js",
+    "internet_page/test_internet_page_browser_proxy.ts",
     "internet_page/tether_connection_dialog_test.ts",
 
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
