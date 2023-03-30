@@ -194,11 +194,11 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     if (!get_page_load_token_callback_.is_null()) {
       ChromeUserPopulation::PageLoadToken token =
           get_page_load_token_callback_.Run(GURL(report->page_url()));
-      report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
-          &token);
       base::UmaHistogramBoolean(
           "SafeBrowsing.ClientSafeBrowsingReport.IsPageLoadTokenNull",
           !token.has_token_value());
+      report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+          &token);
     }
   }
 
