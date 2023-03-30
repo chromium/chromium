@@ -16,7 +16,7 @@ namespace exo {
 
 BASE_FEATURE(kExoReactiveFrameSubmission,
              "ExoReactiveFrameSubmission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 // LayerTreeFrameSinkHolder, public:
@@ -197,6 +197,10 @@ void LayerTreeFrameSinkHolder::DidPresentCompositorFrame(
 }
 
 void LayerTreeFrameSinkHolder::DidLoseLayerTreeFrameSink() {
+  DCHECK(frame_sink_);
+  frame_sink_->DetachFromClient();
+  frame_sink_.reset();
+
   StopProcessingPendingFrames();
 
   last_frame_resources_.clear();
@@ -222,9 +226,11 @@ void LayerTreeFrameSinkHolder::OnDestroyed() {
   lifetime_manager_->RemoveObserver(this);
   lifetime_manager_ = nullptr;
 
-  // Make sure frame sink never outlives the shell.
-  frame_sink_->DetachFromClient();
-  frame_sink_.reset();
+  if (frame_sink_) {
+    // Make sure frame sink never outlives the shell.
+    frame_sink_->DetachFromClient();
+    frame_sink_.reset();
+  }
   ScheduleDelete();
 }
 
