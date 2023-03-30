@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
