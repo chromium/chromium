@@ -49,6 +49,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -196,6 +197,7 @@ public class UrlOverridingTest {
     // Needs to be a real package on the device so we can get an icon from it. It will not be
     // launched.
     private static final String NON_BROWSER_PACKAGE = "com.android.settings";
+    private static final String NON_BROWSER_PACKAGE_AUTO = "com.android.car.settings";
 
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
 
@@ -243,13 +245,15 @@ public class UrlOverridingTest {
 
     private static class TestContext extends ContextWrapper {
         private boolean mResolveToNonBrowserPackage;
+        private String mNonBrowserPackageName;
         private String mHostToMatch;
         private String mSchemeToMatch;
         private IntentFilter mFilterForHostMatch;
         private IntentFilter mFilterForSchemeMatch;
 
-        public TestContext(Context baseContext) {
+        public TestContext(Context baseContext, String nonBrowserPackageName) {
             super(baseContext);
+            mNonBrowserPackageName = nonBrowserPackageName;
         }
 
         public void setResolveBrowserIntentToNonBrowserPackage(boolean toNonBrowser) {
@@ -292,14 +296,14 @@ public class UrlOverridingTest {
 
                     if (mHostToMatch != null && intent.getData() != null
                             && intent.getData().getHost().equals(mHostToMatch)) {
-                        ResolveInfo info = newResolveInfo(NON_BROWSER_PACKAGE);
+                        ResolveInfo info = newResolveInfo(mNonBrowserPackageName);
                         info.filter = mFilterForHostMatch;
                         return Arrays.asList(info);
                     }
 
                     if (mSchemeToMatch != null && intent.getScheme() != null
                             && intent.getScheme().equals(mSchemeToMatch)) {
-                        ResolveInfo info = newResolveInfo(NON_BROWSER_PACKAGE);
+                        ResolveInfo info = newResolveInfo(mNonBrowserPackageName);
                         info.filter = mFilterForSchemeMatch;
                         return Arrays.asList(info);
                     }
@@ -313,14 +317,14 @@ public class UrlOverridingTest {
                     if (intent.getPackage() != null
                             && intent.getPackage().equals(OTHER_BROWSER_PACKAGE)) {
                         if (mResolveToNonBrowserPackage) {
-                            return newResolveInfo(NON_BROWSER_PACKAGE);
+                            return newResolveInfo(mNonBrowserPackageName);
                         }
                         return newResolveInfo(OTHER_BROWSER_PACKAGE);
                     }
 
                     if (mSchemeToMatch != null && intent.getScheme() != null
                             && intent.getScheme().equals(mSchemeToMatch)) {
-                        ResolveInfo info = newResolveInfo(NON_BROWSER_PACKAGE);
+                        ResolveInfo info = newResolveInfo(mNonBrowserPackageName);
                         info.filter = mFilterForSchemeMatch;
                         return info;
                     }
@@ -339,12 +343,16 @@ public class UrlOverridingTest {
     private EmbeddedTestServer mTestServer;
     private Context mContextToRestore;
     private TestContext mTestContext;
+    private String mNonBrowserPackageName;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mContextToRestore = ContextUtils.getApplicationContext();
-        mTestContext = new TestContext(mContextToRestore);
+        mNonBrowserPackageName =
+            BuildInfo.getInstance().isAutomotive ? NON_BROWSER_PACKAGE_AUTO
+                : NON_BROWSER_PACKAGE;
+        mTestContext = new TestContext(mContextToRestore, mNonBrowserPackageName);
         ContextUtils.initApplicationContextForTests(mTestContext);
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -588,7 +596,7 @@ public class UrlOverridingTest {
 
     private void assertMessagePresent() throws Exception {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        ApplicationInfo applicationInfo = pm.getApplicationInfo(NON_BROWSER_PACKAGE, 0);
+        ApplicationInfo applicationInfo = pm.getApplicationInfo(mNonBrowserPackageName, 0);
         CharSequence label = pm.getApplicationLabel(applicationInfo);
 
         PropertyModel message = getCurrentExternalNavigationMessage();
