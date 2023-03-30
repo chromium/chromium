@@ -100,9 +100,6 @@ class GPU_GLES2_EXPORT SharedContextState
   bool GrContextIsVulkan() const {
     return gr_context_type_ == GrContextType::kVulkan;
   }
-  bool GrContextIsMetal() const {
-    return gr_context_type_ == GrContextType::kMetal;
-  }
   bool GrContextIsDawn() const {
     return gr_context_type_ == GrContextType::kDawn;
   }

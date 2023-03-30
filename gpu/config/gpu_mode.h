@@ -12,8 +12,6 @@ enum class GpuMode {
   UNKNOWN,
   // The GPU process is running with hardware acceleration, using only GL.
   HARDWARE_GL,
-  // The GPU process is running with hardware acceleration, using Metal and GL.
-  HARDWARE_METAL,
   // The GPU process is running with hardware acceleration, using Vulkan and GL.
   HARDWARE_VULKAN,
   // The GPU process is running for SwiftShader WebGL.

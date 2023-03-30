@@ -95,9 +95,6 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
   options.fAllowMSAAOnNewIntel =
       base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs);
 
-  if (type == GrContextType::kMetal)
-    options.fRuntimeProgramCacheSize = 1024;
-
   options.fSuppressMipmapSupport =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMipmapGeneration);
@@ -380,14 +377,6 @@ uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
         return tex_info.fID;
       break;
     }
-#if BUILDFLAG(IS_MAC)
-    case GrBackendApi::kMetal: {
-      GrMtlTextureInfo image_info;
-      if (backend_texture.getMtlTextureInfo(&image_info))
-        return reinterpret_cast<uint64_t>(image_info.fTexture.get());
-      break;
-    }
-#endif
 #if BUILDFLAG(ENABLE_VULKAN)
     case GrBackendApi::kVulkan: {
       GrVkImageInfo image_info;

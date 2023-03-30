@@ -336,13 +336,6 @@ GpuServiceImpl::GpuServiceImpl(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
         // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-  GrContextOptions context_options =
-      GetDefaultGrContextOptions(gpu_preferences_.gr_context_type);
-  if (gpu_preferences_.force_max_texture_size) {
-    context_options.fMaxTextureSizeOverride =
-        gpu_preferences_.force_max_texture_size;
-  }
-
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_implementation_) {
     bool is_native_vulkan =
@@ -381,13 +374,6 @@ GpuServiceImpl::GpuServiceImpl(
   image_decode_accelerator_worker_ =
       media::VaapiImageDecodeAcceleratorWorker::Create();
 #endif  // BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
-
-#if BUILDFLAG(IS_APPLE)
-  if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_METAL] ==
-      gpu::kGpuFeatureStatusEnabled) {
-    metal_context_provider_ = MetalContextProvider::Create(context_options);
-  }
-#endif
 
 #if BUILDFLAG(IS_WIN)
   if (media::SupportMediaFoundationClearPlayback()) {

@@ -501,35 +501,6 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 }
 #endif  // defined(CAST_AUDIO_ONLY)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
-TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalToGL) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMetal);
-  ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_METAL, manager->GetGpuMode());
-
-  manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
-}
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_MAC)
-TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalWithGLDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMetal);
-  ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_METAL, manager->GetGpuMode());
-
-  // Simulate GPU process initialization completing with GL unavailable.
-  gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
-      gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
-  manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
-
-  manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
-}
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(ENABLE_VULKAN)
 // TODO(crbug.com/1155622): enable tests when Vulkan is supported on LaCrOS.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

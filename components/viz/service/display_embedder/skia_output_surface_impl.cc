@@ -1302,11 +1302,6 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     }
     return GrBackendFormat::MakeDawn(wgpu_format);
 #endif
-  } else if (dependency_->IsUsingMetal()) {
-#if BUILDFLAG(IS_APPLE)
-    return GrBackendFormat::MakeMtl(
-        gpu::ToMTLPixelFormat(si_format, plane_index));
-#endif
   } else {
     // Convert internal format from GLES2 to platform GL.
     bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()

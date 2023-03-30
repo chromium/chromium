@@ -18094,7 +18094,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Software"/>
   <int value="1" label="GL"/>
   <int value="2" label="Vulkan"/>
-  <int value="3" label="Metal"/>
+  <int value="3" label="Metal (deprecated)"/>
 </enum>
 
 <enum name="CompositorAnimationsFailureReason">

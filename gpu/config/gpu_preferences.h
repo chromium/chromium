@@ -59,10 +59,9 @@ enum class WebGPUPowerPreference : uint32_t {
 };
 
 enum class GrContextType : uint32_t {
-  kGL = 0,
-  kVulkan = 1,
-  kMetal = 2,
-  kDawn = 3,
+  kGL,
+  kVulkan,
+  kDawn,
   kLast = kDawn,
 };
 
@@ -243,10 +242,6 @@ struct GPU_EXPORT GpuPreferences {
   // synchronize with the CPU in order to free released memory immediately
   // when this limit is reached.
   uint32_t vulkan_sync_cpu_memory_limit = 0u;
-
-  // Use Metal for rasterization and Skia-based display compositing. Note that
-  // this is compatible with GL-based display compositing.
-  bool enable_metal = false;
 
   // ===================================
   // Settings from //cc/base/switches.h

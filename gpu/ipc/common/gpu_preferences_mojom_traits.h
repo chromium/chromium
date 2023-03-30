@@ -30,8 +30,6 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
         return gpu::mojom::GrContextType::kGL;
       case gpu::GrContextType::kVulkan:
         return gpu::mojom::GrContextType::kVulkan;
-      case gpu::GrContextType::kMetal:
-        return gpu::mojom::GrContextType::kMetal;
       case gpu::GrContextType::kDawn:
         return gpu::mojom::GrContextType::kDawn;
     }
@@ -46,9 +44,6 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
         return true;
       case gpu::mojom::GrContextType::kVulkan:
         *out = gpu::GrContextType::kVulkan;
-        return true;
-      case gpu::mojom::GrContextType::kMetal:
-        *out = gpu::GrContextType::kMetal;
         return true;
       case gpu::mojom::GrContextType::kDawn:
         *out = gpu::GrContextType::kDawn;
@@ -271,7 +266,6 @@ struct GPU_EXPORT
         prefs.disable_vulkan_fallback_to_gl_for_testing();
     out->vulkan_heap_memory_limit = prefs.vulkan_heap_memory_limit();
     out->vulkan_sync_cpu_memory_limit = prefs.vulkan_sync_cpu_memory_limit();
-    out->enable_metal = prefs.enable_metal();
     out->enable_gpu_benchmarking_extension =
         prefs.enable_gpu_benchmarking_extension();
     out->enable_webgpu = prefs.enable_webgpu();
@@ -449,9 +443,6 @@ struct GPU_EXPORT
   static uint32_t vulkan_sync_cpu_memory_limit(
       const gpu::GpuPreferences& prefs) {
     return prefs.vulkan_sync_cpu_memory_limit;
-  }
-  static bool enable_metal(const gpu::GpuPreferences& prefs) {
-    return prefs.enable_metal;
   }
   static bool enable_gpu_benchmarking_extension(
       const gpu::GpuPreferences& prefs) {

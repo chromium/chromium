@@ -189,15 +189,6 @@ SharedContextState::SharedContextState(
         use_virtualized_gl_contexts_ = false;
       }
       break;
-    case GrContextType::kMetal:
-      if (metal_context_provider_) {
-#if BUILDFLAG(IS_APPLE)
-        gr_context_ = metal_context_provider_->GetGrContext();
-#endif
-        use_virtualized_gl_contexts_ = false;
-        DCHECK(gr_context_);
-      }
-      break;
     case GrContextType::kDawn:
       if (dawn_context_provider_) {
 #if BUILDFLAG(SKIA_USE_DAWN)

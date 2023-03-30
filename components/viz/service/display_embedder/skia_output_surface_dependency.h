@@ -122,10 +122,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   bool IsUsingDawn() const {
     return gr_context_type() == gpu::GrContextType::kDawn;
   }
-
-  bool IsUsingMetal() const {
-    return gr_context_type() == gpu::GrContextType::kMetal;
-  }
 };
 
 }  // namespace viz

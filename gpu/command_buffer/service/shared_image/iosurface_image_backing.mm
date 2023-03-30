@@ -66,7 +66,7 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
   return gfx::BufferFormat::RGBA_8888;
 }
 
-base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
+[[maybe_unused]] base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     id<MTLDevice> mtl_device,
     IOSurfaceRef io_surface,
     const gfx::Size& size,
@@ -837,55 +837,28 @@ std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
 
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
-    sk_sp<SkPromiseImageTexture> promise_texture;
-    if (context_state->GrContextIsMetal()) {
-      int plane = format().is_single_plane() ? io_surface_plane_ : plane_index;
-      promise_texture = ProduceSkiaPromiseTextureMetal(context_state, plane);
-      DCHECK(promise_texture);
-    } else {
-      bool angle_rgbx_internal_format = context_state->feature_info()
-                                            ->feature_flags()
-                                            .angle_rgbx_internal_format;
-      GLenum gl_texture_storage_format = TextureStorageFormat(
-          format(), angle_rgbx_internal_format, plane_index);
-      GrBackendTexture backend_texture;
-      auto plane_size = format().GetPlaneSize(plane_index, size());
-      GetGrBackendTexture(
-          context_state->feature_info(), egl_state->GetGLTarget(), plane_size,
-          egl_state->GetGLServiceId(plane_index), gl_texture_storage_format,
-          context_state->gr_context()->threadSafeProxy(), &backend_texture);
-      promise_texture = SkPromiseImageTexture::Make(backend_texture);
-    }
+    bool angle_rgbx_internal_format = context_state->feature_info()
+                                          ->feature_flags()
+                                          .angle_rgbx_internal_format;
+    GLenum gl_texture_storage_format =
+        TextureStorageFormat(format(), angle_rgbx_internal_format, plane_index);
+    GrBackendTexture backend_texture;
+    auto plane_size = format().GetPlaneSize(plane_index, size());
+    GetGrBackendTexture(
+        context_state->feature_info(), egl_state->GetGLTarget(), plane_size,
+        egl_state->GetGLServiceId(plane_index), gl_texture_storage_format,
+        context_state->gr_context()->threadSafeProxy(), &backend_texture);
+    sk_sp<SkPromiseImageTexture> promise_texture =
+        SkPromiseImageTexture::Make(backend_texture);
     if (!promise_texture) {
       return nullptr;
     }
-
     promise_textures.push_back(std::move(promise_texture));
   }
 
   return std::make_unique<SkiaIOSurfaceRepresentation>(
       manager, this, egl_state, std::move(context_state), promise_textures,
       tracker);
-}
-
-sk_sp<SkPromiseImageTexture>
-IOSurfaceImageBacking::ProduceSkiaPromiseTextureMetal(
-    scoped_refptr<SharedContextState> context_state,
-    int plane_index) {
-  DCHECK(context_state->GrContextIsMetal());
-  auto plane_size = format().GetPlaneSize(plane_index, size());
-
-  id<MTLDevice> mtl_device =
-      context_state->metal_context_provider()->GetMTLDevice();
-  auto mtl_texture = CreateMetalTexture(mtl_device, io_surface_.get(),
-                                        plane_size, format(), plane_index);
-  DCHECK(mtl_texture);
-
-  GrMtlTextureInfo info;
-  info.fTexture.retain(mtl_texture.get());
-  auto gr_backend_texture = GrBackendTexture(
-      plane_size.width(), plane_size.height(), GrMipMapped::kNo, info);
-  return SkPromiseImageTexture::Make(gr_backend_texture);
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {

@@ -1144,8 +1144,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       SharedImageManager::SupportsScanoutImages();
   // TODO(piman): have a consistent limit in shared image backings.
   // https://crbug.com/960588
-  if (shared_context_state_->GrContextIsGL() ||
-      shared_context_state_->GrContextIsMetal()) {
+  if (shared_context_state_->GrContextIsGL()) {
     api()->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size);
   } else if (shared_context_state_->GrContextIsVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)

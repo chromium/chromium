@@ -206,11 +206,6 @@ GrContextType ParseGrContextType() {
     return GrContextType::kDawn;
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kMetal))
-    return GrContextType::kMetal;
-#endif
-
   if (features::IsUsingVulkan())
     return GrContextType::kVulkan;
 

@@ -1416,21 +1416,6 @@
       ]
     },
     {
-      "id": 162,
-      "cr_bugs": [963000],
-      "description": "Metal is very crashy on macOS 10.12",
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "=",
-          "value": "10.12"
-        }
-      },
-      "features": [
-        "metal"
-      ]
-    },
-    {
       "id": 163,
       "description": "Intel drivers older than 2010 on Windows are possibly unreliable",
       "cr_bugs": [72979, 89802, 315205, 977432],
