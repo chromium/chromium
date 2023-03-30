@@ -22,6 +22,8 @@ public final class ToolbarFeatures {
             new MutableFlagWithSafeDefault(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, false);
     private static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             new MutableFlagWithSafeDefault(ChromeFeatureList.RECORD_SUPPRESSION_METRICS, true);
+    private static final MutableFlagWithSafeDefault sDelayTransitionsForAnimation =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.DELAY_TRANSITIONS_FOR_ANIMATION, true);
 
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
@@ -42,6 +44,16 @@ public final class ToolbarFeatures {
         return sSuppressionFlag.isEnabled();
     }
 
+    /**
+     * Returns whether the layout system will delay transitions between start/done hiding/showing
+     * for Android view animations or not. When this is delayed, the toolbar code will try to
+     * always draw itself from Android views during these transitions, to avoid letting the captured
+     * bitmap leak through during transitions. With suppression enabled, the captured bitmap is less
+     * reliable during these transitions.
+     */
+    public static boolean shouldDelayTransitionsForAnimation() {
+        return sDelayTransitionsForAnimation.isEnabled();
+    }
     /**
      * Returns whether to record metrics from suppression experiment. This allows an arm of
      * suppression to run without the overhead from reporting any extra metrics in Java. Using a

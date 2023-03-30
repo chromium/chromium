@@ -32,6 +32,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -877,4 +878,16 @@ public abstract class ToolbarLayout
             shadow.setVisibility(isHairlineVisible ? VISIBLE : GONE);
         }
     }
+
+    /**
+     * To be called indirectly by
+     * {@link LayoutStateProvider.LayoutStateObserver#onStartedHiding(int, boolean, boolean)}.
+     */
+    public void onTransitionStart() {}
+
+    /**
+     * To be called indirectly by
+     * {@link LayoutStateProvider.LayoutStateObserver#onFinishedShowing(int)}.
+     */
+    public void onTransitionEnd() {}
 }
