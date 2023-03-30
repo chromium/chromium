@@ -34,15 +34,17 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Map;
 
 /**
  * Unit tests for MessageQueueManager.
@@ -51,13 +53,17 @@ import org.chromium.ui.base.WindowAndroid;
 @Config(manifest = Config.NONE)
 public class MessageQueueManagerTest {
     private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
+        boolean mIsReadyForShowing;
         @Override
         public void onRequestShowing(Runnable callback) {
+            mIsReadyForShowing = true;
             callback.run();
         }
 
         @Override
-        public void onFinishHiding() {}
+        public void onFinishHiding() {
+            mIsReadyForShowing = false;
+        }
 
         @Override
         public void onAnimationStart() {}
@@ -67,7 +73,7 @@ public class MessageQueueManagerTest {
 
         @Override
         public boolean isReadyForShowing() {
-            return true;
+            return mIsReadyForShowing;
         }
 
         @Override
@@ -145,6 +151,7 @@ public class MessageQueueManagerTest {
         })
                 .when(container)
                 .runAfterInitialMessageLayout(any(Runnable.class));
+        doReturn(false).when(container).isIsInitializingLayout();
         mAnimationCoordinator = new MessageAnimationCoordinator(container, Animator::start);
         UmaRecorderHolder.resetForTesting();
     }
@@ -162,23 +169,42 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
+        var enqueued = HistogramWatcher.newSingleRecordWatcher(
+                "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
+        var dismissed = HistogramWatcher.newSingleRecordWatcher(
+                "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
-        Assert.assertEquals(1, getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
+        enqueued.assertExpected();
         verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m1).dismiss(DismissReason.TIMER);
-        Assert.assertEquals(
-                1, getDismissReasonForTesting(MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
+        dismissed.assertExpected();
 
+        enqueued = HistogramWatcher.newSingleRecordWatcher(
+                "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
+        dismissed = HistogramWatcher.newSingleRecordWatcher(
+                "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
-        Assert.assertEquals(2, getEnqueuedMessageCountForTesting(MessageIdentifier.TEST_MESSAGE));
+        enqueued.assertExpected();
         verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
         queueManager.dismissMessage(m2, DismissReason.TIMER);
-        Assert.assertEquals(
-                2, getDismissReasonForTesting(MessageIdentifier.TEST_MESSAGE, DismissReason.TIMER));
+        dismissed.assertExpected();
         verify(m2).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m2).dismiss(DismissReason.TIMER);
+    }
+
+    /**
+     * Tests lifecycle of a single message:
+     *   - enqueueMessage() calls show()
+     *   - dismissMessage() calls hide() and dismiss()
+     */
+    @Test
+    @SmallTest
+    public void testEnqueueMessage_withStacking() {
+        FeatureList.setTestFeatures(
+                Map.of(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        testEnqueueMessage();
     }
 
     /**
@@ -197,10 +223,12 @@ public class MessageQueueManagerTest {
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
 
+        var dismissed = HistogramWatcher.newBuilder()
+                                .expectIntRecords("Android.Messages.Dismissed.TestMessage",
+                                        DismissReason.ACTIVITY_DESTROYED, 3)
+                                .build();
         queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
-        Assert.assertEquals(3,
-                getDismissReasonForTesting(
-                        MessageIdentifier.TEST_MESSAGE, DismissReason.ACTIVITY_DESTROYED));
+        dismissed.assertExpected();
         verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m2).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m3).dismiss(DismissReason.ACTIVITY_DESTROYED);
@@ -708,16 +736,5 @@ public class MessageQueueManagerTest {
         messages = queueManager.getNextMessages();
         Assert.assertEquals(m3, messages.get(0).handler);
         Assert.assertEquals(m1, messages.get(1).handler);
-    }
-
-    static int getEnqueuedMessageCountForTesting(@MessageIdentifier int messageIdentifier) {
-        return RecordHistogram.getHistogramValueCountForTesting(
-                MessagesMetrics.getEnqueuedHistogramNameForTesting(), messageIdentifier);
-    }
-
-    static int getDismissReasonForTesting(
-            @MessageIdentifier int messageIdentifier, @DismissReason int dismissReason) {
-        String histogramName = MessagesMetrics.getDismissHistogramNameForTesting(messageIdentifier);
-        return RecordHistogram.getHistogramValueCountForTesting(histogramName, dismissReason);
     }
 }

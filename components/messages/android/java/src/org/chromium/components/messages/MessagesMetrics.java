@@ -70,19 +70,21 @@ public class MessagesMetrics {
         int MAX_VALUE = 2;
     }
 
-    /** Records metrics when a message is enqueued. */
-    static void recordMessageEnqueuedVisible(@MessageIdentifier int messageIdentifier) {
+    /** Records metrics when a message is being enqueued. */
+    static void recordMessageEnqueued(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
+    /** Records metrics when a message is visible after being enqueued. */
+    static void recordMessageEnqueuedVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_VISIBLE_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
-    /** Records metrics when a message is enqueued. */
+    /** Records metrics when a message is hidden after being enqueued.*/
     static void recordMessageEnqueuedHidden(@MessageIdentifier int enqueuedMessage,
             @MessageIdentifier int currentDisplayedMessage) {
-        RecordHistogram.recordEnumeratedHistogram(
-                ENQUEUED_HISTOGRAM_NAME, enqueuedMessage, MessageIdentifier.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_HIDDEN_HISTOGRAM_NAME, enqueuedMessage, MessageIdentifier.COUNT);
         RecordHistogram.recordEnumeratedHistogram(

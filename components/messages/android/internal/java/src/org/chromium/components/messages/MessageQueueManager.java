@@ -82,6 +82,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         messageQueue.add(messageState);
         mMessages.put(messageKey, messageState);
 
+        MessagesMetrics.recordMessageEnqueued(message.getMessageIdentifier());
         if (MessageFeatureList.isStackAnimationEnabled()) {
             updateCurrentDisplayedWithStacking();
         } else {
