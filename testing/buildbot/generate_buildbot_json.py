@@ -323,6 +323,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.gn_isolate_map = None
     self.variants = None
 
+    # Relative sub dir of the pyl dir where the JSON files will be written.
+    # Used only for unit testing.
+    self.json_sub_dir = None
+
   @staticmethod
   def parse_args(argv):
 
@@ -1587,6 +1591,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     for filename, contents in result.items():
       jsonstr = self.jsonify(contents)
+      if self.json_sub_dir:
+        filename = os.path.join(self.json_sub_dir, filename)
       self.write_file(self.pyl_file_path(filename + suffix), jsonstr)
 
   def get_valid_bot_names(self):
@@ -2007,8 +2013,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     outputs = self.generate_outputs()
     for filename, expected_contents in outputs.items():
       expected = self.jsonify(expected_contents)
-      file_path = filename + '.json'
-      current = self.read_file(self.pyl_file_path(file_path))
+      file_path = self.pyl_file_path(filename + '.json')
+      if self.json_sub_dir:
+        file_path = os.path.join(self.json_sub_dir, file_path)
+      current = self.read_file(file_path)
       if expected != current:
         ungenerated_files.add(filename)
         if verbose: # pragma: no cover
