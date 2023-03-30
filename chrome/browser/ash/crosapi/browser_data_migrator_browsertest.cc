@@ -122,15 +122,15 @@ class BrowserDataMigratorOnSignIn : public ash::LoginManagerTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {regular_user_}};
 };
 
-class BrowserDataMigratorCopyMigrateOnSignIn
+class BrowserDataMigratorMigrateOnSignInLacrosSideBySide
     : public BrowserDataMigratorOnSignIn {
  public:
-  BrowserDataMigratorCopyMigrateOnSignIn() = default;
-  BrowserDataMigratorCopyMigrateOnSignIn(
-      BrowserDataMigratorCopyMigrateOnSignIn&) = delete;
-  BrowserDataMigratorCopyMigrateOnSignIn& operator=(
-      BrowserDataMigratorCopyMigrateOnSignIn&) = delete;
-  ~BrowserDataMigratorCopyMigrateOnSignIn() override = default;
+  BrowserDataMigratorMigrateOnSignInLacrosSideBySide() = default;
+  BrowserDataMigratorMigrateOnSignInLacrosSideBySide(
+      BrowserDataMigratorMigrateOnSignInLacrosSideBySide&) = delete;
+  BrowserDataMigratorMigrateOnSignInLacrosSideBySide& operator=(
+      BrowserDataMigratorMigrateOnSignInLacrosSideBySide&) = delete;
+  ~BrowserDataMigratorMigrateOnSignInLacrosSideBySide() override = default;
 
   void SetUp() override {
     feature_list_.InitWithFeatures({ash::features::kLacrosSupport}, {});
@@ -142,30 +142,12 @@ class BrowserDataMigratorCopyMigrateOnSignIn
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Check that migration is triggered from signin flow if Lacros is enabled.
-IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
-                       MigrateOnSignIn) {
-  base::RunLoop run_loop;
-  ScopedRestartAttemptForTesting scoped_restart_attempt(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  ASSERT_TRUE(LoginAsExistingRegularUser());
-  run_loop.Run();
-  EXPECT_TRUE(
-      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
-  // Migration should be triggered in copy mode and not move mode.
-  EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_mode_called());
-  EXPECT_EQ(FakeSessionManagerClient::Get()
-                ->request_browser_data_migration_mode_value(),
-            "copy");
-}
-
-// Check that migration marked as completed for a new user and thus migration is
-// not triggered from signin flow.
-IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
-                       SkipMigrateOnSignInForNewUser) {
+// Check that migration is skipped for Lacros Side-by-Side since migration
+// should only run for LacrosOnly.
+IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMigrateOnSignInLacrosSideBySide,
+                       SkipMigrationOnSignIn) {
   ash::test::ProfilePreparedWaiter profile_prepared(regular_user_.account_id);
-  ASSERT_TRUE(LoginAsRegularUser());
+  ASSERT_TRUE(LoginAsExistingRegularUser());
   // Note that `ProfilePreparedWaiter` waits for
   // `ExistingUserController::OnProfilePrepared()` to be called and this is
   // called after `UserSessionManager::InitializeUserSession()` is called, which
@@ -177,7 +159,50 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(
           regular_user_.account_id);
-  EXPECT_TRUE(
+  EXPECT_FALSE(
+      crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
+          g_browser_process->local_state(), user_id_hash));
+}
+
+class BrowserDataMigratorMigrateOnSignInLacrosPrimary
+    : public BrowserDataMigratorOnSignIn {
+ public:
+  BrowserDataMigratorMigrateOnSignInLacrosPrimary() = default;
+  BrowserDataMigratorMigrateOnSignInLacrosPrimary(
+      BrowserDataMigratorMigrateOnSignInLacrosPrimary&) = delete;
+  BrowserDataMigratorMigrateOnSignInLacrosPrimary& operator=(
+      BrowserDataMigratorMigrateOnSignInLacrosPrimary&) = delete;
+  ~BrowserDataMigratorMigrateOnSignInLacrosPrimary() override = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+
+    BrowserDataMigratorOnSignIn::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that migration is skipped for LacrosPrimary since migration should only
+// run for LacrosOnly.
+IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMigrateOnSignInLacrosPrimary,
+                       SkipMigrationOnSignIn) {
+  ash::test::ProfilePreparedWaiter profile_prepared(regular_user_.account_id);
+  ASSERT_TRUE(LoginAsExistingRegularUser());
+  // Note that `ProfilePreparedWaiter` waits for
+  // `ExistingUserController::OnProfilePrepared()` to be called and this is
+  // called after `UserSessionManager::InitializeUserSession()` is called, which
+  // leads to `BrowserDataMigratorImpl::MaybeRestartToMigrate()`. Therefore by
+  // the time the wait ends, migration check would have happened.
+  profile_prepared.Wait();
+  EXPECT_FALSE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  const std::string user_id_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(
+          regular_user_.account_id);
+  EXPECT_FALSE(
       crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
           g_browser_process->local_state(), user_id_hash));
 }
@@ -251,6 +276,34 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
   EXPECT_EQ(FakeSessionManagerClient::Get()
                 ->request_browser_data_migration_mode_value(),
             "move");
+}
+
+// Check that migration marked as completed for a new user and thus migration is
+// not triggered from signin flow.
+IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
+                       SkipMigrateOnSignInForNewUser) {
+  ash::test::ProfilePreparedWaiter profile_prepared(regular_user_.account_id);
+  ASSERT_TRUE(LoginAsRegularUser());
+  // Note that `ProfilePreparedWaiter` waits for
+  // `ExistingUserController::OnProfilePrepared()` to be called and this is
+  // called after `UserSessionManager::InitializeUserSession()` is called, which
+  // leads to `BrowserDataMigratorImpl::MaybeRestartToMigrate()`. Therefore by
+  // the time the wait ends, migration check would have happened.
+  profile_prepared.Wait();
+  EXPECT_FALSE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
+  const std::string user_id_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(
+          regular_user_.account_id);
+  EXPECT_TRUE(
+      crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
+          g_browser_process->local_state(), user_id_hash));
+  EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
+      g_browser_process->local_state(), user_id_hash,
+      crosapi::browser_util::MigrationMode::kCopy));
+  EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
+      g_browser_process->local_state(), user_id_hash,
+      crosapi::browser_util::MigrationMode::kMove));
 }
 
 class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
@@ -459,7 +512,10 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataMigratorForKiosk() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kLacrosSupport}, {});
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly},
+        {});
 
     KioskBaseTest::SetUp();
   }

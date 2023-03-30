@@ -446,7 +446,7 @@ bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
     PolicyInitState policy_init_state) {
   return !base::FeatureList::IsEnabled(
              ash::features::kLacrosProfileMigrationForceOff) &&
-         IsLacrosEnabledForMigration(user, policy_init_state);
+         !IsAshWebBrowserEnabledForMigration(user, policy_init_state);
 }
 
 bool IsProfileMigrationAvailable() {

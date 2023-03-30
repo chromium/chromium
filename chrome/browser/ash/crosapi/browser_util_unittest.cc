@@ -177,27 +177,59 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   // `IsProfileMigrationCompletedForUser()` inside `IsLacrosEnabled()`.
   ScopedLocalState scoped_local_state(&pref_service_);
 
-  // Note that disabling lacros is only enabled for Googlers at the moment.
-  // TODO(crbug.com/1266669): Once profile migration is enabled for
-  // non-googlers, add a @test.com account instead.
-  AddRegularUser("user@google.com");
+  AddRegularUser("user@test.com");
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kLacrosSupport);
 
-  // Lacros is now enabled for profile migration to happen.
-  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
-      user, browser_util::PolicyInitState::kAfterInit));
-  // Since profile migration hasn't been marked as completed, this returns
-  // false.
-  EXPECT_FALSE(browser_util::IsLacrosEnabled());
+  // Lacros is enabled without profile migration for Lacros SxS mode.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({ash::features::kLacrosSupport}, {});
 
-  browser_util::SetProfileMigrationCompletedForUser(
-      &pref_service_, user->username_hash(),
-      browser_util::MigrationMode::kCopy);
+    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+        user, browser_util::PolicyInitState::kAfterInit));
+    // Profile migration is not enabled for Lacros SxS.
+    EXPECT_FALSE(browser_util::IsProfileMigrationEnabled());
+    // Thus without the completion of profile migration, Lacros should be
+    // enabled.
+    EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  }
 
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  // Lacros is enabled without profile migration for LacrosPrimary mode.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+
+    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+        user, browser_util::PolicyInitState::kAfterInit));
+    // Profile migration is not enabled for LacrosPrimary.
+    EXPECT_FALSE(browser_util::IsProfileMigrationEnabled());
+    // Thus without the completion of profile migration, Lacros should be
+    // enabled.
+    EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  }
+
+  // Lacros is enabled only after profile migration for LacrosOnly mode.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly},
+        {});
+
+    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
+        user, browser_util::PolicyInitState::kAfterInit));
+    // Since profile migration hasn't been marked as completed, this returns
+    // false.
+    EXPECT_FALSE(browser_util::IsLacrosEnabled());
+
+    browser_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(),
+        browser_util::MigrationMode::kCopy);
+
+    EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  }
 }
 
 TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
