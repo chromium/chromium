@@ -77,9 +77,6 @@
 #elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "net/cert/internal/trust_store_mac.h"
-#elif BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#include "net/cert/cert_verify_proc_win.h"
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -181,7 +178,6 @@ int MockCertVerifyProc::VerifyInternal(
 enum CertVerifyProcType {
   CERT_VERIFY_PROC_ANDROID,
   CERT_VERIFY_PROC_IOS,
-  CERT_VERIFY_PROC_WIN,
   CERT_VERIFY_PROC_BUILTIN,
   CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS,
 };
@@ -196,8 +192,6 @@ std::string VerifyProcTypeToName(
       return "CertVerifyProcAndroid";
     case CERT_VERIFY_PROC_IOS:
       return "CertVerifyProcIOS";
-    case CERT_VERIFY_PROC_WIN:
-      return "CertVerifyProcWin";
     case CERT_VERIFY_PROC_BUILTIN:
       return "CertVerifyProcBuiltin";
     case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
@@ -218,9 +212,6 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
 #elif BUILDFLAG(IS_IOS)
     case CERT_VERIFY_PROC_IOS:
       return base::MakeRefCounted<CertVerifyProcIOS>();
-#elif BUILDFLAG(IS_WIN)
-    case CERT_VERIFY_PROC_WIN:
-      return base::MakeRefCounted<CertVerifyProcWin>();
 #endif
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case CERT_VERIFY_PROC_BUILTIN:
@@ -250,8 +241,6 @@ constexpr CertVerifyProcType kAllCertVerifiers[] = {
     CERT_VERIFY_PROC_ANDROID,
 #elif BUILDFLAG(IS_IOS)
     CERT_VERIFY_PROC_IOS,
-#elif BUILDFLAG(IS_WIN)
-    CERT_VERIFY_PROC_WIN,
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     CERT_VERIFY_PROC_BUILTIN,
 #endif
@@ -417,14 +406,10 @@ class CertVerifyProcInternalTest
     return false;
   }
 
-  bool SupportsCRLSet() const {
-    return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           VerifyProcTypeIsBuiltin();
-  }
+  bool SupportsCRLSet() const { return VerifyProcTypeIsBuiltin(); }
 
   bool SupportsCRLSetsInPathBuilding() const {
-    return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           VerifyProcTypeIsBuiltin();
+    return VerifyProcTypeIsBuiltin();
   }
 
   bool SupportsEV() const {
@@ -436,14 +421,10 @@ class CertVerifyProcInternalTest
 #endif
   }
 
-  bool SupportsSoftFailRevChecking() const {
-    return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           VerifyProcTypeIsBuiltin();
-  }
+  bool SupportsSoftFailRevChecking() const { return VerifyProcTypeIsBuiltin(); }
 
   bool SupportsRevCheckingRequiredLocalAnchors() const {
-    return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           VerifyProcTypeIsBuiltin();
+    return VerifyProcTypeIsBuiltin();
   }
 
   bool VerifyProcTypeIsBuiltin() const {
@@ -2687,8 +2668,6 @@ class CertVerifyProcNameNormalizationTest : public CertVerifyProcInternalTest {
         return prefix + "Android";
       case CERT_VERIFY_PROC_IOS:
         return prefix + "IOS";
-      case CERT_VERIFY_PROC_WIN:
-        return prefix + "Win";
       case CERT_VERIFY_PROC_BUILTIN:
       case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
         return prefix + "Builtin";
@@ -2745,7 +2724,6 @@ TEST_P(CertVerifyProcNameNormalizationTest, StringType) {
       EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
       break;
     case CERT_VERIFY_PROC_ANDROID:
-    case CERT_VERIFY_PROC_WIN:
     case CERT_VERIFY_PROC_BUILTIN:
     case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
       EXPECT_THAT(error, IsOk());
@@ -3075,15 +3053,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
                  CertificateList(), &verify_result);
   EXPECT_NE(OK, error);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    // CertVerifyProcWin has a flaky result of ERR_CERT_AUTHORITY_INVALID or
-    // ERR_CERT_INVALID (https://crbug.com/859387) - accept either.
-    EXPECT_TRUE(error == ERR_CERT_AUTHORITY_INVALID ||
-                error == ERR_CERT_INVALID)
-        << "Unexpected error: " << error;
-  } else {
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  }
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
 }
 #undef MAYBE_IntermediateFromAia404
 
@@ -3302,18 +3272,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 
     EXPECT_FALSE(verify_result.has_sha1);
     EXPECT_THAT(error, IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    // TODO(eroman): Make these test expectations exact.
-    // This seemed to be working on Windows when !AreSHA1IntermediatesAllowed()
-    // from previous testing, but then failed on the Windows 10 bot.
-    if (error != OK) {
-      EXPECT_TRUE(verify_result.cert_status &
-                  CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-      EXPECT_TRUE(verify_result.cert_status &
-                  CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-      EXPECT_TRUE(verify_result.has_sha1);
-      EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-    }
   } else {
     EXPECT_NE(OK, error);
     if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID &&
@@ -3835,16 +3793,10 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain.get(), kHostname, flags, CRLSet::BuiltinCRLSet().get(),
              CertificateList(), &verify_result);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    // Windows (and macOS <= 10.11 but that's not supported any more) honor MD5
-    // CRLs. ¯\_(ツ)_/¯
-    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-  } else {
-    // Verification should succeed: MD5 signature algorithm is not supported
-    // and soft-fail checking will ignore the inability to get revocation
-    // status.
-    EXPECT_THAT(error, IsOk());
-  }
+  // Verification should succeed: MD5 signature algorithm is not supported
+  // and soft-fail checking will ignore the inability to get revocation
+  // status.
+  EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
@@ -4219,8 +4171,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                 IsError(ERR_CERT_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
-             verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
@@ -4501,16 +4452,10 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints2Intermediate) {
       /*require_explicit_policy=*/2,
       /*inhibit_policy_mapping=*/absl::nullopt);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    // Windows seems to have an off-by-one error in how it enforces
-    // requireExplicitPolicy.
-    EXPECT_THAT(Verify(), IsOk());
-  } else {
     EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
     if (VerifyProcTypeIsBuiltin()) {
       EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
     }
-  }
 }
 
 TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints1Intermediate) {
@@ -4535,14 +4480,7 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Leaf) {
       /*require_explicit_policy=*/0,
       /*inhibit_policy_mapping=*/absl::nullopt);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    // Windows seems to have an off-by-one error in how it enforces
-    // requireExplicitPolicy in general, which also seems to mean that
-    // requireExplicitPolicy on a leaf is never enforced.
-    EXPECT_THAT(Verify(), IsOk());
-  } else {
-    EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
-  }
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
 }
 
 TEST_P(CertVerifyProcConstraintsTest, InhibitPolicyMapping0Root) {
@@ -4948,13 +4886,9 @@ TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthLeaf) {
 TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmRoot) {
   chain_[3]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
 
+  EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
   }
 }
 
@@ -5081,8 +5015,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BaseCase) {
     EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithRequireLeafSelfSigned()),
                 IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5152,8 +5084,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsIsCa) {
     if (VerifyProcTypeIsBuiltin()) {
       EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
       EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-    } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-      EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     } else {
       EXPECT_THAT(Verify(), IsOk());
     }
@@ -5163,7 +5093,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsIsCa) {
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsPathlen) {
   chain_[0]->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/0);
 
-  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+  if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
@@ -5176,8 +5106,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsMissing) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5187,7 +5115,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, NameConstraintsNotMatching) {
   chain_[0]->SetNameConstraintsDnsNames(/*permitted_dns_names=*/{"example.org"},
                                         /*excluded_dns_names=*/{});
 
-  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+  if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
@@ -5201,8 +5129,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, ValidityExpired) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsError(ERR_CERT_DATE_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_DATE_INVALID));
   }
@@ -5226,12 +5152,8 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, PolicyConstraints) {
     if (VerifyProcTypeIsBuiltin()) {
       EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
       EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-    } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-      // Fails since win verifier doesn't handle the "directly trusted leaf"
-      // case, not because the constraint is being enforced.
-      EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     } else {
-      // Succeeds since the mac/ios/android verifiers appear to not enforce
+      // Succeeds since the ios/android verifiers appear to not enforce
       // this constraint in the "directly trusted leaf" case.
       EXPECT_THAT(Verify(), IsOk());
     }
@@ -5249,8 +5171,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, InhibitAnyPolicy) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5264,8 +5184,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageNoDigitalSignature) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5280,8 +5198,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageCertSignLeaf) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5307,8 +5223,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownSignatureAlgorithm) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     // Valid since signature on directly trusted leaf is not checked.
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5331,8 +5245,6 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, WeakSignatureAlgorithm) {
         VerifyWithTrust(
             CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned()),
         IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
@@ -5345,13 +5257,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownExtension) {
     SCOPED_TRACE(critical);
     chain_[0]->SetExtension(TestOid0(), "hello world", critical);
 
-    if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-      if (critical) {
-        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-      } else {
-        EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
-      }
-    } else if (VerifyProcTypeIsBuiltin()) {
+    if (VerifyProcTypeIsBuiltin()) {
       EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
       if (critical) {
         EXPECT_THAT(VerifyAsTrustedLeaf(), IsError(ERR_CERT_INVALID));
@@ -5607,8 +5513,6 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
     EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithRequireLeafSelfSigned()),
                 IsError(ERR_CERT_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -5648,12 +5552,6 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, UnknownExtension) {
       } else {
         EXPECT_THAT(Verify(), IsOk());
         EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
-      }
-    } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
-      if (critical) {
-        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-      } else {
-        EXPECT_THAT(Verify(), IsOk());
       }
     } else {
       EXPECT_THAT(Verify(), IsOk());

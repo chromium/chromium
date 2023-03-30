@@ -111,8 +111,6 @@ component("crypto") {
   }
   if (is_win) {
     sources += [
-      "capi_util.cc",
-      "capi_util.h",
       "scoped_capi_types.h",
       "scoped_cng_types.h",
       "unexportable_key_win.cc",

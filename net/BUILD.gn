@@ -1270,10 +1270,6 @@ component("net") {
       "base/winsock_init.h",
       "base/winsock_util.cc",
       "base/winsock_util.h",
-      "cert/cert_verify_proc_win.cc",
-      "cert/cert_verify_proc_win.h",
-      "cert/known_roots_win.cc",
-      "cert/known_roots_win.h",
       "cert/test_root_certs_win.cc",
       "cert/x509_util_win.cc",
       "cert/x509_util_win.h",
@@ -2845,7 +2841,6 @@ test("net_unittests") {
     sources += [
       "base/network_change_notifier_win_unittest.cc",
       "base/network_interfaces_win_unittest.cc",
-      "cert/cert_verify_proc_win_unittest.cc",
       "http/http_auth_sspi_win_unittest.cc",
       "http/mock_sspi_library_win.cc",
       "http/mock_sspi_library_win.h",

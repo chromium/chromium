@@ -153,24 +153,6 @@ TrustImplTypeFromMojom(
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_WIN)
-void AddWinPlatformDebugInfoToReport(
-    const cert_verifier::mojom::WinPlatformVerifierDebugInfoPtr&
-        win_platform_debug_info,
-    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
-  if (!win_platform_debug_info)
-    return;
-  chrome_browser_ssl::WinPlatformDebugInfo* report_info =
-      trial_report->mutable_win_platform_debug_info();
-  report_info->set_authroot_this_update_time_usec(
-      win_platform_debug_info->authroot_this_update.ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-  report_info->mutable_authroot_sequence_number()->assign(
-      std::begin(win_platform_debug_info->authroot_sequence_number),
-      std::end(win_platform_debug_info->authroot_sequence_number));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(USE_NSS_CERTS)
 chrome_browser_ssl::TrustStoreNSSDebugInfo::SlotFilterType
 SlotFilterTypeFromMojom(
@@ -292,10 +274,6 @@ CertificateErrorReport::CertificateErrorReport(
       trial_report->mutable_mac_combined_trust_debug_info());
   trial_report->set_mac_trust_impl(
       TrustImplTypeFromMojom(debug_info->mac_trust_impl));
-#endif
-#if BUILDFLAG(IS_WIN)
-  AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
-                                  trial_report);
 #endif
 #if BUILDFLAG(IS_LINUX)
   trial_report->set_linux_distro(base::GetLinuxDistro());

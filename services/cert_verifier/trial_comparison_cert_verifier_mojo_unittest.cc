@@ -21,9 +21,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "net/cert/internal/trust_store_mac.h"
 #endif
-#if BUILDFLAG(IS_WIN)
-#include "net/cert/cert_verify_proc_win.h"
-#endif
 #if BUILDFLAG(USE_NSS_CERTS)
 #include <nss.h>
 #include "net/cert/internal/trust_store_nss.h"
@@ -162,11 +159,6 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   mac_trust_debug_info->UpdateTrustDebugInfo(
       kExpectedTrustDebugInfo, net::TrustStoreMac::TrustImplType::kSimple);
 #endif
-#if BUILDFLAG(IS_WIN)
-  std::vector<uint8_t> authroot_sequence{'T', 'E', 'S', 'T'};
-  net::CertVerifyProcWin::ResultDebugData::Create(time, authroot_sequence,
-                                                  &primary_result);
-#endif
 #if BUILDFLAG(USE_NSS_CERTS)
   net::TrustStoreNSS::ResultDebugData::Create(
       false, net::TrustStoreNSS::ResultDebugData::SlotFilterType::kDontFilter,
@@ -230,14 +222,6 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   EXPECT_EQ(
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
       report.debug_info->mac_trust_impl);
-#endif
-#if BUILDFLAG(IS_WIN)
-  ASSERT_TRUE(report.debug_info->win_platform_debug_info);
-  EXPECT_EQ(time,
-            report.debug_info->win_platform_debug_info->authroot_this_update);
-  EXPECT_EQ(
-      authroot_sequence,
-      report.debug_info->win_platform_debug_info->authroot_sequence_number);
 #endif
 #if BUILDFLAG(USE_NSS_CERTS)
   EXPECT_EQ(NSS_GetVersion(), report.debug_info->nss_version);

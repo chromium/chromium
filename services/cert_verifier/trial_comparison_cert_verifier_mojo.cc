@@ -20,10 +20,6 @@
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "net/cert/cert_verify_proc_win.h"
-#endif
-
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "crypto/nss_util.h"
 #include "net/cert/internal/trust_store_nss.h"
@@ -150,19 +146,6 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
         TrustImplTypeToMojom(mac_trust_debug_info->trust_impl());
   }
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-  auto* win_platform_debug_info =
-      net::CertVerifyProcWin::ResultDebugData::Get(&primary_result);
-  if (win_platform_debug_info) {
-    debug_info->win_platform_debug_info =
-        mojom::WinPlatformVerifierDebugInfo::New();
-    debug_info->win_platform_debug_info->authroot_this_update =
-        win_platform_debug_info->authroot_this_update();
-    debug_info->win_platform_debug_info->authroot_sequence_number =
-        win_platform_debug_info->authroot_sequence_number();
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_NSS_CERTS)
   crypto::EnsureNSSInit();

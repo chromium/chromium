@@ -378,14 +378,6 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_trust_impl =
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple;
 #endif
-#if BUILDFLAG(IS_WIN)
-  debug_info->win_platform_debug_info =
-      cert_verifier::mojom::WinPlatformVerifierDebugInfo::New();
-  debug_info->win_platform_debug_info->authroot_this_update =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(8675309));
-  debug_info->win_platform_debug_info->authroot_sequence_number = {
-      'J', 'E', 'N', 'N', 'Y'};
-#endif
 #if BUILDFLAG(USE_NSS_CERTS)
   debug_info->nss_version = "aoeu";
 
@@ -444,17 +436,6 @@ TEST(ErrorReportTest, TrialDebugInfo) {
 #else
   EXPECT_EQ(0, trial_info.mac_combined_trust_debug_info_size());
   EXPECT_FALSE(trial_info.has_mac_trust_impl());
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  ASSERT_TRUE(trial_info.has_win_platform_debug_info());
-  EXPECT_EQ(
-      8675309,
-      trial_info.win_platform_debug_info().authroot_this_update_time_usec());
-  EXPECT_EQ("JENNY",
-            trial_info.win_platform_debug_info().authroot_sequence_number());
-#else
-  EXPECT_FALSE(trial_info.has_win_platform_debug_info());
 #endif
 
 #if BUILDFLAG(IS_LINUX)

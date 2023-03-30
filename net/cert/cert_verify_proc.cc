@@ -64,8 +64,6 @@
 #include "net/cert/cert_verify_proc_android.h"
 #elif BUILDFLAG(IS_IOS)
 #include "net/cert/cert_verify_proc_ios.h"
-#elif BUILDFLAG(IS_WIN)
-#include "net/cert/cert_verify_proc_win.h"
 #endif
 
 namespace net {
