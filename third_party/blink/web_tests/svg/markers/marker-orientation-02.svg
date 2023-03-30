@@ -3,6 +3,13 @@
      http://creativecommons.org/publicdomain/zero/1.0/
 -->
 <svg xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Marker positioning accumulates floating point error, resulting in some rects
+    being drawn with matrices that are barely not pure rotations. This can lead
+    to tiny differences in antialiased pixels along edges.
+  -->
+  <meta name="fuzzy" content="maxDifference=0-1;totalPixels=0-10" />
+
   <title>Test that marker orientation is correct at the end of arcs when
     orient="auto-start-reverse" is used</title>
   <!-- https://bugzilla.mozilla.org/show_bug.cgi?id=769115 -->
