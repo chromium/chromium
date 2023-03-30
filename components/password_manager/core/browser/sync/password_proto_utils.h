@@ -13,7 +13,7 @@
 namespace sync_pb {
 class PasswordSpecifics;
 class PasswordSpecificsData;
-class PasswordSpecificsData_PasswordIssues;
+class PasswordIssues;
 class PasswordSpecificsData_Notes;
 class PasswordSpecificsMetadata;
 }  // namespace sync_pb
@@ -22,7 +22,7 @@ namespace password_manager {
 
 // Converts a map of `form_password_issues` into the format required by the
 // proto.
-sync_pb::PasswordSpecificsData_PasswordIssues PasswordIssuesMapToProto(
+sync_pb::PasswordIssues PasswordIssuesMapToProto(
     const base::flat_map<InsecureType, InsecurityMetadata>&
         form_password_issues);
 

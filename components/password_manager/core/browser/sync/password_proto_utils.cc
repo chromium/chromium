@@ -68,12 +68,12 @@ void TrimPasswordSpecificsDataNotesForCaching(
 
 }  // namespace
 
-sync_pb::PasswordSpecificsData_PasswordIssues PasswordIssuesMapToProto(
+sync_pb::PasswordIssues PasswordIssuesMapToProto(
     const base::flat_map<InsecureType, InsecurityMetadata>&
         form_password_issues) {
-  sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
+  sync_pb::PasswordIssues password_issues;
   for (const auto& [insecure_type, insecure_metadata] : form_password_issues) {
-    sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
+    sync_pb::PasswordIssues::PasswordIssue issue;
     issue.set_date_first_detection_windows_epoch_micros(
         insecure_metadata.create_time.ToDeltaSinceWindowsEpoch()
             .InMicroseconds());

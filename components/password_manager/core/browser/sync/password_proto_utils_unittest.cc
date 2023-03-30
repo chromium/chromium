@@ -23,11 +23,11 @@ using testing::Eq;
 
 constexpr time_t kIssuesCreationTime = 1337;
 
-sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsDataIssues(
+sync_pb::PasswordIssues CreatePasswordIssues(
     const std::vector<InsecureType>& issue_types) {
-  sync_pb::PasswordSpecificsData_PasswordIssues remote_issues;
+  sync_pb::PasswordIssues remote_issues;
   for (auto type : issue_types) {
-    sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue remote_issue;
+    sync_pb::PasswordIssues_PasswordIssue remote_issue;
     remote_issue.set_date_first_detection_windows_epoch_micros(
         base::Time::FromTimeT(kIssuesCreationTime)
             .ToDeltaSinceWindowsEpoch()
@@ -79,7 +79,7 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_avatar_url(GURL(origin).spec());
   password_specifics.set_federation_url(std::string());
   *password_specifics.mutable_password_issues() =
-      CreateSpecificsDataIssues(issue_types);
+      CreatePasswordIssues(issue_types);
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     // The current code always populates notes for outgoing protos even when
     // non-exists.

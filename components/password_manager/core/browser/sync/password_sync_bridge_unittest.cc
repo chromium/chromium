@@ -64,19 +64,19 @@ MATCHER_P(EntityDataHasSignonRealm, expected_signon_realm, "") {
              .signon_realm() == expected_signon_realm;
 }
 
-bool SpecificsHasExpectedInsecureTypes(
-    const sync_pb::PasswordSpecificsData::PasswordIssues& specifics,
+bool PasswordIssuesHasExpectedInsecureTypes(
+    const sync_pb::PasswordIssues& issues,
     const std::vector<InsecureType>& expected_types) {
-  return base::ranges::all_of(expected_types, [&specifics](auto type) {
+  return base::ranges::all_of(expected_types, [&issues](auto type) {
     switch (type) {
       case InsecureType::kLeaked:
-        return specifics.has_leaked_password_issue();
+        return issues.has_leaked_password_issue();
       case InsecureType::kPhished:
-        return specifics.has_phished_password_issue();
+        return issues.has_phished_password_issue();
       case InsecureType::kWeak:
-        return specifics.has_weak_password_issue();
+        return issues.has_weak_password_issue();
       case InsecureType::kReused:
-        return specifics.has_reused_password_issue();
+        return issues.has_reused_password_issue();
     }
   });
 }
@@ -84,8 +84,8 @@ bool SpecificsHasExpectedInsecureTypes(
 MATCHER_P(EntityDataHasSecurityIssueTypes, expected_issue_types, "") {
   const auto& password_issues_data =
       arg->specifics.password().client_only_encrypted_data().password_issues();
-  return SpecificsHasExpectedInsecureTypes(password_issues_data,
-                                           expected_issue_types);
+  return PasswordIssuesHasExpectedInsecureTypes(password_issues_data,
+                                                expected_issue_types);
 }
 
 // |*arg| must be of type sync_pb::PasswordSpecificsData.
@@ -109,11 +109,11 @@ MATCHER_P(IsSyncMetadataStoreChangeListWithStore, expected_metadata_store, "") {
              ->GetMetadataStoreForTesting() == expected_metadata_store;
 }
 
-sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsIssues(
+sync_pb::PasswordIssues CreatePasswordIssues(
     const std::vector<InsecureType>& issue_types) {
-  sync_pb::PasswordSpecificsData_PasswordIssues remote_issues;
+  sync_pb::PasswordIssues remote_issues;
   for (auto type : issue_types) {
-    sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue remote_issue;
+    sync_pb::PasswordIssues_PasswordIssue remote_issue;
     remote_issue.set_date_first_detection_windows_epoch_micros(
         base::Time::FromTimeT(kIssuesCreationTime)
             .ToDeltaSinceWindowsEpoch()
@@ -155,7 +155,7 @@ sync_pb::PasswordSpecifics CreateSpecifics(
   password_data->set_signon_realm(signon_realm);
   if (!issue_types.empty()) {
     *password_data->mutable_password_issues() =
-        CreateSpecificsIssues(issue_types);
+        CreatePasswordIssues(issue_types);
   }
   return password_specifics.password();
 }
@@ -1631,7 +1631,7 @@ TEST_F(PasswordSyncBridgeTest, GetDataWithIssuesForStorageKey) {
   absl::optional<sync_pb::PasswordSpecifics> optional_specifics =
       GetDataFromBridge(/*storage_key=*/kPrimaryKeyStr1);
   ASSERT_TRUE(optional_specifics.has_value());
-  ASSERT_TRUE(SpecificsHasExpectedInsecureTypes(
+  ASSERT_TRUE(PasswordIssuesHasExpectedInsecureTypes(
       optional_specifics.value().client_only_encrypted_data().password_issues(),
       kIssuesTypes));
 }
@@ -1756,7 +1756,7 @@ TEST_F(PasswordSyncBridgeTest,
   password_data->set_federation_url("federation_url");
   password_data->set_date_last_used(1000);
   *password_data->mutable_password_issues() =
-      CreateSpecificsIssues({InsecureType::kLeaked});
+      CreatePasswordIssues({InsecureType::kLeaked});
   password_data->set_date_password_modified_windows_epoch_micros(1000);
 
   *specifics.mutable_password()

@@ -59,8 +59,7 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_federation_url(std::string());
   // The current code always populates password issues for outgoing protos even
   // when none exist.
-  *password_specifics.mutable_password_issues() =
-      sync_pb::PasswordSpecificsData_PasswordIssues();
+  *password_specifics.mutable_password_issues() = sync_pb::PasswordIssues();
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     // The current code always populates notes for outgoing protos even when
     // non-exists.
