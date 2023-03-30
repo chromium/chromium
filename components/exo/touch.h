@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_TOUCH_H_
 #define COMPONENTS_EXO_TOUCH_H_
 
+#include "ash/shell_observer.h"
 #include "base/containers/flat_map.h"
 #include "components/exo/surface_observer.h"
 #include "ui/events/event_handler.h"
@@ -22,7 +23,9 @@ class TouchStylusDelegate;
 
 // This class implements a client touch device that represents one or more
 // touch devices.
-class Touch : public ui::EventHandler, public SurfaceObserver {
+class Touch : public ui::EventHandler,
+              public SurfaceObserver,
+              public ash::ShellObserver {
  public:
   Touch(TouchDelegate* delegate, Seat* seat);
 
@@ -42,6 +45,10 @@ class Touch : public ui::EventHandler, public SurfaceObserver {
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
+
+  // ash::ShellObserver:
+  void OnRootWindowAdded(aura::Window* root_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
  private:
   // Returns the effective target for |event|.

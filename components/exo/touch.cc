@@ -40,11 +40,17 @@ gfx::PointF EventLocationInWindow(ui::TouchEvent* event, aura::Window* window) {
 
 Touch::Touch(TouchDelegate* delegate, Seat* seat)
     : delegate_(delegate), seat_(seat) {
-  WMHelper::GetInstance()->AddPreTargetHandler(this);
+  ash::Shell::Get()->AddShellObserver(this);
+  for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
+    root->AddPreTargetHandler(this);
+  }
 }
 
 Touch::~Touch() {
-  WMHelper::GetInstance()->RemovePreTargetHandler(this);
+  ash::Shell::Get()->RemoveShellObserver(this);
+  for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
+    root->RemovePreTargetHandler(this);
+  }
   delegate_->OnTouchDestroying(this);
   if (HasStylusDelegate())
     stylus_delegate_->OnTouchDestroying(this);
@@ -63,8 +69,9 @@ bool Touch::HasStylusDelegate() const {
 // ui::EventHandler overrides:
 
 void Touch::OnTouchEvent(ui::TouchEvent* event) {
-  if (seat_->was_shutdown() || event->handled())
+  if (seat_->was_shutdown() || event->handled()) {
     return;
+  }
 
   bool send_details = false;
 
@@ -193,6 +200,15 @@ void Touch::OnSurfaceDestroying(Surface* surface) {
   // when this surface dies.
   CancelAllTouches();
   delegate_->OnTouchCancel();
+}
+
+// ash::ShellObserver:
+void Touch::OnRootWindowAdded(aura::Window* root_window) {
+  root_window->AddPreTargetHandler(this);
+}
+
+void Touch::OnRootWindowWillShutdown(aura::Window* root_window) {
+  root_window->RemovePreTargetHandler(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
