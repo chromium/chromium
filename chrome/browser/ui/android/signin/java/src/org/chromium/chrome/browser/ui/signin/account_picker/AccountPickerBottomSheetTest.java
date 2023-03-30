@@ -185,9 +185,8 @@ public class AccountPickerBottomSheetTest {
     public void testDismissCollapsedSheetForWebSignin() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_BACK)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -215,9 +214,8 @@ public class AccountPickerBottomSheetTest {
         when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_BACK)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -244,9 +242,8 @@ public class AccountPickerBottomSheetTest {
     public void testDismissCollapsedSheetWithDismissButtonForWebSignin() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_BUTTON)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -274,9 +271,8 @@ public class AccountPickerBottomSheetTest {
         when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_BUTTON)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -399,9 +395,8 @@ public class AccountPickerBottomSheetTest {
     public void testSignInDefaultAccountOnCollapsedSheetForWebSignin() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -422,9 +417,8 @@ public class AccountPickerBottomSheetTest {
         when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -444,9 +438,8 @@ public class AccountPickerBottomSheetTest {
     public void testSignInAnotherAccountForWebSignin() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -470,9 +463,8 @@ public class AccountPickerBottomSheetTest {
         when(mAccountPickerDelegateMock.getEntryPoint()).thenReturn(EntryPoint.SEND_TAB_TO_SELF);
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT)
                         .build();
         SharedPreferencesManager.getInstance().writeInt(
@@ -544,13 +536,10 @@ public class AccountPickerBottomSheetTest {
     public void testSigninWithAddedAccount() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED,
+                                AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT)
                         .build();
         mAccountManagerTestRule.setResultForNextAddAccountFlow(
@@ -569,11 +558,9 @@ public class AccountPickerBottomSheetTest {
     public void testSignInGeneralError() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN)
                         .build();
         // Throws a connection error during the sign-in action
@@ -605,11 +592,9 @@ public class AccountPickerBottomSheetTest {
     public void testSignInAuthError() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 AccountConsistencyPromoAction.AUTH_ERROR_SHOWN)
                         .build();
         // Throws an auth error during the sign-in action
@@ -686,11 +671,9 @@ public class AccountPickerBottomSheetTest {
     public void testAddAccountOnExpandedSheet() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.SHOWN)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
-                                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED)
-                        .expectIntRecord("Signin.AccountConsistencyPromoAction",
+                        .expectIntRecords("Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED,
                                 AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED)
                         .build();
         mAccountManagerTestRule.setResultForNextAddAccountFlow(
