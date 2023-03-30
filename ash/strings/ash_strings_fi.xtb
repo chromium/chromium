@@ -797,7 +797,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5216991270656129561">Pois päältä <ph name="TIME" /> asti</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5234764350956374838">Hylkää</translation>
-<translation id="523505283826916779">Esteettömyysasetukset</translation>
+<translation id="523505283826916779">Saavutettavuusasetukset</translation>
 <translation id="5245201184978705914">Transkriptiota ei voi luoda</translation>
 <translation id="5253783950165989294">Yhdistetty laitteeseen nimeltä <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % virtaa</translation>
 <translation id="5258528442992323769">Ei tallennettuja virtuaalityöpöytiä</translation>
@@ -1318,7 +1318,7 @@ Uusi asennus</translation>
 <translation id="8029629653277878342">PIN-koodi tai salasana vaaditaan suojauksen parantamiseksi</translation>
 <translation id="8030169304546394654">Yhteys katkaistu</translation>
 <translation id="8036504271468642248">Edellinen lause</translation>
-<translation id="8042893070933512245">Avaa Esteettömyysasetukset-valikko</translation>
+<translation id="8042893070933512245">Avaa Saavutettavuusasetukset-valikko</translation>
 <translation id="8044457332620420407">Näppäimistön taustavalo on poissa päältä</translation>
 <translation id="8048123526339889627">Bluetooth-asetukset</translation>
 <translation id="8051716679295756675">Malli nimeltään <ph name="DESK_TEMPLATE_NAME" /> on jo olemassa</translation>
@@ -1424,7 +1424,7 @@ Uusi asennus</translation>
 <translation id="8614517853887502247">Ilmoitukset (<ph name="APP_1_TITLE" /> ja <ph name="APP_2_TITLE" />) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="8627191004499078455">Yhdistetty: <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Kiellä kameran käyttö</translation>
-<translation id="8631727435199967028">Esteettömyysasetukset</translation>
+<translation id="8631727435199967028">Saavutettavuusasetukset</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> jäljellä</translation>
 <translation id="8641805545866562088">Päivitetään profiililistaa. Odota muutama minuutti.</translation>

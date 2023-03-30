@@ -257,7 +257,7 @@
 <translation id="2318576281648121272">আজি <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , সন্ধানৰ ফলাফলৰ শিতান</translation>
 <translation id="2322173485024759474">এটা বৰ্ণ পিছলৈ যাওক</translation>
-<translation id="2339073806695260576">কোনো টোকা লিখিবলৈ, স্ক্ৰীণশ্বট ল’বলৈ, লেজাৰ পইণ্টাৰ বা আতচী কাঁচ ব্যৱহাৰ কৰিবলৈ শ্বেল্ফত থকা ষ্টাইলাছ বুটামটো টিপক।</translation>
+<translation id="2339073806695260576">কোনো টোকা লিখিবলৈ, স্ক্ৰীনশ্বট ল’বলৈ, লেজাৰ পইণ্টাৰ বা আতচী কাঁচ ব্যৱহাৰ কৰিবলৈ শ্বেল্ফত থকা ষ্টাইলাছ বুটামটো টিপক।</translation>
 <translation id="2341729377289034582">উলম্ব অৱস্থাত থকাকৈ লক কৰা হ'ল</translation>
 <translation id="2345226652884463045">সম্পাদনাৰ বাবে পাঠ বাছনি কৰিবলৈ এণ্টাৰ অথবা ছাৰ্চ + স্পেছ টিপক।</translation>
 <translation id="2350794187831162545">এতিয়া <ph name="LANGUAGE" />ৰ কথন স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হৈছে আৰু ই অফলাইনত কাম কৰে। আপুনি ছেটিং &gt; সাধ্য সুবিধাত নিজৰ শ্ৰুতলিপিৰ ভাষাটো সলনি কৰিব পাৰে।</translation>
@@ -391,7 +391,7 @@
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">কাৰ্ছৰ স্থানান্তৰ কৰক</translation>
 <translation id="3100274880412651815">কেপচাৰ ম'ডটো অগ্ৰাহ্য কৰক</translation>
-<translation id="3105917916468784889">স্ক্ৰীণশ্বট লওক</translation>
+<translation id="3105917916468784889">স্ক্ৰীনশ্বট লওক</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ব্লুটুথ)</translation>
 <translation id="3120421559657122717">ডিভাইচটো শ্বাট ডাউন কৰিবনে?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -517,7 +517,7 @@
 <translation id="3726171378575546917">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> আৰু <ph name="UNAVAILABLE_APPS_COUNT" /> টা নাই।</translation>
 <translation id="3735740477244556633">এই অনুসৰি সজাওক</translation>
 <translation id="3738664582935948253">আপুনি এতিয়া স্ক্ৰীন ৰেকৰ্ডিঙত ক্লিক আৰু কীব’ৰ্ডৰ শ্বৰ্টকাট দেখুৱাব পাৰে</translation>
-<translation id="3742055079367172538">স্ক্ৰীণশ্বট লোৱা হ’ল</translation>
+<translation id="3742055079367172538">স্ক্ৰীনশ্বট লোৱা হ’ল</translation>
 <translation id="3765841986579723851">আজি সম্পাদনা কৰিছে</translation>
 <translation id="3773700760453577392">কোনো প্ৰশাসকে <ph name="USER_EMAIL" />ৰ বাবে একাধিক ছাইন ইনৰ সুবিধাটোৰ অনুমতি বাতিল কৰিছে। অব্যাহত ৰাখিবলৈ সকলো ব্যৱহাৰকাৰীয়ে ছাইন আউট কৰিবই লাগিব।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> সংযোগ কৰি থকা হৈছে</translation>
@@ -684,7 +684,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, তৰাযুক্ত মূল্যাংকন <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{এদিনৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# দিনৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# দিনৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="4633636853437260449">মচিবলৈ Ctrl+W টিপক</translation>
-<translation id="4642092649622328492">আংশিক স্ক্ৰীণশ্বট লওক</translation>
+<translation id="4642092649622328492">আংশিক স্ক্ৰীনশ্বট লওক</translation>
 <translation id="4644727592819780893">কেমেৰাত খাপ খাবলৈ অঞ্চলটোৰ আকাৰ অতি সৰু</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, এপৰ চুপাৰিছ</translation>
 <translation id="4657775630156561295">আপোনাৰ একাউণ্টৰ পৰামৰ্শৰ ইতিহাসৰ পৰা তলত উল্লিখিত পৰামৰ্শটো স্থায়ীভাৱে আঁতৰোৱা হ’ব:

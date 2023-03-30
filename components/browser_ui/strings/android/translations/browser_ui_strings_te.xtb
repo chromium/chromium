@@ -120,7 +120,7 @@
 <translation id="3143754809889689516">ప్రారంభం నుండి ప్లే చేయి</translation>
 <translation id="3162899666601560689">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి</translation>
 <translation id="3165022941318558018">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించడానికి సైట్‌ను అనుమతించండి</translation>
-<translation id="3198916472715691905">నిల్వ చేసిన డేటా <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3198916472715691905">స్టోరేజ్‌ చేసిన డేటా <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">వెబ్ నుండి</translation>
 <translation id="321187648315454507">మీకు నోటిఫికేషన్‌లను పంపడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
@@ -216,7 +216,7 @@
 <translation id="5039804452771397117">అనుమతించండి</translation>
 <translation id="5048398596102334565">మోషన్ సెన్సార్‌లను యాక్సెస్ చేయడానికి సైట్‌లను అనుమతించండి (సిఫార్సు చేస్తున్నాము)</translation>
 <translation id="5050380848339752099">ఈ సైట్ అజ్ఞాత మోడ్ వెలుపల ఉన్న ఒక యాప్‌తో సమాచారాన్ని షేర్ చేయబోతోంది.</translation>
-<translation id="5063480226653192405">నిల్వ వినియోగం</translation>
+<translation id="5063480226653192405">స్టోరేజ్‌ వినియోగం</translation>
 <translation id="5091013926750941408">మొబైల్ సైట్</translation>
 <translation id="509133520954049755">డెస్క్‌టాప్ వీక్షణ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="5100237604440890931">కుదించబడింది - విస్తరింపజేయడానికి క్లిక్ చేయండి.</translation>
@@ -453,5 +453,5 @@
 <translation id="9162462602695099906">ఈ పేజీ ప్రమాదకరం</translation>
 <translation id="9201023452444595544">ఏదైనా ఆఫ్‌లైన్ డేటా ఉంటే తీసివేయబడుతుంది</translation>
 <translation id="930525582205581608">ఈ సైట్‌ను విస్మరించాలా?</translation>
-<translation id="967624055006145463">నిల్వ చేయబడిన డేటా</translation>
+<translation id="967624055006145463">స్టోరేజ్‌ చేయబడిన డేటా</translation>
 </translationbundle>

@@ -24,7 +24,7 @@
 <translation id="1087110696012418426">ಶುಭ ಮಧ್ಯಾಹ್ನ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
 <translation id="1088231044944504242">ನಿಮ್ಮ <ph name="CATEGORY" />, ಫೈಲ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಹುಡುಕಿ. ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಬಾಣದ ಗುರುತಿನ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="109942774857561566">ನನಗೆ ಬೇಜಾರಾಗಿದೆ</translation>
-<translation id="1104084341931202936">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="1104084341931202936">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1104621072296271835">ನಿಮ್ಮ ಸಾಧನಗಳು ಜೊತೆಯಲ್ಲಿ ಇನ್ನೂ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
 <translation id="1111021433905331574">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್‌ನ ಬಣ್ಣವನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; <ph name="APP_TITLE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="112308213915226829">ಶೆಲ್ಫ್ ಅನ್ನು ಸ್ವಯಂಮರೆಮಾಡು</translation>
@@ -107,7 +107,7 @@
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
 <translation id="146902737843070955">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಬದಲಾವಣೆಯನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ</translation>
 <translation id="147310119694673958">ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1479909375538722835">ಫ್ಲೋಟಿಂಗ್ ಪ್ರವೇಶಿಸುವಿಕೆ ಮೆನು</translation>
+<translation id="1479909375538722835">ಫ್ಲೋಟಿಂಗ್ ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಮೆನು</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, ಕ್ಯಾಲೆಂಡರ್ ವೀಕ್ಷಣೆಯನ್ನು ತೆರೆಯಲು Enter ಕೀ ಒತ್ತಿರಿ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> ಜೊತೆಗೆ <ph name="FIRST_ITEM_TITLE" /> ಅನ್ನು ಸ್ವ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -797,7 +797,7 @@
 <translation id="5216991270656129561"><ph name="TIME" /> ವರೆಗೆ ಆಫ್ ಆಗಿರುತ್ತದೆ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
-<translation id="523505283826916779">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="523505283826916779">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5245201184978705914">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ, <ph name="BATTERY_PERCENTAGE" />% ಬ್ಯಾಟರಿ</translation>
 <translation id="5258528442992323769">ಯಾವುದೇ ಉಳಿಸಿದ ಡೆಸ್ಕ್‌ಗಳಿಲ್ಲ</translation>
@@ -1151,7 +1151,7 @@
 <translation id="7068360136237591149">ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7076293881109082629">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7086931198345821656">ಈ ಅಪ್‌ಡೇಟ್‌ಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಪವರ್‌ವಾಷ್‌‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಇತ್ತೀಚಿನ <ph name="SYSTEM_APP_NAME" /> ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
-<translation id="7088960765736518739">ಪ್ರವೇಶಿಸುವಿಕೆ ಬದಲಿಸಿ</translation>
+<translation id="7088960765736518739">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಬದಲಿಸಿ</translation>
 <translation id="7098053464892629930">ಲಭ್ಯವಿರುವ ಎಲ್ಲಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನೋಡಲು, Google Play ನಲ್ಲಿ <ph name="NAME" /> ನ ಆ್ಯಪ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="7098389117866926363">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿ ಎಡ ಪೋರ್ಟ್‌)</translation>
 <translation id="7106330611027933926">ಡೆಸ್ಕ್‌ಬಾರ್ ತೋರಿಸಿ</translation>
@@ -1318,7 +1318,7 @@
 <translation id="8029629653277878342">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8030169304546394654">ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8036504271468642248">ಹಿಂದಿನ ವಾಕ್ಯ</translation>
-<translation id="8042893070933512245">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನು ತೆರೆಯಿರಿ</translation>
+<translation id="8042893070933512245">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="8044457332620420407">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ ಲೈಟ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="8048123526339889627">ಬ್ಲೂಟೂತ್‌‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ಹೆಸರಿನ ಟೆಂಪ್ಲೇಟ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
@@ -1424,7 +1424,7 @@
 <translation id="8614517853887502247">ವೀಕ್ಷಣೆ ರಕ್ಷಣೆ ಆನ್ ಆಗಿರುವ ಕಾರಣದಿಂದಾಗಿ <ph name="APP_1_TITLE" /> ಮತ್ತು <ph name="APP_2_TITLE" /> ಅಧಿಸೂಚನೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ</translation>
 <translation id="8630991711272431708">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
-<translation id="8631727435199967028">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8631727435199967028">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> ಉಳಿದಿದೆ</translation>
 <translation id="8641805545866562088">ಪ್ರೊಫೈಲ್ ಪಟ್ಟಿಯನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಕೆಲವು ನಿಮಿಷಗಳು ಕಾಯಿರಿ.</translation>

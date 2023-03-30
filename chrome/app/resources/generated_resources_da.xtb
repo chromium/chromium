@@ -3520,7 +3520,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="408721682677442104">Fuld kontrol over MIDI-enheder blev afvist</translation>
 <translation id="4087328411748538168">Vis i højre side</translation>
 <translation id="4089235344645910861">Indstillingerne blev gemt, og synkroniseringen er nu startet.</translation>
-<translation id="4090103403438682346">Aktivér Bekræftet adgang</translation>
+<translation id="4090103403438682346">Aktivér Verificeret adgang</translation>
 <translation id="4090947011087001172">Vil du nulstille tilladelserne for <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Du kan se og administrere dine gemte adgangskoder i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="4093865285251893588">Profilbillede</translation>
@@ -4758,7 +4758,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5256861893479663409">På alle websites</translation>
 <translation id="5258992782919386492">Installer på denne enhed</translation>
 <translation id="5260334392110301220">Smarte citationstegn</translation>
-<translation id="5260508466980570042">Din mail eller adgangskode blev ikke bekræftet. Prøv igen.</translation>
+<translation id="5260508466980570042">Din mail eller adgangskode blev ikke verificeret. Prøv igen.</translation>
 <translation id="5260958083445173099">Websites viser indhold på dine foretrukne sprog, hvis det er muligt</translation>
 <translation id="5261619498868361045">Containernavnet skal udfyldes.</translation>
 <translation id="5261683757250193089">Åbn i Webshop</translation>
@@ -8972,7 +8972,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mus er tilsluttet</translation>
 <translation id="9075413375877487220">Denne udvidelse er ikke pålidelig ifølge Udvidet beskyttet browsing.</translation>
-<translation id="9076523132036239772">Din mail eller adgangskode blev ikke bekræftet. Prøv at oprette forbindelse til et netværk først.</translation>
+<translation id="9076523132036239772">Din mail eller adgangskode blev ikke verificeret. Prøv at oprette forbindelse til et netværk først.</translation>
 <translation id="9076821103818989526">Sidepanel</translation>
 <translation id="9076977315710973122">SMV-deling</translation>
 <translation id="907779190626433918">Du bør bruge en unik adgangskode til hvert website og hver app. Hvis nogen får kendskab til en genbrugt adgangskode, kan vedkommende bruge den til at få adgang til dine andre konti.</translation>

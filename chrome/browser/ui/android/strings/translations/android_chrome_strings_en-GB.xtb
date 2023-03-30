@@ -635,7 +635,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4504667196171871375">On Wi-Fi and mobile data</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
 <translation id="4508642716788467538">Pick your language</translation>
-<translation id="4509501256689523862">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />Ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" />, and if the site that you’re viewing personalises ads</translation>
+<translation id="4509501256689523862">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you’re viewing personalises ads</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# day ago}other{# days ago}}</translation>
 <translation id="451872707440238414">Search your bookmarks</translation>
 <translation id="4521489764227272523">The selected data has been removed from Chrome and your synced devices.
@@ -1280,7 +1280,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7851858861565204677">Other devices</translation>
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7859988229622350291">Never translate</translation>
-<translation id="7864208933699511058">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" />, and if the site that you're viewing personalises ads.</translation>
+<translation id="7864208933699511058">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads.</translation>
 <translation id="7866213166286285359">Translate pages here</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> needs Nearby devices permission in order to connect to your device</translation>
 <translation id="7875915731392087153">Create email</translation>

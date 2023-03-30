@@ -120,7 +120,7 @@
 <translation id="1995337122023280937">ఫైల్ లొకేషన్‌కు వెళ్ళు</translation>
 <translation id="1999709132469742660">అన్ని URLలకు ఫైల్ యాక్సెస్</translation>
 <translation id="2001796770603320721">డిస్క్‌లో మేనేజ్ చేయండి</translation>
-<translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో నిల్వ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
+<translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో స్టోరేజ్‌ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="2025955442973426285">టైగ్రిన్యా</translation>
 <translation id="2037845485764049925">రష్యన్</translation>
 <translation id="2044023416777079300">మోడెమ్ రిజిస్టర్ చేయబడలేదు</translation>
@@ -527,7 +527,7 @@
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ఫైళ్లను ఎక్కడి నుండైనా యాక్సెస్ చేయండి, ఆఫ్‌లైన్‌లో ఉన్నా కూడా.<ph name="MARKUP_2" />
     Google Driveలోని ఫైళ్లు అప్‌డేట్ చేయబడి ఉంటాయి, ఇవి ఏ పరికరం నుండైనా అందుబాటులో ఉంటాయి.<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />మీ ఫైళ్లను సురక్షితంగా ఉంచుకోండి.<ph name="MARKUP_5" />
-    మీ పరికరానికి ఏ విధమైన ఆపద సంభవించినా ఫర్వాలేదు, మీ ఫైళ్లు Google Driveలో సురక్షితంగా నిల్వ చేయబడి ఉంటాయి.<ph name="MARKUP_6" />
+    మీ పరికరానికి ఏ విధమైన ఆపద సంభవించినా ఫర్వాలేదు, మీ ఫైళ్లు Google Driveలో సురక్షితంగా స్టోరేజ్‌ చేయబడి ఉంటాయి.<ph name="MARKUP_6" />
     అన్ని ఫైళ్లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, క్రియేట్ చేయండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive నుండి పునరుద్ధరించబడిన ఫైళ్లు</translation>
@@ -760,7 +760,7 @@
 <translation id="7086590977277044826">ఇన్‌స్క్రిప్ట్ కీబోర్డ్‌తో తమిళం</translation>
 <translation id="7088615885725309056">పాతవి</translation>
 <translation id="7103992300314999525">మాసిడోనియన్</translation>
-<translation id="7106346894903675391">మరింత నిల్వని కొనుగోలు చేయండి...</translation>
+<translation id="7106346894903675391">మరింత స్టోరేజ్‌ను కొనుగోలు చేయండి...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;డిస్క్‌లో వెతకండి&lt;/em&gt;</translation>
 <translation id="7135561821015524160">కన్నడ ఫొనెటిక్</translation>
 <translation id="714034171374937760">Chromebase</translation>
