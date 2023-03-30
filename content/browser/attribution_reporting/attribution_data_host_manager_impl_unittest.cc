@@ -577,6 +577,64 @@ TEST_F(AttributionDataHostManagerImplTest,
       "Conversions.SourceRegistration.NavigationType.Background", 2, 2);
 }
 
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHostDisconnectedBeforeBinding_NavigationSourceRegistered) {
+  base::HistogramTester histograms;
+
+  const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
+
+  EXPECT_CALL(mock_manager_,
+              HandleSource(AllOf(SourceTypeIs(SourceType::kNavigation),
+                                 ImpressionOriginIs(page_origin),
+                                 ReportingOriginIs(reporting_origin)),
+                           kFrameId))
+      .Times(2);
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token,
+      AttributionInputEvent());
+
+  SourceRegistration source_data(*DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger.example")}));
+  source_data.source_event_id = 10;
+  source_data.priority = 20;
+  source_data.debug_key = 789;
+  source_data.aggregation_keys =
+      *attribution_reporting::AggregationKeys::FromKeys(
+          {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}});
+  source_data.debug_reporting = true;
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data);
+
+  // This should succeed even though the destination site doesn't match the
+  // final navigation site.
+  source_data.destination_set = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://trigger2.example")});
+  data_host_remote->SourceDataAvailable(reporting_origin,
+                                        std::move(source_data));
+
+  data_host_remote.reset();
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  data_host_manager_.NotifyNavigationStartedForDataHost(
+      attribution_src_token, page_origin,
+      AttributionNavigationType::kContextMenu,
+      /*is_within_fenced_frame=*/false, kFrameId);
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectTimeBucketCount("Conversions.SourceEligibleDataHostLifeTime",
+                                   base::Milliseconds(1), 1);
+
+  // kRegistered = 0, kProcessed = 3.
+  histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
+  histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
+}
+
 // Ensures correct behavior in
 // `AttributionDataHostManagerImpl::OnDataHostDisconnected()` when a data host
 // is registered but disconnects before registering a source or trigger.
