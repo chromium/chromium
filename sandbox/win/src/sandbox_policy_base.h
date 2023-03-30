@@ -195,14 +195,6 @@ class PolicyBase final : public TargetPolicy {
   // call to TargetProcess::Init() is issued.
   ResultCode ApplyToTarget(std::unique_ptr<TargetProcess> target);
 
-  // Called when there are no more active processes in the policy's Job.
-  // If a process is not in a job, call OnProcessFinished().
-  bool OnJobEmpty();
-
-  // Called when a process no longer needs to be tracked. Processes in jobs
-  // should be notified via OnJobEmpty instead.
-  bool OnProcessFinished(DWORD process_id);
-
   EvalResult EvalPolicy(IpcTag service, CountedParameterSetBase* params);
 
   HANDLE GetStdoutHandle();
@@ -238,8 +230,6 @@ class PolicyBase final : public TargetPolicy {
   // Remaining members are unique to this instance and will be configured every
   // time.
 
-  // The policy takes ownership of a target as it is applied to it.
-  std::unique_ptr<TargetProcess> target_;
   // The user-defined global policy settings.
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
@@ -249,8 +239,10 @@ class PolicyBase final : public TargetPolicy {
   // This list contains handles other than the stderr/stdout handles which are
   // shared with the target at times.
   base::HandlesToInheritVector handles_to_share_;
-
   Job job_;
+
+  // The policy takes ownership of a target as it is applied to it.
+  std::unique_ptr<TargetProcess> target_;
 };
 
 }  // namespace sandbox

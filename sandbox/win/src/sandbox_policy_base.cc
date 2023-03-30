@@ -436,7 +436,11 @@ PolicyBase::PolicyBase(base::StringPiece tag)
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
 
-PolicyBase::~PolicyBase() {}
+PolicyBase::~PolicyBase() {
+  // Ensure this is cleared before other members - this terminates the process
+  // if it hasn't already finished.
+  target_.reset();
+}
 
 TargetConfig* PolicyBase::GetConfig() {
   return config();
@@ -651,18 +655,6 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
 
   target_ = std::move(target);
   return SBOX_ALL_OK;
-}
-
-// Can only be called if a job was associated with this policy.
-bool PolicyBase::OnJobEmpty() {
-  target_.reset();
-  return true;
-}
-
-bool PolicyBase::OnProcessFinished(DWORD process_id) {
-  if (target_->ProcessId() == process_id)
-    target_.reset();
-  return true;
 }
 
 EvalResult PolicyBase::EvalPolicy(IpcTag service,

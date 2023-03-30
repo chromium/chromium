@@ -82,7 +82,6 @@ struct JobTracker {
     // As if TerminateProcess() was called for all associated processes.
     // Handles are still valid.
     ::TerminateJobObject(policy->GetJobHandle(), sandbox::SBOX_ALL_OK);
-    policy->OnJobEmpty();
   }
 
   std::unique_ptr<sandbox::PolicyBase> policy;
