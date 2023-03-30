@@ -4,6 +4,7 @@
 
 import json
 import logging
+import os
 import subprocess
 
 import test_runner
@@ -243,3 +244,39 @@ def is_device_with_udid_simulator(device_udid):
       if device_udid == device['udid']:
         return True
   return False
+
+
+def copy_trusted_certificate(cert_path, udid):
+  """Copies a cert into a simulator.
+
+  This allows the simulator to install the input cert.
+
+  Args:
+    cert_path: (str) A path for the cert
+    udid: (str) UDID of a simulator.
+  """
+  # TODO(crbug.com/1351820): Update wpr runner to use this function.
+  if not os.path.exists(cert_path):
+    LOGGER.error('Failed to find the cert path %s', cert_path)
+    return
+
+  LOGGER.info('Copying cert into %s', udid)
+  # Try to boot first, if the simulator is already booted, continue.
+  try:
+    subprocess.check_call(['xcrun', 'simctl', 'boot', udid])
+  except subprocess.CalledProcessError as e:
+    if 'booted' not in str(e):
+      # Logging error instead of throwing, so we don't cause failures in case
+      # this was indeed failing to copy the cert.
+      message = 'Failed to boot simulator before installing cert. ' \
+                'Error: %s' % e.output
+      LOGGER.error(message)
+      return
+
+  try:
+    subprocess.check_call(
+        ['xcrun', 'simctl', 'keychain', udid, 'add-root-cert', cert_path])
+    subprocess.check_call(['xcrun', 'simctl', 'shutdown', udid])
+  except subprocess.CalledProcessError as e:
+    message = 'Failed to install cert. Error: %s' % e.output
+    LOGGER.error(message)

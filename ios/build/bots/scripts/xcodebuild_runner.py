@@ -112,7 +112,8 @@ class LaunchCommand(object):
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
                env=None,
-               test_plugin_service=None):
+               test_plugin_service=None,
+               cert_path=None):
     """Initialize launch command.
 
     Args:
@@ -125,6 +126,7 @@ class LaunchCommand(object):
       out_dir: (str) A folder in which xcodebuild will generate test output.
         By default it is a current directory.
       env: (dict) Environment variables.
+      cert_path: (str) A path for cert to install.
 
     Raises:
       AppNotFoundError: At incorrect egtests_app parameter type.
@@ -142,6 +144,7 @@ class LaunchCommand(object):
     self.env = env
     self._log_parser = xcode_log_parser.get_parser()
     self.test_plugin_service = test_plugin_service
+    self.cert_path = cert_path
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -178,6 +181,9 @@ class LaunchCommand(object):
         shutdown_all_simulators(XTDEVICE_FOLDER)
         erase_all_simulators()
         erase_all_simulators(XTDEVICE_FOLDER)
+        if self.cert_path:
+          iossim_util.copy_trusted_certificate(self.cert_path, self.uuid)
+
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
                                           shards)

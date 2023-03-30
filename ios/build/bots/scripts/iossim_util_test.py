@@ -8,6 +8,8 @@ import mock
 import unittest
 
 import iossim_util
+import os
+import subprocess
 import test_runner
 import test_runner_test
 
@@ -209,6 +211,26 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual('A4E66321-177A-450A-9BA1-488D85B7278E',
                      iossim_util.get_simulator('iPhone 11', '13.2.2'))
     self.assertFalse(mock_create.called)
+
+  def test_copy_cert(self, _):
+    """Ensures right commands are issued to copy cert"""
+    self.mock(os.path, 'exists', lambda *args: True)
+
+    check_call_mock = mock.Mock()
+    self.mock(subprocess, 'check_call', check_call_mock)
+    iossim_util.copy_trusted_certificate('test/cert', 'UDID')
+
+    calls = [
+        mock.call(['xcrun', 'simctl', 'boot', 'UDID']),
+        mock.call([
+            'xcrun', 'simctl', 'keychain', 'UDID', 'add-root-cert', 'test/cert'
+        ]),
+        mock.call(['xcrun', 'simctl', 'shutdown', 'UDID'])
+    ]
+
+    check_call_mock.assert_has_calls(calls)
+    # ensure subprocess.check_call was only called 3 times
+    self.assertEqual(check_call_mock.call_count, 3)
 
 
 if __name__ == '__main__':
