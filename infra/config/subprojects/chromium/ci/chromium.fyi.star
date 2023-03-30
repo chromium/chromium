@@ -1681,6 +1681,7 @@ ci.builder(
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
+        "RBE_clang_depscan_archive": "true",
     },
 )
 
