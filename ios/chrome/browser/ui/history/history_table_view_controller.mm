@@ -213,6 +213,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 }
 
+- (void)detachFromBrowser {
+  // Clear C++ ivars.
+  _browser = nullptr;
+  _historyService = nullptr;
+}
+
 #pragma mark - TableViewModel
 
 - (void)loadModel {
@@ -1003,6 +1009,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Displays a context menu on the cell pressed with gestureRecognizer.
 - (void)displayContextMenuInvokedByGestureRecognizer:
     (UILongPressGestureRecognizer*)gestureRecognizer {
+  if (!self.browser) {
+    return;
+  }
   if (gestureRecognizer.numberOfTouches != 1 || self.editing ||
       gestureRecognizer.state != UIGestureRecognizerStateBegan) {
     return;
@@ -1099,6 +1108,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // Opens URL in a new non-incognito tab in a new window and dismisses the
 // history view.
 - (void)openURLInNewWindow:(const GURL&)URL {
+  if (!self.browser) {
+    return;
+  }
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [windowOpener
@@ -1182,6 +1194,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Opens URL in the current tab and dismisses the history view.
 - (void)openURL:(const GURL&)URL {
+  if (!self.browser) {
+    return;
+  }
   new_tab_page_uma::RecordAction(
       self.browser->GetBrowserState()->IsOffTheRecord(),
       self.browser->GetWebStateList()->GetActiveWebState(),

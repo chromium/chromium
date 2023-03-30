@@ -50,6 +50,10 @@ enum class UrlLoadStrategy;
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
+// Call this when the view controller needs to be detech from browser
+// synchronously (in the case of a shutdown for example).
+- (void)detachFromBrowser;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_TABLE_VIEW_CONTROLLER_H_

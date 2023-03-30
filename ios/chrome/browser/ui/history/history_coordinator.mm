@@ -135,6 +135,11 @@ history::WebHistoryService* WebHistoryServiceGetter(
 }
 
 - (void)stop {
+  // `stop` is called as part of the UI teardown, which means that the browser
+  // objects may be deleted before the dismiss animation is complete.
+  // Disconnect the historyTableViewController before dismissing it to avoid
+  // it accessing stalled objects.
+  [self.historyTableViewController detachFromBrowser];
   [self stopWithCompletion:nil];
 }
 
