@@ -954,6 +954,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.EventListView.EventDisplayedCount" units="int"
+    expires_after="2024-03-28">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the number of currently visible events shown to the user when the
+    Calendar Event List view displays in one day. i.e. the user opens the sys
+    tray calendar, clicks on a date cell and sees 2 events, this metric will
+    track a count of 2.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.EventListView.JoinMeetingButton.Pressed"
     enum="CalendarEventSource" expires_after="2024-02-10">
   <owner>newcomer@google.com</owner>
