@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
@@ -1869,19 +1869,16 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   const bool is_for_columns = direction == kForColumns;
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
-  const bool is_layout_grid = layout_object && layout_object->IsLayoutNGGrid();
+  const auto* grid = DynamicTo<LayoutNGGrid>(layout_object);
 
   // Handle the 'none' case.
   bool is_track_list_empty =
       !computed_grid_track_list.TrackList().RepeaterCount();
-  if (is_layout_grid && is_track_list_empty) {
+  if (grid && is_track_list_empty) {
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
     const Vector<LayoutUnit>& positions =
-        is_for_columns
-            ? ToInterface<LayoutNGGridInterface>(layout_object)
-                  ->ColumnPositions()
-            : ToInterface<LayoutNGGridInterface>(layout_object)->RowPositions();
+        is_for_columns ? grid->ColumnPositions() : grid->RowPositions();
     is_track_list_empty = positions.size() == 1;
   }
 
@@ -1902,9 +1899,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
       computed_grid_track_list.auto_repeat_insertion_point;
   const NGGridTrackList& ng_track_list = computed_grid_track_list.TrackList();
 
-  if (is_layout_grid) {
-    const auto* grid = ToInterface<LayoutNGGridInterface>(layout_object);
-
+  if (grid) {
     // The number of auto repeat tracks. For 'repeat(auto-fill, [x][y])' this
     // will be 2, regardless of what auto-fill computes to. For subgrids, use
     // the number of grid line names specified on the track definition. For
@@ -1950,7 +1945,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   OrderedNamedLinesCollector collector(
       computed_grid_track_list.ordered_named_grid_lines,
       computed_grid_track_list.auto_repeat_ordered_named_grid_lines, is_subgrid,
-      is_layout_grid);
+      !!grid);
   PopulateGridTrackListForNonGrid(list, collector, ng_track_list, style);
   return list;
 }
