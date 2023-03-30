@@ -117,6 +117,8 @@ enum class AskAgainOptions { kAskAgain, kRemember };
 
 enum class FileExtension { kFoo, kBar };
 
+enum class Number { kOne, kTwo };
+
 enum class FilesOptions {
   kOneFooFile,
   kMultipleFooFiles,
@@ -361,6 +363,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckUserDisplayModeInternal(mojom::UserDisplayMode user_display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
+  void CheckPwaWindowCreated(Site site, Number number);
   void CheckWindowNotCreated();
   void CheckWindowControlsOverlay(Site site, IsOn is_on);
   void CheckWindowControlsOverlayToggle(Site site, IsShown is_shown);

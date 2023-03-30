@@ -186,6 +186,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckFilesLoadedInSite) {
   helper_.CheckFilesLoadedInSite(Site::kFileHandler, FilesOptions::kOneFooFile);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckPwaWindowCreated) {
+  helper_.InstallMenuOption(InstallableSite::kFileHandler);
+  helper_.LaunchFileExpectDialog(
+      Site::kFileHandler, FilesOptions::kMultipleBarFiles,
+      AllowDenyOptions::kAllow, AskAgainOptions::kAskAgain);
+  helper_.CheckPwaWindowCreated(Site::kFileHandler, Number::kTwo);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

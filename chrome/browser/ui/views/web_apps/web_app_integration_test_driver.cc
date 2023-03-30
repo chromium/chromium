@@ -3077,6 +3077,45 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckPwaWindowCreated(Site site,
+                                                        Number number) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  DCHECK(before_state_change_action_state_);
+  absl::optional<ProfileState> after_action_profile =
+      GetStateForProfile(after_state_change_action_state_.get(), profile());
+  absl::optional<ProfileState> before_action_profile =
+      GetStateForProfile(before_state_change_action_state_.get(), profile());
+  ASSERT_TRUE(after_action_profile.has_value());
+  ASSERT_TRUE(before_action_profile.has_value());
+
+  int before_state_app_window_count = 0;
+  int after_state_app_window_count = 0;
+  AppId app_id = GetAppIdBySiteMode(site);
+  for (const auto& browser_pair : before_action_profile->browsers) {
+    if (AppBrowserController::IsForWebApp(browser_pair.first, app_id)) {
+      before_state_app_window_count++;
+    }
+  }
+  for (const auto& browser_pair : after_action_profile->browsers) {
+    if (AppBrowserController::IsForWebApp(browser_pair.first, app_id)) {
+      after_state_app_window_count++;
+    }
+  }
+  int app_window_diff =
+      after_state_app_window_count - before_state_app_window_count;
+  switch (number) {
+    case Number::kOne:
+      ASSERT_EQ(1, app_window_diff);
+      break;
+    case Number::kTwo:
+      ASSERT_EQ(2, app_window_diff);
+      break;
+  }
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckWindowNotCreated() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
