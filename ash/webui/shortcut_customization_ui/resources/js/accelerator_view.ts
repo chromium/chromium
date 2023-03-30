@@ -14,7 +14,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, isCustomizationDisabled} from './shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getSortedModifiers, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -155,7 +155,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         modifierStrings.push(getModifierString(modifier));
       }
     }
-    return modifierStrings;
+    return getSortedModifiers(modifierStrings);
   }
 
   protected onViewStateChanged(): void {

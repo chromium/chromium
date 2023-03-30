@@ -68,10 +68,10 @@ suite('acceleratorEditDialogTest', function() {
     // SHIFT + CONTROL + g
     assertEquals(3, keys1.length);
     assertEquals(
-        'shift',
+        'ctrl',
         keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'ctrl',
+        'shift',
         keys1[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
         'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());

@@ -7,10 +7,16 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {Accelerator, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getSortedModifiers, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
+
+function areModifiersEqual(
+    modifiersA: string[], modifiersB: string[]): boolean {
+  return modifiersA.length === modifiersB.length &&
+      modifiersA.every((val, index) => val === modifiersB[index]);
+}
 
 suite('shortcutUtilsTest', function() {
   test('CustomizationDisabled', async () => {
@@ -113,5 +119,31 @@ suite('shortcutUtilsTest', function() {
     };
     const actualAccelerator = getAccelerator(acceleratorInfo);
     assertDeepEquals(expectedAccelerator, actualAccelerator);
+  });
+
+  test('GetSortedModifiers', () => {
+    // Empty modifiers
+    const actualEmpty = getSortedModifiers([]);
+    const expectedEmpty: string[] = [];
+    assertTrue(areModifiersEqual(actualEmpty, expectedEmpty));
+
+    // Single modifiers
+    const actualSingle = getSortedModifiers(['alt']);
+    const expectedSingle: string[] = ['alt'];
+    assertTrue(areModifiersEqual(actualSingle, expectedSingle));
+
+    // Multiple modifiers
+    const actualMultiple = getSortedModifiers(['ctrl', 'shift', 'meta', 'alt']);
+    const expectedMultiple: string[] = ['ctrl', 'alt', 'shift', 'meta'];
+    assertTrue(areModifiersEqual(actualMultiple, expectedMultiple));
+
+    const actualMultiple2 = getSortedModifiers(['ctrl', 'shift', 'meta']);
+    const expectedMultiple2: string[] = ['ctrl', 'shift', 'meta'];
+    assertTrue(areModifiersEqual(actualMultiple2, expectedMultiple2));
+
+    const actualMultiple3 =
+        getSortedModifiers(['shift', 'meta', 'ctrl', 'alt']);
+    const expectedMultiple3: string[] = ['ctrl', 'alt', 'shift', 'meta'];
+    assertTrue(areModifiersEqual(actualMultiple3, expectedMultiple3));
   });
 });
