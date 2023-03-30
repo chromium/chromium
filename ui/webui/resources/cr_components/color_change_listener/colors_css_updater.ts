@@ -13,7 +13,7 @@ import {BrowserProxy} from './browser_proxy.js';
  * The CSS selector used to get the <link> node with the colors.css stylesheet.
  * The wildcard is needed since the URL ends with a timestamp.
  */
-export const COLORS_CSS_SELECTOR: string = 'link[href*=\'colors.css\']';
+export const COLORS_CSS_SELECTOR: string = 'link[href*=\'/colors.css\']';
 
 /**
  * Forces the document to refresh its colors.css stylesheet. This is used to
