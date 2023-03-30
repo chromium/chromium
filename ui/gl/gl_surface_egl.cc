@@ -776,8 +776,8 @@ gfx::Size NativeViewGLSurfaceEGL::GetSize() {
   EGLint height;
   if (!eglQuerySurface(display_->GetDisplay(), surface_, EGL_WIDTH, &width) ||
       !eglQuerySurface(display_->GetDisplay(), surface_, EGL_HEIGHT, &height)) {
-    NOTREACHED() << "eglQuerySurface failed with error "
-                 << GetLastEGLErrorString();
+    LOG(ERROR) << "eglQuerySurface failed with error "
+               << GetLastEGLErrorString();
     return gfx::Size();
   }
 
