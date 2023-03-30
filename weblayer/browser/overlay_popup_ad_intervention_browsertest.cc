@@ -31,9 +31,10 @@ const char kAdsInterventionRecordedHistogram[] =
 
 }  // namespace
 
-class OverlayPopupAdViolationBrowserTest : public SubresourceFilterBrowserTest {
+class WebLayerOverlayPopupAdViolationBrowserTest
+    : public SubresourceFilterBrowserTest {
  public:
-  OverlayPopupAdViolationBrowserTest() = default;
+  WebLayerOverlayPopupAdViolationBrowserTest() = default;
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled = {
@@ -58,14 +59,14 @@ class OverlayPopupAdViolationBrowserTest : public SubresourceFilterBrowserTest {
 
 // TODO(https://crbug.com/1199860): Fails on Linux MSan.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered \
-  DISABLED_NoOverlayPopupAd_AdInterventionNotTriggered
+#define MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered_WL \
+  DISABLED_NoOverlayPopupAd_AdInterventionNotTriggered_WL
 #else
-#define MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered \
-  NoOverlayPopupAd_AdInterventionNotTriggered
+#define MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered_WL \
+  NoOverlayPopupAd_AdInterventionNotTriggered_WL
 #endif
-IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
-                       MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered) {
+IN_PROC_BROWSER_TEST_F(WebLayerOverlayPopupAdViolationBrowserTest,
+                       MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered_WL) {
   base::HistogramTester histogram_tester;
 
   GURL url = embedded_test_server()->GetURL(
@@ -90,14 +91,14 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
 
 // TODO(https://crbug.com/1287783): Fails on linux, android and chromeos.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_OverlayPopupAd_AdInterventionTriggered \
-  DISABLED_OverlayPopupAd_AdInterventionTriggered
+#define MAYBE_OverlayPopupAd_AdInterventionTriggered_WL \
+  DISABLED_OverlayPopupAd_AdInterventionTriggered_WL
 #else
-#define MAYBE_OverlayPopupAd_AdInterventionTriggered \
-  OverlayPopupAd_AdInterventionTriggered
+#define MAYBE_OverlayPopupAd_AdInterventionTriggered_WL \
+  OverlayPopupAd_AdInterventionTriggered_WL
 #endif
-IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
-                       MAYBE_OverlayPopupAd_AdInterventionTriggered) {
+IN_PROC_BROWSER_TEST_F(WebLayerOverlayPopupAdViolationBrowserTest,
+                       MAYBE_OverlayPopupAd_AdInterventionTriggered_WL) {
   base::HistogramTester histogram_tester;
 
   GURL url = embedded_test_server()->GetURL(
@@ -123,10 +124,10 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
       subresource_filter::mojom::AdsViolation::kOverlayPopupAd, 1);
 }
 
-class OverlayPopupAdViolationBrowserTestWithoutEnforcement
-    : public OverlayPopupAdViolationBrowserTest {
+class WebLayerOverlayPopupAdViolationBrowserTestWithoutEnforcement
+    : public WebLayerOverlayPopupAdViolationBrowserTest {
  public:
-  OverlayPopupAdViolationBrowserTestWithoutEnforcement() = default;
+  WebLayerOverlayPopupAdViolationBrowserTestWithoutEnforcement() = default;
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled = {
@@ -144,8 +145,9 @@ class OverlayPopupAdViolationBrowserTestWithoutEnforcement
 };
 
 // TODO(https://crbug.com/1344280): Test is flaky.
-IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTestWithoutEnforcement,
-                       DISABLED_OverlayPopupAd_NoAdInterventionTriggered) {
+IN_PROC_BROWSER_TEST_F(
+    WebLayerOverlayPopupAdViolationBrowserTestWithoutEnforcement,
+    DISABLED_OverlayPopupAd_NoAdInterventionTriggered_WL) {
   base::HistogramTester histogram_tester;
 
   GURL url = embedded_test_server()->GetURL(
