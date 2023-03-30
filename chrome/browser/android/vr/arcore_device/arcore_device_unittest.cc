@@ -127,11 +127,13 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
              display::Display::Rotation::ROTATE_0, {1024, 512});
   }
 
-  void RequestVrSession(int render_process_id,
-                        int render_frame_id,
-                        SurfaceReadyCallback ready_callback,
-                        SurfaceTouchCallback touch_callback,
-                        SurfaceDestroyedCallback destroyed_callback) override {
+  void RequestVrSession(
+      int render_process_id,
+      int render_frame_id,
+      const CompositorDelegateProvider& compositor_delegate_provider,
+      SurfaceReadyCallback ready_callback,
+      SurfaceTouchCallback touch_callback,
+      SurfaceDestroyedCallback destroyed_callback) override {
     NOTREACHED();
   }
   void EndSession() override {}

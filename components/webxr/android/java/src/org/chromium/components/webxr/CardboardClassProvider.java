@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
  */
 /*package*/ class CardboardClassProvider {
     /*package*/ static @Nullable XrImmersiveOverlay.Delegate getOverlayDelegate(
-            @NonNull Activity activity) {
-        return new CardboardOverlayDelegate(activity);
+            VrCompositorDelegate compositorDelegate, @NonNull Activity activity) {
+        return new CardboardOverlayDelegate(compositorDelegate, activity);
     }
 }

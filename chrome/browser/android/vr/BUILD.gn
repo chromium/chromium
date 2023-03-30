@@ -160,6 +160,12 @@ if (enable_arcore) {
   }
 }
 
+if (enable_cardboard) {
+  generate_jni("vr_jni_headers") {
+    sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/vr/VrCompositorDelegateProviderImpl.java" ]
+  }
+}
+
 group("test_support") {
   public_deps = [ ":ui_default_factory" ]
 }

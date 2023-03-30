@@ -67,6 +67,7 @@ class XrJavaCoordinator {
   virtual void RequestVrSession(
       int render_process_id,
       int render_frame_id,
+      const CompositorDelegateProvider& compositor_delegate_provider,
       device::SurfaceReadyCallback ready_callback,
       device::SurfaceTouchCallback touch_callback,
       device::SurfaceDestroyedCallback destroyed_callback) = 0;

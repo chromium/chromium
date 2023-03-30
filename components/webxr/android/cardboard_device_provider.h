@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "components/webxr/android/vr_compositor_delegate_provider.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 
 namespace device {
@@ -17,7 +18,9 @@ namespace webxr {
 
 class CardboardDeviceProvider : public device::VRDeviceProvider {
  public:
-  CardboardDeviceProvider();
+  explicit CardboardDeviceProvider(
+      std::unique_ptr<webxr::VrCompositorDelegateProvider>
+          compositor_delegate_provider);
   ~CardboardDeviceProvider() override;
 
   CardboardDeviceProvider(const CardboardDeviceProvider&) = delete;
@@ -28,6 +31,8 @@ class CardboardDeviceProvider : public device::VRDeviceProvider {
 
  private:
   std::unique_ptr<device::CardboardDevice> cardboard_device_;
+  std::unique_ptr<webxr::VrCompositorDelegateProvider>
+      compositor_delegate_provider_;
   bool initialized_ = false;
 };
 

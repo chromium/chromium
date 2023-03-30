@@ -22,14 +22,14 @@ source_set("android") {
   # assert(enable_vr).
   if (enable_vr) {
     sources = [
-      "ar_compositor_delegate_provider.cc",
-      "ar_compositor_delegate_provider.h",
       "xr_session_coordinator.cc",
       "xr_session_coordinator.h",
     ]
 
     if (enable_arcore) {
       sources += [
+        "ar_compositor_delegate_provider.cc",
+        "ar_compositor_delegate_provider.h",
         "arcore_device_provider.cc",
         "arcore_device_provider.h",
         "arcore_install_helper.cc",
@@ -41,6 +41,8 @@ source_set("android") {
       sources += [
         "cardboard_device_provider.cc",
         "cardboard_device_provider.h",
+        "vr_compositor_delegate_provider.cc",
+        "vr_compositor_delegate_provider.h",
       ]
     }
 
@@ -102,6 +104,8 @@ android_library("xr_java") {
     sources += [
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/VrCompositorDelegate.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/VrCompositorDelegateProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java",

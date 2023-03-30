@@ -71,6 +71,7 @@ void XrSessionCoordinator::RequestArSession(
 void XrSessionCoordinator::RequestVrSession(
     int render_process_id,
     int render_frame_id,
+    const device::CompositorDelegateProvider& compositor_delegate_provider,
     device::SurfaceReadyCallback ready_callback,
     device::SurfaceTouchCallback touch_callback,
     device::SurfaceDestroyedCallback destroyed_callback) {
@@ -83,6 +84,7 @@ void XrSessionCoordinator::RequestVrSession(
 
   Java_XrSessionCoordinator_startVrSession(
       env, j_xr_session_coordinator_,
+      compositor_delegate_provider.GetJavaObject(),
       webxr::GetJavaWebContents(render_process_id, render_frame_id));
 }
 

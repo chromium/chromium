@@ -131,14 +131,15 @@ public class XrSessionCoordinator {
     }
 
     @CalledByNative
-    private void startVrSession(final WebContents webContents) {
+    private void startVrSession(final VrCompositorDelegateProvider compositorDelegateProvider,
+            final WebContents webContents) {
         if (DEBUG_LOGS) Log.i(TAG, "startVrSession");
         // The higher levels should have guaranteed that we're only called if there isn't any other
         // active session going on.
         assert (sActiveSessionInstance == null);
 
-        XrImmersiveOverlay.Delegate overlayDelegate =
-                CardboardClassProvider.getOverlayDelegate(getActivity(webContents));
+        XrImmersiveOverlay.Delegate overlayDelegate = CardboardClassProvider.getOverlayDelegate(
+                compositorDelegateProvider.create(webContents), getActivity(webContents));
         startSession(SessionType.VR, overlayDelegate, webContents);
     }
 

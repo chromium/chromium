@@ -9,7 +9,11 @@
 
 namespace webxr {
 
-CardboardDeviceProvider::CardboardDeviceProvider() = default;
+CardboardDeviceProvider::CardboardDeviceProvider(
+    std::unique_ptr<webxr::VrCompositorDelegateProvider>
+        compositor_delegate_provider)
+    : compositor_delegate_provider_(std::move(compositor_delegate_provider)) {}
+
 CardboardDeviceProvider::~CardboardDeviceProvider() = default;
 
 void CardboardDeviceProvider::Initialize(

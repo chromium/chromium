@@ -53,3 +53,10 @@ if (enable_arcore) {
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
   ]
 }
+
+if (enable_cardboard) {
+  chrome_java_sources += [
+    "java/src/org/chromium/chrome/browser/vr/VrCompositorDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/vr/VrCompositorDelegateProviderImpl.java",
+  ]
+}

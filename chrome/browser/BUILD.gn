@@ -7492,16 +7492,22 @@ static_library("browser") {
     ]
 
     if (is_android) {
+      if (enable_arcore || enable_cardboard) {
+        deps += [ "//components/webxr/android" ]
+      }
+
       if (enable_arcore) {
         deps += [
           "//chrome/browser/android/vr:ar_jni_headers",
-          "//components/webxr/android",
           "//device/vr/android/arcore",
         ]
       }
 
       if (enable_cardboard) {
-        deps += [ "//device/vr/android/cardboard:vr_cardboard" ]
+        deps += [
+          "//chrome/browser/android/vr:vr_jni_headers",
+          "//device/vr/android/cardboard:vr_cardboard",
+        ]
       }
     } else {
       deps += [ "//device/vr/public/mojom:isolated_xr_service" ]

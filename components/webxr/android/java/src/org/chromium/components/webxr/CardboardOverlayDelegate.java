@@ -27,17 +27,22 @@ public class CardboardOverlayDelegate implements XrImmersiveOverlay.Delegate {
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     private Activity mActivity;
+    private VrCompositorDelegate mCompositorDelegate;
 
-    public CardboardOverlayDelegate(@NonNull Activity activity) {
+    public CardboardOverlayDelegate(
+            VrCompositorDelegate compositorDelegate, @NonNull Activity activity) {
         if (DEBUG_LOGS) {
             Log.i(TAG, "constructor");
         }
 
         mActivity = activity;
+        mCompositorDelegate = compositorDelegate;
     }
 
     @Override
-    public void prepareToCreateSurfaceView() {}
+    public void prepareToCreateSurfaceView() {
+        mCompositorDelegate.setOverlayImmersiveVrMode(true);
+    }
 
     @Override
     public void configureSurfaceView(SurfaceView surfaceView) {}
@@ -56,7 +61,9 @@ public class CardboardOverlayDelegate implements XrImmersiveOverlay.Delegate {
     }
 
     @Override
-    public void onStopUsingSurfaceView() {}
+    public void onStopUsingSurfaceView() {
+        mCompositorDelegate.setOverlayImmersiveVrMode(false);
+    }
 
     @Override
     public void removeAndHideSurfaceView(SurfaceView surfaceView) {

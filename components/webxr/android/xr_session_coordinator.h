@@ -31,6 +31,7 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   void RequestVrSession(
       int render_process_id,
       int render_frame_id,
+      const device::CompositorDelegateProvider& compositor_delegate_provider,
       device::SurfaceReadyCallback ready_callback,
       device::SurfaceTouchCallback touch_callback,
       device::SurfaceDestroyedCallback destroyed_callback) override;
