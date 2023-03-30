@@ -1598,9 +1598,12 @@ void ServiceWorkerStorage::DidCollectStaleResources(
 }
 
 void ServiceWorkerStorage::ClearSessionOnlyOrigins() {
-  database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteAllDataForOriginsFromDB, database_.get(),
-                                origins_to_purge_on_shutdown_));
+  if (!origins_to_purge_on_shutdown_.empty()) {
+    database_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeleteAllDataForOriginsFromDB, database_.get(),
+                       origins_to_purge_on_shutdown_));
+  }
 }
 
 void ServiceWorkerStorage::OnResourceReaderDisconnected(
