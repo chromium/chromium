@@ -53,7 +53,7 @@ class LoginStateApiUnittest : public ExtensionApiUnittest {
 TEST_F(LoginStateApiUnittest, GetProfileType_UserProfile) {
   auto function = base::MakeRefCounted<LoginStateGetProfileTypeFunction>();
   EXPECT_EQ("USER_PROFILE",
-            RunFunctionAndReturnValue(function.get(), "[]")->GetString());
+            RunFunctionAndReturnSingleValue(function.get(), "[]")->GetString());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -107,8 +107,8 @@ TEST_F(LoginStateApiAshUnittest, GetSessionState) {
     // |AshTestHelper::bluetooth_config_test_helper()|.
     session_manager::SessionManager::Get()->SetSessionState(test.session_state);
     auto function = base::MakeRefCounted<LoginStateGetSessionStateFunction>();
-    std::unique_ptr<base::Value> result =
-        RunFunctionAndReturnValue(function.get(), "[]");
+    absl::optional<base::Value> result =
+        RunFunctionAndReturnSingleValue(function.get(), "[]");
     EXPECT_EQ(test.expected, result->GetString());
   }
 }
