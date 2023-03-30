@@ -20,6 +20,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -27,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -84,6 +86,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -249,33 +252,30 @@ class BookmarkButton : public BookmarkButtonBase {
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
                  const std::u16string& title)
-      : BookmarkButtonBase(std::move(callback), title), url_(url) {
-    const auto mouseover_and_mousedown_recorder_callback =
-        [](views::Button* button) {
-          switch (button->GetState()) {
-            case views::Button::ButtonState::STATE_PRESSED:
-              base::UmaHistogramEnumeration(
-                  "Prerender.Experimental.BookmarkUrlButtonEvent",
-                  PreloadBookmarkMetricsEvent::kMouseDown);
-              break;
-            case views::Button::ButtonState::STATE_HOVERED:
-              base::UmaHistogramEnumeration(
-                  "Prerender.Experimental.BookmarkUrlButtonEvent",
-                  PreloadBookmarkMetricsEvent::kMouseOver);
-              break;
-            case views::Button::ButtonState::STATE_DISABLED:
-            case views::Button::ButtonState::STATE_NORMAL:
-            case views::Button::ButtonState::STATE_COUNT:
-              break;
-          }
-        };
-
-    state_change_subscription_ =
-        this->AddStateChangedCallback(base::BindRepeating(
-            mouseover_and_mousedown_recorder_callback, base::Unretained(this)));
-  }
+      : BookmarkButtonBase(base::BindRepeating(&BookmarkButton::OnButtonPressed,
+                                               base::Unretained(this)),
+                           title),
+        callback_(std::move(callback)),
+        url_(url) {}
   BookmarkButton(const BookmarkButton&) = delete;
   BookmarkButton& operator=(const BookmarkButton&) = delete;
+
+  void OnButtonPressed(const ui::Event& event) {
+    MayRecordHoverDuration(/*taken=*/true);
+    callback_.Run(event);
+  }
+
+  void MayRecordHoverDuration(bool taken) {
+    if (!mouse_entered_time_.has_value()) {
+      return;
+    }
+    base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
+    mouse_entered_time_ = absl::nullopt;
+    base::UmaHistogramTimes(
+        taken ? "Prerender.Experimental.BookmarkBar.HoverDuration.Taken"
+              : "Prerender.Experimental.BookmarkBar.HoverDuration.NotTaken",
+        duration);
+  }
 
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override {
@@ -299,13 +299,36 @@ class BookmarkButton : public BookmarkButtonBase {
     tooltip_text_.clear();
   }
 
+  void OnMouseEntered(const ui::MouseEvent& event) override {
+    mouse_entered_time_ = base::TimeTicks::Now();
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.BookmarkUrlButtonEvent",
+        PreloadBookmarkMetricsEvent::kMouseOver);
+    BookmarkButtonBase::OnMouseEntered(event);
+  }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    MayRecordHoverDuration(/*taken=*/false);
+    BookmarkButtonBase::OnMouseExited(event);
+  }
+
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    bool result = BookmarkButtonBase::OnMousePressed(event);
+    if (GetState() == ButtonState::STATE_PRESSED) {
+      base::UmaHistogramEnumeration("Prerender.Experimental.BookmarkMetrics",
+                                    PreloadBookmarkMetricsEvent::kMouseDown);
+    }
+    return result;
+  }
+
  private:
   // A cached value of maximum width for tooltip to skip generating
   // new tooltip text.
   mutable int max_tooltip_width_ = 0;
   mutable std::u16string tooltip_text_;
+  PressedCallback callback_;
   const raw_ref<const GURL> url_;
-  base::CallbackListSubscription state_change_subscription_;
+  absl::optional<base::TimeTicks> mouse_entered_time_;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
