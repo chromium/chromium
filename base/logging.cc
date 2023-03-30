@@ -739,24 +739,6 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
   stream_ << "Check failed: " << condition << ". ";
 }
 
-// Using V8RecordReplayPrintVA directly from this code causes link
-// errors when libbase is built statically.  Work around this by
-// loading the symbol dynamically.
-static void RecordReplayDynamicPrintLog(const char *format, ...) {
-  // load the symbol for V8RecordReplayAssertVA.
-  typedef void (*V8RecordReplayPrintVAFunction)(const char* format,
-                                                 va_list ap);
-  static V8RecordReplayPrintVAFunction V8RecordReplayPrintVA =
-      reinterpret_cast<V8RecordReplayPrintVAFunction>(
-          dlsym(RTLD_DEFAULT, "V8RecordReplayPrintVA"));
-  if (V8RecordReplayPrintVA) {
-    va_list ap;
-    va_start(ap, format);
-    V8RecordReplayPrintVA(format, ap);
-    va_end(ap);
-  }
-}
-
 LogMessage::~LogMessage() {
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
@@ -1009,31 +991,10 @@ LogMessage::~LogMessage() {
       // Crash the process to generate a dump.
       // Replace this with an API call to `RecordReplaySetCrashReasonCallback`
       // See RUN-1562: https://linear.app/replay/issue/RUN-1562
-      RecordReplayDynamicPrintLog("ErrorFatal %s:%d %s", file_, line_, str_newline.c_str());
+      RecordReplayPrint("ErrorFatal %s:%d %s", file_, line_, str_newline.c_str());
       IMMEDIATE_CRASH();
     }
   }
-}
-
-#ifdef OS_MAC
-static void (*gRecordReplayPrintFn)(const char*, va_list);
-#endif
-
-static void RecordReplayPrint(const char* aFormat, ...) {
-#ifdef OS_MAC
-  if (!gRecordReplayPrintFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayPrint");
-    if (!fnptr) {
-      return;
-    }
-    gRecordReplayPrintFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
-  }
-
-  va_list ap;
-  va_start(ap, aFormat);
-  gRecordReplayPrintFn(aFormat, ap);
-  va_end(ap);
-#endif
 }
 
 std::string LogMessage::BuildCrashString() const {

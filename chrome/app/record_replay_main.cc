@@ -111,6 +111,17 @@ static const char* WindowsDriverDLL = "windows-recordreplay.dll";
 #endif // BUILDFLAG(IS_WIN)
 
 static DriverHandle OpenDriverHandle() {
+  // When replaying we will already be able to look up the driver DLL.
+  // Use this for an early return on windows so that we don't go through the
+  // logic below to create a temporary driver (which isn't supported when
+  // replaying before calling RecordReplayAttach).
+#if BUILDFLAG(IS_WIN)
+  HMODULE module = GetModuleHandleA(WindowsDriverDLL);
+  if (module) {
+    return module;
+  }
+#endif
+
   const char* tmpdir = GetTempDirectory();
   if (!tmpdir) {
     ReportFailure("Can't figure out temporary directory, can't create driver.");
