@@ -293,6 +293,16 @@ NullableAuthenticatorAttachmentFromValue(const base::Value& value) {
   return absl::nullopt;
 }
 
+std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
+InvalidMakeCredentialField(const char* field_name) {
+  return {nullptr, std::string("field missing or invalid: ") + field_name};
+}
+
+std::pair<blink::mojom::GetAssertionAuthenticatorResponsePtr, std::string>
+InvalidGetAssertionField(const char* field_name) {
+  return {nullptr, std::string("field missing or invalid: ") + field_name};
+}
+
 }  // namespace
 
 base::Value ToValue(
@@ -434,7 +444,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   const base::Value::Dict& dict = value.GetDict();
   const std::string* type = dict.FindString("type");
   if (!type || *type != device::kPublicKey) {
-    return {nullptr, "invalid type"};
+    return InvalidMakeCredentialField("type");
   }
 
   auto response = blink::mojom::MakeCredentialAuthenticatorResponse::New();
@@ -442,50 +452,50 @@ MakeCredentialResponseFromValue(const base::Value& value) {
 
   const std::string* id = dict.FindString("id");
   if (!id) {
-    return {nullptr, "invalid id"};
+    return InvalidMakeCredentialField("id");
   }
   response->info->id = *id;
   absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
   if (!raw_id) {
-    return {nullptr, "invalid rawId"};
+    return InvalidMakeCredentialField("rawId");
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
   const base::Value* authenticator_attachment_value =
       dict.Find("authenticatorAttachment");
   if (!authenticator_attachment_value) {
-    return {nullptr, "invalid authenticatorAttachment"};
+    return InvalidMakeCredentialField("authenticatorAttachment");
   }
   absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
       NullableAuthenticatorAttachmentFromValue(*authenticator_attachment_value);
   if (!authenticator_attachment) {
-    return {nullptr, "invalid authenticatorAttachment"};
+    return InvalidMakeCredentialField("authenticatorAttachment");
   }
   response->authenticator_attachment = *authenticator_attachment;
 
   const base::Value::Dict* attestation_response = dict.FindDict("response");
   if (!attestation_response) {
-    return {nullptr, "invalid response"};
+    return InvalidMakeCredentialField("response");
   }
 
   absl::optional<std::string> authenticator_data =
       Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
   if (!authenticator_data) {
-    return {nullptr, "invalid authenticatorData"};
+    return InvalidMakeCredentialField("authenticatorData");
   }
   response->info->authenticator_data = ToByteVector(*authenticator_data);
 
   absl::optional<std::string> attestation_object =
       Base64UrlDecodeStringKey(*attestation_response, "attestationObject");
   if (!attestation_object) {
-    return {nullptr, "invalid attestationObject"};
+    return InvalidMakeCredentialField("attestationObject");
   }
   response->attestation_object = ToByteVector(*attestation_object);
 
   absl::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*attestation_response, "clientDataJSON");
   if (!client_data_json) {
-    return {nullptr, "invalid clientDataJSON"};
+    return InvalidMakeCredentialField("clientDataJSON");
   }
   response->info->client_data_json = ToByteVector(*client_data_json);
 
@@ -493,7 +503,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   auto [ok, opt_public_key] =
       Base64UrlDecodeNullableStringKey(*attestation_response, "publicKey");
   if (!ok) {
-    return {nullptr, "invalid publicKey"};
+    return InvalidMakeCredentialField("publicKey");
   }
   if (opt_public_key) {
     response->public_key_der = ToByteVector(*opt_public_key);
@@ -502,20 +512,20 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   absl::optional<int> public_key_algorithm =
       attestation_response->FindInt("publicKeyAlgorithm");
   if (!public_key_algorithm) {
-    return {nullptr, "invalid publicKeyAlgorithm"};
+    return InvalidMakeCredentialField("publicKeyAlgorithm");
   }
   response->public_key_algo = *public_key_algorithm;
 
   const base::Value::List* transports =
       attestation_response->FindList("transports");
   if (!transports) {
-    return {nullptr, "invalid transports"};
+    return InvalidMakeCredentialField("transports");
   }
   for (const base::Value& transport_name : *transports) {
     absl::optional<device::FidoTransportProtocol> transport =
         FidoTransportProtocolFromValue(transport_name);
     if (!transport) {
-      return {nullptr, "invalid transports"};
+      return InvalidMakeCredentialField("transports");
     }
     response->transports.push_back(*transport);
   }
@@ -523,7 +533,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   const base::Value::Dict* client_extension_results =
       dict.FindDict("clientExtensionResults");
   if (!client_extension_results) {
-    return {nullptr, "invalid clientExtensionResults"};
+    return InvalidMakeCredentialField("clientExtensionResults");
   }
   absl::optional<bool> cred_blob =
       client_extension_results->FindBool("credBlob");
@@ -553,7 +563,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     response->echo_large_blob = true;
     const absl::optional<bool> supported = large_blob->FindBool("supported");
     if (!supported) {
-      return {nullptr, "invalid largeBlob extension"};
+      return InvalidMakeCredentialField("largeBlob");
     }
     response->supports_large_blob = *supported;
   }
@@ -570,7 +580,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
   const base::Value::Dict& dict = value.GetDict();
   const std::string* type = dict.FindString("type");
   if (!type || *type != device::kPublicKey) {
-    return {nullptr, "invalid type"};
+    return InvalidGetAssertionField("type");
   }
 
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
@@ -578,50 +588,50 @@ GetAssertionResponseFromValue(const base::Value& value) {
 
   const std::string* id = dict.FindString("id");
   if (!id) {
-    return {nullptr, "invalid id"};
+    return InvalidGetAssertionField("id");
   }
   response->info->id = *id;
   absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
   if (!raw_id) {
-    return {nullptr, "invalid rawId"};
+    return InvalidGetAssertionField("rawId");
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
   const base::Value* authenticator_attachment_value =
       dict.Find("authenticatorAttachment");
   if (!authenticator_attachment_value) {
-    return {nullptr, "invalid authenticatorAttachment"};
+    return InvalidGetAssertionField("authenticatorAttachment");
   }
   absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
       NullableAuthenticatorAttachmentFromValue(*authenticator_attachment_value);
   if (!authenticator_attachment) {
-    return {nullptr, "invalid authenticatorAttachment"};
+    return InvalidGetAssertionField("authenticatorAttachment");
   }
   response->authenticator_attachment = *authenticator_attachment;
 
   const base::Value::Dict* assertion_response = dict.FindDict("response");
   if (!assertion_response) {
-    return {nullptr, "invalid response"};
+    return InvalidGetAssertionField("response");
   }
 
   absl::optional<std::string> client_data_json =
       Base64UrlDecodeStringKey(*assertion_response, "clientDataJSON");
   if (!client_data_json) {
-    return {nullptr, "invalid clientDataJSON"};
+    return InvalidGetAssertionField("clientDataJSON");
   }
   response->info->client_data_json = ToByteVector(*client_data_json);
 
   absl::optional<std::string> authenticator_data =
       Base64UrlDecodeStringKey(*assertion_response, "authenticatorData");
   if (!authenticator_data) {
-    return {nullptr, "invalid authenticatorData"};
+    return InvalidGetAssertionField("authenticatorData");
   }
   response->info->authenticator_data = ToByteVector(*authenticator_data);
 
   absl::optional<std::string> signature =
       Base64UrlDecodeStringKey(*assertion_response, "signature");
   if (!signature) {
-    return {nullptr, "invalid signature"};
+    return InvalidGetAssertionField("signature");
   }
   response->signature = ToByteVector(*signature);
 
@@ -629,7 +639,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
   auto [ok, opt_user_handle] =
       Base64UrlDecodeNullableStringKey(*assertion_response, "userHandle");
   if (!ok) {
-    return {nullptr, "invalid userHandle"};
+    return InvalidGetAssertionField("userHandle");
   }
   if (opt_user_handle) {
     response->user_handle = ToByteVector(*opt_user_handle);
@@ -638,7 +648,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
   const base::Value::Dict* client_extension_results =
       dict.FindDict("clientExtensionResults");
   if (!client_extension_results) {
-    return {nullptr, "invalid clientExtensionResults"};
+    return InvalidGetAssertionField("clientExtensionResults");
   }
   const absl::optional<bool> app_id =
       client_extension_results->FindBool("appid");
@@ -650,7 +660,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
     absl::optional<std::string> cred_blob =
         Base64UrlDecodeStringKey(*client_extension_results, "getCredBlob");
     if (!cred_blob) {
-      return {nullptr, "invalid credBlob extension"};
+      return InvalidGetAssertionField("credBlob");
     }
     response->get_cred_blob = ToByteVector(*cred_blob);
   }
@@ -662,7 +672,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
       absl::optional<std::string> blob =
           Base64UrlDecodeStringKey(*large_blob, "blob");
       if (!blob) {
-        return {nullptr, "invalid largeBlob extension"};
+        return InvalidGetAssertionField("largeBlob");
       }
       response->large_blob = ToByteVector(*blob);
     }
