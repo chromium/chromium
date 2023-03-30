@@ -6260,7 +6260,7 @@
   {
     "name": "reduce-accept-language",
     "owners": [ "miketaylr", "victortan"],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
     "name": "reduce-horizontal-fling-velocity",
