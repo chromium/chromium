@@ -112,6 +112,13 @@ void SetSinkIdResolver::Start() {
     }
   }
 
+  // Validate that sink_id_ is a valid UTF8 - see https://crbug.com/1420170.
+  if (sink_id_.Utf8(WTF::kStrictUTF8Conversion).empty() != sink_id_.empty()) {
+    Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidCharacterError, "Invalid sink id."));
+    return;
+  }
+
   if (sink_id_ == HTMLMediaElementAudioOutputDevice::sinkId(*element_))
     Resolve();
   else

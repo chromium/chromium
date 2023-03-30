@@ -7,9 +7,9 @@
   </head>
   <body>
     <script>
-      // TODO(guidou): Add more tests with nonempty src once a MockWebMediaPlayer 
+      // TODO(guidou): Add more tests with nonempty src once a MockWebMediaPlayer
       // is available int the test runner. See crbug.com/546566.
-      
+
       // Tests that the API is available.
       test(function() {
         var audio = document.createElement('audio');
@@ -71,6 +71,14 @@
               });
           });
       }, 'setSinkId("valid") followed by setSinkId("").');
+
+      promise_test(t => {
+        var audio = document.createElement('audio');
+        return promise_rejects_dom(
+            t,
+            "InvalidCharacterError",
+            audio.setSinkId(String.fromCodePoint(55296)));
+      }, "setSinkId fails when given an invalid string");
 
     </script>
   </body>
