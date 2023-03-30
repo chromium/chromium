@@ -228,16 +228,11 @@ class CORE_EXPORT ObjectPaintProperties {
   ADD_ALIAS_NODE(Effect, EffectIsolationNode, effect_isolation_node_);
 
   // The hierarchy of the clip subtree created by a LayoutObject is as follows:
-  // [ FragmentClip ]
-  // |    Clips to a fragment's bounds.
-  // |    This is only present for content under a fragmentation container.
-  // +-[ ViewTransitionClip ]
-  //   |  Clip created only when there is an active ViewTransition. This is used
-  //   |  to clip the element's painting to a subset close to the viewport.
-  //   |  See
-  //   |
-  //   https://drafts.csswg.org/css-view-transitions-1/#compute-the-interest-rectangle-algorithm
-  //  /   for details.
+  // [ ViewTransitionClip ]
+  // |   Clip created only when there is an active ViewTransition. This is used
+  // |   to clip the element's painting to a subset close to the viewport.
+  // |   See https://drafts.csswg.org/css-view-transitions-1/
+  // |       #compute-the-interest-rectangle-algorithm for details.
   // +-[ ClipPathClip ]
   //   |  Clip created by path-based CSS clip-path. Only exists if the
   //  /   clip-path is "simple" that can be applied geometrically. This and
@@ -278,12 +273,10 @@ class CORE_EXPORT ObjectPaintProperties {
   //       paint element.
  public:
   bool HasClipNode() const {
-    return fragment_clip_ || pixel_moving_filter_clip_expaner_ ||
-           clip_path_clip_ || mask_clip_ || css_clip_ ||
-           overflow_controls_clip_ || inner_border_radius_clip_ ||
+    return pixel_moving_filter_clip_expaner_ || clip_path_clip_ || mask_clip_ ||
+           css_clip_ || overflow_controls_clip_ || inner_border_radius_clip_ ||
            overflow_clip_ || clip_isolation_node_;
   }
-  ADD_CLIP(FragmentClip, fragment_clip_);
   ADD_CLIP(PixelMovingFilterClipExpander, pixel_moving_filter_clip_expaner_);
   ADD_CLIP(ClipPathClip, clip_path_clip_);
   ADD_CLIP(MaskClip, mask_clip_);

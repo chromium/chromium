@@ -29,8 +29,6 @@ String SubtreePaintPropertyUpdateReasonsToString(unsigned bitmask) {
     append("kNone");
   if (bitmask & SubtreePaintPropertyUpdateReason::kContainerChainMayChange)
     append("kContainerChainMayChange");
-  if (bitmask & SubtreePaintPropertyUpdateReason::kFragmentsChanged)
-    append("kFragmentsChanged");
   if (bitmask & SubtreePaintPropertyUpdateReason::kPreviouslySkipped)
     append("kPreviouslySkipped");
   if (bitmask & SubtreePaintPropertyUpdateReason::kPrinting)

@@ -113,7 +113,6 @@ class PropertyTreePrinterTraits<ClipPaintPropertyNodeOrAlias> {
   static void AddObjectPaintProperties(
       const ObjectPaintProperties& properties,
       PropertyTreePrinter<ClipPaintPropertyNodeOrAlias>& printer) {
-    printer.AddNode(properties.FragmentClip());
     printer.AddNode(properties.ClipPathClip());
     printer.AddNode(properties.MaskClip());
     printer.AddNode(properties.CssClip());
@@ -244,7 +243,6 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.TransformIsolationNode(), "TransformIsolationNode",
                object);
 
-  SetDebugName(properties.FragmentClip(), "FragmentClip", object);
   SetDebugName(properties.ClipPathClip(), "ClipPathClip", object);
   SetDebugName(properties.MaskClip(), "MaskClip", object);
   SetDebugName(properties.CssClip(), "CssClip", object);

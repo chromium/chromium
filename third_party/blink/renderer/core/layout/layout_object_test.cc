@@ -625,8 +625,9 @@ TEST_F(LayoutObjectTest, SubtreeAndDelayFullPaintInvalidation) {
 
 TEST_F(LayoutObjectTest, SubtreePaintPropertyUpdateReasons) {
   LayoutObject* object = GetDocument().body()->GetLayoutObject();
+  // Just pick a random reason.
   object->AddSubtreePaintPropertyUpdateReason(
-      SubtreePaintPropertyUpdateReason::kFragmentsChanged);
+      SubtreePaintPropertyUpdateReason::kPreviouslySkipped);
   EXPECT_TRUE(object->SubtreePaintPropertyUpdateReasons());
   EXPECT_TRUE(object->NeedsPaintPropertyUpdate());
   EXPECT_TRUE(object->Parent()->DescendantNeedsPaintPropertyUpdate());

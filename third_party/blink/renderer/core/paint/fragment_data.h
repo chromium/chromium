@@ -67,9 +67,8 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     EnsureRareData().sticky_constraints = constraints;
   }
 
-  // A fragment ID unique within the LayoutObject. In NG block fragmentation,
-  // this is the fragmentainer index. In legacy block fragmentation, it's the
-  // flow thread block-offset.
+  // A fragment ID unique within the LayoutObject. It is the same as the
+  // fragmentainer index.
   wtf_size_t FragmentID() const {
     return rare_data_ ? rare_data_->fragment_id : 0;
   }
@@ -87,34 +86,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     // actually are multiple fragments, we'll have rare_data_.
     DCHECK(rare_data_);
     rare_data_->needs_update = b;
-  }
-
-  LayoutUnit LogicalTopInFlowThread() const {
-#if DCHECK_IS_ON()
-    DCHECK(!rare_data_ || rare_data_->has_set_flow_thread_offset_ ||
-           !rare_data_->fragment_id);
-#endif
-    return LayoutUnit::FromRawValue(static_cast<int>(FragmentID()));
-  }
-
-  void SetLogicalTopInFlowThread(LayoutUnit top) {
-    SetFragmentID(top.RawValue());
-#if DCHECK_IS_ON()
-    if (rare_data_)
-      rare_data_->has_set_flow_thread_offset_ = true;
-#endif
-  }
-
-  // The pagination offset is the additional factor to add in to map from flow
-  // thread coordinates relative to the enclosing pagination layer, to visual
-  // coordinates relative to that pagination layer. Not to be used in LayoutNG
-  // fragment painting.
-  PhysicalOffset LegacyPaginationOffset() const {
-    return rare_data_ ? rare_data_->legacy_pagination_offset : PhysicalOffset();
-  }
-  void SetLegacyPaginationOffset(const PhysicalOffset& pagination_offset) {
-    if (rare_data_ || pagination_offset != PhysicalOffset())
-      EnsureRareData().legacy_pagination_offset = pagination_offset;
   }
 
   // Holds references to the paint property nodes created by this object.
@@ -230,7 +201,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     UniqueObjectId unique_id;
 
     // Fragment specific data.
-    PhysicalOffset legacy_pagination_offset;
     std::unique_ptr<ObjectPaintProperties> paint_properties;
     std::unique_ptr<RefCountedPropertyTreeStateOrAlias>
         local_border_box_properties;
@@ -240,15 +210,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     wtf_size_t fragment_id = 0;
 
     bool needs_update = false;
-
-#if DCHECK_IS_ON()
-    // Legacy block fragmentation sets the flow thread offset for each
-    // FragmentData object, and this is used as its fragment_id, whereas NG
-    // block fragmentation uses the fragmentainer index instead. Here's a flag
-    // which can be used to assert that legacy code which expects flow thread
-    // offsets actually gets that.
-    bool has_set_flow_thread_offset_ = false;
-#endif
   };
 
   RareData& EnsureRareData();

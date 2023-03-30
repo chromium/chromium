@@ -368,16 +368,6 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   bool needs_paint_properties = fragment_data->PaintProperties();
 
   wtf_size_t fragment_id = pre_paint_info.fragmentainer_idx;
-  // TODO(mstensho): For now we need to treat unfragmented as ID 0. It doesn't
-  // really matter for LayoutNG, but legacy
-  // PaintPropertyTreeBuilder::ContextForFragment() may take a walk up the tree
-  // and end up querying this (LayoutNG) object, and
-  // FragmentData::LogicalTopInFlowThread() will DCHECK that the value is 0
-  // unless it has been explicitly set by legacy code (which won't happen, since
-  // it's an NG object).
-  if (fragment_id == WTF::kNotFound)
-    fragment_id = 0;
-
   if (pre_paint_info.is_first_for_node) {
     if (allow_update) {
       if (fragment_data->FragmentID() < fragment_id) {
