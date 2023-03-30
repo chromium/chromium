@@ -5696,21 +5696,6 @@
           'isolated_scripts': 'rust_native_tests',
         },
       },
-      'linux-rust-x64-rel-android-toolchain' : {
-        'additional_compile_targets': [
-          'gnrt_unittests',
-          'mojo_rust',
-          'mojo_rust_tests',
-          'rust_build_tests',
-        ],
-        'mixins': [
-          'linux-bionic'
-        ],
-        'test_suites': {
-          'gtest_tests': 'rust_gtests',
-          'isolated_scripts': 'rust_native_tests',
-        },
-      },
       'mac-rust-x64-rel' : {
         'additional_compile_targets': [
           'gnrt_unittests',

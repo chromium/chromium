@@ -69,19 +69,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-rust-x64-rel-android-toolchain": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_all_rust_features": true,
-      "enable_rust": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_chromium_rust_toolchain": false,
-      "use_remoteexec": true
-    }
-  },
   "mac-rust-x64-rel": {
     "gn_args": {
       "dcheck_always_on": true,
