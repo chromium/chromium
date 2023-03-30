@@ -88,16 +88,6 @@ const GRAB_GIF_FRAME_RATIO = 2;
  */
 const TIME_LAPSE_INITIAL_SPEED = 5;
 
-/**
- * Maximum duration for the time-lapse video in seconds.
- */
-const TIME_LAPSE_MAX_DURATION = 60;
-
-/**
- * Default number of fps in case it's not defined from the original video.
- */
-const TIME_LAPSE_DEFAULT_FRAME_RATE = 30;
-
 
 /**
  * Sets avc1 parameter used in video recording.
@@ -610,7 +600,7 @@ export class Video extends ModeBase {
       return [this.handler.onTimeLapseCaptureDone({
         duration: this.recordTime.inMilliseconds(),
         resolution: this.captureResolution,
-        speed: timeLapseSaver.getSpeed(),
+        speed: timeLapseSaver.speed,
         timeLapseSaver,
       })];
     } else {
@@ -740,22 +730,13 @@ export class Video extends ModeBase {
    */
   private async captureTimeLapse(param: h264.EncoderParameters):
       Promise<TimeLapseSaver> {
-    const fps =
-        this.frameRate > 0 ? this.frameRate : TIME_LAPSE_DEFAULT_FRAME_RATE;
     const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
-    const saver = await TimeLapseSaver.create(
-        encoderConfig, this.captureResolution, fps, TIME_LAPSE_INITIAL_SPEED);
     const video = this.video.video;
 
-    // Handles time-lapse speed adjustment.
-    const maxFrames = TIME_LAPSE_MAX_DURATION * fps;
-    let speed = TIME_LAPSE_INITIAL_SPEED;
-    let speedCheckpoint = speed * maxFrames;
-    function updateSpeed() {
-      speed = speed * 2;
-      speedCheckpoint = speed * maxFrames;
-      saver.updateSpeed(speed);
-    }
+    // Creates a saver given the initial speed.
+    const saver = await TimeLapseSaver.create(
+        encoderConfig, this.captureResolution, this.frameRate,
+        TIME_LAPSE_INITIAL_SPEED);
 
     // Creates a frame reader from track processor.
     const track = this.getVideoTrack() as MediaStreamVideoTrack;
@@ -773,7 +754,7 @@ export class Video extends ModeBase {
           resolve(writtenFrameCount);
           return;
         }
-        if (frameCount % speed === 0) {
+        if (frameCount % saver.speed === 0) {
           try {
             const {done, value: frame} = await reader.read();
             if (done) {
@@ -783,9 +764,6 @@ export class Video extends ModeBase {
             saver.write(frame, frameCount);
             writtenFrameCount++;
             frame.close();
-            if (frameCount >= speedCheckpoint) {
-              updateSpeed();
-            }
           } catch (e) {
             reject(e);
           }

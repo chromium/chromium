@@ -147,14 +147,15 @@ const PRIVATE_TEMPFILE_NAME = 'video-tmp.mp4';
  * @return Newly created temporary file.
  * @throws If failed to create video temp file.
  */
-export async function createPrivateTempVideoFile(): Promise<FileAccessEntry> {
+export async function createPrivateTempVideoFile(name = PRIVATE_TEMPFILE_NAME):
+    Promise<FileAccessEntry> {
   const dir = cameraTempDir;
   assert(dir !== null);
 
   // Delete the previous temporary file if there is any.
-  await dir.removeEntry(PRIVATE_TEMPFILE_NAME);
+  await dir.removeEntry(name);
 
-  const file = await dir.createFile(PRIVATE_TEMPFILE_NAME);
+  const file = await dir.createFile(name);
   if (file === null) {
     throw new Error('Failed to create private video temp file.');
   }
