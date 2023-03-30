@@ -110,6 +110,14 @@ export class InputKeyElement extends InputKeyElementBase {
         value: false,
         reflectToAttribute: true,
       },
+
+      // This property is used to apply different styling to keys containing
+      // only text and those with icons.
+      hasIcon: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -117,8 +125,14 @@ export class InputKeyElement extends InputKeyElementBase {
   keyState: KeyInputState;
   narrow: boolean;
   highlighted: boolean;
+  hasIcon: boolean;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.hasIcon = this.key in keyToIconNameMap;
+  }
 
   static get template(): HTMLTemplateElement {
     return getTemplate();

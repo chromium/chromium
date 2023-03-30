@@ -5,11 +5,12 @@
     box-sizing: border-box;
     display: flex;
     font-weight: 500;
-    height: 28px;
+    height: 32px;
     justify-content: center;
     margin-inline-end: 8px;
-    min-width: 28px;
-    padding-inline: 8px;
+    min-width: 32px;
+    padding-bottom: 6px;
+    padding-top: 6px;
   }
 
   :host([narrow]) .key-container {
@@ -32,12 +33,21 @@
     background-color: var(--cros-highlight-color);
     border: none;
     box-shadow: 0 1px 1px var(--cros-highlight-color);
+    padding-inline: 12px;
   }
 
   :host([key-state='alpha-numeric-selected']) .key-container {
     background-color: var(--cros-bg-color-dropped-elevation-1);
     border: none;
     box-shadow: 0 1px 1px var(--cros-bg-color-dropped-elevation-1);
+  }
+
+  :host([key-state='alpha-numeric-selected'][has-icon]) .key-container {
+    padding-inline: 6px;
+  }
+
+  :host([key-state='alpha-numeric-selected']:not([has-icon])) .key-container {
+    padding-inline: 11px;
   }
 
   :host([highlighted][key-state='modifier-selected']) div.key-container {
@@ -57,7 +67,7 @@
   :host(#shiftKey) .key-container,
   :host(#searchKey) .key-container,
   :host([key-state='modifier-selected']) .key-container {
-    min-width: 46px;
+    min-width: 44px;
   }
 
   #key-icon {
