@@ -23,9 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2023-09-03">
+    enum="BooleanSuccess" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an external display. Every time an external
@@ -37,9 +36,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2023-09-03">
+    enum="BooleanSuccess" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an internal display. This is recorded after Chrome
@@ -50,12 +48,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.RefreshRate" units="Hz"
-    expires_after="2022-09-01">
+    expires_after="2024-04-01">
   <obsolete>
     Replaced by ConfigureDisplays.External.Modeset.Success.RefreshRate in M103.
   </obsolete>
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Refresh rate of the mode for the display we're about to modeset. This is
@@ -65,13 +62,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2022-09-01">
+    enum="DisplayResolution" expires_after="2024-04-01">
   <obsolete>
     Split into ConfigureDisplays.External.Modeset.OriginalRequest.Resolution and
     ConfigureDisplays.External.Modeset.Success.Resolution in M103.
   </obsolete>
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     DisplayResolution of the mode for the external display we're about to
@@ -82,9 +78,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2023-05-01">
+    enum="BooleanSuccess" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an internal display. Chrome might try additional
@@ -97,9 +92,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2023-05-01">
+    enum="BooleanSuccess" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an internal display. This is recorded after Chrome
@@ -110,12 +104,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.RefreshRate" units="Hz"
-    expires_after="2022-09-01">
+    expires_after="2024-04-01">
   <obsolete>
     Replaced by ConfigureDisplays.Internal.Modeset.Success.RefreshRate in M103.
   </obsolete>
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Refresh rate of the mode for the display we're about to modeset. This is
@@ -125,13 +118,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2022-09-01">
+    enum="DisplayResolution" expires_after="2024-04-01">
   <obsolete>
     Split into ConfigureDisplays.Internal.Modeset.OriginalRequest.Resolution and
     ConfigureDisplays.Internal.Modeset.Success.Resolution in M103.
   </obsolete>
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     DisplayResolution of the mode for the internal display we're about to
@@ -142,9 +134,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
-    units="count" expires_after="2023-09-03">
+    units="count" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Total number of external displays connected via MST and being configured.
@@ -154,9 +145,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
-    units="%" expires_after="2023-09-03">
+    units="%" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Percentage of external displays connected via MST and being configured. This
@@ -166,9 +156,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
-    units="count" expires_after="2023-09-03">
+    units="count" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Total number of external displays being configured. This is recorded every
@@ -178,9 +167,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.Success.RefreshRate"
-    units="Hz" expires_after="2023-05-01">
+    units="Hz" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Tracks an {Connection} display's resulting refresh rate after a successful
@@ -193,9 +181,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.{Report}.Resolution"
-    enum="DisplayResolution" expires_after="2023-05-01">
+    enum="DisplayResolution" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>{Connection} {Report}</summary>
   <token key="Connection">
@@ -212,9 +199,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.BlockZeroSerialNumberType"
-    enum="BlockZeroSerialNumberType" expires_after="2023-09-03">
+    enum="BlockZeroSerialNumberType" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     The type of serial number retrieved from block zero of a display's EDID
@@ -223,9 +209,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.NumOfSerialNumbersProvided" units="count"
-    expires_after="2023-05-01">
+    expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     The number of serial numbers provided in an EDID (i.e. via block zero and/or
@@ -234,9 +219,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.ParseEdidOptionals" enum="ParseEdidOptionals"
-    expires_after="2023-05-01">
+    expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     The availability (or lack thereof) of tracked optional fields during EDID
@@ -245,9 +229,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.MultipleDisplays.GenerateId.CollisionDetection"
-    enum="BooleanDisplayIdCollision" expires_after="2023-09-03">
+    enum="BooleanDisplayIdCollision" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     Whether or not multiple connected displays produced identical display IDs
@@ -259,10 +242,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
-    expires_after="2023-09-03">
+    expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>sashamcintosh@chromium.org</owner>
-  <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     Type of failure that occurs during EDID parsing. Typically the failure is
