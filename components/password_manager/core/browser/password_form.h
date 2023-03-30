@@ -374,9 +374,9 @@ struct PasswordForm {
   autofill::mojom::SubmissionIndicatorEvent submission_event =
       autofill::mojom::SubmissionIndicatorEvent::NONE;
 
-  // True iff heuristics declined this form for normal saving or filling (e.g.
-  // only credit card fields were found). But this form can be saved or filled
-  // only with the fallback.
+  // True iff heuristics declined this form for normal saving, updating, or
+  // filling (e.g. only credit card fields were found). But this form can be
+  // saved or filled only with the fallback.
   bool only_for_fallback = false;
 
   // True iff the new password field was found with server hints or autocomplete
