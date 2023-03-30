@@ -107,11 +107,6 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
   }
 }
 
-const LayoutNGGridInterface* LayoutNGGrid::ToLayoutNGGridInterface() const {
-  NOT_DESTROYED();
-  return this;
-}
-
 bool LayoutNGGrid::HasCachedPlacementData() const {
   return cached_placement_data_ && !IsGridPlacementDirty();
 }

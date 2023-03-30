@@ -6,15 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_LAYOUT_NG_GRID_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 
 namespace blink {
 
-class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
-                                 public LayoutNGGridInterface {
+class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock {
  public:
   explicit LayoutNGGrid(Element*);
 
@@ -25,27 +23,24 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
     return "LayoutNGGrid";
   }
 
-  const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
-
   bool HasCachedPlacementData() const;
   const NGGridPlacementData& CachedPlacementData() const;
   void SetCachedPlacementData(NGGridPlacementData&& placement_data);
 
   wtf_size_t AutoRepeatCountForDirection(
-      const GridTrackSizingDirection track_direction) const final;
+      const GridTrackSizingDirection track_direction) const;
   wtf_size_t ExplicitGridStartForDirection(
-      const GridTrackSizingDirection track_direction) const final;
+      const GridTrackSizingDirection track_direction) const;
   wtf_size_t ExplicitGridEndForDirection(
-      const GridTrackSizingDirection track_direction) const final;
-  LayoutUnit GridGap(
-      const GridTrackSizingDirection track_direction) const final;
+      const GridTrackSizingDirection track_direction) const;
+  LayoutUnit GridGap(const GridTrackSizingDirection track_direction) const;
   LayoutUnit GridItemOffset(
-      const GridTrackSizingDirection track_direction) const final;
+      const GridTrackSizingDirection track_direction) const;
   Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
-      const GridTrackSizingDirection track_direction) const final;
+      const GridTrackSizingDirection track_direction) const;
 
-  Vector<LayoutUnit> RowPositions() const final;
-  Vector<LayoutUnit> ColumnPositions() const final;
+  Vector<LayoutUnit> RowPositions() const;
+  Vector<LayoutUnit> ColumnPositions() const;
 
   const NGGridLayoutData* GridLayoutData() const;
 

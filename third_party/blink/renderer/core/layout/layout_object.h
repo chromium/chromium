@@ -82,7 +82,6 @@ class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
 class LayoutMultiColumnSpannerPlaceholder;
-class LayoutNGGridInterface;
 class LayoutNGTableInterface;
 class LayoutNGTableRowInterface;
 class LayoutNGTableSectionInterface;
@@ -1144,11 +1143,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   virtual const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface()
       const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return nullptr;
-  }
-  virtual const LayoutNGGridInterface* ToLayoutNGGridInterface() const {
     NOT_DESTROYED();
     NOTREACHED();
     return nullptr;
