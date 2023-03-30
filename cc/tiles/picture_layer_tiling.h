@@ -330,6 +330,9 @@ class CC_EXPORT PictureLayerTiling {
   // See https://linear.app/replay/issue/RUN-550#comment-60ba884e
   int record_replay_id_ = 0;
 
+  // Fix for use after free bug.
+  int tile_id = 0;
+
  protected:
   friend class CoverageIterator;
   friend class PrioritizedTile;

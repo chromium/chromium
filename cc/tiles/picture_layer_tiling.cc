@@ -29,6 +29,8 @@
 
 #include "base/record_replay.h"
 
+static int tile_id_ = 1;
+
 namespace cc {
 
 PictureLayerTiling::PictureLayerTiling(
@@ -47,6 +49,7 @@ PictureLayerTiling::PictureLayerTiling(
       max_preraster_distance_(max_preraster_distance),
       can_use_lcd_text_(can_use_lcd_text) {
   record_replay_id_ = recordreplay::NewIdAnyThread("PictureLayerTiling");
+  tile_id = tile_id_++;
   
   DCHECK(!raster_source->IsSolidColor());
   DCHECK_GE(raster_transform.translation().x(), 0.f);
