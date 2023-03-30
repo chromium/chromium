@@ -6679,9 +6679,6 @@ crbug.com/webrtc/14889 external/wpt/webrtc/simulcast/vp9.https.html [ Skip Timeo
 #Sheriff 2023-02-21
 crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeout ]
 
-# Consistently crashing; disabling whilst we investigate
-crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-no-url-end-to-end.js [ Crash Failure Pass ]
-
 crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 

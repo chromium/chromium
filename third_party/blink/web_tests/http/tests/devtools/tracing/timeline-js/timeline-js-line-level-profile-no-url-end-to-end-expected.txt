@@ -1,4 +1,0 @@
-Tests that a line-level CPU profile is collected and shown in the text editor.
-
-Decoration found: true
-
