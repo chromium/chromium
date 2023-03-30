@@ -78,7 +78,7 @@ class PLATFORM_EXPORT Length {
     DCHECK_NE(t, kCalculated);
   }
 
-  Length(int v, Length::Type t) : value_(v), type_(t), round_to_int_(true) {
+  Length(int v, Length::Type t) : value_(v), type_(t) {
     DCHECK_NE(t, kCalculated);
   }
 
@@ -297,8 +297,6 @@ class PLATFORM_EXPORT Length {
     return value_;
   }
 
-  bool GetRoundToInt() const { return round_to_int_; }
-
   class PLATFORM_EXPORT AnchorEvaluator {
    public:
     // Evaluates an anchor() or anchor-size() function given by the
@@ -337,11 +335,6 @@ class PLATFORM_EXPORT Length {
   };
   bool quirk_ = false;
   unsigned char type_;
-
-  // This only affects BrokenLegacyMultiplyBy()
-  // (in table_layout_algorithm_fixed.cc), nothing else,
-  // so it can be removed when that legacy table code is removed.
-  bool round_to_int_ = false;
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const Length&);

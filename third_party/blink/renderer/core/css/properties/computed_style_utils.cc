@@ -74,10 +74,7 @@ static Length Negate(const Length& length) {
     return length;
   }
 
-  Length ret =
-      length.GetRoundToInt()
-          ? Length(-static_cast<int>(length.GetFloatValue()), length.GetType())
-          : Length(-length.GetFloatValue(), length.GetType());
+  Length ret = Length(-length.GetFloatValue(), length.GetType());
   ret.SetQuirk(length.Quirk());
   return ret;
 }
