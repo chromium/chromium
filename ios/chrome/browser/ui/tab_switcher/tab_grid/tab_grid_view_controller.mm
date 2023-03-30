@@ -2669,6 +2669,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.delegate showInactiveTabs];
 }
 
+- (void)didTapInactiveTabsSettingsLinkInGridViewController:
+    (GridViewController*)gridViewController {
+  NOTREACHED();
+}
+
 #pragma mark - Control actions
 
 - (void)doneButtonTapped:(id)sender {

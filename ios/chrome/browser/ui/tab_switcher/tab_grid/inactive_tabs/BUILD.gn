@@ -22,6 +22,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
@@ -65,8 +66,22 @@ source_set("inactive_tabs_button") {
 
 source_set("inactive_tabs_button_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "inactive_tabs_count_consumer.h" ]
-  deps = [ ":inactive_tabs_button_ui_swift" ]
+  sources = [
+    "inactive_tabs_count_consumer.h",
+    "inactive_tabs_preamble_header.h",
+    "inactive_tabs_preamble_header.mm",
+  ]
+  deps = [
+    ":inactive_tabs_button_ui_swift",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
 }
 
 swift_source_set("inactive_tabs_button_ui_swift") {

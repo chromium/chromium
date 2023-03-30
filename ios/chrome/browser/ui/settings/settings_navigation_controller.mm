@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_coordinator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -79,6 +81,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Privacy Safe Browsing coordinator.
 @property(nonatomic, strong)
     PrivacySafeBrowsingCoordinator* privacySafeBrowsingCoordinator;
+
+// Privacy Safe Browsing coordinator.
+@property(nonatomic, strong)
+    InactiveTabsSettingsCoordinator* inactiveTabsSettingsCoordinator;
 
 // Current UIViewController being presented by this Navigation Controller.
 // If nil it means the Navigation Controller is not presenting anything, or the
@@ -393,6 +399,28 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   navigationController.clearBrowsingDataCoordinator.delegate =
       navigationController;
   [navigationController.clearBrowsingDataCoordinator start];
+  return navigationController;
+}
+
++ (instancetype)
+    inactiveTabsControllerForBrowser:(Browser*)browser
+                            delegate:(id<SettingsNavigationControllerDelegate>)
+                                         delegate {
+  // `IsInactiveTabsEnabled` returns NO if the user explicitly disabled inactive
+  // tabs. As the user should have the choice to enabled it back, the settings
+  // should be displayed even if the feature has been explicitly disabled.
+  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  DCHECK(browser);
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  navigationController.inactiveTabsSettingsCoordinator =
+      [[InactiveTabsSettingsCoordinator alloc]
+          initWithBaseNavigationController:navigationController
+                                   browser:browser];
+  [navigationController.inactiveTabsSettingsCoordinator start];
   return navigationController;
 }
 

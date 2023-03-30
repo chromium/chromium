@@ -97,6 +97,11 @@
   // No-op for unittests.
 }
 
+- (void)didTapInactiveTabsSettingsLinkInGridViewController:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
+
 @end
 
 class GridViewControllerTest : public RootViewControllerTest {

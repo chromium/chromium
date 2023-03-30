@@ -86,8 +86,15 @@
     (GridViewController*)gridViewController;
 
 // Tells the delegate that the inactive tabs button was tapped in
-// `gridViewController`, i.e., there was an intention to show inactive tabs.
+// `gridViewController`, i.e., there was an intention to show inactive tabs (in
+// TabGridModeNormal).
 - (void)didTapInactiveTabsButtonInGridViewController:
+    (GridViewController*)gridViewController;
+
+// Tells the delegate that the inactive tabs settings link was tapped in
+// `gridViewController`, i.e., there was an intention to show inactive tabs
+// settings (in TabGridModeInactive).
+- (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (GridViewController*)gridViewController;
 
 @end

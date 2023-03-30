@@ -1274,7 +1274,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION" desc="Title of the action that will close all tabs in the grid of Inactive Tabs.">
         Close All
       </message>
-       <message name="IDS_IOS_INACTIVE_TABS_SETTINGS_HEADER" desc="Header for the inactive tabs settings.">
+      <message name="IDS_IOS_INACTIVE_TABS_PREAMBLE" desc="Text displayed at the top of the Inactive Tabs grid, to inform the user about the feature, and link to its settings.">
+        Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days or more are moved here. You can change this anytime in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_SETTINGS_HEADER" desc="Header for the inactive tabs settings.">
         Choose when tabs that haven’t recently been used get moved to the inactive tab section.
       </message>
       <message name="IDS_IOS_INACTIVE_TABS_TITLE" desc="Title of the grid of Inactive Tabs.">

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
@@ -30,7 +31,8 @@ const NSTimeInterval kDuration = 0.2;
 }  // namespace
 
 @interface InactiveTabsCoordinator () <GridViewControllerDelegate,
-                                       InactiveTabsViewControllerDelegate>
+                                       InactiveTabsViewControllerDelegate,
+                                       SettingsNavigationControllerDelegate>
 
 // The view controller displaying the inactive tabs.
 @property(nonatomic, strong) InactiveTabsViewController* viewController;
@@ -200,6 +202,17 @@ const NSTimeInterval kDuration = 0.2;
   NOTREACHED();
 }
 
+- (void)didTapInactiveTabsSettingsLinkInGridViewController:
+    (GridViewController*)gridViewController {
+  SettingsNavigationController* settingsController =
+      [SettingsNavigationController
+          inactiveTabsControllerForBrowser:self.browser
+                                  delegate:self];
+  [self.baseViewController presentViewController:settingsController
+                                        animated:YES
+                                      completion:nil];
+}
+
 #pragma mark - InactiveTabsViewControllerDelegate
 
 - (void)inactiveTabsViewControllerDidTapBackButton:
@@ -242,6 +255,32 @@ const NSTimeInterval kDuration = 0.2;
                                      style:UIAlertActionStyleDestructive];
 
   [actionSheetCoordinator start];
+}
+
+#pragma mark - SettingsNavigationControllerDelegate
+
+- (void)closeSettings {
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)settingsWasDismissed {
+  // No-op.
+}
+
+- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
+    handlerForSettings {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<ApplicationCommands>)handlerForApplicationCommands {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<SnackbarCommands>)handlerForSnackbarCommands {
+  NOTREACHED();
+  return nil;
 }
 
 #pragma mark - Private

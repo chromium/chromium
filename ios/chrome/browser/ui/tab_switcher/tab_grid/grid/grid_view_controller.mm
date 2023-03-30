@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -70,7 +71,10 @@ NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
 NSString* const kSuggestedActionsCellIdentifier =
     @"SuggestedActionsCellIdentifier";
 NSString* const kGridHeaderIdentifier = @"GridHeaderIdentifier";
-NSString* const kInactiveTabsHeaderIdentifier = @"InactiveTabsHeaderIdentifier";
+NSString* const kInactiveTabsButtonHeaderIdentifier =
+    @"InactiveTabsButtonHeaderIdentifier";
+NSString* const kInactiveTabsPreambleHeaderIdentifier =
+    @"InactiveTabsPreambleHeaderIdentifier";
 
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
@@ -219,7 +223,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
              withReuseIdentifier:kGridHeaderIdentifier];
   [collectionView registerClass:[InactiveTabsButtonHeader class]
       forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-             withReuseIdentifier:kInactiveTabsHeaderIdentifier];
+             withReuseIdentifier:kInactiveTabsButtonHeaderIdentifier];
+  [collectionView registerClass:[InactiveTabsPreambleHeader class]
+      forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+             withReuseIdentifier:kInactiveTabsPreambleHeaderIdentifier];
 
   // During deletion (in horizontal layout) the backgroundView can resize,
   // revealing temporarily the collectionView background. This makes sure
@@ -535,7 +542,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       DCHECK(IsInactiveTabsEnabled());
       InactiveTabsButtonHeader* header = [collectionView
           dequeueReusableSupplementaryViewOfKind:kind
-                             withReuseIdentifier:kInactiveTabsHeaderIdentifier
+                             withReuseIdentifier:
+                                 kInactiveTabsButtonHeaderIdentifier
                                     forIndexPath:indexPath];
       header.parent = self;
       __weak __typeof(self) weakSelf = self;
@@ -578,9 +586,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       return headerView;
     }
     case TabGridModeInactive:
-      // The Inactive Tabs grid doesn’t have a header.
-      NOTREACHED();
-      return nil;
+      // The Inactive Tabs grid has a header to inform about the feature and a
+      // link to its settings.
+      DCHECK(IsInactiveTabsEnabled());
+      InactiveTabsPreambleHeader* header = [collectionView
+          dequeueReusableSupplementaryViewOfKind:kind
+                             withReuseIdentifier:
+                                 kInactiveTabsPreambleHeaderIdentifier
+                                    forIndexPath:indexPath];
+      __weak __typeof(self) weakSelf = self;
+      header.settingsLinkAction = ^{
+        [weakSelf didTapInactiveTabsSettingsLink];
+      };
+      return header;
   }
 }
 
@@ -694,8 +712,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       return CGSizeMake(collectionView.bounds.size.width, height);
     }
     case TabGridModeInactive:
-      // The Inactive Tabs grid doesn’t have a header.
-      return CGSizeZero;
+      DCHECK(IsInactiveTabsEnabled());
+      // The Inactive Tabs grid has a header to inform about the feature and a
+      // link to its settings.
+      return [self inactiveTabsPreambleHeaderSize];
   }
 }
 
@@ -1519,6 +1539,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate didTapInactiveTabsButtonInGridViewController:self];
 }
 
+// Called when the Inactive Tabs settings link is tapped.
+- (void)didTapInactiveTabsSettingsLink {
+  [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
+}
+
 #pragma mark - Private properties
 
 - (NSUInteger)selectedIndex {
@@ -1942,6 +1967,24 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsButtonHeader* header =
       base::mac::ObjCCastStrict<InactiveTabsButtonHeader>([self
+                             collectionView:self.collectionView
+          viewForSupplementaryElementOfKind:kind
+                                atIndexPath:indexPath]);
+  CGFloat width = CGRectGetWidth(self.collectionView.bounds);
+  CGSize targetSize = CGSize(width, UILayoutFittingExpandedSize.height);
+  CGSize size =
+      [header systemLayoutSizeFittingSize:targetSize
+            withHorizontalFittingPriority:UILayoutPriorityRequired
+                  verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+  return CGSizeMake(width, size.height);
+}
+
+- (CGSize)inactiveTabsPreambleHeaderSize {
+  NSString* kind = UICollectionElementKindSectionHeader;
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:kOpenTabsSectionIndex];
+  InactiveTabsPreambleHeader* header =
+      base::mac::ObjCCastStrict<InactiveTabsPreambleHeader>([self
                              collectionView:self.collectionView
           viewForSupplementaryElementOfKind:kind
                                 atIndexPath:indexPath]);

@@ -186,6 +186,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/tabs",
+    "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/browser/url:constants",
