@@ -94,8 +94,6 @@ Checkbox::Checkbox(const std::u16string& label,
   // the checkbox view (otherwise it gets clipped which looks weird).
   views::InstallEmptyHighlightPathGenerator(this);
 
-  SetAccessibilityProperties(ax::mojom::Role::kCheckBox);
-
   if (features::IsChromeRefresh2023()) {
     InkDrop::Install(image(), std::make_unique<InkDropHost>(image()));
     SetInkDropView(image());
@@ -174,6 +172,7 @@ void Checkbox::SetCheckedIconImageColor(SkColor color) {
 
 void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   LabelButton::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kCheckBox;
   const ax::mojom::CheckedState checked_state =
       GetChecked() ? ax::mojom::CheckedState::kTrue
                    : ax::mojom::CheckedState::kFalse;

@@ -551,6 +551,8 @@ void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   if (GetEnabled())
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
+
+  button_controller_->UpdateAccessibleNodeData(node_data);
 }
 
 void Button::VisibilityChanged(View* starting_from, bool visible) {

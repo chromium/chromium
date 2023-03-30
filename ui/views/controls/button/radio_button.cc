@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event_utils.h"
@@ -32,10 +33,14 @@ constexpr int kFocusRingRadius = 16;
 RadioButton::RadioButton(const std::u16string& label, int group_id)
     : Checkbox(label) {
   SetGroup(group_id);
-  SetAccessibilityProperties(ax::mojom::Role::kRadioButton);
 }
 
 RadioButton::~RadioButton() = default;
+
+void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  Checkbox::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kRadioButton;
+}
 
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;

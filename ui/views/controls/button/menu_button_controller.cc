@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event_constants.h"
@@ -174,6 +175,14 @@ bool MenuButtonController::OnKeyPressed(const ui::KeyEvent& event) {
 bool MenuButtonController::OnKeyReleased(const ui::KeyEvent& event) {
   // A MenuButton always activates the menu on key press.
   return false;
+}
+
+void MenuButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kPopUpButton;
+  node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
+  if (button()->GetEnabled()) {
+    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
+  }
 }
 
 bool MenuButtonController::IsTriggerableEvent(const ui::Event& event) {
