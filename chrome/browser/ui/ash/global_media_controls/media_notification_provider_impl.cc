@@ -162,7 +162,8 @@ MediaNotificationProviderImpl::ShowMediaItem(
       BuildDeviceSelector(
           id, item, GetDeviceService(item), &device_selector_delegate_, profile,
           global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),
-      color_theme_);
+      color_theme_,
+      media_message_center::MediaDisplayPage::kQuickSettingsMediaDetailedView);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 

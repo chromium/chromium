@@ -16,6 +16,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_container.h"
+#include "components/media_message_center/media_notification_view_ash_impl.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/base/media_switches.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -53,7 +54,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       std::unique_ptr<MediaItemUIFooter> footer_view,
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
       absl::optional<media_message_center::NotificationTheme> theme =
-          absl::nullopt);
+          absl::nullopt,
+      absl::optional<media_message_center::MediaDisplayPage>
+          media_display_page = absl::nullopt);
   MediaItemUIView(const MediaItemUIView&) = delete;
   MediaItemUIView& operator=(const MediaItemUIView&) = delete;
   ~MediaItemUIView() override;

@@ -6,19 +6,19 @@
 
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/mock_media_notification_item.h"
-#include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
-#include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 
 namespace media_message_center {
 
-using media_session::mojom::MediaSessionAction;
-using testing::_;
+using ::media_session::mojom::MediaSessionAction;
+using ::testing::_;
+using ::testing::NiceMock;
 
 namespace {
 
@@ -62,17 +62,15 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-    // Create a widget to show on the screen for testing screen coordinates and
-    // focus.
-    widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    widget_->Init(std::move(params));
-    widget_->Show();
+    container_ = std::make_unique<NiceMock<MockMediaNotificationContainer>>();
+    item_ = std::make_unique<NiceMock<test::MockMediaNotificationItem>>();
 
-    // Creates the view and adds it to the widget.
-    CreateView();
+    // Create a widget and add the view to show on the screen for testing screen
+    // coordinates and focus.
+    widget_ = CreateTestWidget();
+    view_ = widget_->SetContentsView(CreateView(
+        media_message_center::MediaDisplayPage::kQuickSettingsMediaView));
+    widget_->Show();
   }
 
   void TearDown() override {
@@ -81,6 +79,13 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     actions_.clear();
 
     views::ViewsTestBase::TearDown();
+  }
+
+  std::unique_ptr<MediaNotificationViewAshImpl> CreateView(
+      MediaDisplayPage media_display_page) {
+    return std::make_unique<MediaNotificationViewAshImpl>(
+        container_.get(), item_->GetWeakPtr(), std::make_unique<views::View>(),
+        NotificationTheme(), media_display_page);
   }
 
   void EnableAllActions() {
@@ -110,17 +115,11 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     NotifyUpdatedActions();
   }
 
-  MockMediaNotificationContainer& container() { return container_; }
+  MockMediaNotificationContainer& container() { return *container_; }
 
   MediaNotificationViewAshImpl* view() const { return view_; }
 
-  test::MockMediaNotificationItem& item() { return item_; }
-
-  views::Label* source_label() const { return view()->source_label_; }
-
-  views::Label* title_label() const { return view()->title_label_; }
-
-  views::Label* artist_label() const { return view()->artist_label_; }
+  test::MockMediaNotificationItem& item() { return *item_; }
 
   std::vector<views::Button*> media_control_buttons() const {
     return view()->action_buttons_;
@@ -150,44 +149,40 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
  private:
   void NotifyUpdatedActions() { view_->UpdateWithMediaActions(actions_); }
 
-  void CreateView() {
-    // On creation, the view should notify |item_|.
-    auto view = std::make_unique<MediaNotificationViewAshImpl>(
-        &container_, item_.GetWeakPtr(), std::make_unique<views::View>(),
-        NotificationTheme());
-
-    media_session::MediaMetadata metadata;
-    metadata.title = u"title";
-    metadata.artist = u"artist";
-    metadata.source_title = u"source title";
-    view->UpdateWithMediaMetadata(metadata);
-
-    view->UpdateWithMediaActions(actions_);
-
-    // Display it in |widget_|. Widget now owns |view|.
-    view_ = widget_->SetContentsView(std::move(view));
-  }
-
   base::flat_set<MediaSessionAction> actions_;
-
-  MockMediaNotificationContainer container_;
-  test::MockMediaNotificationItem item_;
+  std::unique_ptr<MockMediaNotificationContainer> container_;
+  std::unique_ptr<test::MockMediaNotificationItem> item_;
   raw_ptr<MediaNotificationViewAshImpl> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 
+TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
+  auto view = CreateView(
+      media_message_center::MediaDisplayPage::kQuickSettingsMediaView);
+  EXPECT_NE(view->GetChevronIconForTesting(), nullptr);
+
+  view = CreateView(
+      media_message_center::MediaDisplayPage::kQuickSettingsMediaDetailedView);
+  EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
+}
+
 TEST_F(MediaNotificationViewAshImplTest, MetadataUpdated) {
+  EXPECT_EQ(view()->GetSourceLabelForTesting()->GetText(), u"");
+  EXPECT_EQ(view()->GetArtistLabelForTesting()->GetText(), u"");
+  EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), u"");
+
   media_session::MediaMetadata metadata;
-  metadata.source_title = u"source title2";
-  metadata.title = u"title2";
-  metadata.artist = u"artist2";
+  metadata.source_title = u"source title";
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
   view()->UpdateWithMediaMetadata(metadata);
 
-  EXPECT_EQ(source_label()->GetText(), metadata.source_title);
-  EXPECT_EQ(title_label()->GetText(), metadata.title);
-  EXPECT_EQ(artist_label()->GetText(), metadata.artist);
+  EXPECT_EQ(view()->GetSourceLabelForTesting()->GetText(),
+            metadata.source_title);
+  EXPECT_EQ(view()->GetArtistLabelForTesting()->GetText(), metadata.artist);
+  EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), metadata.title);
 }
 
 TEST_F(MediaNotificationViewAshImplTest, PlayPauseButtonDisplay) {

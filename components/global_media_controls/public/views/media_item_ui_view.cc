@@ -14,7 +14,6 @@
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_item.h"
-#include "components/media_message_center/media_notification_view_ash_impl.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -85,7 +84,8 @@ MediaItemUIView::MediaItemUIView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     std::unique_ptr<MediaItemUIFooter> footer_view,
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
-    absl::optional<media_message_center::NotificationTheme> theme)
+    absl::optional<media_message_center::NotificationTheme> theme,
+    absl::optional<media_message_center::MediaDisplayPage> media_display_page)
     : views::Button(base::BindRepeating(&MediaItemUIView::ContainerClicked,
                                         base::Unretained(this))),
       id_(id),
@@ -146,8 +146,11 @@ MediaItemUIView::MediaItemUIView(
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui) {
+    DCHECK(theme.has_value());
+    DCHECK(media_display_page.has_value());
     view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
-        this, std::move(item), std::move(dismiss_button_placeholder), theme);
+        this, std::move(item), std::move(dismiss_button_placeholder),
+        theme.value(), media_display_page.value());
   } else if (base::FeatureList::IsEnabled(
                  media::kGlobalMediaControlsModernUI)) {
     footer_view_ = footer_view_.get();

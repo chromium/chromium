@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
+class BoxLayoutView;
 class Button;
 class ImageView;
 class Label;
@@ -28,6 +29,14 @@ namespace {
 class MediaButton;
 }
 
+// Indicates this media notification view will be displayed on which page.
+enum class MediaDisplayPage {
+  // Media will be display on the Quick Settings media view page.
+  kQuickSettingsMediaView = 0,
+  // Media will be display on the Quick Settings media detailed view page.
+  kQuickSettingsMediaDetailedView = 1,
+};
+
 // CrOS implementation of media notification view.
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
     : public MediaNotificationView {
@@ -37,13 +46,14 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   MediaNotificationViewAshImpl(MediaNotificationContainer* container,
                                base::WeakPtr<MediaNotificationItem> item,
                                std::unique_ptr<views::View> dismiss_button,
-                               absl::optional<NotificationTheme> theme);
+                               NotificationTheme theme,
+                               MediaDisplayPage media_display_page);
   MediaNotificationViewAshImpl(const MediaNotificationViewAshImpl&) = delete;
   MediaNotificationViewAshImpl& operator=(const MediaNotificationViewAshImpl&) =
       delete;
   ~MediaNotificationViewAshImpl() override;
 
-  // MediaNotificationView
+  // MediaNotificationView:
   void SetForcedExpandedState(bool* forced_expanded_state) override {}
   void SetExpanded(bool expanded) override {}
   void UpdateCornerRadius(int top_radius, int bottom_radius) override {}
@@ -62,6 +72,13 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   void UpdateDeviceSelectorAvailability(bool availability) override {}
   void UpdateWithMuteStatus(bool mute) override {}
   void UpdateWithVolume(float volume) override {}
+
+  // Helper functions for testing:
+  views::ImageView* GetArtworkViewForTesting();
+  views::Label* GetSourceLabelForTesting();
+  views::Label* GetArtistLabelForTesting();
+  views::Label* GetTitleLabelForTesting();
+  views::ImageView* GetChevronIconForTesting();
 
  private:
   friend class MediaNotificationViewAshImplTest;
@@ -86,8 +103,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   // |item_| should never be nullptr.
   base::WeakPtr<MediaNotificationItem> item_;
 
-  // The color theme passed from ash. The |theme_| should always have a value.
-  absl::optional<NotificationTheme> theme_;
+  // The color theme for all the colors in this view.
+  NotificationTheme theme_;
 
   media_session::MediaPosition position_;
 
@@ -99,8 +116,12 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
-  raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;
+
+  raw_ptr<views::BoxLayoutView> title_row_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::ImageView> chevron_icon_ = nullptr;
+
   raw_ptr<MediaControlsProgressView> progress_view_ = nullptr;
   raw_ptr<MediaButton> play_pause_button_ = nullptr;
   raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;

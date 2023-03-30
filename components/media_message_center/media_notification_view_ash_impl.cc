@@ -8,8 +8,10 @@
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "components/media_message_center/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -17,7 +19,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace media_message_center {
@@ -31,7 +33,7 @@ constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr auto kMainRowInsets = gfx::Insets::VH(0, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kProgressViewInsets = gfx::Insets::VH(0, 14);
-constexpr auto kTitleLabelInsets = gfx::Insets::TLBR(10, 0, 0, 0);
+constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
 
 constexpr int kMainSeparator = 12;
 constexpr int kMainRowSeparator = 8;
@@ -45,6 +47,7 @@ constexpr int kSourceLineHeight = 18;
 constexpr int kTitleArtistLineHeight = 20;
 
 constexpr auto kArtworkSize = gfx::Size(80, 80);
+constexpr auto kChevronIconSize = gfx::Size(15, 15);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr auto kControlsButtonSize = gfx::Size(32, 32);
 
@@ -110,17 +113,15 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     MediaNotificationContainer* container,
     base::WeakPtr<MediaNotificationItem> item,
     std::unique_ptr<views::View> dismiss_button,
-    absl::optional<NotificationTheme> theme)
+    NotificationTheme theme,
+    MediaDisplayPage media_display_page)
     : container_(container), item_(std::move(item)), theme_(theme) {
   DCHECK(container_);
   DCHECK(dismiss_button);
   DCHECK(item_);
 
-  // We should always have a theme passing from CrOS.
-  DCHECK(theme_.has_value());
-
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
-  SetBackground(views::CreateRoundedRectBackground(theme_->background_color,
+  SetBackground(views::CreateRoundedRectBackground(theme_.background_color,
                                                    kBackgroundCornerRadius));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -151,15 +152,32 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           views::style::STYLE_SECONDARY));
   source_label_->SetLineHeight(kSourceLineHeight);
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  source_label_->SetEnabledColor(theme_->secondary_text_color);
+  source_label_->SetEnabledColor(theme_.secondary_text_color);
+  source_label_->SetProperty(views::kMarginsKey, kSourceLabelInsets);
 
-  title_label_ = media_info_column->AddChildView(std::make_unique<views::Label>(
+  title_row_ =
+      media_info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
+  title_row_->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  title_label_ = title_row_->AddChildView(std::make_unique<views::Label>(
       base::EmptyString16(), views::style::CONTEXT_LABEL,
       views::style::STYLE_PRIMARY));
   title_label_->SetLineHeight(kTitleArtistLineHeight);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetEnabledColor(theme_->primary_text_color);
-  title_label_->SetProperty(views::kMarginsKey, kTitleLabelInsets);
+  title_label_->SetEnabledColor(theme_.primary_text_color);
+  title_row_->SetFlexForView(title_label_, 1);
+
+  // Add a chevron right icon to the title if the media is displaying on the
+  // quick settings media view to indicate user can click on the view to go to
+  // the detailed view page.
+  if (media_display_page == MediaDisplayPage::kQuickSettingsMediaView) {
+    chevron_icon_ =
+        title_row_->AddChildView(std::make_unique<views::ImageView>());
+    chevron_icon_->SetPreferredSize(kChevronIconSize);
+    chevron_icon_->SetImage(
+        CreateVectorIcon(kChevronRightIcon, theme_.enabled_icon_color));
+  }
 
   artist_label_ =
       media_info_column->AddChildView(std::make_unique<views::Label>(
@@ -167,7 +185,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           views::style::STYLE_SECONDARY));
   artist_label_->SetLineHeight(kTitleArtistLineHeight);
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  artist_label_->SetEnabledColor(theme_->secondary_text_color);
+  artist_label_->SetEnabledColor(theme_.secondary_text_color);
 
   // |play_pause_container| holds the play/pause button and dismiss button.
   auto* play_pause_container =
@@ -182,7 +200,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   play_pause_button_ =
       CreateMediaButton(play_pause_container, MediaSessionAction::kPlay);
   play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
-      theme_->background_color, kPlayPauseButtonSize.height() / 2));
+      theme_.background_color, kPlayPauseButtonSize.height() / 2));
 
   // |controls_row| holds all available media action buttons and the progress
   // bar.
@@ -199,8 +217,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
                               base::Unretained(this)),
           /*is_modern_notification=*/true));
-  progress_view_->SetForegroundColor(theme_->enabled_icon_color);
-  progress_view_->SetBackgroundColor(theme_->disabled_icon_color);
+  progress_view_->SetForegroundColor(theme_.enabled_icon_color);
+  progress_view_->SetBackgroundColor(theme_.disabled_icon_color);
   progress_view_->SetProperty(views::kMarginsKey, kProgressViewInsets);
   controls_row_layout->SetFlexForView(progress_view_, 1);
 
@@ -208,9 +226,9 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   picture_in_picture_button_ = CreateMediaButton(
       controls_row, MediaSessionAction::kEnterPictureInPicture);
 
-  container_->OnColorsChanged(theme_->enabled_icon_color,
-                              theme_->disabled_icon_color,
-                              theme_->background_color);
+  container_->OnColorsChanged(theme_.enabled_icon_color,
+                              theme_.disabled_icon_color,
+                              theme_.background_color);
   item_->SetView(this);
 }
 
@@ -231,8 +249,7 @@ MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
       base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
                           base::Unretained(this), button.get()));
   button->set_tag(static_cast<int>(action));
-  button->SetButtonColor(theme_->enabled_icon_color,
-                         theme_->disabled_icon_color);
+  button->SetButtonColor(theme_.enabled_icon_color, theme_.disabled_icon_color);
 
   auto* button_ptr = parent->AddChildView(std::move(button));
   action_buttons_.push_back(button_ptr);
@@ -324,6 +341,27 @@ void MediaNotificationViewAshImpl::ButtonPressed(views::Button* button) {
 
 void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
+}
+
+// Helper functions for testing:
+views::ImageView* MediaNotificationViewAshImpl::GetArtworkViewForTesting() {
+  return artwork_view_;
+}
+
+views::Label* MediaNotificationViewAshImpl::GetSourceLabelForTesting() {
+  return source_label_;
+}
+
+views::Label* MediaNotificationViewAshImpl::GetArtistLabelForTesting() {
+  return artist_label_;
+}
+
+views::Label* MediaNotificationViewAshImpl::GetTitleLabelForTesting() {
+  return title_label_;
+}
+
+views::ImageView* MediaNotificationViewAshImpl::GetChevronIconForTesting() {
+  return chevron_icon_;
 }
 
 BEGIN_METADATA(MediaNotificationViewAshImpl, views::View)

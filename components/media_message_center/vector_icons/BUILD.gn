@@ -8,6 +8,7 @@ aggregate_vector_icons("media_vector_icons") {
   icon_directory = "."
 
   sources = [
+    "chevron_right.icon",
     "media_enter_pip.icon",
     "media_exit_pip.icon",
     "media_next_track.icon",
