@@ -106,6 +106,7 @@ export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';
 export {TimezoneSubpageElement} from './date_time_page/timezone_subpage.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
+export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_page.js';
 export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';

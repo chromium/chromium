@@ -22,7 +22,7 @@ import {getTemplate} from './keyboard_shortcut_banner.html.js';
 
 const KeyboardShortcutBannerBase = I18nMixin(PolymerElement);
 
-class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
+export class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
   static get is() {
     return 'keyboard-shortcut-banner';
   }

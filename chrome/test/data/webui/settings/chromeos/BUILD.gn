@@ -73,7 +73,6 @@ build_webui_tests("build") {
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
     "keyboard_and_text_input_page_tests.js",
-    "keyboard_shortcut_banner_test.js",
     "lock_screen_subpage_tests.ts",
     "manage_accessibility_page_tests.js",
     "manage_users_subpage_tests.js",
@@ -209,6 +208,8 @@ build_webui_tests("build") {
     "device_page/test_device_page_browser_proxy.ts",
 
     "internet_page/tether_connection_dialog_test.ts",
+
+    "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
     "os_a11y_page/audio_and_captions_page_tests.ts",
     "os_a11y_page/text_to_speech_page_tests.ts",

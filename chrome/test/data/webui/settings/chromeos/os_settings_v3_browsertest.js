@@ -362,7 +362,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'KeyboardAndTextInputPage',
    'keyboard_and_text_input_page_tests.js',
  ],
- ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.js'],
+ [
+   'KeyboardShortcutBanner',
+   'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
+ ],
  ['LockScreenSubpage', 'lock_screen_subpage_tests.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],

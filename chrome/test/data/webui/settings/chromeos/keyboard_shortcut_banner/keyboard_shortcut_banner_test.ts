@@ -4,14 +4,13 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {KeyboardShortcutBanner} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-suite('keyboard-shortcut-banner', () => {
-  /** @type {!HTMLElement|undefined} */
-  let banner;
+suite('<keyboard-shortcut-banner>', () => {
+  let banner: KeyboardShortcutBanner;
 
   const TITLE = 'Keyboard shortcut available';
   // A description with the <kbd> elements in the middle of the sentence.
@@ -26,11 +25,9 @@ suite('keyboard-shortcut-banner', () => {
    * Setup the document with a single keyboard-shortcut-banner element with
    * the specified body. The `banner` variable is updated to be the new
    * element.
-   * @param {string} title
-   * @param {!Array<string>} body
    */
-  function setupBannerAndDocument(title, body) {
-    PolymerTest.clearBody();
+  function setupBannerAndDocument(title: string, body: string[]): void {
+    document.body.innerHTML = '';
 
     banner = document.createElement('keyboard-shortcut-banner');
     banner.setAttribute('header', title);
@@ -46,27 +43,25 @@ suite('keyboard-shortcut-banner', () => {
 
   /**
    * Tests that the descriptions have the expected <kbd> elements.
-   * @param {!Element} desc
-   * @return {!Array<number>} The number of child <kbd> elements in each
-   *     top-level <kbd> element.
+   * @return The number of child <kbd> elements in each top-level <kbd> element.
    */
-  function testDescKbds(desc) {
+  function testDescKbds(desc: Element): number[] {
     const allInnerKbds = [];
 
     for (const child of desc.childNodes) {
       if (child.nodeType === Node.TEXT_NODE) {
         continue;
       }
-      assertEquals(child.nodeType, Node.ELEMENT_NODE);
-      assertEquals(child.nodeName, 'KBD');
+      assertEquals(Node.ELEMENT_NODE, child.nodeType);
+      assertEquals('KBD', child.nodeName);
       let innerKbds = 0;
       // Each <kbd> should have nested <kbd>s, or a text node with just '+'.
       for (const kbdChild of child.childNodes) {
         if (kbdChild.nodeType === Node.TEXT_NODE) {
-          assertEquals(kbdChild.textContent, '+');
+          assertEquals('+', kbdChild.textContent);
         } else {
-          assertEquals(kbdChild.nodeType, Node.ELEMENT_NODE);
-          assertEquals(kbdChild.nodeName, 'KBD');
+          assertEquals(Node.ELEMENT_NODE, kbdChild.nodeType);
+          assertEquals('KBD', kbdChild.nodeName);
           innerKbds++;
 
           // The nested <kbd>s' children should all be text nodes.
@@ -81,25 +76,25 @@ suite('keyboard-shortcut-banner', () => {
   }
 
   test('displays the expected text', () => {
-    const header = banner.shadowRoot.querySelector('h2');
-    assertEquals(header.textContent, TITLE);
-    const firstDesc = banner.shadowRoot.querySelector('#id0');
+    const header = banner.shadowRoot!.querySelector('h2');
+    assertEquals(TITLE, header!.textContent);
+    const firstDesc = banner.shadowRoot!.querySelector('#id0');
     assertEquals(
-        firstDesc.textContent,
-        'Press Ctrl+Space to switch to the last used input method');
-    const secondDesc = banner.shadowRoot.querySelector('#id1');
+        'Press Ctrl+Space to switch to the last used input method',
+        firstDesc!.textContent);
+    const secondDesc = banner.shadowRoot!.querySelector('#id1');
     assertEquals(
-        secondDesc.textContent,
-        'Press Ctrl+Shift+Space to switch to the next input method');
-    const dismissButton = banner.shadowRoot.querySelector('cr-button');
-    assertEquals(dismissButton.textContent.trim(), 'Dismiss');
+        'Press Ctrl+Shift+Space to switch to the next input method',
+        secondDesc!.textContent);
+    const dismissButton = banner.shadowRoot!.querySelector('cr-button');
+    assertEquals('Dismiss', dismissButton!.textContent!.trim());
   });
 
   test('displays the correct <kbd> elements', () => {
-    const firstDesc = banner.shadowRoot.querySelector('#id0');
-    const secondDesc = banner.shadowRoot.querySelector('#id1');
-    assertDeepEquals(testDescKbds(firstDesc), [2]);
-    assertDeepEquals(testDescKbds(secondDesc), [3]);
+    const firstDesc = banner.shadowRoot!.querySelector('#id0');
+    const secondDesc = banner.shadowRoot!.querySelector('#id1');
+    assertDeepEquals([2], testDescKbds(firstDesc!));
+    assertDeepEquals([3], testDescKbds(secondDesc!));
 
     // Test multiple top-level <kbd> elements.
     const altTabMessage =
@@ -107,14 +102,14 @@ suite('keyboard-shortcut-banner', () => {
         '<kbd><kbd>Tab</kbd></kbd> until you get to the window you want to ' +
         'open, then release.';
     setupBannerAndDocument(TITLE, [altTabMessage]);
-    const altTabDesc = banner.shadowRoot.querySelector('#id0');
-    assertDeepEquals(testDescKbds(altTabDesc), [2, 1]);
+    const altTabDesc = banner.shadowRoot!.querySelector('#id0');
+    assertDeepEquals([2, 1], testDescKbds(altTabDesc!));
   });
 
   test('fires the dismiss event on button click', async () => {
     const dismissPromise = eventToPromise('dismiss', banner);
-    const button = banner.shadowRoot.querySelector('cr-button');
-    button.click();
+    const button = banner.shadowRoot!.querySelector('cr-button');
+    button!.click();
     await dismissPromise;
   });
 });
