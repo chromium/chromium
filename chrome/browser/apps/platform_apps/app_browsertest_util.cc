@@ -15,13 +15,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/app_window/app_window_contents.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -44,9 +44,9 @@ const char kAppWindowTestApp[] = "app_window/generic";
 
 }  // namespace
 
-namespace utils = extension_function_test_utils;
-
 namespace extensions {
+
+namespace utils = api_test_utils;
 
 PlatformAppBrowserTest::PlatformAppBrowserTest() {
   ChromeAppDelegate::DisableExternalOpenForTesting();
@@ -202,8 +202,8 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
   function->set_extension(extension);
   base::Value::List result(
-      utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
-                                                            "[]", browser())));
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", browser()->profile())));
   return result.size();
 }
 
@@ -213,7 +213,7 @@ bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(
   scoped_refptr<WindowsGetFunction> function = new WindowsGetFunction();
   function->set_extension(extension);
   utils::RunFunction(function.get(), base::StringPrintf("[%u]", window_id),
-                     browser(), api_test_utils::NONE);
+                     browser()->profile(), api_test_utils::FunctionMode::kNone);
   return *function->response_type() == ExtensionFunction::SUCCEEDED;
 }
 
