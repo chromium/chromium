@@ -136,6 +136,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   color: var(--cros-sys-on_surface);
   display: flex;
   height: 40px;
+  padding-inline-end: 12px;
 }
 
 #directory-tree .tree-row > .file-row > .expand-icon {
@@ -1504,7 +1505,7 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
 }
 
 #list-container li {
-  border: 1px solid transparent;
+  border: 2px solid transparent;
 }
 
 /* Modify GROUP_HEADING_HEIGHT in file_table_list.js if this height changes. */
@@ -1533,7 +1534,7 @@ body.check-select #list-container list:focus > li[selected] {
 }
 
 body.check-select #list-container list:focus > li[lead] {
-  border: 1px solid var(--cros-sys-focus_ring);
+  border: 2px solid var(--cros-sys-focus_ring);
 }
 
 body.check-select #list-container list > li[lead],
@@ -1542,7 +1543,7 @@ body.check-select #list-container list > li[selected] {
 }
 
 body.check-select #list-container list > li[lead] {
-  border: 1px solid var(--cros-sys-on_surface_variant);
+  border: 2px solid var(--cros-sys-on_surface_variant);
 }
 
 #list-container grid > .accepts {
