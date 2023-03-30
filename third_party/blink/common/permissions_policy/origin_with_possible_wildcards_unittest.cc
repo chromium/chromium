@@ -6,9 +6,9 @@
 
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -253,7 +253,8 @@ TEST(OriginWithPossibleWildcardsTest, Constructors) {
   EXPECT_NE(b, c);
   EXPECT_EQ(c, d);
   EXPECT_TRUE(
-      mojo::test::SerializeAndDeserialize<network::mojom::CSPSource>(a, b));
+      mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(
+          a, b));
   EXPECT_EQ(a, b);
 }
 
@@ -262,8 +263,9 @@ TEST(OriginWithPossibleWildcardsTest, Opaque) {
   EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), false));
   OriginWithPossibleWildcards original;
   OriginWithPossibleWildcards copy;
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<network::mojom::CSPSource>(
-      original, copy));
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(
+          original, copy));
 }
 
 }  // namespace blink

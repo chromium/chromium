@@ -8,7 +8,6 @@
 #include <map>
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
-#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/common/permissions_policy/policy_value_mojom_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -19,8 +18,9 @@
 namespace mojo {
 
 template <>
-class BLINK_COMMON_EXPORT StructTraits<network::mojom::CSPSourceDataView,
-                                       blink::OriginWithPossibleWildcards> {
+class BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
+                 blink::OriginWithPossibleWildcards> {
  public:
   static const std::string& scheme(const blink::OriginWithPossibleWildcards&
                                        origin_with_possible_wildcards) {
@@ -34,22 +34,12 @@ class BLINK_COMMON_EXPORT StructTraits<network::mojom::CSPSourceDataView,
                       origin_with_possible_wildcards) {
     return origin_with_possible_wildcards.csp_source.port;
   }
-  static const base::StringPiece path(const blink::OriginWithPossibleWildcards&
-                                          origin_with_possible_wildcards) {
-    // We do not allow path based matches.
-    return "";
-  }
   static bool is_host_wildcard(const blink::OriginWithPossibleWildcards&
                                    origin_with_possible_wildcards) {
     return origin_with_possible_wildcards.csp_source.is_host_wildcard;
   }
-  static bool is_port_wildcard(const blink::OriginWithPossibleWildcards&
-                                   origin_with_possible_wildcards) {
-    // We do not allow port wildcards.
-    return false;
-  }
 
-  static bool Read(network::mojom::CSPSourceDataView in,
+  static bool Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
                    blink::OriginWithPossibleWildcards* out);
 };
 

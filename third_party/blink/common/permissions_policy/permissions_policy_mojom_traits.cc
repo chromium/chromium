@@ -4,15 +4,14 @@
 
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 
 namespace mojo {
 
-bool StructTraits<network::mojom::CSPSourceDataView,
+bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
                   blink::OriginWithPossibleWildcards>::
-    Read(network::mojom::CSPSourceDataView in,
+    Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
          blink::OriginWithPossibleWildcards* out) {
   out->csp_source.is_host_wildcard = in.is_host_wildcard();
   out->csp_source.port = in.port();
