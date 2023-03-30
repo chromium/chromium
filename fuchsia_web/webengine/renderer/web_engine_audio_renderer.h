@@ -81,6 +81,11 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
     // Playback is active. When the stream reaches EOS it stays in the kPlaying
     // state.
     kPlaying,
+
+    // AudioConsumer was started, but the rate is set to 0. This state is used
+    // to avoid stopping AudioConsumer unnecessarily between StopTicking() and
+    // StartTicking().
+    kPaused,
   };
 
   void StartAudioConsumer();
@@ -111,6 +116,10 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   // Initializes |stream_sink_|. Called during initialization and every time
   // configuration changes.
   void InitializeStreamSink();
+
+  // Calculates desirable playback rate based on `playback_rate_` and
+  // `playback_state_` and sends it to the AudioConsumer.
+  void UpdatePlaybackRate();
 
   // Helpers to receive AudioConsumerStatus from the |audio_consumer_|.
   void RequestAudioConsumerStatus();
@@ -152,13 +161,6 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   // Returns true if media clock is ticking and the rate is above 0.0.
   bool IsTimeMoving() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
-  // Updates TimelineFunction parameters after StopTicking() or
-  // SetPlaybackRate(0.0). Normally these parameters are provided by
-  // AudioConsumer, but this happens asynchronously and we need to make sure
-  // that StopTicking() and SetPlaybackRate(0.0) stop the media clock
-  // synchronously. Must be called before updating the |state_|.
-  void UpdateTimelineOnStop() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
-
   // Calculates media position based on the TimelineFunction returned from
   // AudioConsumer. Must be called only when IsTimeMoving() is true.
   base::TimeDelta CurrentMediaTimeLocked()
@@ -182,6 +184,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   fuchsia::media::audio::VolumeControlPtr volume_control_;
 
   float volume_ = 1.0;
+
+  double playback_rate_ = 1.0;
 
   media::CdmContext* cdm_context_ = nullptr;
   media::DemuxerStream* demuxer_stream_ = nullptr;

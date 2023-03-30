@@ -9,6 +9,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/cdm_context.h"
@@ -277,6 +278,30 @@ void WebEngineAudioRenderer::InitializeStreamSink() {
   ScheduleBufferTimers();
 }
 
+void WebEngineAudioRenderer::UpdatePlaybackRate() {
+  float target_rate =
+      (GetPlaybackState() == PlaybackState::kPaused) ? 0.0 : playback_rate_;
+
+  audio_consumer_->SetRate(target_rate);
+
+  // AudioConsumer will update media timeline asynchronously. That update is
+  // processed in OnAudioConsumerStatusChanged(). This might cause the clock to
+  // go back. It's not desirable, e.g. because VideoRenderer could drop some
+  // video frames that should be shown when the stream is resumed. To avoid this
+  // issue, update the timeline synchronously. OnAudioConsumerStatusChanged()
+  // will still process the update from AudioConsumer to save the position when
+  // the stream was actually paused, but that update would not move the clock
+  // backward.
+  if (target_rate != 0.0) {
+    return;
+  }
+
+  base::AutoLock lock(timeline_lock_);
+  media_pos_ = CurrentMediaTimeLocked();
+  reference_time_ = base::TimeTicks::Now();
+  media_delta_ = 0;
+}
+
 media::TimeSource* WebEngineAudioRenderer::GetTimeSource() {
   return this;
 }
@@ -326,11 +351,33 @@ void WebEngineAudioRenderer::SetWasPlayedWithUserActivation(
 void WebEngineAudioRenderer::StartTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  switch (GetPlaybackState()) {
+    case PlaybackState::kStopped: {
+      base::AutoLock lock(timeline_lock_);
+      SetPlaybackState(PlaybackState::kStartPending);
+      break;
+    }
+
+    case PlaybackState::kStartPending:
+    case PlaybackState::kStarting:
+    case PlaybackState::kPlaying:
+      NOTREACHED_NORETURN();
+
+    case PlaybackState::kPaused: {
+      // If the stream was paused then we can unpause it without restarting
+      // AudioConsumer.
+      {
+        base::AutoLock lock(timeline_lock_);
+        SetPlaybackState(PlaybackState::kPlaying);
+      }
+      UpdatePlaybackRate();
+      return;
+    }
+  }
+
   // If StreamSink hasn't been created yet, then delay starting AudioConsumer
   // until StreamSink is created.
   if (!stream_sink_) {
-    base::AutoLock lock(timeline_lock_);
-    SetPlaybackState(PlaybackState::kStartPending);
     return;
   }
 
@@ -339,22 +386,11 @@ void WebEngineAudioRenderer::StartTicking() {
 
 void WebEngineAudioRenderer::StartAudioConsumer() {
   DCHECK(stream_sink_);
+  DCHECK_EQ(GetPlaybackState(), PlaybackState::kStartPending);
 
   fuchsia::media::AudioConsumerStartFlags flags{};
   if (demuxer_stream_->liveness() == media::StreamLiveness::kLive) {
     flags = fuchsia::media::AudioConsumerStartFlags::LOW_LATENCY;
-  }
-
-  // Stop the AudioConsumer if it's been started.
-  switch (GetPlaybackState()) {
-    case PlaybackState::kStopped:
-    case PlaybackState::kStartPending:
-      break;
-
-    case PlaybackState::kStarting:
-    case PlaybackState::kPlaying:
-      audio_consumer_->Stop();
-      break;
   }
 
   base::TimeDelta media_pos;
@@ -366,44 +402,58 @@ void WebEngineAudioRenderer::StartAudioConsumer() {
 
   audio_consumer_->Start(flags, fuchsia::media::NO_TIMESTAMP,
                          media_pos.ToZxDuration());
+  UpdatePlaybackRate();
 }
 
 void WebEngineAudioRenderer::StopTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(GetPlaybackState() != PlaybackState::kStopped);
 
-  audio_consumer_->Stop();
+  switch (GetPlaybackState()) {
+    case PlaybackState::kStopped:
+    case PlaybackState::kPaused:
+      NOTREACHED();
+      break;
 
-  base::AutoLock lock(timeline_lock_);
-  UpdateTimelineOnStop();
-  SetPlaybackState(PlaybackState::kStopped);
+    case PlaybackState::kStartPending: {
+      base::AutoLock lock(timeline_lock_);
+      SetPlaybackState(PlaybackState::kStopped);
+      break;
+    }
+
+    case PlaybackState::kStarting:
+    case PlaybackState::kPlaying: {
+      {
+        base::AutoLock lock(timeline_lock_);
+        SetPlaybackState(PlaybackState::kPaused);
+      }
+      UpdatePlaybackRate();
+      break;
+    }
+  }
 }
 
 void WebEngineAudioRenderer::SetPlaybackRate(double playback_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  audio_consumer_->SetRate(playback_rate);
-
-  // AudioConsumer will update media timeline asynchronously. That update is
-  // processed in OnAudioConsumerStatusChanged(). This might cause the clock to
-  // go back. It's not desirable, e.g. because VideoRenderer could drop some
-  // video frames that should be shown when the stream is resumed. To avoid this
-  // issue update the timeline synchronously. OnAudioConsumerStatusChanged()
-  // will still process the update from AudioConsumer to save the position when
-  // the stream was actually paused, but that update would not move the clock
-  // backward.
-  if (playback_rate == 0.0) {
-    base::AutoLock lock(timeline_lock_);
-    UpdateTimelineOnStop();
-  }
+  playback_rate_ = playback_rate;
+  UpdatePlaybackRate();
 }
 
 void WebEngineAudioRenderer::SetMediaTime(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(GetPlaybackState() == PlaybackState::kStopped);
+
+  bool stop_audio_consumer = false;
 
   {
     base::AutoLock lock(timeline_lock_);
+
+    if (GetPlaybackState() == PlaybackState::kPaused) {
+      SetPlaybackState(PlaybackState::kStopped);
+      stop_audio_consumer = true;
+    }
+    DCHECK(GetPlaybackState() == PlaybackState::kStopped);
+
     media_pos_ = time;
 
     // Reset reference timestamp. This is necessary to ensure that the correct
@@ -411,6 +461,10 @@ void WebEngineAudioRenderer::SetMediaTime(base::TimeDelta time) {
     // GetWallClockTimes() is required to return 0 wall clock between
     // SetMediaTime() and StartTicking().
     reference_time_ = base::TimeTicks();
+  }
+
+  if (stop_audio_consumer) {
+    audio_consumer_->Stop();
   }
 
   FlushInternal();
@@ -623,7 +677,6 @@ void WebEngineAudioRenderer::ReadDemuxerStream() {
       1, base::BindOnce(&WebEngineAudioRenderer::OnDemuxerStreamReadDone,
                         weak_factory_.GetWeakPtr()));
 }
-
 void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
     media::DemuxerStream::Status read_status,
     media::DemuxerStream::DecoderBufferVector buffers) {
@@ -748,7 +801,8 @@ void WebEngineAudioRenderer::SetBufferState(
 
 void WebEngineAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(GetPlaybackState() == PlaybackState::kStopped || is_at_end_of_stream_);
+  DCHECK(GetPlaybackState() == PlaybackState::kStopped ||
+         GetPlaybackState() == PlaybackState::kPaused || is_at_end_of_stream_);
 
   if (stream_sink_)
     stream_sink_->DiscardAllPacketsNoReply();
@@ -773,18 +827,7 @@ bool WebEngineAudioRenderer::IsTimeMoving() {
   return state_ == PlaybackState::kPlaying && media_delta_ > 0;
 }
 
-void WebEngineAudioRenderer::UpdateTimelineOnStop() {
-  if (!IsTimeMoving())
-    return;
-
-  media_pos_ = CurrentMediaTimeLocked();
-  reference_time_ = base::TimeTicks::Now();
-  media_delta_ = 0;
-}
-
 base::TimeDelta WebEngineAudioRenderer::CurrentMediaTimeLocked() {
-  DCHECK(IsTimeMoving());
-
   // Calculate media position using formula specified by the TimelineFunction.
   // See https://fuchsia.dev/reference/fidl/fuchsia.media#formulas .
   return media_pos_ + (base::TimeTicks::Now() - reference_time_) *
