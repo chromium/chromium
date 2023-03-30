@@ -17,7 +17,8 @@
 
 class ChromeBrowsingDataModelDelegateTest : public testing::Test {
  public:
-  ChromeBrowsingDataModelDelegateTest() = default;
+  ChromeBrowsingDataModelDelegateTest()
+      : profile_(std::make_unique<TestingProfile>()) {}
 
   ChromeBrowsingDataModelDelegateTest(
       const ChromeBrowsingDataModelDelegateTest&) = delete;
@@ -27,7 +28,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
   ~ChromeBrowsingDataModelDelegateTest() override = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
     browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(),
@@ -41,8 +41,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
             }));
   }
 
-  void TearDown() override { profile_.reset(); }
-
   TestingProfile* profile() { return profile_.get(); }
 
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
@@ -52,9 +50,9 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const std::unique_ptr<TestingProfile> profile_;
   raw_ptr<browsing_topics::MockBrowsingTopicsService>
       mock_browsing_topics_service_;
-  std::unique_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForTopics) {
