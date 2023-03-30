@@ -264,10 +264,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(get_all_args_info.domain(), "cookies.com");
   EXPECT_EQ(get_all_args_info.name(), "test_basic_cookie");
   EXPECT_EQ(get_all_args_info.path(), "");
-  EXPECT_EQ(get_all_args_info.secure(), false);
+  EXPECT_FALSE(get_all_args_info.has_secure());
   EXPECT_EQ(get_all_args_info.store_id(), "0");
   EXPECT_EQ(get_all_args_info.url(), "https://extensions.cookies.com/");
-  EXPECT_EQ(get_all_args_info.is_session(), false);
+  EXPECT_FALSE(get_all_args_info.has_is_session());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,

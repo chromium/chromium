@@ -25,7 +25,7 @@ TEST(CookiesGetSignalTest, ConcatFieldsWithArgs) {
       /*store_id=*/"store-1",
       /*url=*/"http://www.example.com/");
   EXPECT_EQ(signal.getUniqueArgSetId(),
-            "cookie-1store-1http://www.example.com/");
+            "cookie-1,store-1,http://www.example.com/");
 }
 
 TEST(CookiesGetSignalTest, ConcatFieldsWithDefaultArgs) {
@@ -34,7 +34,7 @@ TEST(CookiesGetSignalTest, ConcatFieldsWithDefaultArgs) {
       /*name=*/"",
       /*store_id=*/"",
       /*url=*/"");
-  EXPECT_EQ(signal.getUniqueArgSetId(), "");
+  EXPECT_EQ(signal.getUniqueArgSetId(), ",,");
 }
 
 }  // namespace

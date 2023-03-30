@@ -31,9 +31,9 @@ TEST(CookiesGetAllSignalTest, ConcatFieldsWithAllArgs) {
       /*secure=*/true,
       /*store_id=*/"store-1",
       /*url=*/"http://www.example.com/",
-      /*is_session=*/true);
+      /*is_session=*/false);
   EXPECT_EQ(signal.getUniqueArgSetId(),
-            "domaincookie-1/path11store-1http://www.example.com/1");
+            "domain,cookie-1,/path1,1,store-1,http://www.example.com/,0");
 }
 
 TEST(CookiesGetAllSignalTest, ConcatFieldsWithDefaultArgs) {
@@ -42,11 +42,11 @@ TEST(CookiesGetAllSignalTest, ConcatFieldsWithDefaultArgs) {
       /*domain=*/"",
       /*name=*/"",
       /*path=*/"",
-      /*secure=*/false,
+      /*secure=*/absl::nullopt,
       /*store_id=*/"",
       /*url=*/"",
-      /*is_session=*/false);
-  EXPECT_EQ(signal.getUniqueArgSetId(), "00");
+      /*is_session=*/absl::nullopt);
+  EXPECT_EQ(signal.getUniqueArgSetId(), ",,,,,,");
 }
 
 }  // namespace
