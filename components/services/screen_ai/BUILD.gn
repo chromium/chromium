@@ -17,6 +17,7 @@ source_set("screen_ai") {
   public_deps = [ "//components/services/screen_ai/proto:proto_convertors" ]
 
   deps = [
+    "//components/services/screen_ai/proto",
     "//components/services/screen_ai/public/cpp:utilities",
     "//components/services/screen_ai/public/mojom",
     "//content/public/browser",

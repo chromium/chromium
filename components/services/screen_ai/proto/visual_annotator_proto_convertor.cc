@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/ranges.h"
-#include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -389,15 +388,9 @@ void ResetNodeIDForTesting() {
 // TODO(nektar): Change return value to `std::vector<ui::AXNodeData>` as other
 // fields in `AXTreeUpdate` are unused.
 ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
-    const std::string& serialized_proto,
+    const chrome_screen_ai::VisualAnnotation& visual_annotation,
     const gfx::Rect& image_rect) {
   ui::AXTreeUpdate update;
-
-  chrome_screen_ai::VisualAnnotation visual_annotation;
-  if (!visual_annotation.ParseFromString(serialized_proto)) {
-    NOTREACHED() << "Could not parse Screen AI library output.";
-    return update;
-  }
 
   DCHECK(visual_annotation.lines_size() == 0 ||
          visual_annotation.ui_component_size() == 0);

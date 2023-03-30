@@ -45,10 +45,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
   }
 
   {
-    std::string serialized_annotation;
-    ASSERT_TRUE(annotation.SerializeToString(&serialized_annotation));
     const ui::AXTreeUpdate update =
-        VisualAnnotationToAXTreeUpdate(serialized_annotation, snapshot_bounds);
+        VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
         "id=1 dialog child_ids=2,3 (0, 0)-(800, 900)\n"
@@ -112,10 +110,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
   }
 
   {
-    std::string serialized_annotation;
-    ASSERT_TRUE(annotation.SerializeToString(&serialized_annotation));
     const ui::AXTreeUpdate update =
-        VisualAnnotationToAXTreeUpdate(serialized_annotation, snapshot_bounds);
+        VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
 
     const std::string expected_update(
         "id=1 region child_ids=2 (0, 0)-(800, 900) "

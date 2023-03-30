@@ -233,23 +233,23 @@ void ScreenAIService::VisualAnnotationInternal(
   DCHECK_NE(run_ocr, run_layout_extraction);
   DCHECK(screen_ai_annotator_client_.is_bound());
 
-  std::string proto_as_string;
+  chrome_screen_ai::VisualAnnotation annotation_proto;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
   bool result = false;
   if (run_ocr) {
-    result = library_->PerformOcr(image, proto_as_string);
+    result = library_->PerformOcr(image, annotation_proto);
   } else /* if (run_layout_extraction) */ {
-    result = library_->ExtractLayout(image, proto_as_string);
+    result = library_->ExtractLayout(image, annotation_proto);
   }
-  if (!result || proto_as_string.empty()) {
+  if (!result) {
     DCHECK_EQ(annotation->tree_data.tree_id, ui::AXTreeIDUnknown());
     VLOG(1) << "Screen AI library could not process snapshot or no OCR data.";
     return;
   }
 
   gfx::Rect image_rect(image.width(), image.height());
-  *annotation = VisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
+  *annotation = VisualAnnotationToAXTreeUpdate(annotation_proto, image_rect);
   ScreenAIAXTreeSerializer serializer(parent_tree_id,
                                       std::move(annotation->nodes));
   *annotation = serializer.Serialize();

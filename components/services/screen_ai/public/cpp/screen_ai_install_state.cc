@@ -23,7 +23,7 @@
 
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "112.3";
+const char kMinExpectedVersion[] = "114.0";
 }
 
 namespace {
