@@ -121,7 +121,7 @@
 <translation id="3333961966071413176">جميع جهات الاتصال</translation>
 <translation id="3362437373201486687">جارٍ البحث عن أجهزة تتضمّن بلوتوث.</translation>
 <translation id="3386292677130313581">السؤال قبل السماح للمواقع الإلكترونية بمعرفة الموقع الجغرافي (موصى به)</translation>
-<translation id="3403537308306431953">المستوى الحالي لميزة "تكبير/تصغير": %% <ph name="ZOOM_LEVEL" /></translation>
+<translation id="3403537308306431953">%% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="3521663503435878242">المواقع الإلكترونية ضِمن <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">منع المواقع الإلكترونية من إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
 <translation id="3544058026430919413">يمكن للشركة تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
@@ -323,7 +323,7 @@
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7667547420449112975">ساحر "أوز" العجيب</translation>
-<translation id="7690549345586282764">إظهار ميزة "تكبير/تصغير"</translation>
+<translation id="7690549345586282764">إظهار ميزة التكبير/التصغير</translation>
 <translation id="7695658402549134106">الإعداد المفضّل للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="7781829728241885113">أمس</translation>
@@ -410,7 +410,7 @@
 <translation id="9106233582039520022">هل تريد حذف ملفات تعريف الارتباط؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
-<translation id="9138217887606523162">المستوى الحالي لميزة "تكبير/تصغير" هو %% <ph name="ZOOM_LEVEL" /></translation>
+<translation id="9138217887606523162">المستوى الحالي لميزة التكبير/التصغير هو %% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="9162462602695099906">هذه الصفحة غير آمنة.</translation>
 <translation id="930525582205581608">هل تريد محو سجلّ هذا الموقع الإلكتروني؟</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>
