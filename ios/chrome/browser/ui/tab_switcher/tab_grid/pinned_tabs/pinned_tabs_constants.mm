@@ -23,6 +23,7 @@ const NSTimeInterval kPinnedViewFadeInTime = 0.2;
 const NSTimeInterval kPinnedViewDragAnimationTime = 0.2;
 const NSTimeInterval kPinnedViewMoveAnimationTime = 0.1;
 const NSTimeInterval kPinnedViewInsetAnimationTime = 0.2;
+const NSTimeInterval kPinnedViewPopAnimationTime = 0.2;
 
 // Pinned cell identifier.
 NSString* const kPinnedCellIdentifier = @"PinnedCellIdentifier";
@@ -32,6 +33,7 @@ const CGFloat kPinnedCellHeight = 36.0f;
 const CGFloat kPinnedCellMaxWidth = 168.0f;
 const CGFloat kPinnedCellMinWidth = 90.0f;
 const CGFloat kPinnedCellInteritemSpacing = 8.0f;
+const CGFloat kPinnedCellPopInitialScale = 0.5f;
 
 // Pinned cell constraints.
 const CGFloat kPinnedCellCornerRadius = 13.0f;

@@ -90,6 +90,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // YES if view controller's content has appeared.
   BOOL _contentAppeared;
+
+  // Tracks if there is a scroll in progress.
+  BOOL _scrollInProgress;
 }
 
 - (instancetype)init {
@@ -110,6 +113,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _localDragActionInProgress = NO;
   _dropAnimationInProgress = NO;
   _contentAppeared = NO;
+  _scrollInProgress = NO;
 
   [self configureCollectionView];
   [self configureDropOverlayView];
@@ -147,15 +151,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   _dragSessionEnabled = enabled;
 
+  __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kPinnedViewDragAnimationTime
-                   animations:^{
-                     self->_dragEnabledConstraint.active = enabled;
-                     self->_defaultConstraint.active = !enabled;
-                     [self updateDropOverlayViewVisibility];
-                     [self resetViewBackgrounds];
-                     [self.view.superview layoutIfNeeded];
-                   }
-                   completion:nil];
+      animations:^{
+        self->_dragEnabledConstraint.active = enabled;
+        self->_defaultConstraint.active = !enabled;
+        [self updateDropOverlayViewVisibility];
+        [self resetViewBackgrounds];
+        [self.view.superview layoutIfNeeded];
+        [self.view layoutIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        [weakSelf popLastInsertedItem];
+      }];
 }
 
 - (void)pinnedTabsAvailable:(BOOL)available {
@@ -614,11 +622,69 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private properties
 
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  _scrollInProgress = YES;
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
+  _scrollInProgress = NO;
+  [self popLastInsertedItem];
+}
+
+#pragma mark - Private properties
+
 - (NSUInteger)selectedIndex {
   return [self indexOfItemWithID:_selectedItemID];
 }
 
 #pragma mark - Private
+
+// Animates the lastest inserted item (if any) with a pop animation.
+// This method is called when :
+// - The pinned overlay is hidden.
+// - A scroll animation ends.
+- (void)popLastInsertedItem {
+  if (_dragSessionEnabled || !_lastInsertedItemID) {
+    return;
+  }
+
+  NSUInteger itemIndex = [self indexOfItemWithID:_lastInsertedItemID];
+
+  // Check `itemIndex` boundaries in order to filter out possible race
+  // conditions while mutating the collection.
+  if (itemIndex == NSNotFound || itemIndex >= _items.count) {
+    return;
+  }
+
+  PinnedCell* pinnedCell = base::mac::ObjCCastStrict<PinnedCell>(
+      [self.collectionView cellForItemAtIndexPath:CreateIndexPath(itemIndex)]);
+  CGAffineTransform originalTransform = pinnedCell.transform;
+
+  // Initial attributes.
+  pinnedCell.alpha = 0;
+  pinnedCell.hidden = NO;
+  pinnedCell.transform =
+      CGAffineTransformScale(pinnedCell.transform, kPinnedCellPopInitialScale,
+                             kPinnedCellPopInitialScale);
+
+  const BOOL isSelectedItem = _lastInsertedItemID == _selectedItemID;
+  _lastInsertedItemID = nil;
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kPinnedViewPopAnimationTime
+      animations:^{
+        pinnedCell.alpha = 1;
+        pinnedCell.transform = originalTransform;
+        [self.view layoutIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        if (isSelectedItem) {
+          PinnedTabsViewController* strongSelf = weakSelf;
+          [strongSelf selectCollectionViewItemWithID:strongSelf->_selectedItemID
+                                            animated:NO];
+        }
+      }];
+}
 
 // Updates the visibility of the pinned view.
 - (void)updatePinnedTabsVisibility {
@@ -772,6 +838,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [cell showActivityIndicator];
   } else {
     [cell hideActivityIndicator];
+  }
+  if (_visible && cell.itemIdentifier == _lastInsertedItemID) {
+    cell.hidden = YES;
   }
 }
 

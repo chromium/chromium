@@ -10,13 +10,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Initial scale for items being inserted in the collection view.
-const CGFloat kInsertedItemInitialScale = 0.01f;
-
-}  // namespace
-
 @implementation PinnedTabsLayout
 
 - (instancetype)init {
@@ -61,29 +54,6 @@ const CGFloat kInsertedItemInitialScale = 0.01f;
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
   return YES;
-}
-
-- (UICollectionViewLayoutAttributes*)
-    initialLayoutAttributesForAppearingItemAtIndexPath:
-        (NSIndexPath*)itemIndexPath {
-  // Note that this method is called for any item whose index path is becoming
-  // `itemIndexPath`, which includes any items that were in the layout but whose
-  // index path is changing. For an item whose index path is changing, this
-  // method is called after
-  // -finalLayoutAttributesForDisappearingItemAtIndexPath:
-  UICollectionViewLayoutAttributes* attributes = [[super
-      initialLayoutAttributesForAppearingItemAtIndexPath:itemIndexPath] copy];
-  // Appearing items that aren't being inserted just use the default
-  // attributes.
-  if (![self.indexPathsOfInsertingItems containsObject:itemIndexPath]) {
-    return attributes;
-  }
-
-  attributes.alpha = 0.0;
-  attributes.transform =
-      CGAffineTransformScale(attributes.transform, kInsertedItemInitialScale,
-                             kInsertedItemInitialScale);
-  return attributes;
 }
 
 @end
