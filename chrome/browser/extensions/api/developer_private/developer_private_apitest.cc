@@ -11,13 +11,14 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
@@ -38,10 +39,10 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
       const Extension& extension) {
     auto get_info_function =
         base::MakeRefCounted<api::DeveloperPrivateGetExtensionInfoFunction>();
-    std::unique_ptr<base::Value> result =
-        extension_function_test_utils::RunFunctionAndReturnSingleResult(
+    absl::optional<base::Value> result =
+        api_test_utils::RunFunctionAndReturnSingleResult(
             get_info_function.get(),
-            content::JsReplace(R"([$1])", extension.id()), browser());
+            content::JsReplace(R"([$1])", extension.id()), profile());
     if (!result) {
       ADD_FAILURE() << "No result back when getting extension info";
       return nullptr;
@@ -97,12 +98,12 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   // Inspect the app window.
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-  extension_function_test_utils::RunFunction(
+  api_test_utils::RunFunction(
       function.get(),
       base::StringPrintf("[{\"renderViewId\": %d, \"renderProcessId\": %d}]",
                          window_view->render_view_id,
                          window_view->render_process_id),
-      browser(), api_test_utils::NONE);
+      profile());
 
   // Verify that dev tools opened.
   std::list<AppWindow*> app_windows =
@@ -136,11 +137,11 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   // Inspect the embedded options page.
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-  extension_function_test_utils::RunFunction(
+  api_test_utils::RunFunction(
       function.get(),
       base::StringPrintf("[{\"renderViewId\": %d, \"renderProcessId\": %d}]",
                          view.render_view_id, view.render_process_id),
-      browser(), api_test_utils::NONE);
+      profile());
 
   // Verify that dev tools opened.
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
@@ -186,15 +187,15 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   DevToolsWindowCreationObserver devtools_window_created_observer;
   auto dev_tools_function =
       base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-  extension_function_test_utils::RunFunction(dev_tools_function.get(),
-                                             base::StringPrintf(
-                                                 R"([{"renderViewId": -1,
+  api_test_utils::RunFunction(dev_tools_function.get(),
+                              base::StringPrintf(
+                                  R"([{"renderViewId": -1,
                                                       "renderProcessId": -1,
                                                       "isServiceWorker": true,
                                                       "extensionId": "%s"
                                                    }])",
-                                                 extension->id().c_str()),
-                                             browser(), api_test_utils::NONE);
+                                  extension->id().c_str()),
+                              profile());
   devtools_window_created_observer.WaitForLoad();
 
   // Verify that dev tool window opened.
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Inspect the service worker page.
   auto dev_tools_function =
       base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-  extension_function_test_utils::RunFunction(
+  api_test_utils::RunFunction(
       dev_tools_function.get(),
       base::StringPrintf(
           R"([{"renderViewId": -1,
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
                "extensionId": "%s"
             }])",
           info->views[0].render_process_id, extension->id().c_str()),
-      browser(), api_test_utils::NONE);
+      profile());
 
   // Find the service worker background host.
   content::DevToolsAgentHost::List targets =
@@ -355,11 +356,11 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
     DevToolsWindowCreationObserver devtools_window_created_observer;
     auto dev_tools_function =
         base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-    extension_function_test_utils::RunFunction(
+    api_test_utils::RunFunction(
         dev_tools_function.get(),
         content::JsReplace(kOpenDevToolsParams, main_render_process_id,
                            extension->id().c_str(), /*incognito:*/ false),
-        browser(), api_test_utils::NONE);
+        profile());
     devtools_window_created_observer.WaitForLoad();
     main_devtools_window = devtools_window_created_observer.devtools_window();
   }
@@ -368,11 +369,11 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
     DevToolsWindowCreationObserver devtools_window_created_observer;
     auto dev_tools_function =
         base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-    extension_function_test_utils::RunFunction(
+    api_test_utils::RunFunction(
         dev_tools_function.get(),
         content::JsReplace(kOpenDevToolsParams, incognito_render_process_id,
                            extension->id().c_str(), /*incognito:*/ true),
-        browser(), api_test_utils::NONE);
+        profile());
     devtools_window_created_observer.WaitForLoad();
     incognito_devtools_window =
         devtools_window_created_observer.devtools_window();
@@ -441,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   // Call the API function to inspect the offscreen document.
   auto dev_tools_function =
       base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-  extension_function_test_utils::RunFunction(
+  api_test_utils::RunFunction(
       dev_tools_function.get(),
       content::JsReplace(
           R"([{"renderViewId": $1,
@@ -449,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
                "extensionId": $3
             }])",
           view.render_view_id, view.render_process_id, extension->id()),
-      browser(), api_test_utils::NONE);
+      profile());
 
   // Validate that the devtools window is now shown.
   DevToolsWindow* dev_tools_window =
