@@ -179,8 +179,6 @@ class SupervisedUserService
   // custodian.
   std::u16string GetExtensionsLockedMessage() const;
 
-  static std::string GetEduCoexistenceLoginUrl();
-
   // Returns true if the extensions permissions parental control is enabled.
   bool AreExtensionsPermissionsEnabled() const;
 

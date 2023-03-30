@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_manager_core/account_addition_options.h"
@@ -75,8 +74,8 @@ GURL GetInlineLoginUrl(const std::string& email) {
 
   // Addition of secondary Google Accounts is allowed.
   if (ProfileManager::GetActiveUserProfile()->IsChild()) {
-    return GetUrlWithEmailParam(
-        SupervisedUserService::GetEduCoexistenceLoginUrl(), email);
+    return GetUrlWithEmailParam(chrome::kChromeUIEDUCoexistenceLoginURLV2,
+                                email);
   }
   return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
 }

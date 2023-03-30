@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -210,11 +209,6 @@ std::string SupervisedUserService::GetSecondCustodianName() const {
 std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
   return l10n_util::GetStringFUTF16(IDS_EXTENSIONS_LOCKED_SUPERVISED_USER,
                                     base::UTF8ToUTF16(GetCustodianName()));
-}
-
-// static
-std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
-  return chrome::kChromeUIEDUCoexistenceLoginURLV2;
 }
 
 bool SupervisedUserService::IsURLFilteringEnabled() const {
