@@ -63,6 +63,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // The cell for note entry.
 @property(nonatomic, readonly) PasswordNoteCell* noteCell;
 
+// The value of the username text.
+@property(nonatomic, strong) NSString* usernameText;
+
+// The value of the password text.
+@property(nonatomic, strong) NSString* passwordText;
+
+// The value of the note text.
+@property(nonatomic, strong) NSString* noteText;
+
 // If yes, the footer informing about the max note length is shown.
 @property(nonatomic, assign) BOOL isNoteFooterShown;
 
@@ -284,6 +293,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - PasswordNoteCellDelegate
 
 - (void)textViewDidChangeInCell:(PasswordNoteCell*)cell {
+  self.noteText = cell.textView.text;
   int noteLength = cell.textView.text.length;
   [cell setValid:(noteLength <= kMaxNoteCharAmount)];
   [self updateSaveButtonState];
@@ -311,6 +321,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)textFieldDidChangeInCell:(NewPasswordTableCell*)cell {
   if (cell == self.passwordCell) {
+    self.passwordText = cell.textField.text;
     // Update the password creation type so the correct histogram value can be
     // fired when the password is actually created.
     if (self.passwordCreationType == CPEPasswordCreated::kPasswordSuggested) {
@@ -322,6 +333,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       self.passwordCreationType = CPEPasswordCreated::kPasswordManuallyEntered;
     }
     [self updateSaveButtonState];
+  } else if (cell == self.usernameCell) {
+    self.usernameText = cell.textField.text;
   }
 }
 
@@ -337,9 +350,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Updates the save button state based on whether there is text in the password
 // cell.
 - (void)updateSaveButtonState {
-  self.navigationItem.rightBarButtonItem.enabled =
-      self.passwordCell.textField.text.length > 0 &&
-      self.noteCell.textView.text.length <= kMaxNoteCharAmount;
+  if (IsPasswordNotesWithBackupEnabled()) {
+    self.navigationItem.rightBarButtonItem.enabled =
+        self.passwordText.length > 0 &&
+        self.noteText.length <= kMaxNoteCharAmount;
+  } else {
+    self.navigationItem.rightBarButtonItem.enabled =
+        self.passwordCell.textField.text.length > 0;
+  }
 }
 
 #pragma mark - Private
@@ -385,10 +403,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // user has already said they are aware that they are replacing a previous
 // credential.
 - (void)saveCredential:(BOOL)shouldReplace {
-  NSString* username = [self currentUsername];
-  NSString* password = [self currentPassword];
-  NSString* note =
-      IsPasswordNotesWithBackupEnabled() ? [self currentNote] : @"";
+  NSString* username = IsPasswordNotesWithBackupEnabled()
+                           ? self.usernameText
+                           : [self currentUsername];
+  NSString* password = IsPasswordNotesWithBackupEnabled()
+                           ? self.passwordText
+                           : [self currentPassword];
+  NSString* note = IsPasswordNotesWithBackupEnabled() ? self.noteText : @"";
 
   [self.credentialHandler saveCredentialWithUsername:username
                                             password:password
@@ -410,6 +431,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setPassword:(NSString*)password {
   NewPasswordTableCell* passwordCell = self.passwordCell;
   passwordCell.textField.text = password;
+  self.passwordText = password;
   // Move voiceover focus to the save button so the user knows that something
   // has happend and the save button is now enabled.
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
@@ -443,11 +465,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NSString* messageBaseLocalizedString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_REPLACE_MESSAGE",
       @"Message for password replace alert");
+  NSString* username = IsPasswordNotesWithBackupEnabled()
+                           ? self.usernameText
+                           : [self currentUsername];
   NSString* message = [[messageBaseLocalizedString
       stringByReplacingOccurrencesOfString:@"$2"
                                 withString:self.currentHost]
       stringByReplacingOccurrencesOfString:@"$1"
-                                withString:[self currentUsername] ?: @""];
+                                withString:username ?: @""];
   UIAlertController* alertController = [UIAlertController
       alertControllerWithTitle:
           NSLocalizedString(
