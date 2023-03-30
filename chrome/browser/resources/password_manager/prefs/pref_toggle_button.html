@@ -20,7 +20,7 @@
     padding: var(--cr-section-vertical-padding) 0;
   }
 </style>
-<div id="outerRow" noSubLabel$="[[!subLabel]]">
+<div id="outerRow" noSubLabel$="[[!subLabel]]" role="switch">
   <div class="flex" id="labelWrapper">
     <div class="label" aria-hidden="true">[[label]]</div>
     <div class="cr-secondary-text label" id="sub-label">
@@ -32,7 +32,7 @@
   <cr-toggle id="control" checked="{{checked}}"
       disabled="[[disabled]]"
       on-change="onToggleClick_"
-      aria-describedby="sub-label-text">
+      aria-label="[[getAriaLabel_(label, subLabel)]]">
   </cr-toggle>
   <template is="dom-if" if="[[pref.extensionId]]">
     <extension-controlled-icon id="extensionIcon"

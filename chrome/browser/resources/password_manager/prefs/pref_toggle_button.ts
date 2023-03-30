@@ -138,6 +138,13 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
   private updatePrefValue_() {
     this.setPrefValue(this.checked);
   }
+
+  private getAriaLabel_(): string {
+    if (!this.subLabel) {
+      return this.label;
+    }
+    return [this.label, this.subLabel].join('. ');
+  }
 }
 
 declare global {
