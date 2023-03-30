@@ -2096,6 +2096,27 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+// Updates the views, buttons, toolbars as well as broadcasts incognito tabs
+// visibility after the tab count has changed.
+- (void)handleTabCountChangeWithTabCount:(NSUInteger)tabCount {
+  if (self.tabGridMode == TabGridModeSelection) {
+    // Exit selection mode if there are no more tabs.
+    if (tabCount == 0) {
+      self.tabGridMode = TabGridModeNormal;
+    }
+
+    [self updateSelectionModeToolbars];
+  }
+
+  if (tabCount > 0) {
+    // Undo is only available when the tab grid is empty.
+    self.undoCloseAllAvailable = NO;
+  }
+
+  [self configureButtonsForActiveAndCurrentPage];
+  [self broadcastIncognitoContentVisibility];
+}
+
 // Broadcasts whether incognito tabs are showing.
 - (void)broadcastIncognitoContentVisibility {
   // It is programmer error to broadcast incognito content visibility when the
@@ -2407,6 +2428,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
             (PinnedTabsViewController*)pinnedTabsViewController
               didChangeItemCount:(NSUInteger)count {
   self.topToolbar.pageControl.pinnedTabCount = count;
+  const NSUInteger totalTabCount =
+      count + self.topToolbar.pageControl.regularTabCount;
+
+  crash_keys::SetRegularTabCount(totalTabCount);
+  [self handleTabCountChangeWithTabCount:totalTabCount];
 }
 
 - (void)pinnedTabsViewControllerVisibilityDidChange:
@@ -2546,26 +2572,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
-  if (self.tabGridMode == TabGridModeSelection) {
-    // Exit selection mode if there are no more tabs.
-    if (count == 0) {
-      self.tabGridMode = TabGridModeNormal;
-    }
-    [self updateSelectionModeToolbars];
-  }
-
-  if (count > 0) {
-    // Undo is only available when the tab grid is empty.
-    self.undoCloseAllAvailable = NO;
-  }
-  [self configureButtonsForActiveAndCurrentPage];
   if (gridViewController == self.regularTabsViewController) {
     self.topToolbar.pageControl.regularTabCount = count;
-    crash_keys::SetRegularTabCount(count);
+    const NSUInteger totalTabCount =
+        count + self.topToolbar.pageControl.pinnedTabCount;
+
+    crash_keys::SetRegularTabCount(totalTabCount);
+    [self handleTabCountChangeWithTabCount:totalTabCount];
+
   } else if (gridViewController == self.incognitoTabsViewController) {
     crash_keys::SetIncognitoTabCount(count);
+    [self handleTabCountChangeWithTabCount:count];
   }
-  [self broadcastIncognitoContentVisibility];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
