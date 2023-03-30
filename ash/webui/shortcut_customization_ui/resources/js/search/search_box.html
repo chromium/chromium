@@ -90,8 +90,8 @@
   }
 </style>
 
-<!-- TODO(longbowei): Localize string -->
-<cr-toolbar-search-field id="search" label="Search for keyboard shortcuts"
+<cr-toolbar-search-field id="search" label="[[i18n('searchPlaceholderLabel')]]"
+    clear-label="[[i18n('searchClearQueryLabel')]]"
     on-search-icon-clicked="onSearchIconClicked"
     spinner-active="[[spinnerActive]]">
 </cr-toolbar-search-field>
@@ -117,7 +117,11 @@
         </search-result-row>
       </template>
     </iron-list>
-    <div id="noSearchResultsContainer" hidden="[[searchResultsExist]]">
+    <!-- noSearchResultsContainer is aria-hidden because the aria-label of this
+    specific container gets announced as soon as search results have changed
+    (onSearchResultsChanged) and no search results exist. -->
+    <div id="noSearchResultsContainer" hidden="[[searchResultsExist]]"
+        aria-hidden="true">
       [[i18n('searchNoResults')]]
     </div>
   </div>
