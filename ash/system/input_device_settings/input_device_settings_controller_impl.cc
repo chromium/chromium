@@ -228,9 +228,8 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
 void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
   settings_refresh_pending_ = false;
   for (const auto& [id, keyboard] : keyboards_) {
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        keyboard.get());
+    keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
+                                                       keyboard.get());
     metrics_manager_->RecordKeyboardInitialMetrics(*keyboard);
     DispatchKeyboardSettingsChanged(id);
   }
@@ -252,12 +251,8 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
-  for (const auto& [id, keyboard] : keyboards_) {
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        keyboard.get());
-    DispatchKeyboardSettingsChanged(id);
-  }
+  // TODO(dpad): Implement re-initialization of keyboard settings when the
+  // policies change.
 }
 
 const mojom::KeyboardSettings*
@@ -360,9 +355,8 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     return;
   }
   found_keyboard.settings = settings.Clone();
-  keyboard_pref_handler_->UpdateKeyboardSettings(
-      active_pref_service_, policy_handler_->keyboard_policies(),
-      found_keyboard);
+  keyboard_pref_handler_->UpdateKeyboardSettings(active_pref_service_,
+                                                 found_keyboard);
   DispatchKeyboardSettingsChanged(id);
   // Check the list of keyboards to see if any have the same |device_key|.
   // If so, their settings need to also be updated.
@@ -589,9 +583,8 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     // Get initial settings from the pref manager and generate our local storage
     // of the device.
     auto mojom_keyboard = BuildMojomKeyboard(keyboard);
-    keyboard_pref_handler_->InitializeKeyboardSettings(
-        active_pref_service_, policy_handler_->keyboard_policies(),
-        mojom_keyboard.get());
+    keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
+                                                       mojom_keyboard.get());
     metrics_manager_->RecordKeyboardInitialMetrics(*mojom_keyboard);
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
