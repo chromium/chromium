@@ -1252,6 +1252,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ଗୋଟିଏ ଅଙ୍କ ବାକି ଅଛି}other{#ଟି ଅଙ୍କ ବାକି ଅଛି}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" />ର ଡାଉନଲୋଡକୁ ବିରତ କରାଯାଇଛି</translation>
 <translation id="6878400149835617132">ସର୍ଟକଟ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1ଟି ଆପ}other{#ଟି ଆପ୍ସ}}</translation>
 <translation id="6884665277231944629">ଆଜିକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6886172995547742638">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ର କାର୍ଯ୍ୟଦକ୍ଷତା କମ୍ ହୋଇପାରେ। ଏକ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ <ph name="PREFERRED_MINIMUM_POWER" />W କିମ୍ବା ଉଚ୍ଚତର USB-C ପାୱାର ଆଡପ୍ଟର୍ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="688631446150864480">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଡାଉନ୍ ତୀର କୀ'କୁ ଦବାନ୍ତୁ</translation>
@@ -1432,6 +1433,7 @@
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="776344839111254542">ଅପ୍‍‍ଡେଟ୍ ବିବରଣୀ ଦେଖିବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="7768784765476638775">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍</translation>
+<translation id="7769299611924763557">ଆପଣଙ୍କ GIF ଖୁବ ଶୀଘ୍ର ପ୍ରସ୍ତୁତ ହୋଇଯିବ</translation>
 <translation id="7780094051999721182">ସର୍ଟକଟଗୁଡ଼ିକ</translation>
 <translation id="7780159184141939021">ସ୍କ୍ରିନ୍‌କୁ ଘୂରାନ୍ତୁ</translation>
 <translation id="7796735576426975947">ନୂଆ ବିଜ୍ଞପ୍ତି ଲୁକ୍କାୟିତ ଅଛି</translation>

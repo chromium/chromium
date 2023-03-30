@@ -1253,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
 <translation id="6867938213751067702">Изтеглянето на <ph name="FILENAME" /> е на пауза</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 приложение}other{# приложения}}</translation>
 <translation id="6884665277231944629">Към днешната дата</translation>
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
 <translation id="688631446150864480">Натиснете клавиша със стрелка за надолу, за да превключите прозорците</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7749443890790263709">Достигнат е максималният брой работни кътове.</translation>
 <translation id="776344839111254542">Кликнете, за да видите подробности за актуализацията</translation>
 <translation id="7768784765476638775">Прочитане на глас</translation>
+<translation id="7769299611924763557">GIF файлът ви ще бъде готов скоро</translation>
 <translation id="7780094051999721182">преки пътища</translation>
 <translation id="7780159184141939021">Завъртане на екрана</translation>
 <translation id="7796735576426975947">Скрито е ново известие</translation>

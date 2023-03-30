@@ -415,6 +415,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3863769054730344136">Envoyer à vos appareils</translation>
 <translation id="387280738075653372">Téléchargez Chrome ici.</translation>
 <translation id="3888863481921783344">Cela sera utilisé pour vous montrer les invités potentiels à votre événement.</translation>
+<translation id="3891414008432200754">Prix</translation>
 <translation id="3892144330757387737">Vous trouverez votre historique ici</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Votre organisation a désactivé la synchronisation. Vous pouvez tout de même voir vos favoris, votre historique, vos mots de passe et d'autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte.</translation>
@@ -479,6 +480,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4342946437867096381">Vous avez déjà enregistré un mot de passe pour ce site dans votre compte Google. Google peut choisir pour vous le mot de passe le plus récent.</translation>
 <translation id="4343046787186034850">Accès à l'appareil photo et au microphone autorisé</translation>
 <translation id="4359125752503270327">Cette page s'ouvrira dans une autre application.</translation>
+<translation id="4371526908359194219">Notifications par courriel</translation>
 <translation id="4375040482473363939">Recherche de code QR</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4389019817280890563">Toucher pour changer la langue.</translation>
@@ -580,6 +582,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4986678885919050584">Retirer de cet appareil</translation>
 <translation id="498985224078955265">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
+<translation id="5016420433031926653">Envoyer à <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
 <translation id="5039804452771397117">Autoriser</translation>

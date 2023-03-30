@@ -92,6 +92,7 @@
 <translation id="3185330573522821672">Персонализирайте новия си потребителски профил в Chromium</translation>
 <translation id="3190315855212034486">О, не! Chromium претърпя срив. Да се стартира ли отново сега?</translation>
 <translation id="3258596308407688501">Chromium не може да чете и записва в директорията си за данни: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Това ръководство ви информира какви възможности за избор имате, така че Chromium да работи по желания от вас начин</translation>
 <translation id="3283186697780795848">Инсталирана е версия <ph name="PRODUCT_VERSION" /> на Chromium</translation>
 <translation id="3286538390144397061">Рестартиране сега</translation>
 <translation id="328888136576916638">Ключовете на приложния програмен интерфейс (API) на Google липсват. Някои функции на Chromium ще бъдат деактивирани.</translation>
@@ -376,6 +377,7 @@
 <translation id="924957577793602335">Персонализирайте Chromium според вкуса си</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
 <translation id="942598560705308788">Сертификати, управлявани от Chromium</translation>
+<translation id="959579472876010517">Възползвайте се максимално от Chromium</translation>
 <translation id="965162752251293939">Кой използва Chromium?</translation>
 <translation id="967427899662692980">Получете най-високото ниво на сигурност на Chromium</translation>
 <translation id="9792300276217204">Изчистване на данните за сайтовете от устройството ви при всяко затваряне на Chromium</translation>

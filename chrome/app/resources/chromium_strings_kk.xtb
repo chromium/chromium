@@ -96,6 +96,7 @@
 <translation id="3258596308407688501">Chromium өзінің деректер каталогін оқи және оған жаза алмайды:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Бұл гид таңдауларыңызды түсінуге көмектеседі, осылайша Chromium сіз қалағандай жұмыс істейді</translation>
 <translation id="3283186697780795848">Chromium браузерінің <ph name="PRODUCT_VERSION" /> нұсқасы орнатылды.</translation>
 <translation id="3286538390144397061">Қазір қайта іске қосу</translation>
 <translation id="328888136576916638">Google API пернелері жоқ. Кейбір Chromium функциялары өшіріледі.</translation>
@@ -383,6 +384,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="924957577793602335">Chromium браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="93478295209880648">Chromium дұрыс жұмыс істемеуі мүмкін, себебі оған Windows XP не Windows Vista жүйелерінде қолдау көрсетілмейді</translation>
 <translation id="942598560705308788">Chromium басқаратын сертификаттар</translation>
+<translation id="959579472876010517">Chromium-ды барынша пайдалану</translation>
 <translation id="965162752251293939">Chromium-ді кім пайдаланып жатыр?</translation>
 <translation id="967427899662692980">Chromium браузерінің ең күшті қорғанысын қолданыңыз</translation>
 <translation id="9792300276217204">Chromium браузерін жапқан кезде құрылғыңыздан сайт деректерін үнемі өшіру</translation>

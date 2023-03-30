@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">Votre appareil est géré par <ph name="DOMAIN" />. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="1026655690966755180">Ajouter un port</translation>
 <translation id="1026822031284433028">Charger l'image</translation>
+<translation id="1026959648338730078">Windows Hello ou clé de sécurité externe</translation>
 <translation id="1028604629594230522">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez.</translation>
 <translation id="1028700151766901954">Motif : LBS reste dans <ph name="DEFAULT_OPEN_BROWSER" /> par défaut.</translation>
 <translation id="1029317248976101138">Zoom</translation>
@@ -938,6 +939,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1797117170091578105">Jouez à l'aide de votre clavier Chromebook. Vous pouvez affecter des touches à des actions particulières.</translation>
 <translation id="1800502858278951817">Aucune extension n'a demandé de lire et de modifier <ph name="SITE_NAME" /></translation>
 <translation id="180203835522132923">Rechercher+O, puis W</translation>
+<translation id="1802457294427928325">Modifier le comportement des touches F pour les actions de la rangée supérieure de ChromeOS</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
 <translation id="1802687198411089702">La page ne répond pas. Vous pouvez attendre qu'elle réponde ou la quitter.</translation>
 <translation id="1803531841600994172">Langue cible</translation>
@@ -1269,6 +1271,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="208634871997892083">RPV permanent</translation>
 <translation id="2087822576218954668">Imprimer : <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">L'inscription est uniquement prise en charge après l'installation de <ph name="DEVICE_OS" />.</translation>
+<translation id="2088564884469682888">TrackPoint intégré</translation>
 <translation id="2089090684895656482">Moins</translation>
 <translation id="208928984520943006">Pour revenir à l'écran d'accueil en tout temps, balayez l'écran du bas vers le haut.</translation>
 <translation id="2089566709556890888">Naviguez en toute sécurité avec Google Chrome</translation>
@@ -1462,6 +1465,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2238379619048995541">Données sur l'état de la fréquence</translation>
 <translation id="2241053333139545397">Accéder à vos données sur un certain nombre de sites Web et les modifier</translation>
+<translation id="2241242047787527912">Pour chaque touche répertoriée ci-dessous, choisir l'action que vous souhaitez qu'elle effectue</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2242687258748107519">Information sur le fichier</translation>
 <translation id="2245603955208828424">Utilisez les touches fléchées pour parcourir les éléments lettre par lettre</translation>
@@ -1500,12 +1504,14 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2271986192355138465">Découvrir comment installer des applications Web</translation>
 <translation id="2272430695183451567">Aucun commutateur attribué</translation>
 <translation id="2272570998639520080">Verre de martini</translation>
+<translation id="2272830751703114341">Activer la touche Système/Lanceur pour changer le comportement des touches de la rangée supérieure</translation>
 <translation id="2273119997271134996">Problème avec le port vidéo de la station d'accueil</translation>
 <translation id="2274840746523584236">Recharger votre Chromebook</translation>
 <translation id="2276503375879033601">Ajouter d'autres applications</translation>
 <translation id="2276910256003242519">Effacement des données en cours…</translation>
 <translation id="2278562042389100163">Ouvrir une fenêtre de navigateur</translation>
 <translation id="2278668501808246459">Démarrage du gestionnaire de conteneur en cours…</translation>
+<translation id="2279051792571591988">Rétablir les paramètres par défaut</translation>
 <translation id="2280486287150724112">Marge de droite</translation>
 <translation id="2281863813036651454">Clic gauche de la souris</translation>
 <translation id="2282146716419988068">Processus de GPU</translation>
@@ -2818,6 +2824,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3441663102605358937">Connectez-vous à <ph name="ACCOUNT" /> de nouveau pour vérifier ce compte</translation>
 <translation id="3442674350323953953">Permettez à Google d'utiliser vos données matérielles pour améliorer <ph name="DEVICE_OS" />. Si vous refusez, ces données sont tout de même envoyées à Google pour déterminer les mises à jour appropriées, mais elles ne sont pas stockées ni utilisées autrement.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> a dépassé le délai</translation>
+<translation id="3443754338602062261">Vous avez déjà des mots de passe pour ces comptes dans votre <ph name="BRAND" />. Si vous choisissez d'importer l'un des mots de passe ci-dessous, il remplacera l'ancien.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> pourra consulter <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Réponses rapides de l'Assistant Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -3064,6 +3071,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3659550105763988702">Utilisez votre clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Vous avez entré un trop grand nombre de codes d'accès incorrects. Réessayez plus tard</translation>
 <translation id="3660234220361471169">Non fiable</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{un ancien mot de passe trouvé}one{{NUM_PASSWORDS} mots de passe existants trouvés}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains paramètres de votre navigateur ont été corrompus par un autre programme, et les a réinitialisé à leurs valeurs par défaut.</translation>
 <translation id="3665919494326051362">Version actuelle : <ph name="CURRENT_VERSION" /></translation>
@@ -3079,6 +3087,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3677959414150797585">Comprend les applications, les pages Web et plus. Envoie des statistiques afin d'améliorer les suggestions seulement si vous avez choisi de partager les données d'utilisation.</translation>
 <translation id="3678156199662914018">Extension : <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laisseront aucune autre trace sur votre ordinateur (comme des témoins) après la déconnexion. Les fichiers que vous téléchargez et les favoris que vous créez ne seront pas conservés.</translation>
+<translation id="3679126865530709868">Pavé tactile intégré</translation>
 <translation id="368019053277764111">Ouvrir la recherche dans le panneau latéral</translation>
 <translation id="3680683624079082902">Voix de la synthèse vocale</translation>
 <translation id="3681311097828166361">Nous vous remercions de vos commentaires. Vous êtes actuellement hors connexion, et votre rapport sera envoyé plus tard.</translation>
@@ -4258,6 +4267,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour une sécurité accrue</translation>
 <translation id="471759229191973607">Changer de thème</translation>
+<translation id="4718564115458102525">Aucun clavier détecté</translation>
 <translation id="4722735765955348426">Mot de passe pour <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> partage votre écran.</translation>
 <translation id="4722989931633062466">Non autorisés à afficher des invites de connexion tierces</translation>
@@ -5476,6 +5486,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5841270259333717135">Configurer l'Ethernet</translation>
 <translation id="5842497610951477805">Activer le Bluetooth</translation>
 <translation id="5844574845205796324">Suggérer du nouveau contenu à explorer</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{une touche remappée}one{{COUNT} touches remappées}other{{COUNT} touches remappées}}</translation>
 <translation id="5846200638699387931">Erreur de syntaxe de relation : <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Pas d'ombre</translation>
 <translation id="5846504156837627898">Gérer les autorisations du site</translation>
@@ -5601,6 +5612,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5945002094477276055">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer au service de navigation sécurisée Google pour le faire analyser?</translation>
 <translation id="5945363896952315544">Votre clé de sécurité ne peut pas stocker davantage d'empreintes digitales. Pour en ajouter une, commencer par supprimer une empreinte digitale existante.</translation>
 <translation id="5946591249682680882">Identifiant de rapport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">Annuler l'importation</translation>
 <translation id="5948536763493709626">Connectez un clavier ou une souris, ou continuez la configuration en utilisant votre écran tactile. Si vous utilisez des appareils Bluetooth, assurez-vous que vos appareils sont prêts à être associés.</translation>
 <translation id="5949544233750246342">Impossible d'analyser le fichier</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> souhaite utiliser les polices locales</translation>
@@ -5857,6 +5869,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6177412385419165772">Suppression en cours...</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>
+<translation id="6179893151569852357">Convertir les touches F en touches de la rangée supérieure de ChromeOS</translation>
 <translation id="6180510783007738939">Ligne</translation>
 <translation id="6180550893222597997">Quelle clé d'accès voulez-vous utiliser pour <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Téléchargement bloqué</translation>
@@ -6057,6 +6070,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="6370021412472292592">Échec de chargement du fichier manifeste.</translation>
 <translation id="637135143619858508">Grand interligne</translation>
+<translation id="6372856076511744743">Remapper les touches du clavier</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6374635887697228982">Obtenir des rabais?</translation>
@@ -6501,6 +6515,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="677646486571529447">Ajouter une note</translation>
 <translation id="6776589734354015877">Profitez de fonctionnalités supplémentaires</translation>
 <translation id="6776729248872343918">Activer le mode Association rapide</translation>
+<translation id="677778081766640955">Maintenir la touche enfoncée pour basculer entre les touches F et les actions ChromeOS</translation>
 <translation id="6777817260680419853">Redirection bloquée</translation>
 <translation id="6779092717724412415">Pour mettre en évidence un élément comme celui-ci, sélectionnez un texte et faites un clic droit.</translation>
 <translation id="6779447100905857289">vos paniers</translation>
@@ -7674,6 +7689,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805768142964895445">État</translation>
+<translation id="7805906048382884326">Fermer le conseil</translation>
 <translation id="7807067443225230855">Recherche et Assistant Google</translation>
 <translation id="7807117920154132308">Il semble que <ph name="SUPERVISED_USER_NAME" /> ait déjà configuré l'Assistant Google sur un autre appareil. En activant la fonctionnalité Contexte à l'écran sur cet appareil, <ph name="SUPERVISED_USER_NAME" /> peut tirer encore plus parti de l'Assistant.</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>

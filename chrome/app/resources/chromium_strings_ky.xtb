@@ -96,6 +96,7 @@
 <translation id="3258596308407688501">Chromium дайындар каталогун окуп, ага жаза албайт:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Бул жетектеме Chromium'ду өзүңүзгө ыңгайлаштырууга жардам берет</translation>
 <translation id="3283186697780795848"><ph name="PRODUCT_VERSION" /> Chromium версиясы орнотулду</translation>
 <translation id="3286538390144397061">Азыр өчүрүп күйгүзүү</translation>
 <translation id="328888136576916638">Google API ачкычтары жок болуп жатат. Chromium'дун айрым функциялары өчүрүлөт.</translation>
@@ -384,6 +385,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="924957577793602335">Chromium'ду каалагандай ыңгайлаштырып алыңыз</translation>
 <translation id="93478295209880648">Chromium туура эмес иштеши мүмкүн, себеби ал Windows XP же Windows Vista'да мындан ары колдоого алынбайт.</translation>
 <translation id="942598560705308788">Chromium башкарган тастыктамалар</translation>
+<translation id="959579472876010517">Chromium'дун бардык мүмкүнчүлүктөрүн пайдаланыңыз</translation>
 <translation id="965162752251293939">Chromium'ду ким колдонуп жатат?</translation>
 <translation id="967427899662692980">Chromium'дун эң күчтүү коопсуздук системасын орнотуп алыңыз</translation>
 <translation id="9792300276217204">Chromium'ду жапкан сайын түзмөгүңүздөгү сайттардын маалыматын тазалоо</translation>

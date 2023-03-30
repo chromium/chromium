@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">Құрылғыңызды <ph name="DOMAIN" /> басқарады. Әкімшілер бұл құрылғыдағы кез келген профильдің деректерін пайдалана алады.</translation>
 <translation id="1026655690966755180">Порт енгізу</translation>
 <translation id="1026822031284433028">Кескінді жүктеу</translation>
+<translation id="1026959648338730078">Windows Hello немесе сыртқы қауіпсіздік кілті</translation>
 <translation id="1028604629594230522">Chrome сіз кіруіңіз мүмкін беттерді алдын ала жүктейді, сонда олар кірген кезде тезірек жүктеледі.</translation>
 <translation id="1028700151766901954">Себеп: LBS <ph name="DEFAULT_OPEN_BROWSER" /> браузерінде әдепкісінше қалады.</translation>
 <translation id="1029317248976101138">Масштабтау</translation>
@@ -934,6 +935,7 @@
 <translation id="1797117170091578105">Chromebook пернетақтасымен ойнаңыз. Пернелерді арнайы әрекеттерге тағайындауға болады.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> сайтын оқуға және өзгертуге ешқандай кеңейтім сұралмады.</translation>
 <translation id="180203835522132923">Search + O, одан кейін W</translation>
+<translation id="1802457294427928325">F пернелерінің әрекетін ChromeOS жоғарғы қатардағы әрекеттеріне өзгертіңіз.</translation>
 <translation id="1802624026913571222">Қақпағы жабылғанда, ұйқы режиміне өту</translation>
 <translation id="1802687198411089702">Бет жауап бермеуде. Оны күтуге не жабуға болады.</translation>
 <translation id="1803531841600994172">Аударма тілі</translation>
@@ -1265,6 +1267,7 @@
 <translation id="208634871997892083">Әрқашан қосулы VPN</translation>
 <translation id="2087822576218954668">Басып шығару: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> орнатылған соң ғана тіркелуге болады.</translation>
+<translation id="2088564884469682888">Ендірілген TrackPoint</translation>
 <translation id="2089090684895656482">Азырақ</translation>
 <translation id="208928984520943006">Негізгі экранға кез келген уақытта өту үшін саусақпен экранның төменгі жағынан жоғары қарай сырғытыңыз.</translation>
 <translation id="2089566709556890888">Google Chrome арқылы қауіпсіз күйде шолыңыз</translation>
@@ -1458,6 +1461,7 @@
 <translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
 <translation id="2238379619048995541">Жиілік күйі деректері</translation>
 <translation id="2241053333139545397">Бірнеше сайттағы деректеріңізді оқу және өзгерту</translation>
+<translation id="2241242047787527912">Төменде тізімделген әрбір перне үшін орындағыңыз келетін әрекетті таңдаңыз.</translation>
 <translation id="2241634353105152135">Бір-ақ рет</translation>
 <translation id="2242687258748107519">Файл ақпараты</translation>
 <translation id="2245603955208828424">Элементтер арасында әріптеп жылжу үшін бағыт пернелерін пайдаланыңыз.</translation>
@@ -1496,12 +1500,14 @@
 <translation id="2271986192355138465">Веб-қолданбаларды орнату жолын білу</translation>
 <translation id="2272430695183451567">Ешқандай ауыстырғыш тағайындалмаған.</translation>
 <translation id="2272570998639520080">Мартини ыдысы</translation>
+<translation id="2272830751703114341">Жоғарғы қатардағы пернелердің әрекетін ауыстыру үшін "Жүйе/Іске қосу тақтасы" пернесін қосыңыз.</translation>
 <translation id="2273119997271134996">Қондыру станциясының бейне ұяшығында ақау бар</translation>
 <translation id="2274840746523584236">Chromebook құрылғыңызды зарядтаңыз</translation>
 <translation id="2276503375879033601">Басқа қолданбалар қосу</translation>
 <translation id="2276910256003242519">Деректер өшірілуде…</translation>
 <translation id="2278562042389100163">Браузер терезесін ашу</translation>
 <translation id="2278668501808246459">Контейнер басқарушысы іске қосылуда</translation>
+<translation id="2279051792571591988">Бастапқы параметрлерді қалпына келтіру</translation>
 <translation id="2280486287150724112">Оң жақ шеті</translation>
 <translation id="2281863813036651454">Тінтуірдің сол жақ пернесін түрту</translation>
 <translation id="2282146716419988068">GPU процесі</translation>
@@ -2813,6 +2819,7 @@
 <translation id="3441663102605358937">Осы аккаунтты растау үшін <ph name="ACCOUNT" /> аккаунтына қайта кіріңіз.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> жүйесін жақсарту үшін Google-ға жабдық деректерін пайдалануға рұқсат беріңіз. Егер бас тартсаңыз, дұрыс жаңартуларды анықтау үшін Google-ға дерек жіберіле береді, бірақ ол сақталмайды немесе пайдаланылмайды.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> уақыты өтіп кетті</translation>
+<translation id="3443754338602062261"><ph name="BRAND" /> ішінде бұл тіркелгілерге арналған құпия сөздеріңіз бұрыннан бар. Төмендегі құпия сөздердің бірін импорттауды таңдасаңыз, ол бұрыннан бар біреуін ауыстырады.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> домені <ph name="FILENAME" /> файлын көре алады.</translation>
 <translation id="3445047461171030979">Google Assistant жылдам жауаптары</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
@@ -3059,6 +3066,7 @@
 <translation id="3659550105763988702"><ph name="APP_NAME" /> қолданбасына кіру кілтін пайдаланыңыз</translation>
 <translation id="3659929705630080526">Рұқсат кодын енгізгенде тым көп қателестіңіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="3660234220361471169">Сенімсіз</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 бұрыннан бар құпия сөз табылды}other{{NUM_PASSWORDS} бұрыннан бар құпия сөз табылды}}</translation>
 <translation id="3664511988987167893">Кеңейтім белгішесі</translation>
 <translation id="3665589677786828986">Chrome кейбір параметрлеріңізді басқа бағдарлама бүлдіргенін анықтап, бастапқы әдепкі параметрлеріне қайтарды.</translation>
 <translation id="3665919494326051362">Ағымдағы нұсқасы: <ph name="CURRENT_VERSION" /></translation>
@@ -3074,6 +3082,7 @@
 <translation id="3677959414150797585">Оған қолданбалар, веб-беттер және тағы басқалар жатады. Пайдаланылуы туралы деректерді бөлісуді таңдасаңыз, ұсыныстарды жақсарту үшін статистиканы жібереді.</translation>
 <translation id="3678156199662914018">Кеңейтім: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Сіз осы терезеде қарайтын беттер браузерді қолдану тарихында көрсетілмейді және аккаунтыңыздан шыққаннан кейін, олар компьютерде cookie файлдары сияқты іздер қалдырмайды. Сіз жүктеп алған файлдар және жасаған бетбелгілер сақталмайды.</translation>
+<translation id="3679126865530709868">Ендірілген сенсорлық тақта</translation>
 <translation id="368019053277764111">Бүйірлік панельде іздеу бетін ашу</translation>
 <translation id="3680683624079082902">Мәтінді дыбыстау дауысы</translation>
 <translation id="3681311097828166361">Пікіріңіз үшін рақмет. Қазір желіге қосылмағансыз, есебіңіз кейінірек жіберіледі.</translation>
@@ -4253,6 +4262,7 @@
 <translation id="47158868804223727">Топты жаю немесе жию үшін оның атауын басыңыз.</translation>
 <translation id="4716483597559580346">Қосымша қауіпсіздік үшін Powerwash функциясын қолдану</translation>
 <translation id="471759229191973607">Тақырыпты өзгерту</translation>
+<translation id="4718564115458102525">Пернетақта анықталмады.</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> құпия сөзі</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> экраныңызды бөлісуде.</translation>
 <translation id="4722989931633062466">Аккаунтқа үшінші тарап арқылы кіру хабарларының көрсетілуіне рұқсат бермеу</translation>
@@ -5469,6 +5479,7 @@
 <translation id="5841270259333717135">Ethernet желісін конфигурациялау</translation>
 <translation id="5842497610951477805">Bluetooth қосу</translation>
 <translation id="5844574845205796324">Жаңа контент ұсыну</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{1 қайта тағайындалған перне}other{{COUNT} қайта тағайындалған перне}}</translation>
 <translation id="5846200638699387931">Қатынас синтаксисінің қатесі: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Көлеңкесіз</translation>
 <translation id="5846504156837627898">Сайт рұқсаттарын басқару</translation>
@@ -5594,6 +5605,7 @@
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> қауіпті болуы мүмкін. Сканерлеу үшін Google Safe Browsing-ге жіберу керек пе?</translation>
 <translation id="5945363896952315544">Қауіпсіздік кілтіңіз бұдан көп саусақ ізін сақтай алмайды. Жаңасын қосу үшін бұрыннан бар саусақ ізін жойыңыз.</translation>
 <translation id="5946591249682680882">Есеп идентификаторы <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">Импорттауды тоқтату</translation>
 <translation id="5948536763493709626">Пернетақтаны немесе тінтуірді қосыңыз, не болмаса сенсорлық экран көмегімен реттеуді жалғастырыңыз. Bluetooth құрылғыларын қолдансаңыз, құрылғыларыңыздың қосуға дайын екеніне көз жеткізіңіз.</translation>
 <translation id="5949544233750246342">Файлды талдау мүмкін емес</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> жергілікті қаріптерді пайдаланғысы келеді.</translation>
@@ -5849,6 +5861,7 @@
 <translation id="6177412385419165772">Өшірілуде...</translation>
 <translation id="6178664161104547336">Сертификат таңдау</translation>
 <translation id="6178682841350631965">Кіру деректеріңіз жаңартылды.</translation>
+<translation id="6179893151569852357">F пернелерін ChromeOS жоғарғы қатарындағы пернелеріне түрлендіру</translation>
 <translation id="6180510783007738939">Жол құралы</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> үшін қандай кіру кілтін пайдаланғыңыз келеді?</translation>
 <translation id="6181431612547969857">Жүктеуге тыйым салынған</translation>
@@ -6049,6 +6062,7 @@
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="6370021412472292592">Манифестті жүктеу мүмкін болмады.</translation>
 <translation id="637135143619858508">Бос</translation>
+<translation id="6372856076511744743">Пернетақта пернелерін қайта тағайындау</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Әрекетті қайталау</translation>
 <translation id="6374635887697228982">Жеңілдіктер алу керек пе?</translation>
@@ -6491,6 +6505,7 @@
 <translation id="677646486571529447">Ескертпе қосу</translation>
 <translation id="6776589734354015877">Қосымша мүмкіндіктер алу</translation>
 <translation id="6776729248872343918">Fast Pair функциясын қосу</translation>
+<translation id="677778081766640955">F пернелері мен ChromeOS әрекеттері арасында ауысу үшін пернені басып тұрыңыз.</translation>
 <translation id="6777817260680419853">Бағыттауға тыйым салынған</translation>
 <translation id="6779092717724412415">Осылай ерекшелеу үшін мәтінді таңдап, тінтуірдің оң жақ түймесін басыңыз.</translation>
 <translation id="6779447100905857289">себеттеріңіз</translation>
@@ -7664,6 +7679,7 @@
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7804072833593604762">Қойынды жабық</translation>
 <translation id="7805768142964895445">Күйі</translation>
+<translation id="7805906048382884326">Кеңесті жабу</translation>
 <translation id="7807067443225230855">Іздеу және Assistant</translation>
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> Google Assistant қызметін басқа құрылғыда реттеп қойған сияқты. <ph name="SUPERVISED_USER_NAME" /> құрылғыдағы Экран контексін қосу арқылы Assistant-ті барынша тиімді пайдалана алады.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> үшін камераға кіру рұқсатын әрдайым беру</translation>

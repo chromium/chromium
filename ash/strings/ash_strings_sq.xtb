@@ -1253,6 +1253,7 @@ Instalim i ri</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Një shifër e mbetur}other{# shifra të mbetura}}</translation>
 <translation id="6867938213751067702">Shkarkimi u vendos në pauzë <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shkurtorja është çaktivizuar</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacion}other{# aplikacione}}</translation>
 <translation id="6884665277231944629">Kthehu te dita e sotme</translation>
 <translation id="6886172995547742638">Pajisja jote <ph name="DEVICE_TYPE" /> mund të ketë një cilësi funksionimi më të ulët. Përdor një përshtatës elektrik të certifikuar të tipit USB-C me fuqi <ph name="PREFERRED_MINIMUM_POWER" /> W ose më shumë.</translation>
 <translation id="688631446150864480">Shtyp tastin "Shigjeta poshtë" për të ndërruar dritaret</translation>
@@ -1433,6 +1434,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="776344839111254542">Kliko për të parë detajet e përditësimit</translation>
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
+<translation id="7769299611924763557">Imazhi yt GIF do të jetë gati së shpejti</translation>
 <translation id="7780094051999721182">shkurtoret</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7796735576426975947">Njoftimi i ri është fshehur</translation>

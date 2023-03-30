@@ -92,6 +92,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="3185330573522821672">Yeni Chromium profilinizi özelleştirin</translation>
 <translation id="3190315855212034486">Hata! Chromium kilitlendi. Yeniden başlatılsın mı?</translation>
 <translation id="3258596308407688501">Chromium veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Bu kılavuz, seçimlerinizi anlamanıza yardımcı olarak Chromium'un istediğiniz şekilde çalışmasını sağlar</translation>
 <translation id="3283186697780795848">Chromium sürümü <ph name="PRODUCT_VERSION" /> yüklendi</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
 <translation id="328888136576916638">Google API anahtarları eksik. Chromium'un bazı işlevleri devre dışı bırakılacak.</translation>
@@ -379,6 +380,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="924957577793602335">Chromium'u kendinize uyarlayın</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="942598560705308788">Chromium tarafından yönetilen sertifikalar</translation>
+<translation id="959579472876010517">Chromium'dan en iyi şekilde yararlanın</translation>
 <translation id="965162752251293939">Chromium'u kim kullanıyor?</translation>
 <translation id="967427899662692980">Chromium'un en güçlü güvenlik özelliğinden faydalanın</translation>
 <translation id="9792300276217204">Chromium'u kapattığımda site verileri her zaman cihazımdan temizlensin</translation>

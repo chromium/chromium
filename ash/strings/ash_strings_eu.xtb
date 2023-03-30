@@ -1254,6 +1254,7 @@ Berriki instalatu da</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 zenbaki geratzen da}other{# zenbaki geratzen dira}}</translation>
 <translation id="6867938213751067702">Pausatu da <ph name="FILENAME" /> fitxategiaren deskarga</translation>
 <translation id="6878400149835617132">Lasterbidea desaktibatu da</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikazio}other{# aplikazio}}</translation>
 <translation id="6884665277231944629">Itzuli gaurko egunera</translation>
 <translation id="6886172995547742638">Baliteke <ph name="DEVICE_TYPE" /> gailuaren errendimendua txikiagoa izatea. Erabili <ph name="PREFERRED_MINIMUM_POWER" /> W-eko edo gehiagoko USB-C egokigailu bat.</translation>
 <translation id="688631446150864480">Leihoz aldatzeko, sakatu behera egiteko gezi-tekla</translation>
@@ -1433,6 +1434,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="776344839111254542">Egin klik eguneratzearen xehetasunak ikusteko</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
+<translation id="7769299611924763557">GIFa laster egongo da prest</translation>
 <translation id="7780094051999721182">lasterbideak</translation>
 <translation id="7780159184141939021">Biratu pantaila</translation>
 <translation id="7796735576426975947">Beste jakinarazpen bat ezkutatu da</translation>

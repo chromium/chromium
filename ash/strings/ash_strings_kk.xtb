@@ -1253,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> файлын жүктеп алу кідіртілді</translation>
 <translation id="6878400149835617132">Таңбаша өшірілді</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 қолданба}other{# қолданба}}</translation>
 <translation id="6884665277231944629">Бүгінге оралу</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> құрылғысы нашар жұмыс істеуі мүмкін. Сертификаты бар <ph name="PREFERRED_MINIMUM_POWER" /> Вт немесе одан жоғары кернеулі USB-C қуат адаптерін пайдаланыңыз.</translation>
 <translation id="688631446150864480">Терезелерді ауыстыру үшін төменге бағыттауыш пернені басыңыз.</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
 <translation id="776344839111254542">Жаңарту мәліметтерін қарау үшін басыңыз</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
+<translation id="7769299611924763557">GIF файлыңыз жақын арада дайын болады.</translation>
 <translation id="7780094051999721182">таңбашалар</translation>
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7796735576426975947">Жаңа хабарландыру жасырылған</translation>

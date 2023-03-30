@@ -30,6 +30,7 @@
 <translation id="1022669824195822609"><ph name="DOMAIN" /> administra tu dispositivo. Los administradores pueden acceder a los datos de cualquier perfil en este dispositivo.</translation>
 <translation id="1026655690966755180">Agregar puerto</translation>
 <translation id="1026822031284433028">Cargar imagen</translation>
+<translation id="1026959648338730078">Windows Hello o llave de seguridad externa</translation>
 <translation id="1028604629594230522">Chrome precarga páginas que es probable que visites, para que se carguen más rápido cuando lo hagas.</translation>
 <translation id="1028700151766901954">Motivo: LBS permanece en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
 <translation id="1029317248976101138">Zoom</translation>
@@ -934,6 +935,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1797117170091578105">Juega con el teclado de la Chromebook. Puedes personalizar las teclas para que realicen acciones específicas.</translation>
 <translation id="1800502858278951817">Ninguna extensión solicitó leer y modificar <ph name="SITE_NAME" /></translation>
 <translation id="180203835522132923">Tecla de búsqueda + O y, luego, W</translation>
+<translation id="1802457294427928325">Cambia el comportamiento de las teclas de función por acciones de la fila superior de ChromeOS</translation>
 <translation id="1802624026913571222">Suspender cuando se cierra la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar o salir.</translation>
 <translation id="1803531841600994172">Idioma de destino de la traducción</translation>
@@ -1265,6 +1267,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="208634871997892083">VPN siempre activada</translation>
 <translation id="2087822576218954668">Imprimir: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Solo se permite la inscripción después de instalar <ph name="DEVICE_OS" />.</translation>
+<translation id="2088564884469682888">TrackPoint integrado</translation>
 <translation id="2089090684895656482">Menos</translation>
 <translation id="208928984520943006">Si quieres acceder a la pantalla principal en cualquier momento, desliza el dedo hacia arriba desde la parte inferior.</translation>
 <translation id="2089566709556890888">Navega de forma segura con Google Chrome</translation>
@@ -1458,6 +1461,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
+<translation id="2241242047787527912">Para cada tecla enumerada a continuación, elige la acción que deseas asignarle</translation>
 <translation id="2241634353105152135">Solo esta vez</translation>
 <translation id="2242687258748107519">Información del archivo</translation>
 <translation id="2245603955208828424">Usa las flechas para desplazarte por los elementos letra por letra.</translation>
@@ -1496,12 +1500,14 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2271986192355138465">Más información para instalar apps web</translation>
 <translation id="2272430695183451567">0 interruptores asignados</translation>
 <translation id="2272570998639520080">Copa de martini</translation>
+<translation id="2272830751703114341">Habilitar la tecla de sistema/selector para cambiar el comportamiento de las teclas de la fila superior</translation>
 <translation id="2273119997271134996">Problema en el puerto de video del conector</translation>
 <translation id="2274840746523584236">Carga la Chromebook</translation>
 <translation id="2276503375879033601">Agregar más aplicaciones</translation>
 <translation id="2276910256003242519">Borrando datos…</translation>
 <translation id="2278562042389100163">Abrir ventana del navegador</translation>
 <translation id="2278668501808246459">Se está iniciando el administrador de contenedores</translation>
+<translation id="2279051792571591988">Restaurar la configuración predeterminada</translation>
 <translation id="2280486287150724112">Margen derecho</translation>
 <translation id="2281863813036651454">Hacer clic con el botón izquierdo del mouse</translation>
 <translation id="2282146716419988068">Proceso de GPU</translation>
@@ -2813,6 +2819,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3441663102605358937">Vuelve a acceder a <ph name="ACCOUNT" /> para verificar esta cuenta</translation>
 <translation id="3442674350323953953">Permitir que Google utilice tus datos de hardware para mejorar <ph name="DEVICE_OS" />. Si lo rechazas, se enviarán estos datos a Google para determinar las actualizaciones adecuadas, pero no se almacenarán ni se utilizarán de otra manera.</translation>
 <translation id="3443744348829035122">Se agotó el tiempo de espera de <ph name="BRAND" /></translation>
+<translation id="3443754338602062261">Ya tienes contraseñas para estas cuentas en tu <ph name="BRAND" />. Si decides importar una de las contraseñas a continuación, se reemplazará la contraseña existente.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> podrá ver el archivo <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respuestas rápidas del Asistente de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -3059,6 +3066,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3659550105763988702">Usa tu llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Ingresaste un código de acceso incorrecto demasiadas veces. Vuelve a intentarlo más tarde.</translation>
 <translation id="3660234220361471169">No es de confianza</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Se encontró 1 contraseña existente}other{Se encontraron {NUM_PASSWORDS} contraseñas existentes}}</translation>
 <translation id="3664511988987167893">Ícono de extensión</translation>
 <translation id="3665589677786828986">Chrome detectó que otro programa dañó algunas opciones de configuración, por lo que la restableció a los valores predeterminados.</translation>
 <translation id="3665919494326051362">La versión actual es <ph name="CURRENT_VERSION" /></translation>
@@ -3074,6 +3082,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3677959414150797585">Incluye apps, páginas web y mucho más. Envía estadísticas para mejorar las sugerencias solo si elegiste compartir los datos de uso.</translation>
 <translation id="3678156199662914018">Extensión: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Las páginas a las que accedas desde esta ventana no aparecerán en el historial del navegador ni dejarán rastros (por ejemplo, cookies) en la computadora una vez que salgas del navegador. Los archivos que descargues y los favoritos que crees no se guardarán.</translation>
+<translation id="3679126865530709868">Panel táctil integrado</translation>
 <translation id="368019053277764111">Abrir la búsqueda en el panel lateral</translation>
 <translation id="3680683624079082902">Voz para texto a voz</translation>
 <translation id="3681311097828166361">Gracias por tus comentarios. Tu informe se enviará cuando tengas conexión.</translation>
@@ -4253,6 +4262,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="47158868804223727">Haz clic en el nombre del grupo para expandirlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
 <translation id="471759229191973607">Cambiar tema</translation>
+<translation id="4718564115458102525">No se detectó ningún teclado</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No se pueden mostrar mensajes de acceso de terceros</translation>
@@ -5471,6 +5481,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
 <translation id="5844574845205796324">Sugerir nuevo contenido para explorar</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{Se reasignó 1 tecla}other{Se reasignaron {COUNT} teclas}}</translation>
 <translation id="5846200638699387931">Error de sintaxis relacional: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sin sombra</translation>
 <translation id="5846504156837627898">Administrar los permisos de sitios</translation>
@@ -5596,6 +5607,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5945002094477276055">El archivo <ph name="FILE_NAME" /> puede ser peligroso. ¿Quieres enviarlo a la Navegación segura de Google para analizarlo?</translation>
 <translation id="5945363896952315544">Tu llave de seguridad no puede almacenar más huellas digitales. Para agregar una nueva, primero borra una huella digital existente.</translation>
 <translation id="5946591249682680882">ID de informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">Cancelar la importación</translation>
 <translation id="5948536763493709626">Conecta un teclado o mouse, o continua la configuración con la pantalla táctil. Si usas dispositivos Bluetooth, asegúrate de que estén listos para vincularse.</translation>
 <translation id="5949544233750246342">No se puede analizar el archivo</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> desea usar fuentes locales</translation>
@@ -5852,6 +5864,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6177412385419165772">Quitando…</translation>
 <translation id="6178664161104547336">Seleccionar un certificado</translation>
 <translation id="6178682841350631965">Se actualizaron tus datos de acceso.</translation>
+<translation id="6179893151569852357">Convierte las teclas de función en teclas de la fila superior de ChromeOS</translation>
 <translation id="6180510783007738939">Herramienta de línea</translation>
 <translation id="6180550893222597997">¿Qué llave de acceso deseas usar para <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Descarga bloqueada</translation>
@@ -6052,6 +6065,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="636850387210749493">Inscripción empresarial</translation>
 <translation id="6370021412472292592">No se pudo cargar el manifiesto.</translation>
 <translation id="637135143619858508">Separado</translation>
+<translation id="6372856076511744743">Reasignar las teclas del teclado</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Volver a intentar</translation>
 <translation id="6374635887697228982">¿Quieres obtener descuentos?</translation>
@@ -6494,6 +6508,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="677646486571529447">Agregar nota</translation>
 <translation id="6776589734354015877">Obtén funciones adicionales.</translation>
 <translation id="6776729248872343918">Habilitar Vinculación rápida</translation>
+<translation id="677778081766640955">Mantén presionada la tecla para alternar entre las teclas de función y las acciones de ChromeOS</translation>
 <translation id="6777817260680419853">Se bloqueó el redireccionamiento</translation>
 <translation id="6779092717724412415">Para crear texto destacado como este, selecciona cualquier texto y haz clic con el botón derecho.</translation>
 <translation id="6779447100905857289">tus carritos</translation>
@@ -7667,6 +7682,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7805906048382884326">Cerrar la sugerencia</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7807117920154132308">Al parecer, <ph name="SUPERVISED_USER_NAME" /> ya configuró Asistente de Google en otro dispositivo. <ph name="SUPERVISED_USER_NAME" /> puede activar el contexto de la pantalla de este dispositivo para sacarle incluso más provecho a Asistente.</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>

@@ -96,6 +96,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="3258596308407688501">Chromium-ek ezin du irakurri bere datu-direktorioa eta ezin du idatzi bertan:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Gida honek zure aukerak ulertzen lagunduko dizu, Chromium-ek nahi duzun bezala funtziona dezan</translation>
 <translation id="3283186697780795848">Chromium-en <ph name="PRODUCT_VERSION" /> bertsioa dago instalatuta</translation>
 <translation id="3286538390144397061">Berrabiarazi orain</translation>
 <translation id="328888136576916638">Google APIko gakoak falta dira. Chromium-en funtzionalitate batzuk desgaitu egingo dira.</translation>
@@ -383,6 +384,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="924957577793602335">Pertsonalizatu Chromium</translation>
 <translation id="93478295209880648">Chromium-ek agian ez du behar bezala funtzionatuko, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
 <translation id="942598560705308788">Chromium-ek kudeatutako ziurtagiriak</translation>
+<translation id="959579472876010517">Atera etekinik handiena Chromium-i</translation>
 <translation id="965162752251293939">Nor erabiltzen ari da Chromium?</translation>
 <translation id="967427899662692980">Lortu Chromium-en segurtasun-aukerarik sendoena</translation>
 <translation id="9792300276217204">Chromium ixten duzunean, garbitu beti webguneetako datuak gailutik</translation>

@@ -1253,6 +1253,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> डाउनलोड गर्ने कार्य केही समयका लागि रोकिएको छ</translation>
 <translation id="6878400149835617132">सर्टकट निष्क्रिय पारियो</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{एउटा एप}other{# वटा एप}}</translation>
 <translation id="6884665277231944629">आजको मितिमा फर्कनुहोस्</translation>
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
 <translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>
@@ -1433,6 +1434,7 @@
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="776344839111254542">अद्यावधिकसम्बन्धी विवरणहरू हेर्न क्लिक गर्नुहोस्</translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
+<translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
 <translation id="7780094051999721182">सर्टकट</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
 <translation id="7796735576426975947">नयाँ सूचना लुकाइएको छ</translation>

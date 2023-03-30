@@ -1253,6 +1253,7 @@ Yeni yüklenmiş</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> dosyasını indirme işlemi duraklatıldı</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 uygulama}other{# uygulama}}</translation>
 <translation id="6884665277231944629">Bugüne geri dönün</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="688631446150864480">Pencereler arasında geçiş yapmak için Aşağı ok tuşuna basın</translation>
@@ -1433,6 +1434,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="776344839111254542">Güncelleme ayrıntılarını görüntülemek için tıklayın</translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
+<translation id="7769299611924763557">GIF'iniz kısa süre içinde hazır olacak</translation>
 <translation id="7780094051999721182">Kısayollar</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7796735576426975947">Yeni bildirim gösterilmiyor</translation>

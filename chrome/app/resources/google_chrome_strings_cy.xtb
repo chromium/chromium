@@ -27,6 +27,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1507198376417198979">Personoleiddio eich proffil Chrome newydd</translation>
 <translation id="1516530951338665275">Mae angen mynediad Bluetooth ar Google Chrome i barhau i 
 baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Mae'r canllaw hwn yn eich helpu i ddeall eich dewisiadau, fel bod Chrome yn gweithio fel y dymunwch</translation>
 <translation id="1547295885616600893">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
 <translation id="1583073672411044740">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi i'r proffil Chrome hwn. Bydd hyn yn creu proffil Chrome newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -69,6 +70,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2131230230468101642">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chrome eu hystyried.</translation>
 <translation id="2139300032719313227">Ailgychwyn ChromeOS</translation>
 <translation id="2151406531797534936">Ailgychwynnwch Chrome nawr</translation>
+<translation id="2163996651553460171">Cael y gorau o Chrome</translation>
 <translation id="2174917724755363426">Gosod heb ei gwblhau. Ydych chi'n siŵr eich bod am ganslo?</translation>
 <translation id="223889379102603431">Gwybodaeth am sut mae Chrome yn rheoli ei dystysgrifau gwraidd</translation>
 <translation id="2258103955319320201">I gael mynediad at eich holl bethau porwr Chrome ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen</translation>

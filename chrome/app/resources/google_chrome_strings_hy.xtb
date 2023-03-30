@@ -26,6 +26,7 @@
 <translation id="1434626383986940139">Chrome Canary հավելվածներ</translation>
 <translation id="1507198376417198979">Կարգավորեք Chrome-ի նոր պրոֆիլը</translation>
 <translation id="1516530951338665275">Զուգակցումը շարունակելու համար Google Chrome-ին հասանելի դարձրեք Bluetooth-ը։ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Այս ուղեցույցը կօգնի ձեզ կարգավորել Chrome-ն ըստ ձեր ցանկության</translation>
 <translation id="1547295885616600893">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />-ն արդեն մուտք է գործել Chrome-ի այս պրոֆիլը։ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար կստեղծվի Chrome-ի նոր պրոֆիլ։</translation>
@@ -66,6 +67,7 @@
 <translation id="2131230230468101642">Ձեր գաղտնիությունը պաշտպանելու նպատակով մենք 4 շաբաթից ավտոմատ ջնջում ենք ձեր հետաքրքրությունները։ Երբ դուք շարունակում եք դիտել վեբ էջեր, համապատասխան հետաքրքրությունը կարող է նորից հայտնվել ցանկում։ Որպեսզի Chrome-ը հաշվի չառնի որոշակի հետաքրքրությունները, կարող եք դրանք հեռացնել։</translation>
 <translation id="2139300032719313227">ChromeOS-ի վերագործարկում</translation>
 <translation id="2151406531797534936">Վերագործարկեք Chrome-ը</translation>
+<translation id="2163996651553460171">Օգտվեք Chrome-ի բոլոր հնարավորություններից</translation>
 <translation id="2174917724755363426">Տեղադրումը չի ավարտվել։ Իսկապե՞ս ուզում եք չեղարկել։</translation>
 <translation id="223889379102603431">Տեղեկություններ այն մասին, թե ինչպես է Chrome-ը կառավարում իր արմատային հավաստագրերը</translation>
 <translation id="2258103955319320201">Chrome դիտարկիչի ձեր տվյալները ձեր բոլոր սարքերում օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>

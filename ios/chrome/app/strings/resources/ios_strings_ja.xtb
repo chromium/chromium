@@ -415,6 +415,7 @@
 <translation id="3863769054730344136">お使いのデバイスに送信</translation>
 <translation id="387280738075653372">こちらから Chrome をダウンロードできます。</translation>
 <translation id="3888863481921783344">予定の招待者の候補を表示するために使用されます。</translation>
+<translation id="3891414008432200754">価格</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3904829425754749514">同期は組織によってオフにされています。このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
@@ -757,6 +758,7 @@
 <translation id="6219550825416862075">おかえりなさい</translation>
 <translation id="6219688215832490856">翻訳しない</translation>
 <translation id="6223816392543092032">ブックマーク、履歴、パスワードなどの設定をどのデバイスでも利用できるようにします。</translation>
+<translation id="6224759905509595045">本人確認…</translation>
 <translation id="6229318421047648685">PC 版サイトを見る</translation>
 <translation id="6231782223312638214">候補</translation>
 <translation id="6232329973559504466">シークレット検索</translation>
@@ -917,6 +919,7 @@
 <translation id="7108762695052995889">サイトを見る</translation>
 <translation id="7133798577887235672">氏名</translation>
 <translation id="7136892417564438900">カメラを使用できません</translation>
+<translation id="7161230316646448869">すべてのデバイスでブックマーク、履歴、その他の設定を同期する</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
 <translation id="7172852049901402487">セキュリティの問題からパスワードを保護します</translation>
 <translation id="7173114856073700355">設定を開く</translation>

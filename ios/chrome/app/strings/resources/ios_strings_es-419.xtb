@@ -415,6 +415,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3863769054730344136">Enviar a tus dispositivos</translation>
 <translation id="387280738075653372">Descarga Chrome aquí.</translation>
 <translation id="3888863481921783344">Se utilizará para mostrarte posibles invitados para tu evento.</translation>
+<translation id="3891414008432200754">Precio</translation>
 <translation id="3892144330757387737">Aquí encontrarás tu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904829425754749514">Tu organización desactivó la sincronización. Podrás seguir viendo tus favoritos, el historial, las contraseñas y otras opciones de configuración en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
@@ -479,6 +480,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4342946437867096381">Ya guardaste una contraseña para este sitio en tu Cuenta de Google. Google puede elegir la contraseña más reciente por ti.</translation>
 <translation id="4343046787186034850">Acceso a la cámara y al micrófono permitido</translation>
 <translation id="4359125752503270327">Esta página se abrirá en otra aplicación.</translation>
+<translation id="4371526908359194219">Notificaciones por correo electrónico</translation>
 <translation id="4375040482473363939">Búsqueda mediante código QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4389019817280890563">Presiona aquí para cambiar el idioma.</translation>
@@ -580,6 +582,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4986678885919050584">Quitar de este dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
+<translation id="5016420433031926653">Enviar a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5039804452771397117">Permitir</translation>

@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">آپ کا آلہ <ph name="DOMAIN" /> کے زیر انتظام ہے۔ منتظمین اس آلے پر کسی بھی پروفائل میں ڈیٹا تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
+<translation id="1026959648338730078">‏Windows Hello یا بیرونی سیکیورٹی کلید</translation>
 <translation id="1028604629594230522">‏Chrome صفحات کو پیشگی لوڈ کرتا ہے جنہیں آپ ملاحظہ کر سکتے ہیں، تاکہ وہ آپ کے ملاحظہ کرتے وقت مزید تیزی سے لوڈ ہو سکیں۔</translation>
 <translation id="1028700151766901954">‏وجہ: LBS بطور ڈیفالٹ <ph name="DEFAULT_OPEN_BROWSER" /> میں رہتا ہے۔</translation>
 <translation id="1029317248976101138">زوم کریں</translation>
@@ -937,6 +938,7 @@
 <translation id="1797117170091578105">‏اپنا Chromebook کی بورڈ استعمال کر کے کھیلیں۔ آپ مخصوص کاروائیوں کے لیے کلیدوں کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="1800502858278951817">کسی بھی ایکسٹینشن نے <ph name="SITE_NAME" /> کو پڑھنے اور تبدیل کرنے کی درخواست نہیں کی ہے</translation>
 <translation id="180203835522132923">‏Search + O، پھر W</translation>
+<translation id="1802457294427928325">‏F کلیدوں کے برتاؤ کو ChromeOS کے اوپر کی قطار کی کارروائیوں میں تبدیل کریں</translation>
 <translation id="1802624026913571222">کوَر بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="1802687198411089702">صفحہ کھل نہیں رہا ہے۔ آپ اس کے کھلنے انتظار کر سکتے ہیں یا باہر نکل سکتے ہیں۔</translation>
 <translation id="1803531841600994172">وہ زبان جس میں ترجمہ کرنا ہے</translation>
@@ -1268,6 +1270,7 @@
 <translation id="208634871997892083">‏ہمیشہ آن VPN</translation>
 <translation id="2087822576218954668">پرنٹ کریں: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> انسٹال کرنے کے بعد ہی اندراج تعاون یافتہ ہوتا ہے۔</translation>
+<translation id="2088564884469682888">Built-in TrackPoint</translation>
 <translation id="2089090684895656482">کم</translation>
 <translation id="208928984520943006">کسی بھی وقت ہوم اسکرین پر جانے کے لیے، نیچے سے اوپر کی طرف سوائپ کریں۔</translation>
 <translation id="2089566709556890888">‏Google Chrome کے ساتھ محفوظ طریقے سے براؤز کریں</translation>
@@ -1462,6 +1465,7 @@
 <translation id="2235344399760031203">فریق ثالث کوکیز مسدود ہیں</translation>
 <translation id="2238379619048995541">فریکوینسی صورت حال کا ڈیٹا</translation>
 <translation id="2241053333139545397">متعدد ویب سائٹس پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
+<translation id="2241242047787527912">ذیل میں درج ہر کلید کے لیے، وہ عمل منتخب کریں جو آپ چاہتے ہیں کہ وہ انجام دے</translation>
 <translation id="2241634353105152135">بس ایک بار</translation>
 <translation id="2242687258748107519">فائل کی معلومات</translation>
 <translation id="2245603955208828424">حرف بہ حرف ایک آئٹم سے دوسرے آئٹم پر جانے کے لئے تیر کے نشان والی کلیدیں استعمال کریں</translation>
@@ -1500,12 +1504,14 @@
 <translation id="2271986192355138465">ویب ایپس کو انسٹال کرنے کا طریقہ جانیں</translation>
 <translation id="2272430695183451567">0 سوئچز تفویض کیے گئے</translation>
 <translation id="2272570998639520080">مارٹنی گلاس</translation>
+<translation id="2272830751703114341">اوپر کی قطار والی کلیدوں کے برتاؤ کو تبدیل کرنے کے لیے سسٹم/لانچر کلید کو فعال کریں</translation>
 <translation id="2273119997271134996">ڈاک ویڈیو پورٹ کا مسئلہ</translation>
 <translation id="2274840746523584236">‏اپنے Chromebook کو چارج کریں</translation>
 <translation id="2276503375879033601">مزید ایپس شامل کریں</translation>
 <translation id="2276910256003242519">ڈیٹا صاف ہو رہا ہے...</translation>
 <translation id="2278562042389100163">براؤزر ونڈو کھولیں</translation>
 <translation id="2278668501808246459">کنٹینر مینیجر شروع ہو رہا ہے</translation>
+<translation id="2279051792571591988">ڈیفالٹس کو بحال کریں</translation>
 <translation id="2280486287150724112">دایاں مارجن</translation>
 <translation id="2281863813036651454">ماؤس کی بائیں کلک</translation>
 <translation id="2282146716419988068">‏GPU کارروائی</translation>
@@ -2818,6 +2824,7 @@
 <translation id="3441663102605358937">اس اکاؤنٹ کی توثیق کرنے کیلئے <ph name="ACCOUNT" /> میں دوبارہ سائن ان کریں</translation>
 <translation id="3442674350323953953">‏<ph name="DEVICE_OS" /> کو بہتر بنانے میں مدد کے لیے Google کو اپنا ہارڈویئر ڈیٹا استعمال کرنے دیں۔ اگر آپ مسترد کرتے ہیں تو یہ ڈیٹا اب بھی Google کو بھیجا جاتا ہے تاکہ مناسب اپ ڈیٹس کا تعین کیا جا سکے، لیکن اسے اسٹور یا استعمال نہیں کیا جاتا۔</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> ٹائم آؤٹ ہو گيا</translation>
+<translation id="3443754338602062261">آپ کے پاس آپ کے <ph name="BRAND" /> میں پہلے سے ہی ان اکاؤنٹس کے پاس ورڈ موجود ہیں۔ اگر آپ ذیل میں سے کسی ایک پاس ورڈ کو درآمد کرنے کا انتخاب کرتے ہیں تو یہ موجودہ پاس ورڈ کو تبدیل کر دے گا۔</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> کو دیکھ سکے گا</translation>
 <translation id="3445047461171030979">‏Google اسسٹنٹ کے فوری جوابات</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
@@ -3064,6 +3071,7 @@
 <translation id="3659550105763988702"><ph name="APP_NAME" /> کے لئے اپنی پاس کی استعمال کریں</translation>
 <translation id="3659929705630080526">آپ نے کئی مرتبہ غلط رسائی کوڈ درج کیا ہے۔ بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3660234220361471169">غیر بھروسہ مند</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 موجودہ پاس ورڈ ملا}other{{NUM_PASSWORDS} موجودہ پاس ورڈز ملے}}</translation>
 <translation id="3664511988987167893">ایکسٹینشن آئیکن</translation>
 <translation id="3665589677786828986">‏Chrome کو پتا چلا کہ آپ کی کچھ ترتیبات دوسرے پروگرام کی وجہ سے خراب ہوگئی تھیں اور انہیں ان کی اصل ڈیفالٹ میں دوبارہ ترتیب دے دیا گیا تھا۔</translation>
 <translation id="3665919494326051362">موجودہ ورژن <ph name="CURRENT_VERSION" /> ہے</translation>
@@ -3079,6 +3087,7 @@
 <translation id="3677959414150797585">ایپس، ویب صفحات اور مزید شامل ہے۔ یہ تجاویز کو بہتر بنانے کے لیے اعداد و شمار صرف تب بھیجتا ہے جب آپ نے استعمال کے ڈیٹا کا اشتراک کرنے کو منتخب کیا ہو۔</translation>
 <translation id="3678156199662914018">ایکسٹینشن: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">آپ اس ونڈو میں جو صفحات دیکھتے ہیں وہ براؤزر کی سرگزشت میں ظاہر نہیں ہوں گے اور وہ آپ کے سائن آؤٹ ہو جانے کے بعد کوکیز جیسے دیگر نشانات کمپیوٹر پر نہیں چھوڑیں گے۔ آپ جو فائلیں ڈاؤن لوڈ کرتے ہیں اور جو بُک مارکس بناتے ہیں انہیں برقرار نہیں رکھا جائے گا۔</translation>
+<translation id="3679126865530709868">Built-in Touchpad</translation>
 <translation id="368019053277764111">سائیڈ پینل میں تلاش ٹول بار کھولیں</translation>
 <translation id="3680683624079082902">ٹیکسٹ ٹو اسپیچ آواز</translation>
 <translation id="3681311097828166361">آپ کے تاثرات کا شکریہ۔ آپ ابھی آف لائن ہیں اور آپ کی رپورٹ بعد میں بھیجی جائے گی۔</translation>
@@ -4258,6 +4267,7 @@
 <translation id="47158868804223727">گروپ کے نام کو پھیلانے یا سکیڑنے کے لیے اس پر کلک کریں</translation>
 <translation id="4716483597559580346">‏Powerwash برائے اضافی سیکیورٹی</translation>
 <translation id="471759229191973607">تھیم تبدیل کریں</translation>
+<translation id="4718564115458102525">کوئی کی بورڈ نہیں ملا</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> کے لیے پاس ورڈ</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> آپ کی اسکرین کا اشتراک کر رہی ہے۔</translation>
 <translation id="4722989931633062466">فریق ثالث کے سائن ان پرامپٹس دکھانے کی اجازت نہیں ہے</translation>
@@ -5475,6 +5485,7 @@
 <translation id="5841270259333717135">ایتھرنیٹ کو ترتیب دیں</translation>
 <translation id="5842497610951477805">بلوٹوتھ فعال</translation>
 <translation id="5844574845205796324">دریافت کرنے کے لیے نیا مواد تجویز کریں</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{1 دوبارہ تیار کردہ کلید}other{{COUNT} دوبارہ تیار کردہ کلیدیں}}</translation>
 <translation id="5846200638699387931">تعلق کے سِنٹیکس کی خرابی: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">کوئی شیڈو نہیں</translation>
 <translation id="5846504156837627898">سائٹ کی اجازتوں کا نظم کریں</translation>
@@ -5600,6 +5611,7 @@
 <translation id="5945002094477276055">‏<ph name="FILE_NAME" /> خطرناک ہو سکتا ہے۔ اسکین کرنے کے لیے Google محفوظ براؤزنگ کو بھیجیں؟</translation>
 <translation id="5945363896952315544">آپ کی سیکیورٹی کلید مزید کوئی بھی فنگر پرنٹ اسٹور نہیں کر سکتی ہے۔ کسی نئی پرنٹ کو شامل کرنے کیلئے پہلے کسی موجودہ فنگر پرنٹ کو حذف کریں۔</translation>
 <translation id="5946591249682680882">‏رپورٹ ‎ID <ph name="WEBRTC_LOG_REPORT_ID" />‎</translation>
+<translation id="5948476936444935795">برآمد منسوخ کریں</translation>
 <translation id="5948536763493709626">کی بورڈ یا ماؤس منسلک کریں یا اپنی ٹچ اسکرین کا استعمال کر کے سیٹ اپ جاری رکھیں۔ اگر آپ بلوٹوتھ آلات استعمال کر رہے ہیں تو یقینی بنائیں کہ آپ کے آلات جوڑا بنانے کیلئے تیار ہیں۔</translation>
 <translation id="5949544233750246342">فائل کو پارس کرنے سے قاصر</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> مقامی فونٹس استعمال کرنا چاہتی ہے</translation>
@@ -5856,6 +5868,7 @@
 <translation id="6177412385419165772">ہٹایا جا رہا ہے…</translation>
 <translation id="6178664161104547336">ایک سرٹیفکیٹ منتخب کریں</translation>
 <translation id="6178682841350631965">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہوا</translation>
+<translation id="6179893151569852357">‏F کلیدوں کو ChromeOS کے اوپر کی قطار والی کلیدوں میں تبدیل کریں</translation>
 <translation id="6180510783007738939">لائن ٹول</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> کے لئے آپ کون سی پاس کی استعمال کرنا چاہتے ہیں؟</translation>
 <translation id="6181431612547969857">ڈاؤن لوڈ مسدود ہوگیا</translation>
@@ -6056,6 +6069,7 @@
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="6370021412472292592">‏manifest لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="637135143619858508">لائنوں کے درمیان جگہ</translation>
+<translation id="6372856076511744743">کی بورڈ کی کلیدوں کو دوبارہ تیار کریں</translation>
 <translation id="6374077068638737855">آئیس ویزل</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6374635887697228982">رعایتیں حاصل کریں؟</translation>
@@ -6498,6 +6512,7 @@
 <translation id="677646486571529447">ایک نوٹ شامل کریں</translation>
 <translation id="6776589734354015877">اضافی خصوصیات حاصل کریں</translation>
 <translation id="6776729248872343918">فاسٹ پئیر کو فعال کریں</translation>
+<translation id="677778081766640955">‏F کلید اور ChromeOS کی کارروائیوں کے درمیان سوئچ کرنے کے لیے کلید کو ہولڈ کریں</translation>
 <translation id="6777817260680419853">ری ڈائریکٹ مسدود ہے</translation>
 <translation id="6779092717724412415">اس طرح کی ہائی لائٹ تخلیق کرنے کے لیے، کوئی بھی ٹیکسٹ منتخب کریں اور دائیں طرف کلک کریں۔</translation>
 <translation id="6779447100905857289">آپ کے کارٹس</translation>
@@ -7671,6 +7686,7 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7804072833593604762">ٹیب بند ہو گیا</translation>
 <translation id="7805768142964895445">صورتحال</translation>
+<translation id="7805906048382884326">ٹپ بند کریں</translation>
 <translation id="7807067443225230855">تلاش اور اسسٹنٹ</translation>
 <translation id="7807117920154132308">‏ایسا لگتا ہے کہ <ph name="SUPERVISED_USER_NAME" /> نے پہلے ہی کسی دوسرے آلے پر Google اسسٹنٹ کو سیٹ اپ کر دیا ہے۔ اس آلے پر اسکرین کے سیاق و سباق کو آن کر کے <ph name="SUPERVISED_USER_NAME" /> اسسٹنٹ سے مزید بھرپور فائدہ حاصل کر سکتا ہے۔</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> کو ہمیشہ اپنے کیمرے تک رسائی حاصل کرنے کی اجازت دیں</translation>

@@ -1254,6 +1254,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ਇੱਕ ਅੰਕ ਬਾਕੀ}one{# ਅੰਕ ਬਾਕੀ}other{# ਅੰਕ ਬਾਕੀ}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ਦਾ ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="6878400149835617132">ਸ਼ਾਰਟਕੱਟ ਬੰਦ ਹੈ</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ਐਪ}one{# ਐਪ}other{# ਐਪਾਂ}}</translation>
 <translation id="6884665277231944629">ਅੱਜ ਦੀ ਤਾਰੀਖ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="6886172995547742638">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਉਮੀਦ ਨਾਲੋਂ ਘੱਟ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰੇ। ਕੋਈ ਪ੍ਰਮਾਣਿਤ <ph name="PREFERRED_MINIMUM_POWER" />W ਜਾਂ ਵੱਧ ਦਾ USB-C ਪਾਵਰ ਅਡਾਪਟਰ ਵਰਤੋ।</translation>
 <translation id="688631446150864480">ਵਿੰਡੋ ਸਵਿੱਚ ਕਰਨ ਲਈ ਹੇਠਾਂ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
@@ -1434,6 +1435,7 @@
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
 <translation id="776344839111254542">ਅੱਪਡੇਟ ਵੇਰਵਿਆਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
+<translation id="7769299611924763557">ਤੁਹਾਡੇ GIF ਨੂੰ ਜਲਦ ਹੀ ਤਿਆਰ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7780094051999721182">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7780159184141939021">ਸਕ੍ਰੀਨ ਘੁਮਾਓ</translation>
 <translation id="7796735576426975947">ਨਵੀਂ ਸੂਚਨਾ ਲੁਕੀ ਹੋਈ ਹੈ</translation>

@@ -1253,6 +1253,7 @@ Gosodiad newydd</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Un digid yn weddill}zero{# digid yn weddill}two{# ddigid yn weddill}few{# digid yn weddill}many{# digid yn weddill}other{# digid yn weddill}}</translation>
 <translation id="6867938213751067702">Wedi seibio lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Mae'r llwybr byr wedi'i ddiffodd</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
 <translation id="6884665277231944629">Mynd yn ôl i heddiw</translation>
 <translation id="6886172995547742638">Mae'n bosib y bydd eich <ph name="DEVICE_TYPE" /> yn profi perfformiad is. Defnyddiwch addasydd pŵer USB-C ardystiedig <ph name="PREFERRED_MINIMUM_POWER" />W neu uwch.</translation>
 <translation id="688631446150864480">Pwyswch y fysell Saeth i lawr i newid ffenestri</translation>
@@ -1433,6 +1434,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7749443890790263709">Wedi cyrraedd y nifer uchaf o ddesgiau.</translation>
 <translation id="776344839111254542">Cliciwch i weld manylion y diweddariad</translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
+<translation id="7769299611924763557">Bydd eich GIF yn barod yn fuan</translation>
 <translation id="7780094051999721182">llwybrau byr</translation>
 <translation id="7780159184141939021">Cylchdroi'r Sgrîn</translation>
 <translation id="7796735576426975947">Hysbysiad newydd wedi'i guddio</translation>

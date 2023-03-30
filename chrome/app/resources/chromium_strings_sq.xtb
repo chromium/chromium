@@ -96,6 +96,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3258596308407688501">Chromium nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Ky udhëzues të ndihmon të kuptosh zgjedhjet e tua, në mënyrë që Chromium të funksionojë ashtu si dëshiron ti</translation>
 <translation id="3283186697780795848">Është instaluar versioni i Chromium <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
 <translation id="328888136576916638">Çelësat API të Google mungojnë. Disa funksione të Chromium do të çaktivizohen.</translation>
@@ -383,6 +384,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="924957577793602335">Personalizoje Chromium</translation>
 <translation id="93478295209880648">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në Windows XP ose Windows Vista</translation>
 <translation id="942598560705308788">Certifikatat e menaxhuara nga Chromium</translation>
+<translation id="959579472876010517">Përfito sa më shumë nga Chromium</translation>
 <translation id="965162752251293939">Kush po e përdor Chromium?</translation>
 <translation id="967427899662692980">Merr sigurinë më të fortë të Chromium</translation>
 <translation id="9792300276217204">Pastro gjithmonë të dhënat e sajteve nga pajisja jote kur të mbyllësh Chromium</translation>

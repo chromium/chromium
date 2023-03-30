@@ -678,7 +678,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Şifreler bu cihazda Şifre Yöneticisi'ne kaydedilir</translation>
-<translation id="4766678251456904326">Hesabı cihaza ekleyin</translation>
+<translation id="4766678251456904326">Cihaza hesap ekleyin</translation>
 <translation id="4769095993849849966">Yeni dosya adı</translation>
 <translation id="4778653490315793244">Henüz gösterilecek bir şey yok</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> adlı dosyayı silmek istiyor musunuz?</translation>
@@ -1320,6 +1320,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8058746566562539958">Yeni Chrome sekmesinde aç</translation>
 <translation id="8062594758852531064">Genişletilmiş önceden yükleme:</translation>
 <translation id="8063895661287329888">Yer işareti eklenemedi.</translation>
+<translation id="8066816452984416180">Bu sayfaya hızlı bir şekilde yer işareti koyun. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="806745655614357130">Verilerimi ayrı tut</translation>
 <translation id="8073388330009372546">Resmi yeni sekmede aç</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
@@ -1351,6 +1352,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8216351761227087153">İzle</translation>
 <translation id="8218622182176210845">Hesabınızı yönetin</translation>
 <translation id="8223642481677794647">Akış kartı menüsü</translation>
+<translation id="8236097722223016103">Yer işaretlerine ekle</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="8255617931166444521">Siteler, çerezlerinizi yalnızca kendi sitelerindeki tarama etkinliğinizi görmek için kullanabilir</translation>
 <translation id="8259179246279078674">Önceden yüklenmiş sayfalar şifrelenmiş olduğu için Google, önceden yüklenmiş sayfa içeriğiyle ilgili hiçbir şey öğrenmez. Google sunucuları hangi sitelerin gizli olarak önceden yüklendiğini öğrenir. Bu bilgi yalnızca sayfaları önceden yüklemek için kullanılır ve Google Hesabınızdaki diğer bilgilerle bağlantılı değildir.</translation>

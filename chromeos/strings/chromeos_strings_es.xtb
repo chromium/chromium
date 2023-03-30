@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />; nombre: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">intro</translation>
 <translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
+<translation id="7131634559772719176">Confirmar preajuste</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Reintentar</translation>
@@ -769,6 +770,7 @@
 <translation id="7762130827864645708">Tu contraseña se ha cambiado correctamente. A partir de ahora, usa la nueva contraseña.</translation>
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
+<translation id="7770834998503326261">Información adicional relacionada con tu selección</translation>
 <translation id="7778717409420828014">Tus comentarios nos ayudan a mejorar la experiencia en Chromebook y nuestro equipo los revisará. Recibimos muchos informes, por lo que no podremos enviarte una respuesta.</translation>
 <translation id="7784116172884276937">No hay servidores DNS configurados</translation>
 <translation id="7791543448312431591">Añadir</translation>
@@ -801,6 +803,7 @@
 <translation id="80398733265834479">Habilitar modo de color automático</translation>
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="8045012663542226664">Silenciar micrófono</translation>
+<translation id="8050091914317269817">Si seleccionas este fondo de pantalla, se activará el modo Oscuro automático y la coincidencia de colores del fondo de pantalla.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde aplicaciones Android</translation>

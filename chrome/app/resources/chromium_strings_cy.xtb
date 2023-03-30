@@ -96,6 +96,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3258596308407688501">Ni all Chromium ddarllen nac ysgrifennu i'w gyfeiriadur data:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="3259037713047794342">Mae'r canllaw hwn yn eich helpu i ddeall eich dewisiadau, fel bod Chromium yn gweithio fel y dymunwch</translation>
 <translation id="3283186697780795848">Mae fersiwn <ph name="PRODUCT_VERSION" /> o Chromium wedi'i osod</translation>
 <translation id="3286538390144397061">Ailddechrau Nawr</translation>
 <translation id="328888136576916638">Mae allweddi API Google ar goll. Bydd rhywfaint o swyddogaeth Chromium wedi'i hanalluogi.</translation>
@@ -384,6 +385,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="924957577793602335">Personoleiddio Chromium</translation>
 <translation id="93478295209880648">Mae'n bosib na fydd Chromium yn gweithredu'n gywir oherwydd nad yw'n cael ei gefnogi mwyach ar Windows XP na Windows Vista</translation>
 <translation id="942598560705308788">Tystysgrifau a reolir gan Chromium</translation>
+<translation id="959579472876010517">Cael y gorau o Chromium</translation>
 <translation id="965162752251293939">Pwy sy'n defnyddio Chromium?</translation>
 <translation id="967427899662692980">Cael diogelwch cryfaf Chromium</translation>
 <translation id="9792300276217204">Clirio data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chromium</translation>

@@ -464,7 +464,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="205212645995975601">Barbacoas y parrilladas</translation>
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza todos los días.}=1{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza todos los días.}other{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza cada {NUM_DAYS} días.}}</translation>
-<translation id="2056658168519009885">Los sitios pueden solicitar información a Chrome para ayudarles a personalizar los anuncios que veas.</translation>
+<translation id="2056658168519009885">Los sitios pueden solicitar a Chrome información que les ayude a personalizar los anuncios que veas.</translation>
 <translation id="2059202684901022309">22x34 pulgadas</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Una sugerencia}other{# sugerencias}}</translation>
 <translation id="2066915425250589881">solicitar que se elimine</translation>
@@ -498,6 +498,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2119867082804433120">Perforado en la parte inferior derecha</translation>
 <translation id="2122719317867821810">Esta política funciona según lo previsto, pero ha anulado un valor en conflicto definido en otra parte.</translation>
 <translation id="2126374524350484896">Proveedor de PDF:</translation>
+<translation id="2128262927290305126">En tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">Es posible que las plantillas que has especificado no se apliquen por no haber configurado la política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Ropa de hombre</translation>
@@ -543,6 +544,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2219735899272417925">Es necesario restablecer el dispositivo</translation>
 <translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2225927550500503913">Tarjeta virtual activada</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Iniciar sesión<ph name="END_LINK" /> en la red Wi-Fi</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
 <translation id="2241693394036365668">Se ha descargado un archivo</translation>
 <translation id="2246264294482514010">10x12 pulgadas</translation>
@@ -1084,6 +1086,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3631244953324577188">Biometría</translation>
 <translation id="3632503704576938756">Pantalla compartida reanudada</translation>
 <translation id="3632892046558972264">Pantalla compartida en pausa</translation>
+<translation id="3633035844150606508">La dirección se guardará en tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
 <translation id="3633738897356909127">Botón Actualizar Chrome, pulsa Intro para actualizar Chrome desde la configuración de Chrome</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Acabas de escribir tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chrome recomienda que compruebes las contraseñas que tengas guardadas.</translation>
@@ -1794,6 +1797,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5324080437450482387">Seleccionar información de contacto</translation>
 <translation id="5329858041417644019">Tu navegador no está administrado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
+<translation id="5332769172018416402">Preguntar por mensaje</translation>
 <translation id="5333022057423422993">Chrome ha detectado que la contraseña que acabas de usar se ha visto expuesta en una brecha de seguridad de datos. Para proteger tus cuentas, te recomendamos que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="5334013548165032829">Registros detallados del sistema</translation>
 <translation id="5334145288572353250">¿Guardar dirección?</translation>
@@ -1987,6 +1991,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No deberías introducir información confidencial en este sitio web (por ejemplo, contraseñas o tarjetas de crédito) porque los atacantes podrían robarla.</translation>
+<translation id="5841338463993781099">¿Guardar en la cuenta?</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -2243,7 +2248,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6468485451923838994">Fuentes</translation>
 <translation id="647261751007945333">Políticas de dispositivos</translation>
 <translation id="647330291963761005">Instalando actualizaciones</translation>
-<translation id="6475672344094591109">Los sitios que visites pueden solicitar información a Chrome para ayudarles a medir el rendimiento de sus anuncios. Chrome protege tu privacidad limitando la información que los sitios pueden compartir entre sí.</translation>
+<translation id="6475672344094591109">Los sitios que visites pueden solicitar a Chrome información que les ayude a medir el rendimiento de sus anuncios. Chrome protege tu privacidad limitando la información que los sitios pueden compartir entre sí.</translation>
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>
 <translation id="6486200200930923183">Documentales</translation>
 <translation id="6489534406876378309">Empezar a subir errores</translation>
@@ -2799,7 +2804,7 @@ Más información:
 <translation id="7773005668374414287">Mismo orden boca arriba</translation>
 <translation id="7785790577395078482">este tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Rellénalo antes de guardar.</translation>
-<translation id="7790488044432570133">Los sitios que visites pueden solicitar información a Chrome para ayudarles a medir el rendimiento de sus anuncios. Chrome permite que los sitios recojan algunos tipos de datos, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="7790488044432570133">Los sitios que visites pueden solicitar a Chrome información que les ayude a medir el rendimiento de sus anuncios. Chrome permite que los sitios recojan algunos tipos de datos, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="7791011319128895129">Sin publicar</translation>
 <translation id="7791196057686275387">Envolver</translation>
 <translation id="7791543448312431591">Añadir</translation>

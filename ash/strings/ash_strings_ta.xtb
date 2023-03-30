@@ -1252,6 +1252,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{இன்னும் ஓர் இலக்கத்தை உள்ளிட வேண்டும்}other{இன்னும் # இலக்கங்களை உள்ளிட வேண்டும்}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவது இடைநிறுத்தப்பட்டது</translation>
 <translation id="6878400149835617132">ஷார்ட்கட் முடக்கப்பட்டுள்ளது</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ஆப்ஸ்}other{# ஆப்ஸ்}}</translation>
 <translation id="6884665277231944629">இன்றைய தேதிக்குச் செல்லும்</translation>
 <translation id="6886172995547742638">உங்கள் <ph name="DEVICE_TYPE" /> இன் செயல்திறன் குறையலாம். சான்றளிக்கப்பட்ட <ph name="PREFERRED_MINIMUM_POWER" />W அல்லது அதற்கும் அதிகமான USB-C பவர் அடாப்டரைப் பயன்படுத்தவும்.</translation>
 <translation id="688631446150864480">சாளரங்களுக்கு இடையே மாற கீழ்நோக்கிய அம்புக்குறி விசையை அழுத்துக</translation>
@@ -1432,6 +1433,7 @@
 <translation id="7749443890790263709">டெஸ்க்குகளின் எண்ணிக்கை அதிகபட்ச வரம்பை எட்டிவிட்டது.</translation>
 <translation id="776344839111254542">புதுப்பிப்பு விவரங்களைப் பார்க்க, கிளிக் செய்யவும்</translation>
 <translation id="7768784765476638775">பேசும் திரை</translation>
+<translation id="7769299611924763557">உங்கள் GIF விரைவில் தயாராகிவிடும்</translation>
 <translation id="7780094051999721182">ஷார்ட்கட்கள்</translation>
 <translation id="7780159184141939021">திரைச் சுழற்சி</translation>
 <translation id="7796735576426975947">புதிய அறிவிப்பு மறைக்கப்பட்டுள்ளது</translation>

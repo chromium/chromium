@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Chromium を最大限に活用するには、Google アカウントで Chromium にログインしてください。</translation>
 <translation id="3639997914391704523">Google アカウントでログインすると、Chromium でパスワードを確認できるようになります。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> は Chromium を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
+<translation id="372658070733623520">Google アカウントで Chromium データを使用して保存するには、本人確認を行ってください。</translation>
 <translation id="3805899903892079518">Chromium で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="4043291146360695975">パスワードは、このデバイスのパスワード マネージャーにのみ保存されます。</translation>
 <translation id="4099085513035183040">Chromium ベータ版ではサポートされていません</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312"><ph name="DOMAIN" /> で管理されているアカウントでログインして、Chromium データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chromium からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
 <translation id="5983312940147103417">Chromium の品質を向上</translation>
 <translation id="6062449165341879460">このアカウントで保存した Chromium のデータ、ブックマーク、履歴、パスワード、その他の設定は、組織（<ph name="DOMAIN" />）からアクセス可能となります。ログアウトすると、データはこのデバイスから消去されますが、管理対象の Google アカウントには保存されたままで、組織はこれを使用できます。また、組織はこのアカウント専用のユーザー ポリシーを設定して、Chromium の動作を変更することも可能です。</translation>
+<translation id="61109258320235597">Google アカウントで Chromium データを使用して保存するには、パスフレーズを入力してください。</translation>
 <translation id="6119647025869519954">Chromium を既定のブラウザにするには:
 1. [設定] を開きます。
 2. [デフォルトのブラウザアプリ] をタップします。

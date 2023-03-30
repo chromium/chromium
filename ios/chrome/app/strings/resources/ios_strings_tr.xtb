@@ -415,6 +415,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3863769054730344136">Cihaza Gönder</translation>
 <translation id="387280738075653372">Chrome'u buradan indirin.</translation>
 <translation id="3888863481921783344">Bu bilgiler, etkinliğinize katılması muhtemel olan davetlileri göstermek için kullanılır.</translation>
+<translation id="3891414008432200754">Fiyat</translation>
 <translation id="3892144330757387737">Geçmişiniz burada gösterilir</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3904829425754749514">Kuruluşunuz senkronizasyonu kapattı. Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızı bu cihazda görmeye devam edebilirsiniz. Değişiklik yaparsanız bu değişiklikler hesabınızla senkronize edilmez.</translation>
@@ -479,6 +480,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4342946437867096381">Bu siteye ait bir şifreyi Google Hesabınıza zaten kaydettiniz. Google sizin için en son şifreyi seçebilir.</translation>
 <translation id="4343046787186034850">Kamera ve Mikrofon Erişimine İzin Veriliyor</translation>
 <translation id="4359125752503270327">Bu sayfa, başka bir uygulamada açılacak.</translation>
+<translation id="4371526908359194219">E-posta Bildirimleri</translation>
 <translation id="4375040482473363939">QR kodu Arama</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dili değiştirmek için dokunun.</translation>
@@ -580,6 +582,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4986678885919050584">Bu Cihazdan Kaldır</translation>
 <translation id="498985224078955265">Bu sekmeyi başka bir cihaza göndermek için her iki cihazda da Chrome'da oturum açın.</translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
+<translation id="5016420433031926653"><ph name="USER_EMAIL" /> adresine gönder</translation>
 <translation id="5017828934289857214">Daha Sonra Hatırlat</translation>
 <translation id="5037676449506322593">Tümünü Seç</translation>
 <translation id="5039804452771397117">İzin ver</translation>

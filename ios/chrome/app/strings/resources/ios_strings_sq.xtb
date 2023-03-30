@@ -415,6 +415,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3863769054730344136">Dërgo te pajisjet e tua</translation>
 <translation id="387280738075653372">Shkarko Chrome këtu.</translation>
 <translation id="3888863481921783344">Kjo do të përdoret për të të shfaqur të ftuarit e mundshëm në ngjarjen tënde.</translation>
+<translation id="3891414008432200754">Çmimi</translation>
 <translation id="3892144330757387737">Këtu do të gjesh historikun tënd</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3904829425754749514">Organizata jote e ka çaktivizuar sinkronizimin. Mund të shikosh ende faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në këtë pajisje. Nëse bën ndryshime, ato nuk do të sinkronizohen me llogarinë tënde.</translation>
@@ -479,6 +480,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4342946437867096381">Ke ruajtur tashmë një fjalëkalim për këtë sajt në "Llogarinë tënde të Google". Google mund të zgjedhë fjalëkalimin më të fundit për ty.</translation>
 <translation id="4343046787186034850">Lejohet qasja te "Kamera" dhe "Mikrofoni"</translation>
 <translation id="4359125752503270327">Kjo faqe do të hapet në një aplikacion tjetër.</translation>
+<translation id="4371526908359194219">Njoftimet me email</translation>
 <translation id="4375040482473363939">Kërkim me kod QR</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
@@ -580,6 +582,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4986678885919050584">Hiq nga kjo pajisje</translation>
 <translation id="498985224078955265">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
+<translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Më kujto më vonë</translation>
 <translation id="5037676449506322593">Përzgjidhi të gjitha</translation>
 <translation id="5039804452771397117">Lejo</translation>

@@ -1253,6 +1253,7 @@ Nouvelle installation</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
 <translation id="6867938213751067702">Téléchargement de <ph name="FILENAME" /> interrompu</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{une application}one{# application}other{# applications}}</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
@@ -1433,6 +1434,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7749443890790263709">Le nombre maximal de bureaux a été atteint.</translation>
 <translation id="776344839111254542">Cliquez pour afficher les détails de la mise à jour</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
+<translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>

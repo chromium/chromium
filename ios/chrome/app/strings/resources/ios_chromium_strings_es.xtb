@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Para sacarle el máximo partido a Chromium, inicia sesión en Chromium con tu cuenta de Google.</translation>
 <translation id="3639997914391704523">Chromium puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ha usado Chromium y ha dejado marcadores, contraseñas y otras configuraciones en este dispositivo.</translation>
+<translation id="372658070733623520">Para usar y guardar los datos de Chromium en tu cuenta de Google, debes verificar tu identidad.</translation>
 <translation id="3805899903892079518">Chromium no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el gestor de contraseñas solo en este dispositivo.</translation>
 <translation id="4099085513035183040">No compatible con Chromium Beta</translation>
@@ -76,6 +77,7 @@
 <translation id="5945387852661427312">Estás iniciando sesión con una cuenta gestionada por <ph name="DOMAIN" /> y vas a otorgar a su administrador el control sobre tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Al cerrar sesión en Chromium, tus datos se eliminarán de este dispositivo, pero permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="5983312940147103417">Mejorar Chromium</translation>
 <translation id="6062449165341879460">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, tus marcadores, tu historial, tus contraseñas y otros ajustes de Chromium que almacenes en esta cuenta. Si cierras sesión, tus datos se borrarán de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu cuenta de Google gestionada y estarán disponibles para tu organización. Tu organización también puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chromium.</translation>
+<translation id="61109258320235597">Para usar y guardar los datos de Chromium en tu cuenta de Google, debes introducir tu frase de contraseña.</translation>
 <translation id="6119647025869519954">Para establecer Chromium como navegador predeterminado, haz lo siguiente:
 1. Abre Configuración
 2. Toca Aplicación de navegador predeterminada

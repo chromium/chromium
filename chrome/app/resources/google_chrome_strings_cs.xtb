@@ -27,6 +27,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1507198376417198979">Přizpůsobte si svůj nový profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome potřebuje přístup k Bluetooth, aby bylo možné
  pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Tento průvodce vám pomůže porozumět vašim možnostem, aby prohlížeč Chrome fungoval tak, jak chcete</translation>
 <translation id="1547295885616600893">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
 <translation id="1583073672411044740">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chrome přihlášen. Tímto vytvoříte nový profil Chrome pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -69,6 +70,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2131230230468101642">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromu odstranit.</translation>
 <translation id="2139300032719313227">Restartujte systém ChromeOS</translation>
 <translation id="2151406531797534936">Restartujte Chrome</translation>
+<translation id="2163996651553460171">Využijte Chrome na maximum</translation>
 <translation id="2174917724755363426">Instalace není dokončena. Opravdu ji chcete zrušit?</translation>
 <translation id="223889379102603431">Informace o tom, jak Chrome spravuje své kořenové certifikáty</translation>
 <translation id="2258103955319320201">Pokud ke svým údajům v Chromu chcete mít přístup na všech zařízeních, přihlaste se a poté zapněte synchronizaci</translation>

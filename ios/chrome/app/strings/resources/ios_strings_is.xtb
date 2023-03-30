@@ -415,6 +415,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3863769054730344136">Senda í tækin þín</translation>
 <translation id="387280738075653372">Sæktu Chrome hér.</translation>
 <translation id="3888863481921783344">Þetta verður notað til að sýna þér hugsanlega boðsgesti á viðburðinn þinn.</translation>
+<translation id="3891414008432200754">Verð</translation>
 <translation id="3892144330757387737">Þú finnur ferilinn þinn hér</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3904829425754749514">Fyrirtækið þitt slökkti á samstillingu. Þú getur áfram séð bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við reikninginn þinn.</translation>
@@ -479,6 +480,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4342946437867096381">Þú hefur þegar vistað aðgangsorð að þessu vefsvæði á Google-reikningnum þínum. Google getur valið nýjasta aðgangsorðið fyrir þig.</translation>
 <translation id="4343046787186034850">Aðgangur að myndavél og hljóðnema leyfður</translation>
 <translation id="4359125752503270327">Þessi síða verður opnuð í öðru forriti.</translation>
+<translation id="4371526908359194219">Tilkynningar í tölvupósti</translation>
 <translation id="4375040482473363939">QR-kóðaleit</translation>
 <translation id="4378154925671717803">Sími</translation>
 <translation id="4389019817280890563">Ýttu til að skipta um tungumál.</translation>
@@ -580,6 +582,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4986678885919050584">Fjarlægja úr þessu tæki</translation>
 <translation id="498985224078955265">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chrome í báðum tækjum.</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
+<translation id="5016420433031926653">Senda til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Minna mig á seinna</translation>
 <translation id="5037676449506322593">Velja allt</translation>
 <translation id="5039804452771397117">Leyfa</translation>

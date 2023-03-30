@@ -27,6 +27,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1516530951338665275">Google Chrome necesita acceso al Bluetooth para continuar 
  con la vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1535597783576881392">Esta guía te ayudará a descubrir las opciones que te ofrece Chrome para hacer que funcione como tú quieras</translation>
 <translation id="1547295885616600893">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ya ha iniciado sesión en este perfil de Chrome. Se creará un perfil nuevo de Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -69,6 +70,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2131230230468101642">Para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. También puedes eliminar los intereses que no quieras que Chrome tenga en cuenta.</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
+<translation id="2163996651553460171">Saca el máximo partido a Chrome</translation>
 <translation id="2174917724755363426">No se ha completado la instalación. ¿Seguro que quieres cancelarla?</translation>
 <translation id="223889379102603431">Información sobre cómo gestiona Chrome sus certificados raíz</translation>
 <translation id="2258103955319320201">Para acceder a tus elementos del navegador de Chrome en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
