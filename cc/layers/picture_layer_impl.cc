@@ -571,10 +571,10 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       only_used_low_res_last_append_quads_ = false;
 
     if (last_append_quads_tilings_.empty() ||
-        last_append_quads_tilings_.back() != iter.CurrentTiling()) {
+        last_append_quads_tilings_.back() != iter.CurrentTiling()->tile_id) {
       recordreplay::Assert("[RUN-550-1536] PictureLayerImpl::AppendQuads B %d",
                            iter.CurrentTiling()->record_replay_id_);
-      last_append_quads_tilings_.push_back(iter.CurrentTiling());
+      last_append_quads_tilings_.push_back(iter.CurrentTiling()->tile_id);
     }
   }
   recordreplay::Assert("[RUN-550-1536] PictureLayerImpl::AppendQuads C");
@@ -1701,7 +1701,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
 }
 
 void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
-    const std::vector<PictureLayerTiling*>& used_tilings) {
+    const std::vector<int>& used_tilings) {
 
   DCHECK(layer_tree_impl()->IsActiveTree());
   if (tilings_->num_tilings() == 0)

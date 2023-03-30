@@ -251,7 +251,7 @@ void PictureLayerTilingSet::VerifyTilings(
 void PictureLayerTilingSet::CleanUpTilings(
     float min_acceptable_high_res_scale_key,
     float max_acceptable_high_res_scale_key,
-    const std::vector<PictureLayerTiling*>& needed_tilings,
+    const std::vector<int>& needed_tilings,
     PictureLayerTilingSet* twin_set) {
   std::vector<PictureLayerTiling*> to_remove;
   for (const auto& tiling : tilings_) {
@@ -261,7 +261,7 @@ void PictureLayerTilingSet::CleanUpTilings(
     recordreplay::Assert(
         "[RUN-550-1469] PictureLayerTilingSet::CleanUpTilings A %f, %d %d, %d %d %d %d",
         tiling->contents_scale_key(),
-        (int)tiling->resolution(), base::Contains(needed_tilings, tiling.get()),
+        (int)tiling->resolution(), base::Contains(needed_tilings, tiling.get()->tile_id),
         rect.x(), rect.y(), rect.width(), rect.height());
 
     if (tiling->contents_scale_key() >= min_acceptable_high_res_scale_key &&
@@ -274,7 +274,7 @@ void PictureLayerTilingSet::CleanUpTilings(
       continue;
 
     // Don't remove tilings that are required.
-    if (base::Contains(needed_tilings, tiling.get())) {
+    if (base::Contains(needed_tilings, tiling.get()->tile_id)) {
       continue;
     }
 
