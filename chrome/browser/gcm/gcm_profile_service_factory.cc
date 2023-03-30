@@ -34,7 +34,6 @@
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/prefetch/prefetch_gcm_app_handler.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #endif
 
@@ -151,15 +150,9 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       content::GetIOThreadTaskRunner({}), blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  offline_pages::PrefetchService* prefetch_service =
-      offline_pages::PrefetchServiceFactory::GetForKey(
-          profile->GetProfileKey());
-  if (prefetch_service != nullptr) {
-    offline_pages::PrefetchGCMHandler* prefetch_gcm_handler =
-        prefetch_service->GetPrefetchGCMHandler();
-    service->driver()->AddAppHandler(prefetch_gcm_handler->GetAppId(),
-                                     prefetch_gcm_handler->AsGCMAppHandler());
-  }
+  // TODO(crbug/1424920): PrefetchService is being removed. Leave this for at
+  // least one milestone.
+  offline_pages::PrefetchServiceFactory::GetForKey(profile->GetProfileKey());
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
   return service.release();

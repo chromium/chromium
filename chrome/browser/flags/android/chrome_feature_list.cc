@@ -348,7 +348,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &offline_pages::kOfflinePagesDescriptiveFailStatusFeature,
     &offline_pages::kOfflinePagesDescriptivePendingStatusFeature,
     &offline_pages::kOfflinePagesLivePageSharingFeature,
-    &offline_pages::kPrefetchingOfflinePagesFeature,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kOmniboxRemoveExcessiveRecycledViewClearCalls,

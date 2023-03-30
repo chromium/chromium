@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
-#include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -29,18 +28,13 @@
 #include "chrome/common/chrome_content_client.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/prefetch/generate_page_bundle_request.h"
-#include "components/offline_pages/core/prefetch/get_operation_request.h"
-#include "components/offline_pages/core/prefetch/prefetch_background_task_handler.h"
-#include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
-#include "components/offline_pages/core/prefetch/prefetch_downloader.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
-#include "components/offline_pages/core/prefetch/prefetch_service.h"
-#include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/network_change_notifier.h"
 
 namespace offline_internals {
+// TODO(crbug.com/1424920): Remove all prefetch references from the internals
+// page.
 
 namespace {
 
@@ -80,9 +74,7 @@ std::string GetStringFromSavePageStatus() {
 }  // namespace
 
 OfflineInternalsUIMessageHandler::OfflineInternalsUIMessageHandler()
-    : offline_page_model_(nullptr),
-      request_coordinator_(nullptr),
-      prefetch_service_(nullptr) {}
+    : offline_page_model_(nullptr), request_coordinator_(nullptr) {}
 
 OfflineInternalsUIMessageHandler::~OfflineInternalsUIMessageHandler() {}
 
@@ -250,15 +242,8 @@ void OfflineInternalsUIMessageHandler::HandleScheduleNwake(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  if (prefetch_service_) {
-    prefetch_service_->ForceRefreshSuggestions();
-    prefetch_service_->GetPrefetchBackgroundTaskHandler()
-        ->EnsureTaskScheduled();
-    ResolveJavascriptCallback(callback_id, base::Value("Scheduled."));
-  } else {
-    RejectJavascriptCallback(callback_id,
-                             base::Value("No prefetch service available."));
-  }
+  RejectJavascriptCallback(callback_id,
+                           base::Value("No prefetch service available."));
 }
 
 void OfflineInternalsUIMessageHandler::HandleCancelNwake(
@@ -266,14 +251,8 @@ void OfflineInternalsUIMessageHandler::HandleCancelNwake(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  if (prefetch_service_) {
-    prefetch_service_->GetPrefetchBackgroundTaskHandler()
-        ->CancelBackgroundTask();
-    ResolveJavascriptCallback(callback_id, base::Value("Cancelled."));
-  } else {
-    RejectJavascriptCallback(callback_id,
-                             base::Value("No prefetch service available."));
-  }
+  RejectJavascriptCallback(callback_id,
+                           base::Value("No prefetch service available."));
 }
 
 void OfflineInternalsUIMessageHandler::HandleGeneratePageBundle(
@@ -281,51 +260,8 @@ void OfflineInternalsUIMessageHandler::HandleGeneratePageBundle(
   AllowJavascript();
   const std::string& callback_id = args[0].GetString();
 
-  if (!prefetch_service_) {
-    RejectJavascriptCallback(base::Value(callback_id),
-                             base::Value("No prefetch service available."));
-    return;
-  }
-
-  const std::string& data = args[1].GetString();
-  std::vector<std::string> page_urls = base::SplitStringUsingSubstr(
-      data, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::vector<offline_pages::PrefetchURL> prefetch_urls;
-  for (auto& page_url : page_urls) {
-    // Creates a dummy prefetch URL with a bogus ID, and using the URL as the
-    // page title.
-    GURL url(page_url);
-    if (url.is_valid()) {
-      prefetch_urls.push_back(offline_pages::PrefetchURL(
-          "offline-internals", url, base::UTF8ToUTF16(page_url)));
-    }
-  }
-
-  prefetch_service_->GetPrefetchDispatcher()->AddCandidatePrefetchURLs(
-      offline_pages::kSuggestedArticlesNamespace, prefetch_urls);
-  // Note: Static casts are needed here so that both Windows and Android can
-  // compile these printf formats.
-  std::string message =
-      base::StringPrintf("Added %zu candidate URLs.", prefetch_urls.size());
-  if (prefetch_urls.size() < page_urls.size()) {
-    size_t invalid_urls_count = page_urls.size() - prefetch_urls.size();
-    message.append(
-        base::StringPrintf(" Ignored %zu invalid URLs.", invalid_urls_count));
-  }
-  message.append("\n");
-
-  // Construct a JSON array containing all the URLs. To guard against malicious
-  // URLs that might contain special characters, we create a base::Value::List
-  // and then serialize it into JSON, instead of doing direct string
-  // manipulation.
-  base::Value::List urls;
-  for (const auto& prefetch_url : prefetch_urls) {
-    urls.Append(prefetch_url.url.spec());
-  }
-  std::string json;
-  base::JSONWriter::Write(urls, &json);
-  message.append(json);
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(message));
+  RejectJavascriptCallback(base::Value(callback_id),
+                           base::Value("No prefetch service available."));
 }
 
 void OfflineInternalsUIMessageHandler::HandleGetOperation(
@@ -333,19 +269,8 @@ void OfflineInternalsUIMessageHandler::HandleGetOperation(
   AllowJavascript();
   const std::string& callback_id = args[0].GetString();
 
-  if (!prefetch_service_) {
-    RejectJavascriptCallback(base::Value(callback_id),
-                             base::Value("No prefetch service available."));
-    return;
-  }
-
-  std::string name = args[1].GetString();
-  base::TrimWhitespaceASCII(name, base::TRIM_ALL, &name);
-
-  prefetch_service_->GetPrefetchDispatcher()
-      ->GCMOperationCompletedMessageReceived(name);
-  base::Value message("GetOperation will be attempted for any matching pages.");
-  ResolveJavascriptCallback(base::Value(callback_id), message);
+  RejectJavascriptCallback(base::Value(callback_id),
+                           base::Value("No prefetch service available."));
 }
 
 void OfflineInternalsUIMessageHandler::HandleDownloadArchive(
@@ -353,11 +278,6 @@ void OfflineInternalsUIMessageHandler::HandleDownloadArchive(
   AllowJavascript();
   std::string name = args[0].GetString();
   base::TrimWhitespaceASCII(name, base::TRIM_ALL, &name);
-
-  if (prefetch_service_) {
-    prefetch_service_->GetPrefetchDownloader()->StartDownload(
-        base::GenerateGUID(), name, std::string());
-  }
 }
 
 void OfflineInternalsUIMessageHandler::HandleSetRecordRequestQueue(
@@ -373,18 +293,11 @@ void OfflineInternalsUIMessageHandler::HandleSetRecordPrefetchService(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK(!args.empty());
-  const bool should_record = args[0].GetBool();
-  if (prefetch_service_)
-    prefetch_service_->GetLogger()->SetIsLogging(should_record);
 }
 
 void OfflineInternalsUIMessageHandler::HandleSetLimitlessPrefetchingEnabled(
     const base::Value::List& args) {
-  AllowJavascript();
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  DCHECK(!args.empty());
-  bool enabled = args[0].GetBool();
-  offline_pages::prefetch_prefs::SetLimitlessPrefetchingEnabled(prefs, enabled);
+
 }
 
 void OfflineInternalsUIMessageHandler::HandleGetLimitlessPrefetchingEnabled(
@@ -392,57 +305,14 @@ void OfflineInternalsUIMessageHandler::HandleGetLimitlessPrefetchingEnabled(
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  bool enabled =
-      offline_pages::prefetch_prefs::IsLimitlessPrefetchingEnabled(prefs);
-
-  ResolveJavascriptCallback(callback_id, base::Value(enabled));
+  ResolveJavascriptCallback(callback_id, base::Value(false));
 }
 
 void OfflineInternalsUIMessageHandler::HandleSetPrefetchTestingHeader(
-    const base::Value::List& args) {
-  AllowJavascript();
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-
-  if (args.size() != 1) {
-    DLOG(ERROR) << "Expected 1 argument to setPrefetchTesting header but got "
-                << args.size();
-    return;
-  }
-  if (!args[0].is_string()) {
-    DLOG(ERROR) << "Expected argument to be string but got "
-                << base::Value::GetTypeName(args[0].type());
-    return;
-  }
-
-  offline_pages::prefetch_prefs::SetPrefetchTestingHeader(prefs,
-                                                          args[0].GetString());
-
-  if (prefetch_service_)
-    prefetch_service_->SetEnabledByServer(prefs, true);
-}
+    const base::Value::List& args) {}
 
 void OfflineInternalsUIMessageHandler::HandleGetPrefetchTestingHeader(
-    const base::Value::List& args) {
-  AllowJavascript();
-  if (args.size() != 1) {
-    DLOG(ERROR) << "Expected 1 argument to getPrefetchTestingHeader but got "
-                << args.size();
-    return;
-  }
-  if (!args[0].is_string()) {
-    DLOG(ERROR) << "Expected callback_id to be a string but got "
-                << base::Value::GetTypeName(args[0].type());
-    return;
-  }
-
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  ResolveJavascriptCallback(
-      args[0],
-      base::Value(offline_pages::prefetch_prefs::GetPrefetchTestingHeader(prefs)
-
-                      ));
-}
+    const base::Value::List& args) {}
 
 void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
     const base::Value::List& args) {
@@ -459,9 +329,6 @@ void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
                  ? request_coordinator_->GetLogger()->GetIsLogging()
                  : false);
   bool prefetch_logging = false;
-  if (prefetch_service_) {
-    prefetch_logging = prefetch_service_->GetLogger()->GetIsLogging();
-  }
   result.Set("prefetchIsLogging", prefetch_logging);
   ResolveJavascriptCallback(callback_id, result);
 }
@@ -476,8 +343,6 @@ void OfflineInternalsUIMessageHandler::HandleGetEventLogs(
     offline_page_model_->GetLogger()->GetLogs(&logs);
   if (request_coordinator_)
     request_coordinator_->GetLogger()->GetLogs(&logs);
-  if (prefetch_service_)
-    prefetch_service_->GetLogger()->GetLogs(&logs);
   std::sort(logs.begin(), logs.end());
 
   base::Value::List result;
@@ -627,8 +492,6 @@ void OfflineInternalsUIMessageHandler::RegisterMessages() {
       offline_pages::OfflinePageModelFactory::GetForBrowserContext(profile);
   request_coordinator_ =
       offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
-  prefetch_service_ = offline_pages::PrefetchServiceFactory::GetForKey(
-      profile->GetProfileKey());
 }
 
 void OfflineInternalsUIMessageHandler::OnJavascriptDisallowed() {

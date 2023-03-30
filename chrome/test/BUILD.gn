@@ -6573,9 +6573,6 @@ test("unit_tests") {
       "../browser/offline_pages/offline_page_request_handler_unittest.cc",
       "../browser/offline_pages/offline_page_tab_helper_unittest.cc",
       "../browser/offline_pages/offline_page_utils_unittest.cc",
-      "../browser/offline_pages/prefetch/gcm_token_unittest.cc",
-      "../browser/offline_pages/prefetch/offline_metrics_collector_impl_unittest.cc",
-      "../browser/offline_pages/prefetch/prefetch_background_task_handler_impl_unittest.cc",
       "../browser/offline_pages/recent_tab_helper_unittest.cc",
       "../browser/offline_pages/test_offline_page_model_builder.cc",
       "../browser/offline_pages/test_offline_page_model_builder.h",
@@ -6595,7 +6592,6 @@ test("unit_tests") {
       "//components/offline_pages/content/background_loader:test_support",
       "//components/offline_pages/core:test_support",
       "//components/offline_pages/core/background:test_support",
-      "//components/offline_pages/core/prefetch:test_support",
     ]
   }
 

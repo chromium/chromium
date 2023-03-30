@@ -152,7 +152,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 .then(inv -> inv.getArgument(0));
 
         Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING, true);
         features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
         FeatureList.setTestFeatures(features);
 

@@ -16,11 +16,9 @@
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_store_types.h"
-#include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace offline_pages {
-class PrefetchService;
 enum class GetRequestsResult;
 }
 
@@ -133,9 +131,6 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
 
   // Request coordinator for background offline actions.
   raw_ptr<offline_pages::RequestCoordinator> request_coordinator_;
-
-  // Prefetch service for prefetching service logs and actions.
-  raw_ptr<offline_pages::PrefetchService> prefetch_service_;
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<OfflineInternalsUIMessageHandler> weak_ptr_factory_{

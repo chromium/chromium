@@ -50,14 +50,6 @@ enum class TaskIds {
   // team_email: offline-dev@chromium.org
   // owner: dewittj@chromium.org
   OFFLINE_PAGES_BACKGROUND_JOB_ID = 77,
-  // component: UI>Browser>Offline
-  // team_email: offline-dev@chromium.org
-  // owner: dewittj@chromium.org
-  OFFLINE_PAGES_PREFETCH_JOB_ID = 78,
-  // component: UI>Browser>Offline
-  // team_email: offline-dev@chromium.org
-  // owner: dewittj@chromium.org
-  OFFLINE_PAGES_PREFETCH_NOTIFICATION_JOB_ID = 79,
   // component: UI>Browser>Downloads
   // team_email:
   // owner: qinmin@chromium.org

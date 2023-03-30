@@ -11,50 +11,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/offline_pages/task/sql_store_base.h"
 
-namespace sql {
-class Database;
-}
-
 namespace offline_pages {
 
-// PrefetchStore is a front end to SQLite store hosting prefetch related
-// items.
-//
-// The store controls the pointer to the SQLite database and only makes it
-// available to the |RunCallback| of the |Execute| method on the blocking
-// thread.
-//
-// Store has a set of auxiliary functions meant to be used on the blocking
-// thread. They can be found in prefetch_store_sql_utils file.
-class PrefetchStore : public SqlStoreBase {
+// TODO(crbug.com/1424920): This was deleted, what remains is a function to
+// delete the database. Remove this code after it's been live for one milestone.
+class PrefetchStore {
  public:
-  // Creates an instance of |PrefetchStore| with an in-memory SQLite database.
-  explicit PrefetchStore(
+  static void Delete(
+      const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
-
-  // Creates an instance of |PrefetchStore| with a SQLite database stored in
-  // |database_dir|.
-  PrefetchStore(scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-                const base::FilePath& database_dir);
-
-  ~PrefetchStore() override;
-
-  static const char* GetTableCreationSqlForTesting();
-
- protected:
-  // SqlStoreBase:
-  base::OnceCallback<bool(sql::Database* db)> GetSchemaInitializationFunction()
-      override;
-  void OnOpenStart(base::TimeTicks last_open_time) override;
-  void OnOpenDone(bool success) override;
-  void OnTaskBegin(bool is_initialized) override;
-  void OnTaskRunComplete() override;
-  void OnTaskReturnComplete() override;
-  void OnCloseStart(InitializationStatus status_before_close) override;
-  void OnCloseComplete() override;
-
- private:
-  friend class PrefetchStoreTestUtil;
 };
 
 }  // namespace offline_pages

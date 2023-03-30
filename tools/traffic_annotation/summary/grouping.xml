@@ -509,11 +509,6 @@ after discussions on the right group.
     <sender name="Images">
       <annotation id="image_annotation"/>
     </sender>
-    <sender name="Prefetch">
-      <annotation id="offline_prefetch"/>
-      <annotation id="prefetch_download"/>
-      <annotation id="prefetch_visuals"/>
-    </sender>
     <sender name="Early Hints">
       <annotation id="early_hints_preload"/>
     </sender>

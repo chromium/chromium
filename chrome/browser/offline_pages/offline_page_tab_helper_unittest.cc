@@ -17,9 +17,6 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_page_item.h"
-#include "components/offline_pages/core/prefetch/offline_metrics_collector.h"
-#include "components/offline_pages/core/prefetch/prefetch_service.h"
-#include "components/offline_pages/core/prefetch/prefetch_service_test_taco.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -45,37 +42,6 @@ namespace {
 
 using blink::mojom::MHTMLLoadResult;
 
-class TestMetricsCollector : public OfflineMetricsCollector {
- public:
-  TestMetricsCollector() = default;
-  ~TestMetricsCollector() override = default;
-
-  // OfflineMetricsCollector implementation
-  void OnAppStartupOrResume() override { app_startup_count_++; }
-  void OnSuccessfulNavigationOnline() override {
-    successful_online_navigations_count_++;
-  }
-  void OnSuccessfulNavigationOffline() override {
-    successful_offline_navigations_count_++;
-  }
-  void OnPrefetchEnabled() override {}
-  void OnSuccessfulPagePrefetch() override {}
-  void OnPrefetchedPageOpened() override {}
-  void ReportAccumulatedStats() override { report_stats_count_++; }
-
-  int app_startup_count_ = 0;
-  int successful_offline_navigations_count_ = 0;
-  int successful_online_navigations_count_ = 0;
-  int report_stats_count_ = 0;
-};
-
-// This is used by KeyedServiceFactory::SetTestingFactoryAndUse.
-std::unique_ptr<KeyedService> BuildTestPrefetchService(SimpleFactoryKey*) {
-  auto taco = std::make_unique<PrefetchServiceTestTaco>();
-  taco->SetOfflineMetricsCollector(std::make_unique<TestMetricsCollector>());
-  return taco->CreateAndReturnPrefetchService();
-}
-
 class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   OfflinePageTabHelperTest();
@@ -96,18 +62,12 @@ class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
                                MHTMLLoadResult load_result);
 
   OfflinePageTabHelper* tab_helper() const { return tab_helper_; }
-  PrefetchService* prefetch_service() const { return prefetch_service_; }
   content::NavigationSimulator* navigation_simulator() {
     return navigation_simulator_.get();
   }
-  TestMetricsCollector* metrics() const {
-    return static_cast<TestMetricsCollector*>(
-        prefetch_service_->GetOfflineMetricsCollector());
-  }
 
  private:
-  raw_ptr<OfflinePageTabHelper> tab_helper_;   // Owned by WebContents.
-  raw_ptr<PrefetchService> prefetch_service_;  // Keyed Service.
+  raw_ptr<OfflinePageTabHelper> tab_helper_;  // Owned by WebContents.
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   base::WeakPtrFactory<OfflinePageTabHelperTest> weak_ptr_factory_{this};
@@ -117,13 +77,6 @@ OfflinePageTabHelperTest::OfflinePageTabHelperTest() : tab_helper_(nullptr) {}
 
 void OfflinePageTabHelperTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
-
-  SimpleFactoryKey* key =
-      SimpleKeyMap::GetInstance()->GetForBrowserContext(browser_context());
-
-  PrefetchServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      key, base::BindRepeating(&BuildTestPrefetchService));
-  prefetch_service_ = PrefetchServiceFactory::GetForKey(key);
 
   OfflinePageTabHelper::CreateForWebContents(web_contents());
   tab_helper_ = OfflinePageTabHelper::FromWebContents(web_contents());
@@ -173,36 +126,18 @@ void OfflinePageTabHelperTest::SimulateOfflinePageLoad(
 TEST_F(OfflinePageTabHelperTest, InitialSetup) {
   CreateNavigationSimulator(GURL("http://mystery.site/foo.html"));
   EXPECT_NE(nullptr, tab_helper());
-  EXPECT_NE(nullptr, prefetch_service());
-  EXPECT_NE(nullptr, prefetch_service()->GetOfflineMetricsCollector());
-  EXPECT_EQ(metrics(), prefetch_service()->GetOfflineMetricsCollector());
-  EXPECT_EQ(0, metrics()->app_startup_count_);
-  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
-  EXPECT_EQ(0, metrics()->successful_offline_navigations_count_);
-  EXPECT_EQ(0, metrics()->report_stats_count_);
 }
 
 TEST_F(OfflinePageTabHelperTest, MetricsStartNavigation) {
   CreateNavigationSimulator(GURL("http://mystery.site/foo.html"));
   // This causes WCO::DidStartNavigation()
   navigation_simulator()->Start();
-
-  EXPECT_EQ(1, metrics()->app_startup_count_);
-  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
-  EXPECT_EQ(0, metrics()->successful_offline_navigations_count_);
-  EXPECT_EQ(0, metrics()->report_stats_count_);
 }
 
 TEST_F(OfflinePageTabHelperTest, MetricsOnlineNavigation) {
   CreateNavigationSimulator(GURL("http://mystery.site/foo.html"));
   navigation_simulator()->Start();
   navigation_simulator()->Commit();
-
-  EXPECT_EQ(1, metrics()->app_startup_count_);
-  EXPECT_EQ(1, metrics()->successful_online_navigations_count_);
-  EXPECT_EQ(0, metrics()->successful_offline_navigations_count_);
-  // Since this is online navigation, request to send data should be made.
-  EXPECT_EQ(1, metrics()->report_stats_count_);
 }
 
 TEST_F(OfflinePageTabHelperTest, MetricsOfflineNavigation) {
@@ -219,12 +154,6 @@ TEST_F(OfflinePageTabHelperTest, MetricsOfflineNavigation) {
   navigation_simulator()->SetContentsMimeType("multipart/related");
 
   navigation_simulator()->Commit();
-
-  EXPECT_EQ(1, metrics()->app_startup_count_);
-  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
-  EXPECT_EQ(1, metrics()->successful_offline_navigations_count_);
-  // During offline navigation, request to send data should not be made.
-  EXPECT_EQ(0, metrics()->report_stats_count_);
 }
 
 TEST_F(OfflinePageTabHelperTest, TrustedInternalOfflinePage) {
@@ -494,11 +423,6 @@ TEST_F(OfflinePageTabHelperFencedFrameTest, DoNotRecordMetricsInFencedFrame) {
       tab_helper()->GetOfflinePreviewItem();
   EXPECT_NE(offline_page_item, nullptr);
 
-  EXPECT_EQ(1, metrics()->app_startup_count_);
-  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
-  EXPECT_EQ(1, metrics()->successful_offline_navigations_count_);
-  EXPECT_EQ(0, metrics()->report_stats_count_);
-
   // Create a fenced frame.
   content::RenderFrameHostTester::For(main_rfh())
       ->InitializeRenderFrameIfNeeded();
@@ -513,13 +437,6 @@ TEST_F(OfflinePageTabHelperFencedFrameTest, DoNotRecordMetricsInFencedFrame) {
   // The offline preview item should not be cleared by the fenced frame's
   // navigation and should be same as |offline_page_item|.
   EXPECT_EQ(tab_helper()->GetOfflinePreviewItem(), offline_page_item);
-
-  // The existing metric values should not be changed after navigating in the
-  // fenced frame.
-  EXPECT_EQ(1, metrics()->app_startup_count_);
-  EXPECT_EQ(0, metrics()->successful_online_navigations_count_);
-  EXPECT_EQ(1, metrics()->successful_offline_navigations_count_);
-  EXPECT_EQ(0, metrics()->report_stats_count_);
 }
 
 }  // namespace

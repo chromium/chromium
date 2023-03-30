@@ -215,7 +215,6 @@
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/prefetch/offline_metrics_collector_impl.h"
-#include "chrome/browser/offline_pages/prefetch/prefetch_background_task_handler_impl.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #endif
 

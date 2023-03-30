@@ -29,7 +29,6 @@ class WebContents;
 namespace offline_pages {
 
 struct OfflinePageItem;
-class PrefetchService;
 
 // This enum is used for UMA reporting. It contains all possible trusted states
 // of the offline page.
@@ -174,9 +173,6 @@ class OfflinePageTabHelper
 
   void ReportOfflinePageMetrics();
 
-  // Report the metrics essential to PrefetchService.
-  void ReportPrefetchMetrics(content::NavigationHandle* navigation_handle);
-
   // Reload the URL in order to fetch the offline page on certain net errors.
   void TryLoadingOfflinePageOnNetError(
       content::NavigationHandle* navigation_handle);
@@ -211,9 +207,6 @@ class OfflinePageTabHelper
   LoadedOfflinePageInfo offline_info_;
 
   bool reloading_url_on_net_error_ = false;
-
-  // Service, outlives this object.
-  raw_ptr<PrefetchService> prefetch_service_ = nullptr;
 
   // TODO(crbug.com/827215): We only really want interface messages for the main
   // frame but this is not easily done with the current helper classes.

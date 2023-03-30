@@ -7109,15 +7109,8 @@ static_library("browser") {
       "offline_pages/offliner_helper.h",
       "offline_pages/offliner_user_data.cc",
       "offline_pages/offliner_user_data.h",
-      "offline_pages/prefetch/gcm_token.cc",
-      "offline_pages/prefetch/gcm_token.h",
       "offline_pages/prefetch/offline_metrics_collector_impl.cc",
       "offline_pages/prefetch/offline_metrics_collector_impl.h",
-      "offline_pages/prefetch/offline_prefetch_download_client.cc",
-      "offline_pages/prefetch/offline_prefetch_download_client.h",
-      "offline_pages/prefetch/prefetch_background_task_handler_impl.cc",
-      "offline_pages/prefetch/prefetch_background_task_handler_impl.h",
-      "offline_pages/prefetch/prefetch_background_task_scheduler.h",
       "offline_pages/prefetch/prefetch_service_factory.cc",
       "offline_pages/prefetch/prefetch_service_factory.h",
       "offline_pages/recent_tab_helper.cc",
@@ -7156,16 +7149,10 @@ static_library("browser") {
         "offline_pages/android/offline_page_model_factory.cc",
         "offline_pages/android/offline_page_origin_utils_android.cc",
         "offline_pages/android/offline_page_utils_android.cc",
-        "offline_pages/android/prefetch_background_task_android.cc",
-        "offline_pages/android/prefetch_background_task_android.h",
-        "offline_pages/android/prefetch_background_task_scheduler_android.cc",
-        "offline_pages/android/prefetch_configuration_impl_android.cc",
         "offline_pages/android/request_coordinator_bridge.cc",
         "offline_pages/android/request_coordinator_bridge.h",
         "offline_pages/android/request_coordinator_factory.cc",
       ]
-
-      deps += [ "//chrome/browser/offline_pages/android:jni_headers" ]
     }
 
     public_deps += [

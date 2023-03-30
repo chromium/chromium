@@ -133,9 +133,6 @@ chromium-metrics-reviews@google.com.
   <variant name="NotificationService" summary="NotificationService"/>
   <variant name="NotificationTrigger" summary="NotificationTrigger"/>
   <variant name="OfflinePages" summary="OfflinePages"/>
-  <variant name="OfflinePagesPrefetch" summary="OfflinePagesPrefetch"/>
-  <variant name="OfflinePagesPrefetchNotification"
-      summary="OfflinePagesPrefetchNotification"/>
   <variant name="Omaha" summary="Omaha"/>
   <variant name="PeriodicBackgroundSyncChromeWakeup"
       summary="PeriodicBackgroundSyncChromeWakeup"/>

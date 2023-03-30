@@ -77,9 +77,6 @@ public class BackgroundTaskSchedulerUmaTest {
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_PAGES,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_PREFETCH,
-                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
-                        TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.DOWNLOAD_SERVICE_JOB_ID));
@@ -94,9 +91,6 @@ public class BackgroundTaskSchedulerUmaTest {
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_WEBVIEW_VARIATIONS,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_CONTENT_NOTIFICATION,
-                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
-                        TaskIds.OFFLINE_PAGES_PREFETCH_NOTIFICATION_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_WEBAPK_UPDATE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.WEBAPK_UPDATE_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION,
@@ -272,18 +266,6 @@ public class BackgroundTaskSchedulerUmaTest {
         verify(mUmaSpy, times(1))
                 .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskExpired"),
                         ArgumentMatchers.eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportTaskCanceled() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        BackgroundTaskSchedulerUma.getInstance().reportTaskCanceled(
-                TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskCanceled"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_PREFETCH));
     }
 
     @Test

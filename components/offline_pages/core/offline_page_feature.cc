@@ -28,10 +28,6 @@ BASE_FEATURE(kOfflinePagesLivePageSharingFeature,
              "OfflinePagesLivePageSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchingOfflinePagesFeature,
-             "OfflinePagesPrefetching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOfflinePagesDescriptiveFailStatusFeature,
              "OfflinePagesDescriptiveFailStatus",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -58,10 +54,6 @@ bool IsOfflinePagesLivePageSharingEnabled() {
   return base::FeatureList::IsEnabled(kOfflinePagesLivePageSharingFeature);
 }
 
-bool IsPrefetchingOfflinePagesEnabled() {
-  return base::FeatureList::IsEnabled(kPrefetchingOfflinePagesFeature);
-}
-
 bool ShouldUseTestingSnapshotDelay() {
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   return cl->HasSwitch(kOfflinePagesUseTestingSnapshotDelay);
@@ -80,12 +72,6 @@ bool IsOfflinePagesDescriptivePendingStatusEnabled() {
 bool ShouldOfflinePagesInDownloadHomeOpenInCct() {
   return base::FeatureList::IsEnabled(
       kOfflinePagesInDownloadHomeOpenInCctFeature);
-}
-
-std::string GetPrefetchingOfflinePagesExperimentTag() {
-  return base::GetFieldTrialParamValueByFeature(
-      kPrefetchingOfflinePagesFeature,
-      kPrefetchingOfflinePagesExperimentsOption);
 }
 
 bool IsOnTheFlyMhtmlHashComputationEnabled() {

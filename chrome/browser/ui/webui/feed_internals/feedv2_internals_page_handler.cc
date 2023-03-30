@@ -22,7 +22,6 @@
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
-#include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -60,8 +59,7 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
 
   properties->is_feed_visible = feed_stream_->IsArticlesListVisible();
   properties->is_feed_allowed = IsFeedAllowed();
-  properties->is_prefetching_enabled =
-      offline_pages::prefetch_prefs::IsEnabled(pref_service_);
+  properties->is_prefetching_enabled = false;
   properties->is_web_feed_follow_intro_debug_enabled =
       IsWebFeedFollowIntroDebugEnabled();
   properties->use_feed_query_requests = ShouldUseFeedQueryRequests();

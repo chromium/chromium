@@ -97,8 +97,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_CHROME_MINIDUMP;
             case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
                 return BACKGROUND_TASK_OFFLINE_PAGES;
-            case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:
-                return BACKGROUND_TASK_OFFLINE_PREFETCH;
             case TaskIds.DOWNLOAD_SERVICE_JOB_ID:
                 return BACKGROUND_TASK_DOWNLOAD_SERVICE;
             case TaskIds.DOWNLOAD_CLEANUP_JOB_ID:
@@ -109,8 +107,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_DOWNLOAD_LATER;
             case TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID:
                 return BACKGROUND_TASK_WEBVIEW_VARIATIONS;
-            case TaskIds.OFFLINE_PAGES_PREFETCH_NOTIFICATION_JOB_ID:
-                return BACKGROUND_TASK_OFFLINE_CONTENT_NOTIFICATION;
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBAPK_UPDATE;
             case TaskIds.DEPRECATED_DOWNLOAD_RESUMPTION_JOB_ID:
@@ -160,8 +156,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "ChromeMinidumpUploading";
             case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
                 return "OfflinePages";
-            case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:
-                return "OfflinePagesPrefetch";
             case TaskIds.DOWNLOAD_SERVICE_JOB_ID:
                 return "DownloadService";
             case TaskIds.DOWNLOAD_CLEANUP_JOB_ID:
@@ -172,8 +166,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "DownloadLater";
             case TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID:
                 return "WebviewVariationsSeedFetch";
-            case TaskIds.OFFLINE_PAGES_PREFETCH_NOTIFICATION_JOB_ID:
-                return "OfflinePagesPrefetchNotification";
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return "WebApkUpdate";
             case TaskIds.DEPRECATED_DOWNLOAD_RESUMPTION_JOB_ID:

@@ -143,7 +143,6 @@ Refer to README.md for content description and update process.
  <item id="oauth2_access_token_fetcher" added_in_milestone="62" content_hash_code="01ff32b0" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_access_token_fetcher.cc" />
  <item id="oauth2_api_call_flow" added_in_milestone="65" type="completing" content_hash_code="067ca204" os_list="linux,windows,chromeos,android" policy_fields="-1" file_path="google_apis/gaia/oauth2_api_call_flow.cc" />
  <item id="oauth2_mint_token_flow" added_in_milestone="62" type="partial" second_id="oauth2_api_call_flow" content_hash_code="05756bf8" os_list="linux,windows,chromeos,android" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="google_apis/gaia/oauth2_mint_token_flow.cc" />
- <item id="offline_prefetch" added_in_milestone="62" content_hash_code="06ad9616" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/prefetch_request_fetcher.cc" />
  <item id="omaha_client_android_uc" added_in_milestone="99" content_hash_code="0757ca45" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java" />
  <item id="omnibox_documentsuggest" added_in_milestone="69" content_hash_code="07917541" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/document_suggestions_service.cc" />
  <item id="omnibox_navigation_observer" added_in_milestone="62" content_hash_code="043a7a2f" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc" />
@@ -172,8 +171,6 @@ Refer to README.md for content description and update process.
  <item id="port_forwarding_controller_socket" added_in_milestone="65" content_hash_code="074810e4" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/port_forwarding_controller.cc" />
  <item id="ppapi_download_request" added_in_milestone="62" content_hash_code="04e5f4df" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc" />
  <item id="predictive_prefetch" added_in_milestone="85" content_hash_code="00ebd1fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/predictors/prefetch_manager.cc" />
- <item id="prefetch_download" added_in_milestone="62" content_hash_code="0146e99e" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/prefetch_downloader_impl.cc" />
- <item id="prefetch_visuals" added_in_milestone="75" content_hash_code="0564010a" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/visuals_fetch_by_url.cc" />
  <item id="profile_avatar" added_in_milestone="62" content_hash_code="06c4a5fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_avatar_downloader.cc" />
  <item id="profile_resetter_upload" added_in_milestone="62" content_hash_code="07b56813" os_list="linux,windows,chromeos" file_path="chrome/browser/profile_resetter/reset_report_uploader.cc" />
  <item id="promo_service" added_in_milestone="72" content_hash_code="01f69c19" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/promos/promo_service.cc" />

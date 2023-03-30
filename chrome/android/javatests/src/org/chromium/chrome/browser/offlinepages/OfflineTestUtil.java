@@ -171,18 +171,6 @@ public class OfflineTestUtil {
         CriteriaHelper.pollInstrumentationThread(() -> done.get());
     }
 
-    // Set the offline_pages.enabled_by_server pref for testing. If |enabled| is false,
-    // also ensures that the server-enabled check is due.
-    public static void setPrefetchingEnabledByServer(boolean enabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { OfflineTestUtilJni.get().setPrefetchingEnabledByServer(enabled); });
-    }
-
-    public static void setGCMTokenForTesting(String gcmToken) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { OfflineTestUtilJni.get().setGCMTokenForTesting(gcmToken); });
-    }
-
     @NativeMethods
     interface Natives {
         void getRequestsInQueue(Callback<SavePageRequest[]> callback);
@@ -194,7 +182,5 @@ public class OfflineTestUtil {
         void clearIntercepts();
         void dumpRequestCoordinatorState(Callback<String> callback);
         void waitForConnectivityState(boolean connected, Runnable callback);
-        void setPrefetchingEnabledByServer(boolean enabled);
-        void setGCMTokenForTesting(String gcmToken);
     }
 }

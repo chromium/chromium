@@ -42,7 +42,6 @@ if (!is_ios) {
       "//components/offline_pages/core:unit_tests",
       "//components/offline_pages/core/background:unit_tests",
       "//components/offline_pages/core/downloads:unit_tests",
-      "//components/offline_pages/core/prefetch:unit_tests",
       "//components/offline_pages/core/request_header:unit_tests",
       "//components/offline_pages/task:unit_tests",
     ]

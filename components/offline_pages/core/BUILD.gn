@@ -178,7 +178,6 @@ source_set("unit_tests") {
     ":core",
     ":switches",
     ":test_support",
-    "prefetch:unit_tests",
     "//base",
     "//base/test:test_support",
     "//components/offline_pages/task:test_support",
@@ -197,7 +196,6 @@ if (is_android) {
       "background/save_page_request.h",
       "offline_page_types.h",
       "offline_store_types.h",
-      "prefetch/prefetch_types.h",
     ]
   }
 }

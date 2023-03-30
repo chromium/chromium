@@ -834,8 +834,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorInProductHelpController.java",
   "java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorMetricsDelegate.java",
   "java/src/org/chromium/chrome/browser/offlinepages/measurements/OfflineMeasurementsBackgroundTask.java",
-  "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTask.java",
-  "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskScheduler.java",
   "java/src/org/chromium/chrome/browser/omaha/MarketURLGetter.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaBase.java",
   "java/src/org/chromium/chrome/browser/omaha/OmahaDelegate.java",

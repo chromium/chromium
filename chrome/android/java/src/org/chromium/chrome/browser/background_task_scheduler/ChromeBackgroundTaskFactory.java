@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
 import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTask;
 import org.chromium.chrome.browser.notifications.scheduler.NotificationSchedulerTask;
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
-import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchBackgroundTask;
 import org.chromium.chrome.browser.omaha.OmahaService;
 import org.chromium.chrome.browser.services.gcm.GCMBackgroundTask;
 import org.chromium.chrome.browser.webapps.WebApkUpdateTask;
@@ -59,8 +58,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new GCMBackgroundTask();
             case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
                 return new OfflineBackgroundTask();
-            case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:
-                return new PrefetchBackgroundTask();
             case TaskIds.DOWNLOAD_SERVICE_JOB_ID:
             case TaskIds.DOWNLOAD_CLEANUP_JOB_ID:
             case TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID:

@@ -220,7 +220,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2UnitTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorMetricsDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/offlinepages/measurements/OfflineMeasurementsBackgroundTaskUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omaha/AttributeFinder.java",
   "junit/src/org/chromium/chrome/browser/omaha/ExponentialBackoffSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/omaha/MockRequestGenerator.java",
