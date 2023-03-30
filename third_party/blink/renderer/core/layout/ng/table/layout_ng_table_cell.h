@@ -7,8 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
 
 namespace blink {
@@ -17,9 +16,8 @@ class LayoutNGTable;
 class LayoutNGTableRow;
 class LayoutNGTableSection;
 
-class CORE_EXPORT LayoutNGTableCell
-    : public LayoutNGBlockFlowMixin<LayoutBlockFlow>,
-      public LayoutNGTableCellInterface {
+class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow,
+                                      public LayoutNGTableCellInterface {
  public:
   explicit LayoutNGTableCell(Element*);
 
@@ -142,8 +140,7 @@ class CORE_EXPORT LayoutNGTableCell
  protected:
   bool IsOfType(LayoutObjectType type) const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectTableCell ||
-           LayoutNGBlockFlowMixin<LayoutBlockFlow>::IsOfType(type);
+    return type == kLayoutObjectTableCell || LayoutNGBlockFlow::IsOfType(type);
   }
 
  private:
