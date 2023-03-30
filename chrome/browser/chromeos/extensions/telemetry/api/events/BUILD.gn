@@ -43,6 +43,19 @@ source_set("event_manager") {
   public_deps = [ "//extensions/browser" ]
 }
 
+source_set("event_converters") {
+  sources = [
+    "events_api_converters.cc",
+    "events_api_converters.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+  ]
+}
+
 function_registration("api_registration") {
   sources = chromeos_system_extensions_api_schema_sources
   impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api/events"
@@ -72,4 +85,16 @@ source_set("browser_tests") {
   ]
 
   data = [ "//chrome/test/data" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "events_api_converters_unittest.cc" ]
+
+  deps = [
+    ":event_converters",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
 }
