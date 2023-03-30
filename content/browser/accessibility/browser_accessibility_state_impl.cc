@@ -16,9 +16,9 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents_ax_mode_notifier.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -189,10 +189,7 @@ void BrowserAccessibilityStateImpl::ResetAccessibilityMode() {
   // the observers are never notified and screen reader support fails to work.
   ui::AXPlatformNode::SetAXMode(accessibility_mode_);
 
-  std::vector<WebContentsImpl*> web_contents_vector =
-      WebContentsImpl::GetAllWebContents();
-  for (size_t i = 0; i < web_contents_vector.size(); ++i)
-    web_contents_vector[i]->SetAccessibilityMode(accessibility_mode_);
+  NotifyWebContentsToSetAXMode(accessibility_mode_);
 }
 
 bool BrowserAccessibilityStateImpl::IsAccessibleBrowser() {
@@ -441,10 +438,7 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
                               true);
   }
 
-  std::vector<WebContentsImpl*> web_contents_vector =
-      WebContentsImpl::GetAllWebContents();
-  for (size_t i = 0; i < web_contents_vector.size(); ++i)
-    web_contents_vector[i]->AddAccessibilityMode(accessibility_mode_);
+  NotifyWebContentsToAddAXMode(accessibility_mode_);
 
   // Add a crash key with the ax_mode, to enable searching for top crashes that
   // occur when accessibility is turned on. This adds it for the browser
@@ -472,10 +466,7 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
   // Proxy the new AXMode to AXPlatformNode.
   ui::AXPlatformNode::SetAXMode(accessibility_mode_);
 
-  std::vector<WebContentsImpl*> web_contents_vector =
-      WebContentsImpl::GetAllWebContents();
-  for (size_t i = 0; i < web_contents_vector.size(); ++i)
-    web_contents_vector[i]->SetAccessibilityMode(accessibility_mode_);
+  NotifyWebContentsToSetAXMode(accessibility_mode_);
 }
 
 base::CallbackListSubscription

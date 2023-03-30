@@ -427,6 +427,8 @@ source_set("browser_sources") {
     "weak_document_ptr.h",
     "web_contents.cc",
     "web_contents.h",
+    "web_contents_ax_mode_notifier.cc",
+    "web_contents_ax_mode_notifier.h",
     "web_contents_delegate.cc",
     "web_contents_delegate.h",
     "web_contents_media_capture_id.cc",
