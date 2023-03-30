@@ -125,7 +125,7 @@ BASE_FEATURE(kIOSPasswordCheckup,
 // subtitle.
 BASE_FEATURE(kIOSShowPasswordStorageInSaveInfobar,
              "IOSShowPasswordStorageInSaveInfobar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables password bottom sheet to be displayed (on iOS) when a user is
 // signed-in and taps on a username or password field on a website that has at
