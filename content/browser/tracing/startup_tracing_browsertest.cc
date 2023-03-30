@@ -355,7 +355,13 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OutputType::kJSON, OutputType::kProto),
         testing::Values(OutputLocation::kDirectoryWithDefaultBasename)));
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
+// TODO(crbug.com/1428925): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_StopOnUIThread DISABLED_StopOnUIThread
+#else
+#define MAYBE_StopOnUIThread StopOnUIThread
+#endif
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnUIThread) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   StartupTracingController::EmergencyStop();
@@ -385,7 +391,13 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPool) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPoolTwice) {
+// TODO(crbug.com/1428925): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_StopOnThreadPoolTwice DISABLED_StopOnThreadPoolTwice
+#else
+#define MAYBE_StopOnThreadPoolTwice StopOnThreadPoolTwice
+#endif
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, MAYBE_StopOnThreadPoolTwice) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
