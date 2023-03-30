@@ -205,7 +205,7 @@ void AddSysColorMixer(ColorProvider* provider,
                 : SetAlpha({kColorRefNeutral99}, 0x1A)};
   mixer[kColorSysStateHoverOnSubtle] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
-                : SetAlpha({kColorRefNeutral10}, 0x60)};
+                : SetAlpha({kColorRefNeutral10}, 0x0F)};
   mixer[kColorSysStateRippleNeutralOnProminent] = {
       dark_mode ? SetAlpha({kColorRefNeutral10}, 0x1F)
                 : SetAlpha({kColorRefNeutral99}, 0x29)};
