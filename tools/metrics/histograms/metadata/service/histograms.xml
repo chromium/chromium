@@ -340,9 +340,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.DiskCache.WriteResponseResult"
-    enum="ServiceWorkerWriteResponseResult" expires_after="2023-05-09">
-  <owner>bashi@chromium.org</owner>
-  <owner>nhiroki@chromium.org</owner>
+    enum="ServiceWorkerWriteResponseResult" expires_after="2024-03-28">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
   <summary>
     Records result of writing response into ServiceWorkerDiskCache. This is not
     recorded when response has no body. Note that this is recorded on every
