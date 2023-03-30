@@ -11,7 +11,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -28,6 +27,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -37,7 +37,7 @@
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/gurl.h"
 
-using extension_function_test_utils::RunFunctionAndReturnSingleResult;
+using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
 
 namespace {
 
@@ -120,9 +120,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   ASSERT_EQ(SyncStatusMessageType::kSynced, GetSyncStatusMessageType(profile));
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(nullptr,
-            RunFunctionAndReturnSingleResult(
-                function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_FALSE(RunFunctionAndReturnSingleResult(
+      function.get(), kRemoveEverythingArguments, browser()->profile()));
   // Check that the Sync token was not revoked.
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
       primary_account_info.account_id));
@@ -156,9 +155,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   ASSERT_NE(SyncStatusMessageType::kSynced, GetSyncStatusMessageType(profile));
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(nullptr,
-            RunFunctionAndReturnSingleResult(
-                function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_FALSE(RunFunctionAndReturnSingleResult(
+      function.get(), kRemoveEverythingArguments, browser()->profile()));
   // Check that the account was not removed and Sync was paused.
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
@@ -182,9 +180,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
       signin::MakeAccountAvailable(identity_manager, kAccountEmail);
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(nullptr,
-            RunFunctionAndReturnSingleResult(
-                function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_FALSE(RunFunctionAndReturnSingleResult(
+      function.get(), kRemoveEverythingArguments, browser()->profile()));
   // Check that the account was removed.
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
@@ -241,9 +238,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageAll) {
 
   // Clear the data for everything.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(nullptr,
-            RunFunctionAndReturnSingleResult(
-                function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_FALSE(RunFunctionAndReturnSingleResult(
+      function.get(), kRemoveEverythingArguments, browser()->profile()));
 
   usage_infos = GetLocalStorage(browser()->profile());
   EXPECT_EQ(0U, usage_infos.size());
@@ -271,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
     }, {
     "localStorage": true
     }])";
-  EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(function.get(),
-                                                      removeArgs, browser()));
+  EXPECT_FALSE(RunFunctionAndReturnSingleResult(function.get(), removeArgs,
+                                                browser()->profile()));
 
   usage_infos = GetLocalStorage(browser()->profile());
   EXPECT_EQ(1U, usage_infos.size());
@@ -347,8 +343,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
     }, {
     "localStorage": true
     }])";
-  EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(function.get(),
-                                                      removeArgs, browser()));
+  EXPECT_FALSE(RunFunctionAndReturnSingleResult(function.get(), removeArgs,
+                                                browser()->profile()));
 
   usage_infos = GetLocalStorage(browser()->profile());
   EXPECT_EQ(3U, usage_infos.size());
