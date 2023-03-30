@@ -79079,7 +79079,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="Manage passwords button clicked"/>
   <int value="1"
       label="Google Password Manager link clicked in the bubble footer"/>
-  <int value="2" label="Credential row clicked"/>
+  <int value="2" label="Credential row without note clicked"/>
   <int value="3" label="Username copied"/>
   <int value="4" label="Password copied"/>
   <int value="5" label="Password revealed"/>
@@ -79089,6 +79089,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Note added"/>
   <int value="10" label="Note edited"/>
   <int value="11" label="Note deleted"/>
+  <int value="12" label="Credential row with note clicked"/>
 </enum>
 
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">

@@ -638,7 +638,7 @@ enum class PasswordsImportDesktopInteractions {
 enum class PasswordManagementBubbleInteractions {
   kManagePasswordsButtonClicked = 0,
   kGooglePasswordManagerLinkClicked = 1,
-  kCredentialRowClicked = 2,
+  kCredentialRowWithoutNoteClicked = 2,
   kUsernameCopyButtonClicked = 3,
   kPasswordCopyButtonClicked = 4,
   kPasswordShowButtonClicked = 5,
@@ -648,7 +648,8 @@ enum class PasswordManagementBubbleInteractions {
   kNoteAdded = 9,
   kNoteEdited = 10,
   kNoteDeleted = 11,
-  kMaxValue = kNoteDeleted,
+  kCredentialRowWithNoteClicked = 12,
+  kMaxValue = kCredentialRowWithNoteClicked,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(

@@ -68,10 +68,15 @@ ManagePasswordsListView::ManagePasswordsListView(
                    on_row_clicked_callback,
                const password_manager::PasswordForm& password_form) {
               on_row_clicked_callback.Run(password_form);
+              PasswordManagementBubbleInteractions user_interaction =
+                  password_form.GetNoteWithEmptyUniqueDisplayName().empty()
+                      ? PasswordManagementBubbleInteractions::
+                            kCredentialRowWithoutNoteClicked
+                      : PasswordManagementBubbleInteractions::
+                            kCredentialRowWithNoteClicked;
               password_manager::metrics_util::
                   LogUserInteractionsInPasswordManagementBubble(
-                      PasswordManagementBubbleInteractions::
-                          kCredentialRowClicked);
+                      user_interaction);
             },
             on_row_clicked_callback, *password_form),
         /*main_image_icon=*/favicon,
