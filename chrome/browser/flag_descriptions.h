@@ -3059,6 +3059,9 @@ extern const char kEnableBackgroundBlurDescription[];
 extern const char kDisableDnsProxyName[];
 extern const char kDisableDnsProxyDescription[];
 
+extern const char kEnableRFC8925Name[];
+extern const char kEnableRFC8925Description[];
+
 extern const char kEnableEdidBasedDisplayIdsName[];
 extern const char kEnableEdidBasedDisplayIdsDescription[];
 

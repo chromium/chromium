@@ -5329,6 +5329,12 @@ const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
     "Chrome browser.";
 
+const char kEnableRFC8925Name[] =
+    "Enable RFC8925 (prefer IPv6-only on IPv6-only-capable network)";
+const char kEnableRFC8925Description[] =
+    "Let ChromeOS DHCPv4 client voluntarily drop DHCPv4 lease and prefer to"
+    "operate IPv6-only, if the network is also IPv6-only capable.";
+
 const char kPasspointARCSupportName[] = "Enable Passpoint ARC support";
 const char kPasspointARCSupportDescription[] =
     "Feature to allow Android apps (running on ARC) to provision WiFi networks "

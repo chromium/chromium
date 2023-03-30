@@ -57,6 +57,7 @@
   "enable-quic",
   "enable-reader-mode-in-cct",
   "enable-resource-loading-hints",
+  "enable-rfc-8925",
   "enable-show-autofill-signatures",
   "enable-site-per-process",
   "enable-touchscreen-calibration",

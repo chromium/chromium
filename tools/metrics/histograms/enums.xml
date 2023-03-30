@@ -59576,6 +59576,7 @@ from previous Chrome versions.
   <int value="-1182777927" label="ShareButtonInTopToolbar:enabled"/>
   <int value="-1182771360"
       label="AutofillVirtualCardsOnTouchToFillAndroid:disabled"/>
+  <int value="-1182246276" label="EnableRFC8925:enabled"/>
   <int value="-1182087678"
       label="CrossOriginOpenerPolicyAccessReporting:disabled"/>
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
@@ -65158,6 +65159,7 @@ from previous Chrome versions.
   <int value="1896527497" label="ImmersiveUiMode:enabled"/>
   <int value="1897117967" label="LensImageFormatOptimizations:enabled"/>
   <int value="1898231011" label="enable-native-notifications"/>
+  <int value="1898286738" label="EnableRFC8925:disabled"/>
   <int value="1899111954" label="WebRtcMetronomeTaskQueue:disabled"/>
   <int value="1899248188" label="MediaApp:disabled"/>
   <int value="1900508100" label="PasswordViewPageInSettings:enabled"/>

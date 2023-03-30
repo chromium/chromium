@@ -4005,6 +4005,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"time-of-day-wallpaper", flag_descriptions::kTimeOfDayWallpaperName,
      flag_descriptions::kTimeOfDayWallpaperDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTimeOfDayWallpaper)},
+    {"enable-rfc-8925", flag_descriptions::kEnableRFC8925Name,
+     flag_descriptions::kEnableRFC8925Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableRFC8925)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

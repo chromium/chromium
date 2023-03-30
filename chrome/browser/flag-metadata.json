@@ -3042,6 +3042,13 @@
      "expiry_milestone": 118
   },
   {
+    "name": "enable-rfc-8925",
+    "owners": [ "taoyl", "cros-networking@google.com" ],
+    // This is used by network administrators to debug potential network issues
+    // related to IPv6-only capability.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-rgb-keyboard",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
     "expiry_milestone": 118
