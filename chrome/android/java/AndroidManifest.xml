@@ -72,6 +72,7 @@ by a child template that "extends" this file.
 
     <!-- TODO(https://crbug.com/1421346): Remove this tools:ignore attribute once it's no longer necessary. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" tools:ignore="SystemPermissionTypo" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:ignore="SystemPermissionTypo" />
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
