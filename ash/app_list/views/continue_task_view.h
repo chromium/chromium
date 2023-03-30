@@ -82,6 +82,7 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
 
  private:
   void UpdateIcon();
+  ui::ColorId GetIconBackgroundColorId() const;
   gfx::Size GetIconSize() const;
   void UpdateResult();
 
@@ -104,10 +105,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // Closes the context menu for this view if it is running.
   void CloseContextMenu();
 
-  // Updates the background and the border if the ContinueTaskView is in tablet
-  // mode.
-  void UpdateStyleForTabletMode();
-
   // Record metrics at the moment when the ContinueTaskView result is removed.
   void LogMetricsOnResultRemoved();
 
@@ -119,8 +116,6 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   views::Label* subtitle_ = nullptr;
   views::ImageView* icon_ = nullptr;
   SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
-
-  const bool is_tablet_mode_;
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

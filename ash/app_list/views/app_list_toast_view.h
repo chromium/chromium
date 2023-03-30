@@ -81,7 +81,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Whether `view` is a ToastPillButton.
   static bool IsToastButton(views::View* view);
 
-  explicit AppListToastView(const std::u16string title);
+  AppListToastView(const std::u16string title, bool style_for_tablet_mode);
   AppListToastView(const AppListToastView&) = delete;
   AppListToastView& operator=(const AppListToastView&) = delete;
   ~AppListToastView() override;
@@ -106,10 +106,6 @@ class ASH_EXPORT AppListToastView : public views::View {
   void UpdateInteriorMargins(const gfx::Insets& margins);
 
   void SetViewDelegate(AppListViewDelegate* delegate);
-
-  // Styles the toast for display in tablet mode launcher UI - for example, adds
-  // background blur, and sets rounded corners on the toast layer.
-  void StyleForTabletMode();
 
   // Sets whether the icon for the toast should have a background.
   void AddIconBackground();
@@ -159,9 +155,6 @@ class ASH_EXPORT AppListToastView : public views::View {
   const gfx::VectorIcon* default_icon_ = nullptr;
 
   absl::optional<int> icon_size_;
-
-  // Whether the toast UI should be style for tablet mode app list UI.
-  bool style_for_tablet_mode_ = false;
 
   // Whether the toast icon should be styled with a background.
   bool has_icon_background_ = false;

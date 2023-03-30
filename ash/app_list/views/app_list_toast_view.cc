@@ -19,6 +19,7 @@
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -84,13 +85,10 @@ AppListToastView::Builder::~Builder() = default;
 
 std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
   std::unique_ptr<AppListToastView> toast =
-      std::make_unique<AppListToastView>(title_);
+      std::make_unique<AppListToastView>(title_, style_for_tablet_mode_);
 
   if (view_delegate_)
     toast->SetViewDelegate(view_delegate_);
-
-  if (style_for_tablet_mode_)
-    toast->StyleForTabletMode();
 
   if (dark_icon_ && light_icon_)
     toast->SetThemingIcons(dark_icon_, light_icon_);
@@ -190,7 +188,8 @@ bool AppListToastView::IsToastButton(views::View* view) {
   return views::IsViewClass<ToastPillButton>(view);
 }
 
-AppListToastView::AppListToastView(const std::u16string title) {
+AppListToastView::AppListToastView(const std::u16string title,
+                                   bool style_for_tablet_mode) {
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kInteriorMargin));
   layout_manager_->set_cross_axis_alignment(
@@ -203,48 +202,56 @@ AppListToastView::AppListToastView(const std::u16string title) {
 
   title_label_ =
       label_container_->AddChildView(std::make_unique<views::Label>(title));
-  bubble_utils::ApplyStyle(title_label_, TypographyToken::kCrosBody2);
+
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+  const ui::ColorId title_color_id =
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary;
+  bubble_utils::ApplyStyle(title_label_,
+                           style_for_tablet_mode ? TypographyToken::kCrosBody1
+                                                 : TypographyToken::kCrosBody2,
+                           title_color_id);
+
   title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_label_->SetMultiLine(true);
   SetTitleLabelMaximumWidth();
 
   layout_manager_->SetFlexForView(label_container_, 1);
-}
 
-AppListToastView::~AppListToastView() = default;
+  if (style_for_tablet_mode) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
 
-void AppListToastView::StyleForTabletMode() {
-  style_for_tablet_mode_ = true;
-
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
-}
-
-void AppListToastView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  if (style_for_tablet_mode_) {
-    SetBackground(views::CreateRoundedRectBackground(
-        ColorProvider::Get()->GetBaseLayerColor(
-            ColorProvider::BaseLayerType::kTransparent80),
-        kCornerRadius));
+    const ui::ColorId background_color_id =
+        is_jelly_enabled
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+            : kColorAshShieldAndBase80;
+    SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
+                                                           kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kCornerRadius,
-        chromeos::features::IsJellyrollEnabled()
+        is_jelly_enabled
             ? views::HighlightBorder::Type::kHighlightBorderNoShadow
             : views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   } else {
-    SetBackground(views::CreateRoundedRectBackground(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive),
-        kCornerRadius));
+    const ui::ColorId background_color_id =
+        is_jelly_enabled
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+            : kColorAshControlBackgroundColorInactive;
+    SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
+                                                           kCornerRadius));
   }
+}
 
+AppListToastView::~AppListToastView() = default;
+
+void AppListToastView::OnThemeChanged() {
+  views::View::OnThemeChanged();
   UpdateIconImage();
 }
 
@@ -284,8 +291,12 @@ void AppListToastView::SetSubtitle(const std::u16string subtitle) {
 
   subtitle_label_ =
       label_container_->AddChildView(std::make_unique<views::Label>(subtitle));
+  const ui::ColorId label_color_id =
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+          : kColorAshTextColorSecondary;
   bubble_utils::ApplyStyle(subtitle_label_, TypographyToken::kCrosAnnotation1,
-                           kColorAshTextColorSecondary);
+                           label_color_id);
   subtitle_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 
