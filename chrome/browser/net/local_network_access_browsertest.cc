@@ -109,6 +109,12 @@ constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
 constexpr char kWorkerScriptWithPnaHeadersPath[] =
     "/workers/post_ready_with_pna_headers.js";
 
+// Path to a response that passes Private Network Access checks.
+constexpr char kPnaPath[] =
+    "/set-header"
+    "?Access-Control-Allow-Origin: *"
+    "&Access-Control-Allow-Private-Network: true";
+
 // The returned script evaluates to a boolean indicating whether the fetch
 // succeeded or not.
 std::string FetchScript(const GURL& url) {
@@ -177,6 +183,9 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
       WebFeature::kPrivateNetworkAccessFetchedSubFrame,
       WebFeature::kPrivateNetworkAccessFetchedTopFrame,
       WebFeature::kPrivateNetworkAccessWithinWorker,
+      WebFeature::kPrivateNetworkAccessPreflightError,
+      WebFeature::kPrivateNetworkAccessPreflightSuccess,
+      WebFeature::kPrivateNetworkAccessPreflightWarning,
   };
 }
 
@@ -370,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWithFeatureDisabledBrowserTest,
 // This test verifies that when a secure context served from the public address
 // space loads a resource from the local network, the correct WebFeature is
 // use-counted.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWithFeatureDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsAddressSpaceFeatureForFetch) {
   WebFeatureHistogramTester feature_histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -380,14 +389,14 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWithFeatureDisabledBrowserTest,
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
 
-  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
-    fetch("/defaultresponse").then(response => response.ok)
-  )"));
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  FetchScript(SecureURL(*server, kPnaPath))));
 
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightSuccess, 1},
       }));
 }
 
@@ -415,6 +424,7 @@ IN_PROC_BROWSER_TEST_F(
       {
           {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
           {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
 
@@ -443,6 +453,7 @@ IN_PROC_BROWSER_TEST_F(
       {
           {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
           {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
 
@@ -866,6 +877,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWithFeatureEnabledBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightSuccess, 1},
       }));
 }
 
@@ -953,6 +965,8 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
 
@@ -998,6 +1012,7 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessRespectPreflightResultsBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightSuccess, 1},
       }));
 }
 
@@ -1088,6 +1103,8 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
 
@@ -1135,6 +1152,7 @@ IN_PROC_BROWSER_TEST_P(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightSuccess, 1},
       }));
 }
 
@@ -1217,11 +1235,13 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
     })()
   )"));
 
-  feature_histogram_tester.ExpectCounts(
-      AddFeatureCounts(AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-                       {
-                           {WebFeature::kPrivateNetworkAccessWithinWorker, 1},
-                       }));
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessWithinWorker, 1},
+          {WebFeature::kPrivateNetworkAccessIgnoredPreflightError, 1},
+          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
@@ -1258,11 +1278,15 @@ IN_PROC_BROWSER_TEST_P(LocalNetworkAccessWithFeatureEnabledWorkerBrowserTest,
     })()
   )"));
 
-  feature_histogram_tester.ExpectCounts(
-      AddFeatureCounts(AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-                       {
-                           {WebFeature::kPrivateNetworkAccessWithinWorker, 1},
-                       }));
+  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
+      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
+      {
+          {WebFeature::kPrivateNetworkAccessWithinWorker, 1},
+          // `kPrivateNetworkAccessIgnoredPreflightError` is not recorded.
+          // TODO(https://crbug.com/1428688): Consider recording the usecounter
+          // correctly.
+          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
+      }));
 }
 
 // Test the experimental use counter for accesses to the 0.0.0.0 IP address

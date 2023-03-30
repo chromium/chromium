@@ -3868,6 +3868,9 @@ enum WebFeature {
   kAttributeValueContainsLtOrGt = 4527,
   kV8ImportAssertionDeprecatedSyntax = 4528,
   kImageCaptureBackgroundBlur = 4529,
+  kPrivateNetworkAccessPreflightError = 4530,
+  kPrivateNetworkAccessPreflightSuccess = 4531,
+  kPrivateNetworkAccessPreflightWarning = 4532,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

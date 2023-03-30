@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
+#include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -80,6 +81,12 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const absl::optional<network::CorsErrorStatus>& cors_error_status(
       const network::URLLoaderCompletionStatus& status) {
     return status.cors_error_status;
+  }
+
+  static network::mojom::PrivateNetworkAccessPreflightResult
+  private_network_access_preflight_result(
+      const network::URLLoaderCompletionStatus& status) {
+    return status.private_network_access_preflight_result;
   }
 
   static network::mojom::TrustTokenOperationStatus trust_token_operation_status(

@@ -319,7 +319,7 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     const mojom::ClientSecurityStatePtr& client_security_state,
     base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
     absl::optional<CorsErrorStatus>* detected_error_status) {
-  DCHECK(detected_error_status);
+  CHECK(detected_error_status);
 
   auto check_result = CheckPreflightAccess(
       final_url, head.headers ? head.headers->response_code() : 0,
@@ -332,29 +332,13 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     *detected_error_status = std::move(check_result.error());
     return nullptr;
   }
-  *detected_error_status = absl::nullopt;
 
-  absl::optional<CorsErrorStatus> status =
+  *detected_error_status =
       CheckAllowPrivateNetworkHeader(head, original_request);
-  if (status) {
-    if (ShouldEnforcePrivateNetworkAccessHeader(
-            private_network_access_behavior)) {
-      *detected_error_status = std::move(status);
-      return nullptr;
-    }
-
-    // We only report these errors as warnings when they are suppressed, since
-    // `CorsURLLoader` already reports them otherwise.
-    if (devtools_observer && *devtools_observer) {
-      (*devtools_observer)
-          ->OnCorsError(original_request.devtools_request_id,
-                        original_request.request_initiator,
-                        client_security_state.Clone(), original_request.url,
-                        *status, /*is_warning=*/true);
-    }
-
-    base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
-                                  status->cors_error);
+  if (detected_error_status->has_value() &&
+      ShouldEnforcePrivateNetworkAccessHeader(
+          private_network_access_behavior)) {
+    return nullptr;
   }
 
   absl::optional<mojom::CorsError> error;
@@ -512,28 +496,44 @@ class PreflightController::PreflightLoader final {
     }
 
     absl::optional<CorsErrorStatus> detected_error_status;
-    bool has_authorization_covered_by_wildcard = false;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
         final_url, head, original_request_, tainted_,
         private_network_access_behavior_, client_security_state_,
         devtools_observer_, &detected_error_status);
 
-    if (result) {
-      // Only log if there is a result to log.
-      net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_RESULT,
-                        [&result] { return result->NetLogParams(); });
-
-      // Preflight succeeded. Check `original_request_` with `result`.
-      DCHECK(!detected_error_status);
-      detected_error_status = CheckPreflightResult(
-          *result, original_request_, non_wildcard_request_headers_support_,
-          acam_preflight_spec_conformant_);
-      has_authorization_covered_by_wildcard =
-          result->HasAuthorizationCoveredByWildcard(original_request_.headers);
+    if (!result) {
+      std::move(completion_callback_)
+          .Run(net::ERR_FAILED, std::move(detected_error_status), false);
+      return;
     }
 
+    // NOTE: `detected_error_status` may be non-nullopt if a PNA warning was
+    // encountered in `CreatePreflightResult()`.
+
+    // Only log if there is a result to log.
+    net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_RESULT,
+                      [&result] { return result->NetLogParams(); });
+
+    // Preflight succeeded. Check `original_request_` with `result`.
+    net::Error net_error = net::OK;
+    absl::optional<CorsErrorStatus> check_error_status = CheckPreflightResult(
+        *result, original_request_, non_wildcard_request_headers_support_,
+        acam_preflight_spec_conformant_);
+
+    // Avoid overwriting if `CheckPreflightResult()` succeeds, just in case
+    // there was a PNA warning in `detected_error_status`.
+    // TODO(https://crbug.com/1268378): Simplify this by always overwriting
+    // `detected_error_status` once preflights are always enforced.
+    if (check_error_status.has_value()) {
+      net_error = net::ERR_FAILED;
+      detected_error_status = std::move(check_error_status);
+    }
+
+    bool has_authorization_covered_by_wildcard =
+        result->HasAuthorizationCoveredByWildcard(original_request_.headers);
+
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
-        !detected_error_status) {
+        net_error == net::OK) {
       controller_->AppendToCache(*original_request_.request_initiator,
                                  original_request_.url, network_isolation_key_,
                                  original_request_.target_ip_address_space,
@@ -541,8 +541,8 @@ class PreflightController::PreflightLoader final {
     }
 
     std::move(completion_callback_)
-        .Run(detected_error_status ? net::ERR_FAILED : net::OK,
-             detected_error_status, has_authorization_covered_by_wildcard);
+        .Run(net_error, detected_error_status,
+             has_authorization_covered_by_wildcard);
   }
 
   void HandleResponseBody(std::unique_ptr<std::string> response_body) {

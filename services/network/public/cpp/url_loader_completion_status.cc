@@ -41,6 +41,8 @@ bool URLLoaderCompletionStatus::operator==(
          encoded_body_length == rhs.encoded_body_length &&
          decoded_body_length == rhs.decoded_body_length &&
          cors_error_status == rhs.cors_error_status &&
+         private_network_access_preflight_result ==
+             rhs.private_network_access_preflight_result &&
          blocked_by_response_reason == rhs.blocked_by_response_reason &&
          should_report_corb_blocking == rhs.should_report_corb_blocking &&
          proxy_server == rhs.proxy_server &&

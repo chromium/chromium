@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
                                  bool is_warning = false);
 
   // Handles OnComplete() callback.
-  void HandleComplete(const URLLoaderCompletionStatus& status);
+  void HandleComplete(URLLoaderCompletionStatus status);
 
   void OnMojoDisconnect();
 
@@ -191,6 +191,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // is enabled.
   PrivateNetworkAccessPreflightBehavior
   GetPrivateNetworkAccessPreflightBehavior() const;
+
+  // Returns `pna_preflight_result_`'s value, then resets it.
+  mojom::PrivateNetworkAccessPreflightResult
+  TakePrivateNetworkAccessPreflightResult();
 
   static absl::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
@@ -306,6 +310,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // TODO(https://crbug.com/1268378): Remove this along with
   // `ShouldIgnorePrivateNetworkAccessErrors()`.
   bool sending_pna_only_warning_preflight_ = false;
+
+  // The result of sending a PNA preflight, if any.
+  // Set when a PNA preflight completes. Reset and passed to
+  // `forwarding_client_` via `URLResponseHead` in `OnReceiveRedirect()` and
+  // `OnReceiveResponse()`.
+  mojom::PrivateNetworkAccessPreflightResult pna_preflight_result_ =
+      mojom::PrivateNetworkAccessPreflightResult::kNone;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   base::WeakPtrFactory<mojo::Remote<mojom::DevToolsObserver>>
