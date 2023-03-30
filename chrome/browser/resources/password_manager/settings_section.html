@@ -29,6 +29,9 @@
     --cr-icon-button-margin-end: 10px;
   }
 
+  cr-link-row[hide-icon]::part(icon) {
+    opacity: 0;
+  }
 </style>
 <h3 class="page-title">$i18n{settings}</h3>
 <div class="card">
@@ -71,7 +74,8 @@
   </cr-link-row>
   <cr-link-row id="importPasswords" class="cr-row settings-cr-link-row"
       label="$i18n{importPasswords}"
-      sub-label="$i18n{importPasswordsDescription}" hide-icon>
+      sub-label="$i18n{importPasswordsDescription}" hide-icon
+      ariaShowLabel ariaShowSublabel roleDescription="button">
   </cr-link-row>
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
       <passwords-exporter></passwords-exporter>
@@ -79,7 +83,8 @@
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
         on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
-        sub-label="[[getShortcutBannerDescription_()]]" hide-icon>
+        sub-label="[[getShortcutBannerDescription_()]]" hide-icon
+        ariaShowLabel ariaShowSublabel roleDescription="button">
     </cr-link-row>
   </template>
 </div>

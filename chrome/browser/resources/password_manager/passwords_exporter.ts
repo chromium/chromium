@@ -154,6 +154,13 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
         this.exportedFilePath_);
     this.$.exportSuccessToast.hide();
   }
+
+  private getAriaLabel_(): string {
+    return [
+      this.i18n('exportPasswords'),
+      this.i18n('exportPasswordsDescription'),
+    ].join('. ');
+  }
 }
 
 declare global {
