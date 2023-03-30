@@ -166,13 +166,10 @@ PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
 
 }  // namespace
 
-PaintLayerRareData::PaintLayerRareData()
-    : enclosing_pagination_layer(nullptr) {}
-
+PaintLayerRareData::PaintLayerRareData() = default;
 PaintLayerRareData::~PaintLayerRareData() = default;
 
 void PaintLayerRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(enclosing_pagination_layer);
   visitor->Trace(resource_info);
 }
 
@@ -303,7 +300,6 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
       RuntimeCallStats::CounterId::kUpdateLayerPositionsAfterLayout);
 
   UpdateLayerPositionRecursive();
-  UpdatePaginationRecursive(EnclosingPaginationLayer());
 }
 
 void PaintLayer::UpdateLayerPositionRecursive() {
@@ -374,72 +370,6 @@ gfx::Transform PaintLayer::CurrentTransform() const {
   if (gfx::Transform* transform = Transform())
     return *transform;
   return gfx::Transform();
-}
-
-void PaintLayer::ConvertFromFlowThreadToVisualBoundingBoxInAncestor(
-    const PaintLayer* ancestor_layer,
-    PhysicalRect& rect) const {
-  PaintLayer* pagination_layer = EnclosingPaginationLayer();
-  DCHECK(pagination_layer);
-  auto& flow_thread = To<LayoutFlowThread>(pagination_layer->GetLayoutObject());
-
-  // First make the flow thread rectangle relative to the flow thread, not to
-  // |layer|.
-  PhysicalOffset offset_within_pagination_layer;
-  ConvertToLayerCoords(pagination_layer, offset_within_pagination_layer);
-  rect.Move(offset_within_pagination_layer);
-
-  // Then make the rectangle visual, relative to the fragmentation context.
-  // Split our box up into the actual fragment boxes that layout in the
-  // columns/pages and unite those together to get our true bounding box.
-  rect = PhysicalRectToBeNoop(
-      flow_thread.FragmentsBoundingBox(rect.ToLayoutRect()));
-
-  // Finally, make the visual rectangle relative to |ancestorLayer|.
-  if (ancestor_layer->EnclosingPaginationLayer() != pagination_layer) {
-    rect.Move(pagination_layer->VisualOffsetFromAncestor(ancestor_layer));
-    return;
-  }
-  // The ancestor layer is inside the same pagination layer as |layer|, so we
-  // need to subtract the visual distance from the ancestor layer to the
-  // pagination layer.
-  rect.Move(-ancestor_layer->VisualOffsetFromAncestor(pagination_layer));
-}
-
-void PaintLayer::UpdatePaginationRecursive(bool needs_pagination_update) {
-  if (rare_data_)
-    rare_data_->enclosing_pagination_layer = nullptr;
-
-  if (GetLayoutObject().IsLayoutFlowThread())
-    needs_pagination_update = true;
-
-  if (needs_pagination_update) {
-    // Each paginated layer has to paint on its own. There is no recurring into
-    // child layers. Each layer has to be checked individually and genuinely
-    // know if it is going to have to split itself up when painting only its
-    // contents (and not any other descendant layers). We track an
-    // enclosingPaginationLayer instead of using a simple bit, since we want to
-    // be able to get back to that layer easily.
-    if (LayoutFlowThread* containing_flow_thread =
-            GetLayoutObject().FlowThreadContainingBlock())
-      EnsureRareData().enclosing_pagination_layer =
-          containing_flow_thread->Layer();
-  }
-
-  // If this element prevents child painting, then we can skip updating
-  // pagination info, since it won't be used anyway.
-  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
-    return;
-
-  for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
-    child->UpdatePaginationRecursive(needs_pagination_update);
-}
-
-void PaintLayer::ClearPaginationRecursive() {
-  if (rare_data_)
-    rare_data_->enclosing_pagination_layer = nullptr;
-  for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
-    child->ClearPaginationRecursive();
 }
 
 void PaintLayer::DirtyVisibleContentStatus() {
@@ -929,9 +859,6 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
   if (old_child->has_visible_content_ ||
       old_child->has_visible_self_painting_descendant_)
     MarkAncestorChainForFlagsUpdate();
-
-  if (old_child->EnclosingPaginationLayer())
-    old_child->ClearPaginationRecursive();
 }
 
 void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
@@ -1075,29 +1002,7 @@ PhysicalOffset PaintLayer::VisualOffsetFromAncestor(
     PhysicalOffset offset) const {
   if (ancestor_layer == this)
     return offset;
-  PaintLayer* pagination_layer = EnclosingPaginationLayer();
-  if (pagination_layer == this)
-    pagination_layer = Parent()->EnclosingPaginationLayer();
-  if (!pagination_layer) {
-    ConvertToLayerCoords(ancestor_layer, offset);
-    return offset;
-  }
-
-  auto& flow_thread = To<LayoutFlowThread>(pagination_layer->GetLayoutObject());
-  ConvertToLayerCoords(pagination_layer, offset);
-  offset = PhysicalOffsetToBeNoop(
-      flow_thread.FlowThreadPointToVisualPoint(offset.ToLayoutPoint()));
-  if (ancestor_layer == pagination_layer)
-    return offset;
-
-  if (ancestor_layer->EnclosingPaginationLayer() != pagination_layer) {
-    offset += pagination_layer->VisualOffsetFromAncestor(ancestor_layer);
-  } else {
-    // The ancestor layer is also inside the pagination layer, so we need to
-    // subtract the visual distance from the ancestor layer to the pagination
-    // layer.
-    offset -= ancestor_layer->VisualOffsetFromAncestor(pagination_layer);
-  }
+  ConvertToLayerCoords(ancestor_layer, offset);
   return offset;
 }
 
@@ -2142,10 +2047,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   DCHECK(IsSelfPaintingLayer());
 
   PhysicalRect origin;
-  if (EnclosingPaginationLayer())
-    ConvertFromFlowThreadToVisualBoundingBoxInAncestor(&root_layer, origin);
-  else
-    ConvertToLayerCoords(&root_layer, origin);
+  ConvertToLayerCoords(&root_layer, origin);
 
   gfx::PointF point(hit_test_location.Point() - origin.offset);
   gfx::RectF reference_box =
@@ -2275,9 +2177,6 @@ bool PaintLayer::KnownToClipSubtreeToPaddingBox() const {
 }
 
 bool PaintLayer::SupportsSubsequenceCaching() const {
-  if (EnclosingPaginationLayer())
-    return false;
-
   if (const LayoutBox* box = GetLayoutBox()) {
     // TODO(crbug.com/1253797): Revisit this when implementing correct paint
     // order of fragmented stacking contexts.

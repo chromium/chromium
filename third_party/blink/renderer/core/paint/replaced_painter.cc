@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -106,17 +105,6 @@ bool ReplacedPainter::ShouldPaintBoxDecorationBackground(
 }
 
 void ReplacedPainter::Paint(const PaintInfo& paint_info) {
-  // TODO(crbug.com/797779): For now embedded contents don't know whether
-  // they are painted in a fragmented context and may do something bad in a
-  // fragmented context, e.g. creating subsequences. Skip cache to avoid that.
-  // This will be unnecessary when the contents are fragment aware.
-  absl::optional<DisplayItemCacheSkipper> cache_skipper;
-  if (layout_replaced_.IsLayoutEmbeddedContent()) {
-    DCHECK(layout_replaced_.HasLayer());
-    if (layout_replaced_.Layer()->EnclosingPaginationLayer())
-      cache_skipper.emplace(paint_info.context);
-  }
-
   ScopedPaintState paint_state(layout_replaced_, paint_info);
   if (!ShouldPaint(paint_state))
     return;

@@ -541,11 +541,6 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   auto* frame_view = box->GetFrameView();
   frame_view->InvalidateBackgroundAttachmentFixedDescendantsOnScroll(*box);
 
-  // TODO(chrishtr): remove this slow path once crbug.com/906885 is fixed.
-  // See also https://bugs.chromium.org/p/chromium/issues/detail?id=903287#c10.
-  if (Layer()->EnclosingPaginationLayer())
-    box->SetSubtreeShouldCheckForPaintInvalidation();
-
   if (!box->BackgroundNeedsFullPaintInvalidation()) {
     auto background_paint_location = box->GetBackgroundPaintLocation();
     bool background_paint_in_border_box =

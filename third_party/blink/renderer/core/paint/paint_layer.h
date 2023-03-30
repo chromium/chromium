@@ -105,18 +105,6 @@ struct CORE_EXPORT PaintLayerRareData final
 
   std::unique_ptr<gfx::Transform> transform;
 
-  // Pointer to the enclosing Layer that caused us to be paginated. It is 0 if
-  // we are not paginated.
-  //
-  // See LayoutMultiColumnFlowThread and
-  // https://sites.google.com/a/chromium.org/dev/developers/design-documents/multi-column-layout
-  // for more information about the multicol implementation. It's important to
-  // understand the difference between flow thread coordinates and visual
-  // coordinates when working with multicol in Layer, since Layer is one of the
-  // few places where we have to worry about the visual ones. Internally we try
-  // to use flow-thread coordinates whenever possible.
-  Member<PaintLayer> enclosing_pagination_layer;
-
   Member<PaintLayerResourceInfo> resource_info;
 };
 
@@ -276,10 +264,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void UpdateLayerPositionsAfterLayout();
 
-  PaintLayer* EnclosingPaginationLayer() const {
-    return rare_data_ ? rare_data_->enclosing_pagination_layer : nullptr;
-  }
-
   void UpdateTransform();
 
   bool HasVisibleContent() const {
@@ -321,15 +305,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PhysicalOffset VisualOffsetFromAncestor(
       const PaintLayer* ancestor_layer,
       PhysicalOffset offset = PhysicalOffset()) const;
-
-  // Convert a bounding box from flow thread coordinates, relative to |this|, to
-  // visual coordinates, relative to |ancestorLayer|.
-  // See http://www.chromium.org/developers/design-documents/multi-column-layout
-  // for more info on these coordinate types.  This method requires this layer
-  // to be paginated; i.e. it must have an enclosingPaginationLayer().
-  void ConvertFromFlowThreadToVisualBoundingBoxInAncestor(
-      const PaintLayer* ancestor_layer,
-      PhysicalRect&) const;
 
   // The hitTest() method looks for mouse events by walking layers that
   // intersect the point from front to back.
@@ -750,9 +725,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void UpdateTransformAfterStyleChange(const ComputedStyle* old_style,
                                        const ComputedStyle& new_style);
-
-  void UpdatePaginationRecursive(bool needs_pagination_update = false);
-  void ClearPaginationRecursive();
 
   void MarkCompositingContainerChainForNeedsRepaint();
 
