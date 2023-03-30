@@ -41,9 +41,6 @@
     }
   },
   "$build/reclient": {
-    "bootstrap_env": {
-      "RBE_compression_threshold": "4000000"
-    },
     "ensure_verified": true,
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",

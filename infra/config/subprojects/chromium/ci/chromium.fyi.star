@@ -1673,9 +1673,6 @@ ci.builder(
         short_name = "re",
     ),
     execution_timeout = 14 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_compression_threshold": "4000000",
-    },
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
@@ -1739,9 +1736,6 @@ ci.builder(
         category = "win",
         short_name = "re",
     ),
-    reclient_bootstrap_env = {
-        "RBE_compression_threshold": "4000000",
-    },
     reclient_ensure_verified = True,
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
@@ -1775,9 +1769,6 @@ fyi_mac_builder(
         category = "mac",
         short_name = "re",
     ),
-    reclient_bootstrap_env = {
-        "RBE_compression_threshold": "4000000",
-    },
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
 )
