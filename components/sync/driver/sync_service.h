@@ -12,7 +12,6 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -117,9 +116,10 @@ class SyncSetupInProgressHandle {
 //   setup-in-progress handles, datatype configuration will begin.
 class SyncService : public KeyedService {
  public:
-  // The set of reasons due to which Sync-the-feature can be disabled. Note that
-  // Sync-the-transport might still start up even in the presence of (some)
-  // disable reasons. Meant to be used as a enum set.
+  // The set of reasons due to which Sync can be disabled.
+  // Except for DISABLE_REASON_USER_CHOICE, these apply to both
+  // sync-the-transport and sync-the-feature.
+  // Meant to be used as a enum set.
   enum DisableReason {
     // Sync is disabled by enterprise policy, either browser policy (through
     // prefs) or account policy received from the Sync server.
@@ -127,13 +127,12 @@ class SyncService : public KeyedService {
     DISABLE_REASON_FIRST = DISABLE_REASON_ENTERPRISE_POLICY,
     // Sync can't start because there is no authenticated user.
     DISABLE_REASON_NOT_SIGNED_IN,
-    // Sync is suppressed by user choice, either by disabling all the data
-    // type toggles (*), or a “Reset Sync” operation from the dashboard. This is
-    // also set if there's simply no signed-in user (in addition to
-    // DISABLE_REASON_NOT_SIGNED_IN).
-    //
-    // (*) As of 01/2022, this is only true on mobile, where the logic was
-    // introduced as part of a migration (see crbug.com/1291946).
+    // Sync-the-feature is suppressed by user choice. This mostly means there is
+    // no signed-in user (in which case DISABLE_REASON_NOT_SIGNED_IN will also
+    // be present), but can also happen after a "Reset Sync" operation from the
+    // dashboard.
+    // TODO(crbug.com/1429261): Remove this reason (and update the comment
+    // above), so that all the reasons affect Sync-the-transport.
     DISABLE_REASON_USER_CHOICE,
     // Sync has encountered an unrecoverable error. It won't attempt to start
     // again until either the browser is restarted, or the user fully signs out
@@ -152,8 +151,8 @@ class SyncService : public KeyedService {
     // Sync is inactive, e.g. due to enterprise policy, or simply because there
     // is no authenticated user.
     DISABLED,
-    // Sync is paused, e.g. because there is a persistent auth error (e.g. user
-    // signed out on the web on desktop), and the engine is inactive.
+    // Sync is paused because there is a persistent auth error (e.g. user signed
+    // out on the web on desktop), and the engine is inactive.
     PAUSED,
     // Sync's startup was deferred, so that it doesn't slow down browser
     // startup. Once the deferral time (usually 10s) expires, or something
@@ -347,8 +346,9 @@ class SyncService : public KeyedService {
   //////////////////////////////////////////////////////////////////////////////
 
   // Returns the set of types which are preferred for enabling. This is a
-  // superset of the active types (see GetActiveDataTypes()). This also includes
-  // any forced types.
+  // superset of the active types (see GetActiveDataTypes()).
+  // TODO(crbug.com/1429249): Deprecated, DO NOT USE! You probably want
+  // `GetUserSettings()->GetSelectedTypes()` instead.
   virtual ModelTypeSet GetPreferredDataTypes() const = 0;
 
   // Returns the set of currently active data types (those chosen or configured
@@ -369,6 +369,7 @@ class SyncService : public KeyedService {
   // ASAP, presumably because a local change event has occurred but we're
   // still in deferred start mode, meaning the SyncableService hasn't been
   // told to MergeDataAndStartSyncing yet.
+  // TODO(crbug.com/1429293): Remove this API.
   virtual void OnDataTypeRequestsSyncStartup(ModelType type) = 0;
 
   // Triggers a GetUpdates call for the specified |types|, pulling any new data
@@ -476,7 +477,7 @@ class SyncService : public KeyedService {
       base::OnceCallback<void(base::Value::List)> callback) = 0;
 
  protected:
-  SyncService() {}
+  SyncService() = default;
 };
 
 }  // namespace syncer
