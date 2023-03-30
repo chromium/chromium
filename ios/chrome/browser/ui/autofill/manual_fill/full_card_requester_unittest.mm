@@ -17,6 +17,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -83,7 +84,10 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/GURL());
     frames_manager->AddWebFrame(std::move(main_frame));
-    web_state()->SetWebFramesManager(std::move(frames_manager));
+    autofill::AutofillJavaScriptFeature* feature =
+        autofill::AutofillJavaScriptFeature::GetInstance();
+    web::ContentWorld content_world = feature->GetSupportedContentWorld();
+    web_state()->SetWebFramesManager(content_world, std::move(frames_manager));
 
     UniqueIDDataTabHelper::CreateForWebState(web_state());
 
@@ -106,9 +110,11 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
   void TearDown() override {
     // Remove the frame in order to destroy the AutofillDriver before the
     // AutofillClient.
+    autofill::AutofillJavaScriptFeature* feature =
+        autofill::AutofillJavaScriptFeature::GetInstance();
     web::FakeWebFramesManager* frames_manager =
         static_cast<web::FakeWebFramesManager*>(
-            web_state()->GetPageWorldWebFramesManager());
+            feature->GetWebFramesManager(web_state()));
     std::string frame_id = frames_manager->GetMainWebFrame()->GetFrameId();
     frames_manager->RemoveWebFrame(frame_id);
 
@@ -154,8 +160,10 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
   FullCardRequester full_card_requester(base_view_controller, browser_state());
 
   EXPECT_EQ(nil, base_view_controller.presentedViewController);
+  autofill::AutofillJavaScriptFeature* feature =
+      autofill::AutofillJavaScriptFeature::GetInstance();
   web::WebFrame* main_frame =
-      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
+      feature->GetWebFramesManager(web_state())->GetMainWebFrame();
   autofill::BrowserAutofillManager* autofill_manager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
                                                            main_frame)
