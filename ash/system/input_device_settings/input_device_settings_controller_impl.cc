@@ -15,6 +15,7 @@
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
+#include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
@@ -168,6 +169,19 @@ void InputDeviceSettingsControllerImpl::Init() {
               &InputDeviceSettingsControllerImpl::OnPointingStickListUpdated,
               base::Unretained(this)));
   metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
+  InitializePolicyHandler();
+}
+
+void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
+  policy_handler_ =
+      std::make_unique<InputDeviceSettingsPolicyHandler>(base::BindRepeating(
+          &InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged,
+          base::Unretained(this)));
+
+  // Only initialize the policy handler when in an active user session.
+  if (active_pref_service_) {
+    policy_handler_->Initialize(active_pref_service_);
+  }
 }
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
@@ -195,6 +209,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
   active_pref_service_ = pref_service;
+  InitializePolicyHandler();
 
   // Device settings must be refreshed when the user pref service is updated,
   // but all dependencies of `InputDeviceSettingsControllerImpl` must be updated
@@ -233,6 +248,11 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
         active_pref_service_, pointing_stick.get());
     DispatchPointingStickSettingsChanged(id);
   }
+}
+
+void InputDeviceSettingsControllerImpl::OnKeyboardPoliciesChanged() {
+  // TODO(dpad): Implement re-initialization of keyboard settings when the
+  // policies change.
 }
 
 const mojom::KeyboardSettings*
