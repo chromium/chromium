@@ -73,7 +73,17 @@ For detailed documentation on the Shill IPConfig DBus API, please refer to
 
 ## Shill profile client {#shill-profile-client}
 
-TODO: Discuss the Shill profile client.
+The [`ShillProfileClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_profile_client.h;drc=2527cfc617c6cc4bbad415d49a00b44a773e1d9f)
+class provides an interface for interacting with the Shill profile interface
+which is the top-level singleton exposed by Shill that provides Layer 3
+configuration. It enables Chrome to:
+* Set the value of a profile property
+* Get properties for a profile entry
+* Delete a profile
+
+For detailed documentation on the Shill Profile DBus API, please refer to
+[profile-api.txt](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/shill/doc/profile-api.txt;drc=06c14aa5039b8045a2c293e65f8924c9aa5fd22b).
+
 
 ## Shill service client {#shill-service-client}
 The
@@ -134,8 +144,10 @@ implemented by
 [`FakeShillIPConfigClient`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/dbus/shill/fake_shill_ipconfig_client.h;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094).
 
 ## Shill profile client {#shill-profile-client-testing}
+The [`ShillProfileClient::TestInterface`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_profile_client.h;l=37-98;drc=2527cfc617c6cc4bbad415d49a00b44a773e1d9f)
+allows you to add fake profile entries for ChromeOS unit testing
+purposes. This interface is implemented in the [FakeShillProfileClient](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/fake_shill_profile_client.h;drc=2527cfc617c6cc4bbad415d49a00b44a773e1d9f).
 
-TODO: Discuss the Shill profile client testing interface.
 
 ## Shill service client {#shill-service-client-testing}
 
