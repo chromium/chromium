@@ -312,7 +312,13 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::SetUpJpegParameters(
   memset(&ctrls, 0, sizeof(ctrls));
   memset(&ctrl, 0, sizeof(ctrl));
 
-  ctrls.ctrl_class = V4L2_CTRL_CLASS_JPEG;
+  ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ctrls.count = 0;
+  const bool use_modern_s_ext_ctrls =
+      device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls) == 0;
+
+  ctrls.which =
+      use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : V4L2_CTRL_CLASS_JPEG;
   ctrls.controls = &ctrl;
   ctrls.count = 1;
 
@@ -1152,7 +1158,13 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
   memset(&ctrl, 0, sizeof(ctrl));
   memset(&queryctrl, 0, sizeof(queryctrl));
 
-  ctrls.ctrl_class = V4L2_CTRL_CLASS_JPEG;
+  ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ctrls.count = 0;
+  const bool use_modern_s_ext_ctrls =
+      device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls) == 0;
+
+  ctrls.which =
+      use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : V4L2_CTRL_CLASS_JPEG;
   ctrls.controls = &ctrl;
   ctrls.count = 1;
 

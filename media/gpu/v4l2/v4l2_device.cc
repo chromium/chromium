@@ -2362,7 +2362,13 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
 
   struct v4l2_ext_controls ext_ctrls;
   memset(&ext_ctrls, 0, sizeof(ext_ctrls));
-  ext_ctrls.ctrl_class = ctrl_class;
+  ext_ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ext_ctrls.count = 0;
+  const bool use_modern_s_ext_ctrls =
+      Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) == 0;
+
+  ext_ctrls.which =
+      use_modern_s_ext_ctrls ? V4L2_CTRL_WHICH_CUR_VAL : ctrl_class;
   ext_ctrls.count = ctrls.size();
   ext_ctrls.controls = &ctrls[0].ctrl;
 
