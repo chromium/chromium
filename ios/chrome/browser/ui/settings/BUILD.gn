@@ -123,7 +123,6 @@ source_set("settings") {
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/default_browser:utils",
-    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/flags:system_flags",

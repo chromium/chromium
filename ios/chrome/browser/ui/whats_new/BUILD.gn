@@ -25,7 +25,6 @@ source_set("whats_new") {
     ":feature_flags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser:utils",
-    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
