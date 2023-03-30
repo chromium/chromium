@@ -2432,7 +2432,7 @@ void LocalFrame::OnTaskCompleted(base::TimeTicks start_time,
 
 void LocalFrame::MainFrameInteractive() {
   if (Page* page = GetPage()) {
-    page->GetV8CompileHints().GenerateData();
+    page->GetV8CrowdsourcedCompileHintsProducer().GenerateData();
   }
 }
 

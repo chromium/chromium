@@ -26,22 +26,28 @@ namespace {
 constexpr int kBloomFilterInt32Count = 1024;
 }
 
-std::atomic<bool> V8CompileHints::data_generated_for_this_process_ = false;
+std::atomic<bool>
+    V8CrowdsourcedCompileHintsProducer::data_generated_for_this_process_ =
+        false;
 
-V8CompileHints::V8CompileHints(Page* page) : page_(page) {}
+V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
+    Page* page)
+    : page_(page) {}
 
-void V8CompileHints::RecordScript(Frame* frame,
-                                  ExecutionContext* execution_context,
-                                  const v8::Local<v8::Script> script,
-                                  ScriptState* script_state) {
+void V8CrowdsourcedCompileHintsProducer::RecordScript(
+    Frame* frame,
+    ExecutionContext* execution_context,
+    const v8::Local<v8::Script> script,
+    ScriptState* script_state) {
   if (state_ == State::kDataGenerationFinished || state_ == State::kDisabled) {
     // We've already generated data for this V8CompileHints, or data generation
     // is disabled. Don't record any script compilations happening after it.
     return;
   }
   if (data_generated_for_this_process_) {
-    // We've already generated data for some other V8CompileHints, so stop
-    // collecting data. The task for data generation might still run.
+    // We've already generated data for some other
+    // V8CrowdsourcedCompileHintsProducer, so stop collecting data. The task for
+    // data generation might still run.
     state_ = State::kDataGenerationFinished;
     ClearData();
   }
@@ -77,7 +83,7 @@ void V8CompileHints::RecordScript(Frame* frame,
   script_name_hashes_.emplace_back(script_name_hash);
 }
 
-void V8CompileHints::GenerateData() {
+void V8CrowdsourcedCompileHintsProducer::GenerateData() {
   // Call FeatureList::IsEnabled only once.
   static bool compile_hints_enabled =
       base::FeatureList::IsEnabled(features::kProduceCompileHints);
@@ -100,16 +106,16 @@ void V8CompileHints::GenerateData() {
   ClearData();
 }
 
-void V8CompileHints::Trace(Visitor* visitor) const {
+void V8CrowdsourcedCompileHintsProducer::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
 }
 
-void V8CompileHints::ClearData() {
+void V8CrowdsourcedCompileHintsProducer::ClearData() {
   scripts_.clear();
   script_name_hashes_.clear();
 }
 
-bool V8CompileHints::SendDataToUkm() {
+bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   Frame* main_frame = page_->MainFrame();
   // Because of OOPIF, the main frame is not necessarily a LocalFrame. We cannot
   // generate good compile hints for those pages, so skip sending them.
@@ -685,7 +691,7 @@ bool V8CompileHints::SendDataToUkm() {
   return true;
 }
 
-void V8CompileHints::AddNoise(unsigned* data) {
+void V8CrowdsourcedCompileHintsProducer::AddNoise(unsigned* data) {
   // Add differential privacy noise:
   // With noise / 2 probability, the bit will be 0.
   // With noise / 2 probability, the bit will be 1.
