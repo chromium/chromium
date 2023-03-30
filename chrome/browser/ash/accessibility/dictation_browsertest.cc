@@ -727,9 +727,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWhenInputFieldLosesFocus) {
   EXPECT_EQ("Vega is a star", GetEditableValue());
 }
 
-// TODO(crbug.com/1352312): Flaky.
-IN_PROC_BROWSER_TEST_P(DictationTest,
-                       DISABLED_UserEndsDictationWhenChromeVoxEnabled) {
+IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   EnableChromeVox();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
   InstallMockInputContextHandler();
@@ -743,8 +741,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest,
   WaitForCommitText(kFinalSpeechResult16);
 }
 
-// TODO(crbug.com/1401298): Flaky.
-IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_ChromeVoxSilencedWhenToggledOn) {
+IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
   // Set up ChromeVox.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
@@ -760,8 +757,9 @@ IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_ChromeVoxSilencedWhenToggledOn) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
-  // Assert ChromeVox was asked to stop speaking at the toggle.
-  EXPECT_EQ(1, sm.stop_count());
+  // Assert ChromeVox was asked to stop speaking at the toggle. Note: multiple
+  // requests to stop speech can be sent, so we just expect stop_count() > 0.
+  EXPECT_GT(sm.stop_count(), 0);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, EntersInterimSpeechWhenToggledOff) {
