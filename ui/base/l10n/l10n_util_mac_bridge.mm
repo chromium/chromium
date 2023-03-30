@@ -23,4 +23,8 @@
   return l10n_util::GetNSStringF(messageId, base::SysNSStringToUTF16(argument));
 }
 
++ (NSString*)pluralStringForMessageId:(int)messageId number:(int)number {
+  return l10n_util::GetPluralNSStringF(messageId, number);
+}
+
 @end

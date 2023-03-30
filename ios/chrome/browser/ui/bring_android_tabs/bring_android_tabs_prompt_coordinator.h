@@ -9,12 +9,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol BringAndroidTabsCommands;
+
 // Coordinator that manages the "Bring Android Tabs" prompt presentation and
 // interaction.
 @interface BringAndroidTabsPromptCoordinator : ChromeCoordinator
 
 // View controller for the prompt.
-@property(nonatomic, strong) UIViewController* viewController;
+@property(nonatomic, readonly) UIViewController* viewController;
+// Command handler for the prompt.
+@property(nonatomic, weak) id<BringAndroidTabsCommands> commandHandler;
 
 @end
 

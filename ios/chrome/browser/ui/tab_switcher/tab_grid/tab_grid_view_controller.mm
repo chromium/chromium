@@ -724,11 +724,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [_reauthAgent addObserver:self];
 }
 
-- (void)setBringAndroidTabsPromptViewController:
-    (UIViewController*)viewController {
-  _bringAndroidTabsPromptViewController = viewController;
+- (void)setBottomMessage:(UIViewController*)bottomMessage {
+  _bottomMessage = bottomMessage;
   // TODO(crbug.com/1418117): Move around other UI components in the regular tab
-  // grid accordingly, and add/remove `viewController` to the view hierarchy.
+  // grid accordingly, and add/remove `bottomMessage` to the view hierarchy.
 }
 
 #pragma mark - TabGridPaging

@@ -63,7 +63,7 @@
   [self onPromptDisappear:bring_android_tabs::PromptActionType::kReviewTabs];
 }
 
-- (void)bringAndroidTabsPromptViewControllerDidDismiss:(BOOL)swiped {
+- (void)bringAndroidTabsPromptViewControllerDidDismissWithSwipe:(BOOL)swiped {
   [self onPromptDisappear:
             swiped ? bring_android_tabs::PromptActionType::kSwipeToDismiss
                    : bring_android_tabs::PromptActionType::kCancel];

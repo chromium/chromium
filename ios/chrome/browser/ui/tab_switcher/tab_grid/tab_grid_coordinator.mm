@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
+#import "ios/chrome/browser/bring_android_tabs/features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_util.h"
@@ -436,7 +437,7 @@
   if (currentActivePage == TabGridPageRegularTabs &&
       !_bringAndroidTabsPromptCoordinator) {
     BringAndroidTabsToIOSService* bringAndroidTabsService =
-        BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
+        BringAndroidTabsToIOSServiceFactory::GetForBrowserState(
             self.regularBrowser->GetBrowserState());
     if (bringAndroidTabsService != nil) {
       bringAndroidTabsService->LoadTabs();
@@ -873,7 +874,7 @@
   [self.incognitoSnackbarCoordinator stop];
   self.incognitoSnackbarCoordinator = nil;
 
-  self.baseViewController.bringAndroidTabsPromptViewController = nil;
+  self.baseViewController.bottomMessage = nil;
   [_bringAndroidTabsPromptCoordinator stop];
   _bringAndroidTabsPromptCoordinator = nil;
   [_tabListFromAndroidCoordinator stop];
@@ -1313,10 +1314,25 @@
         [[BringAndroidTabsPromptCoordinator alloc]
             initWithBaseViewController:self.baseViewController
                                browser:self.regularBrowser];
+    _bringAndroidTabsPromptCoordinator.commandHandler = self;
   }
   [_bringAndroidTabsPromptCoordinator start];
-  self.baseViewController.bringAndroidTabsPromptViewController =
-      _bringAndroidTabsPromptCoordinator.viewController;
+  switch (GetBringYourOwnTabsPromptType()) {
+    case BringYourOwnTabsPromptType::kHalfSheet:
+      [self.baseViewController
+          presentViewController:_bringAndroidTabsPromptCoordinator
+                                    .viewController
+                       animated:YES
+                     completion:nil];
+      break;
+    case BringYourOwnTabsPromptType::kBottomMessage:
+      self.baseViewController.bottomMessage =
+          _bringAndroidTabsPromptCoordinator.viewController;
+      break;
+    case BringYourOwnTabsPromptType::kDisabled:
+      NOTREACHED();
+      break;
+  }
 }
 
 - (void)reviewAllBringAndroidTabs {
@@ -1330,9 +1346,20 @@
 // Helper method to handle BringAndroidTabsCommands.
 - (void)onUserInteractionWithBringAndroidTabsPrompt:(BOOL)reviewTabs {
   DCHECK(_bringAndroidTabsPromptCoordinator);
-  DCHECK_EQ(self.baseViewController.bringAndroidTabsPromptViewController,
-            _bringAndroidTabsPromptCoordinator.viewController);
-  self.baseViewController.bringAndroidTabsPromptViewController = nil;
+  switch (GetBringYourOwnTabsPromptType()) {
+    case BringYourOwnTabsPromptType::kHalfSheet:
+      [self.baseViewController dismissViewControllerAnimated:YES
+                                                  completion:nil];
+      break;
+    case BringYourOwnTabsPromptType::kBottomMessage:
+      DCHECK_EQ(self.baseViewController.bottomMessage,
+                _bringAndroidTabsPromptCoordinator.viewController);
+      self.baseViewController.bottomMessage = nil;
+      break;
+    case BringYourOwnTabsPromptType::kDisabled:
+      NOTREACHED();
+      break;
+  }
   if (reviewTabs) {
     _tabListFromAndroidCoordinator = [[TabListFromAndroidCoordinator alloc]
         initWithBaseViewController:self.baseViewController

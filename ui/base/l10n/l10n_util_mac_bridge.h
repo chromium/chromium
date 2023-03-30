@@ -17,6 +17,8 @@
 + (NSString*)formatStringForMessageId:(int)messageId
                              argument:(NSString*)argument;
 
++ (NSString*)pluralStringForMessageId:(int)messageId number:(int)number;
+
 @end
 
 #endif  // UI_BASE_L10N_L10N_UTIL_MAC_BRIDGE_H_

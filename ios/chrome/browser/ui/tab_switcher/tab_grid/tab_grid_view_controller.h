@@ -177,11 +177,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<TabContextMenuProvider>
     incognitoTabsContextMenuProvider;
 
-// The view controller for the "Bring Android Tabs" prompt for Android
-// switchers. Note that setting this value immediately adds it to the view
-// hierarchy.
-@property(nonatomic, strong)
-    UIViewController* bringAndroidTabsPromptViewController;
+// The view controller that shows below the tab grid as a bottom message. Note
+// that setting this value immediately adds it to the view hierarchy.
+@property(nonatomic, strong) UIViewController* bottomMessage;
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;

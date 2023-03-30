@@ -137,7 +137,7 @@ TEST_F(BringAndroidTabsPromptMediatorTest, ReviewTabs) {
 TEST_F(BringAndroidTabsPromptMediatorTest, TapCloseButton) {
   base::HistogramTester histogram_tester;
   [delegate() bringAndroidTabsPromptViewControllerDidShow];
-  [delegate() bringAndroidTabsPromptViewControllerDidDismiss:NO];
+  [delegate() bringAndroidTabsPromptViewControllerDidDismissWithSwipe:NO];
   histogram_tester.ExpectUniqueSample(
       bring_android_tabs::kPromptActionHistogramName,
       bring_android_tabs::PromptActionType::kCancel, 1);
@@ -149,7 +149,7 @@ TEST_F(BringAndroidTabsPromptMediatorTest, TapCloseButton) {
 TEST_F(BringAndroidTabsPromptMediatorTest, SwipeToDismiss) {
   base::HistogramTester histogram_tester;
   [delegate() bringAndroidTabsPromptViewControllerDidShow];
-  [delegate() bringAndroidTabsPromptViewControllerDidDismiss:YES];
+  [delegate() bringAndroidTabsPromptViewControllerDidDismissWithSwipe:YES];
   histogram_tester.ExpectUniqueSample(
       bring_android_tabs::kPromptActionHistogramName,
       bring_android_tabs::PromptActionType::kSwipeToDismiss, 1);
