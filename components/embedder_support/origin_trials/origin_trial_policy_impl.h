@@ -38,6 +38,8 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
   bool SetDisabledFeatures(const std::string& disabled_feature_list);
   bool SetDisabledTokens(const std::string& disabled_token_list);
 
+  const std::set<std::string>* GetDisabledTokensForTesting() const override;
+
  private:
   std::vector<blink::OriginTrialPublicKey> public_keys_;
   std::set<std::string> disabled_features_;

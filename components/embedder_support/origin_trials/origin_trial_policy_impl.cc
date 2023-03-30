@@ -155,4 +155,9 @@ bool OriginTrialPolicyImpl::SetDisabledTokens(
   return true;
 }
 
+const std::set<std::string>*
+OriginTrialPolicyImpl::GetDisabledTokensForTesting() const {
+  return &disabled_tokens_;
+}
+
 }  // namespace embedder_support
