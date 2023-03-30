@@ -1251,14 +1251,11 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDENTITY_DISC_SIGNED_OUT" desc="The content description for a toolbar button displaying the signed-out avatar. Tapping on this button navigates to 'Turn on Sync' page in settings [iOS only].">
         Signed out. Opens dialog to sign in and turn on sync.
       </message>
-      <message name="IDS_IOS_INACTIVE_TABS_BUTTON_TITLE" desc="Title of the button in the Tab Grid that opens the grid of Inactive Tabs.">
-        Inactive Tabs
-      </message>
-      <message name="IDS_IOS_INACTIVE_TABS_TITLE" desc="Title of the grid of Inactive Tabs.">
-        Inactive Tabs
-      </message>
       <message name="IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE" desc="Subtitle of the button in the Tab Grid that opens the grid of Inactive Tabs.">
         Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_BUTTON_TITLE" desc="Title of the button in the Tab Grid that opens the grid of Inactive Tabs.">
+        Inactive Tabs
       </message>
       <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_BUTTON" desc="Title of the Close All Inactive button in the grid of Inactive Tabs.">
         Close All Inactive
@@ -1277,7 +1274,13 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION" desc="Title of the action that will close all tabs in the grid of Inactive Tabs.">
         Close All
       </message>
-      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
+       <message name="IDS_IOS_INACTIVE_TABS_SETTINGS_HEADER" desc="Header for the inactive tabs settings.">
+        Choose when tabs that haven’t recently been used get moved to the inactive tab section.
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_TITLE" desc="Title of the grid of Inactive Tabs.">
+        Inactive Tabs
+      </message>
+     <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
         Learn more about Incognito mode
       </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE" desc="Title of interstitial which lets the user choose, when they open a link from an external app, whether to open it in Incognito mode or in a regular tab. [iOS only]">
@@ -1812,6 +1815,15 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_KEEP_SEPARATE_TITLE" desc="The title of the Keep Data Separate option on the Import Data settings screen. [60em]">
         Keep my data separate
       </message>
+      <message name="IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED" desc="Option description to disable inactive tabs. (Title case)">
+        Never Move
+      </message>
+      <message name="IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD" desc="Current chosen threshold for the inactive tabs option. (Title case)">
+        After <ph name="THRESHOLD">$1<ex>14</ex></ph> Days
+      </message>
+      <message name="IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS" desc="Title for opening the setting for when tabs should be considered inactive. (Title case)">
+        Move Inactive Tabs
+      </message>
       <message name="IDS_IOS_OPTIONS_PRELOAD_WEBPAGES" desc="Title for opening the setting for if/when to preload webpages. [Length: 20em] [iOS only]">
         Preload Webpages
       </message>
@@ -2154,6 +2166,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP" desc="Accessibility hint for info button items that have a tap functionality.">
         Button
+      </message>
+      <message name="IDS_IOS_TABS_MANAGEMENT_SETTINGS" desc="Title for the tabs management panel in settings [Length: 30em] [iOS only]">
+        Tabs
       </message>
       <message name="IDS_IOS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_TITLE" desc="Title shown in the iOS message when the account tailored security setting is enabled for a consented primary account">
         Enhanced Protection is On

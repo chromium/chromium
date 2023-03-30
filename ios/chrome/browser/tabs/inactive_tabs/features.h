@@ -13,6 +13,9 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+// Preference value when a user manually disable the feature.
+extern const int kInactiveTabsDisabledByUser;
+
 // Feature flag that sets the tab inactivity threshold.
 BASE_DECLARE_FEATURE(kTabInactivityThreshold);
 
@@ -30,6 +33,9 @@ bool IsInactiveTabsEnabled();
 // Convenience method for determining the tab inactivity threshold.
 // The default is 14 days.
 const base::TimeDelta InactiveTabsTimeThreshold();
+
+// Returns true if a user disabled the feature manually.
+bool IsInactiveTabsExplictlyDisabledByUser();
 
 // Convenience method for getting a displayable representation of the threshold.
 // This is the number of days as a string.

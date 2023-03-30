@@ -61,3 +61,6 @@ NSString* const kSettingsIncognitoInterstitialDisabledId =
     @"kSettingsIncognitoInterstitialDisabledId";
 NSString* const kSettingsPriceNotificationsId =
     @"kSettingsPriceNotificationsId";
+NSString* const kSettingsTabsCellId = @"kSettingsTabsCellId";
+NSString* const kSettingsMoveInactiveTabsCellId =
+    @"kSettingsMoveInactiveTabsCellId";

@@ -1,0 +1,151 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller.h"
+
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+
+// List of sections.
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierActions = kSectionIdentifierEnumZero,
+};
+
+// List of item types.
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeInactiveTabs = kItemTypeEnumZero,
+};
+
+}  // namespace
+
+@implementation TabsSettingsTableViewController {
+  // Updatable inactive tabs items.
+  TableViewDetailIconItem* _inactiveTabsDetailItem;
+  // Current inactive tab days threshold.
+  int _inactiveDaysThreshold;
+}
+
+- (instancetype)init {
+  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
+  self = [super initWithStyle:ChromeTableViewStyle()];
+  if (self) {
+    self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);
+  }
+  return self;
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.tableView.estimatedRowHeight = 70;
+  self.tableView.rowHeight = UITableViewAutomaticDimension;
+
+  [self loadModel];
+}
+
+#pragma mark - ChromeTableViewController
+
+- (void)loadModel {
+  [super loadModel];
+
+  TableViewModel* model = self.tableViewModel;
+  [model addSectionWithIdentifier:SectionIdentifierActions];
+  [model addItem:[self moveInactiveTabsItem]
+      toSectionWithIdentifier:SectionIdentifierActions];
+
+  [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  // TODO(crbug.com/1418021): Add metrics when the user go close Tabs Settings.
+}
+
+- (void)reportBackUserAction {
+  // TODO(crbug.com/1418021): Add metrics when the user go back from Tabs
+  // Settings to root Settings screen.
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (@available(iOS 16.0, *)) {
+    return;
+  }
+
+  NSInteger type = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  if (type == ItemTypeInactiveTabs) {
+    [self.delegate
+        tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
+  }
+}
+
+- (void)tableView:(UITableView*)tableView
+    performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSInteger type = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  if (type == ItemTypeInactiveTabs) {
+    [self.delegate
+        tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
+  }
+}
+
+#pragma mark - TabsSettingsConsumer
+
+- (void)inactiveTabsTimeThresholdChanged:(int)threshold {
+  [self updateInactiveTabsItemWithDaysThreshold:threshold];
+}
+
+#pragma mark - Private
+
+// Returns a newly created TableViewDetailIconItem for the inactive tabs
+// settings menu.
+- (TableViewDetailIconItem*)moveInactiveTabsItem {
+  _inactiveTabsDetailItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeInactiveTabs];
+  _inactiveTabsDetailItem.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS);
+  _inactiveTabsDetailItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _inactiveTabsDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _inactiveTabsDetailItem.accessibilityIdentifier =
+      kSettingsMoveInactiveTabsCellId;
+  return _inactiveTabsDetailItem;
+}
+
+// Updates the detail text for the Inactive tabs item.
+- (void)updateInactiveTabsItemWithDaysThreshold:(int)threshold {
+  _inactiveDaysThreshold = threshold;
+  if (!_inactiveTabsDetailItem) {
+    return;
+  }
+  if (_inactiveDaysThreshold == -1) {
+    _inactiveTabsDetailItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_INACTIVE_TABS_DISABLED);
+  } else {
+    std::u16string thresholdString = base::SysNSStringToUTF16(
+        [NSString stringWithFormat:@"%@", @(_inactiveDaysThreshold)]);
+    _inactiveTabsDetailItem.detailText = l10n_util::GetNSStringF(
+        IDS_IOS_OPTIONS_INACTIVE_TABS_THRESHOLD, thresholdString);
+  }
+  [self reconfigureCellsForItems:@[ _inactiveTabsDetailItem ]];
+}
+
+@end

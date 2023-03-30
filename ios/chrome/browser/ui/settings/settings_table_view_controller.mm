@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
@@ -109,6 +110,7 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/voice_search_table_view_controller.h"
 #import "ios/chrome/browser/upgrade/upgrade_utils.h"
@@ -246,6 +248,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+
+  // Tabs settings coordinator.
+  TabsSettingsCoordinator* _tabsCoordinator;
 }
 
 // The item related to the switch for the show feed settings.
@@ -459,15 +464,33 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
     }
   }
-  [model addItem:[self languageSettingsDetailItem]
-      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  [model addItem:[self contentSettingsDetailItem]
-      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  [model addItem:[self bandwidthManagementDetailItem]
-      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-  // Info Section
-  [model addSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  // `IsInactiveTabsEnabled` returns NO if the user explicitly disabled inactive
+  // tabs. As the user should have the choice to enabled it back, the settings
+  // should be displayed even if the feature has been explicitly disabled.
+  if (IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser()) {
+    [model addItem:[self tabsSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+
+    // Info Section
+    [model addSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    [model addItem:[self languageSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    [model addItem:[self contentSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    [model addItem:[self bandwidthManagementDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  } else {
+    [model addItem:[self languageSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    [model addItem:[self contentSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    [model addItem:[self bandwidthManagementDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+
+    // Info Section
+    [model addSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  }
   [model addItem:[self aboutChromeDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierInfo];
 
@@ -962,6 +985,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       accessibilityIdentifier:kSettingsContentSettingsCellId];
 }
 
+- (TableViewItem*)tabsSettingsDetailItem {
+  return [self detailItemWithType:SettingsItemTypeTabs
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_TABS_MANAGEMENT_SETTINGS)
+                       detailText:nil
+                           symbol:DefaultSettingsRootSymbol(kTabsSymbol)
+            symbolBackgroundColor:[UIColor colorNamed:kOrange500Color]
+          accessibilityIdentifier:kSettingsTabsCellId];
+}
+
 - (TableViewItem*)bandwidthManagementDetailItem {
   return [self detailItemWithType:SettingsItemTypeBandwidth
                              text:l10n_util::GetNSString(
@@ -1324,6 +1357,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       controller =
           [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
       break;
+    case SettingsItemTypeTabs:
+      // TODO(crbug.com/1418021): Add metrics about tabs settings.
+      [self showTabsSettings];
+      break;
     case SettingsItemTypeBandwidth:
       base::RecordAction(base::UserMetricsAction("Settings.Bandwidth"));
       controller = [[BandwidthManagementTableViewController alloc]
@@ -1480,6 +1517,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                    browser:_browser];
   _googleServicesSettingsCoordinator.delegate = self;
   [_googleServicesSettingsCoordinator start];
+}
+
+- (void)showTabsSettings {
+  _tabsCoordinator = [[TabsSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  [_tabsCoordinator start];
 }
 
 - (void)showGoogleSync {
@@ -1824,6 +1868,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   [_manageSyncSettingsCoordinator stop];
   _manageSyncSettingsCoordinator = nil;
+
+  [_tabsCoordinator stop];
+  _tabsCoordinator = nil;
 
   // Stop observable prefs.
   [_showMemoryDebugToolsEnabled stop];

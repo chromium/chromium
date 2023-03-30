@@ -48,6 +48,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeSafetyCheck,
   SettingsItemTypeDefaultBrowser,
   SettingsItemTypeSigninDisabled,
+  SettingsItemTypeTabs,
 };
 
 // The accessibility identifier of the settings TableView.
@@ -158,5 +159,11 @@ extern NSString* const kSettingsIncognitoInterstitialDisabledId;
 
 // The accessibility identifier of the Price Notifications setting.
 extern NSString* const kSettingsPriceNotificationsId;
+
+// The accessibility identifier of the tabs cell.
+extern NSString* const kSettingsTabsCellId;
+
+// The accessibility identifier of the move inactive tabs settings cell.
+extern NSString* const kSettingsMoveInactiveTabsCellId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_
