@@ -622,4 +622,27 @@ AwBrowserContext::service_worker_xrw_allowlist_matcher() {
   return service_worker_xrw_allowlist_matcher_;
 }
 
+void AwBrowserContext::SetExtraHeaders(const GURL& url,
+                                       const std::string& headers) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!url.is_valid()) {
+    return;
+  }
+  if (!headers.empty()) {
+    extra_headers_[url.spec()] = headers;
+  } else {
+    extra_headers_.erase(url.spec());
+  }
+}
+
+std::string AwBrowserContext::GetExtraHeaders(const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!url.is_valid()) {
+    return std::string();
+  }
+  std::map<std::string, std::string>::iterator iter =
+      extra_headers_.find(url.spec());
+  return iter != extra_headers_.end() ? iter->second : std::string();
+}
+
 }  // namespace android_webview

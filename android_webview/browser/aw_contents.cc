@@ -17,7 +17,6 @@
 #include "android_webview/browser/aw_pdf_exporter.h"
 #include "android_webview/browser/aw_render_process.h"
 #include "android_webview/browser/aw_renderer_priority.h"
-#include "android_webview/browser/aw_resource_context.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
 #include "android_webview/browser/gfx/aw_gl_functor.h"
@@ -1384,11 +1383,10 @@ void AwContents::SetExtraHeadersForUrl(
   std::string extra_headers;
   if (jextra_headers)
     extra_headers = ConvertJavaStringToUTF8(env, jextra_headers);
-  AwResourceContext* resource_context = static_cast<AwResourceContext*>(
-      AwBrowserContext::FromWebContents(web_contents_.get())
-          ->GetResourceContext());
-  resource_context->SetExtraHeaders(GURL(ConvertJavaStringToUTF8(env, url)),
-                                    extra_headers);
+  auto* browser_context =
+      AwBrowserContext::FromWebContents(web_contents_.get());
+  browser_context->SetExtraHeaders(GURL(ConvertJavaStringToUTF8(env, url)),
+                                   extra_headers);
 }
 
 void AwContents::SetJsOnlineProperty(JNIEnv* env, jboolean network_up) {

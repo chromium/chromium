@@ -19,11 +19,11 @@ class HttpRequestHeaders;
 }
 
 namespace android_webview {
-class AwResourceContext;
+class AwBrowserContext;
 
 class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  explicit AwURLLoaderThrottle(AwResourceContext* aw_resource_context);
+  explicit AwURLLoaderThrottle(AwBrowserContext* aw_browser_context);
 
   AwURLLoaderThrottle(const AwURLLoaderThrottle&) = delete;
   AwURLLoaderThrottle& operator=(const AwURLLoaderThrottle&) = delete;
@@ -45,7 +45,7 @@ class AwURLLoaderThrottle : public blink::URLLoaderThrottle {
   void AddExtraHeadersIfNeeded(const GURL& url,
                                net::HttpRequestHeaders* headers);
 
-  raw_ptr<AwResourceContext> aw_resource_context_;
+  raw_ptr<AwBrowserContext> aw_browser_context_;
   std::vector<std::string> added_headers_;
   url::Origin original_origin_;
 };

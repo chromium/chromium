@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/network_service/aw_url_loader_throttle.h"
 
-#include "android_webview/browser/aw_resource_context.h"
+#include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/common/aw_features.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -15,8 +15,8 @@
 
 namespace android_webview {
 
-AwURLLoaderThrottle::AwURLLoaderThrottle(AwResourceContext* aw_resource_context)
-    : aw_resource_context_(aw_resource_context) {}
+AwURLLoaderThrottle::AwURLLoaderThrottle(AwBrowserContext* aw_browser_context)
+    : aw_browser_context_(aw_browser_context) {}
 
 AwURLLoaderThrottle::~AwURLLoaderThrottle() = default;
 
@@ -59,7 +59,7 @@ void AwURLLoaderThrottle::WillRedirectRequest(
 void AwURLLoaderThrottle::AddExtraHeadersIfNeeded(
     const GURL& url,
     net::HttpRequestHeaders* headers) {
-  std::string extra_headers = aw_resource_context_->GetExtraHeaders(url);
+  std::string extra_headers = aw_browser_context_->GetExtraHeaders(url);
   if (extra_headers.empty())
     return;
 
