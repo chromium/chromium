@@ -1589,6 +1589,11 @@ class DictationUITest : public DictationTest {
         std::make_unique<DictationBubbleTestHelper>();
   }
 
+  void TearDownOnMainThread() override {
+    dictation_bubble_test_helper_.reset();
+    DictationTest::TearDownOnMainThread();
+  }
+
   void WaitForProperties(
       bool visible,
       DictationBubbleIconType icon,
@@ -1606,41 +1611,13 @@ class DictationUITest : public DictationTest {
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
 };
 
-// Consistently failing on Linux ChromiumOS MSan (https://crbug.com/1302688).
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ShownWhenSpeechRecognitionStarts \
-  DISABLED_ShownWhenSpeechRecognitionStarts
-#define MAYBE_DisplaysInterimSpeechResults DISABLED_DisplaysInterimSpeechResults
-#define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
-#define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
-  DISABLED_ResetsToStandbyModeAfterFinalSpeechResult
-#define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
-#define MAYBE_StandbyHints DISABLED_StandbyHints
-#define MAYBE_HintsShownWhenTextCommitted DISABLED_HintsShownWhenTextCommitted
-#define MAYBE_HintsShownAfterTextSelected DISABLED_HintsShownAfterTextSelected
-#define MAYBE_HintsShownAfterCommandExecuted \
-  DISABLED_HintsShownAfterCommandExecuted
-#else
-#define MAYBE_ShownWhenSpeechRecognitionStarts ShownWhenSpeechRecognitionStarts
-#define MAYBE_DisplaysInterimSpeechResults DisplaysInterimSpeechResults
-#define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
-#define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
-  ResetsToStandbyModeAfterFinalSpeechResult
-#define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
-#define MAYBE_StandbyHints StandbyHints
-#define MAYBE_HintsShownWhenTextCommitted HintsShownWhenTextCommitted
-#define MAYBE_HintsShownAfterTextSelected HintsShownAfterTextSelected
-#define MAYBE_HintsShownAfterCommandExecuted HintsShownAfterCommandExecuted
-#endif
-
 INSTANTIATE_TEST_SUITE_P(
     NetworkTextArea,
     DictationUITest,
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kTextArea)));
 
-IN_PROC_BROWSER_TEST_P(DictationUITest,
-                       MAYBE_ShownWhenSpeechRecognitionStarts) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1649,7 +1626,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest,
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysInterimSpeechResults) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Send an interim speech result.
@@ -1660,7 +1637,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysInterimSpeechResults) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysMacroSuccess) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Perform a command.
@@ -1677,7 +1654,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysMacroSuccess) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest,
-                       MAYBE_ResetsToStandbyModeAfterFinalSpeechResult) {
+                       ResetsToStandbyModeAfterFinalSpeechResult) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1698,8 +1675,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest,
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-// Times out on CrOS. b/264535324
-IN_PROC_BROWSER_TEST_P(DictationUITest, DISABLED_HiddenWhenDictationDeactivates) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1715,7 +1691,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DISABLED_HiddenWhenDictationDeactivates)
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_StandbyHints) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1758,7 +1734,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   sm.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownWhenTextCommitted) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownWhenTextCommitted) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
@@ -1784,7 +1760,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownWhenTextCommitted) {
                                   kHelp});
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterTextSelected) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
@@ -1808,7 +1784,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
                                   kHelp});
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterCommandExecuted) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
@@ -1868,13 +1844,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable)));
 
-// TODO(crbug.com/1368843): Test is flaky on MSAN builds.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_Input DISABLED_Input
-#else
-#define MAYBE_Input Input
-#endif
-IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MAYBE_Input) {
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Input) {
   SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
 }
 

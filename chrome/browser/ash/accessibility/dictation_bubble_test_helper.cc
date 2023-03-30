@@ -18,7 +18,12 @@ DictationBubbleTestHelper::DictationBubbleTestHelper() {
   GetController()->AddObserver(this);
 }
 
-DictationBubbleTestHelper::~DictationBubbleTestHelper() = default;
+DictationBubbleTestHelper::~DictationBubbleTestHelper() {
+  auto* controller = GetController();
+  if (controller) {
+    controller->RemoveObserver(this);
+  }
+}
 
 bool DictationBubbleTestHelper::IsVisible() {
   return GetController()->widget_->IsVisible();
@@ -75,12 +80,13 @@ std::vector<std::u16string> DictationBubbleTestHelper::GetVisibleHints() {
 }
 
 DictationBubbleController* DictationBubbleTestHelper::GetController() {
-  DictationBubbleController* controller =
-      Shell::Get()
-          ->accessibility_controller()
-          ->GetDictationBubbleControllerForTest();
-  DCHECK(controller != nullptr);
-  return controller;
+  if (!Shell::HasInstance()) {
+    return nullptr;
+  }
+
+  return Shell::Get()
+      ->accessibility_controller()
+      ->GetDictationBubbleControllerForTest();
 }
 
 void DictationBubbleTestHelper::WaitForVisibility(bool visible) {
