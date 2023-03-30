@@ -427,7 +427,6 @@ extern const char kProfileUsingDefaultName[];
 extern const char kProfileName[];
 extern const char kProfileUsingDefaultAvatar[];
 extern const char kProfileUsingGAIAAvatar[];
-extern const char kSupervisedUserId[];
 
 extern const char kInvertNotificationShown[];
 

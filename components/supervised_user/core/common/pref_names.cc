@@ -64,6 +64,9 @@ const char kSupervisedUserSecondCustodianProfileURL[] =
 const char kSupervisedUserExtensionsMayRequestPermissions[] =
     "profile.managed.extensions_may_request_permissions";
 
+// The supervised user ID.
+const char kSupervisedUserId[] = "profile.managed_user_id";
+
 // Maps host names to whether the host is manually allowed or blocked.
 const char kSupervisedUserManualHosts[] = "profile.managed.manual_hosts";
 

@@ -1335,9 +1335,6 @@ const char kProfileUsingDefaultName[] = "profile.using_default_name";
 const char kProfileUsingDefaultAvatar[] = "profile.using_default_avatar";
 const char kProfileUsingGAIAAvatar[] = "profile.using_gaia_avatar";
 
-// The supervised user ID.
-const char kSupervisedUserId[] = "profile.managed_user_id";
-
 // Indicates if we've already shown a notification that high contrast
 // mode is on, recommending high-contrast extensions and themes.
 const char kInvertNotificationShown[] = "invert_notification_version_2_shown";
