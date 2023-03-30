@@ -1059,7 +1059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ZipMountTime.{RootType}" units="ms"
-    expires_after="2024-01-01">
+    expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1075,8 +1075,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="FileBrowser.ZipTask.Time" units="ms"
-    expires_after="2023-05-07">
+<histogram name="FileBrowser.ZipTask.Time" units="ms" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
