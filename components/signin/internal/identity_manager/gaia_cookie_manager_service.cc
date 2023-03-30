@@ -294,8 +294,9 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::
     if (!elem.is_dict())
       continue;
 
-    const std::string* token = elem.FindStringPath("carryBackToken");
-    const std::string* url = elem.FindStringPath("url");
+    const base::Value::Dict& elem_dict = elem.GetDict();
+    const std::string* token = elem_dict.FindString("carryBackToken");
+    const std::string* url = elem_dict.FindString("url");
     if (token && url) {
       results_[*token] = "null";
       network::SimpleURLLoader* loader =
