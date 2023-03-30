@@ -87,6 +87,8 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 5,
     },
     main_list_view = "try",
     tryjob = try_.job(),
