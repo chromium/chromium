@@ -25,6 +25,7 @@ source_set("snapshots") {
     "snapshots_util.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//base/ios",
     "//ios/chrome/browser/browser_state",
@@ -85,4 +86,13 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/gfx",
   ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
 }

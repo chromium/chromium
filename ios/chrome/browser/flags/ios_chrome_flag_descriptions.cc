@@ -182,6 +182,11 @@ extern const char kEmailDescription[] =
     "When enabled, one tapping or long pressing on an email address will "
     "trigger the email experience.";
 
+extern const char kPDFSnapshotName[] =
+    "Fix PDF snapshot by using a different API";
+extern const char kPDFSnapshotDescription[] =
+    "When enabled, the tab showing PDF should have the correct thumbnail.";
+
 extern const char kPhoneNumberName[] = "Phone number experience enable";
 extern const char kPhoneNumberDescription[] =
     "When enabled, one tapping or long pressing on a phone number will trigger "

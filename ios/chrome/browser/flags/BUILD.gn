@@ -68,6 +68,7 @@ source_set("flags") {
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots:features",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/text_selection:text_selection_utils",
