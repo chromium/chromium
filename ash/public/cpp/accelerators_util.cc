@@ -6,8 +6,10 @@
 
 #include <string>
 
+#include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_codes_array.h"
@@ -71,6 +73,8 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
   // normally in the loop below. For the positional keys, the |DomCode| is
   // then mapped to the |DomKey| in the current layout which represents the
   // glyph/character that appears on the key (and usually when typed).
+
+  // Positional keys are direct lookups, no need to store in the cache.
   if (remap_positional_key &&
       ::features::IsImprovedKeyboardShortcutsEnabled()) {
     ui::DomCode dom_code =
@@ -91,16 +95,38 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
     }
   }
 
+  const absl::optional<std::u16string> cached_key_string =
+      AcceleratorKeycodeLookupCache::Get()->Find(key_code);
+  // Cache hit, return immediately.
+  if (cached_key_string.has_value()) {
+    return std::move(cached_key_string).value();
+  }
+
+  // Cache miss, get the key string and store it.
   for (const auto& dom_code : ui::kDomCodesArray) {
     if (!layout_engine->Lookup(dom_code, /*event_flags=*/ui::EF_NONE, &dom_key,
                                &key_code_to_compare)) {
       continue;
     }
-    if (key_code_to_compare != key_code || !dom_key.IsValid() ||
-        dom_key.IsDeadKey()) {
+
+    // Even though this isn't what we're looking for, we should still populate
+    // the cache as we're iterating through the DomCode array.
+    if (key_code_to_compare != key_code) {
+      AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(
+          key_code_to_compare,
+          base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key)));
       continue;
     }
-    return base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+
+    if (!dom_key.IsValid() || dom_key.IsDeadKey()) {
+      continue;
+    }
+
+    // Found the correct lookup, cache and return the string.
+    const std::u16string key_string =
+        base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+    AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(key_code, key_string);
+    return key_string;
   }
   return std::u16string();
 }

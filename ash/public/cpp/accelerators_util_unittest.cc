@@ -7,7 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -18,7 +22,7 @@
 
 namespace ash {
 
-class AcceleratorsUtilTest : public testing::Test {
+class AcceleratorsUtilTest : public AshTestBase {
  public:
   AcceleratorsUtilTest() {
     layout_engine_ = std::make_unique<ui::StubKeyboardLayoutEngine>();
@@ -35,7 +39,16 @@ class AcceleratorsUtilTest : public testing::Test {
 
 TEST_F(AcceleratorsUtilTest, BasicDomCode) {
   const std::u16string expected = u"a";
+
+  absl::optional<std::u16string> found_key_string =
+      AcceleratorKeycodeLookupCache::Get()->Find(ui::KeyboardCode::VKEY_A);
+  EXPECT_FALSE(found_key_string.has_value());
   EXPECT_EQ(expected, KeycodeToKeyString(ui::KeyboardCode::VKEY_A));
+  // Expect the cache to be populated.
+  found_key_string =
+      AcceleratorKeycodeLookupCache::Get()->Find(ui::KeyboardCode::VKEY_A);
+  EXPECT_TRUE(found_key_string.has_value());
+  EXPECT_EQ(expected, found_key_string.value());
 }
 
 TEST_F(AcceleratorsUtilTest, PositionalKeyCode) {
@@ -64,7 +77,16 @@ TEST_F(AcceleratorsUtilTest, PositionalKeyCode) {
 
 TEST_F(AcceleratorsUtilTest, NonAlphanumericKey) {
   const std::u16string expected = u"Meta";
+  absl::optional<std::u16string> found_key_string =
+      AcceleratorKeycodeLookupCache::Get()->Find(
+          ui::KeyboardCode::VKEY_COMMAND);
+  EXPECT_FALSE(found_key_string.has_value());
   EXPECT_EQ(expected, KeycodeToKeyString(ui::KeyboardCode::VKEY_COMMAND));
+
+  found_key_string = AcceleratorKeycodeLookupCache::Get()->Find(
+      ui::KeyboardCode::VKEY_COMMAND);
+  EXPECT_TRUE(found_key_string.has_value());
+  EXPECT_EQ(expected, found_key_string.value());
 }
 
 }  // namespace ash
