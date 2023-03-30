@@ -357,19 +357,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
-  // OnAXTreeDestroyed is called whenever the AXActionHandler in the browser
-  // learns that an AXTree was destroyed. This could be from any tab, not just
-  // the active one; therefore many tree_ids will not be found in trees_.
-  if (!model_.ContainsTree(tree_id)) {
-    return;
-  }
-  if (model_.active_tree_id() == tree_id) {
-    // TODO(crbug.com/1266555): If distillation is in progress, cancel the
-    // distillation request.
-    model_.SetActiveTreeId(ui::AXTreeIDUnknown());
-    model_.SetActiveUkmSourceId(ukm::kInvalidSourceId);
-  }
-  model_.EraseTree(tree_id);
+  model_.OnAXTreeDestroyed(tree_id);
 }
 
 void ReadAnythingAppController::OnAtomicUpdateFinished(
@@ -443,7 +431,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   if (!model_.content_node_ids().empty()) {
     // If there are content_node_ids, this means the AXTree was successfully
     // distilled.
-    ComputeDisplayNodeIdsForDistilledTree();
+    model_.ComputeDisplayNodeIdsForDistilledTree();
   }
 
   // Draw selection (if one exists) and the content.
@@ -459,31 +447,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 }
 
 void ReadAnythingAppController::PostProcessSelection() {
-  DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
-  DCHECK(model_.ContainsTree(model_.active_tree_id()));
-
-  // If the previous selection was inside the distilled content, that means we
-  // are currently displaying the distilled content in Read Anything. We may not
-  // need to redraw the distilled content if the user's new selection is inside
-  // the distilled content.
-  // If the previous selection was outside the distilled content, we will always
-  // redraw either a) the new selected content or b) the original distilled
-  // content if the new selection is inside that or if the selection was
-  // cleared.
-  bool need_to_draw = !model_.SelectionInsideDisplayNodes();
-
-  // Save the current selection
-  model_.UpdateSelection();
-
-  // If the main panel selection contains content outside of the distilled
-  // content, we need to find the selected nodes to display instead of the
-  // distilled content.
-  if (model_.has_selection() && !model_.SelectionInsideDisplayNodes()) {
-    need_to_draw = true;
-    ComputeSelectionNodeIds();
-  }
-
-  if (need_to_draw) {
+  if (model_.PostProcessSelection()) {
     Draw();
   }
   DrawSelection();
@@ -502,113 +466,6 @@ void ReadAnythingAppController::DrawSelection() {
   // replace this function call with firing an event.
   std::string script = "chrome.readAnything.updateSelection();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
-}
-
-void ReadAnythingAppController::ComputeSelectionNodeIds() {
-  DCHECK(model_.has_selection());
-  DCHECK_NE(model_.active_tree_id(), ui::AXTreeIDUnknown());
-  DCHECK(model_.ContainsTree(model_.active_tree_id()));
-
-  // TODO(crbug.com/1266555): Refactor selection updates into the model once
-  //  trees have been moved to the model.
-  ui::AXNode* start_node = model_.GetAXNode(model_.start_node_id());
-  DCHECK(start_node);
-  ui::AXNode* end_node = model_.GetAXNode(model_.end_node_id());
-  DCHECK(end_node);
-
-  // If start node or end node is ignored, the selection was invalid.
-  if (start_node->IsIgnored() || end_node->IsIgnored()) {
-    return;
-  }
-
-  // Selection nodes are the nodes which will be displayed by the rendering
-  // algorithm of Read Anything app.ts if there is a selection that contains
-  // content outside of the distilled content. We wish to create a subtree which
-  // stretches from start node to end node with tree root as the root.
-
-  // Add all ancestor ids of start node, including the start node itself. This
-  // does a first walk down to start node.
-  base::queue<ui::AXNode*> ancestors =
-      start_node->GetAncestorsCrossingTreeBoundaryAsQueue();
-  while (!ancestors.empty()) {
-    ui::AXNodeID ancestor_id = ancestors.front()->id();
-    ancestors.pop();
-    if (!model_.IsNodeIgnoredForReadAnything(ancestor_id)) {
-      model_.InsertSelectionNode(ancestor_id);
-    }
-  }
-
-  // Do a pre-order walk of the tree from the start node to the end node and add
-  // all nodes to the list.
-  // TODO(crbug.com/1266555): Right now, we are going from start node to an
-  // unignored node that is before or equal to the end node. This condition was
-  // changed from next_node != end node because when a paragraph is selected
-  // with a triple click, we sometimes pass the end node, causing a SEGV_ACCERR.
-  // We need to investigate this case in more depth.
-  ui::AXNode* next_node = start_node->GetNextUnignoredInTreeOrder();
-  while (next_node && next_node->CompareTo(*end_node) <= 0) {
-    if (!model_.IsNodeIgnoredForReadAnything(next_node->id())) {
-      model_.InsertSelectionNode(next_node->id());
-    }
-    next_node = next_node->GetNextUnignoredInTreeOrder();
-  }
-}
-
-void ReadAnythingAppController::ComputeDisplayNodeIdsForDistilledTree() {
-  DCHECK(!model_.content_node_ids().empty());
-
-  // Display nodes are the nodes which will be displayed by the rendering
-  // algorithm of Read Anything app.ts. We wish to create a subtree which
-  // stretches down from tree root to every content node and includes the
-  // descendants of each content node.
-  for (auto content_node_id : model_.content_node_ids()) {
-    ui::AXNode* content_node = model_.GetAXNode(content_node_id);
-    // TODO(crbug.com/1266555): If content_node_id is from a child tree of the
-    // active ax tree, GetAXNode will return nullptr. Fix GetAXNode to harvest
-    // nodes from child trees, and then replace the `if (!content_node)` check
-    // with `DCHECK(content_node)`.
-    // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
-    // not be the correct approach. Do we need a version of
-    // GetDeepestLastUnignoredChild() that works on ignored nodes?
-    if (!content_node || content_node->IsIgnored()) {
-      continue;
-    }
-
-    // Add all ancestor ids, including the content node itself, which is the
-    // first ancestor in the queue. Exit the loop early if an ancestor is
-    // already in model_.display_node_ids(); this means that all of the
-    // remaining ancestors in the queue are also already in display_node_ids.
-    // IsNodeIgnoredForReadAnything removes control nodes from display_node_ids,
-    // which is used by GetChildren(). This effectively prunes the tree at the
-    // control node. For example, a button and its static text inside will be
-    // removed.
-    base::queue<ui::AXNode*> ancestors =
-        content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
-    while (!ancestors.empty()) {
-      ui::AXNodeID ancestor_id = ancestors.front()->id();
-      if (base::Contains(model_.display_node_ids(), ancestor_id)) {
-        break;
-      }
-      ancestors.pop();
-      if (!model_.IsNodeIgnoredForReadAnything(ancestor_id)) {
-        model_.InsertDisplayNode(ancestor_id);
-      }
-    }
-
-    // Add all descendant ids to the set.
-    ui::AXNode* next_node = content_node;
-    ui::AXNode* deepest_last_child =
-        content_node->GetDeepestLastUnignoredChild();
-    if (!deepest_last_child) {
-      continue;
-    }
-    while (next_node != deepest_last_child) {
-      next_node = next_node->GetNextUnignoredInTreeOrder();
-      if (!model_.IsNodeIgnoredForReadAnything(next_node->id())) {
-        model_.InsertDisplayNode(next_node->id());
-      }
-    }
-  }
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {

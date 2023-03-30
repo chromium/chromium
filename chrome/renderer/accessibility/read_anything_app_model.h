@@ -76,7 +76,22 @@ class ReadAnythingAppModel {
   void InsertDisplayNode(ui::AXNodeID node);
   void InsertSelectionNode(ui::AXNodeID node);
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
+  bool PostProcessSelection();
   void UpdateSelection();
+  // Helper functions for the rendering algorithm. Post-process the AXTree and
+  // cache values before sending an `updateContent` notification to the Read
+  // Anything app.ts.
+  // ComputeDisplayNodeIdsForDistilledTree computes display nodes from the
+  // content nodes. These display nodes will be displayed in Read Anything
+  // app.ts by default.
+  // ComputeSelectionNodeIds computes selection nodes from
+  // the user's selection. The selection nodes list is only populated when the
+  // user's selection contains nodes outside of the display nodes list. By
+  // keeping two separate lists of nodes, we can switch back to displaying the
+  // default distilled content without recomputing the nodes when the user
+  // clears their selection or selects content inside the distilled content.
+  void ComputeDisplayNodeIdsForDistilledTree();
+  void ComputeSelectionNodeIds();
   bool SelectionInsideDisplayNodes();
 
   const std::unique_ptr<ui::AXSerializableTree>& GetTreeFromId(
@@ -95,6 +110,8 @@ class ReadAnythingAppModel {
   void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
                                   const std::vector<ui::AXTreeUpdate>& updates,
                                   ui::AXTreeObserver* tree_observer);
+
+  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
   std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
   GetPendingUpdatesForTesting();
