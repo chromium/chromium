@@ -3033,6 +3033,9 @@ extern const char kFastPairDescription[];
 extern const char kFastPairHandshakeRefactorName[];
 extern const char kFastPairHandshakeRefactorDescription[];
 
+extern const char kFastPairHIDName[];
+extern const char kFastPairHIDDescription[];
+
 extern const char kFastPairLowPowerName[];
 extern const char kFastPairLowPowerDescription[];
 

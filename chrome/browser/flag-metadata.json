@@ -3711,6 +3711,14 @@
     "expiry_milestone": 116
   },
   {
+    "name": "fast-pair-hid",
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira"
+    ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "fast-pair-low-power",
     "owners": [
       "//ash/quick_pair/OWNERS",
