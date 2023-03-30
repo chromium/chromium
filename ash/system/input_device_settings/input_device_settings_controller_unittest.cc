@@ -52,12 +52,15 @@ constexpr char kUserEmail2[] = "joy@abc.com";
 
 class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
  public:
-  void InitializeKeyboardSettings(PrefService* pref_service,
-                                  mojom::Keyboard* keyboard) override {
+  void InitializeKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override {
     keyboard->settings = mojom::KeyboardSettings::New();
     num_keyboard_settings_initialized_++;
   }
   void UpdateKeyboardSettings(PrefService* pref_service,
+                              const mojom::KeyboardPolicies& keyboard_policies,
                               const mojom::Keyboard& keyboard) override {
     num_keyboard_settings_updated_++;
   }
