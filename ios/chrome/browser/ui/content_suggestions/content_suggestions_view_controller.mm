@@ -417,8 +417,8 @@ CGFloat ModuleVerticalSpacing() {
       addGestureRecognizer:self.returnToRecentTabTapRecognizer];
   self.returnToRecentTabTapRecognizer.enabled = YES;
   // If the Content Suggestions is already shown, add the Return to Recent Tab
-  // tile to the StackView.
-  if ([[self.verticalStackView arrangedSubviews] count]) {
+  // tile to the StackView, otherwise, add to the verticalStackView.
+  if (self.isViewLoaded) {
     UIView* parentView = self.returnToRecentTabTile;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       self.returnToRecentTabContainer = [[ContentSuggestionsModuleContainer
