@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_PERIODIC_SCHEDULER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_PERIODIC_SCHEDULER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_PERIODIC_SCHEDULER_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_PERIODIC_SCHEDULER_H_
 
 #include <string>
 
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A NearbyShareSchedulerBase that schedules periodic tasks at fixed intervals.
@@ -38,4 +38,4 @@ class NearbySharePeriodicScheduler : public NearbyShareSchedulerBase {
   base::TimeDelta request_period_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_PERIODIC_SCHEDULER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_PERIODIC_SCHEDULER_H_

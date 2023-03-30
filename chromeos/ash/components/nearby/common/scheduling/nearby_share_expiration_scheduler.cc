@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_expiration_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_expiration_scheduler.h"
 
 #include <utility>
 
@@ -28,11 +28,13 @@ absl::optional<base::TimeDelta>
 NearbyShareExpirationScheduler::TimeUntilRecurringRequest(
     base::Time now) const {
   absl::optional<base::Time> expiration_time = expiration_time_functor_.Run();
-  if (!expiration_time)
+  if (!expiration_time) {
     return absl::nullopt;
+  }
 
-  if (*expiration_time <= now)
+  if (*expiration_time <= now) {
     return base::Seconds(0);
+  }
 
   return *expiration_time - now;
 }

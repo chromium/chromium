@@ -7696,7 +7696,6 @@ test("unit_tests") {
       "//chrome/browser/nearby_sharing/proto",
       "//chrome/browser/nearby_sharing/proto:tachyon_proto",
       "//chrome/browser/nearby_sharing/public/cpp",
-      "//chrome/browser/nearby_sharing/scheduling:unit_tests",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
       "//chrome/browser/ui/ash/holding_space:test_support",

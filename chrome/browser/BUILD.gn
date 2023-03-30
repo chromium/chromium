@@ -5050,7 +5050,6 @@ static_library("browser") {
       "//chrome/browser/nearby_sharing/proto",
       "//chrome/browser/nearby_sharing/proto:tachyon_proto",
       "//chrome/browser/nearby_sharing/public/cpp",
-      "//chrome/browser/nearby_sharing/scheduling",
       "//chrome/browser/policy:onc",
       "//chrome/browser/resources:app_icon_resources",
       "//chrome/browser/ui/ash/system_web_apps",

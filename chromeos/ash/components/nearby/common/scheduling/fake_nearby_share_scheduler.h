@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
 
 #include <vector>
 
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A fake implementation of NearbyShareScheduler that allows the user to set all
@@ -55,4 +55,4 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   size_t num_consecutive_failures_ = 0;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_H_

@@ -6,9 +6,10 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_on_demand_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_on_demand_scheduler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,10 +21,15 @@ const char kTestPrefName[] = "test_pref_name";
 
 class NearbyShareOnDemandSchedulerTest : public ::testing::Test {
  protected:
-  NearbyShareOnDemandSchedulerTest() = default;
+  NearbyShareOnDemandSchedulerTest()
+      : network_connection_tracker_(
+            network::TestNetworkConnectionTracker::CreateInstance()) {}
+
   ~NearbyShareOnDemandSchedulerTest() override = default;
 
   void SetUp() override {
+    content::SetNetworkConnectionTrackerForTesting(
+        network_connection_tracker_.get());
     pref_service_.registry()->RegisterDictionaryPref(kTestPrefName);
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);
@@ -38,6 +44,8 @@ class NearbyShareOnDemandSchedulerTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NearbyShareScheduler> scheduler_;
 };

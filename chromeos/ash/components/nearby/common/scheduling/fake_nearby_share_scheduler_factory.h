@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
-#define CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
 
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_expiration_scheduler.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_expiration_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
 
 class NearbyShareScheduler;
 class PrefService;
@@ -105,4 +105,4 @@ class FakeNearbyShareSchedulerFactory : public NearbyShareSchedulerFactory {
   std::map<std::string, PeriodicInstance> pref_name_to_periodic_instance_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_FAKE_NEARBY_SHARE_SCHEDULER_FACTORY_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_periodic_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_periodic_scheduler.h"
 
 #include <algorithm>
 #include <utility>
@@ -30,8 +30,9 @@ NearbySharePeriodicScheduler::TimeUntilRecurringRequest(base::Time now) const {
   absl::optional<base::Time> last_success_time = GetLastSuccessTime();
 
   // Immediately run a first-time request.
-  if (!last_success_time)
+  if (!last_success_time) {
     return base::Seconds(0);
+  }
 
   base::TimeDelta time_elapsed_since_last_success = now - *last_success_time;
 

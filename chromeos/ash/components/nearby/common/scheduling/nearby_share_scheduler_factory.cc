@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_factory.h"
 
 #include <utility>
 
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_on_demand_scheduler.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_periodic_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_on_demand_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_periodic_scheduler.h"
 
 // static
 NearbyShareSchedulerFactory* NearbyShareSchedulerFactory::test_factory_ =

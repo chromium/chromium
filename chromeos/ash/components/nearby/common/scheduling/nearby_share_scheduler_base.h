@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
-#define CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
 
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -111,4 +111,4 @@ class NearbyShareSchedulerBase
   base::OneShotTimer timer_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_SCHEDULING_NEARBY_SHARE_SCHEDULER_BASE_H_

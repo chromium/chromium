@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -61,10 +61,15 @@ class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
 
 class NearbyShareSchedulerBaseTest : public ::testing::Test {
  protected:
-  NearbyShareSchedulerBaseTest() = default;
+  NearbyShareSchedulerBaseTest()
+      : network_connection_tracker_(
+            network::TestNetworkConnectionTracker::CreateInstance()) {}
+
   ~NearbyShareSchedulerBaseTest() override = default;
 
   void SetUp() override {
+    content::SetNetworkConnectionTrackerForTesting(
+        network_connection_tracker_.get());
     pref_service_.registry()->RegisterDictionaryPref(kTestPrefName);
     SetNetworkConnection(/*online=*/true);
   }
@@ -139,6 +144,8 @@ class NearbyShareSchedulerBaseTest : public ::testing::Test {
   size_t on_request_call_count_ = 0;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NearbyShareScheduler> scheduler_;
 };

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler_base.h"
 
 #include <algorithm>
 #include <sstream>
@@ -13,7 +13,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/network_service_instance.h"
@@ -70,8 +69,8 @@ void NearbyShareSchedulerBase::HandleResult(bool success) {
   base::Time now = clock_->Now();
   SetLastAttemptTime(now);
 
-  NS_LOG(VERBOSE) << "Nearby Share scheduler \"" << pref_name_
-                  << "\" latest attempt " << (success ? "succeeded" : "failed");
+  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
+  // (see go/np-plumbing).
 
   if (success) {
     SetLastSuccessTime(now);
@@ -86,14 +85,16 @@ void NearbyShareSchedulerBase::HandleResult(bool success) {
 }
 
 void NearbyShareSchedulerBase::Reschedule() {
-  if (!is_running())
+  if (!is_running()) {
     return;
+  }
 
   timer_.Stop();
 
   absl::optional<base::TimeDelta> delay = GetTimeUntilNextRequest();
-  if (!delay)
+  if (!delay) {
     return;
+  }
 
   timer_.Start(FROM_HERE, *delay,
                base::BindOnce(&NearbyShareSchedulerBase::OnTimerFired,
@@ -108,18 +109,21 @@ absl::optional<base::Time> NearbyShareSchedulerBase::GetLastSuccessTime()
 
 absl::optional<base::TimeDelta>
 NearbyShareSchedulerBase::GetTimeUntilNextRequest() const {
-  if (!is_running() || IsWaitingForResult())
+  if (!is_running() || IsWaitingForResult()) {
     return absl::nullopt;
+  }
 
-  if (HasPendingImmediateRequest())
+  if (HasPendingImmediateRequest()) {
     return kZeroTimeDelta;
+  }
 
   base::Time now = clock_->Now();
 
   // Recover from failures using exponential backoff strategy if necessary.
   absl::optional<base::TimeDelta> time_until_retry = TimeUntilRetry(now);
-  if (time_until_retry)
+  if (time_until_retry) {
     return time_until_retry;
+  }
 
   // Schedule the periodic request if applicable.
   return TimeUntilRecurringRequest(now);
@@ -134,19 +138,22 @@ bool NearbyShareSchedulerBase::IsWaitingForResult() const {
 size_t NearbyShareSchedulerBase::GetNumConsecutiveFailures() const {
   const std::string* str = pref_service_->GetDict(pref_name_)
                                .FindString(kNumConsecutiveFailuresKeyName);
-  if (!str)
+  if (!str) {
     return 0;
+  }
 
   size_t num_failures = 0;
-  if (!base::StringToSizeT(*str, &num_failures))
+  if (!base::StringToSizeT(*str, &num_failures)) {
     return 0;
+  }
 
   return num_failures;
 }
 
 void NearbyShareSchedulerBase::OnStart() {
   Reschedule();
-  NS_LOG(VERBOSE) << "Starting Nearby Share scheduler \"" << pref_name_ << "\"";
+  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
+  // (see go/np-plumbing).
   PrintSchedulerState();
 }
 
@@ -156,8 +163,9 @@ void NearbyShareSchedulerBase::OnStop() {
 
 void NearbyShareSchedulerBase::OnConnectionChanged(
     network::mojom::ConnectionType type) {
-  if (content::GetNetworkConnectionTracker()->IsOffline())
+  if (content::GetNetworkConnectionTracker()->IsOffline()) {
     return;
+  }
 
   Reschedule();
 }
@@ -212,12 +220,14 @@ void NearbyShareSchedulerBase::InitializePersistedRequest() {
 
 absl::optional<base::TimeDelta> NearbyShareSchedulerBase::TimeUntilRetry(
     base::Time now) const {
-  if (!retry_failures_)
+  if (!retry_failures_) {
     return absl::nullopt;
+  }
 
   size_t num_failures = GetNumConsecutiveFailures();
-  if (num_failures == 0)
+  if (num_failures == 0) {
     return absl::nullopt;
+  }
 
   // The exponential back off is
   //
@@ -284,5 +294,6 @@ void NearbyShareSchedulerBase::PrintSchedulerState() const {
      << (HasPendingImmediateRequest() ? "Yes" : "No");
   ss << "\n  Num consecutive failures: " << GetNumConsecutiveFailures();
 
-  NS_LOG(VERBOSE) << ss.str();
+  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
+  // (see go/np-plumbing).
 }

@@ -14,7 +14,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
-#include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler_factory.h"
+#include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_share_scheduler_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

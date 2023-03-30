@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_share_scheduler.h"
 
 #include <utility>
 
