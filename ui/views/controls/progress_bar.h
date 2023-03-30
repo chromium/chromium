@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 
@@ -50,10 +51,14 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // The color of the progress portion.
   SkColor GetForegroundColor() const;
   void SetForegroundColor(SkColor color);
+  absl::optional<ui::ColorId> GetForegroundColorId() const;
+  void SetForegroundColorId(absl::optional<ui::ColorId> color_id);
 
   // The color of the portion that displays potential progress.
   SkColor GetBackgroundColor() const;
   void SetBackgroundColor(SkColor color);
+  absl::optional<ui::ColorId> GetBackgroundColorId() const;
+  void SetBackgroundColorId(absl::optional<ui::ColorId> color_id);
 
  protected:
   int preferred_height() const { return preferred_height_; }
@@ -82,7 +87,9 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   const bool allow_round_corner_;
 
   absl::optional<SkColor> foreground_color_;
+  absl::optional<ui::ColorId> foreground_color_id_;
   absl::optional<SkColor> background_color_;
+  absl::optional<ui::ColorId> background_color_id_;
 
   std::unique_ptr<gfx::LinearAnimation> indeterminate_bar_animation_;
 

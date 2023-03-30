@@ -69,10 +69,11 @@ ProgressBar::~ProgressBar() = default;
 
 void ProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  if (IsIndeterminate())
+  if (IsIndeterminate()) {
     node_data->RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
-  else
+  } else {
     node_data->SetValue(base::FormatPercent(RoundToPercent(current_value_)));
+  }
 }
 
 gfx::Size ProgressBar::CalculatePreferredSize() const {
@@ -92,8 +93,9 @@ void ProgressBar::AddedToWidget() {
 }
 
 void ProgressBar::OnPaint(gfx::Canvas* canvas) {
-  if (IsIndeterminate())
+  if (IsIndeterminate()) {
     return OnPaintIndeterminate(canvas);
+  }
 
   gfx::Rect content_bounds = GetContentsBounds();
 
@@ -111,8 +113,9 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   SkPath slice_path;
   const int slice_width = static_cast<int>(
       content_bounds.width() * std::min(current_value_, 1.0) + 0.5);
-  if (slice_width < 1)
+  if (slice_width < 1) {
     return;
+  }
 
   gfx::Rect slice_bounds = content_bounds;
   slice_bounds.set_width(slice_width);
@@ -132,8 +135,9 @@ double ProgressBar::GetValue() const {
 void ProgressBar::SetValue(double value) {
   double adjusted_value = (value < 0.0 || value > 1.0) ? -1.0 : value;
 
-  if (adjusted_value == current_value_)
+  if (adjusted_value == current_value_) {
     return;
+  }
 
   current_value_ = adjusted_value;
   if (IsIndeterminate()) {
@@ -149,40 +153,78 @@ void ProgressBar::SetValue(double value) {
 }
 
 void ProgressBar::SetPaused(bool is_paused) {
-  if (is_paused_ == is_paused)
+  if (is_paused_ == is_paused) {
     return;
+  }
 
   is_paused_ = is_paused;
   OnPropertyChanged(&is_paused_, kPropertyEffectsPaint);
 }
 
 SkColor ProgressBar::GetForegroundColor() const {
-  if (foreground_color_)
+  if (foreground_color_) {
     return foreground_color_.value();
+  }
 
-  return GetColorProvider()->GetColor(GetPaused() ? ui::kColorProgressBarPaused
-                                                  : ui::kColorProgressBar);
+  return GetColorProvider()->GetColor(foreground_color_id_.value_or(
+      GetPaused() ? ui::kColorProgressBarPaused : ui::kColorProgressBar));
 }
 
 void ProgressBar::SetForegroundColor(SkColor color) {
-  if (foreground_color_ == color)
+  if (foreground_color_ == color) {
     return;
+  }
 
   foreground_color_ = color;
+  foreground_color_id_ = absl::nullopt;
   OnPropertyChanged(&foreground_color_, kPropertyEffectsPaint);
 }
 
+absl::optional<ui::ColorId> ProgressBar::GetForegroundColorId() const {
+  return foreground_color_id_;
+}
+
+void ProgressBar::SetForegroundColorId(absl::optional<ui::ColorId> color_id) {
+  if (foreground_color_id_ == color_id) {
+    return;
+  }
+
+  foreground_color_id_ = color_id;
+  foreground_color_ = absl::nullopt;
+  OnPropertyChanged(&foreground_color_id_, kPropertyEffectsPaint);
+}
+
 SkColor ProgressBar::GetBackgroundColor() const {
+  if (background_color_id_) {
+    return GetColorProvider()->GetColor(background_color_id_.value());
+  }
+
   return background_color_.value_or(
       color_utils::BlendTowardMaxContrast(GetForegroundColor(), 0xCC));
 }
 
 void ProgressBar::SetBackgroundColor(SkColor color) {
-  if (background_color_ == color)
+  if (background_color_ == color) {
     return;
+  }
 
   background_color_ = color;
+  background_color_id_ = absl::nullopt;
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
+}
+
+absl::optional<ui::ColorId> ProgressBar::GetBackgroundColorId() const {
+  return background_color_id_;
+}
+
+void ProgressBar::SetBackgroundColorId(absl::optional<ui::ColorId> color_id) {
+  if (background_color_id_ == color_id) {
+    return;
+  }
+
+  background_color_id_ = color_id;
+  background_color_ = absl::nullopt;
+  OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
 
 void ProgressBar::AnimationProgressed(const gfx::Animation* animation) {
@@ -194,8 +236,9 @@ void ProgressBar::AnimationProgressed(const gfx::Animation* animation) {
 void ProgressBar::AnimationEnded(const gfx::Animation* animation) {
   DCHECK_EQ(animation, indeterminate_bar_animation_.get());
   // Restarts animation.
-  if (IsIndeterminate())
+  if (IsIndeterminate()) {
     indeterminate_bar_animation_->Start();
+  }
 }
 
 bool ProgressBar::IsIndeterminate() {
@@ -276,6 +319,8 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
 BEGIN_METADATA(ProgressBar, View)
 ADD_PROPERTY_METADATA(SkColor, ForegroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ForegroundColorId);
+ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, BackgroundColorId);
 ADD_PROPERTY_METADATA(bool, Paused)
 END_METADATA
 

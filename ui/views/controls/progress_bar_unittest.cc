@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/color/color_id.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
@@ -98,6 +99,27 @@ TEST_F(ProgressBarTest, OverrideDefaultColors) {
   bar_->SetBackgroundColor(SK_ColorGREEN);
   EXPECT_EQ(SK_ColorRED, bar_->GetForegroundColor());
   EXPECT_EQ(SK_ColorGREEN, bar_->GetBackgroundColor());
+
+  // Override colors with color ID. It will also override the colors set with
+  // SkColor.
+  bar_->SetForegroundColorId(ui::kColorSysPrimary);
+  bar_->SetBackgroundColorId(ui::kColorSysPrimaryContainer);
+  const auto* color_provider = bar_->GetColorProvider();
+  EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimary),
+            bar_->GetForegroundColor());
+  EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimaryContainer),
+            bar_->GetBackgroundColor());
+  EXPECT_EQ(ui::kColorSysPrimary, bar_->GetForegroundColorId().value());
+  EXPECT_EQ(ui::kColorSysPrimaryContainer,
+            bar_->GetBackgroundColorId().value());
+
+  // Override the colors set with color ID by SkColor.
+  bar_->SetForegroundColor(SK_ColorRED);
+  bar_->SetBackgroundColor(SK_ColorGREEN);
+  EXPECT_EQ(SK_ColorRED, bar_->GetForegroundColor());
+  EXPECT_EQ(SK_ColorGREEN, bar_->GetBackgroundColor());
+  EXPECT_EQ(absl::nullopt, bar_->GetForegroundColorId());
+  EXPECT_EQ(absl::nullopt, bar_->GetBackgroundColorId());
 }
 
 }  // namespace views
