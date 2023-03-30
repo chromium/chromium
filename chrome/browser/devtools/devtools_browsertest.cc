@@ -58,10 +58,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -2458,97 +2454,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
 #else
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 #endif
-}
-
-// Tests disallowed devtools for force-installed web apps.
-class DevToolsWebAppForceInstallTest
-    : public web_app::WebAppControllerBrowserTest {
- protected:
-  // WebAppControllerBrowserTest overrides:
-  void SetUpOnMainThread() override {
-    web_app::WebAppControllerBrowserTest::SetUpOnMainThread();
-    // Allow different origins to be handled by the embedded_test_server.
-    host_resolver()->AddRule("*", "127.0.0.1");
-    web_app::test::WaitUntilReady(
-        web_app::WebAppProvider::GetForTest(profile()));
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  // Installs a web app, emulating that it has been force-installed by policy.
-  // Fills |*out_web_contents| with a |WebContents| that has been navigated to
-  // the force-installed web app.
-  void ForceInstallWebAppAndOpen(content::WebContents** out_web_contents) {
-    web_app::ForceInstallWebApp(profile(), GetWebAppUrl());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetWebAppUrl()));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
-    *out_web_contents = web_contents;
-  }
-
-  GURL GetWebAppUrl() const {
-    return embedded_test_server()->GetURL("/banners/manifest_test_page.html");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsWebAppForceInstallTest,
-                       PolicyDisallowedForForceInstalledWebApp) {
-  // DevTools are disallowed for force-installed web apps by default.
-  content::WebContents* web_contents = nullptr;
-  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
-
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
-  ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsWebAppForceInstallTest,
-                       PolicyDisallowedForForceInstalledWebAppCloseConnection) {
-  AllowDevTools(browser());
-  content::WebContents* web_contents = nullptr;
-  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
-
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
-  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-
-  // Policy change must close the connection with the force installed extension.
-  DisallowDevToolsForForceInstalledExtenions(browser());
-  ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DevToolsWebAppForceInstallTest,
-    PolicyDisallowedForForceInstalledWebAppNavigateToAboutBlank) {
-  // DevTools are disallowed for force-installed web apps by default.
-  content::WebContents* web_contents = nullptr;
-  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
-  ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-
-  // It's possible to open DevTools for about:blank.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
-  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    DevToolsWebAppForceInstallTest,
-    PolicyDisallowedForForceInstalledWebAppKeepConnectionAboutBlank) {
-  AllowDevTools(browser());
-
-  content::WebContents* web_contents;
-  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
-  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
-  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
-
-  // Policy change to must not disrupt CDP coneciton unrelated to a force
-  // installed extension.
-  DisallowDevToolsForForceInstalledExtenions(browser());
-  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
 class DevToolsPixelOutputTests : public DevToolsTest {
