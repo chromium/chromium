@@ -568,8 +568,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 // the overflow menu.
 - (void)testPinTabFromOverflowMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+    // The Pinned Tabs feature is iPhone only.
+    return;
   }
   if (@available(iOS 15, *)) {
   } else {
@@ -597,11 +597,23 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
   NSString* unpinTabSnackbarMessage =
       l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB);
 
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      assertWithMatcher:grey_nil()];
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
+        assertWithMatcher:grey_nil()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Tap the snackbar to make it disappear.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
+        assertWithMatcher:grey_nil()];
+  }
 
   [ChromeEarlGreyUI openToolsMenu];
 
