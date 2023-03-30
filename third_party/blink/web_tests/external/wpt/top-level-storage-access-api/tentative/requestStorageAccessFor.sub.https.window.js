@@ -18,8 +18,8 @@ const requestedOrigin = 'https://foo.com';
 const altOrigin = 'https://{{hosts[alt][www]}}:{{ports[https][0]}}';
 
 // Common tests to run in all frames.
-test(
-    () => {
+promise_test(
+    async () => {
       assert_not_equals(document.requestStorageAccessFor, undefined);
     },
     '[' + testPrefix +

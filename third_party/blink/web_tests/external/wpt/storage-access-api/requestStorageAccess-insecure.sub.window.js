@@ -13,7 +13,7 @@
 const {testPrefix, topLevelDocument} = processQueryParams();
 
 // Common tests to run in all frames.
-test(() => {
+promise_test(async () => {
   assert_not_equals(document.requestStorageAccess, undefined);
 }, "[" + testPrefix + "] document.requestStorageAccess() should exist on the document interface");
 

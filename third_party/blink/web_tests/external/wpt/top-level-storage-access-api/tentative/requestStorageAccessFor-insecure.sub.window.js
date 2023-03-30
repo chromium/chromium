@@ -15,8 +15,8 @@ if (!topLevelDocument) {
 }
 
 // Common tests to run in all frames.
-test(
-    () => {
+promise_test(
+    async () => {
       assert_not_equals(document.requestStorageAccessFor, undefined);
     },
     '[' + testPrefix +
