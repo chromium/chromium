@@ -54,8 +54,10 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 
 /// Bottom padding for table view headers.
 const CGFloat kHeaderPaddingBottom = 10.0f;
-/// Leading, trailing, and top padding for table view headers.
+/// Leading and trailing padding for table view headers.
 const CGFloat kHeaderPadding = 2.0f;
+/// Top padding for table view headers.
+const CGFloat kHeaderTopPadding = 16.0f;
 
 /// Returns whether the keyboard is dismissed when scrolling suggestions.
 BOOL ShouldDismissKeyboardOnScroll() {
@@ -754,8 +756,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
   contentConfiguration.textProperties.transform =
       UIListContentTextTransformUppercase;
   contentConfiguration.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      kHeaderPadding, kHeaderPadding, kHeaderPaddingBottom,
-      kHeaderPadding);
+      kHeaderTopPadding, kHeaderPadding, kHeaderPaddingBottom, kHeaderPadding);
 
   // Inset the header to match the omnibox width, similar to
   // `adjustMarginsToMatchOmniboxWidth` method.
@@ -769,9 +770,9 @@ BOOL ShouldDismissKeyboardOnScroll() {
       CGFloat leftMargin = omniboxFrame.origin.x;
 
       contentConfiguration.directionalLayoutMargins =
-          NSDirectionalEdgeInsetsMake(
-              kHeaderPadding, kHeaderPadding + leftMargin,
-              kHeaderPaddingBottom, kHeaderPadding);
+          NSDirectionalEdgeInsetsMake(kHeaderTopPadding,
+                                      kHeaderPadding + leftMargin,
+                                      kHeaderPaddingBottom, kHeaderPadding);
     }
   }
 
