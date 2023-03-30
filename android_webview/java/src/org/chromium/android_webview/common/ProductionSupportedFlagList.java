@@ -399,6 +399,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED,
                     "Causes the browser process to crash if child processes are failing to launch"
                             + " due to a browser version change."),
+            Flag.baseFeature(BlinkFeatures.NEW_BASE_URL_INHERITANCE_BEHAVIOR,
+                    "Enables the new base-url inheritance behavior for about:blank and "
+                            + "about:srcdoc pages loaded in a webview."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
