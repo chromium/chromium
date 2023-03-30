@@ -48,6 +48,12 @@ class ASH_EXPORT AcceleratorAliasConverter {
   // cleaner.
   std::vector<ui::Accelerator> CreateReversedSixPackAliases(
       const ui::Accelerator& accelerator) const;
+
+  // Given a list of accelerators, filter out those accelerators that have
+  // unsupported keys. Return a list of filtered accelerators with supported
+  // keys only.
+  std::vector<ui::Accelerator> FilterAliasBySupportedKeys(
+      const std::vector<ui::Accelerator>& accelerators) const;
 };
 
 }  // namespace ash

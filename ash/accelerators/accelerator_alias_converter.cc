@@ -27,7 +27,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   // six pack alias at the same time. Because top row keys and six pack keys are
   // two completely different sets of keys.
   if (!aliases.empty()) {
-    return aliases;
+    return FilterAliasBySupportedKeys(aliases);
   }
 
   // For |six_pack_key| and |reversed_six_pack_key|, show both the base
@@ -44,7 +44,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
 
   // Add base accelerator.
   aliases.push_back(accelerator);
-  return aliases;
+  return FilterAliasBySupportedKeys(aliases);
 }
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
@@ -146,6 +146,20 @@ AcceleratorAliasConverter::CreateReversedSixPackAliases(
   return {ui::Accelerator(
       ui::kReversedSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
       modifiers, accelerator.key_state())};
+}
+
+std::vector<ui::Accelerator>
+AcceleratorAliasConverter::FilterAliasBySupportedKeys(
+    const std::vector<ui::Accelerator>& accelerators) const {
+  std::vector<ui::Accelerator> filtered_accelerators;
+  std::copy_if(
+      accelerators.begin(), accelerators.end(),
+      std::back_inserter(filtered_accelerators),
+      [](const ui::Accelerator& accelerator) {
+        return Shell::Get()->keyboard_capability()->HasKeyEventOnAnyKeyboard(
+            accelerator.key_code());
+      });
+  return filtered_accelerators;
 }
 
 }  // namespace ash

@@ -88,7 +88,15 @@ class FakeDeviceManager {
 
 using AcceleratorAliasConverterTest = AshTestBase;
 
-TEST_F(AcceleratorAliasConverterTest, CheckTopRowAlias) {
+TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
   AcceleratorAliasConverter accelerator_alias_converter_;
 
   // Top row keys not fKeys prevents remapping.
@@ -163,6 +171,20 @@ INSTANTIATE_TEST_SUITE_P(
          {ui::Accelerator{ui::VKEY_BROWSER_BACK,
                           ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
+        // For internal keyboard only, layout1 doesn't have
+        // VKEY_MEDIA_PLAY_PAUSE key.
+        {{INTERNAL},
+         {kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_ALT_DOWN},
+         {}},
+
+        // For internal keyboard only, layout2 doesn't have VKEY_BROWSER_FORWARD
+        // key.
+        {{INTERNAL},
+         {kKbdTopRowLayout2Tag},
+         ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
+         {}},
+
         // For TopRowLayout1: [Alt] + [Forward] -> [Alt] + [Search] + [F2].
         {{EXTERNAL_BLUETOOTH},
          {kKbdTopRowLayout1Tag},
@@ -223,6 +245,13 @@ INSTANTIATE_TEST_SUITE_P(
          {kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
          {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+
+        // Two keyboards with the same layout type. Both do not have
+        // VKEY_MEDIA_PLAY_PAUSE key.
+        {{EXTERNAL_BLUETOOTH, EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout1Tag},
+         ui::Accelerator{ui::VKEY_MEDIA_PLAY_PAUSE, ui::EF_ALT_DOWN},
+         {}},
 
         // Both internal and external keyboards exists, we show both variations.
         {{INTERNAL, EXTERNAL_USB},
@@ -331,7 +360,7 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
     for (size_t i = 0; i < expected_accelerator_.size(); i++) {
       EXPECT_EQ(expected_accelerator_[i], accelerator_alias[i]);
     }
-  } else {
+  } else if (accelerator_alias.size() > 0) {
     EXPECT_EQ(accelerator_, accelerator_alias[0]);
   }
 }
@@ -513,11 +542,13 @@ TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
 
   if (expected_accelerator_.has_value()) {
     // Accelerator has valid a remapping.
-    EXPECT_EQ(2u, accelerator_alias.size());
+    EXPECT_EQ(1u, accelerator_alias.size());
     EXPECT_EQ(expected_accelerator_, accelerator_alias[0]);
-    EXPECT_EQ(accelerator_, accelerator_alias[1]);
+  } else if (ui::KeyboardCapability::IsSixPackKey(accelerator_.key_code())) {
+    // Original accelerator has six pack key, which is not supported by internal
+    // keyboard.
+    EXPECT_EQ(0u, accelerator_alias.size());
   } else {
-    // Accelerator doesn't have a valid remapping.
     EXPECT_EQ(1u, accelerator_alias.size());
     EXPECT_EQ(accelerator_, accelerator_alias[0]);
   }
