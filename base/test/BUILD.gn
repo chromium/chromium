@@ -230,8 +230,6 @@ static_library("test_support") {
 
   if (is_ios) {
     sources += [
-      "../ios/weak_nsobject.h",
-      "../ios/weak_nsobject.mm",
       "ios/wait_util.h",
       "ios/wait_util.mm",
       "test_file_util_mac.cc",

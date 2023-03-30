@@ -3709,7 +3709,6 @@ test("base_unittests") {
     sources += [
       "ios/device_util_unittest.mm",
       "ios/scoped_critical_action_unittest.mm",
-      "ios/weak_nsobject_unittest.mm",
     ]
 
     if (is_cronet_build) {

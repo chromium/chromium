@@ -5,27 +5,6 @@ as stack-based classes and namespaces. As a result, all front-end Bling files
 should be .mm files, as we expect eventually they will contain C++ code or
 language features.
 
-## Use scoped_nsobject<T> and WeakNSObject<T> where ARC is not available.
-
-While there are no smart pointers in Objective-C, Chrome has
-`scoped_nsobject<T>` and `WeakNSObject<T>` to automatically manage (and
-document) object ownership.
-
-Under ARC,` scoped_nsobject<T>` and `WeakNSObject<T>` should only be used for
-interfacing with existing APIs that take these, or for declaring a C++ member
-variable in a header. Otherwise use `__weak` variables and `strong`/`weak`
-properties. **Note that scoped_nsobject and WeakNSObject provide the same API
-under ARC**, i.e. `scoped_nsobject<T> foo([[Bar alloc] init]);` is correct both
-under ARC and non-ARC.
-
-`scoped_nsobject<T>` should be used for all owned member variables in C++
-classes (except the private classes that only exist in implementation files) and
-Objective-C classes built without ARC, even if that means writing dedicated
-getters and setters to implement `@property` declarations. Same goes for
-WeakNSObject - always use it to express weak ownership of an Objective-C object,
-unless you are writing ARC code. We'd rather have a little more boilerplate code
-than a leak.
-
 ## Use ObjCCast<T> and ObjcCCastStrict<T>
 
 As the C++ style guide tells you, we never use C casts and prefer
