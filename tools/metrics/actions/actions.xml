@@ -27666,6 +27666,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafeBrowsing.AccountIntegration.DisabledDialog.Dismissed">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>The ESB disabled dialog was dismissed.</description>
+</action>
+
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.OkButtonClicked">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -27688,6 +27694,12 @@ should be able to be added at any place in this file.
   <owner>awado@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>The ESB disabled dialog was shown to the user.</description>
+</action>
+
+<action name="SafeBrowsing.AccountIntegration.EnabledDialog.Dismissed">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>The ESB enabled dialog was dismissed.</description>
 </action>
 
 <action name="SafeBrowsing.AccountIntegration.EnabledDialog.OkButtonClicked">
