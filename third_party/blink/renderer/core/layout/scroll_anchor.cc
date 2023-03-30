@@ -178,7 +178,7 @@ static const AtomicString UniqueClassnameAmongSiblings(Element* element) {
     if (sibling_element->HasClass() && sibling_element != element) {
       const SpaceSplitString& class_names = sibling_element->ClassNames();
       for (wtf_size_t i = 0; i < class_names.size(); ++i) {
-        classname_filter->Add(class_names[i].Impl()->ExistingHash());
+        classname_filter->Add(class_names[i].Hash());
       }
     }
   }
@@ -188,7 +188,7 @@ static const AtomicString UniqueClassnameAmongSiblings(Element* element) {
     // MayContain allows for false positives, but a false positive is relatively
     // harmless; it just means we have to choose a different classname, or in
     // the worst case a different selector.
-    if (!classname_filter->MayContain(class_names[i].Impl()->ExistingHash())) {
+    if (!classname_filter->MayContain(class_names[i].Hash())) {
       return class_names[i];
     }
   }

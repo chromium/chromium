@@ -21,19 +21,19 @@ inline bool IsExcludedAttribute(const AtomicString& name) {
 }
 
 inline unsigned GetTagHash(const AtomicString& tag_name) {
-  return tag_name.Impl()->ExistingHash() * kTagNameSalt;
+  return tag_name.Hash() * kTagNameSalt;
 }
 
 inline unsigned GetClassHash(const AtomicString& class_name) {
-  return class_name.Impl()->ExistingHash() * kClassSalt;
+  return class_name.Hash() * kClassSalt;
 }
 
 inline unsigned GetIdHash(const AtomicString& id) {
-  return id.Impl()->ExistingHash() * kIdSalt;
+  return id.Hash() * kIdSalt;
 }
 
 inline unsigned GetAttributeHash(const AtomicString& attribute_name) {
-  return attribute_name.Impl()->ExistingHash() * kAttributeSalt;
+  return attribute_name.Hash() * kAttributeSalt;
 }
 
 }  // namespace

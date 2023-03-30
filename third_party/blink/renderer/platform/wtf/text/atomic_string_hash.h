@@ -37,9 +37,7 @@ namespace WTF {
 
 template <>
 struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
-  static unsigned GetHash(const AtomicString& key) {
-    return key.Impl()->ExistingHash();
-  }
+  static unsigned GetHash(const AtomicString& key) { return key.Hash(); }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 

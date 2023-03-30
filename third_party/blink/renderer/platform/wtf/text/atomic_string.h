@@ -187,6 +187,7 @@ class WTF_EXPORT AtomicString {
 
   bool IsNull() const { return string_.IsNull(); }
   bool empty() const { return string_.empty(); }
+  unsigned Hash() const { return string_.Impl()->ExistingHash(); }
 
 #ifdef __OBJC__
   AtomicString(NSString* s) : string_(Add((CFStringRef)s)) {}

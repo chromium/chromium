@@ -78,9 +78,9 @@ TEST_F(BloomFilterTest, NonCountingBloomFilterKeyBoundary) {
 }
 
 TEST_F(BloomFilterTest, NonCountingBloomFilterBasic) {
-  unsigned alfa = AtomicString("Alfa").Impl()->ExistingHash();
-  unsigned bravo = AtomicString("Bravo").Impl()->ExistingHash();
-  unsigned charlie = AtomicString("Charlie").Impl()->ExistingHash();
+  unsigned alfa = AtomicString("Alfa").Hash();
+  unsigned bravo = AtomicString("Bravo").Hash();
+  unsigned charlie = AtomicString("Charlie").Hash();
 
   BloomFilter<12> filter;
   EXPECT_FALSE(filter.MayContain(alfa));
