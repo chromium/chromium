@@ -278,6 +278,13 @@ BOOL IsMultilineSearchSuggestionEnabled() {
       constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
                                   constant:kTextTopMargin];
 
+  // When there is no trailing button, the text should extend to the cell's
+  // trailing edge with a padding.
+  self.textTrailingConstraint = [self.contentView.trailingAnchor
+      constraintEqualToAnchor:self.textStackView.trailingAnchor
+                     constant:kTextTrailingMargin];
+  self.textTrailingConstraint.priority = UILayoutPriorityRequired - 1;
+
   [NSLayoutConstraint activateConstraints:@[
     // Row has a minimum height.
     [self.contentView.heightAnchor
@@ -295,6 +302,7 @@ BOOL IsMultilineSearchSuggestionEnabled() {
     // is actually left off because it will be added via a
     // layout guide once the cell has been added to the view hierarchy.
     self.textTopConstraint,
+    self.textTrailingConstraint,
     [self.textStackView.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
 
@@ -340,15 +348,6 @@ BOOL IsMultilineSearchSuggestionEnabled() {
   DCHECK(self.imageLayoutGuide);
   DCHECK(self.textLayoutGuide);
 
-  // When there is no trailing button, the text should extend to the cell's
-  // trailing edge with a padding.
-  NSLayoutConstraint* stackViewToCellTrailing =
-      [self.textStackView.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kTextTrailingMargin];
-  stackViewToCellTrailing.priority = UILayoutPriorityRequired - 1;
-  self.textTrailingConstraint = stackViewToCellTrailing;
-
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
   [NSLayoutConstraint
@@ -360,7 +359,6 @@ BOOL IsMultilineSearchSuggestionEnabled() {
         constraintEqualToAnchor:self.imageLayoutGuide.widthAnchor],
     [self.textStackView.leadingAnchor
         constraintEqualToAnchor:self.textLayoutGuide.leadingAnchor],
-    stackViewToCellTrailing,
   ];
 
   [NSLayoutConstraint
