@@ -105,30 +105,12 @@ void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
     return;
   }
 
-  auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
   bool running =
       guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
           in_progress_mount_->container_id);
   if (!running) {
     LOG(ERROR) << "Unable to mount files for a container that's not running";
     Finish(CrostiniSshfsResult::kContainerNotRunning);
-    return;
-  }
-
-  manager->GetContainerSshKeys(
-      container_id, base::BindOnce(&CrostiniSshfs::OnGetContainerSshKeys,
-                                   weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CrostiniSshfs::OnGetContainerSshKeys(
-    bool success,
-    const std::string& container_public_key,
-    const std::string& host_private_key,
-    const std::string& hostname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!success) {
-    LOG(ERROR) << "Unable to get container ssh keys";
-    Finish(CrostiniSshfsResult::kGetSshKeysFailed);
     return;
   }
 
@@ -144,20 +126,17 @@ void CrostiniSshfs::OnGetContainerSshKeys(
   auto* dmgr = ash::disks::DiskMountManager::GetInstance();
 
   if (info->sftp_vsock_port != 0) {
-    // If we have a vsock port and cid, use sftp:// over vsock instead.
     in_progress_mount_->source_path = base::StringPrintf(
         "sftp://%" PRId64 ":%u", info->cid, info->sftp_vsock_port);
   } else {
-    // otherwise construct sshfs:// source path.
-    in_progress_mount_->source_path = base::StringPrintf(
-        "sshfs://%s@%s:", info->username.c_str(), hostname.c_str());
+    LOG(ERROR) << "Container has no sftp vsock port";
+    Finish(CrostiniSshfsResult::kGetContainerInfoFailed);
+    return;
   }
   in_progress_mount_->container_homedir = info->homedir;
 
   dmgr->MountPath(in_progress_mount_->source_path, "",
-                  file_manager::util::GetCrostiniMountPointName(profile_),
-                  file_manager::util::GetCrostiniMountOptions(
-                      hostname, host_private_key, container_public_key),
+                  file_manager::util::GetCrostiniMountPointName(profile_), {},
                   ash::MountType::kNetworkStorage,
                   ash::MountAccessMode::kReadWrite,
                   base::BindOnce(&CrostiniSshfs::OnMountEvent,

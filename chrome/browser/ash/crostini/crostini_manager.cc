@@ -2169,20 +2169,6 @@ void CrostiniManager::UninstallPackageOwningFile(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CrostiniManager::GetContainerSshKeys(
-    const guest_os::GuestId& container_id,
-    GetContainerSshKeysCallback callback) {
-  vm_tools::concierge::ContainerSshKeysRequest request;
-  request.set_vm_name(container_id.vm_name);
-  request.set_container_name(container_id.container_name);
-  request.set_cryptohome_id(CryptohomeIdForProfile(profile_));
-
-  GetConciergeClient()->GetContainerSshKeys(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnGetContainerSshKeys,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 bool CrostiniManager::GetCrostiniDialogStatus(DialogType dialog_type) const {
   return open_crostini_dialogs_.count(dialog_type) == 1;
 }
@@ -3380,18 +3366,6 @@ void CrostiniManager::OnInstallLinuxPackage(
   }
 
   std::move(callback).Run(CrostiniResult::SUCCESS);
-}
-
-void CrostiniManager::OnGetContainerSshKeys(
-    GetContainerSshKeysCallback callback,
-    absl::optional<vm_tools::concierge::ContainerSshKeysResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to get ssh keys. Empty response.";
-    std::move(callback).Run(/*success=*/false, "", "", "");
-    return;
-  }
-  std::move(callback).Run(/*success=*/true, response->container_public_key(),
-                          response->host_private_key(), response->hostname());
 }
 
 void CrostiniManager::RemoveCrostini(std::string vm_name,

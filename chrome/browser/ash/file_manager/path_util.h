@@ -139,12 +139,6 @@ base::FilePath GetCrostiniMountDirectory(Profile* profile);
 // The actual directory the Guest OS with `mountPointName` is mounted in.
 base::FilePath GetGuestOsMountDirectory(std::string mountPointName);
 
-// The sshfs mount options for crostini "Linux files" mount.
-std::vector<std::string> GetCrostiniMountOptions(
-    const std::string& hostname,
-    const std::string& host_private_key,
-    const std::string& container_public_key);
-
 // Convert a cracked |file_system_url| to a path inside a VM mounted at
 // |vm_mount| (e.g. /mnt/chromeos). If |map_crostini_home| is set, paths under
 // GetCrostiniMountDirectory() are translated to be under the user's home

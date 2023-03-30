@@ -333,17 +333,10 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
   void ExpectCrostiniMount() {
-    std::string known_hosts;
-    base::Base64Encode("[hostname]:2222 pubkey", &known_hosts);
-    std::string identity;
-    base::Base64Encode("privkey", &identity);
-    std::vector<std::string> mount_options = {
-        "UserKnownHostsBase64=" + known_hosts, "IdentityBase64=" + identity,
-        "Port=2222"};
+    std::vector<std::string> mount_options;
     EXPECT_CALL(*disk_mount_manager_mock_,
-                MountPath("sshfs://testuser@hostname:", "",
-                          "crostini_user_termina_penguin", mount_options,
-                          ash::MountType::kNetworkStorage,
+                MountPath("sftp://3:1234", "", "crostini_user_termina_penguin",
+                          mount_options, ash::MountType::kNetworkStorage,
                           ash::MountAccessMode::kReadWrite, _))
         .WillOnce(Invoke(this, &FileManagerPrivateApiTest::SshfsMount));
   }
@@ -590,11 +583,12 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(browser()->profile());
   crostini_manager->set_skip_restart_for_testing();
-  crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+  crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName, 3);
   crostini_manager->AddRunningContainerForTesting(
       crostini::kCrostiniDefaultVmName,
       crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
-                              "testuser", "/home/testuser", "PLACEHOLDER_IP"));
+                              "testuser", "/home/testuser", "PLACEHOLDER_IP",
+                              1234));
 
   ExpectCrostiniMount();
 
@@ -634,11 +628,12 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
   crostini::CrostiniManager* crostini_manager =
       crostini::CrostiniManager::GetForProfile(browser()->profile());
   crostini_manager->set_skip_restart_for_testing();
-  crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+  crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName, 3);
   crostini_manager->AddRunningContainerForTesting(
       crostini::kCrostiniDefaultVmName,
       crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
-                              "testuser", "/home/testuser", "PLACEHOLDER_IP"));
+                              "testuser", "/home/testuser", "PLACEHOLDER_IP",
+                              1234));
 
   ExpectCrostiniMount();
 

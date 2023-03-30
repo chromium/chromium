@@ -478,25 +478,6 @@ base::FilePath GetGuestOsMountDirectory(std::string mountPointName) {
   return base::FilePath("/media/fuse/" + mountPointName);
 }
 
-std::vector<std::string> GetCrostiniMountOptions(
-    const std::string& hostname,
-    const std::string& host_private_key,
-    const std::string& container_public_key) {
-  const std::string port = "2222";
-  std::vector<std::string> options;
-  std::string base64_known_hosts;
-  std::string base64_identity;
-  base::Base64Encode(host_private_key, &base64_identity);
-  base::Base64Encode(
-      base::StringPrintf("[%s]:%s %s", hostname.c_str(), port.c_str(),
-                         container_public_key.c_str()),
-      &base64_known_hosts);
-  options.push_back("UserKnownHostsBase64=" + base64_known_hosts);
-  options.push_back("IdentityBase64=" + base64_identity);
-  options.push_back("Port=" + port);
-  return options;
-}
-
 bool ConvertFileSystemURLToPathInsideVM(
     Profile* profile,
     const storage::FileSystemURL& file_system_url,

@@ -392,17 +392,6 @@ class CrostiniManager : public KeyedService,
                                   std::string desktop_file_id,
                                   CrostiniResultCallback callback);
 
-  // Asynchronously gets SSH server public key of container and trusted SSH
-  // client private key which can be used to connect to the container.
-  // |callback| is called after the method call finishes.
-  using GetContainerSshKeysCallback =
-      base::OnceCallback<void(bool success,
-                              const std::string& container_public_key,
-                              const std::string& host_private_key,
-                              const std::string& hostname)>;
-  void GetContainerSshKeys(const guest_os::GuestId& container_id,
-                           GetContainerSshKeysCallback callback);
-
   // Runs all the steps required to restart the given crostini vm and container.
   // The optional |observer| tracks progress. If provided, it must be alive
   // until the restart completes (i.e. when |callback| is called) or the request
@@ -773,12 +762,6 @@ class CrostiniManager : public KeyedService,
       CrostiniResultCallback callback,
       absl::optional<vm_tools::cicerone::UninstallPackageOwningFileResponse>
           response);
-
-  // Callback for CrostiniManager::GetContainerSshKeys. Called after the
-  // Concierge service finishes.
-  void OnGetContainerSshKeys(
-      GetContainerSshKeysCallback callback,
-      absl::optional<vm_tools::concierge::ContainerSshKeysResponse> response);
 
   // Helper for CrostiniManager::MaybeUpdateCrostini. Makes blocking calls to
   // check for /dev/kvm.

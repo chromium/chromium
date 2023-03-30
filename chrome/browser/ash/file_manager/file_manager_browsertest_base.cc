@@ -1092,7 +1092,8 @@ class AndroidFilesTestVolume : public LocalTestVolume {
 // CrostiniTestVolume: local test volume for the "Linux files" directory.
 class CrostiniTestVolume : public LocalTestVolume {
  public:
-  CrostiniTestVolume() : LocalTestVolume("Crostini") {}
+  explicit CrostiniTestVolume(const std::string& source_path)
+      : LocalTestVolume("Crostini"), source_path_(source_path) {}
 
   CrostiniTestVolume(const CrostiniTestVolume&) = delete;
   CrostiniTestVolume& operator=(const CrostiniTestVolume&) = delete;
@@ -1109,6 +1110,11 @@ class CrostiniTestVolume : public LocalTestVolume {
   }
 
   const base::FilePath& mount_path() const { return root_path(); }
+
+  const std::string& source_path() const { return source_path_; }
+
+ private:
+  std::string source_path_;
 };
 
 // FakeTestVolume: local test volume with a given volume and device type.
@@ -2158,7 +2164,6 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
     // Init crostini.  Set VM and container running for testing, and register
     // CustomMountPointCallback.
-    crostini_volume_ = std::make_unique<CrostiniTestVolume>();
     if (options.guest_mode != IN_INCOGNITO) {
       crostini_features_.set_is_allowed_now(true);
       crostini_features_.set_enabled(true);
@@ -2169,12 +2174,15 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
         crostini::CrostiniManager::GetForProfile(
             profile()->GetOriginalProfile());
     crostini_manager->set_skip_restart_for_testing();
-    crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+    crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName,
+                                             3);
     crostini_manager->AddRunningContainerForTesting(
         crostini::kCrostiniDefaultVmName,
         crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
-                                "testuser", "/home/testuser",
-                                "PLACEHOLDER_IP"));
+                                "testuser", "/home/testuser", "PLACEHOLDER_IP",
+                                1234));
+    crostini_volume_ = std::make_unique<CrostiniTestVolume>("sftp://3:1234");
+
     guest_os::GuestOsSharePath::GetForProfile(profile()->GetOriginalProfile())
         ->RegisterGuest(crostini::DefaultContainerId());
     static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
@@ -3460,7 +3468,10 @@ base::FilePath FileManagerBrowserTestBase::MaybeMountCrostini(
     const std::vector<std::string>& mount_options) {
   GURL source_url(source_path);
   DCHECK(source_url.is_valid());
-  if (source_url.scheme() != "sshfs") {
+  if (source_url.scheme() != "sftp") {
+    return {};
+  }
+  if (source_path != crostini_volume_->source_path()) {
     return {};
   }
   CHECK(crostini_volume_->Mount(profile()));

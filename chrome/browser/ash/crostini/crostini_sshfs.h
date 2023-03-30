@@ -76,11 +76,6 @@ class CrostiniSshfs : ContainerShutdownObserver {
                                    base::Time started,
                                    bool success);
 
-  void OnGetContainerSshKeys(bool success,
-                             const std::string& container_public_key,
-                             const std::string& host_private_key,
-                             const std::string& hostname);
-
   struct InProgressMount {
     std::string source_path;
     guest_os::GuestId container_id;
