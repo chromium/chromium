@@ -122,8 +122,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
     @VisibleForTesting
     public static final String PREF_SEARCH_AND_BROWSE_CATEGORY = "search_and_browse_category";
-
-    private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
+    @VisibleForTesting
+    public static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
@@ -244,13 +244,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         mUrlKeyedAnonymizedData =
                 (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
-        mUrlKeyedAnonymizedData.setChecked(
-                UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile));
-        mUrlKeyedAnonymizedData.setOnPreferenceChangeListener((preference, newValue) -> {
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    profile, (boolean) newValue);
-            return true;
-        });
+        boolean urlKeyedAnonymizedDataShouldBeEnabled =
+                UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
+                ? UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile)
+                : true;
+        mUrlKeyedAnonymizedData.setChecked(urlKeyedAnonymizedDataShouldBeEnabled);
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate((
                 ChromeManagedPreferenceDelegate) (preference
                 -> UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)));
@@ -737,8 +735,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private void confirmSettings() {
         RecordUserAction.record("Signin_Signin_ConfirmAdvancedSyncSettings");
         SyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.ADVANCED_FLOW_CONFIRM);
-        UnifiedConsentServiceBridge.recordSyncSetupDataTypesHistogram(
-                Profile.getLastUsedRegularProfile());
+
+        Profile profile = Profile.getLastUsedRegularProfile();
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                profile, mUrlKeyedAnonymizedData.isChecked());
+        UnifiedConsentServiceBridge.recordSyncSetupDataTypesHistogram(profile);
         // Settings will be applied when mSyncSetupInProgressHandle is released in onDestroy.
         getActivity().finish();
     }
