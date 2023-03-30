@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_LACROS_FILE_SYSTEM_PROVIDER_H_
 #define CHROME_BROWSER_LACROS_LACROS_FILE_SYSTEM_PROVIDER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_registry.h"
