@@ -318,7 +318,6 @@
 <translation id="3174662312949010067">Зачуваните лозинки може да ги користите и на другите ваши уреди.</translation>
 <translation id="3175081911749765310">Веб-услуги</translation>
 <translation id="3178650076442119961">Активен денес</translation>
-<translation id="3181261441371833039">Затворете ги само обичните картички</translation>
 <translation id="3181825792072797598">Вклучи синхронизација</translation>
 <translation id="3181954750937456830">Безбедно прелистување (ве заштитува вас и вашиот уред од опасни сајтови)</translation>
 <translation id="3184767182050912705">Отклучете со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1053,6 +1052,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="806745655614357130">Не поврзувај ги податоците</translation>
 <translation id="8073670137947914548">Преземањето заврши</translation>
 <translation id="8073872304774253879">Подобрете ги пребарувањата и прелистувањето</translation>
+<translation id="8076492880354921740">Картички</translation>
 <translation id="8077675488769462025">Неактивни картички</translation>
 <translation id="8079602123447022758">Поставкава е управувана, допрете двапати за повеќе информации</translation>
 <translation id="8080028325999236607">Затвори ги сите картички</translation>

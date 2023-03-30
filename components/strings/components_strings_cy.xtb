@@ -1653,6 +1653,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5018422839182700155">Methu ag agor y dudalen hon</translation>
 <translation id="5018802455907704660">16 x 20 modfedd</translation>
 <translation id="5019198164206649151">Mae'r storfa wrth gefn mewn cyflwr gwael</translation>
+<translation id="5019293549442035120">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">Cerddoriaeth y byd</translation>
 <translation id="5021557570875267742">Olrhain prisiau gyda Chrome</translation>
 <translation id="5023310440958281426">Gwiriwch bolisïau’ch gweinyddwr</translation>
@@ -1790,6 +1791,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5324080437450482387">Dewis Manylion Cyswllt</translation>
 <translation id="5329858041417644019">Nid yw eich porwr yn cael ei reoli</translation>
 <translation id="5332219387342487447">Dull Anfon</translation>
+<translation id="5332769172018416402">Gofyn mewn neges</translation>
 <translation id="5333022057423422993">Daeth Chrome o hyd i'r cyfrinair rydych newydd ei ddefnyddio mewn tor data. I ddiogelu eich cyfrifon, rydym yn argymell gwirio eich cyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="5334013548165032829">Cofnodion system manwl</translation>
 <translation id="5334145288572353250">Cadw'r Cyfeiriad?</translation>
@@ -1978,6 +1980,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5817918615728894473">Paru</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Codir tâl ar y cerdyn hwn pan fyddwch yn talu, ond ni fydd ei rif go iawn yn cael ei rannu â'r wefan hon. Ar gyfer diogelwch ychwanegol, cynhyrchir CGS dros dro.}zero{Codir tâl ar y cerdyn a ddewiswch pan fyddwch yn talu, ond ni fydd ei rif go iawn yn cael ei rannu â'r wefan hon. Ar gyfer diogelwch ychwanegol, cynhyrchir CGS dros dro.}two{Codir tâl ar y cerdyn a ddewiswch pan fyddwch yn talu, ond ni fydd ei rif go iawn yn cael ei rannu â'r wefan hon. Ar gyfer diogelwch ychwanegol, cynhyrchir CGS dros dro.}few{Codir tâl ar y cerdyn a ddewiswch pan fyddwch yn talu, ond ni fydd ei rif go iawn yn cael ei rannu â'r wefan hon. Ar gyfer diogelwch ychwanegol, cynhyrchir CGS dros dro.}many{Codir tâl ar y cerdyn a ddewiswch pan fyddwch yn talu, ond ni fydd ei rif go iawn yn cael ei rannu â'r wefan hon. Ar gyfer diogelwch ychwanegol, cynhyrchir CGS dros dro.}other{Codir tâl ar y cerdyn a ddewiswch pan fyddwch yn talu, ond ni fydd ei rif go iawn yn cael ei rannu â'r wefan hon. Ar gyfer diogelwch ychwanegol, cynhyrchir CGS dros dro.}}</translation>
 <translation id="5826507051599432481">Enw Cyffredin (CN)</translation>
+<translation id="5829215001860862731">Cadw yn y Cyfrif</translation>
 <translation id="5830698870816298009">symudiad a defnydd camera</translation>
 <translation id="583281660410589416">Anhysbys</translation>
 <translation id="5838278095973806738">Ni ddylech roi unrhyw wybodaeth sensitif ar y wefan hon (er enghraifft, cyfrineiriau neu gardiau credyd), oherwydd gallai ymosodwyr ei dwyn.</translation>

@@ -220,6 +220,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hei <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinsyöttö</translation>
+<translation id="1980808257969311265">Liity: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Näytä edellinen viikko</translation>
 <translation id="1989113344093894667">Sisältöä ei voi tallentaa</translation>
 <translation id="1990046457226896323">Puhetiedostot ladattu</translation>
@@ -900,7 +901,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5229343007215035173">Laita Yksityinen näkyvyys päälle tai pois päältä</translation>
 <translation id="5234764350956374838">Hylkää</translation>
-<translation id="523505283826916779">Esteettömyysasetukset</translation>
+<translation id="523505283826916779">Saavutettavuusasetukset</translation>
 <translation id="5245201184978705914">Transkriptiota ei voi luoda</translation>
 <translation id="5253783950165989294">Yhdistetty laitteeseen nimeltä <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % virtaa</translation>
 <translation id="5258528442992323769">Ei tallennettuja virtuaalityöpöytiä</translation>
@@ -1492,7 +1493,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8029629653277878342">PIN-koodi tai salasana vaaditaan suojauksen parantamiseksi</translation>
 <translation id="8030169304546394654">Yhteys katkaistu</translation>
 <translation id="8036504271468642248">Edellinen lause</translation>
-<translation id="8042893070933512245">Avaa Esteettömyysasetukset-valikko</translation>
+<translation id="8042893070933512245">Avaa Saavutettavuusasetukset-valikko</translation>
 <translation id="8044457332620420407">Näppäimistön taustavalo on poissa päältä</translation>
 <translation id="8048077032188362328">Järjestelmänvalvoja on laittanut hotspotin pois päältä.</translation>
 <translation id="8048123526339889627">Bluetooth-asetukset</translation>
@@ -1611,7 +1612,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8619138598101195078">Vähennä äänenvoimakkuutta</translation>
 <translation id="8627191004499078455">Yhdistetty: <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Kiellä kameran käyttö</translation>
-<translation id="8631727435199967028">Esteettömyysasetukset</translation>
+<translation id="8631727435199967028">Saavutettavuusasetukset</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="8638637208069328956">Laita mikrofoni päälle tai pois päältä</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> jäljellä</translation>

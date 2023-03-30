@@ -1528,6 +1528,7 @@ Khi bạn đặt chính sách này, người dùng sẽ không thể ghi đè gi
 Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền riêng tư sẽ tắt lúc ban đầu nhưng người dùng vẫn có thể kiểm soát.</translation>
 <translation id="2413899611035194909">Hiển thị các tuỳ chọn hỗ trợ tiếp cận trong trình đơn ở khay hệ thống của màn hình đăng nhập</translation>
 <translation id="2415715982424988916">Khám phá (được hỗ trợ kể từ phiên bản 91)</translation>
+<translation id="2420958105721932612">Chỉ định cách cài đặt một ứng dụng. AVAILABLE: Ứng dụng không được cài đặt tự động, nhưng người dùng có thể cài đặt. Đây là giá trị mặc định nếu bạn không chỉ định chính sách này. FORCE_INSTALLED: Ứng dụng được cài đặt tự động và người dùng không thể gỡ cài đặt. BLOCKED: Ứng dụng bị chặn và không cài đặt được. Nếu ứng dụng đã được cài đặt theo chính sách trước đó, thì ứng dụng sẽ bị gỡ cài đặt.</translation>
 <translation id="2421400544595297401">Không cho phép người dùng chưa liên kết sử dụng ứng dụng Android</translation>
 <translation id="2421677964966613267">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web không thể chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />.
 

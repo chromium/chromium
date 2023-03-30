@@ -108,7 +108,6 @@
 <translation id="1834290891154666894">إدخال غير صالح لمطابقة الاسم البديل الخاص بالموضوع</translation>
 <translation id="1838709767668011582">‏موقع Google</translation>
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
-<translation id="1859422890169495746">‏جهاز Chromebook هذا</translation>
 <translation id="1864756863218646478">تعذر العثور على الملف.</translation>
 <translation id="1884013283844450420">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، الاتصال</translation>
 <translation id="1920670151694390848">تحويل صوتي إلى اللغة الماليالامية</translation>
@@ -475,6 +474,7 @@
 <translation id="4843566743023903107">‏أجهزة Chromebase</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485316830061041779">الألمانية</translation>
+<translation id="4862885579661885411">إعدادات الملفات</translation>
 <translation id="4867079195717347957">انقر لترتيب محتوى العمود ترتيبًا تنازليًا.</translation>
 <translation id="4867297348137739678">الأسبوع الماضي</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بايت</translation>

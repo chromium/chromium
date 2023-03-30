@@ -324,7 +324,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3174662312949010067">You can also use saved passwords on your other devices.</translation>
 <translation id="3175081911749765310">Web Services</translation>
 <translation id="3178650076442119961">Active today</translation>
-<translation id="3181261441371833039">Close regular tabs only</translation>
 <translation id="3181825792072797598">Turn on Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3184767182050912705">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1059,6 +1058,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="806745655614357130">Keep my data separate</translation>
 <translation id="8073670137947914548">Download finished</translation>
 <translation id="8073872304774253879">Make searches and browsing better</translation>
+<translation id="8076492880354921740">Tabs</translation>
 <translation id="8077675488769462025">Inactive tabs</translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>

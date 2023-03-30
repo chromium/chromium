@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">Որոնումների պատմությունը ջնջելու համար կարդացեք ձեր որոնողական համակարգի համապատասխան ցուցումները։</translation>
 <translation id="202292859882676807">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="20485545164632846">նոր տարր</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> հաշվում նույն գաղտնաբառն է օգտագործվում</translation>
 <translation id="2050196510205866090">{count,plural, =1{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}one{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}other{Վճարման {count} պահված եղանակ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
@@ -238,6 +239,10 @@
 <translation id="26915454213703967">Որոնել պատկերում Google-ի միջոցով</translation>
 <translation id="2691653761409724435">Հասանելի չէ անցանց ռեժիմում</translation>
 <translation id="2695507686909505111">Էջը թարգմանված է</translation>
+<translation id="2696180352517415858">Դուք դուրս չեք գա ձեր Google հաշվից։ <ph name="BEGIN_LINK" />Այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։
+
+
+Դուք օգտագործում եք <ph name="DSE_NAME" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="2697526135132990015">Դուրս գալ և ջնջել տվյալները</translation>
 <translation id="2700241355396984822">Թույլտվությունների պարամետրեր</translation>
 <translation id="2702801445560668637">Ընթերցանության ցանկ</translation>
@@ -250,6 +255,7 @@
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
 <translation id="2749231692441336879">Դուք բաժանորդագրվեցիք «<ph name="CHANNEL_NAME" />» ալիքին</translation>
 <translation id="2764831210418622012">հենց նոր</translation>
+<translation id="2772667768515195373">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն պահվում է ձեր Google հաշվում (<ph name="USER_EMAIL" />)։</translation>
 <translation id="2773292004659987824">Որոնում ինկոգնիտո ռեժիմում</translation>
 <translation id="277771892408211951">Ընտրեք լեզուն</translation>
 <translation id="2780046210906776326">Էլփոստի հաշիվներ չկան</translation>
@@ -318,7 +324,6 @@
 <translation id="3174662312949010067">Պահված գաղտնաբառերը կարող եք նաև օգտագործել ձեր մյուս սարքերում։</translation>
 <translation id="3175081911749765310">Համացանցի ծառայություններ</translation>
 <translation id="3178650076442119961">Այսօր ակտիվ է եղել</translation>
-<translation id="3181261441371833039">Փակել միայն կանոնավոր ներդիրները</translation>
 <translation id="3181825792072797598">Միացնել համաժամացումը</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3184767182050912705">Ապակողպել՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -480,6 +485,7 @@
 <translation id="4342946437867096381">Դուք ձեր Google հաշվում այս կայքի համար արդեն գաղտնաբառ պահել եք։ Google-ը կարող է ընտրել վերջին օգտագործված գաղտնաբառը։</translation>
 <translation id="4343046787186034850">Տեսախցիկի և խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4359125752503270327">Այս էջը կբացվի այլ հավելվածում:</translation>
+<translation id="4371526908359194219">Ծանուցումներ էլփոստով</translation>
 <translation id="4375040482473363939">Սկանավորել QR կոդը</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
 <translation id="4389019817280890563">Հպեք՝ լեզուն փոխելու համար։</translation>
@@ -583,6 +589,7 @@
 <translation id="4986678885919050584">Հեռացնել սարքից</translation>
 <translation id="498985224078955265">Այս ներդիրը մեկ այլ սարք ուղարկելու համար երկու սարքերում մուտք գործեք Chrome։</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
+<translation id="5016420433031926653">Ուղարկվում են <ph name="USER_EMAIL" /> հասցեին</translation>
 <translation id="5017828934289857214">Հիշեցնել ինձ ավելի ուշ</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
@@ -1051,6 +1058,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="806745655614357130">Իմ տվյալները պահել առանձին</translation>
 <translation id="8073670137947914548">Ներբեռնումն ավարտվեց</translation>
 <translation id="8073872304774253879">Բարելավել որոնումն ու էջերի դիտումը</translation>
+<translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8077675488769462025">Ոչ ակտիվ ներդիրներ</translation>
 <translation id="8079602123447022758">Այս կարգավորումը հնարավոր է փոխել։ Ավելին իմանալու համար կրկնակի հպեք։</translation>
 <translation id="8080028325999236607">Փակել բոլոր ներդիրները</translation>

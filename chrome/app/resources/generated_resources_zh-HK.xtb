@@ -2589,6 +2589,7 @@
 <translation id="3202173864863109533">此分頁的音效已設為靜音。</translation>
 <translation id="3202578601642193415">最新記錄</translation>
 <translation id="3204648577100496185">系統可能會從裝置中移除與此應用程式相關的資料</translation>
+<translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -3266,6 +3267,7 @@
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803345858388753269">影片品質</translation>
 <translation id="3803367742635802571">您瀏覽的網站可能無法正常運作</translation>
+<translation id="3803583375545057606">要徵求家長同意啟用此擴充程式嗎？</translation>
 <translation id="380408572480438692">啟用效能數據收集功能可協助 Google 持續改善系統。除非您提交意見反映報告 (Alt-Shift-I) 並在其中包含效能數據，否則 Google 不會收到任何相關數據。您可以隨時返回這個螢幕停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充程式 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
@@ -3687,6 +3689,7 @@
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="417096670996204801">選擇設定檔</translation>
+<translation id="41725145403849567">要徵求家長同意加入此擴充程式嗎？</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -5099,6 +5102,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 必須包含至少 1 個字元}other{PIN 必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
 <translation id="5476016146231427848">請重新啟動裝置，以便在 Chromebook 上使用 Steam</translation>
+<translation id="5476897066181964657">您必須獲得家長或監護人許可，才能加入此擴充程式</translation>
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
@@ -6848,6 +6852,7 @@
 <translation id="7025190659207909717">流動數據服務管理</translation>
 <translation id="7025895441903756761">安全和私隱</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟書籤(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
+<translation id="7028057921476386252">您必須獲得家長或監護人許可，才能啟用此擴充程式</translation>
 <translation id="7029307918966275733">尚未安裝 Crostini。請安裝 Crostini 來查看製作人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">將網址傳送至「安全瀏覽」功能檢查</translation>

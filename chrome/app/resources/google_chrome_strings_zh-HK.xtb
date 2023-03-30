@@ -24,7 +24,7 @@
 <translation id="1399397803214730675">這部電腦已安裝較新的 Google Chrome 版本，如果軟件無法工作，請解除安裝 Google Chrome，然後再試一次。</translation>
 <translation id="139993653570221430">您可於 Chrome 設定中隨時改變主意。系統會同時執行試用功能和目前放送廣告的方式，因此您不會立即看到變化。</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome 曾連線至 HID 裝置}=1{Google Chrome 已連線至 HID 裝置}other{Google Chrome 已連線至 HID 裝置}}</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome 未連線至 HID 裝置}=1{Google Chrome 已連線至 HID 裝置}other{Google Chrome 已連線至 HID 裝置}}</translation>
 <translation id="1507198376417198979">自訂您的新 Chrome 設定檔</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />。</translation>

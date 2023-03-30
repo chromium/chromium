@@ -24,6 +24,7 @@
 
 તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
 <translation id="1640672724030957280">ડાઉનલોડ કરી રહ્યું છે...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromiumને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}=1{Chromiumને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}one{Chromiumને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}other{Chromiumને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}}</translation>
 <translation id="1708666629004767631">Chromiumનું નવું, સુરક્ષિત વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="17264556997921157">તમે રુચિના એ વિષયોને જોઈ અને કાઢી નાખી શકો છો કે જેનો ઉપયોગ સાઇટ તમને જાહેરાતો બતાવવા માટે કરે છે. Chromium તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે તમારી રુચિઓનું અનુમાન લગાવે છે.</translation>
 <translation id="1733725117201708356">Chromium ટૂંક સમયમાં જ બ્રાઉઝિંગ ડેટા ડિલીટ કરશે</translation>

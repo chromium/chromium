@@ -108,7 +108,6 @@
 <translation id="1834290891154666894">Érvénytelen bejegyzés: Tárgy alternatív egyéb neve – egyezés</translation>
 <translation id="1838709767668011582">Google-webhely</translation>
 <translation id="1853795129690976061">Ez a mappa meg van osztva a Linux rendszerrel</translation>
-<translation id="1859422890169495746">Ez a Chromebook</translation>
 <translation id="1864756863218646478">A fájl nem található.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, csatlakozás</translation>
 <translation id="1920670151694390848">malajálam, betű szerinti átírás</translation>
@@ -475,6 +474,7 @@
 <translation id="4843566743023903107">Chromebase-ek</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="485316830061041779">német</translation>
+<translation id="4862885579661885411">Fájlbeállítások</translation>
 <translation id="4867079195717347957">Kattintson az oszlop csökkenő sorrendben való rendezéséhez.</translation>
 <translation id="4867297348137739678">Múlt héten</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bájt</translation>

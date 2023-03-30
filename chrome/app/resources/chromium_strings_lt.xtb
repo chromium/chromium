@@ -24,6 +24,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 
 Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taikomi šiai paskyrai. Galite tvarkyti „Google“ paskyras skiltyje <ph name="SETTINGS_LINK_BEGIN" />„Nustatymai“<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Atsisiunčiama...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{„Chromium“ buvo prijungta prie HID įrenginio}=1{„Chromium“ prijungta prie HID įrenginio}one{„Chromium“ prijungta prie HID įrenginių}few{„Chromium“ prijungta prie HID įrenginių}many{„Chromium“ prijungta prie HID įrenginių}other{„Chromium“ prijungta prie HID įrenginių}}</translation>
 <translation id="1708666629004767631">Pasiekiama nauja, saugesnė „Chromium“ versija.</translation>
 <translation id="17264556997921157">Galite peržiūrėti ir pašalinti pomėgių svetainių temas, pagal kurias parenkami jums rodomi skelbimai. „Chromium“ pagal jūsų naršymo istoriją įvertina temas, kurios jus domina</translation>
 <translation id="1733725117201708356">„Chromium“ netrukus ištrins naršymo duomenis</translation>

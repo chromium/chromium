@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">デバイス <ph name="INDEX" />/<ph name="COUNT" />、名前: <ph name="NAME" />。</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
+<translation id="7131634559772719176">プリセットの確認</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
@@ -802,6 +803,7 @@
 <translation id="80398733265834479">自動カラー モードを有効にする</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8045012663542226664">マイクのミュート</translation>
+<translation id="8050091914317269817">この壁紙を選択すると、自動ダークモードと壁紙の色の調整がオンになります。</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>

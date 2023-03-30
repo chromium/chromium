@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">ამ კომპიუტერს უკვე აქვს Google Chrom-ის უფრო ახალი ვერსია. იმ შემთხვევაში, თუ პროგრამა არ მუშაობს, გთხოვთ, განახორციელეთ Google Chrome-ის დეინსტალაცია და სცადეთ ისევ.</translation>
 <translation id="139993653570221430">აზრის შეცვლას ნებისმიერ დროს შეძლებთ Chrome-ის პარამეტრებიდან. ცდები განხორციელდება რეკლამის ჩვენების ამჟამინდელი მექანიზმების მოქმედების პარალელურად, ამიტომ ცვლილებებს მომენტალურად არ შეამჩნევთ.</translation>
 <translation id="1434626383986940139">Chrome Canary პროგრამები</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome დაკავშირებული იყო HID მოწყობილობასთან}=1{Google Chrome დაკავშირებულია HID მოწყობილობასთან}other{Google Chrome დაკავშირებულია HID მოწყობილობებთან}}</translation>
 <translation id="1507198376417198979">მოირგეთ თქვენი ახალი Chrome პროფილი</translation>
 <translation id="1516530951338665275">დაწყვილების გასაგრძელებლად Google Chrome საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>

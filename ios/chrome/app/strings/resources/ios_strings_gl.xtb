@@ -155,6 +155,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2021670401941426298">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca.</translation>
 <translation id="202292859882676807">Permitiuse o acceso ao micrófono</translation>
 <translation id="20485545164632846">novo elemento</translation>
+<translation id="2049727122989709386">Hai <ph name="COUNT" /> contas nas que se usa o mesmo contrasinal</translation>
 <translation id="2050196510205866090">{count,plural, =1{Hai {count} método de pago gardado dispoñible sobre o teclado.}other{Hai {count} métodos de pago gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
@@ -238,6 +239,10 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="26915454213703967">Buscar na imaxe con Google</translation>
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
 <translation id="2695507686909505111">Traduciuse a páxina</translation>
+<translation id="2696180352517415858">Non se pechará a sesión na túa Conta de Google. Cando teñas a sesión iniciada, poderían gardarse na túa Conta de Google <ph name="BEGIN_LINK" />outros tipos de actividade<ph name="END_LINK" />. Podes eliminalos en calquera momento.
+
+
+O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar o historial de busca, consulta as instrucións do propio motor para facelo (se as ten).</translation>
 <translation id="2697526135132990015">Pechar sesión e borrar datos</translation>
 <translation id="2700241355396984822">Opcións para configurar permisos</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
@@ -250,6 +255,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Comezaches a seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">agora mesmo</translation>
+<translation id="2772667768515195373">Podes usar nos produtos de Google os enderezos gardados. Este enderezo está gardado na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Busca do modo de incógnito</translation>
 <translation id="277771892408211951">Seleccionar idioma</translation>
 <translation id="2780046210906776326">Non hai ningunha conta de correo electrónico</translation>
@@ -318,7 +324,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3174662312949010067">Tamén podes utilizar os contrasinais gardados nos teus outros dispositivos.</translation>
 <translation id="3175081911749765310">Servizos web</translation>
 <translation id="3178650076442119961">Dispositivo activo hoxe</translation>
-<translation id="3181261441371833039">Pechar só pestanas non fixadas</translation>
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1053,6 +1058,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="806745655614357130">Conservar os meus datos por separado</translation>
 <translation id="8073670137947914548">A descarga finalizou</translation>
 <translation id="8073872304774253879">Mellorar as buscas e a navegación</translation>
+<translation id="8076492880354921740">Pestanas</translation>
 <translation id="8077675488769462025">Pestanas inactivas</translation>
 <translation id="8079602123447022758">Esta opción de configuración está xestionada polo administrador. Toca dúas veces para obter máis información</translation>
 <translation id="8080028325999236607">Pechar pestanas</translation>

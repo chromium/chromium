@@ -221,6 +221,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">مرحبًا، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">إدخال نصي</translation>
+<translation id="1980808257969311265">الانضمام إلى "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="1982717156487272186">عرض الأسبوع الماضي</translation>
 <translation id="1989113344093894667">لا يمكن تصوير المحتوى</translation>
 <translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
@@ -1613,7 +1614,7 @@
 <translation id="8619138598101195078">خفض مستوى الصوت</translation>
 <translation id="8627191004499078455">تم الاتصال بجهاز <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">إيقاف الوصول إلى الكاميرا</translation>
-<translation id="8631727435199967028">إعدادات "سهولة الاستخدام"</translation>
+<translation id="8631727435199967028">إعدادات تسهيل الاستخدام</translation>
 <translation id="8637598503828012618">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="8638637208069328956">تفعيل/إيقاف الميكروفون</translation>
 <translation id="8639760480004882931">يتبقى <ph name="PERCENTAGE" /></translation>

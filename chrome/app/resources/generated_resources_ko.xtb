@@ -2591,6 +2591,7 @@
 <translation id="3202173864863109533">이 탭의 오디오가 음소거됩니다.</translation>
 <translation id="3202578601642193415">최근</translation>
 <translation id="3204648577100496185">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
+<translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208321278970793882">앱</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3208703785962634733">미확인</translation>
@@ -6400,6 +6401,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6647690760956378579">자연 음성 미리보기</translation>
 <translation id="6648911618876616409">중요 업데이트를 설치할 준비가 되었습니다. 시작하려면 로그인하세요.</translation>
 <translation id="6649018507441623493">잠시 기다려 주세요.</translation>
+<translation id="6650206238642452078">ChromeOS 시스템 이벤트 구독</translation>
 <translation id="665061930738760572">새 창에서 열기(&amp;N)</translation>
 <translation id="6651237644330755633">웹사이트를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="6651495917527016072">휴대전화와 Wi-Fi 네트워크를 동기화합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -9116,6 +9118,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="904224458472510106">이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="9042827002460091668">인터넷 연결 상태를 확인하고 다시 시도해 주세요.</translation>
 <translation id="9042893549633094279">개인 정보 보호 및 보안</translation>
+<translation id="9043264199499366189">ChromeOS Flex 시스템 이벤트 구독</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
 <translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>

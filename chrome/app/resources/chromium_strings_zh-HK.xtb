@@ -24,7 +24,7 @@
 
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="1640672724030957280">正在下載…</translation>
-<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium 曾連線至 HID 裝置}=1{Chromium 已連線至 HID 裝置}other{Chromium 已連線至 HID 裝置}}</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium 未連線至 HID 裝置}=1{Chromium 已連線至 HID 裝置}other{Chromium 已連線至 HID 裝置}}</translation>
 <translation id="1708666629004767631">更新、更安全的 Chromium 版本現已推出。</translation>
 <translation id="17264556997921157">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chromium 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="1733725117201708356">Chromium 即將刪除瀏覽資料</translation>

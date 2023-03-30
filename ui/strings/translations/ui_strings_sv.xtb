@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4588090240171750605">Scrolla åt höger</translation>
 <translation id="4724120544754982507"><ph name="UNREAD_NOTIFICATION_COUNT" /> olästa aviseringar i meddelandecentret</translation>
+<translation id="4729257764711776855">nummer</translation>
 <translation id="4746179598275229723">Tillägget har lossats</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 månad kvar}other{# månader kvar}}</translation>
 <translation id="4888938634149558681">Ring</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">Det gick inte att skicka</translation>
 <translation id="528468243742722775">Avsluta</translation>
 <translation id="5329858601952122676">&amp;Ta bort</translation>
+<translation id="5361107212971249203">text</translation>
 <translation id="5463830097259460683">Emoji och symboler</translation>
 <translation id="5528053674512161860">Sidhämtningen misslyckades eftersom utvecklarmodulen för användargränssnitt (dev_ui) inte har installerats</translation>
 <translation id="5574202486608032840">Operativsystemet <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>

@@ -22,6 +22,7 @@
 
 اجازه‌هایی که قبلاً به وب‌سایت‌ها و برنامه‌ها داده‌اید ممکن است در این حساب اعمال شود. می‌توانید «حساب‌های Google» خود را در بخش <ph name="SETTINGS_LINK_BEGIN" />تنظیمات<ph name="SETTINGS_LINK_END" /> مدیریت کنید.</translation>
 <translation id="1640672724030957280">در حال بارگیری…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{‏Chromium به دستگاه HID متصل بود}=1{‏Chromium به دستگاه HID متصل است}one{‏Chromium به دستگاه HID متصل است}other{‏Chromium به دستگاه‌های HID متصل است}}</translation>
 <translation id="1708666629004767631">‏نسخه جدید و امن‌تری از Chromium موجود است.</translation>
 <translation id="17264556997921157">‏می‌توانید موضوعات موردعلاقه را که سایت‌ها برای ارائه آگهی به شما استفاده می‌کنند ببینید یا حذف کنید. Chromium علایق شما را براساس سابقه مرور اخیرتان تخمین می‌زند.</translation>
 <translation id="1733725117201708356">‏Chromium به‌زودی داده‌های مرور را حذف می‌کند</translation>

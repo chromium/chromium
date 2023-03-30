@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">컴퓨터에 Chrome 최신 버전이 설치되어 있습니다. 실행되지 않는 경우 제거한 후 다시 시도하세요.</translation>
 <translation id="139993653570221430">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 시험 버전은 현재의 광고 게재 방식을 기반으로 실행되므로 변경사항이 당장 적용되는 것은 아닙니다.</translation>
 <translation id="1434626383986940139">Chrome Canary 앱</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{현재 Chrome이 HID 기기에 연결되어 있지 않습니다.}=1{Chrome이 HID 기기에 연결되어 있습니다.}other{Chrome이 HID 기기에 연결되어 있습니다.}}</translation>
 <translation id="1507198376417198979">새로운 Chrome 프로필 맞춤설정</translation>
 <translation id="1516530951338665275">페어링을 계속하려면 Chrome에서 블루투스 액세스 권한이
 필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

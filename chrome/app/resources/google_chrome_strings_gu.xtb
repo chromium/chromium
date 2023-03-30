@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">આ કમ્પ્યુટર પર પહેલેથી જ Google Chromeનું વધુ તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કામ ન કરતું હોય, તો કૃપા કરીને Google Chromeને અનઇન્સ્ટૉલ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="139993653570221430">તમે Chrome સેટિંગમાં જઈને કોઈપણ સમયે તમારો નિર્ણય બદલી શકો છો. જાહેરાતો આપવાની વર્તમાન રીતની સાથેસાથે અજમાયશો ચાલે છે, તેથી તમને ફેરફારો તરત જ દેખાશે નહીં.</translation>
 <translation id="1434626383986940139">Chrome કેનેરી ઍપ્લિકેશનો</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chromeને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}=1{Google Chromeને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}one{Google Chromeને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}other{Google Chromeને HID ડિવાઇસ સાથે કનેક્ટ કરેલું છે}}</translation>
 <translation id="1507198376417198979">તમારી નવી Chrome પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="1516530951338665275">જોડાણ કરવાનું ચાલુ રાખવા માટે, Google Chromeને બ્લૂટૂથના ઍક્સેસની 
  જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

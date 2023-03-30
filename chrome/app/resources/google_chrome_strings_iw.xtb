@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">‏במחשב זה מותקנת כבר גרסה עדכנית יותר של Google Chrome. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Google Chrome ולנסות שוב.</translation>
 <translation id="139993653570221430">‏יש לך אפשרות לשנות את הבחירה בכל שלב בהגדרות של Chrome. גרסאות הניסיון יפעלו במקביל לשיטה הנוכחית של הצגת המודעות, אז השינויים לא יורגשו מיד.</translation>
 <translation id="1434626383986940139">‏אפליקציות Chrome – קאנארי</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{‏Google Chrome לא מחובר בשלב זה להתקן HID כלשהו}=1{‏Google Chrome מחובר להתקן HID}one{‏Google Chrome מחובר להתקני HID}two{‏Google Chrome מחובר להתקני HID}other{‏Google Chrome מחובר להתקני HID}}</translation>
 <translation id="1507198376417198979">‏רוצה להתאים אישית את פרופיל Chrome?</translation>
 <translation id="1516530951338665275">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי להמשיך 
  את ההתאמה. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

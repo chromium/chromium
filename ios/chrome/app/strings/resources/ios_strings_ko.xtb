@@ -7,7 +7,7 @@
 <translation id="1035980983510608210">모든 탭을 닫으면 고정된 탭도 닫힙니다.</translation>
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
-<translation id="105093091697134113">다음 계정에서 타사의 정보 유출로 인해 노출되었거나 사기성 웹사이트에 입력된 비밀번호를 사용하고 있습니다. 비밀번호를 즉시 변경하여 계정을 안전하게 보호하세요.</translation>
+<translation id="105093091697134113">다음 계정에서 서드 파티의 정보 유출로 인해 노출되었거나 사기성 웹사이트에 입력된 비밀번호를 사용하고 있습니다. 비밀번호를 즉시 변경하여 계정을 안전하게 보호하세요.</translation>
 <translation id="1054045277222934172">설정 &gt; 콘텐츠 설정에서 기본 사이트 보기를 데스크톱으로 변경할 수 있습니다.</translation>
 <translation id="1054745118061919935">계속하면 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1063454504051558093">다른 비밀번호를 사용하세요...</translation>
@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="202292859882676807">마이크 액세스 허용됨</translation>
 <translation id="20485545164632846">새 항목</translation>
+<translation id="2049727122989709386">계정 <ph name="COUNT" />개에서 동일한 비밀번호 사용 중</translation>
 <translation id="2050196510205866090">{count,plural, =1{키보드 위에 저장된 결제 수단 {count}개가 있습니다.}other{키보드 위에 저장된 결제 수단 {count}개가 있습니다.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
@@ -238,6 +239,10 @@
 <translation id="26915454213703967">Google로 이미지 내 검색</translation>
 <translation id="2691653761409724435">오프라인에서 사용할 수 없음</translation>
 <translation id="2695507686909505111">페이지 번역됨</translation>
+<translation id="2696180352517415858">Google 계정에서 로그아웃되지 않습니다. 로그인할 경우 <ph name="BEGIN_LINK" />다른 활동 형식<ph name="END_LINK" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.
+
+
+현재 사용 중인 검색엔진은 <ph name="DSE_NAME" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="2697526135132990015">로그아웃 후 데이터 지우기</translation>
 <translation id="2700241355396984822">권한 설정 옵션</translation>
 <translation id="2702801445560668637">읽기 목록</translation>
@@ -250,6 +255,7 @@
 <translation id="2747003861858887689">이전 필드</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> 사이트를 팔로우했습니다.</translation>
 <translation id="2764831210418622012">방금</translation>
+<translation id="2772667768515195373">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. Google 계정(<ph name="USER_EMAIL" />)에 저장된 주소입니다.</translation>
 <translation id="2773292004659987824">시크릿 검색</translation>
 <translation id="277771892408211951">언어 선택</translation>
 <translation id="2780046210906776326">이메일 계정이 없음</translation>
@@ -318,7 +324,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3174662312949010067">다른 기기에서도 저장된 비밀번호를 사용할 수 있습니다</translation>
 <translation id="3175081911749765310">웹 서비스</translation>
 <translation id="3178650076442119961">오늘 사용됨</translation>
-<translation id="3181261441371833039">일반 탭만 닫기</translation>
 <translation id="3181825792072797598">동기화 사용 설정</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증으로 잠금 해제</translation>
@@ -1053,6 +1058,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="806745655614357130">내 데이터 별도로 유지</translation>
 <translation id="8073670137947914548">다운로드가 완료되었습니다</translation>
 <translation id="8073872304774253879">검색 및 탐색 기능 개선</translation>
+<translation id="8076492880354921740">탭</translation>
 <translation id="8077675488769462025">비활성된 탭</translation>
 <translation id="8079602123447022758">관리자가 관리하는 설정입니다, 자세한 정보를 보려면 두 번 탭하세요</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>

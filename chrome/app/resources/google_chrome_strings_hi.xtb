@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">इस कंप्यूटर में Google Chrome का ज़्यादा नवीन वर्शन पहले से मौजूद है. अगर सॉफ्टवेयर काम नहीं कर रहा है, तो कृपया Google Chrome अनइंस्‍टॉल करें और फिर से प्रयास करें.</translation>
 <translation id="139993653570221430">Chrome की सेटिंग में जाकर, इसमें कभी भी बदलाव किया जा सकता है. आपको ये बदलाव तुरंत नहीं दिखेंगे. ऐसा इसलिए होता है, क्योंकि आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के ट्रायल के दौरान भी, विज्ञापन दिखाने के पुराने तरीके को पूरी तरह से नहीं बदला जाता है.</translation>
 <translation id="1434626383986940139">Chrome Canary ऐप्स </translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome अभी किसी भी एचआईडी डिवाइस से कनेक्ट नहीं है}=1{Google Chrome को किसी एचआईडी डिवाइस से कनेक्ट किया गया है}one{Google Chrome को किसी एचआईडी डिवाइस से कनेक्ट किया गया है}other{Google Chrome को एचआईडी डिवाइसों से कनेक्ट किया गया है}}</translation>
 <translation id="1507198376417198979">अपनी नई Chrome प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
 <translation id="1516530951338665275">दूसरे डिवाइस से जोड़े रखने के लिए, Google Chrome को ब्लूटूथ का ऐक्सेस 
  चाहिए. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

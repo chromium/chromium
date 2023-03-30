@@ -23,6 +23,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 
 Les autorisations que vous avez déjà accordées aux sites Web et aux applis peuvent s'appliquer à ce compte. Vous pouvez gérer vos comptes Google dans <ph name="SETTINGS_LINK_BEGIN" />Paramètres<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium n'est connecté à aucun appareil HID}=1{Chromium est connecté à un appareil HID}one{Chromium est connecté à un appareil HID}other{Chromium est connecté à plusieurs appareils HID}}</translation>
 <translation id="1708666629004767631">Une nouvelle version de Chromium encore plus sûre est disponible.</translation>
 <translation id="17264556997921157">Vous pouvez consulter et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chromium se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>
 <translation id="1733725117201708356">Chromium supprimera bientôt les données de navigation</translation>

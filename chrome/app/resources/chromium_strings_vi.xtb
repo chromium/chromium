@@ -22,6 +22,7 @@
 
 Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp dụng cho cả tài khoản này. Bạn có thể quản lý Tài khoản Google trong phần <ph name="SETTINGS_LINK_BEGIN" />Cài đặt<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Đang tải xuống...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium hiện không được kết nối với một thiết bị HID}=1{Chromium đang được kết nối với một thiết bị HID}other{Chromium đang được kết nối với nhiều thiết bị HID}}</translation>
 <translation id="1708666629004767631">Hiện đã có phiên bản Chromium mới an toàn hơn.</translation>
 <translation id="17264556997921157">Bạn có thể xem và xoá những chủ đề quan tâm mà các trang web dựa vào để hiện quảng cáo cho bạn. Chromium ước đoán các mối quan tâm dựa trên nhật ký duyệt web gần đây của bạn.</translation>
 <translation id="1733725117201708356">Chromium sắp xoá dữ liệu duyệt web</translation>

@@ -22,6 +22,7 @@
 
 De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Downloader...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium har ikke forbindelse til nogen HID-enhed}=1{Chromium har forbindelse til en HID-enhed}one{Chromium har forbindelse til en HID-enhed}other{Chromium har forbindelse til HID-enheder}}</translation>
 <translation id="1708666629004767631">Der findes en ny og mere sikker version af Chromium.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chromium estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="1733725117201708356">Chromium sletter snart browserdataene</translation>

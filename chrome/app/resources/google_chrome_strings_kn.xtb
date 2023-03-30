@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">ಈ ಕಂಪ್ಯೂಟರ್ ಈಗಾಗಲೇ ತೀರಾ ಇತ್ತೀಚಿನ Google Chrome ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿದೆ. ಸಾಫ್ಟ್‌ವೇರ್ ಕಾರ್ಯ ನಿರ್ವಹಿಸದೆ ಇದ್ದರೆ, ದಯವಿಟ್ಟು Google Chrome ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="139993653570221430">ನೀವು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಮನಸ್ಸನ್ನು ಬದಲಾಯಿಸಬಹುದು. ಪ್ರಸ್ತುತ ಜಾಹೀರಾತು ಪ್ರದರ್ಶನದ ವಿಧಾನದ ಜೊತೆಯಲ್ಲೇ ಪ್ರಯೋಗಗಳೂ ರನ್ ಆಗುತ್ತವೆ, ಹಾಗಾಗಿ ನಿಮಗೆ ತಕ್ಷಣವೇ ಬದಲಾವಣೆಗಳು ಕಾಣಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="1434626383986940139">Chrome ಕ್ಯಾನರಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome ಅನ್ನು HID ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿತ್ತು}=1{Google Chrome ಅನ್ನು HID ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ}one{Google Chrome ಅನ್ನು HID ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ}other{Google Chrome ಅನ್ನು HID ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1507198376417198979">ನಿಮ್ಮ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1516530951338665275">ಜೋಡಣೆಯನ್ನು ಮುಂದುವರಿಸಲು Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌ನಿಂದ<ph name="END_LINK_CROS_OSS" /> ChromeOS ನ ರಚನೆ ಸಾಧ್ಯವಾಗಿದೆ.</translation>

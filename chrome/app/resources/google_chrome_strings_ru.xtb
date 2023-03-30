@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">На компьютере уже установлена последняя версия браузера Google Chrome. Если он не работает, удалите его и установите снова.</translation>
 <translation id="139993653570221430">Вы можете в любое время изменить свое решение в настройках Chrome. Экспериментальные функции действуют одновременно с текущими настройками показа рекламы, поэтому вы не сразу заметите изменения.</translation>
 <translation id="1434626383986940139">Приложения Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Браузер Google Chrome не подключен к HID-устройствам}=1{Браузер Google Chrome подключен к HID-устройству}one{Браузер Google Chrome подключен к HID-устройствам}few{Браузер Google Chrome подключен к HID-устройствам}many{Браузер Google Chrome подключен к HID-устройствам}other{Браузер Google Chrome подключен к HID-устройствам}}</translation>
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>

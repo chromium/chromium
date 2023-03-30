@@ -108,6 +108,7 @@
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4588090240171750605">Posuv doprava</translation>
 <translation id="4724120544754982507">Centrum oznámení – nepřečtená oznámení: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4729257764711776855">číslo</translation>
 <translation id="4746179598275229723">Rozšíření bylo uvolněno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{zbývá 1 měsíc}few{zbývají # měsíce}many{zbývá # měsíce}other{zbývá # měsíců}}</translation>
 <translation id="4888938634149558681">Volat</translation>
@@ -119,6 +120,7 @@
 <translation id="5278860589123563674">Odeslání se nezdařilo</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5329858601952122676">&amp;Smazat</translation>
+<translation id="5361107212971249203">text</translation>
 <translation id="5463830097259460683">Emodži a symboly</translation>
 <translation id="5528053674512161860">Načtení stránky se nezdařilo, protože není nainstalovaný modul uživatelského rozhraní pro vývojáře (dev_ui)</translation>
 <translation id="5574202486608032840">Systém <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>

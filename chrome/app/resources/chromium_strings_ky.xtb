@@ -24,6 +24,7 @@
 
 Вебсайттарга жана колдонмолорго берилген уруксаттар ушул аккаунтка карата колдонулушу мүмкүн. Google аккаунттарыңызды <ph name="SETTINGS_LINK_BEGIN" />Жөндөөлөрдөн<ph name="SETTINGS_LINK_END" /> башкара аласыз.</translation>
 <translation id="1640672724030957280">Жүктөлүп алынууда...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium HID түзмөгүнө туташтырылган}=1{Chromium HID түзмөгүнө туташып турат}other{Chromium HID түзмөктөрүнө туташып турат}}</translation>
 <translation id="1708666629004767631">Chromium'дун бир кыйла жаңы, коопсуз версиясы бар.</translation>
 <translation id="17264556997921157">Сайттар жарнамаларды көрсөтүү үчүн колдонгон темаларды көрүп, өчүрө аласыз. Chromium сизди кызыктырган темаларды акыркы көргөн вебсайттарыңыздын негизинде божомолдойт.</translation>
 <translation id="1733725117201708356">Chromium серептөө дайындарын жакында өчүрөт</translation>

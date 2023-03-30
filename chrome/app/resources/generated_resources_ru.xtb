@@ -2576,6 +2576,7 @@
 <translation id="3202173864863109533">Звук на этой вкладке отключен</translation>
 <translation id="3202578601642193415">Последние</translation>
 <translation id="3204648577100496185">Данные, связанные с этим приложением, могут быть удалены с устройства.</translation>
+<translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208321278970793882">Приложение</translation>
 <translation id="3208584281581115441">Выполнить проверку</translation>
 <translation id="3208703785962634733">Не подтвержден</translation>
@@ -6392,6 +6393,7 @@
 <translation id="6647690760956378579">Предв. прослушивание естественного голоса</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
 <translation id="6649018507441623493">Подождите...</translation>
+<translation id="6650206238642452078">Подписка на системные события ChromeOS</translation>
 <translation id="665061930738760572">Открыть в &amp;новом окне</translation>
 <translation id="6651237644330755633">Доверять этому сертификату при идентификации сайтов</translation>
 <translation id="6651495917527016072">Синхронизировать сети Wi-Fi с телефоном. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -9110,6 +9112,7 @@
 <translation id="904224458472510106">Это действие нельзя будет отменить.</translation>
 <translation id="9042827002460091668">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="9042893549633094279">Конфиденциальность и безопасность</translation>
+<translation id="9043264199499366189">Подписка на системные события ChromeOS Flex</translation>
 <translation id="9044646465488564462">Не удалось подключиться к сети: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Список для чтения перемещен на новую боковую панель. Посмотрите его.</translation>
 <translation id="9045430190527754450">Отправлять в Google адреса веб-страниц, которые вы пытаетесь открыть</translation>

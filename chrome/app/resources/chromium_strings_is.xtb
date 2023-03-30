@@ -24,6 +24,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 
 Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á þessum reikningi. Þú getur haft umsjón með Google reikningunum þínum í <ph name="SETTINGS_LINK_BEGIN" />stillingum<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Sækir...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium var tengt við HID-tæki}=1{Chromium er tengt við HID-tæki}one{Chromium er tengt við HID-tæki}other{Chromium er tengt við HID-tæki}}</translation>
 <translation id="1708666629004767631">Nýrri og öruggari útgáfa af Chromium er í boði.</translation>
 <translation id="17264556997921157">Þú getur séð og fjarlægt áhugasvið sem vefsvæði nota til að birta þér auglýsingar. Chromium áætlar áhugasvið þín út frá nýlegum vafraferli þínum.</translation>
 <translation id="1733725117201708356">Chromium mun eyða vefskoðunargögnum bráðlega</translation>

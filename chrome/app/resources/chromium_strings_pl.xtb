@@ -22,6 +22,7 @@
 
 Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. Kontami Google możesz zarządzać w <ph name="SETTINGS_LINK_BEGIN" />Ustawieniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Przeglądarka Chromium została połączona z urządzeniem HID}=1{Przeglądarka Chromium jest połączona z urządzeniem HID}few{Przeglądarka Chromium jest połączona z urządzeniami HID}many{Przeglądarka Chromium jest połączona z urządzeniami HID}other{Przeglądarka Chromium jest połączona z urządzeniami HID}}</translation>
 <translation id="1708666629004767631">Dostępna jest nowa, bezpieczniejsza wersja Chromium.</translation>
 <translation id="17264556997921157">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chromium ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
 <translation id="1733725117201708356">Chromium usunie wkrótce dane przeglądania</translation>

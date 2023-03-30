@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">‏این رایانه از قبل دارای نسخه جدیدتر Google Chrome است. اگر نرم‌افزار کار نمی‌کند، لطفاً Google Chrome را حذف نصب کرده و دوباره امتحان کنید.</translation>
 <translation id="139993653570221430">‏هروقت بخواهید می‌توانید در تنظیمات Chrome نظرتان را عوض کنید. دوره‌های آزمایشی به‌موازات روش کنونی ارائه آگهی اجرا می‌شود، بنابراین تغییرات بلافاصله ظاهر نمی‌شوند.</translation>
 <translation id="1434626383986940139">‏برنامه‌های Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{‏Google Chrome به دستگاه HID متصل بود}=1{‏Google Chrome به دستگاه HID متصل است}one{‏Google Chrome به دستگاه HID متصل است}other{‏Google Chrome به دستگاه‌های HID متصل است}}</translation>
 <translation id="1507198376417198979">‏سفارشی کردن نمایه جدید Chrome</translation>
 <translation id="1516530951338665275">‏Google Chrome باید برای ادامه مرتبط‌سازی به بلوتوث
 دسترسی داشته باشد. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

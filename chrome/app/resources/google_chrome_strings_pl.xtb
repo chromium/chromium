@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">Na tym komputerze jest już zainstalowana nowsza wersja Google Chrome. Jeśli oprogramowanie nie działa, odinstaluj Google Chrome, a następnie spróbuj ponownie.</translation>
 <translation id="139993653570221430">W każdej chwili możesz zmienić swój wybór w ustawieniach Chrome. Testy są przeprowadzanie przy dotychczasowych zasadach wyświetlania reklam, więc zmiany mogą nie być widoczne od razu.</translation>
 <translation id="1434626383986940139">Aplikacje Chrome w wersji poglądowej</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Przeglądarka Google Chrome została połączona z urządzeniem HID}=1{Przeglądarka Google Chrome jest połączona z urządzeniem HID}few{Przeglądarka Google Chrome jest połączona z urządzeniami HID}many{Przeglądarka Google Chrome jest połączona z urządzeniami HID}other{Przeglądarka Google Chrome jest połączona z urządzeniami HID}}</translation>
 <translation id="1507198376417198979">Dostosuj swój nowy profil w Chrome</translation>
 <translation id="1516530951338665275">Aby kontynuować parowanie, Google Chrome potrzebuje dostępu do Bluetootha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>

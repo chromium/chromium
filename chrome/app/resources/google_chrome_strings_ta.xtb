@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">Google Chromeமின் மிகச் சமீபத்திய பதிப்பு இந்தக் கம்ப்யூட்டரில் ஏற்கனவே உள்ளது. மென்பொருள் இயங்கவில்லை என்றால், Google Chromeமை நிறுவல்நீக்கம் செய்துவிட்டு, மீண்டும் முயற்சி செய்க.</translation>
 <translation id="139993653570221430">Chrome அமைப்புகளில் எப்போது வேண்டுமானாலும் மாற்றங்களைச் செய்யலாம். விளம்பரங்கள் தற்போது காட்டப்படும் வகையில் தொடர்ந்து காட்டப்படும். இந்தப் பரிசோதனைகளும் அவற்றோடு இணையாகவே நிகழும் என்பதால் மாற்றங்கள் உடனடியாக உங்களுக்குக் காட்டப்படாது.</translation>
 <translation id="1434626383986940139">Chrome Canary ஆப்ஸ்</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{தற்போது HID சாதனத்துடன் Google Chrome இணைக்கப்படவில்லை}=1{HID சாதனத்துடன் Google Chrome இணைக்கப்பட்டுள்ளது}other{HID சாதனங்களுடன் Google Chrome இணைக்கப்பட்டுள்ளது}}</translation>
 <translation id="1507198376417198979">புதிய Chrome சுயவிவரத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="1516530951338665275">இணைப்பதைத் தொடர Google Chromeமிற்கு புளூடூத் அணுகல் 
  தேவை. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

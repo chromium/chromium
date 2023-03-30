@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">यो कम्प्युटर पहिले नै Google Chrome को एउटा अझ हालैको संस्करण छ। यदि सफ्टवेयरले काम गरिरहेको छैन भने, कृपया Google Chrome को स्थापना हटाउनुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="139993653570221430">तपाईं जुनसुकै बेला Chrome का सेटिङमा गई आफ्नो सहमति फिर्ता लिन सक्नुहुन्छ। यी ट्रायलहरूमा विज्ञापन देखाउने हालको तरिका नै अपनाइने भएकाले तपाईंले गर्नुभएका परिवर्तनहरू तुरुन्तै लागू हुँदैनन्।</translation>
 <translation id="1434626383986940139">Chrome क्यानरी एप्स</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome कुनै पनि HID डिभाइसमा कनेक्ट गरिएको छैन}=1{Google Chrome HID डिभाइसमा कनेक्ट गरिएको छ}other{Google Chrome HID डिभाइसहरूमा कनेक्ट गरिएको छ}}</translation>
 <translation id="1507198376417198979">आफ्नो नयाँ Chrome प्रोफाइल आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="1516530951338665275">कनेक्ट गर्ने प्रक्रिया जारी राख्न Google Chrome लाई ब्लुटुथ प्रयोग गर्ने अनुमति
  दिनु पर्ने हुन्छ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
