@@ -361,6 +361,7 @@ static_library("content_shell_lib") {
     deps += [
       "//services/tracing/public/cpp",
       "//services/tracing/public/mojom:mojom",
+      "//ui/shell_dialogs",
     ]
   }
 
