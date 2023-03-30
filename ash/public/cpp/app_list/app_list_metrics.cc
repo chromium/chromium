@@ -19,10 +19,6 @@ const char kAppListSearchResultOpenTypeHistogramInTablet[] =
     "Apps.AppListSearchResultOpenTypeV2.TabletMode";
 const char kAppListSearchResultOpenTypeHistogramInClamshell[] =
     "Apps.AppListSearchResultOpenTypeV2.ClamshellMode";
-const char kAppListSuggestionChipOpenTypeHistogramInClamshell[] =
-    "Apps.AppListSuggestedChipOpenType.ClamshellMode";
-const char kAppListSuggestionChipOpenTypeHistogramInTablet[] =
-    "Apps.AppListSuggestedChipOpenType.TabletMode";
 const char kAppListContinueTaskOpenTypeHistogramInClamshell[] =
     "Apps.AppListContinueTaskOpenType.ClamshellMode";
 const char kAppListContinueTaskOpenTypeHistogramInTablet[] =
@@ -96,17 +92,6 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
             SEARCH_RESULT_TYPE_BOUNDARY);
       }
       break;
-    case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
-      if (is_tablet_mode) {
-        UMA_HISTOGRAM_ENUMERATION(
-            kAppListSuggestionChipOpenTypeHistogramInTablet, type,
-            SEARCH_RESULT_TYPE_BOUNDARY);
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            kAppListSuggestionChipOpenTypeHistogramInClamshell, type,
-            SEARCH_RESULT_TYPE_BOUNDARY);
-      }
-      break;
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
       if (is_tablet_mode) {
         UMA_HISTOGRAM_ENUMERATION(kAppListContinueTaskOpenTypeHistogramInTablet,
@@ -120,6 +105,7 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
     case AppListLaunchedFrom::kLaunchedFromShelf:
     case AppListLaunchedFrom::kLaunchedFromGrid:
     case AppListLaunchedFrom::kLaunchedFromRecentApps:
+    case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
       // Search results don't live in the shelf, the app grid or recent apps.
       NOTREACHED();
       break;

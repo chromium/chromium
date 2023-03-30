@@ -205,7 +205,7 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
                                         metric_params_.is_tablet_mode,
                                         metric_params_.launcher_show_timestamp);
           break;
-        case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+        case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         case AppListLaunchedFrom::kLaunchedFromContinueTask:
         case AppListLaunchedFrom::kLaunchedFromShelf:
           NOTREACHED();

@@ -851,8 +851,6 @@ void AppListClientImpl::RecordOpenedResultFromSearchBox(
 void AppListClientImpl::MaybeRecordLauncherAction(
     ash::AppListLaunchedFrom launched_from) {
   DCHECK(launched_from == ash::AppListLaunchedFrom::kLaunchedFromGrid ||
-         launched_from ==
-             ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromRecentApps ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromContinueTask);

@@ -523,34 +523,6 @@ int SearchBoxView::GetFocusRingSpacing() {
   return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;
 }
 
-void SearchBoxView::RecordSearchBoxActivationHistogram(
-    ui::EventType event_type) {
-  ActivationSource activation_type;
-  switch (event_type) {
-    case ui::ET_GESTURE_TAP:
-      activation_type = ActivationSource::kGestureTap;
-      break;
-    case ui::ET_MOUSE_PRESSED:
-      activation_type = ActivationSource::kMousePress;
-      break;
-    case ui::ET_KEY_PRESSED:
-      activation_type = ActivationSource::kKeyPress;
-      break;
-    default:
-      return;
-  }
-
-  base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated",
-                                activation_type);
-  if (is_app_list_bubble_) {
-    base::UmaHistogramEnumeration(
-        "Apps.AppListSearchBoxActivated.ClamshellMode", activation_type);
-  } else {
-    base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated.TabletMode",
-                                  activation_type);
-  }
-}
-
 void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
   UpdateSearchIcon();
 

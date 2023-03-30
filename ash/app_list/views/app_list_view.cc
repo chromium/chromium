@@ -479,18 +479,6 @@ void AppListView::SetChildViewsForStateTransition(
   }
 }
 
-void AppListView::RecordStateTransitionForUma(AppListViewState new_state) {
-  AppListStateTransitionSource transition =
-      GetAppListStateTransitionSource(new_state);
-  // kMaxAppListStateTransition denotes a transition we are not interested in
-  // recording (ie. FullscreenAllApps->FullscreenAllApps).
-  if (transition == kMaxAppListStateTransition)
-    return;
-
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppListStateTransitionSource", transition,
-                            kMaxAppListStateTransition);
-}
-
 void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
   if (new_state == app_list_state_ || !delegate_->AppListTargetVisibility())
     return;
@@ -525,40 +513,6 @@ AppsContainerView* AppListView::GetAppsContainerView() {
 
 PagedAppsGridView* AppListView::GetRootAppsGridView() {
   return GetAppsContainerView()->apps_grid_view();
-}
-
-AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
-    AppListViewState target_state) const {
-  // TODO(https://crbug.com/1356661): Remove peeking and half launcher
-  // transitions.
-  switch (app_list_state_) {
-    case AppListViewState::kClosed:
-      // CLOSED->X transitions are not useful for UMA.
-      return kMaxAppListStateTransition;
-    case AppListViewState::kFullscreenAllApps:
-      switch (target_state) {
-        case AppListViewState::kClosed:
-          return kFullscreenAllAppsToClosed;
-        case AppListViewState::kFullscreenSearch:
-          return kFullscreenAllAppsToFullscreenSearch;
-        case AppListViewState::kFullscreenAllApps:
-          // FULLSCREEN_ALL_APPS->FULLSCREEN_ALL_APPS is used when resetting the
-          // widget positon after a failed state transition. Not useful for UMA.
-          return kMaxAppListStateTransition;
-      }
-    case AppListViewState::kFullscreenSearch:
-      switch (target_state) {
-        case AppListViewState::kClosed:
-          return kFullscreenSearchToClosed;
-        case AppListViewState::kFullscreenAllApps:
-          return kFullscreenSearchToFullscreenAllApps;
-        case AppListViewState::kFullscreenSearch:
-          // FULLSCREEN_SEARCH->FULLSCREEN_SEARCH is used when resetting the
-          // widget position after a failed state transition. Not useful for
-          // UMA.
-          return kMaxAppListStateTransition;
-      }
-  }
 }
 
 views::View* AppListView::GetInitiallyFocusedView() {
@@ -698,7 +652,6 @@ void AppListView::SetState(AppListViewState new_state) {
 
   app_list_main_view_->contents_view()->OnAppListViewTargetStateChanged(
       new_state);
-  RecordStateTransitionForUma(new_state);
   app_list_state_ = new_state;
   if (delegate_)
     delegate_->OnViewStateChanged(new_state);

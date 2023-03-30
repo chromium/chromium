@@ -3791,20 +3791,6 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Color order"/>
 </enum>
 
-<enum name="AppListStateTransitionSource">
-  <int value="0" label="Fullscreen All Apps To Closed"/>
-  <int value="1" label="Fullscreen All Apps To Fullscreen Search"/>
-  <int value="2" label="Fullscreen All Apps To Peeking (deprecated)"/>
-  <int value="3" label="Fullscreen Search To Closed"/>
-  <int value="4" label="Fullscreen Search To Fullscreen All Apps"/>
-  <int value="5" label="Half To Closed (deprecated)"/>
-  <int value="6" label="Half To Fullscreen Search (deprecated)"/>
-  <int value="7" label="Half To Peeking (deprecated)"/>
-  <int value="8" label="Peeking To Closed (deprecated)"/>
-  <int value="9" label="Peeking To Fullscreen All Apps (deprecated)"/>
-  <int value="10" label="Peeking To Half (deprecated)"/>
-</enum>
-
 <enum name="AppListUsageStateByNewUsers">
   <int value="0" label="LAUNCHER_USED"/>
   <int value="1" label="LAUNCHER_NOT_USED_BEFORE_DESTRUCTION"/>
@@ -56084,24 +56070,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="17" label="Share Intent"/>
 </enum>
 
-<enum name="LauncherContinueSectionRemoveFeedbackType">
-  <int value="0" label="Invalid Feedback"/>
-  <int value="1" label="Local file - not interested in any suggestions"/>
-  <int value="2" label="Not interested in local file"/>
-  <int value="3" label="Not interested in local file - done using file"/>
-  <int value="4" label="Not interested in local file - don't want file shown"/>
-  <int value="5"
-      label="Not interested in local file - done using file and don't want
-             file shown"/>
-  <int value="6" label="Drive file - not interested in any suggestions"/>
-  <int value="7" label="Not interested in drive file"/>
-  <int value="8" label="Not interested in drive file - done using file"/>
-  <int value="9" label="Not interested in drive file - don't want file shown"/>
-  <int value="10"
-      label="Not interested in drive file - done using file and don't want
-             file shown"/>
-</enum>
-
 <enum name="LauncherContinueSectionResultType">
   <int value="0" label="Local file"/>
   <int value="1" label="Drive file"/>
@@ -92170,12 +92138,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="No Answer"/>
   <int value="3" label="Received Answer"/>
   <int value="4" label="Received Answer - Too Large"/>
-</enum>
-
-<enum name="SearchBoxActivationSource">
-  <int value="0" label="Mouse Press"/>
-  <int value="1" label="Key Press"/>
-  <int value="2" label="Gesture Tap"/>
 </enum>
 
 <enum name="SearchBoxTextMatch">

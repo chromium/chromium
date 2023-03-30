@@ -1132,7 +1132,6 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
   if (launch_type == AppListLaunchType::kAppSearchResult) {
     switch (launched_from) {
       case AppListLaunchedFrom::kLaunchedFromSearchBox:
-      case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
       case AppListLaunchedFrom::kLaunchedFromRecentApps:
         RecordAppLaunched(launched_from);
         break;
@@ -1140,6 +1139,8 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       case AppListLaunchedFrom::kLaunchedFromShelf:
       case AppListLaunchedFrom::kLaunchedFromContinueTask:
         break;
+      case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
+        NOTREACHED();
     }
   }
 
@@ -1160,10 +1161,6 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
           break;
       }
       break;
-    case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
-      RecordLauncherWorkflowMetrics(AppListUserAction::kOpenSuggestionChip,
-                                    is_tablet_mode, last_show_timestamp_);
-      break;
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
       RecordLauncherWorkflowMetrics(AppListUserAction::kOpenContinueSectionTask,
                                     is_tablet_mode, last_show_timestamp_);
@@ -1171,15 +1168,12 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     case AppListLaunchedFrom::kLaunchedFromGrid:
     case AppListLaunchedFrom::kLaunchedFromRecentApps:
     case AppListLaunchedFrom::kLaunchedFromShelf:
+    case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
       NOTREACHED();
       break;
   }
 
-  // Suggestion chips are not represented to the user as search results, so do
-  // not record search result metrics for them.
-  if (launched_from != AppListLaunchedFrom::kLaunchedFromSuggestionChip) {
-    base::RecordAction(base::UserMetricsAction("AppList_OpenSearchResult"));
-  }
+  base::RecordAction(base::UserMetricsAction("AppList_OpenSearchResult"));
 
   if (client_) {
     client_->OpenSearchResult(profile_id_, result_id, event_flags,
@@ -1242,10 +1236,10 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
       RecordLauncherWorkflowMetrics(AppListUserAction::kAppLaunchFromRecentApps,
                                     is_tablet_mode, last_show_timestamp_);
       break;
-    case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
     case AppListLaunchedFrom::kLaunchedFromSearchBox:
     case AppListLaunchedFrom::kLaunchedFromShelf:
+    case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
       NOTREACHED();
       break;
   }

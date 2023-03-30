@@ -325,7 +325,7 @@ enum class AppListGridAnimationStatus {
 // AppListLaunchedFrom enum listing in tools/metrics/histograms/enums.xml.
 enum class AppListLaunchedFrom {
   kLaunchedFromGrid = 1,
-  kLaunchedFromSuggestionChip = 2,
+  DEPRECATED_kLaunchedFromSuggestionChip = 2,
   kLaunchedFromShelf = 3,
   kLaunchedFromSearchBox = 4,
   kLaunchedFromRecentApps = 5,

@@ -570,7 +570,6 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
 
   if (active) {
     search_box_->RequestFocus();
-    RecordSearchBoxActivationHistogram(event_type);
   } else {
     search_box_->DestroyTouchSelection();
   }

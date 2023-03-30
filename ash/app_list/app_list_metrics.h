@@ -53,27 +53,6 @@ enum AppListFolderOpened {
   kMaxFolderOpened = 2,
 };
 
-// The valid AppListState transitions. These values are written to logs.  New
-// enum values can be added, but existing enums must never be renumbered or
-// deleted and reused. If adding a state transition, add it to the switch
-// statement in AppListView::GetAppListStateTransitionSource.
-enum AppListStateTransitionSource {
-  kFullscreenAllAppsToClosed = 0,
-  kFullscreenAllAppsToFullscreenSearch = 1,
-  // Usage removed.
-  // kFullscreenAllAppsToPeeking = 2,
-  kFullscreenSearchToClosed = 3,
-  kFullscreenSearchToFullscreenAllApps = 4,
-  // Usage removed.
-  // kHalfToClosed = 5,
-  // KHalfToFullscreenSearch = 6,
-  // kHalfToPeeking = 7,
-  // kPeekingToClosed = 8,
-  // kPeekingToFullscreenAllApps = 9,
-  // kPeekingToHalf = 10,
-  kMaxAppListStateTransition = 11,
-};
-
 // The different ways to change pages in the app list's app grid. These values
 // are written to logs.  New enum values can be added, but existing enums must
 // never be renumbered or deleted and reused.
@@ -167,9 +146,9 @@ enum class AppListUserAction {
   kOpenContinueSectionTask = 4,
 
   // User opened a suggestion chip shown in the app list UI.
-  kOpenSuggestionChip = 5,
+  DEPRECATED_kOpenSuggestionChip = 5,
 
-  kMaxValue = kOpenSuggestionChip,
+  kMaxValue = DEPRECATED_kOpenSuggestionChip,
 };
 
 // Whether and how user-entered search box text matches up with the first search

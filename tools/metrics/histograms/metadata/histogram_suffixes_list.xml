@@ -5825,10 +5825,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Apps.AppListContinueTaskOpenType"/>
   <affected-histogram name="Apps.AppListFolderNameLength"/>
   <affected-histogram name="Apps.AppListPageSwitcherSource"/>
-  <affected-histogram name="Apps.AppListSearchBoxActivated"/>
   <affected-histogram name="Apps.AppListSearchQueryLength"/>
   <affected-histogram name="Apps.AppListSearchResultOpenTypeV2"/>
-  <affected-histogram name="Apps.AppListSuggestedChipOpenType"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.FromApp"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.NotFromApp"/>
   <affected-histogram

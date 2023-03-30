@@ -35,16 +35,6 @@ namespace ash {
 class SearchBoxImageButton;
 class SearchIconImageView;
 
-// These are used in histograms, do not remove/renumber entries. If you're
-// adding to this enum with the intention that it will be logged, update the
-// SearchBoxActivationSource enum listing in tools/metrics/histograms/enums.xml.
-enum class ActivationSource {
-  kMousePress = 0,
-  kKeyPress = 1,
-  kGestureTap = 2,
-  kMaxValue = kGestureTap,
-};
-
 // SearchBoxViewBase consists of icons and a Textfield. The Textfiled is for
 // inputting queries and triggering callbacks. The icons include a search icon,
 // a close icon and a back icon for different functionalities. This class
@@ -215,9 +205,6 @@ class SearchBoxViewBase : public views::View,
 
   // Update search box border based on whether the search box is activated.
   virtual void UpdateSearchBoxBorder() {}
-
-  // Records in histograms the activation of the searchbox.
-  virtual void RecordSearchBoxActivationHistogram(ui::EventType event_type) {}
 
  private:
   void OnEnabledChanged();

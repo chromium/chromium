@@ -291,13 +291,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Gets the root apps grid view owned by this view.
   PagedAppsGridView* GetRootAppsGridView();
 
-  // Gets the AppListStateTransitionSource for |app_list_state_| to
-  // |target_state|. If we are not interested in recording a state transition
-  // (ie. PEEKING->PEEKING) then return kMaxAppListStateTransition. If this is
-  // modified, histograms will be affected.
-  AppListStateTransitionSource GetAppListStateTransitionSource(
-      AppListViewState target_state) const;
-
   // Overridden from views::WidgetDelegateView:
   views::View* GetInitiallyFocusedView() override;
 

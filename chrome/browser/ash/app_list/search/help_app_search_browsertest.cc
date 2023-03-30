@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromContinueTask,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
 
