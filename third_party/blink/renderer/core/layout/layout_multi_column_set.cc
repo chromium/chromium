@@ -593,6 +593,9 @@ void LayoutMultiColumnSet::UpdateLayout() {
     SetShouldDoFullPaintInvalidation();
     last_actual_column_count_ = actual_column_count;
   }
+
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
 }
 
 MinMaxSizes LayoutMultiColumnSet::ComputeIntrinsicLogicalWidths() const {

@@ -441,6 +441,10 @@ bool LayoutBlockFlow::CheckIfIsSelfCollapsingBlock() const {
 DISABLE_CFI_PERF
 void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
+
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
+
   DCHECK(NeedsLayout());
   DCHECK(IsInlineBlockOrInlineTable() || !IsInline());
 

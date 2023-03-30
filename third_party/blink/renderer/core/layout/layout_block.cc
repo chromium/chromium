@@ -481,8 +481,8 @@ bool LayoutBlock::UpdateLogicalWidthAndColumnWidth() {
 
 void LayoutBlock::UpdateBlockLayout(bool) {
   NOT_DESTROYED();
-  NOTREACHED();
   ClearNeedsLayout();
+  NOTREACHED_NORETURN();
 }
 
 void LayoutBlock::AddVisualOverflowFromChildren() {

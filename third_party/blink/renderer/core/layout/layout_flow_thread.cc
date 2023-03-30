@@ -144,6 +144,9 @@ void LayoutFlowThread::UpdateLayout() {
   page_logical_size_changed_ = column_sets_invalidated_ && EverHadLayout();
   LayoutBlockFlow::UpdateLayout();
   page_logical_size_changed_ = false;
+
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
 }
 
 PaintLayerType LayoutFlowThread::LayerTypeRequired() const {

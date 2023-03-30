@@ -33,6 +33,9 @@ void LayoutOutsideListMarker::UpdateLayout() {
         block_offset, kDoNotIndentText, LayoutUnit());
   }
   UpdateMargins();
+
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
 }
 
 void LayoutOutsideListMarker::UpdateMargins() {

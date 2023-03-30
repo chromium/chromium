@@ -680,6 +680,9 @@ void LayoutListItem::UpdateLayout() {
   if (ListMarker* list_marker = ListMarker::Get(marker))
     list_marker->UpdateMarkerTextIfNeeded(*marker);
   LayoutBlockFlow::UpdateLayout();
+
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace blink

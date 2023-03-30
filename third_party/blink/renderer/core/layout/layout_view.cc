@@ -339,6 +339,9 @@ void LayoutView::UpdateBlockLayout(bool relayout_children) {
     return;
 
   LayoutBlockFlow::UpdateBlockLayout(relayout_children);
+
+  // TODO(1229581): Remove this logic.
+  NOTREACHED_NORETURN();
 }
 
 void LayoutView::UpdateLayout() {
