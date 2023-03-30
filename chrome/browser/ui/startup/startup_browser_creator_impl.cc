@@ -428,6 +428,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       case PrivacySandboxService::PromptType::kM1Consent:
       case PrivacySandboxService::PromptType::kM1NoticeEEA:
       case PrivacySandboxService::PromptType::kM1NoticeROW:
+      case PrivacySandboxService::PromptType::kM1NoticeRestricted:
         privacy_sandbox_dialog_required = true;
         break;
       case PrivacySandboxService::PromptType::kNotice:

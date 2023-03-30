@@ -3398,6 +3398,12 @@ const FeatureEntry::FeatureParam
              kPrivacySandboxSettings4ForceShowNoticeEeaForTestingName,
          "true"},
         {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
+const FeatureEntry::FeatureParam
+    kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting[] = {
+        {privacy_sandbox::
+             kPrivacySandboxSettings4ForceShowNoticeRestrictedForTestingName,
+         "true"},
+        {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
 
 const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
     {"Sample Data", kPrivacySandboxSettings4ShowSampleDataForTesting,
@@ -3414,6 +3420,10 @@ const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
     {"Force show EEA notice",
      kPrivacySandboxSettings4ForceShowEEANoticeForTesting,
      std::size(kPrivacySandboxSettings4ForceShowEEANoticeForTesting), nullptr},
+    {"Force show Restricted notice",
+     kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting,
+     std::size(kPrivacySandboxSettings4ForceShowRestrictedNoticeForTesting),
+     nullptr},
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

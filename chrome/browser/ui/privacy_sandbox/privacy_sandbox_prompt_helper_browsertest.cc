@@ -127,7 +127,9 @@ class PrivacySandboxPromptHelperTestWithParam
         [[fallthrough]];
       case PrivacySandboxService::PromptType::kM1NoticeROW:
         [[fallthrough]];
-      case PrivacySandboxService::PromptType::kM1NoticeEEA: {
+      case PrivacySandboxService::PromptType::kM1NoticeEEA:
+        [[fallthrough]];
+      case PrivacySandboxService::PromptType::kM1NoticeRestricted: {
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{privacy_sandbox::kPrivacySandboxSettings4},
             /*disabled_features=*/{privacy_sandbox::kPrivacySandboxSettings3});

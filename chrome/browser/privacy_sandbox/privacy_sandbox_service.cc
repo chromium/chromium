@@ -1267,6 +1267,11 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
     return PromptType::kM1NoticeEEA;
   }
 
+  if (privacy_sandbox::
+          kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting.Get()) {
+    return PromptType::kM1NoticeRestricted;
+  }
+
   // If this a non-Chrome build, do not show a prompt.
   if (!is_chrome_build) {
     return PromptType::kNone;

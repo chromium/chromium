@@ -30,6 +30,9 @@ extern const char kPrivacySandboxSettings4ForceShowNoticeRowForTestingName[];
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const char kPrivacySandboxSettings4ForceShowNoticeEeaForTestingName[];
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char
+    kPrivacySandboxSettings4ForceShowNoticeRestrictedForTestingName[];
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const char kPrivacySandboxSettings4ShowSampleDataForTestingName[];
 
 // When true, the user will be shown a consent to enable the Privacy Sandbox
@@ -56,6 +59,9 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings4ForceShowNoticeEeaForTesting;
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting;
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings4ShowSampleDataForTesting;

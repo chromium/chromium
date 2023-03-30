@@ -57,7 +57,8 @@ class PrivacySandboxService : public KeyedService {
     kM1Consent = 3,
     kM1NoticeROW = 4,
     kM1NoticeEEA = 5,
-    kMaxValue = kM1NoticeEEA,
+    kM1NoticeRestricted = 6,
+    kMaxValue = kM1NoticeRestricted,
   };
 
   // An exhaustive list of actions related to showing & interacting with the

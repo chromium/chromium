@@ -18,6 +18,8 @@ const char kPrivacySandboxSettings4ForceShowNoticeRowForTestingName[] =
     "force-show-notice-row-for-testing";
 const char kPrivacySandboxSettings4ForceShowNoticeEeaForTestingName[] =
     "force-show-notice-eea-for-testing";
+const char kPrivacySandboxSettings4ForceShowNoticeRestrictedForTestingName[] =
+    "force-show-notice-restricted-for-testing";
 const char kPrivacySandboxSettings4ShowSampleDataForTestingName[] =
     "show-sample-data";
 
@@ -40,6 +42,10 @@ const base::FeatureParam<bool>
     kPrivacySandboxSettings4ForceShowNoticeEeaForTesting{
         &kPrivacySandboxSettings4,
         kPrivacySandboxSettings4ForceShowNoticeEeaForTestingName, false};
+const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting{
+        &kPrivacySandboxSettings4,
+        kPrivacySandboxSettings4ForceShowNoticeRestrictedForTestingName, false};
 const base::FeatureParam<bool> kPrivacySandboxSettings4ShowSampleDataForTesting{
     &kPrivacySandboxSettings4,
     kPrivacySandboxSettings4ShowSampleDataForTestingName, false};

@@ -48,6 +48,7 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
     case PrivacySandboxService::PromptType::kM1NoticeEEA:
       return net::AppendQueryParameter(combined_dialog_url, "step", "notice");
     case PrivacySandboxService::PromptType::kNone:
+    case PrivacySandboxService::PromptType::kM1NoticeRestricted:
       NOTREACHED_NORETURN();
   }
 }
@@ -60,6 +61,7 @@ int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
     case PrivacySandboxService::PromptType::kM1Consent:
     case PrivacySandboxService::PromptType::kM1NoticeROW:
     case PrivacySandboxService::PromptType::kM1NoticeEEA:
+    case PrivacySandboxService::PromptType::kM1NoticeRestricted:
       return kM1DialogWidth;
     case PrivacySandboxService::PromptType::kNone:
       NOTREACHED_NORETURN();
