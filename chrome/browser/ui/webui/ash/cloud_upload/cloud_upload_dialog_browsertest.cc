@@ -141,16 +141,6 @@ content::WebContents* GetWebContentsFromCloudUploadDialog() {
   return web_contents;
 }
 
-// Fill in the placeholder from `script_with_placeholder` with the JS command
-// to retrieve the HTML `element`. Return the resulting JS script.
-std::string ScriptFillPlaceholder(const char script_with_placeholder[],
-                                  std::string element) {
-  const char element_with_placeholder[] = "document.querySelectorAll('%s')[0]";
-  std::string element_script =
-      base::StringPrintf(element_with_placeholder, element.c_str());
-  return base::StringPrintf(script_with_placeholder, element_script.c_str());
-}
-
 // Set email (using a domain from |kNonManagedDomainPatterns|) to login a
 // non-managed user. Intended to be used in the override of |SetUpCommandLine|
 // from |InProcessBrowserTest| to ensure
@@ -397,30 +387,22 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   // Get the `tasks` member from the `FileHandlerPageElement` which are all of
   // the observed local file tasks.
   bool dialog_init_complete = false;
-  base::internal::JSONParser parser(base::JSON_PARSE_RFC);
-  absl::optional<base::Value> value;
-  std::string result;
+  base::Value::List observed_app_ids;
   while (!dialog_init_complete) {
     // It is possible that the `FileHandlerPageElement` element still hasn't
     // been initiated yet. It is completed when the `localTasks` member is
     // non-empty.
-    if (!content::ExecuteScriptAndExtractString(
-            web_contents,
-            base::StringPrintf(
-                "domAutomationController.send(%s)",
-                ScriptFillPlaceholder(
-                    "JSON.stringify(%s.localTasks.map(task => task.appId))",
-                    "file-handler-page")
-                    .c_str()),
-            &result)) {
+    content::EvalJsResult eval_result =
+        content::EvalJs(web_contents,
+                        "document.querySelector('file-handler-page')"
+                        ".localTasks.map(task => task.appId)");
+    if (!eval_result.error.empty()) {
       continue;
     }
-    value = parser.Parse(result);
-    ASSERT_TRUE(value->is_list());
-    dialog_init_complete = !(value->GetList().empty());
+    observed_app_ids = eval_result.ExtractList().TakeList();
+    dialog_init_complete = !observed_app_ids.empty();
   }
 
-  base::Value::List& observed_app_ids = value->GetList();
 // Check QuickOffice was not observed by the dialog.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ASSERT_TRUE(file_manager::file_tasks::IsExtensionInstalled(
@@ -466,22 +448,20 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
       &default_task));
 
   // Expand local tasks accordion.
-  std::string expand_local_tasks = "%s.$('#accordion').click()";
   EXPECT_TRUE(content::ExecJs(
       web_contents,
-      ScriptFillPlaceholder(expand_local_tasks.c_str(), "file-handler-page")));
+      "document.querySelector('file-handler-page').$('#accordion').click()"));
 
   // Click the selected task.
-  std::string rename_task_id =
-      "%s.$('#id" + base::NumberToString(selected_task_position) + "').click()";
+  std::string position_string = base::NumberToString(selected_task_position);
   EXPECT_TRUE(content::ExecJs(
-      web_contents,
-      ScriptFillPlaceholder(rename_task_id.c_str(), "file-handler-page")));
+      web_contents, "document.querySelector('file-handler-page').$('#id" +
+                        position_string + "').click()"));
 
   // Click the open button.
-  EXPECT_TRUE(content::ExecJs(
-      web_contents, ScriptFillPlaceholder("%s.$('.action-button').click()",
-                                          "file-handler-page")));
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('file-handler-page')"
+                              ".$('.action-button').click()"));
 
   // Wait for selected task to open.
   navigation_observer_task.Wait();
@@ -639,16 +619,15 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
   // Click through the Welcome Page.
   while (!content::ExecJs(
       web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('welcome-page').querySelector('.action-button').click()",
-          "cloud-upload"))) {
+      "document.querySelector('cloud-upload').$('welcome-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Wait for the ODFS Sign In Page.
   while (!content::ExecJs(
-      web_contents, ScriptFillPlaceholder(
-                        "%s.$('sign-in-page').querySelector('.action-button')",
-                        "cloud-upload"))) {
+      web_contents,
+      "document.querySelector('cloud-upload').$('sign-in-page')"
+      ".querySelector('.action-button')")) {
   }
 }
 
@@ -682,18 +661,16 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   // Click through the Welcome Page.
   while (!content::ExecJs(
       web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('welcome-page').querySelector('.action-button').click()",
-          "cloud-upload"))) {
+      "document.querySelector('cloud-upload').$('welcome-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Wait for the Office PWA Install Page, this script will fail until the page
   // exists.
   while (!content::ExecJs(
       web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('office-pwa-install-page').querySelector('.action-button')",
-          "cloud-upload"))) {
+      "document.querySelector('cloud-upload').$('office-pwa-install-page')"
+      ".querySelector('.action-button')")) {
   }
 }
 
@@ -761,17 +738,15 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   // Click through the Welcome Page.
   while (!content::ExecJs(
       web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('welcome-page').querySelector('.action-button').click()",
-          "cloud-upload"))) {
+      "document.querySelector('cloud-upload').$('welcome-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Click through the Upload Page.
-  while (!content::ExecJs(
-      web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('upload-page').querySelector('.action-button').click()",
-          "cloud-upload"))) {
+  while (
+      !content::ExecJs(web_contents,
+                       "document.querySelector('cloud-upload').$('upload-page')"
+                       ".querySelector('.action-button').click()")) {
   }
 
   // Check that the Office PWA has been made the default for doc files.
@@ -833,17 +808,15 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   // Click through the Welcome Page.
   while (!content::ExecJs(
       web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('welcome-page').querySelector('.action-button').click()",
-          "cloud-upload"))) {
+      "document.querySelector('cloud-upload').$('welcome-page')"
+      ".querySelector('.action-button').click()")) {
   }
 
   // Click through the Upload Page.
-  while (!content::ExecJs(
-      web_contents,
-      ScriptFillPlaceholder(
-          "%s.$('upload-page').querySelector('.action-button').click()",
-          "cloud-upload"))) {
+  while (
+      !content::ExecJs(web_contents,
+                       "document.querySelector('cloud-upload').$('upload-page')"
+                       ".querySelector('.action-button').click()")) {
   }
 
   // Check that there is still not a default task for doc files.
