@@ -143,7 +143,7 @@ ScriptPromise StorageBucket::expires(ScriptState* script_state) {
 
 IDBFactory* StorageBucket::indexedDB() {
   if (!idb_factory_) {
-    idb_factory_ = MakeGarbageCollected<IDBFactory>();
+    idb_factory_ = MakeGarbageCollected<IDBFactory>(GetExecutionContext());
     mojo::PendingRemote<mojom::blink::IDBFactory> factory;
     remote_->GetIdbFactory(factory.InitWithNewPipeAndPassReceiver());
     idb_factory_->SetFactory(std::move(factory), GetExecutionContext());

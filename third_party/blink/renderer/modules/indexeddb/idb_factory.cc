@@ -215,7 +215,8 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 static const char kPermissionDeniedErrorMessage[] =
     "The user denied permission to access the database.";
 
-IDBFactory::IDBFactory() = default;
+IDBFactory::IDBFactory(ContextLifecycleNotifier* notifier)
+    : factory_(notifier), feature_observer_(notifier) {}
 IDBFactory::~IDBFactory() = default;
 
 static bool IsContextValid(ExecutionContext* context) {
@@ -225,8 +226,14 @@ static bool IsContextValid(ExecutionContext* context) {
   return true;
 }
 
+void IDBFactory::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  visitor->Trace(factory_);
+  visitor->Trace(feature_observer_);
+}
+
 void IDBFactory::SetFactoryForTesting(
-    mojo::Remote<mojom::blink::IDBFactory> factory) {
+    HeapMojoRemote<mojom::blink::IDBFactory> factory) {
   factory_ = std::move(factory);
 }
 
@@ -244,7 +251,7 @@ void IDBFactory::SetFactory(
   feature_observer_.Bind(std::move(feature_observer), task_runner_);
 }
 
-mojo::Remote<mojom::blink::IDBFactory>& IDBFactory::GetFactory(
+HeapMojoRemote<mojom::blink::IDBFactory>& IDBFactory::GetFactory(
     ExecutionContext* execution_context) {
   if (!factory_) {
     mojo::PendingRemote<mojom::blink::IDBFactory> factory;
@@ -424,7 +431,7 @@ void IDBFactory::OpenInternalImpl(
         callbacks_remote,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
         transaction_receiver,
-    mojo::Remote<mojom::blink::IDBFactory>& factory,
+    HeapMojoRemote<mojom::blink::IDBFactory>& factory,
     const String& name,
     int64_t version,
     int64_t transaction_id) {
@@ -503,7 +510,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
 
 void IDBFactory::DeleteDatabaseInternalImpl(
     IDBOpenDBRequest* request,
-    mojo::Remote<mojom::blink::IDBFactory>& factory,
+    HeapMojoRemote<mojom::blink::IDBFactory>& factory,
     const String& name,
     bool force_close) {
   if (!request->GetExecutionContext()) {

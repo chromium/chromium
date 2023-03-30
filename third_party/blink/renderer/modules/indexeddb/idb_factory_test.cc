@@ -105,7 +105,7 @@ class IDBFactoryTest : public testing::Test {
 TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
   V8TestingScope scope(KURL("https://example.com"));
 
-  mojo::Remote<mojom::blink::IDBFactory> remote;
+  HeapMojoRemote<mojom::blink::IDBFactory> remote(scope.GetExecutionContext());
   auto mock_factory = std::make_unique<BackendFactoryWithMockedDatabaseInfo>(
       remote.BindNewPipeAndPassReceiver(
           scope.GetExecutionContext()->GetTaskRunner(
@@ -113,7 +113,7 @@ TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
 
   mojo::AssociatedRemote<mojom::blink::IDBCallbacks> callbacks;
   mock_factory->SetCallbacksPointer(&callbacks);
-  auto* factory = MakeGarbageCollected<IDBFactory>();
+  auto* factory = MakeGarbageCollected<IDBFactory>(scope.GetExecutionContext());
   factory->SetFactoryForTesting(std::move(remote));
 
   DummyExceptionStateForTesting exception_state;
@@ -153,7 +153,7 @@ TEST_F(IDBFactoryTest, WebIDBGetDBInfoCallbacksResolvesPromise) {
 TEST_F(IDBFactoryTest, WebIDBGetDBNamesCallbacksRejectsPromise) {
   V8TestingScope scope(KURL("https://example.com"));
 
-  mojo::Remote<mojom::blink::IDBFactory> remote;
+  HeapMojoRemote<mojom::blink::IDBFactory> remote(scope.GetExecutionContext());
   auto mock_factory = std::make_unique<BackendFactoryWithMockedDatabaseInfo>(
       remote.BindNewPipeAndPassReceiver(
           scope.GetExecutionContext()->GetTaskRunner(
@@ -161,7 +161,7 @@ TEST_F(IDBFactoryTest, WebIDBGetDBNamesCallbacksRejectsPromise) {
 
   mojo::AssociatedRemote<mojom::blink::IDBCallbacks> callbacks;
   mock_factory->SetCallbacksPointer(&callbacks);
-  auto* factory = MakeGarbageCollected<IDBFactory>();
+  auto* factory = MakeGarbageCollected<IDBFactory>(scope.GetExecutionContext());
   factory->SetFactoryForTesting(std::move(remote));
 
   DummyExceptionStateForTesting exception_state;
