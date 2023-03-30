@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
@@ -91,7 +92,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
             @NonNull ActionChipsDelegate actionChipsDelegate,
-            @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener) {
+            @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
+            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
@@ -107,7 +109,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 urlBarEditingTextProvider, listModel, new Handler(), modalDialogManagerSupplier,
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 bringToForegroundCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
-                actionChipsDelegate);
+                actionChipsDelegate, openHistoryClustersDelegate);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);

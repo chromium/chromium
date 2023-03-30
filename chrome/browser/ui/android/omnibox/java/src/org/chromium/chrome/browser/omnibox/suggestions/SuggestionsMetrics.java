@@ -191,6 +191,26 @@ public class SuggestionsMetrics {
     }
 
     /**
+     * Records relevant histogram(s) when a Journeys action is clicked in the omnibox. Not emitted
+     * if the given position is <0.
+     */
+    public static void recordResumeJourneyClick(int position) {
+        if (position < 0) return;
+        RecordHistogram.recordExactLinearHistogram("Omnibox.SuggestionUsed.ResumeJourney", position,
+                SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
+    }
+
+    /**
+     * Records relevant histogram(s) when a Journeys action is shown in the omnibox. Not emitted if
+     * the given position is <0.
+     */
+    public static void recordResumeJourneyShown(int position) {
+        if (position < 0) return;
+        RecordHistogram.recordEnumeratedHistogram("Omnibox.ResumeJourneyShown", position,
+                SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
+    }
+
+    /**
      * Translate the pageClass to a histogram suffix.
      *
      * @param histogram Histogram prefix.

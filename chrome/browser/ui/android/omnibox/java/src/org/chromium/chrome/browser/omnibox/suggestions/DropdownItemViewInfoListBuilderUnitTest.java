@@ -36,6 +36,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.test.util.browser.Features;
@@ -64,6 +65,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     private @Mock HeaderProcessor mMockHeaderProcessor;
     private @Mock DividerLineProcessor mMockDividerLineProcessor;
     private @Mock ActionChipsDelegate mMockActionChipsDelegate;
+    @Mock
+    private HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
     DropdownItemViewInfoListBuilder mBuilder;
 
     @Before
@@ -77,7 +80,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
         mBuilder = new DropdownItemViewInfoListBuilder(
-                () -> null, (url) -> false, mMockActionChipsDelegate);
+                () -> null, (url) -> false, mMockActionChipsDelegate, mOpenHistoryClustersDelegate);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }

@@ -158,6 +158,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kXsurfaceMetricsReporting,
     &history::kOrganicRepeatableQueries,
     &history_clusters::internal::kJourneys,
+    &history_clusters::internal::kOmniboxHistoryClusterProvider,
     &kAdaptiveButtonInTopToolbar,
     &kAdaptiveButtonInTopToolbarTranslate,
     &kAdaptiveButtonInTopToolbarAddToBookmarks,

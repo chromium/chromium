@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerPro
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -169,7 +170,8 @@ public class LocationBarCoordinator
             Callback<Throwable> reportExceptionCallback,
             @Nullable BackPressManager backPressManager,
             @NonNull OmniboxSuggestionsDropdownScrollListener
-                    omniboxSuggestionsDropdownScrollListener) {
+                    omniboxSuggestionsDropdownScrollListener,
+            @Nullable OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -207,7 +209,7 @@ public class LocationBarCoordinator
                 activityTabSupplier, shareDelegateSupplier, locationBarDataProvider,
                 profileObservableSupplier, bringTabToFrontCallback, tabWindowManagerSupplier,
                 bookmarkState, jankTracker, actionChipsDelegate,
-                omniboxSuggestionsDropdownScrollListener);
+                omniboxSuggestionsDropdownScrollListener, openHistoryClustersDelegate);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTabletWindow(), statusView, mUrlCoordinator,
                 locationBarDataProvider, templateUrlServiceSupplier, searchEngineLogoUtils,

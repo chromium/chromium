@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
@@ -109,8 +108,7 @@ public class ActionChipsProcessor {
 
     private void executeAction(@NonNull OmniboxAction action, int position) {
         if (action.actionId == OmniboxActionType.HISTORY_CLUSTERS) {
-            RecordHistogram.recordEnumeratedHistogram("Omnibox.SuggestionUsed.ResumeJourney",
-                    position, SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
+            SuggestionsMetrics.recordResumeJourneyClick(position);
         }
         mSuggestionHost.finishInteraction();
         mActionChipsDelegate.execute(action);
@@ -123,10 +121,7 @@ public class ActionChipsProcessor {
         for (Integer pedal : mLastVisiblePedals) {
             SuggestionsMetrics.recordPedalShown(pedal);
         }
-        if (mJourneysActionShownPosition != -1) {
-            RecordHistogram.recordExactLinearHistogram("Omnibox.ResumeJourneyShown",
-                    mJourneysActionShownPosition, SuggestionsMetrics.MAX_AUTOCOMPLETE_POSITION);
-        }
+        SuggestionsMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
 
         mJourneysActionShownPosition = -1;
         mLastVisiblePedals.clear();

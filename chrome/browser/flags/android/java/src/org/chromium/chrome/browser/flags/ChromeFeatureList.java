@@ -369,6 +369,8 @@ public abstract class ChromeFeatureList {
             "OmniboxAdaptNarrowTabletWindows";
     public static final String OMNIBOX_ASSISTANT_VOICE_SEARCH = "OmniboxAssistantVoiceSearch";
     public static final String OMNIBOX_CONSUMERS_IME_INSETS = "OmniboxConsumesImeInsets";
+    public static final String OMNIBOX_HISTORY_CLUSTER_PROVIDER =
+            "JourneysOmniboxHistoryClusterProvider";
     public static final String OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR =
             "OmniboxMatchToolbarAndStatusBarColor";
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";

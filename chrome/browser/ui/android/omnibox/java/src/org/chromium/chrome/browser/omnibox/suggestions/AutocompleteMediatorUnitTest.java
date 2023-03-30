@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -100,6 +101,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock WindowAndroid mMockWindowAndroid;
     private @Mock ActionChipsDelegate mActionChipsDelegate;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
+    @Mock
+    private HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -126,7 +129,7 @@ public class AutocompleteMediatorUnitTest {
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     new Handler(), () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,
-                    new DummyJankTracker(), mActionChipsDelegate);
+                    new DummyJankTracker(), mActionChipsDelegate, mOpenHistoryClustersDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on

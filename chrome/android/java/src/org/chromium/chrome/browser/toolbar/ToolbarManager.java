@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -453,7 +454,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull ActionChipsDelegate actionChipsDelegate,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            boolean initializeWithIncognitoColors, @Nullable BackPressManager backPressManager) {
+            boolean initializeWithIncognitoColors, @Nullable BackPressManager backPressManager,
+            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -665,7 +667,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     merchantTrustSignalsCoordinatorSupplier,
                     actionChipsDelegate, mControlsVisibilityDelegate,
                     ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
-                    toolbarLayout);
+                    toolbarLayout, openHistoryClustersDelegate);
             // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);

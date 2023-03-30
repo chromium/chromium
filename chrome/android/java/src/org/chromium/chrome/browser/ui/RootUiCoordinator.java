@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
@@ -1168,6 +1169,11 @@ public class RootUiCoordinator
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
+            OpenHistoryClustersDelegate openHistoryClustersDelegate = query -> {
+                if (mHistoryClustersCoordinator == null) return;
+                mHistoryClustersCoordinator.openHistoryClustersUi(query);
+            };
+
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
                     urlFocusChangedCallback, mTopUiThemeColorProvider,
@@ -1185,7 +1191,8 @@ public class RootUiCoordinator
                     mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
                     mActionChipsDelegate, mEphemeralTabCoordinatorSupplier,
-                    mInitializeUiWithIncognitoColors, mBackPressManager);
+                    mInitializeUiWithIncognitoColors, mBackPressManager,
+                    openHistoryClustersDelegate);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

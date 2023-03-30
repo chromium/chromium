@@ -156,6 +156,10 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         mMediator.openHistoryClustersUi(query);
     }
 
+    public int getHistoryClustersIconResId() {
+        return R.drawable.ic_journeys;
+    }
+
     /** Gets the root view for a "full activity" presentation of the user's history clusters. */
     public ViewGroup getActivityContentView() {
         if (!mActivityViewInflated) {

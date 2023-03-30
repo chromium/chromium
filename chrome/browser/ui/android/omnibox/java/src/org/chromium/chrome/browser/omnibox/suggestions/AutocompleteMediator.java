@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics.RefineActionUsage;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -167,7 +168,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull ActionChipsDelegate actionChipsDelegate) {
+            @NonNull ActionChipsDelegate actionChipsDelegate,
+            @NonNull OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mContext = context;
         mControllerProvider = controllerProvider;
         mDelegate = delegate;
@@ -180,8 +182,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mBringTabToFrontCallback = bringTabToFrontCallback;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
-        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
-                activityTabSupplier, bookmarkState, actionChipsDelegate);
+        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(activityTabSupplier,
+                bookmarkState, actionChipsDelegate, openHistoryClustersDelegate);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);

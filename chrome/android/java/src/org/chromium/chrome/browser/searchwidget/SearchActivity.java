@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -233,23 +234,27 @@ public class SearchActivity extends AsyncInitializationActivity
         }
         // clang-format off
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, mAnchorView,
-                mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
-                mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
-                /*activityTabSupplier=*/() -> null, getModalDialogManagerSupplier(),
-                /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
-                getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
-                SearchEngineLogoUtils.getInstance(),
-                /*pageInfoAction=*/(tab, pageInfoHighlight) -> {},
-                IntentHandler::bringTabToFront,
-                /*saveOfflineButtonState=*/(tab) -> false,
-                /*omniboxUma*/(url, transition, isNtp) -> {},
-                TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
-                VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
-                /*merchantTrustSignalsCoordinatorSupplier=*/null,
-                new ActionChipsDelegateImpl(this, new OneshotSupplierImpl<>(),
-                        getModalDialogManagerSupplier()), null,
-                ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
-                /*OmniboxSuggestionsDropdownScrollListener=*/this);
+            mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
+            mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
+            /*activityTabSupplier=*/() -> null, getModalDialogManagerSupplier(),
+            /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
+            getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
+            SearchEngineLogoUtils.getInstance(),
+            /*pageInfoAction=*/(tab, pageInfoHighlight) -> {},
+            IntentHandler::bringTabToFront,
+            /*saveOfflineButtonState=*/(tab) -> false,
+            /*omniboxUma*/(url, transition, isNtp) -> {},
+            TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
+            VoiceToolbarButtonController::isToolbarMicEnabled, new DummyJankTracker(),
+            /*merchantTrustSignalsCoordinatorSupplier=*/null,
+            new ActionChipsDelegateImpl(this, new OneshotSupplierImpl<>(),
+                getModalDialogManagerSupplier()), null,
+            ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
+            /*OmniboxSuggestionsDropdownScrollListener=*/this,
+            new OpenHistoryClustersDelegate() {
+                @Override
+                public void openHistoryClustersUi(String query) {}
+            });
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
