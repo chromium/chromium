@@ -469,9 +469,6 @@ EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
       case SmartLockState::kPhoneAuthenticated:
         return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
             kAuthenticatedPhone;
-      case SmartLockState::kPasswordReentryRequired:
-        return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-            kForcedReauth;
       case SmartLockState::kPhoneNotLockable:
         return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
             kPhoneNotLockable;
@@ -527,8 +524,6 @@ EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
         return PASSWORD_ENTRY_PHONE_LOCKED_AND_RSSI_TOO_LOW;
       case SmartLockState::kPhoneAuthenticated:
         return PASSWORD_ENTRY_WITH_AUTHENTICATED_PHONE;
-      case SmartLockState::kPasswordReentryRequired:
-        return PASSWORD_ENTRY_FORCED_REAUTH;
       case SmartLockState::kPrimaryUserAbsent:
         return PASSWORD_ENTRY_PRIMARY_USER_ABSENT;
     }

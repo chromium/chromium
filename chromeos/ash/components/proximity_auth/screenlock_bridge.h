@@ -29,7 +29,6 @@ class ScreenlockBridge {
   // User pod icons supported by lock screen / signin screen UI.
   enum UserPodCustomIcon {
     USER_POD_CUSTOM_ICON_NONE,
-    USER_POD_CUSTOM_ICON_HARDLOCKED,
     USER_POD_CUSTOM_ICON_LOCKED,
     USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED,
     // TODO(isherman): The "locked with proximity hint" icon is currently the

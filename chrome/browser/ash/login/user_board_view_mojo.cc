@@ -21,8 +21,6 @@ EasyUnlockIconState GetEasyUnlockIconStateFromUserPodCustomIconId(
   switch (icon) {
     case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_NONE:
       return EasyUnlockIconState::NONE;
-    case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_HARDLOCKED:
-      return EasyUnlockIconState::HARDLOCKED;
     case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_LOCKED:
       return EasyUnlockIconState::LOCKED;
     case proximity_auth::ScreenlockBridge::

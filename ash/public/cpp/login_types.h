@@ -111,9 +111,6 @@ enum class MultiProfileUserBehavior {
 enum class EasyUnlockIconState {
   // No icon shown.
   NONE,
-  // The user has clicked the easy unlock icon and disabled easy unlock for this
-  // login/lock session.
-  HARDLOCKED,
   // Phone could not be found.
   LOCKED,
   // Phone found, but it is not unlocked.

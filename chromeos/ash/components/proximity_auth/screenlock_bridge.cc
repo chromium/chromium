@@ -29,7 +29,6 @@ const char kLockedToBeActivatedUserPodCustomIconId[] = "locked-to-be-activated";
 const char kLockedWithProximityHintUserPodCustomIconId[] =
     "locked-with-proximity-hint";
 const char kUnlockedUserPodCustomIconId[] = "unlocked";
-const char kHardlockedUserPodCustomIconId[] = "hardlocked";
 const char kSpinnerUserPodCustomIconId[] = "spinner";
 
 // Given the user pod icon, returns its id as used by the user pod UI code.
@@ -43,8 +42,6 @@ std::string GetIdForIcon(ScreenlockBridge::UserPodCustomIcon icon) {
       return kLockedWithProximityHintUserPodCustomIconId;
     case ScreenlockBridge::USER_POD_CUSTOM_ICON_UNLOCKED:
       return kUnlockedUserPodCustomIconId;
-    case ScreenlockBridge::USER_POD_CUSTOM_ICON_HARDLOCKED:
-      return kHardlockedUserPodCustomIconId;
     case ScreenlockBridge::USER_POD_CUSTOM_ICON_SPINNER:
       return kSpinnerUserPodCustomIconId;
     default:

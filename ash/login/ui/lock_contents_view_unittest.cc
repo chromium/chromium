@@ -3162,7 +3162,6 @@ TEST_F(LockContentsViewUnitTest, UpdatingSmartLockStateSetsAuthMethod) {
       {SmartLockState::kPhoneFoundLockedAndProximate, true},
       {SmartLockState::kPhoneFoundUnlockedAndDistant, true},
       {SmartLockState::kPhoneAuthenticated, true},
-      {SmartLockState::kPasswordReentryRequired, true},
       {SmartLockState::kPrimaryUserAbsent, true}};
 
   for (const auto& it : state_and_is_auth_method_expected) {
@@ -3204,12 +3203,6 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesPasswordView) {
   DataDispatcher()->SetSmartLockState(account_id,
                                       SmartLockState::kPhoneAuthenticated);
   EXPECT_FALSE(auth_user_view->password_view()->GetVisible());
-
-  // Check that password view becomes visible when auth
-  // factor is in kErrorPermanent state.
-  DataDispatcher()->SetSmartLockState(account_id,
-                                      SmartLockState::kPasswordReentryRequired);
-  EXPECT_TRUE(auth_user_view->password_view()->GetVisible());
 }
 
 TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {

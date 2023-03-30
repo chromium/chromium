@@ -41,9 +41,6 @@ std::ostream& operator<<(std::ostream& stream, const SmartLockState& state) {
     case SmartLockState::kPhoneAuthenticated:
       stream << "[phone authenticated]";
       break;
-    case SmartLockState::kPasswordReentryRequired:
-      stream << "[password reentry required]";
-      break;
     case SmartLockState::kPrimaryUserAbsent:
       stream << "[primary user absent]";
       break;

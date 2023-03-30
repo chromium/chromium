@@ -37,12 +37,6 @@ constexpr LabelTestcase kLabelTestcases[] = {
     {SmartLockState::kInactive, /*can_use_pin=*/false,
      IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
      IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
-    {SmartLockState::kPasswordReentryRequired, /*can_use_pin=*/true,
-     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
-     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
-    {SmartLockState::kPasswordReentryRequired, /*can_use_pin=*/false,
-     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
-     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
     {SmartLockState::kPrimaryUserAbsent, /*can_use_pin=*/true,
      IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
      IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
@@ -178,8 +172,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, AvailableStates) {
 
 TEST_F(SmartLockAuthFactorModelUnittest, ErrorStates) {
   InitializeSmartLockAuthFactorModel();
-  for (SmartLockState state : {SmartLockState::kPasswordReentryRequired,
-                               SmartLockState::kPrimaryUserAbsent,
+  for (SmartLockState state : {SmartLockState::kPrimaryUserAbsent,
                                SmartLockState::kPhoneNotAuthenticated,
                                SmartLockState::kBluetoothDisabled,
                                SmartLockState::kPhoneNotLockable}) {
@@ -239,8 +232,6 @@ TEST_F(SmartLockAuthFactorModelUnittest, ArrowButtonTapCallback) {
       SmartLockState::kPhoneFoundUnlockedAndDistant, false);
   TestArrowButtonAndCheckCallbackCalled(SmartLockState::kPhoneAuthenticated,
                                         true);
-  TestArrowButtonAndCheckCallbackCalled(
-      SmartLockState::kPasswordReentryRequired, false);
   TestArrowButtonAndCheckCallbackCalled(SmartLockState::kPrimaryUserAbsent,
                                         false);
 }

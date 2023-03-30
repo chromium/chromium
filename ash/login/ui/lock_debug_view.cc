@@ -350,8 +350,6 @@ class LockDebugView::DebugDataDispatcherTransformer
           case SmartLockState::kBluetoothDisabled:
             return SmartLockState::kPhoneNotAuthenticated;
           case SmartLockState::kPhoneNotAuthenticated:
-            return SmartLockState::kPasswordReentryRequired;
-          case SmartLockState::kPasswordReentryRequired:
             return SmartLockState::kPrimaryUserAbsent;
           case SmartLockState::kPrimaryUserAbsent:
             return SmartLockState::kDisabled;
@@ -387,8 +385,6 @@ class LockDebugView::DebugDataDispatcherTransformer
           case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
             return EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT;
           case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
-            return EasyUnlockIconState::HARDLOCKED;
-          case EasyUnlockIconState::HARDLOCKED:
             return EasyUnlockIconState::UNLOCKED;
           case EasyUnlockIconState::UNLOCKED:
             return EasyUnlockIconState::NONE;

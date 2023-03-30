@@ -54,8 +54,6 @@ proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
     case SmartLockState::kInactive:
     case SmartLockState::kDisabled:
       return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_NONE;
-    case SmartLockState::kPasswordReentryRequired:
-      return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_HARDLOCKED;
     case SmartLockState::kPrimaryUserAbsent:
       return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_LOCKED;
   }
@@ -69,6 +67,7 @@ size_t GetTooltipResourceId(SmartLockState state) {
     case SmartLockState::kInactive:
     case SmartLockState::kDisabled:
     case SmartLockState::kConnectingToPhone:
+    case SmartLockState::kPhoneAuthenticated:
       return 0;
     case SmartLockState::kBluetoothDisabled:
       return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_NO_BLUETOOTH;
@@ -84,10 +83,6 @@ size_t GetTooltipResourceId(SmartLockState state) {
       return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_RSSI_TOO_LOW;
     case SmartLockState::kPhoneFoundLockedAndDistant:
       return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PHONE_LOCKED_AND_RSSI_TOO_LOW;
-    case SmartLockState::kPhoneAuthenticated:
-      return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_HARDLOCK_INSTRUCTIONS;
-    case SmartLockState::kPasswordReentryRequired:
-      return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PASSWORD_REAUTH;
     case SmartLockState::kPrimaryUserAbsent:
       return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PRIMARY_USER_ABSENT;
   }

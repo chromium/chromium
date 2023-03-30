@@ -179,8 +179,6 @@ bool HasCommunicatedWithPhone(SmartLockState state) {
     case SmartLockState::kPhoneNotFound:
       [[fallthrough]];
     case SmartLockState::kConnectingToPhone:
-      [[fallthrough]];
-    case SmartLockState::kPasswordReentryRequired:
       return false;
     case SmartLockState::kPhoneNotLockable:
       [[fallthrough]];

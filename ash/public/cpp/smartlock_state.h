@@ -42,9 +42,6 @@ enum class SmartLockState {
   kPhoneFoundUnlockedAndDistant,
   // Phone is authenticated, and the local device can be unlocked.
   kPhoneAuthenticated,
-  // The user must reauthenticate using their password because a sufficient time
-  // has elapsed since their last password entry.
-  kPasswordReentryRequired,
   // The primary user profile is either in the background or this user is a
   // secondary user profile.
   kPrimaryUserAbsent

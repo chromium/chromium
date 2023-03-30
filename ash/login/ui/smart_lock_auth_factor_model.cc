@@ -93,8 +93,6 @@ AuthFactorModel::AuthFactorState SmartLockAuthFactorModel::GetAuthFactorState()
       return AuthFactorState::kClickRequired;
     case SmartLockState::kPhoneFoundLockedAndProximate:
       return AuthFactorState::kReady;
-    case SmartLockState::kPasswordReentryRequired:
-      [[fallthrough]];
     case SmartLockState::kPrimaryUserAbsent:
       [[fallthrough]];
     case SmartLockState::kPhoneNotAuthenticated:
@@ -127,8 +125,6 @@ int SmartLockAuthFactorModel::GetLabelId() const {
     case SmartLockState::kDisabled:
       [[fallthrough]];
     case SmartLockState::kInactive:
-      [[fallthrough]];
-    case SmartLockState::kPasswordReentryRequired:
       [[fallthrough]];
     case SmartLockState::kPrimaryUserAbsent:
       [[fallthrough]];
@@ -206,8 +202,6 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
     case SmartLockState::kPrimaryUserAbsent:
       [[fallthrough]];
     case SmartLockState::kPhoneNotAuthenticated:
-      [[fallthrough]];
-    case SmartLockState::kPasswordReentryRequired:
       [[fallthrough]];
     case SmartLockState::kPhoneNotLockable:
       [[fallthrough]];

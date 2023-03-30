@@ -383,10 +383,6 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
       case EasyUnlockIconState::NONE:
         // The easy unlock icon will be set to invisible. Do nothing.
         break;
-      case EasyUnlockIconState::HARDLOCKED:
-        color = color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorProminent);
-        break;
       case EasyUnlockIconState::LOCKED:
         // This is the default case in terms of icon and color.
         break;

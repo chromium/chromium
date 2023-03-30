@@ -117,10 +117,6 @@ constexpr SmartLockStateTestCase kSmartLockStateTestCases[] = {
      SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
          kAuthenticatedPhone,
      false},
-    {SmartLockState::kPasswordReentryRequired,
-     EasyUnlockAuthEvent::PASSWORD_ENTRY_FORCED_REAUTH,
-     SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::kForcedReauth,
-     false},
     {SmartLockState::kPhoneNotLockable,
      EasyUnlockAuthEvent::PASSWORD_ENTRY_PHONE_NOT_LOCKABLE,
      SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::

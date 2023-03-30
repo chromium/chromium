@@ -63,12 +63,20 @@ class SmartLockMetricsRecorder {
     kMaxValue = kUserControllerSignInFailure
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
   enum class SmartLockAuthMethodChoice {
     kSmartLock = 0,
     kOther = 1,
     kMaxValue = kOther
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
   enum class SmartLockAuthEventPasswordState {
     kUnknownState = 0,
     kNoPairing = 1,
@@ -86,7 +94,7 @@ class SmartLockMetricsRecorder {
     kPairingAdded = 13,
     kNoScreenlockStateHandler = 14,
     kPhoneLockedAndRssiTooLow = 15,
-    kForcedReauth = 16,
+    // kForcedReauth = 16, (obsolete)
     kLoginWithSmartLockDisabled = 17,
     kPhoneNotLockable = 18,
     kPrimaryUserAbsent = 19,
