@@ -11,12 +11,14 @@ source_set("oobe_quick_start") {
     "connectivity",
     "logging",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/attestation:attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/constants:constants",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/prefs:prefs",
     "//components/qr_code_generator:qr_code_generator",
     "//components/version_info:channel",
     "//google_apis:google_apis",
@@ -25,6 +27,8 @@ source_set("oobe_quick_start") {
     "//services/network/public/cpp:cpp",
   ]
   sources = [
+    "oobe_quick_start_pref_names.cc",
+    "oobe_quick_start_pref_names.h",
     "second_device_auth_broker.cc",
     "second_device_auth_broker.h",
     "target_device_bootstrap_controller.cc",

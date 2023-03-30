@@ -11,6 +11,9 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
+#include "chrome/browser/browser_process.h"
+#include "components/prefs/pref_service.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -97,6 +100,22 @@ void TargetDeviceBootstrapController::StopAdvertising() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void TargetDeviceBootstrapController::PrepareForUpdate() {
+  if (status_.step != Step::CONNECTED) {
+    return;
+  }
+
+  // TODO(b/234655072): Trigger message to notify source device of update.
+  // TODO(b/234655072): Implement timeout for connection to close.
+  // If the source device successfully receives this message, it drops the
+  // connection. The target device waits 1-3 seconds for the connection to close
+  // in order to confirm the source device is prepared to re-connect after the
+  // target device reboots. If the connection isn't closed within the timeout,
+  // the target device reboots like normal and will not automatically resume
+  // Quick Start after the update.
+  prepare_for_update_on_connection_closed_ = true;
+}
+
 void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
     const std::string& source_device_id,
     base::WeakPtr<IncomingConnection> connection) {
@@ -142,6 +161,13 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   NotifyObservers();
+
+  if (prepare_for_update_on_connection_closed_) {
+    PrefService* prefs = g_browser_process->local_state();
+    prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
+    // TODO(b/234655072): Get RandomSessionID and secondary SharedSecret from
+    // connection_broker_ and persist to local state as well.
+  }
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {

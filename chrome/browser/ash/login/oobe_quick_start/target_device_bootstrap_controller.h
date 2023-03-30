@@ -83,6 +83,11 @@ class TargetDeviceBootstrapController
   void StartAdvertising();
   void StopAdvertising();
 
+  // A user may initiate Quick Start then have to download an update and reboot.
+  // This function persists necessary data and notifies the source device so
+  // Quick Start can resume where it left off after the reboot.
+  void PrepareForUpdate();
+
   // TargetDeviceConnectionBroker::ConnectionLifecycleListener:
   void OnIncomingConnectionInitiated(
       const std::string& source_device_id,
@@ -103,6 +108,7 @@ class TargetDeviceBootstrapController
   base::WeakPtr<IncomingConnection> incoming_connection_;
   // TODO: Should we enforce one observer at a time here too?
   base::ObserverList<Observer> observers_;
+  bool prepare_for_update_on_connection_closed_ = false;
 
   Status status_;
 
