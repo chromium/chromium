@@ -58,23 +58,51 @@ source_set("features") {
   ]
 }
 
+source_set("set_up_list") {
+  sources = [
+    "set_up_list.h",
+    "set_up_list.mm",
+    "set_up_list_item.h",
+    "set_up_list_item.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/prefs:prefs",
+    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/signin",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "browser_policy_new_tab_page_rewriter_unittest.mm",
     "new_tab_page_tab_helper_unittest.mm",
+    "set_up_list_unittest.mm",
   ]
   deps = [
+    ":set_up_list",
     "//base/test:test_support",
+    "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/strings",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/default_browser:test_support",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/search_engines:search_engines",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
