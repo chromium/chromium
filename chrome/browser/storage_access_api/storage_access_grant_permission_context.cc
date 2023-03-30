@@ -77,18 +77,24 @@ void RecordOutcomeSample(RequestOutcome outcome) {
 }
 
 content_settings::ContentSettingConstraints ComputeConstraints(
-    RequestOutcome outcome,
-    bool implicit_result) {
-  if (!implicit_result) {
-    return {content_settings::GetConstraintExpiration(kExplicitGrantDuration),
-            content_settings::SessionModel::Durable};
+    RequestOutcome outcome) {
+  switch (outcome) {
+    case RequestOutcome::kGrantedByFirstPartySet:
+      return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
+              content_settings::SessionModel::NonRestorableUserSession};
+    case RequestOutcome::kGrantedByAllowance:
+      return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
+              content_settings::SessionModel::UserSession};
+    case RequestOutcome::kDismissedByUser:
+    case RequestOutcome::kDeniedByFirstPartySet:
+      NOTREACHED_NORETURN();
+    case RequestOutcome::kGrantedByUser:
+    case RequestOutcome::kDeniedByUser:
+    case RequestOutcome::kDeniedByPrerequisites:
+    case RequestOutcome::kReusedPreviousDecision:
+      return {content_settings::GetConstraintExpiration(kExplicitGrantDuration),
+              content_settings::SessionModel::Durable};
   }
-  if (outcome == RequestOutcome::kGrantedByFirstPartySet) {
-    return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-            content_settings::SessionModel::NonRestorableUserSession};
-  }
-  return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-          content_settings::SessionModel::UserSession};
 }
 
 bool ShouldPersistSetting(bool permission_allowed,
@@ -343,9 +349,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   }
 
   // Our failure cases are tracked by the prompt outcomes in the
-  // `Permissions.Action.StorageAccess` histogram. Because implicit and not
-  // allowed results return early, in practice this means that an implicit
-  // result at this point means a grant was generated.
+  // `Permissions.Action.StorageAccess` histogram. Because implicitly denied
+  // results return early, in practice this means that an implicit result at
+  // this point means a grant was generated.
   CHECK(!implicit_result || permission_allowed);
   if (permission_allowed) {
     base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit",
@@ -356,14 +362,11 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   DCHECK(settings_map);
   DCHECK(persist);
 
-  // This permission was allowed so store it either ephemerally or more
-  // permanently depending on if the allow came from a prompt or automatic
-  // grant.
   settings_map->SetContentSettingCustomScope(
       URLToSchemefulSitePattern(requesting_origin),
       URLToSchemefulSitePattern(embedding_origin),
       ContentSettingsType::STORAGE_ACCESS, content_setting,
-      ComputeConstraints(outcome, implicit_result));
+      ComputeConstraints(outcome));
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
