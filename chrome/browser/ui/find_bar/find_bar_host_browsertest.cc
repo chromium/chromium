@@ -807,8 +807,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NavigateClearsOrdinal) {
 
   // Open the Find box. In most tests we can just search without opening the
   // box first, but in this case we are testing functionality triggered by
-  // NOTIFICATION_NAV_ENTRY_COMMITTED in the FindBarController and the observer
-  // for that event isn't setup unless the box is open.
+  // `NavigationEntryCommitted()` in the FindBarController and it isn't setup
+  // unless the box is open.
   EnsureFindBoxOpen();
 
   // Search for a text that exists within a link on the page.

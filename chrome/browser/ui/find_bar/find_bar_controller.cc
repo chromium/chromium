@@ -16,9 +16,6 @@
 #include "components/find_in_page/find_types.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/range/range.h"
@@ -31,12 +28,12 @@ FindBarController::FindBarController(std::unique_ptr<FindBar> find_bar)
       find_bar_platform_helper_(FindBarPlatformHelper::Create(this)) {}
 
 FindBarController::~FindBarController() {
-  DCHECK(!web_contents_);
+  DCHECK(!web_contents());
 }
 
 void FindBarController::Show(bool find_next, bool forward_direction) {
   find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents_);
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
 
   // Only show the animation if we're not already showing a find bar for the
   // selected WebContents.
@@ -82,11 +79,11 @@ void FindBarController::EndFindSession(
     find_in_page::ResultAction result_action) {
   find_bar_->Hide(true);
 
-  // |web_contents_| can be NULL for a number of reasons, for example when the
+  // web_contents() can be NULL for a number of reasons, for example when the
   // tab is closing. We must guard against that case. See issue 8030.
-  if (web_contents_) {
+  if (web_contents()) {
     find_in_page::FindTabHelper* find_tab_helper =
-        find_in_page::FindTabHelper::FromWebContents(web_contents_);
+        find_in_page::FindTabHelper::FromWebContents(web_contents());
 
     // When we hide the window, we need to notify the renderer that we are done
     // for now, so that we can abort the scoping effort and clear all the
@@ -102,12 +99,11 @@ void FindBarController::EndFindSession(
 }
 
 void FindBarController::ChangeWebContents(WebContents* contents) {
-  if (web_contents_) {
-    registrar_.RemoveAll();
+  if (web_contents()) {
     find_bar_->StopAnimation();
 
     find_in_page::FindTabHelper* find_tab_helper =
-        find_in_page::FindTabHelper::FromWebContents(web_contents_);
+        find_in_page::FindTabHelper::FromWebContents(web_contents());
     if (find_tab_helper) {
       find_tab_helper->set_selected_range(find_bar_->GetSelectedRange());
       DCHECK(find_tab_observation_.IsObservingSource(find_tab_helper));
@@ -128,15 +124,11 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     find_bar_->Hide(false);
   }
 
-  web_contents_ = contents;
+  Observe(contents);
 
-  if (!web_contents_)
+  if (!web_contents()) {
     return;
-
-  registrar_.Add(
-      this,
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::Source<NavigationController>(&web_contents_->GetController()));
+  }
 
   MaybeSetPrepopulateText();
   UpdateFindBarForCurrentResult();
@@ -167,10 +159,11 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
 void FindBarController::SetText(std::u16string text) {
   find_bar_->SetFindTextAndSelectedRange(text, find_bar_->GetSelectedRange());
 
-  if (!web_contents_)
+  if (!web_contents()) {
     return;
+  }
   find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents_);
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
   if (!find_tab_helper->find_ui_active())
     return;
 
@@ -188,38 +181,30 @@ void FindBarController::OnUserChangedFindText(std::u16string text) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FindBarController, content::NotificationObserver implementation:
+// FindBarController, content::WebContentsObserver implementation:
 
-void FindBarController::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_NAV_ENTRY_COMMITTED, type);
-  NavigationController* source_controller =
-      content::Source<NavigationController>(source).ptr();
-  if (source_controller == &web_contents_->GetController()) {
-    content::LoadCommittedDetails* commit_details =
-        content::Details<content::LoadCommittedDetails>(details).ptr();
-    // Hide the find bar on navigation.
-    if (find_bar_->IsFindBarVisible() && commit_details->is_main_frame &&
-        commit_details->is_navigation_to_different_page()) {
-      EndFindSession(find_in_page::SelectionAction::kKeep,
-                     find_in_page::ResultAction::kClear);
-    }
+void FindBarController::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  // Hide the find bar on navigation.
+  if (find_bar_->IsFindBarVisible() && load_details.is_main_frame &&
+      load_details.is_navigation_to_different_page()) {
+    EndFindSession(find_in_page::SelectionAction::kKeep,
+                   find_in_page::ResultAction::kClear);
   }
 }
 
 void FindBarController::OnFindEmptyText(content::WebContents* web_contents) {
-  DCHECK_EQ(web_contents, web_contents_);
+  CHECK_EQ(web_contents, this->web_contents());
   UpdateFindBarForCurrentResult();
 }
 
 void FindBarController::OnFindResultAvailable(
     content::WebContents* web_contents) {
-  DCHECK_EQ(web_contents, web_contents_);
+  CHECK_EQ(web_contents, this->web_contents());
   UpdateFindBarForCurrentResult();
 
   find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents_);
+      find_in_page::FindTabHelper::FromWebContents(web_contents);
 
   // Only "final" results may audibly alert the user. Also don't alert when
   // we're only highlighting results (when first opening the find bar).
@@ -246,7 +231,7 @@ void FindBarController::OnFindResultAvailable(
 
 void FindBarController::UpdateFindBarForCurrentResult() {
   find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents_);
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
   const find_in_page::FindNotificationDetails& find_result =
       find_tab_helper->find_result();
   // Avoid bug 894389: When a new search starts (and finds something) it reports
@@ -281,7 +266,7 @@ void FindBarController::MaybeSetPrepopulateText() {
   // the last search in this tab, but if no search has been issued in this tab
   // we use the last search string (from any tab).
   find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents_);
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
   std::u16string find_string = find_tab_helper->find_text();
   if (find_string.empty())
     find_string = find_tab_helper->GetInitialSearchText();
@@ -296,7 +281,7 @@ void FindBarController::MaybeSetPrepopulateText() {
 }
 
 std::u16string FindBarController::GetSelectedText() {
-  auto* host_view = web_contents_->GetRenderWidgetHostView();
+  auto* host_view = web_contents()->GetRenderWidgetHostView();
   if (!host_view)
     return std::u16string();
 
