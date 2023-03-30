@@ -150,10 +150,9 @@ class BASE_EXPORT SysInfo {
   // none of the above.
   static std::string ProcessCPUArchitecture();
 
-  // Avoid using this. Use base/cpu.h to get information about the CPU instead.
-  // http://crbug.com/148884
   // Returns the CPU model name of the system. If it can not be figured out,
   // an empty string is returned.
+  // More detailed info can be obtained from base/cpu.h.
   static std::string CPUModelName();
 
   // Return the smallest amount of memory (in bytes) which the VM system will
