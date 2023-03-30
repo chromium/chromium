@@ -7,10 +7,14 @@
 // CreateContextParams.
 {
   include: [
+    "//fuchsia_web/webengine/web_instance-common.shard.cml",
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
-    "//fuchsia_web/webengine/web_instance-common.shard.cml",
   ],
+
+  // These uses are based on https://fuchsia.dev/reference/fidl/fuchsia.web,
+  // especially
+  // https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams.
   use: [
     {
       // Required capabilities for all configurations.
@@ -20,76 +24,88 @@
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
+        // "fuchsia.kernel.VmexResource" is optional below.
+        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
       ]
     },
     {
-      // Optional capabilities, dependent on availability of tracing services.
+      // Optional capabilities, dependent on `ContextFeatureFlags` and other
+      // optional functionality. Protocols for `ContextFeatureFlags` are listed
+      // in the order in which they are defined. after those for other
+      // functionality.
       protocol: [
-          "fuchsia.tracing.perfetto.ProducerConnector",
-          "fuchsia.tracing.provider.Registry",
-      ],
-      availability: "optional",
-    },
-    {
-      // Optional capabilities, dependent on ContextFeatureFlags.
-      protocol: [
+        // Enables better performance, especially for media rendering.
+        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        "fuchsia.media.ProfileProvider",
 
-        // Required by Frame.CreateView*(), unless HEADLESS is set.
-        "fuchsia.accessibility.semantics.SemanticsManager",
-        "fuchsia.ui.composition.Allocator",
-        "fuchsia.ui.composition.Flatland",
-        "fuchsia.ui.scenic.Scenic",
+        // Optionally used by the tracing service.
+        // TODO(crbug.com/1364196): Provide conditionally when enabled.
+        "fuchsia.tracing.perfetto.ProducerConnector",
 
-        // Required by ContextFeatureFlags.NETWORK
+        // Required for `Frame.SetPreferredTheme(DEFAULT)`.
+        "fuchsia.settings.Display",
+
+        // Required by `ContextFeatureFlags.NETWORK`.
         "fuchsia.net.interfaces.State",
         "fuchsia.net.name.Lookup",
         "fuchsia.posix.socket.Provider",
 
-        // Required by ContextFeatureFlags.AUDIO
+        // Required by `ContextFeatureFlags.AUDIO`.
         "fuchsia.media.Audio",
         "fuchsia.media.AudioDeviceEnumerator",
         "fuchsia.media.SessionAudioConsumerFactory",
 
-        // Required by ContextFeatureFlags.VULKAN
+        // Required by `ContextFeatureFlags.VULKAN`.
+        // These are the protocols not already required that
+        //`vulkan/client.shard.cml` provides. That shard cannot be used because
+        // it *requires* the Loader protocol.
+        // "fuchsia.tracing.provider.Registry" is optionally used by the
+        // tracing service.
         "fuchsia.vulkan.loader.Loader",
+        "fuchsia.tracing.provider.Registry",
 
-        // Required by ContextFeatureFlags.HARDWARE_VIDEO_DECODER
+        // Required by `ContextFeatureFlags.HARDWARE_VIDEO_DECODER`.
         "fuchsia.mediacodec.CodecFactory",
 
-        // Required by ContextFeatureFlags.WIDEVINE_CDM
+        // Required by `ContextFeatureFlags.WIDEVINE_CDM`.
         // Only needed in builds with enable_widevine=true.
         // TODO(crbug.com/1379411): Move to a shard.
         "fuchsia.media.drm.Widevine",
 
-        // Required by CreateContextParams.playready_key_system
+        // Required by CreateContextParams.playready_key_system.
         // Only needed in builds with enable_widevine && enable_cast_receiver.
         // TODO(crbug.com/1379411): Move to a shard.
         "fuchsia.media.drm.PlayReady",
 
-        // Required by ContextFeatureFlags.LEGACY_METRICS
+        // When `ContextFeatureFlags.HEADLESS` is not set, required to use
+        // `Frame.CreateView*()`.
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
+        "fuchsia.ui.scenic.Scenic",
+
+        // Required by `ContextFeatureFlags.LEGACY_METRICS`.
         // Only needed in enable_cast_receiver=true builds.
         // TODO(crbug.com/1379411): Move to a shard.
         "fuchsia.legacymetrics.MetricsRecorder",
 
-        // Required by ContextFeatureFlags.KEYBOARD
+        // Required by `ContextFeatureFlags.KEYBOARD`.
         "fuchsia.ui.input3.Keyboard",
 
-        // Required by ContextFeatureFlags.VIRTUAL_KEYBOARD
+        // Required by `ContextFeatureFlags.VIRTUAL_KEYBOARD`.
         "fuchsia.input.virtualkeyboard.ControllerCreator",
 
-        // Required for JavaScript & WebAssembly unless
-        // ContextFeatureFlags.DISABLE_DYNAMIC_CODE_GENERATION is set.
+        // When `ContextFeatureFlags.DISABLE_DYNAMIC_CODE_GENERATION` is not
+        // set, required for JavaScript & WebAssembly.
         "fuchsia.kernel.VmexResource",
 
-        // Required by ???
+        // Required for camera access.
+        // TODO(crbug.com/1209031): Add ContextFeatureFlag and reference here.
         "fuchsia.camera3.DeviceWatcher",
-        "fuchsia.media.ProfileProvider",
-
-        // Required by Frame.SetPreferredTheme(DEFAULT).
-        "fuchsia.settings.Display",
       ],
       availability: "optional",
     },
