@@ -86,12 +86,17 @@ export class SettingsIbanEditDialogElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.title_ = this.i18n(this.iban ? 'editIbanTitle' : 'addIbanTitle');
     if (this.iban) {
+      // Save IBAN button is by default enabled in 'EDIT' mode as IBAN value is
+      // pre-populated.
       this.value_ = this.iban.value;
       this.nickname_ = this.iban.nickname;
+      this.title_ = this.i18n('editIbanTitle');
+    } else {
+      this.title_ = this.i18n('addIbanTitle');
+      // Save IBAN button is disabled in 'ADD' mode as IBAN value is empty.
+      this.$.saveButton.disabled = true;
     }
-    this.$.saveButton.disabled = true;
     this.$.dialog.showModal();
   }
 
