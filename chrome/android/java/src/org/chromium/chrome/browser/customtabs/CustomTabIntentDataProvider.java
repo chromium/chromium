@@ -256,11 +256,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * Extra that, if set, allows you to interact with the background app when a PCCT is launched
      */
     public static final String EXTRA_ENABLE_BACKGROUND_INTERACTION =
-            "androix.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION";
+            "androidx.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION";
 
     /** Extra that enables the maximization button on the side sheet Custom Tab toolbar. */
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
-            "androix.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
 
     /**
      * Extra that, if set in combination with
