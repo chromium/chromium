@@ -216,15 +216,15 @@ absl::optional<int> FindIndexOfMatchingKeyframe(
     const absl::optional<EffectModel::CompositeOperation>& composite) {
   for (wtf_size_t i = start_index; i < keyframes.size(); i++) {
     StringKeyframe* keyframe = keyframes[i];
-
     // Keyframes are sorted by offset. Search can stop once we hit and offset
     // that exceeds the target value.
-    if (offset < keyframe->Offset()) {
+    if (offset && keyframe->Offset() && offset < keyframe->Offset()) {
       break;
     }
 
+    // Timeline offsets do not need to be consecutive.
     if (timeline_offset != keyframe->GetTimelineOffset()) {
-      break;
+      continue;
     }
 
     if (easing.ToString() != keyframe->Easing().ToString()) {
@@ -286,8 +286,12 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   PropertySet start_properties;
   PropertySet end_properties;
 
+  PropertySet fixed_offset_properties;
+
+  HashMap<String, PropertySet> timeline_offset_properties_map;
+
   // Properties that have already been processed at the current keyframe.
-  PropertySet current_offset_properties;
+  PropertySet* current_offset_properties;
 
   // 6. Perform a stable sort of the keyframe blocks in the @keyframes rule by
   //    the offset specified in the keyframe selector, and iterate over the
@@ -299,7 +303,6 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
       writing_direction.Direction(), timeline, has_named_range_keyframes);
 
   absl::optional<double> last_offset;
-  absl::optional<TimelineOffset> last_timeline_offset;
   wtf_size_t merged_frame_count = 0;
   for (wtf_size_t i = keyframes.size(); i > 0; --i) {
     // 6.1 Let keyframe offset be the value of the keyframe selector converted
@@ -309,6 +312,20 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     absl::optional<double> keyframe_offset = rule_keyframe->Offset();
     absl::optional<TimelineOffset> timeline_offset =
         rule_keyframe->GetTimelineOffset();
+
+    if (!timeline_offset) {
+      current_offset_properties = &fixed_offset_properties;
+    } else {
+      String key = timeline_offset->ToString();
+      auto it = timeline_offset_properties_map.find(key);
+      if (it == timeline_offset_properties_map.end()) {
+        auto add_result =
+            timeline_offset_properties_map.insert(key, PropertySet());
+        current_offset_properties = &add_result.stored_value->value;
+      } else {
+        current_offset_properties = &it.Get()->value;
+      }
+    }
 
     // 6.2 Let keyframe timing function be the value of the last valid
     //     declaration of animation-timing-function specified on the keyframe
@@ -332,11 +349,9 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
 
     // Prevent stomping a rule override by tracking properties applied at
     // the current offset.
-    if (last_offset != keyframe_offset ||
-        last_timeline_offset != timeline_offset) {
-      current_offset_properties.clear();
+    if (last_offset != keyframe_offset && !timeline_offset) {
+      fixed_offset_properties.clear();
       last_offset = keyframe_offset;
-      last_timeline_offset = timeline_offset;
     }
 
     // TODO(crbug.com/1408702): we should merge keyframes to the most left one,
@@ -383,8 +398,9 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
       // Since processing keyframes in reverse order, skipping properties that
       // have already been inserted prevents overwriting a later merged
       // keyframe.
-      if (current_offset_properties.Contains(property_name))
+      if (current_offset_properties->Contains(property_name)) {
         continue;
+      }
 
       if (source_index != target_index) {
         keyframe->SetCSSPropertyValue(
@@ -392,7 +408,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
             rule_keyframe->CssPropertyValue(property));
       }
 
-      current_offset_properties.insert(property_name);
+      current_offset_properties->insert(property_name);
       animated_properties.insert(property_name);
       if (keyframe_offset == 0)
         start_properties.insert(property_name);
