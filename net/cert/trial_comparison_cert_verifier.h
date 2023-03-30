@@ -99,9 +99,6 @@ class NET_EXPORT TrialComparisonCertVerifier
   CertVerifier* primary_verifier() const { return primary_verifier_.get(); }
   CertVerifier* primary_reverifier() const { return primary_reverifier_.get(); }
   CertVerifier* trial_verifier() const { return trial_verifier_.get(); }
-  CertVerifier* revocation_trial_verifier() const {
-    return revocation_trial_verifier_.get();
-  }
 
   void RemoveJob(Job* job_ptr);
 
@@ -115,9 +112,6 @@ class NET_EXPORT TrialComparisonCertVerifier
   std::unique_ptr<CertVerifierWithUpdatableProc> primary_verifier_;
   std::unique_ptr<CertVerifierWithUpdatableProc> primary_reverifier_;
   std::unique_ptr<CertVerifierWithUpdatableProc> trial_verifier_;
-  // Similar to |trial_verifier_|, except configured to always check
-  // revocation information.
-  std::unique_ptr<CertVerifierWithUpdatableProc> revocation_trial_verifier_;
 
   std::set<std::unique_ptr<Job>, base::UniquePtrComparator> jobs_;
 

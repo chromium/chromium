@@ -1733,81 +1733,6 @@ TEST_F(TrialComparisonCertVerifierTest, DeletedAfterTrialVerificationStarted) {
   histograms_.ExpectTotalCount("Net.CertVerifier_TrialComparisonResult", 0);
 }
 
-TEST_F(TrialComparisonCertVerifierTest, MacUndesiredRevocationChecking) {
-  CertVerifyResult revoked_result;
-  revoked_result.verified_cert = cert_chain_1_;
-  revoked_result.cert_status = CERT_STATUS_REVOKED;
-
-  CertVerifyResult ok_result;
-  ok_result.verified_cert = cert_chain_1_;
-
-  // Primary verifier returns an error status.
-  scoped_refptr<FakeCertVerifyProc> verify_proc1 =
-      base::MakeRefCounted<FakeCertVerifyProc>(ERR_CERT_REVOKED,
-                                               revoked_result);
-
-  scoped_refptr<MockCertVerifyProc> verify_proc2 =
-      base::MakeRefCounted<MockCertVerifyProc>();
-  // Secondary verifier returns ok status...
-  EXPECT_CALL(*verify_proc2, VerifyInternal(_, _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(ok_result), Return(OK)));
-
-#if BUILDFLAG(IS_APPLE)
-  // The secondary should have been called twice on Mac due to attempting
-  // the kIgnoredMacUndesiredRevocationCheckingWorkaround.
-  EXPECT_CALL(
-      *verify_proc2,
-      VerifyInternal(_, _, _, _, CertVerifyProc::VERIFY_REV_CHECKING_ENABLED, _,
-                     _, _, _))
-      .WillOnce(
-          DoAll(SetArgPointee<7>(revoked_result), Return(ERR_CERT_REVOKED)));
-#endif
-
-  std::vector<TrialReportInfo> reports;
-  TrialComparisonCertVerifier verifier(
-      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
-      SwapWithNotCalledProcFactory(),
-      base::BindRepeating(&RecordTrialReport, &reports));
-  verifier.set_trial_allowed(true);
-
-  CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
-                                     /*ocsp_response=*/std::string(),
-                                     /*sct_list=*/std::string());
-  CertVerifyResult result;
-  TestCompletionCallback callback;
-  std::unique_ptr<CertVerifier::Request> request;
-  int error = verifier.Verify(params, &result, callback.callback(), &request,
-                              NetLogWithSource());
-  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
-  EXPECT_TRUE(request);
-
-  error = callback.WaitForResult();
-  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-
-  RunUntilIdle();
-
-  EXPECT_EQ(1, verify_proc1->num_verifications());
-  testing::Mock::VerifyAndClear(verify_proc2.get());
-  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
-  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialSecondary",
-                               1);
-#if BUILDFLAG(IS_APPLE)
-  // Expect no report.
-  EXPECT_EQ(0U, reports.size());
-
-  histograms_.ExpectUniqueSample(
-      "Net.CertVerifier_TrialComparisonResult",
-      TrialComparisonResult::kIgnoredMacUndesiredRevocationChecking, 1);
-#else
-  // Expect a report.
-  EXPECT_EQ(1U, reports.size());
-
-  histograms_.ExpectUniqueSample(
-      "Net.CertVerifier_TrialComparisonResult",
-      TrialComparisonResult::kPrimaryErrorSecondaryValid, 1);
-#endif
-}
-
 TEST_F(TrialComparisonCertVerifierTest, PrimaryRevokedSecondaryOk) {
   CertVerifyResult revoked_result;
   revoked_result.verified_cert = cert_chain_1_;
@@ -1826,13 +1751,7 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryRevokedSecondaryOk) {
   scoped_refptr<MockCertVerifyProc> verify_proc2 =
       base::MakeRefCounted<MockCertVerifyProc>();
   EXPECT_CALL(*verify_proc2, VerifyInternal(_, _, _, _, _, _, _, _, _))
-#if BUILDFLAG(IS_APPLE)
-      // The secondary should have been called twice on Mac due to attempting
-      // the kIgnoredMacUndesiredRevocationCheckingWorkaround.
-      .Times(2)
-#else
       .Times(1)
-#endif
       .WillRepeatedly(DoAll(SetArgPointee<7>(ok_result), Return(OK)));
 
   std::vector<TrialReportInfo> reports;
@@ -2298,63 +2217,6 @@ TEST_F(TrialComparisonCertVerifierTest, BothKnownRootsIgnored) {
                                  TrialComparisonResult::kIgnoredBothKnownRoot,
                                  1);
 }
-
-#if BUILDFLAG(IS_WIN)
-// Ignore results for windows when REV_CHECKING_ENABLED errors are reported
-// in both primary and trial verifiers.
-TEST_F(TrialComparisonCertVerifierTest, RevCheckingIgnoredWin) {
-  CertVerifyResult primary_result;
-  primary_result.verified_cert = cert_chain_1_;
-  primary_result.cert_status =
-      CERT_STATUS_DATE_INVALID | CERT_STATUS_REV_CHECKING_ENABLED;
-  scoped_refptr<FakeCertVerifyProc> verify_proc1 =
-      base::MakeRefCounted<FakeCertVerifyProc>(
-          ERR_CERT_WEAK_SIGNATURE_ALGORITHM, primary_result);
-
-  CertVerifyResult secondary_result;
-  secondary_result.verified_cert = cert_chain_1_;
-  secondary_result.cert_status = CERT_STATUS_DATE_INVALID;
-  scoped_refptr<FakeCertVerifyProc> verify_proc2 =
-      base::MakeRefCounted<FakeCertVerifyProc>(
-          ERR_CERTIFICATE_TRANSPARENCY_REQUIRED, secondary_result);
-
-  std::vector<TrialReportInfo> reports;
-  TrialComparisonCertVerifier verifier(
-      verify_proc1, SwapWithNotCalledProcFactory(), verify_proc2,
-      SwapWithNotCalledProcFactory(),
-      base::BindRepeating(&RecordTrialReport, &reports));
-  verifier.set_trial_allowed(true);
-
-  CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
-                                     /*ocsp_response=*/std::string(),
-                                     /*sct_list=*/std::string());
-  CertVerifyResult result;
-  TestCompletionCallback callback;
-  std::unique_ptr<CertVerifier::Request> request;
-  int error = verifier.Verify(params, &result, callback.callback(), &request,
-                              NetLogWithSource());
-  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
-  EXPECT_TRUE(request);
-
-  error = callback.WaitForResult();
-  EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-
-  verify_proc2->WaitForVerifyCall();
-  RunUntilIdle();
-
-  // Expect no report.
-  EXPECT_TRUE(reports.empty());
-
-  EXPECT_EQ(1, verify_proc1->num_verifications());
-  EXPECT_EQ(1, verify_proc2->num_verifications());
-  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
-  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialSecondary",
-                               1);
-  histograms_.ExpectUniqueSample(
-      "Net.CertVerifier_TrialComparisonResult",
-      TrialComparisonResult::kIgnoredWindowsRevCheckingEnabled, 1);
-}
-#endif
 
 // Ignore results where trial reports ERR_CERT_AUTHORITY_INVALID and the primary
 // reports any error with a cert status of CERT_STATUS_SYMANTEC_LEGACY

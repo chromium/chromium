@@ -200,8 +200,6 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
       return "both_valid_different_details";
     case net::TrialComparisonResult::kBothErrorDifferentDetails:
       return "both_error_different_details";
-    case net::TrialComparisonResult::kIgnoredMacUndesiredRevocationChecking:
-      return "ignored_mac_undesirable_rev_checking";
     case net::TrialComparisonResult::
         kIgnoredMultipleEVPoliciesAndOneMatchesRoot:
       return "ignored_multiple_ev_policies_one_matches_root";
@@ -211,8 +209,6 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
       return "ignored_configuration_changed";
     case net::TrialComparisonResult::kIgnoredSHA1SignaturePresent:
       return "ignored_sha1_signature_present";
-    case net::TrialComparisonResult::kIgnoredWindowsRevCheckingEnabled:
-      return "ignored_windows_rev_checking_enabled";
     case net::TrialComparisonResult::kIgnoredBothAuthorityInvalid:
       return "ignored_both_authority_invalid";
     case net::TrialComparisonResult::kIgnoredBothKnownRoot:
