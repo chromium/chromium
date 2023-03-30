@@ -65,7 +65,8 @@ absl::optional<KernelMatrix> GetKernelMatrix(const Dictionary& dict,
   absl::optional<Vector<Vector<float>>> km_input =
       dict.Get<IDLSequence<IDLSequence<IDLFloat>>>("kernelMatrix",
                                                    exception_state);
-  if (!km_input.has_value() || km_input->size() == 0) {
+  if (!km_input.has_value() || km_input->size() == 0 ||
+      (km_input->size() >= 2 && km_input->at(0).size() == 0)) {
     exception_state.ThrowTypeError(
         "Failed to construct convolve matrix filter. 'kernelMatrix' must be an "
         "array of arrays of numbers representing an n by m matrix.");
