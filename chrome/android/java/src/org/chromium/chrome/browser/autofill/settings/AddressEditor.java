@@ -71,6 +71,40 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
     private EditorModel mEditor;
 
     /**
+     * The list of possible address fields for editing is determined statically.
+     *
+     * @return the list of address fields this address editor supports.
+     */
+    private static Map<Integer, EditorFieldModel> getAddressFields() {
+        Map<Integer, EditorFieldModel> addressFields = new HashMap<>();
+
+        // Don't use INPUT_TYPE_HINT_REGION to avoid capitalizing all characters.
+        addressFields.put(AddressField.ADMIN_AREA, EditorFieldModel.createTextInput());
+
+        // City, dependent locality, and organization don't have any special formatting hints.
+        addressFields.put(AddressField.LOCALITY, EditorFieldModel.createTextInput());
+        addressFields.put(AddressField.DEPENDENT_LOCALITY, EditorFieldModel.createTextInput());
+        addressFields.put(AddressField.ORGANIZATION, EditorFieldModel.createTextInput());
+
+        // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
+        // the keyboard, if possible.
+        addressFields.put(AddressField.SORTING_CODE,
+                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+        addressFields.put(AddressField.POSTAL_CODE,
+                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+
+        // Street line field can contain \n to indicate line breaks.
+        addressFields.put(AddressField.STREET_ADDRESS,
+                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES));
+
+        // Android has special formatting rules for names.
+        addressFields.put(AddressField.RECIPIENT,
+                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
+
+        return addressFields;
+    }
+
+    /**
      * Builds an address editor.
      *
      * @param saveToDisk Whether to save changes to disk after editing.
@@ -242,31 +276,7 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         // There's a finite number of fields for address editing. Changing the country will re-order
         // and relabel the fields. The meaning of each field remains the same.
         if (mAddressFields.isEmpty()) {
-            // Not use INPUT_TYPE_HINT_REGION to avoid capitalizing all characters.
-            mAddressFields.put(AddressField.ADMIN_AREA, EditorFieldModel.createTextInput());
-
-            // City, dependent locality, and organization don't have any special formatting hints.
-            mAddressFields.put(AddressField.LOCALITY, EditorFieldModel.createTextInput());
-            mAddressFields.put(AddressField.DEPENDENT_LOCALITY, EditorFieldModel.createTextInput());
-            mAddressFields.put(AddressField.ORGANIZATION, EditorFieldModel.createTextInput());
-
-            // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
-            // the keyboard, if possible.
-            mAddressFields.put(AddressField.SORTING_CODE,
-                    EditorFieldModel.createTextInput(
-                            EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
-            mAddressFields.put(AddressField.POSTAL_CODE,
-                    EditorFieldModel.createTextInput(
-                            EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
-
-            // Street line field can contain \n to indicate line breaks.
-            mAddressFields.put(AddressField.STREET_ADDRESS,
-                    EditorFieldModel.createTextInput(
-                            EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES));
-
-            // Android has special formatting rules for names.
-            mAddressFields.put(AddressField.RECIPIENT,
-                    EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
+            mAddressFields.putAll(getAddressFields());
         }
 
         // Phone number is present for all countries.
