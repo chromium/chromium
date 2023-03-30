@@ -862,6 +862,16 @@ bool IsGeneratedImage(const CSSValueID id) {
   }
 }
 
+bool IsImageSet(const CSSValueID id) {
+  if (id == CSSValueID::kWebkitImageSet) {
+    return true;
+  }
+  if (id == CSSValueID::kImageSet) {
+    return RuntimeEnabledFeatures::CSSImageSetEnabled();
+  }
+  return false;
+}
+
 }  // namespace
 
 void Complete4Sides(CSSValue* side[4]) {
@@ -1575,6 +1585,26 @@ StringView ConsumeStringAsStringView(CSSParserTokenRange& range) {
   return range.ConsumeIncludingWhitespace().Value();
 }
 
+namespace {
+
+StringView ApplyFetchRestrictions(StringView url,
+                                  const CSSParserContext& context) {
+  // Invalidate the URL if only data URLs are allowed and the protocol is not
+  // data.
+  if (!url.IsNull() &&
+      context.ResourceFetchRestriction() ==
+          ResourceFetchRestriction::kOnlyDataUrls &&
+      !ProtocolIs(url.ToString(), "data")) {
+    // The StringView must be instantiated with an empty string otherwise the
+    // URL will incorrectly be identified as null. The resource should behave as
+    // if it failed to load.
+    return StringView("");
+  }
+  return url;
+}
+
+}  // namespace
+
 StringView ConsumeUrlAsStringView(CSSParserTokenRange& range,
                                   const CSSParserContext& context) {
   StringView url;
@@ -1594,29 +1624,7 @@ StringView ConsumeUrlAsStringView(CSSParserTokenRange& range,
     range.ConsumeWhitespace();
     url = next.Value();
   }
-
-  // Invalidate the URL if only data URLs are allowed and the protocol is not
-  // data.
-  if (!url.IsNull() &&
-      context.ResourceFetchRestriction() ==
-          ResourceFetchRestriction::kOnlyDataUrls &&
-      !ProtocolIs(url.ToString(), "data")) {
-    // The StringView must be instantiated with an empty string otherwise the
-    // URL will incorrectly be identified as null. The resource should behave as
-    // if it failed to load.
-    url = StringView("");
-  }
-
-  return url;
-}
-
-StringView ConsumeUrlOrStringAsStringView(CSSParserTokenRange& range,
-                                          const CSSParserContext& context) {
-  if (range.Peek().GetType() == CSSParserTokenType::kStringToken) {
-    return ConsumeStringAsStringView(range);
-  }
-
-  return ConsumeUrlAsStringView(range, context);
+  return ApplyFetchRestrictions(url, context);
 }
 
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
@@ -1625,7 +1633,7 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
   if (url.IsNull()) {
     return nullptr;
   }
-  AtomicString url_string(url.ToString());
+  AtomicString url_string = url.ToAtomicString();
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
       url_string, context.CompleteURL(url_string));
 }
@@ -3488,8 +3496,9 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
 }
 
 static CSSImageValue* CreateCSSImageValueWithReferrer(
-    const AtomicString& raw_value,
+    const StringView& uri,
     const CSSParserContext& context) {
+  AtomicString raw_value = uri.ToAtomicString();
   auto* image_value = MakeGarbageCollected<CSSImageValue>(
       raw_value, context.CompleteURL(raw_value), context.GetReferrer(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
@@ -3500,9 +3509,7 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
   return image_value;
 }
 
-static CSSImageSetTypeValue* ConsumeImageSetType(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context) {
+static CSSImageSetTypeValue* ConsumeImageSetType(CSSParserTokenRange& range) {
   if (!RuntimeEnabledFeatures::CSSImageSetEnabled() ||
       range.Peek().FunctionId() != CSSValueID::kType) {
     return nullptr;
@@ -3511,14 +3518,13 @@ static CSSImageSetTypeValue* ConsumeImageSetType(
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
 
-  auto type = ConsumeUrlOrStringAsStringView(args, context).ToString();
-  if (type.IsNull()) {
+  auto type = ConsumeStringAsStringView(args);
+  if (type.IsNull() || !args.AtEnd()) {
     return nullptr;
   }
 
   range = range_copy;
-
-  return MakeGarbageCollected<CSSImageSetTypeValue>(type);
+  return MakeGarbageCollected<CSSImageSetTypeValue>(type.ToString());
 }
 
 static CSSImageSetOptionValue* ConsumeImageSetOption(
@@ -3538,7 +3544,7 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
   }
 
   // Type could appear before or after resolution
-  CSSImageSetTypeValue* type = ConsumeImageSetType(range, context);
+  CSSImageSetTypeValue* type = ConsumeImageSetType(range);
 
   if (!RuntimeEnabledFeatures::CSSImageSetEnabled() &&
       range.Peek().GetType() != kDimensionToken &&
@@ -3549,7 +3555,7 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
   CSSPrimitiveValue* resolution = ConsumeResolution(range, context);
 
   if (!type) {
-    type = ConsumeImageSetType(range, context);
+    type = ConsumeImageSetType(range);
   }
 
   return MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution, type);
@@ -3603,20 +3609,21 @@ CSSValue* ConsumeImage(
     const ConsumeGeneratedImagePolicy generated_image_policy,
     const ConsumeStringUrlImagePolicy string_url_image_policy,
     const ConsumeImageSetImagePolicy image_set_image_policy) {
-  AtomicString uri =
-      ((string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow)
-           ? ConsumeUrlOrStringAsStringView(range, context)
-           : ConsumeUrlAsStringView(range, context))
-          .ToAtomicString();
+  StringView uri = ConsumeUrlAsStringView(range, context);
   if (!uri.IsNull()) {
     return CreateCSSImageValueWithReferrer(uri, context);
   }
+  if (string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow) {
+    StringView uri_string = ConsumeStringAsStringView(range);
+    if (!uri_string.IsNull()) {
+      uri_string = ApplyFetchRestrictions(uri_string, context);
+      return CreateCSSImageValueWithReferrer(uri_string, context);
+    }
+  }
   if (range.Peek().GetType() == kFunctionToken) {
     CSSValueID id = range.Peek().FunctionId();
-    if ((id == CSSValueID::kWebkitImageSet ||
-         (id == CSSValueID::kImageSet &&
-          RuntimeEnabledFeatures::CSSImageSetEnabled())) &&
-        image_set_image_policy == ConsumeImageSetImagePolicy::kAllow) {
+    if (image_set_image_policy == ConsumeImageSetImagePolicy::kAllow &&
+        IsImageSet(id)) {
       return ConsumeImageSet(range, context, generated_image_policy);
     }
     if (generated_image_policy == ConsumeGeneratedImagePolicy::kAllow &&
