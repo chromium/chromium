@@ -211,22 +211,7 @@ void NotificationGroupingController::
 
   parent_id = SetupParentNotification(parent_notification, parent_id);
 
-  grouped_notification_list_->AddGroupedNotification(notification_id,
-                                                     parent_id);
-
-  MessageView* parent_view =
-      notification_view_controller->GetMessageViewForNotificationId(parent_id);
-  if (parent_view) {
-    parent_view->AddGroupNotification(*notification);
-  } else {
-    message_center->ResetSinglePopup(parent_id);
-  }
-
-  metrics_utils::LogCountOfNotificationsInOneGroup(
-      grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
-          .size());
-  metrics_utils::LogGroupNotificationAddedType(
-      metrics_utils::GroupNotificationType::GROUP_CHILD);
+  AddNotificationToGroup(notification_id, parent_id);
 }
 
 const std::string& NotificationGroupingController::SetupParentNotification(
@@ -388,11 +373,7 @@ void NotificationGroupingController::OnNotificationAdded(
 
   // We only need to process notifications that are children of an
   // existing group. So do nothing otherwise.
-  if (!notification) {
-    return;
-  }
-
-  if (!notification->group_child()) {
+  if (!notification || !notification->group_child()) {
     return;
   }
 
@@ -413,40 +394,21 @@ void NotificationGroupingController::OnNotificationAdded(
   // notifications for this group.
   if (!grouped_notification_list_->ParentNotificationExists(parent_id)) {
     if (parent_view) {
+      // When there's a parent view that exists in the UI, we will perform the
+      // "convert from single notification to group notification" animation.
+      // Thus, the rest of the logic of adding a child notification to a group
+      // will be handled in
+      // `ConvertFromSingleToGroupNotificationAfterAnimation()`, which is called
+      // after the animation from the parent view is completed.
       parent_view->AnimateSingleToGroup(this, notification_id, parent_id);
       return;
     }
 
     parent_id = SetupParentNotification(
         MessageCenter::Get()->FindNotificationById(parent_id), parent_id);
-
-    // Retrieve the parent notification again (since now we are having a new
-    // `parent_id`).
-    parent_notification = MessageCenter::Get()->FindNotificationById(parent_id);
   }
 
-  // The parent notification should have the same priority as the last added
-  // child notification, so that we can display the group popup according to
-  // that notification.
-  parent_notification->set_priority(notification->priority());
-
-  grouped_notification_list_->AddGroupedNotification(notification_id,
-                                                     parent_id);
-
-  if (parent_view) {
-    parent_view->AddGroupNotification(*notification);
-    if (message_center->FindPopupNotificationById(parent_id)) {
-      message_center->ResetPopupTimer(parent_id);
-    }
-  } else {
-    message_center->ResetSinglePopup(parent_id);
-  }
-
-  metrics_utils::LogCountOfNotificationsInOneGroup(
-      grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
-          .size());
-  metrics_utils::LogGroupNotificationAddedType(
-      metrics_utils::GroupNotificationType::GROUP_CHILD);
+  AddNotificationToGroup(notification_id, parent_id);
 }
 
 void NotificationGroupingController::OnNotificationDisplayed(
@@ -490,6 +452,49 @@ void NotificationGroupingController::OnNotificationRemoved(
       message_center->RemoveNotification(id, by_user);
     }
   }
+}
+
+void NotificationGroupingController::AddNotificationToGroup(
+    const std::string& notification_id,
+    const std::string& parent_id) {
+  auto* message_center = MessageCenter::Get();
+  Notification* notification =
+      message_center->FindNotificationById(notification_id);
+  Notification* parent_notification =
+      MessageCenter::Get()->FindNotificationById(parent_id);
+
+  if (!notification || !parent_notification) {
+    return;
+  }
+
+  // The parent notification should have the same priority as the last added
+  // child notification, so that we can display the group popup according to
+  // that notification.
+  parent_notification->set_priority(notification->priority());
+
+  grouped_notification_list_->AddGroupedNotification(notification_id,
+                                                     parent_id);
+
+  auto* notification_view_controller = GetActiveNotificationViewController();
+  auto* parent_view =
+      notification_view_controller
+          ? notification_view_controller->GetMessageViewForNotificationId(
+                parent_id)
+          : nullptr;
+  if (parent_view) {
+    parent_view->AddGroupNotification(*notification);
+    if (message_center->FindPopupNotificationById(parent_id)) {
+      message_center->ResetPopupTimer(parent_id);
+    }
+  } else {
+    message_center->ResetSinglePopup(parent_id);
+  }
+
+  metrics_utils::LogCountOfNotificationsInOneGroup(
+      grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
+          .size());
+  metrics_utils::LogGroupNotificationAddedType(
+      metrics_utils::GroupNotificationType::GROUP_CHILD);
 }
 
 }  // namespace ash
