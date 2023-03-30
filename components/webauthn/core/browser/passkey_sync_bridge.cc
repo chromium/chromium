@@ -50,10 +50,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
   return entity_data;
 }
 
-std::string RandomSyncId() {
-  return base::RandBytesAsString(kSyncIdLength);
-}
-
 bool WebauthnCredentialSpecificsValid(
     const sync_pb::WebauthnCredentialSpecifics& specifics) {
   return specifics.sync_id().size() == kSyncIdLength &&
@@ -209,10 +205,10 @@ base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() {
 
 std::string PasskeySyncBridge::AddNewPasskeyForTesting(
     sync_pb::WebauthnCredentialSpecifics specifics) {
-  DCHECK(!specifics.has_sync_id());
-  std::string sync_id = RandomSyncId();
-  DCHECK(!base::Contains(data_, sync_id));
-  specifics.set_sync_id(sync_id);
+  CHECK(WebauthnCredentialSpecificsValid(specifics));
+
+  const std::string& sync_id = specifics.sync_id();
+  CHECK(!base::Contains(data_, sync_id));
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();

@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -109,6 +111,24 @@ void AdaptClientTagForFullUpdateData(ModelType model_type,
                                    data->specifics.autofill_offer()));
   } else {
     NOTREACHED();
+  }
+}
+
+void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
+  // Google Play Services may create entities where the client_tag_hash doesn't
+  // conform to the form expected by Chromium. These values are the hex-encoded,
+  // 16-byte random `sync_id` value, and will therefore always be 32 bytes long.
+  // Valid ClientTagHash values are Base64(SHA1(protobuf_prefix + client_tag))
+  // and therefore always 28 bytes.
+  const std::string& client_tag_hash = data->client_tag_hash.value();
+  if (client_tag_hash.size() == 32 &&
+      // base::HexEncode() returns upper case, `client_tag_hash` is lower case.
+      base::ToUpperASCII(client_tag_hash) ==
+          base::HexEncode(base::as_bytes(base::make_span(
+              data->specifics.webauthn_credential().sync_id())))) {
+    data->client_tag_hash = ClientTagHash::FromUnhashed(
+        ModelType::WEBAUTHN_CREDENTIAL,
+        data->specifics.webauthn_credential().sync_id());
   }
 }
 
@@ -583,6 +603,8 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   } else if (model_type == AUTOFILL_WALLET_DATA ||
              model_type == AUTOFILL_WALLET_OFFER) {
     AdaptClientTagForFullUpdateData(model_type, &data);
+  } else if (model_type == WEBAUTHN_CREDENTIAL) {
+    AdaptWebAuthnClientTagHash(&data);
   }
 
   response_data->entity = std::move(data);

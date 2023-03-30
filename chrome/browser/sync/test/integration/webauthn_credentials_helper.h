@@ -17,8 +17,8 @@ PasskeyModel& GetModel(int profile_idx);
 
 bool AwaitAllModelsMatch();
 
-// Returns a new WebauthnCredentialSpecifics entity with a random credential ID,
-// and fixed RP ID and user ID.
+// Returns a new WebauthnCredentialSpecifics entity with a random sync ID and
+// credential ID, and fixed RP ID and user ID.
 sync_pb::WebauthnCredentialSpecifics NewPasskey();
 
 }  // namespace webauthn_credentials_helper

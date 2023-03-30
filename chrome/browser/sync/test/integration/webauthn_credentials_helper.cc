@@ -50,6 +50,7 @@ bool AwaitAllModelsMatch() {
 
 sync_pb::WebauthnCredentialSpecifics NewPasskey() {
   sync_pb::WebauthnCredentialSpecifics specifics;
+  specifics.set_sync_id(base::RandBytesAsString(16));
   specifics.set_credential_id(base::RandBytesAsString(16));
   specifics.set_rp_id(kTestRpId);
   specifics.set_user_id(kTestUserId);

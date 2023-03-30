@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,6 +34,7 @@
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/test/fake_cryptographer.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "components/sync/test/mock_invalidation_tracker.h"
@@ -1893,6 +1895,30 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   // The client tag hash gets filled in by the worker.
   EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
+}
+
+TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+     WebAuthnCredentialWithLegacyClientTagHash) {
+  // Older Play Services clients set the `client_tag_hash` to be the
+  // hex-encoding of the 16-byte `sync_id`. Expect the worker to change this to
+  // the correct client tag hash value.
+  UpdateResponseData response_data;
+
+  const std::string sync_id = base::RandBytesAsString(16);
+  sync_pb::SyncEntity entity;
+  *entity.mutable_specifics()
+       ->mutable_webauthn_credential()
+       ->mutable_sync_id() = sync_id;
+  *entity.mutable_client_tag_hash() =
+      base::HexEncode(sync_id.data(), sync_id.size());
+
+  ASSERT_EQ(
+      ModelTypeWorker::SUCCESS,
+      ModelTypeWorker::PopulateUpdateResponseData(
+          FakeCryptographer(), WEBAUTHN_CREDENTIAL, entity, &response_data));
+
+  EXPECT_EQ(response_data.entity.client_tag_hash,
+            ClientTagHash::FromUnhashed(WEBAUTHN_CREDENTIAL, sync_id));
 }
 
 class GetLocalChangesRequestTest : public testing::Test {
