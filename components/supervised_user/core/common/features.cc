@@ -66,7 +66,7 @@ BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
 // Enables the new Kids Management Api.
 BASE_FEATURE(kEnableKidsManagementService,
              "EnableKidsManagementService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables synchronous sign-in checking in the First Run Experience.
 BASE_FEATURE(kSynchronousSignInChecking,
