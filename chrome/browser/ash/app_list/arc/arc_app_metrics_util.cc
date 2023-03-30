@@ -9,7 +9,8 @@
 
 namespace {
 
-constexpr char kManualInstallHistogramBase[] = "Arc.AppInstall.Manual.";
+constexpr char kManualInstallHistogramBase[] =
+    "Arc.AppInstall.Manual.InitialSession.";
 
 }  // namespace
 
@@ -21,6 +22,7 @@ ArcAppMetricsUtil::~ArcAppMetricsUtil() = default;
 
 void ArcAppMetricsUtil::recordAppInstallStartTime(const std::string& app_name) {
   install_start_time_map_[app_name] = base::TimeTicks::Now();
+  installs_requested_ = true;
 }
 
 void ArcAppMetricsUtil::maybeReportInstallTimeDelta(
@@ -35,9 +37,11 @@ void ArcAppMetricsUtil::maybeReportInstallTimeDelta(
 }
 
 void ArcAppMetricsUtil::reportIncompleteInstalls() {
-  base::UmaHistogramExactLinear(
-      base::StrCat({kManualInstallHistogramBase, "NumAppsIncomplete"}),
-      install_start_time_map_.size(), /*exclusive_max=*/51);
+  if (installs_requested_) {
+    base::UmaHistogramExactLinear(
+        base::StrCat({kManualInstallHistogramBase, "NumAppsIncomplete"}),
+        install_start_time_map_.size(), /*exclusive_max=*/51);
+  }
 }
 
 }  // namespace arc

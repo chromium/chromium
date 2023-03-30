@@ -18,6 +18,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
@@ -2383,7 +2384,13 @@ void ArcAppListPrefs::OnInstallationStarted(
     return;
 
   apps_installations_.insert(*package_name);
-  if (!(sync_service_ && sync_service_->IsPackageSyncing(*package_name)) &&
+
+  // Track install start time IFF app sync metrics are also being recorded
+  // and app is not a synced or default app. App sync metrics are only
+  // recorded if this is the initial session after opting in during the sync
+  // consent screen
+  if (prefs_->GetBoolean(ash::prefs::kRecordArcAppSyncMetrics) &&
+      !(sync_service_ && sync_service_->IsPackageSyncing(*package_name)) &&
       !IsDefaultPackage(*package_name)) {
     arc_app_metrics_util_->recordAppInstallStartTime(*package_name);
   }

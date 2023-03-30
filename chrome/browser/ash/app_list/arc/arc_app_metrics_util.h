@@ -28,6 +28,7 @@ class ArcAppMetricsUtil {
   void reportIncompleteInstalls();
 
  private:
+  bool installs_requested_ = false;
   std::map<std::string, base::TimeTicks> install_start_time_map_;
 };
 

@@ -473,23 +473,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Arc.AppInstall.Manual.NumAppsIncomplete" units="ms"
-    expires_after="2023-09-15">
+<histogram name="Arc.AppInstall.Manual.InitialSession.NumAppsIncomplete"
+    units="ms" expires_after="2023-09-15">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Record the number of manual installs that did not complete. This metric is
-    recorded when the ARC session is stopped.
+    Record the number of manual installs that did not complete after the very
+    first login on a device. This metric is recorded when the ARC session is
+    stopped IFF it is the first session after opting in during the sync consent
+    screen.
   </summary>
 </histogram>
 
-<histogram name="Arc.AppInstall.Manual.TimeDelta" units="ms"
+<histogram name="Arc.AppInstall.Manual.InitialSession.TimeDelta" units="ms"
     expires_after="2023-09-15">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Record the length of time it took to complete a manual install. This metric
-    is recorded when a manual install succeeds.
+    Record the length of time it took to complete a manual install after the
+    very first login on a device. This metric is recorded when a manual install
+    succeeds IFF it is the first session after opting in during the sync consent
+    screen.
   </summary>
 </histogram>
 

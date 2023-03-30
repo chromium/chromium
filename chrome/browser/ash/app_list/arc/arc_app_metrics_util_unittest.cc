@@ -14,9 +14,9 @@ namespace {
 constexpr char kPackageName[] = "com.example.app";
 constexpr char kPackageName2[] = "com.example.app2";
 constexpr char kManualInstallTimeDeltaHistogram[] =
-    "Arc.AppInstall.Manual.TimeDelta";
+    "Arc.AppInstall.Manual.InitialSession.TimeDelta";
 constexpr char kManualInstallIncompleteHistogram[] =
-    "Arc.AppInstall.Manual.NumAppsIncomplete";
+    "Arc.AppInstall.Manual.InitialSession.NumAppsIncomplete";
 
 }  // namespace
 
@@ -38,6 +38,11 @@ class ArcAppMetricsUtilTest : public testing::Test {
 TEST_F(ArcAppMetricsUtilTest, DoNotRecordTimeDeltaWhenNoStartExists) {
   arc_app_metrics_util_.maybeReportInstallTimeDelta(kPackageName);
   tester_.ExpectTotalCount(kManualInstallTimeDeltaHistogram, 0);
+}
+
+TEST_F(ArcAppMetricsUtilTest, DoNotRecordIncompleteWhenNoInstallsRequested) {
+  arc_app_metrics_util_.reportIncompleteInstalls();
+  tester_.ExpectTotalCount(kManualInstallIncompleteHistogram, 0);
 }
 
 TEST_F(ArcAppMetricsUtilTest, RecordCorrectTimeDeltaForOnePackage) {
