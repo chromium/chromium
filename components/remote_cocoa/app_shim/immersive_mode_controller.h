@@ -18,7 +18,6 @@
 @class ImmersiveModeMapper;
 @class ImmersiveModeTitlebarObserver;
 @class ImmersiveModeTitlebarViewController;
-@class ImmersiveModeWindowObserver;
 
 namespace gfx {
 class Rect;
@@ -68,8 +67,18 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Called when the NSTitlebarContainerView frame changes.
   virtual void OnTitlebarFrameDidChange(NSRect frame);
 
-  // Called when a child window is added to the overlay_window_.
+  // Called when a child window is added to the observed windows.
+  // `ObserveChildWindows` controls which windows are being observed.
   virtual void OnChildWindowAdded(NSWindow* child);
+
+  // Called when a child window is removed from the observed windows.
+  virtual void OnChildWindowRemoved(NSWindow* child);
+
+  // Start observing child windows of `window`.
+  void ObserveChildWindows(NSWindow* window);
+
+  // Stop observing child windows of `window`.
+  void StopObservingChildWindows(NSWindow* window);
 
   NSWindow* browser_window() { return browser_window_; }
   NSWindow* overlay_window() { return overlay_window_; }
@@ -90,9 +99,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
  private:
   // Pin or unpin the titlebar.
   void SetTitlebarPinned(bool pinned);
-
-  // Start observing child windows of overlay_widget_.
-  void ObserveOverlayChildWindows();
 
   // Reparent children of `source` to `target`.
   void ReparentChildWindows(NSWindow* source, NSWindow* target);
@@ -128,8 +134,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
       thin_titlebar_view_controller_;
 
   base::scoped_nsobject<ImmersiveModeMapper> immersive_mode_mapper_;
-  base::scoped_nsobject<ImmersiveModeWindowObserver>
-      immersive_mode_window_observer_;
   base::scoped_nsobject<ImmersiveModeTitlebarObserver>
       immersive_mode_titlebar_observer_;
 
@@ -145,6 +149,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Keeps the view controllers hidden until the fullscreen transition is
   // complete.
   bool fullscreen_transition_complete_ = false;
+
+  // Keeps track of which windows have received titlebar and reveal locks.
+  std::set<NSWindow*> window_lock_received_;
 
   base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
 };

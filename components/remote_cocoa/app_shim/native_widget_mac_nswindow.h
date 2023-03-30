@@ -87,6 +87,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);
+
+// Called whenever a child window is removed to the receiver.
+@property(nonatomic, copy) void (^childWindowRemovedHandler)(NSWindow* child);
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_MAC_NSWINDOW_H_

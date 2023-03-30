@@ -41,6 +41,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void TitlebarUnlock() override;
   void OnTitlebarFrameDidChange(NSRect frame) override;
   void OnChildWindowAdded(NSWindow* child) override;
+  void OnChildWindowRemoved(NSWindow* child) override;
   bool IsTabbed() override;
 
  private:

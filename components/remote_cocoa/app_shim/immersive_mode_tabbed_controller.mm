@@ -35,8 +35,8 @@ ImmersiveModeTabbedController::ImmersiveModeTabbedController(
 }
 
 ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
-  NSWindow* browser_window = ImmersiveModeController::browser_window();
-  browser_window.toolbar = nil;
+  StopObservingChildWindows(tab_window_);
+  browser_window().toolbar = nil;
   [tab_content_view_ retain];
   [tab_content_view_ removeFromSuperview];
   tab_window_.contentView = tab_content_view_;
@@ -76,18 +76,24 @@ void ImmersiveModeTabbedController::Enable() {
   // The `overlay_window_` is handled the same way in ImmersiveModeController.
   // See the comment there for more details.
   tab_window_.ignoresMouseEvents = YES;
+
+  ObserveChildWindows(tab_window_);
 }
 
 void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
   // Keep the titlebar hidden until the fullscreen transition is complete.
-  ImmersiveModeController::FullscreenTransitionCompleted();
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
   toolbar.visible = NO;
-  ImmersiveModeController::browser_window().toolbar = toolbar;
+  browser_window().toolbar = toolbar;
 
   // `UpdateToolbarVisibility()` will make the toolbar visible as necessary.
-  UpdateToolbarVisibility(ImmersiveModeController::last_used_style());
+  UpdateToolbarVisibility(last_used_style());
+
+  // Call the base implementation after adding the toolbar. Reparenting of child
+  // widgets occurs in base, which may cause a `RevealLock()`. If the toolbar is
+  // not set `RevealLock()` will have no control over revealing the titlebar.
+  ImmersiveModeController::FullscreenTransitionCompleted();
 }
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(
@@ -115,11 +121,10 @@ void ImmersiveModeTabbedController::UpdateToolbarVisibility(
 }
 
 void ImmersiveModeTabbedController::AddController() {
-  NSWindow* browser_window = ImmersiveModeController::browser_window();
-  if (![browser_window.titlebarAccessoryViewControllers
+  NSWindow* window = browser_window();
+  if (![window.titlebarAccessoryViewControllers
           containsObject:tab_titlebar_view_controller_]) {
-    [browser_window
-        addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
+    [window addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
   }
 }
 
@@ -147,9 +152,8 @@ void ImmersiveModeTabbedController::RevealLock() {
 void ImmersiveModeTabbedController::RevealUnlock() {
   // The reveal lock count will be updated in
   // ImmersiveModeController::RevealUnlock(), count 1 or less here as unlocked.
-  if (ImmersiveModeController::reveal_lock_count() < 2 &&
-      ImmersiveModeController::last_used_style() ==
-          mojom::ToolbarVisibilityStyle::kAutohide) {
+  if (reveal_lock_count() < 2 &&
+      last_used_style() == mojom::ToolbarVisibilityStyle::kAutohide) {
     TitlebarHide();
   }
 
@@ -158,19 +162,16 @@ void ImmersiveModeTabbedController::RevealUnlock() {
 }
 
 void ImmersiveModeTabbedController::TitlebarReveal() {
-  NSWindow* browser_window = ImmersiveModeController::browser_window();
-  browser_window.toolbar.visible = YES;
+  browser_window().toolbar.visible = YES;
 }
 
 void ImmersiveModeTabbedController::TitlebarHide() {
-  NSWindow* browser_window = ImmersiveModeController::browser_window();
-  browser_window.toolbar.visible = NO;
+  browser_window().toolbar.visible = NO;
 }
 
-// TODO(https://crbug.com/1414521) TitlebarLock and TitlebarUnlock mean
-// something entirely different in ImmersiveModeController. Override them here
-// and do nothing for now. In order to handle non-focusing child widgets
-// TitlebarLock and TitlebarUnlock will need to be handled.
+// The titlebar hosts the tab strip. This causes the titlebar to be
+// revealed/hidden during RevealLock()/RevealUnlock(). Override TitlebarLock()
+// and TitlebarUnlock() to do nothing.
 void ImmersiveModeTabbedController::TitlebarLock() {}
 
 void ImmersiveModeTabbedController::TitlebarUnlock() {}
@@ -193,6 +194,15 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
     return;
   }
   ImmersiveModeController::OnChildWindowAdded(child);
+}
+
+void ImmersiveModeTabbedController::OnChildWindowRemoved(NSWindow* child) {
+  // The `tab_window_` is a child of the `overlay_window_`. Ignore the
+  // `tab_window_`.
+  if (child == tab_window_) {
+    return;
+  }
+  ImmersiveModeController::OnChildWindowRemoved(child);
 }
 
 bool ImmersiveModeTabbedController::IsTabbed() {

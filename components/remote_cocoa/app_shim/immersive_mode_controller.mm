@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_block.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
@@ -197,52 +198,6 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 
 @end
 
-@interface ImmersiveModeWindowObserver : NSObject {
-  base::WeakPtr<remote_cocoa::ImmersiveModeController> _controller;
-}
-- (instancetype)initWithController:
-    (base::WeakPtr<remote_cocoa::ImmersiveModeController>)controller;
-@end
-
-@implementation ImmersiveModeWindowObserver
-
-- (instancetype)initWithController:
-    (base::WeakPtr<remote_cocoa::ImmersiveModeController>)controller {
-  self = [super init];
-  if (self) {
-    _controller = std::move(controller);
-  }
-  return self;
-}
-
-- (void)observeValueForKeyPath:(NSString*)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary<NSKeyValueChangeKey, id>*)change
-                       context:(void*)context {
-  if (![keyPath isEqualToString:@"visible"]) {
-    return;
-  }
-
-  BOOL visible = [change[NSKeyValueChangeNewKey] boolValue];
-  NSWindow* window = base::mac::ObjCCastStrict<NSWindow>(object);
-  if (visible) {
-    if (_controller) {
-      _controller->TitlebarLock();
-    }
-    return;
-  }
-
-  // Assume not-visible is a terminal state for an overlay child window. Also
-  // assume child windows will become not-visible before self is destroyed.
-  // These assumptions makes adding and removing the visible observer trival.
-  [window removeObserver:self forKeyPath:@"visible"];
-  if (_controller) {
-    _controller->TitlebarUnlock();
-  }
-}
-
-@end
-
 namespace remote_cocoa {
 
 bool IsNSToolbarFullScreenWindow(NSWindow* window) {
@@ -258,9 +213,6 @@ ImmersiveModeController::ImmersiveModeController(NSWindow* browser_window,
     : browser_window_(browser_window),
       overlay_window_(overlay_window),
       weak_ptr_factory_(this) {
-  immersive_mode_window_observer_.reset([[ImmersiveModeWindowObserver alloc]
-      initWithController:weak_ptr_factory_.GetWeakPtr()]);
-
   // A style of NSTitlebarSeparatorStyleAutomatic (default) will show a black
   // line separator when removing the NSWindowStyleMaskFullSizeContentView style
   // bit. We do not want a separator. Pre-macOS 11 there is no titlebar
@@ -329,6 +281,8 @@ ImmersiveModeController::~ImmersiveModeController() {
   // Remove the titlebar observer before moving the view.
   immersive_mode_titlebar_observer_.reset();
 
+  StopObservingChildWindows(overlay_window_);
+
   // Rollback the view shuffling from enablement.
   [thin_titlebar_view_controller_ removeFromParentViewController];
   [overlay_content_view_ removeFromSuperview];
@@ -352,10 +306,9 @@ void ImmersiveModeController::Enable() {
   [browser_window_ addTitlebarAccessoryViewController:
                        immersive_mode_titlebar_view_controller_];
 
-  // Move sub-widgets from the browser widget to the overlay widget so that
-  // they are rendered above the toolbar.
-  ObserveOverlayChildWindows();
-  ReparentChildWindows(browser_window_, overlay_window_);
+  // Watch for child windows. When they are added the overlay view will be
+  // revealed as appropriate.
+  ObserveChildWindows(overlay_window_);
 
   thin_titlebar_view_controller_.get().hidden = YES;
   [browser_window_
@@ -369,6 +322,11 @@ void ImmersiveModeController::Enable() {
 void ImmersiveModeController::FullscreenTransitionCompleted() {
   fullscreen_transition_complete_ = true;
   UpdateToolbarVisibility(last_used_style_);
+
+  // Move sub-widgets from the browser widget to the overlay widget so that
+  // they are rendered above the toolbar. Do this after the fullscreen
+  // transition is complete.
+  ReparentChildWindows(browser_window_, overlay_window_);
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
@@ -469,25 +427,44 @@ void ImmersiveModeController::SetTitlebarPinned(bool pinned) {
       addTitlebarAccessoryViewController:clear_titlebar_view_controller_];
 }
 
-void ImmersiveModeController::ObserveOverlayChildWindows() {
-  // Watch the overlay Widget for new child Widgets.
-  NativeWidgetMacNSWindow* overlay_window =
-      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(overlay_window_);
-  overlay_window.childWindowAddedHandler = ^(NSWindow* child) {
+void ImmersiveModeController::ObserveChildWindows(NSWindow* window) {
+  // Watch the Widget for addition and removal of child Widgets.
+  NativeWidgetMacNSWindow* widget_window =
+      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
+  widget_window.childWindowAddedHandler = ^(NSWindow* child) {
     OnChildWindowAdded(child);
+  };
+  widget_window.childWindowRemovedHandler = ^(NSWindow* child) {
+    OnChildWindowRemoved(child);
   };
 }
 
+void ImmersiveModeController::StopObservingChildWindows(NSWindow* window) {
+  NativeWidgetMacNSWindow* widget_window =
+      base::mac::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
+  widget_window.childWindowAddedHandler = nil;
+  widget_window.childWindowRemovedHandler = nil;
+}
+
 void ImmersiveModeController::OnChildWindowAdded(NSWindow* child) {
-  // Ignore non-visible children.
-  if (!child.visible) {
-    return;
+  // When windows are re-ordered they get removed and re-added triggering
+  // OnChildWindowRemoved and OnChildWindowAdded calls.
+  // Prevent any given window from obtaining more than one lock.
+  if (!base::Contains(window_lock_received_, child)) {
+    window_lock_received_.insert(child);
+    RevealLock();
+    TitlebarLock();
   }
-  [child addObserver:immersive_mode_window_observer_
-          forKeyPath:@"visible"
-             options:NSKeyValueObservingOptionInitial |
-                     NSKeyValueObservingOptionNew
-             context:nullptr];
+
+  // TODO(https://crbug.com/1350595): Handle a detached find bar.
+}
+
+void ImmersiveModeController::OnChildWindowRemoved(NSWindow* child) {
+  if (base::Contains(window_lock_received_, child)) {
+    window_lock_received_.erase(child);
+    RevealUnlock();
+    TitlebarUnlock();
+  }
 }
 
 void ImmersiveModeController::ReparentChildWindows(NSWindow* source,

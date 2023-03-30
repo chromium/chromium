@@ -401,4 +401,31 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
   EXPECT_FALSE(browser().toolbar.visible);
 }
 
+// Test ImmersiveModeTabbedController construction and destruction.
+TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
+  // Controller under test.
+  auto immersive_mode_controller =
+      std::make_unique<ImmersiveModeTabbedController>(
+          browser(), overlay(), tab_overlay(), base::DoNothing());
+  immersive_mode_controller->Enable();
+  immersive_mode_controller->FullscreenTransitionCompleted();
+
+  // Autohide top chrome.
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAutohide);
+
+  // Create a popup.
+  CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
+
+  // Add the popup as a child of tab_overlay.
+  [tab_overlay() addChildWindow:popup ordered:NSWindowAbove];
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 1);
+
+  // Make sure that closing the popup results in the reveal lock count
+  // decrementing.
+  [popup close];
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 0);
+}
+
 }  // namespace remote_cocoa

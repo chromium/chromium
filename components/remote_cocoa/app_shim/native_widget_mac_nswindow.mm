@@ -173,6 +173,7 @@ void OrderChildWindow(NSWindow* child_window,
 @synthesize isTooltip = _isTooltip;
 @synthesize isHeadless = _isHeadless;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
+@synthesize childWindowRemovedHandler = _childWindowRemovedHandler;
 
 - (instancetype)initWithContentRect:(NSRect)contentRect
                           styleMask:(NSUInteger)windowStyle
@@ -212,6 +213,7 @@ void OrderChildWindow(NSWindow* child_window,
   _willUpdateRestorableState = YES;
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
   [_childWindowAddedHandler dealloc];
+  [_childWindowRemovedHandler dealloc];
   [super dealloc];
 }
 
@@ -223,6 +225,13 @@ void OrderChildWindow(NSWindow* child_window,
   childWin.level = level;
   if (self.childWindowAddedHandler) {
     self.childWindowAddedHandler(childWin);
+  }
+}
+
+- (void)removeChildWindow:(NSWindow*)childWin {
+  [super removeChildWindow:childWin];
+  if (self.childWindowRemovedHandler) {
+    self.childWindowRemovedHandler(childWin);
   }
 }
 
