@@ -1027,18 +1027,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.BulkCheck.CompromisedCredentialsCountWithAutoChangeAfterCheckAndroid"
-    units="credentials" expires_after="2023-05-07">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Count of compromised credentials that have a 'Change automatically' button,
-    recorded whenever a bulk leak check finished successfully. Should be
-    compared to 'CompromisedCredentialsCountAfterCheckAndroid'.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.BulkCheck.Error"
     enum="PasswordLeakDetectionError" expires_after="2023-09-10">
   <owner>vasilii@chromium.org</owner>
