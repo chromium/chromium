@@ -150,6 +150,18 @@ struct ImportScenarioTestCase {
   bool allow_only_silent_updates = false;
 };
 
+bool IsNewProfile(const ImportScenarioTestCase& test_scenario) {
+  return test_scenario.expected_import_type ==
+         AutofillProfileImportType::kNewProfile;
+}
+
+bool IsConfirmableMerge(const ImportScenarioTestCase& test_scenario) {
+  return test_scenario.expected_import_type ==
+             AutofillProfileImportType::kConfirmableMerge ||
+         test_scenario.expected_import_type ==
+             AutofillProfileImportType::kConfirmableMergeAndSilentUpdate;
+}
+
 class AddressProfileSaveManagerTest
     : public testing::Test,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -176,15 +188,27 @@ class AddressProfileSaveManagerTest
   // Tests the |test_scenario|.
   void TestImportScenario(ImportScenarioTestCase& test_scenario);
 
-  // Verifies the logged ukm data.
-  void VerifyUkmForAddressImport(const ukm::TestUkmRecorder* ukm_recorder,
-                                 ImportScenarioTestCase& test_scenario);
-
   const ProfileImportMetadata& import_metadata() const {
     return import_metadata_;
   }
 
+  GURL form_url() const {
+    return GURL("https://www.importmyform.com/index.html");
+  }
+
  protected:
+  void VerifyUMAMetricsCollection(
+      const ImportScenarioTestCase& test_scenario,
+      const base::HistogramTester& histogram_tester) const;
+
+  void VerifyStrikeCounts(const ImportScenarioTestCase& test_scenario,
+                          const ProfileImportProcess& last_import,
+                          int initial_strikes) const;
+
+  void VerifyUkmForAddressImport(
+      const ukm::TestUkmRecorder* ukm_recorder,
+      const ImportScenarioTestCase& test_scenario) const;
+
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   MockPersonalDataManager mock_personal_data_manager_;
@@ -200,8 +224,6 @@ void ExpectEmptyHistograms(const base::HistogramTester& histogram_tester,
 
 void AddressProfileSaveManagerTest::TestImportScenario(
     ImportScenarioTestCase& test_scenario) {
-  static const GURL url("https://www.importmyform.com/index.html");
-
   // Assert that there is not a single profile stored in the personal data
   // manager.
   ASSERT_TRUE(mock_personal_data_manager_.GetProfiles().empty());
@@ -223,8 +245,9 @@ void AddressProfileSaveManagerTest::TestImportScenario(
                 ->GetMaxStrikesLimit()
           : 1;
   mock_personal_data_manager_.GetProfileSaveStrikeDatabase()->AddStrikes(
-      initial_strikes, url.host());
-  ASSERT_EQ(mock_personal_data_manager_.IsNewProfileImportBlockedForDomain(url),
+      initial_strikes, form_url().host());
+  ASSERT_EQ(mock_personal_data_manager_.IsNewProfileImportBlockedForDomain(
+                form_url()),
             test_scenario.new_profiles_suppresssed_for_domain);
 
   // Add one strike for each existing profile and the maximum number of strikes
@@ -256,7 +279,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // Initiate the profile import.
   save_manager.ImportProfileFromForm(
-      test_scenario.observed_profile, "en-US", url,
+      test_scenario.observed_profile, "en-US", form_url(),
       /*allow_only_silent_updates=*/test_scenario.allow_only_silent_updates,
       import_metadata());
 
@@ -280,51 +303,51 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   EXPECT_EQ(test_scenario.merge_candidate, last_import->merge_candidate());
   EXPECT_EQ(test_scenario.import_candidate, last_import->import_candidate());
 
-  // Test the collection of metrics.
+  VerifyUMAMetricsCollection(test_scenario, histogram_tester);
+  VerifyStrikeCounts(test_scenario, *last_import, initial_strikes);
+  VerifyUkmForAddressImport(autofill_client_.GetTestUkmRecorder(),
+                            test_scenario);
+}
+
+void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
+    const ImportScenarioTestCase& test_scenario,
+    const base::HistogramTester& histogram_tester) const {
   histogram_tester.ExpectUniqueSample(
       test_scenario.allow_only_silent_updates
           ? kSilentUpdatesProfileImportTypeHistogram
           : kProfileImportTypeHistogram,
       test_scenario.expected_import_type, 1);
 
-  const bool is_new_profile = test_scenario.expected_import_type ==
-                              AutofillProfileImportType::kNewProfile;
-  const bool is_confirmable_merge =
-      test_scenario.expected_import_type ==
-          AutofillProfileImportType::kConfirmableMerge ||
-      test_scenario.expected_import_type ==
-          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate;
-
   // If the import was neither a new profile or a confirmable merge, test that
   // the corresponding histograms are unchanged.
-  if (!is_new_profile && !is_confirmable_merge) {
+  if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario)) {
     ExpectEmptyHistograms(
         histogram_tester,
         {kNewProfileEditsHistogram, kNewProfileDecisionHistogram,
          kProfileUpdateEditsHistogram, kProfileUpdateDecisionHistogram});
   } else {
-    DCHECK(!is_new_profile || !is_confirmable_merge);
+    DCHECK(!IsNewProfile(test_scenario) || !IsConfirmableMerge(test_scenario));
 
     const std::string affected_decision_histo =
-        is_new_profile ? kNewProfileDecisionHistogram
-                       : kProfileUpdateDecisionHistogram;
+        IsNewProfile(test_scenario) ? kNewProfileDecisionHistogram
+                                    : kProfileUpdateDecisionHistogram;
     const std::string unaffected_decision_histo =
-        !is_new_profile ? kNewProfileDecisionHistogram
-                        : kProfileUpdateDecisionHistogram;
+        !IsNewProfile(test_scenario) ? kNewProfileDecisionHistogram
+                                     : kProfileUpdateDecisionHistogram;
 
-    const std::string affected_edits_histo = is_new_profile
+    const std::string affected_edits_histo = IsNewProfile(test_scenario)
                                                  ? kNewProfileEditsHistogram
                                                  : kProfileUpdateEditsHistogram;
     const std::string unaffected_edits_histo =
-        !is_new_profile ? kNewProfileEditsHistogram
-                        : kProfileUpdateEditsHistogram;
+        !IsNewProfile(test_scenario) ? kNewProfileEditsHistogram
+                                     : kProfileUpdateEditsHistogram;
 
     const std::string affected_number_of_edits_histo =
-        is_new_profile ? kNewProfileNumberOfEditsHistogram
-                       : kProfileUpdateNumberOfEditsHistogram;
+        IsNewProfile(test_scenario) ? kNewProfileNumberOfEditsHistogram
+                                    : kProfileUpdateNumberOfEditsHistogram;
     const std::string unaffected_number_of_edits_histo =
-        !is_new_profile ? kNewProfileNumberOfEditsHistogram
-                        : kProfileUpdateNumberOfEditsHistogram;
+        !IsNewProfile(test_scenario) ? kNewProfileNumberOfEditsHistogram
+                                     : kProfileUpdateNumberOfEditsHistogram;
 
     histogram_tester.ExpectTotalCount(unaffected_decision_histo, 0);
     histogram_tester.ExpectTotalCount(unaffected_edits_histo, 0);
@@ -346,7 +369,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
       histogram_tester.ExpectTotalCount(unaffected_number_of_edits_histo, 0);
     }
 
-    if (is_confirmable_merge &&
+    if (IsConfirmableMerge(test_scenario) &&
         (test_scenario.user_decision == UserDecision::kAccepted ||
          test_scenario.user_decision == UserDecision::kDeclined)) {
       std::string changed_histogram_suffix;
@@ -377,33 +400,38 @@ void AddressProfileSaveManagerTest::TestImportScenario(
           1);
     }
   }
+}
 
-  // Check that the strike count was incremented if the import of a new profile
-  // was declined.
-  if (is_new_profile && last_import->UserDeclined()) {
+void AddressProfileSaveManagerTest::VerifyStrikeCounts(
+    const ImportScenarioTestCase& test_scenario,
+    const ProfileImportProcess& last_import,
+    int initial_strikes) const {
+  // Check that the strike count was incremented if the import of a new
+  // profile was declined.
+  if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
     EXPECT_EQ(2, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
-                     ->GetStrikes(url.host()));
-  } else if (is_new_profile && last_import->UserAccepted()) {
+                     ->GetStrikes(form_url().host()));
+  } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
-                     ->GetStrikes(url.host()));
+                     ->GetStrikes(form_url().host()));
   } else {
     // In all other cases, the number of strikes should be unaltered.
     EXPECT_EQ(
         initial_strikes,
         mock_personal_data_manager_.GetProfileSaveStrikeDatabase()->GetStrikes(
-            url.host()));
+            form_url().host()));
   }
 
   // Check that the strike count for profile updates is reset if a profile was
   // updated.
-  if (is_confirmable_merge &&
+  if (IsConfirmableMerge(test_scenario) &&
       (test_scenario.user_decision == UserDecision::kAccepted ||
        test_scenario.user_decision == UserDecision::kEditAccepted)) {
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
                      ->GetStrikes(test_scenario.merge_candidate->guid()));
-  } else if (is_confirmable_merge &&
+  } else if (IsConfirmableMerge(test_scenario) &&
              (test_scenario.user_decision == UserDecision::kDeclined ||
               test_scenario.user_decision == UserDecision::kMessageDeclined)) {
     // Or that it is incremented if the update was declined.
@@ -414,14 +442,11 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     EXPECT_EQ(1, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
                      ->GetStrikes(test_scenario.merge_candidate->guid()));
   }
-
-  VerifyUkmForAddressImport(autofill_client_.GetTestUkmRecorder(),
-                            test_scenario);
 }
 
 void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
     const ukm::TestUkmRecorder* ukm_recorder,
-    ImportScenarioTestCase& test_scenario) {
+    const ImportScenarioTestCase& test_scenario) const {
   ASSERT_TRUE(test_scenario.expected_import_type !=
               AutofillProfileImportType::kImportTypeUnspecified);
 
