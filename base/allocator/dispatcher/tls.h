@@ -15,16 +15,15 @@
 #endif
 
 #if USE_LOCAL_TLS_EMULATION()
-#include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/base_export.h"
-#include "base/check.h"
-#include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
-
 #include <algorithm>
 #include <atomic>
 #include <memory>
 #include <mutex>
+
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/base_export.h"
+#include "base/check.h"
+#include "base/compiler_specific.h"
 
 #include <pthread.h>
 
@@ -205,7 +204,10 @@ struct ThreadLocalStorage {
 
     if (UNLIKELY(slot == nullptr)) {
       slot = FindAndAllocateFreeSlot(root_.load(std::memory_order_relaxed));
-      CHECK(tls_system.SetThreadSpecificData(slot));
+
+      // We might be called in the course of handling a memory allocation. We do
+      // not use CHECK since they might allocate and cause a recursion.
+      RAW_CHECK(tls_system.SetThreadSpecificData(slot));
 
       // Reset the content to wipe out any previous data.
       Reset(slot->item);
@@ -305,7 +307,9 @@ struct ThreadLocalStorage {
     // SingleSlot and reset the is_used flag.
     auto* const slot = static_cast<SingleSlot*>(data);
 
-    DCHECK(slot && slot->is_used.test_and_set());
+    // We might be called in the course of handling a memory allocation. We do
+    // not use CHECK since they might allocate and cause a recursion.
+    RAW_CHECK(slot && slot->is_used.test_and_set());
 
     slot->is_used.clear(std::memory_order_relaxed);
   }
@@ -325,7 +329,9 @@ struct ThreadLocalStorage {
     void* const uninitialized_memory =
         dereference(allocator_).AllocateMemory(sizeof(Chunk));
 
-    CHECK(uninitialized_memory);
+    // We might be called in the course of handling a memory allocation. We do
+    // not use CHECK since they might allocate and cause a recursion.
+    RAW_CHECK(uninitialized_memory != nullptr);
 
     return new (uninitialized_memory) Chunk{};
   }
@@ -333,6 +339,8 @@ struct ThreadLocalStorage {
   void FreeAndDeallocateChunkForTesting(Chunk* chunk_to_erase) {
     chunk_to_erase->~Chunk();
 
+    // FreeAndDeallocateChunkForTesting must be called outside of the allocation
+    // path. Therefore, it is secure to verify with CHECK.
     CHECK(dereference(allocator_)
               .FreeMemoryForTesting(chunk_to_erase, sizeof(Chunk)));
   }

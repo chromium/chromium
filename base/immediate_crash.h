@@ -24,6 +24,8 @@
 //   __builtin_unreachable() is used to provide that hint here. clang also uses
 //   this as a heuristic to pack the instructions in the function epilogue to
 //   improve code density.
+// - base::ImmediateCrash() is used in allocation hooks. To prevent recursions,
+//   TRAP_SEQUENCE_() must not allocate.
 //
 // Additional properties that are nice to have:
 // - TRAP_SEQUENCE_() should be as compact as possible.
