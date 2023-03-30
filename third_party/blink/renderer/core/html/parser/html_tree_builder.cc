@@ -131,7 +131,7 @@ static bool IsTableBodyContextTag(HTMLTag tag) {
 class HTMLTreeBuilder::CharacterTokenBuffer {
  public:
   explicit CharacterTokenBuffer(AtomicHTMLToken* token)
-      : characters_(token->Characters().Impl()),
+      : characters_(token->Characters()),
         current_(0),
         end_(token->Characters().length()) {
     DCHECK(!IsEmpty());
@@ -146,8 +146,9 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
 
   void SkipAtMostOneLeadingNewline() {
     DCHECK(!IsEmpty());
-    if ((*characters_)[current_] == '\n')
+    if (characters_[current_] == '\n') {
       ++current_;
+    }
   }
 
   void SkipLeadingWhitespace() { SkipLeading<IsHTMLSpace<UChar>>(); }
@@ -164,9 +165,9 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
 
     // First, check the first character to identify whether the string looks
     // common (i.e. "\n<space>*").
-    const UChar first = (*characters_)[current_];
+    const UChar first = characters_[current_];
     if (!IsHTMLSpace(first)) {
-      return {StringView(characters_.get(), start, 0),
+      return {StringView(characters_, start, 0),
               WhitespaceMode::kNotAllWhitespace};
     }
     if (first != '\n') {
@@ -176,7 +177,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     // Then, check the rest.
     ++current_;
     for (; current_ != end_; ++current_) {
-      const UChar ch = (*characters_)[current_];
+      const UChar ch = characters_[current_];
       if (LIKELY(ch == ' ')) {
         continue;
       } else if (IsHTMLSpecialWhitespace(ch)) {
@@ -186,8 +187,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
       }
     }
 
-    return {StringView(characters_.get(), start, current_ - start),
-            whitespace_mode};
+    return {StringView(characters_, start, current_ - start), whitespace_mode};
   }
 
   void SkipLeadingNonWhitespace() { SkipLeading<IsNotHTMLSpace<UChar>>(); }
@@ -198,11 +198,11 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     DCHECK(!IsEmpty());
     unsigned start = current_;
     current_ = end_;
-    return StringView(characters_.get(), start, end_ - start);
+    return StringView(characters_, start, end_ - start);
   }
 
   void GiveRemainingTo(StringBuilder& recipient) {
-    WTF::VisitCharacters(*characters_, [&](const auto* chars, unsigned length) {
+    WTF::VisitCharacters(characters_, [&](const auto* chars, unsigned length) {
       recipient.Append(chars + current_, end_ - current_);
     });
     current_ = end_;
@@ -221,7 +221,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     WhitespaceMode whitespace_mode = WhitespaceMode::kNewlineThenWhitespace;
     unsigned length = 0;
     for (unsigned i = start; i < end_; ++i) {
-      const UChar ch = (*characters_)[i];
+      const UChar ch = characters_[i];
       if (length == 0) {
         if (ch == '\n') {
           ++length;
@@ -245,7 +245,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
       return {String(), WhitespaceMode::kNotAllWhitespace};
     }
     if (length == start - end_) {  // It's all whitespace.
-      return {String(characters_->Substring(start, start - end_)),
+      return {String(characters_.Substring(start, start - end_)),
               whitespace_mode};
     }
 
@@ -253,7 +253,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     StringBuffer<LChar> result(length);
     unsigned j = 0;
     for (unsigned i = start; i < end_; ++i) {
-      UChar c = (*characters_)[i];
+      UChar c = characters_[i];
       if (c == ' ' || IsHTMLSpecialWhitespace(c)) {
         result[j++] = static_cast<LChar>(c);
       }
@@ -266,13 +266,13 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
   template <bool characterPredicate(UChar)>
   void SkipLeading() {
     DCHECK(!IsEmpty());
-    while (characterPredicate((*characters_)[current_])) {
+    while (characterPredicate(characters_[current_])) {
       if (++current_ == end_)
         return;
     }
   }
 
-  scoped_refptr<StringImpl> characters_;
+  String characters_;
   unsigned current_;
   unsigned end_;
 };
