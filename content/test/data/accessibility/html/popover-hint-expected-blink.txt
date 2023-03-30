@@ -23,7 +23,7 @@ rootWebArea
 ++++++++++++++++staticText ignored invisible name='3'
 ++++++++++++++layoutTableCell ignored invisible
 ++++++++++++++++staticText ignored invisible name='4'
-++++++button description='Test popover with rich content like a datatable. 1 2 3 4' descriptionFrom=popoverAttribute
+++++++button
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored invisible name='<newline>  Test popover with a textinput!<newline>  '
 ++++++++genericContainer ignored invisible
@@ -31,7 +31,7 @@ rootWebArea
 ++++++++++++textField ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++staticText ignored invisible name='test'
-++++++button description='Test popover with a textinput! test' descriptionFrom=popoverAttribute
+++++++button
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored invisible name='<newline>  Test popover with title in button to test description.<newline>'
 ++++++button description='Test popover with title in button to test description.' name='the title' descriptionFrom=popoverAttribute

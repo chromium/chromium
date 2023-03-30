@@ -5796,7 +5796,7 @@ String AXNodeObject::Description(
         }
         AXObject* popover_ax_object =
             AXObjectCache().GetOrCreate(popover_target.popover);
-        if (popover_ax_object) {
+        if (popover_ax_object && popover_ax_object->IsPlainContent()) {
           AXObjectSet visited;
           description = RecursiveTextAlternative(*popover_ax_object,
                                                  popover_ax_object, visited);
