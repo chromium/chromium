@@ -19275,8 +19275,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   DidCommitNavigationCanceller canceller(
       shell()->web_contents(), main_frame_url_2,
       base::BindLambdaForTesting([iframe]() {
-        EXPECT_TRUE(
-            ExecJs(iframe, "parent.location.href = 'chrome-guest://1234';"));
+        EXPECT_TRUE(ExecJs(
+            iframe, "parent.location.href = 'chrome-untrusted://1234';"));
       }));
 
   // This navigation will be raced by a navigation started in the iframe.

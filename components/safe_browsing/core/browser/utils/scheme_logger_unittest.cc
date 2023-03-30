@@ -40,7 +40,6 @@ TEST(SchemeLoggerTest, TestLogScheme) {
       {"chrome-error://", UrlScheme::kChromeError},
       {"chrome://settings", UrlScheme::kChrome},
       {"chrome-untrusted://", UrlScheme::kChromeUntrusted},
-      {"chrome-guest://", UrlScheme::kChromeGuest},
       {"view-source:foo/", UrlScheme::kViewSource},
       {"externalfile:foo/", UrlScheme::kExternalFile},
       {"android-app:foo/", UrlScheme::kAndroidApp},

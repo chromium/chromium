@@ -41,7 +41,7 @@ enum class UrlScheme {
   kChromeError = 24,
   kChrome = 25,
   kChromeUntrusted = 26,
-  kChromeGuest = 27,
+  kChromeGuest_Obsolete = 27,
   kViewSource = 28,
   kExternalFile = 29,
   kAndroidApp = 30,

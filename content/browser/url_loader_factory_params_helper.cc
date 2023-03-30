@@ -64,10 +64,6 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     base::StringPiece debug_tag) {
   DCHECK(process);
 
-  // "chrome-guest://..." is never used as a main or isolated world origin.
-  DCHECK_NE(kGuestScheme, origin.scheme());
-  DCHECK_NE(kGuestScheme, request_initiator_origin_lock.scheme());
-
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
 

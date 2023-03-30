@@ -43,7 +43,6 @@ const std::map<std::string, UrlScheme>& GetSchemeOptions() {
           {"chrome-error", UrlScheme::kChromeError},
           {"chrome", UrlScheme::kChrome},
           {"chrome-untrusted", UrlScheme::kChromeUntrusted},
-          {"chrome-guest", UrlScheme::kChromeGuest},
           {"view-source", UrlScheme::kViewSource},
           {"externalfile", UrlScheme::kExternalFile},
           {"android-app", UrlScheme::kAndroidApp},

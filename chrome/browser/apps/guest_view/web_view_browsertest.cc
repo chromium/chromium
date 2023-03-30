@@ -5381,22 +5381,16 @@ class LocalNetworkAccessWebViewTest : public WebViewTest {
 };
 
 // Verify that Local Network Access has the correct understanding of guests.
-// The chrome-guest:// scheme should only ever be used as a Site URL (and only
-// when not using <webview> site isolation), and this should not interfere with
-// the local/private/public classification. See https://crbug.com/1167698 for
-// details.
+// The local/private/public classification should not be affected by being
+// within a guest. See https://crbug.com/1167698 for details.
 //
 // Note: This test is put in this file for convenience of reusing the entire
 // app testing infrastructure. Other similar tests that do not require that
 // infrastructure live in LocalNetworkAccessBrowserTest.*
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebViewTest,
-                       SpecialSchemeChromeGuest) {
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebViewTest, ClassificationInGuest) {
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest_frame_host = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest_frame_host);
-
-  EXPECT_FALSE(
-      guest_frame_host->GetLastCommittedURL().SchemeIs(content::kGuestScheme));
   EXPECT_TRUE(guest_frame_host->GetSiteInstance()->IsGuest());
 
   // We'll try to fetch a local page with Access-Control-Allow-Origin: *, to

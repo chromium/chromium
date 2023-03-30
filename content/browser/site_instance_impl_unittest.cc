@@ -1789,21 +1789,6 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
 }
 
 TEST_F(SiteInstanceTest, CreateForGuest) {
-  const GURL kGuestUrl(std::string(kGuestScheme) + "://abc123/path");
-
-  // Verify that a SiteInstance created with CreateForUrlInfo() is not
-  // considered a <webview> guest and has the path removed for the site URL like
-  // any other standard URL.
-  auto instance1 = SiteInstanceImpl::CreateForTesting(context(), kGuestUrl);
-  EXPECT_FALSE(instance1->IsGuest());
-  if (AreDefaultSiteInstancesEnabled()) {
-    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
-  } else {
-    EXPECT_NE(kGuestUrl, instance1->GetSiteURL());
-    EXPECT_EQ(GURL(std::string(kGuestScheme) + "://abc123/"),
-              instance1->GetSiteURL());
-  }
-
   // Verify that a SiteInstance created with CreateForGuest() is considered
   // a <webview> guest and has the correct StoragePartition.
   const StoragePartitionConfig kGuestConfig = StoragePartitionConfig::Create(

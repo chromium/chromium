@@ -1108,10 +1108,10 @@ function testCanGoBack() {
 // pseudo-scheme fires loadabort and doesn't cause a crash.
 function testLoadAbortNonWebSafeScheme() {
   var webview = document.createElement('webview');
-  var chromeGuestURL = 'chrome-guest://abc123/';
+  var chromeUntrustedURL = 'chrome-untrusted://abc123/';
   webview.addEventListener('loadabort', function(e) {
     embedder.test.assertEq('ERR_DISALLOWED_URL_SCHEME', e.reason);
-    embedder.test.assertEq(chromeGuestURL, e.url);
+    embedder.test.assertEq(chromeUntrustedURL, e.url);
   });
   webview.addEventListener('loadstop', function(e) {
     embedder.test.assertEq('about:blank', webview.src);
@@ -1121,7 +1121,7 @@ function testLoadAbortNonWebSafeScheme() {
     // We should not crash.
     embedder.test.fail();
   });
-  webview.src = chromeGuestURL;
+  webview.src = chromeUntrustedURL;
   document.body.appendChild(webview);
 };
 

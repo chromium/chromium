@@ -61,7 +61,7 @@ class CONTENT_EXPORT ProcessLock {
   // Returns a ProcessLock representing what the given |site_info| requires.
   // Note that this may be different from the actual ProcessLock of the
   // resulting process, in cases where a locked process is not required (e.g.,
-  // SiteInfos for chrome-guest:// or http://unisolated.invalid).
+  // SiteInfos for http://unisolated.invalid).
   static ProcessLock FromSiteInfo(const SiteInfo& site_info);
 
   ProcessLock();
