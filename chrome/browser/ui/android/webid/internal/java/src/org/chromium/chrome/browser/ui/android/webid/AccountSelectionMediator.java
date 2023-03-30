@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -33,7 +36,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -124,21 +126,44 @@ class AccountSelectionMediator {
         mBottomSheetContent = bottomSheetContent;
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
-            // TODO(majidvp): We should override #onSheetStateChanged() and react to HIDDEN state
-            // since closed is a legacy fixture that can get out of sync with the state is some
-            // situations. https://crbug.com/1215174
+            // Sends focus events to the relevant views for accessibility.
+            // TODO(crbug.com/1429345): Add tests for TalkBack on FedCM.
+            private void focusForAccessibility() {
+                View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+                assert contentView != null;
+                View continueButton = contentView.findViewById(R.id.account_selection_continue_btn);
+
+                View focusView = continueButton.isShown()
+                        ? continueButton
+                        : contentView.findViewById(R.id.header_title);
+                focusView.requestFocus();
+                focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }
+
             @Override
-            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                super.onSheetClosed(reason);
-                mBottomSheetController.removeObserver(mBottomSheetObserver);
+            public void onSheetStateChanged(@SheetState int state, int reason) {
+                if (state == SheetState.HIDDEN) {
+                    super.onSheetClosed(reason);
+                    mBottomSheetController.removeObserver(mBottomSheetObserver);
 
-                if (mWasDismissed) return;
+                    if (mWasDismissed) return;
 
-                @IdentityRequestDialogDismissReason
-                int dismissReason = (reason == BottomSheetController.StateChangeReason.SWIPE)
-                        ? IdentityRequestDialogDismissReason.SWIPE
-                        : IdentityRequestDialogDismissReason.OTHER;
-                onDismissed(dismissReason);
+                    @IdentityRequestDialogDismissReason
+                    int dismissReason = (reason == BottomSheetController.StateChangeReason.SWIPE)
+                            ? IdentityRequestDialogDismissReason.SWIPE
+                            : IdentityRequestDialogDismissReason.OTHER;
+                    onDismissed(dismissReason);
+                    return;
+                }
+
+                if (state != SheetState.FULL) return;
+
+                // The bottom sheet programmatically requests focuses for accessibility when its
+                // contents are changed. If we call focusForAccessibility prior to
+                // onSheetStateChanged, the bottom sheet announcement would override the title or
+                // continue button announcement. Hence, focusForAccessibility is called here after
+                // the bottom sheet's focus-taking actions.
+                focusForAccessibility();
             }
         };
     }
@@ -153,8 +178,7 @@ class AccountSelectionMediator {
     private void handleBackPress() {
         mSelectedAccount = null;
         showAccountsInternal(mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mAccounts,
-                mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false,
-                /*focusItem=*/ItemProperties.HEADER);
+                mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false);
     }
 
     private PropertyModel createHeaderItem(HeaderType headerType, String topFrameForDisplay,
@@ -215,8 +239,7 @@ class AccountSelectionMediator {
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN) {
             mHeaderType = HeaderType.VERIFY;
-            updateSheet(Arrays.asList(account), /*areAccountsClickable=*/false,
-                    /* focusItem=*/ItemProperties.HEADER);
+            updateSheet(Arrays.asList(account), /*areAccountsClickable=*/false);
         } else {
             // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
             // not invoked updateSheet() as that would cause a loop and isn't needed.
@@ -241,7 +264,7 @@ class AccountSelectionMediator {
 
         mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
         showAccountsInternal(topFrameForDisplay, iframeForDisplay, idpForDisplay, accounts,
-                idpMetadata, clientMetadata, isAutoReauthn, /*focusItem=*/ItemProperties.HEADER);
+                idpMetadata, clientMetadata, isAutoReauthn);
         setComponentShowTime(SystemClock.elapsedRealtime());
 
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
@@ -268,7 +291,7 @@ class AccountSelectionMediator {
 
     private void showAccountsInternal(String topFrameForDisplay, String iframeForDisplay,
             String idpForDisplay, List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn, PropertyKey focusItem) {
+            ClientIdMetadata clientMetadata, boolean isAutoReauthn) {
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
         mIdpForDisplay = idpForDisplay;
@@ -281,12 +304,11 @@ class AccountSelectionMediator {
         }
 
         mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
-        updateSheet(accounts, /*areAccountsClickable=*/mSelectedAccount == null, focusItem);
+        updateSheet(accounts, /*areAccountsClickable=*/mSelectedAccount == null);
         updateBackPressBehavior();
     }
 
-    private void updateSheet(
-            List<Account> accounts, boolean areAccountsClickable, PropertyKey focusItem) {
+    private void updateSheet(List<Account> accounts, boolean areAccountsClickable) {
         updateAccounts(mIdpForDisplay, accounts, areAccountsClickable);
         updateHeader();
 
@@ -315,7 +337,6 @@ class AccountSelectionMediator {
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         showContent();
-        mBottomSheetContent.focusForAccessibility(focusItem);
     }
 
     private void updateHeader() {
@@ -389,8 +410,7 @@ class AccountSelectionMediator {
         mSelectedAccount = selectedAccount;
         if (oldSelectedAccount == null && !mSelectedAccount.isSignIn()) {
             showAccountsInternal(mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mAccounts,
-                    mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false,
-                    /*focusItem=*/ItemProperties.CONTINUE_BUTTON);
+                    mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false);
             return;
         }
 

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import android.view.View;
-import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -13,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.ui.modelutil.PropertyKey;
 
 /**
  * This view renders content that gets displayed inside the bottom sheet. This
@@ -51,25 +48,6 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     public void setCustomBackPressBehavior(@Nullable Runnable backPressHandler) {
         mBackPressHandler = backPressHandler;
         mBackPressStateChangedSupplier.set(backPressHandler != null);
-    }
-
-    public void focusForAccessibility(PropertyKey focusItem) {
-        // {@link mContentView} is null for some tests.
-        if (mContentView == null) return;
-
-        View focusView = null;
-        if (focusItem == ItemProperties.HEADER) {
-            focusView = mContentView.findViewById(R.id.header_title);
-        } else if (focusItem == ItemProperties.CONTINUE_BUTTON) {
-            focusView = mContentView.findViewById(R.id.account_selection_continue_btn);
-        } else {
-            assert false;
-        }
-
-        if (focusView != null) {
-            focusView.requestFocus();
-            focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-        }
     }
 
     public void computeAndUpdateAccountListHeight() {
