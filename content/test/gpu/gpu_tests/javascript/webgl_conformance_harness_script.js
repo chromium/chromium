@@ -124,6 +124,7 @@ testHarness.notifyFinished = function(url) {
   testHarness._finished = true;
 };
 testHarness.navigateToPage = function(src) {
+  wrapper.sendHeartbeatThrottled();
   var testFrame = document.getElementById("test-frame");
   testFrame.src = src;
 };
@@ -135,4 +136,7 @@ window.onerror = function(message, url, line) {
   testHarness.reportResults(null, false, message);
   testHarness.notifyFinished(null);
 };
-window.quietMode = function() { return true; }
+window.quietMode = function() {
+  wrapper.sendHeartbeatThrottled();
+  return true;
+}
