@@ -122,6 +122,7 @@ public class PartialCustomTabDisplayManager
             mStrategy = mSizeStrategyCreator.createForType(
                     type, startMaximized, mSideSheetPosition, mSideSheetAnimation);
             mCurrentPartialCustomTabType = type;
+            mStrategy.setToolbar(mToolbarCoordinatorView, mCustomTabToolbar);
             new Handler().postDelayed(() -> {
                 mStrategy.onToolbarInitialized(
                         mToolbarCoordinatorView, mCustomTabToolbar, mToolbarCornerRadius);

@@ -61,13 +61,6 @@ public abstract class PartialCustomTabBaseStrategy
     protected @Px int mDisplayHeight;
     protected @Px int mDisplayWidth;
 
-    // ContentFrame + CoordinatorLayout - CompositorViewHolder
-    //              + NavigationBar
-    //              + Spinner
-    // Not just CompositorViewHolder but also CoordinatorLayout is resized because many UI
-    // components such as BottomSheet, InfoBar, Snackbar are child views of CoordinatorLayout,
-    // which makes them appear correctly at the bottom.
-    protected ViewGroup mCoordinatorLayout;
     protected Runnable mPositionUpdater;
 
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
@@ -141,11 +134,10 @@ public abstract class PartialCustomTabBaseStrategy
 
     @Override
     public void onPostInflationStartup() {
-        mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
         // Elevate the main web contents area as high as the handle bar to have the shadow
         // effect look right.
         int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
-        mCoordinatorLayout.setElevation(ev);
+        getCoordinatorLayout().setElevation(ev);
 
         mPositionUpdater.run();
     }
@@ -158,11 +150,14 @@ public abstract class PartialCustomTabBaseStrategy
     @Override
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
-        mToolbarCoordinator = coordinatorView;
+        setToolbar(coordinatorView, toolbar);
+        roundCorners(toolbar, toolbarCornerRadius);
+    }
+
+    public void setToolbar(View toolbarCoordinator, CustomTabToolbar toolbar) {
+        mToolbarCoordinator = toolbarCoordinator;
         mToolbarView = toolbar;
         mToolbarColor = toolbar.getBackground().getColor();
-
-        roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
     }
 
     public void onShowSoftInput(Runnable softKeyboardRunnable) {
@@ -215,6 +210,16 @@ public abstract class PartialCustomTabBaseStrategy
             updateShadowOffset();
             maybeInvokeResizeCallback();
         });
+    }
+
+    protected ViewGroup getCoordinatorLayout() {
+        // ContentFrame + CoordinatorLayout - CompositorViewHolder
+        //              + NavigationBar
+        //              + Spinner
+        // Not just CompositorViewHolder but also CoordinatorLayout is resized because many UI
+        // components such as BottomSheet, InfoBar, Snackbar are child views of CoordinatorLayout,
+        // which makes them appear correctly at the bottom.
+        return mActivity.findViewById(R.id.coordinator);
     }
 
     protected void maybeInvokeResizeCallback() {
@@ -293,9 +298,10 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     protected void setCoordinatorLayoutHeight(int height) {
-        ViewGroup.LayoutParams p = mCoordinatorLayout.getLayoutParams();
+        ViewGroup coordinator = getCoordinatorLayout();
+        ViewGroup.LayoutParams p = coordinator.getLayoutParams();
         p.height = height;
-        mCoordinatorLayout.setLayoutParams(p);
+        coordinator.setLayoutParams(p);
     }
 
     protected void initializeHeight() {
@@ -338,8 +344,7 @@ public abstract class PartialCustomTabBaseStrategy
                 mToolbarCoordinator, "PartialCustomTabBaseStrategy.updateShadowOffset");
     }
 
-    protected void roundCorners(
-            View coordinator, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+    protected void roundCorners(CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         // Inflate the handle View.
         ViewStub handleViewStub = mActivity.findViewById(R.id.custom_tabs_handle_view_stub);
         // If the handle view has already been inflated then the stub will be null. This can happen,
@@ -349,8 +354,7 @@ public abstract class PartialCustomTabBaseStrategy
             handleViewStub.inflate();
         }
 
-        mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
-        mCoordinatorLayout.setElevation(
+        getCoordinatorLayout().setElevation(
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         handleView.setElevation(
@@ -383,7 +387,6 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected void drawDividerLine(
             int leftInset, int topInset, int rightInset, CustomTabToolbar toolbar) {
-        mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         View dragBar = handleView.findViewById(R.id.drag_bar);
         GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
@@ -395,7 +398,7 @@ public abstract class PartialCustomTabBaseStrategy
 
         // We need an inset to make the outline shadow visible.
         dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
-        mCoordinatorLayout.setBackground(
+        getCoordinatorLayout().setBackground(
                 new InsetDrawable(cctBackground, leftInset, topInset, rightInset, 0));
     }
 
@@ -480,7 +483,6 @@ public abstract class PartialCustomTabBaseStrategy
         mToolbarCoordinator = toolbarCoordinator;
 
         onPostInflationStartup();
-        mCoordinatorLayout = coordinatorLayout;
     }
 
     @VisibleForTesting
