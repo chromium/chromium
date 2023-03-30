@@ -3295,7 +3295,7 @@ class SafeBrowsingFencedFrameBrowserTest
     // FencedFrameTestHelper::CreateFencedFrame for this case as well.
     constexpr char kAddFencedFrameScript[] = R"({
           const fencedFrame = document.createElement('fencedframe');
-          fencedFrame.src = $1;
+          fencedFrame.config = new FencedFrameConfig($1);
           document.body.appendChild(fencedFrame);
         })";
     EXPECT_TRUE(
@@ -3390,11 +3390,16 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
                  const ClientSafeBrowsingReportRequest::Resource& b) -> bool {
                 return a.url() < b.url();
               });
+
+    // Fenced frames loaded with configs do not have the `src` attribute set, so
+    // they do not show up on the safe browsing report.
+    // TODO(https://crbug.com/1428788): Update this once config-loaded fenced
+    // frames show up on the safe browsing report.
     ASSERT_EQ(2U, resources.size());
     VerifyResource(report, resources[1], initial_url.spec(), initial_url.spec(),
-                   1, "");
+                   0, "");
     VerifyResource(report, resources[0], fenced_frame_url.spec(),
-                   initial_url.spec(), 0, "FENCEDFRAME");
+                   initial_url.spec(), 0, "");
 
     ASSERT_EQ(2, report.dom_size());
     // Because the order of elements is not deterministic, we just verify the

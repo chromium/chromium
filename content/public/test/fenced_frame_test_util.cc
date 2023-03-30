@@ -42,7 +42,8 @@ constexpr char kEmbedderNavigateFencedFrameScript[] =
 FencedFrameTestHelper::FencedFrameTestHelper() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{blink::features::kFencedFrames, {}},
-       {features::kPrivacySandboxAdsAPIsOverride, {}}},
+       {features::kPrivacySandboxAdsAPIsOverride, {}},
+       {blink::features::kFencedFramesAPIChanges, {}}},
       {/* disabled_features */});
 }
 
