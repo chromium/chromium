@@ -39,7 +39,7 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
       base::JSONReader::Read(message_str);
   ASSERT_TRUE(parsed_message.has_value());
 
-  absl::optional<int> id = parsed_message->FindIntPath("id");
+  absl::optional<int> id = parsed_message->GetDict().FindInt("id");
   if (!id || !*id || *id != last_sent_id_)
     return;
 
