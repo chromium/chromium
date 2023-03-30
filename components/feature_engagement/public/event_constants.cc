@@ -87,6 +87,8 @@ const char kBlueDotPromoOverflowMenuDismissed[] =
     "blue_dot_promo_overflow_menu_dismissed";
 const char kBlueDotPromoSettingsDismissed[] =
     "blue_dot_promo_settings_dismissed";
+const char kCredentialProviderExtensionPromoSnoozed[] =
+    "credential_provider_extension_promo_snoozed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

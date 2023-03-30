@@ -163,6 +163,9 @@ extern const char kBlueDotPromoOverflowMenuDismissed[];
 // row.
 extern const char kBlueDotPromoSettingsDismissed[];
 
+// The user snoozed the Credential Provider Extension Promo
+extern const char kCredentialProviderExtensionPromoSnoozed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

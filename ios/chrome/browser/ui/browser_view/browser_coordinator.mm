@@ -1809,9 +1809,11 @@ enum class ToolbarKind {
     // make sure to set its UI handler.
     _credentialProviderPromoCoordinator.promosUIHandler =
         self.promosManagerCoordinator;
-  }
 
-  [self.promosManagerCoordinator start];
+    [self.promosManagerCoordinator start];
+  } else {
+    [self.promosManagerCoordinator displayPromoIfAvailable];
+  }
 }
 
 - (void)requestAppStoreReview {

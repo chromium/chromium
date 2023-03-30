@@ -21,6 +21,10 @@
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace feature_engagement {
+class Tracker;
+}
+
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams should not use this directly, use
 // promo_manager.h instead.
@@ -32,7 +36,9 @@ class PromosManagerImpl : public PromosManager {
     bool was_pending;
   };
 
-  PromosManagerImpl(PrefService* local_state, base::Clock* clock);
+  PromosManagerImpl(PrefService* local_state,
+                    base::Clock* clock,
+                    feature_engagement::Tracker* tracker);
   ~PromosManagerImpl() override;
 
   // `promo`-specific impression limits, if defined. May return an empty
@@ -99,6 +105,11 @@ class PromosManagerImpl : public PromosManager {
       promos_manager::Promo promo,
       const std::vector<promos_manager::Impression>& sorted_impressions) const;
 
+  // Checks whether a promo can currently be shown using the feature engagement
+  // system to check any impression limits.
+  bool CanShowPromoUsingFeatureEngagementTracker(
+      promos_manager::Promo promo) const;
+
   // Returns a list of impression counts (std::vector<int>) from a promo
   // impression counts map.
   std::vector<int> ImpressionCounts(
@@ -131,6 +142,9 @@ class PromosManagerImpl : public PromosManager {
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;
+
+  // The feature engagement tracker.
+  raw_ptr<feature_engagement::Tracker> tracker_;
 
   // The set of currently active, continuous-display promos.
   std::set<promos_manager::Promo> active_promos_;

@@ -10,6 +10,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "base/values.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -71,6 +73,7 @@ class PromosManagerImplTest : public PlatformTest {
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<PromosManagerImpl> promos_manager_;
+  std::unique_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -106,8 +109,9 @@ Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
 
 void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
-  promos_manager_ =
-      std::make_unique<PromosManagerImpl>(local_state_.get(), &test_clock_);
+  mock_tracker_ = std::make_unique<feature_engagement::test::MockTracker>();
+  promos_manager_ = std::make_unique<PromosManagerImpl>(
+      local_state_.get(), &test_clock_, mock_tracker_.get());
   promos_manager_->Init();
 }
 

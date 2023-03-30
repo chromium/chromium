@@ -18,6 +18,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -66,8 +67,9 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
 #pragma mark - Constructor/Destructor
 
 PromosManagerImpl::PromosManagerImpl(PrefService* local_state,
-                                     base::Clock* clock)
-    : local_state_(local_state), clock_(clock) {
+                                     base::Clock* clock,
+                                     feature_engagement::Tracker* tracker)
+    : local_state_(local_state), clock_(clock), tracker_(tracker) {
   DCHECK(local_state_);
   DCHECK(clock_);
 }
@@ -372,6 +374,9 @@ bool PromosManagerImpl::AnyImpressionLimitTriggered(
 bool PromosManagerImpl::CanShowPromo(
     promos_manager::Promo promo,
     const std::vector<promos_manager::Impression>& sorted_impressions) const {
+  if (ShouldPromosManagerUseFET()) {
+    return CanShowPromoUsingFeatureEngagementTracker(promo);
+  }
   // Maintains a map ([promos_manager::Promo] : [current impression count]) for
   // evaluating against GlobalImpressionLimits(),
   // GlobalPerPromoImpressionLimits(), and, if defined, `promo`-specific
@@ -462,6 +467,20 @@ bool PromosManagerImpl::CanShowPromo(
           kValid);
 
   return true;
+}
+
+bool PromosManagerImpl::CanShowPromoUsingFeatureEngagementTracker(
+    promos_manager::Promo promo) const {
+  auto it = promo_configs_.find(promo);
+  if (it == promo_configs_.end()) {
+    return false;
+  }
+
+  const base::Feature* feature = it->feature_engagement_feature;
+  if (!feature) {
+    return false;
+  }
+  return tracker_->ShouldTriggerHelpUI(*feature);
 }
 
 std::vector<int> PromosManagerImpl::ImpressionCounts(

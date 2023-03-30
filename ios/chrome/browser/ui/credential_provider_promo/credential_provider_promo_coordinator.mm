@@ -7,6 +7,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
@@ -91,6 +92,9 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   }
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.mediator.consumer = self.viewController;
+  self.mediator.tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
   self.promoContext = CredentialProviderPromoContext::kFirstStep;

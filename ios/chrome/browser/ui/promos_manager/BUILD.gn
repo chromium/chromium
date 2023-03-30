@@ -53,9 +53,12 @@ source_set("promos_manager") {
   public_deps = [
     ":promos",
     "//base",
+    "//components/feature_engagement/public",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:factory",
+    "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//third_party/abseil-cpp:absl",

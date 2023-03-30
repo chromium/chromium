@@ -4,6 +4,7 @@
 
 #include "components/feature_engagement/public/ios_promo_feature_configuration.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
@@ -20,7 +21,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    if (base::FeatureList::IsEnabled(kIPHGroups)) {
+      config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    }
     config->used =
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 365);
     config->trigger =
@@ -35,7 +38,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    if (base::FeatureList::IsEnabled(kIPHGroups)) {
+      config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    }
     config->used =
         EventConfig("whats_new_promo_used", Comparator(EQUAL, 0), 365, 365);
     // What's New promo should only ever trigger once.
@@ -53,7 +58,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    if (base::FeatureList::IsEnabled(kIPHGroups)) {
+      config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    }
     config->used =
         EventConfig("post_restore_promo_used", Comparator(EQUAL, 0), 365, 365);
     // Post Restore promo should always show when requested.
@@ -70,7 +77,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    if (base::FeatureList::IsEnabled(kIPHGroups)) {
+      config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    }
     config->used = EventConfig("credential_provider_extension_promo_used",
                                Comparator(EQUAL, 0), 365, 365);
     config->trigger = EventConfig("credential_provider_extension_promo_trigger",

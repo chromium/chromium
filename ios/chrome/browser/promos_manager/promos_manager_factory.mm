@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
 
@@ -34,15 +35,20 @@ PromosManagerFactory* PromosManagerFactory::GetInstance() {
 PromosManagerFactory::PromosManagerFactory()
     : BrowserStateKeyedServiceFactory(
           "PromosManagerFactory",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(feature_engagement::TrackerFactory::GetInstance());
+}
 
 PromosManagerFactory::~PromosManagerFactory() = default;
 
 std::unique_ptr<KeyedService> PromosManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   auto promos_manager = std::make_unique<PromosManagerImpl>(
       GetApplicationContext()->GetLocalState(),
-      base::DefaultClock::GetInstance());
+      base::DefaultClock::GetInstance(),
+      feature_engagement::TrackerFactory::GetForBrowserState(browser_state));
   promos_manager->Init();
   return promos_manager;
 }

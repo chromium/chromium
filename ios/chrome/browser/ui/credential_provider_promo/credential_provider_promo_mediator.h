@@ -15,11 +15,18 @@
 class PrefService;
 class PromosManager;
 
+namespace feature_engagement {
+class Tracker;
+}
+
 // Manages the state and interactions of the CredentialProviderPromoConsumer.
 @interface CredentialProviderPromoMediator : NSObject
 
 // The main consumer for this mediator.
 @property(nonatomic, weak) id<CredentialProviderPromoConsumer> consumer;
+
+// The feature engagement tracker to alert of promo events.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
 // Designated initializer. Initializes the mediator with the
 // PromosManager, presenter, and PrefService.
