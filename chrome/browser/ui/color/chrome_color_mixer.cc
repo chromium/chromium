@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -89,7 +88,7 @@ constexpr SkAlpha kTabGroupChipAlpha = 61;
 void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
                                     const ui::ColorProviderManager::Key& key) {
   const bool gm3_background_color_enabled =
-      features::IsChromeRefresh2023() ||
+      base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella) ||
       base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateBackgroundColor);
 
   // Apply omnibox background color updates only to non-themed clients.

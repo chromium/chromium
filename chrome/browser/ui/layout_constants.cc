@@ -46,7 +46,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 3 : 12;
     case LOCATION_BAR_HEIGHT:
       if (base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateHeight) ||
-          base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+          base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella)) {
         return touch_ui ? 36 : 34;
       } else {
         return touch_ui ? 36 : 28;
