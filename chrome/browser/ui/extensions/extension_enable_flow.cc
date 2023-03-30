@@ -101,7 +101,10 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
               ->Get(profile_)
               ->GetSupervisedUserExtensionsDelegate();
   DCHECK(supervised_user_extensions_delegate);
-  if (profile_->IsChild() && extension &&
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile_);
+  if (supervised_user_service->AreExtensionsPermissionsEnabled() && extension &&
+
       // Only ask for parent approval if the extension still requires approval.
       !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
           *extension)) {
@@ -243,10 +246,10 @@ void ExtensionEnableFlow::EnableExtension() {
     return;
   }
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (profile_->IsChild()) {
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile_);
+  if (supervised_user_service->AreExtensionsPermissionsEnabled()) {
     // We need to add parent approval first.
-    SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile_);
     supervised_user_service->AddExtensionApproval(*extension);
     supervised_user_service->RecordExtensionEnablementUmaMetrics(
         /*enabled=*/true);

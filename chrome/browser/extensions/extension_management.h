@@ -233,9 +233,6 @@ class ExtensionManagement : public KeyedService {
   // aren't deferred).
   ExtensionIdSet GetForcePinnedList() const;
 
-  // Returns whether the profile associated with this instance is supervised.
-  bool is_child() const { return is_child_; }
-
  private:
   using SettingsIdMap =
       std::unordered_map<ExtensionId,
@@ -339,7 +336,6 @@ class ExtensionManagement : public KeyedService {
   const raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
   bool is_signin_profile_ = false;
-  bool is_child_ = false;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   PrefChangeRegistrar pref_change_registrar_;

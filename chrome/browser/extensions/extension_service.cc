@@ -127,6 +127,11 @@
 #include "storage/browser/file_system/file_system_context.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
 using content::BrowserContext;
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
@@ -1222,7 +1227,13 @@ void ExtensionService::CheckManagementPolicy() {
 
     // If this profile is not supervised, then remove any supervised user
     // related disable reasons.
-    if (!profile()->IsChild()) {
+    bool extensions_permissions_enabled = true;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    extensions_permissions_enabled =
+        SupervisedUserServiceFactory::GetForProfile(profile())
+            ->AreExtensionsPermissionsEnabled();
+#endif
+    if (extensions_permissions_enabled) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }
 

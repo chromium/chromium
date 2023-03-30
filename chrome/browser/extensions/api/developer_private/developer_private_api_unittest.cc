@@ -68,6 +68,12 @@
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/common/features.h"
+#endif
+
 namespace extensions {
 
 namespace {
@@ -2769,10 +2775,23 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
       api::developer_private::EVENT_TYPE_PREFS_CHANGED));
 }
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class DeveloperPrivateApiSupervisedUserUnitTest
-    : public DeveloperPrivateApiUnitTest {
+    : public DeveloperPrivateApiUnitTest,
+      public testing::WithParamInterface<bool> {
  public:
-  DeveloperPrivateApiSupervisedUserUnitTest() = default;
+  DeveloperPrivateApiSupervisedUserUnitTest() {
+    if (extensions_permissions_for_supervised_users_on_desktop()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    }
+  }
 
   DeveloperPrivateApiSupervisedUserUnitTest(
       const DeveloperPrivateApiSupervisedUserUnitTest&) = delete;
@@ -2782,27 +2801,55 @@ class DeveloperPrivateApiSupervisedUserUnitTest
   ~DeveloperPrivateApiSupervisedUserUnitTest() override = default;
 
   bool ProfileIsSupervised() const override { return true; }
+
+  bool extensions_permissions_for_supervised_users_on_desktop() const {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests trying to call loadUnpacked when the profile shouldn't be allowed to.
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
+TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
        LoadUnpackedFailsForSupervisedUsers) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&path);
 
-  ASSERT_TRUE(profile()->IsChild());
-
-  auto function =
-      base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
-  function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
-  std::string error = extension_function_test_utils::RunFunctionAndReturnError(
-      function.get(), "[]", browser());
-  EXPECT_THAT(error, testing::HasSubstr("Child account"));
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile());
+  EXPECT_NE(service, nullptr);
+  if (extensions_permissions_for_supervised_users_on_desktop()) {
+    EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+    auto function =
+        base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+    std::string error =
+        extension_function_test_utils::RunFunctionAndReturnError(
+            function.get(), "[]", browser());
+    EXPECT_THAT(error, testing::HasSubstr("Child account"));
+  } else {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+    EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+    auto function =
+        base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
+    function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
+    std::string error =
+        extension_function_test_utils::RunFunctionAndReturnError(
+            function.get(), "[]", browser());
+    EXPECT_THAT(error, testing::HasSubstr("Child account"));
+#else
+    EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+#endif
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ExtensionsPermissionsForSupervisedUsersOnDesktopFeature,
+    DeveloperPrivateApiSupervisedUserUnitTest,
+    testing::Bool());
 #endif
 
 }  // namespace extensions
