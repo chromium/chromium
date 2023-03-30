@@ -50,12 +50,12 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
              InitStageBrowserObjectsForBackgroundHandlers) {
     // Save the value of the feature flag now since 'base::FeatureList' was
     // not available in `InitStageBrowserBasic`.
-    // IsFeedBackgroundRefreshEnabled() simply reads the saved value saved by
-    // SaveFeedBackgroundRefreshEnabledForNextColdStart(). Do not wrap this in
-    // IsFeedBackgroundRefreshEnabled() -- in this case, a new value would
-    // never be saved again once we save NO, since the NO codepath would not
-    // execute saving a new value.
-    SaveFeedBackgroundRefreshEnabledForNextColdStart();
+    // IsFeedBackgroundRefreshCapabilityEnabled() simply reads the saved value
+    // saved by SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart(). Do
+    // not wrap this in IsFeedBackgroundRefreshCapabilityEnabled() -- in this
+    // case, a new value would never be saved again once we save NO, since the
+    // NO codepath would not execute saving a new value.
+    SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart();
   } else if (appState.initStage == InitStageNormalUI &&
              IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
     // Starting the DiscoverFeedService is required before users are able to
@@ -79,10 +79,8 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 #pragma mark - SceneObservingAppAgent
 
 - (void)appDidEnterBackground {
-  if (IsFeedBackgroundRefreshEnabled()) {
-    [self scheduleBackgroundRefresh];
-  }
-  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
+  if (IsFeedBackgroundRefreshEnabled() ||
+      IsFeedAppCloseBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
   } else if (IsFeedAppCloseForegroundRefreshEnabled()) {
     [self feedService]->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
@@ -91,7 +89,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 - (void)appDidEnterForeground {
   _wasForegroundedAtLeastOnce = YES;
-  if (IsFeedBackgroundRefreshEnabled()) {
+  if (IsFeedBackgroundRefreshCapabilityEnabled()) {
     // This is not strictly necessary, but it makes it more explicit. The OS
     // limits to 1 refresh task at any time, and a new request will replace a
     // previous request. Tasks are only executed in the background.
@@ -115,7 +113,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 // documentation, this must complete before the end of
 // `applicationDidFinishLaunching`.
 - (void)maybeRegisterBackgroundRefreshTask {
-  if (!IsFeedBackgroundRefreshEnabled()) {
+  if (!IsFeedBackgroundRefreshCapabilityEnabled()) {
     return;
   }
   __weak FeedAppAgent* weakSelf = self;
@@ -137,9 +135,9 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 // including other files. The OS only allows one fetch task at a time.
 // Eventually, background fetches should be managed by a central manager.
 - (void)scheduleBackgroundRefresh {
-  // Do not DCHECK IsFeedBackgroundRefreshEnabled() because this is also called
-  // from the background task handler, and the value could have changed during a
-  // cold start.
+  // Do not DCHECK whether background refreshes were enabled at startup because
+  // this is also called from the background task handler, and the value could
+  // have changed during a cold start.
   if (!IsFeedBackgroundRefreshEnabled() &&
       !IsFeedAppCloseBackgroundRefreshEnabled()) {
     return;
@@ -175,9 +173,10 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 // This method is called when the app is in the background.
 - (void)handleBackgroundRefreshTask:(BGTask*)task {
-  // Do not DCHECK IsFeedBackgroundRefreshEnabled() because the value could have
-  // changed during a cold start.
-  if (!IsFeedBackgroundRefreshEnabled()) {
+  // Do not DCHECK whether background refreshes were enabled at startup because
+  // the value could have changed during a cold start.
+  if (!IsFeedBackgroundRefreshEnabled() &&
+      !IsFeedAppCloseBackgroundRefreshEnabled()) {
     return;
   }
   if (_wasForegroundedAtLeastOnce) {
