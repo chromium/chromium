@@ -8126,6 +8126,8 @@ void Element::AddPropertyToPresentationAttributeStyle(
     CSSPropertyID property_id,
     CSSValueID identifier) {
   DCHECK(IsStyledElement());
+  DCHECK(!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled() ||
+         property_id != CSSPropertyID::kWhiteSpace);
   style->SetLonghandProperty(property_id,
                              *CSSIdentifierValue::Create(identifier));
 }

@@ -187,13 +187,29 @@ void HTMLTextAreaElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kWrapAttr) {
     if (ShouldWrapText()) {
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWhiteSpace,
-                                              CSSValueID::kPreWrap);
+      if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kWhiteSpace, CSSValueID::kPreWrap);
+      } else {
+        // Longhands of `white-space: pre-wrap`.
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kPreserve);
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
+                                                CSSValueID::kWrap);
+      }
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kOverflowWrap, CSSValueID::kBreakWord);
     } else {
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWhiteSpace,
-                                              CSSValueID::kPre);
+      if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
+      } else {
+        // Longhands of `white-space: pre`.
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kPreserve);
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
+                                                CSSValueID::kNowrap);
+      }
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kOverflowWrap, CSSValueID::kNormal);
     }
