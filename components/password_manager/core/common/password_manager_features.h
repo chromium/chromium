@@ -93,6 +93,7 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
 BASE_DECLARE_FEATURE(kExploratorySaveUpdatePasswordStrings);
 #endif
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
+BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
 BASE_DECLARE_FEATURE(kPasswordGenerationPreviewOnHover);
 
 // All features parameters are in alphabetical order.

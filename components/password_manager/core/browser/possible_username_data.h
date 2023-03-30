@@ -27,19 +27,28 @@ struct PossibleUsernameData {
                        const std::u16string& field_name,
                        const std::u16string& value,
                        base::Time last_change,
-                       int driver_id);
+                       int driver_id,
+                       bool autocomplete_attribute_has_username);
   PossibleUsernameData(const PossibleUsernameData&);
   ~PossibleUsernameData();
 
   std::string signon_realm;
   autofill::FieldRendererId renderer_id;
+
+  // TODO(crbug.com/1260336): Delete after fields are not distinguished by
+  // |field_name|.
   std::u16string field_name;
+
   std::u16string value;
   base::Time last_change;
 
   // Id of PasswordManagerDriver which corresponds to the frame of this field.
   // Paired with the |renderer_id|, this identifies a field globally.
   int driver_id;
+
+  // Whether the autocomplete attribute is present and equals to
+  // username.
+  bool autocomplete_attribute_has_username;
 
   // Predictions for the form which contains a field with |renderer_id|.
   absl::optional<FormPredictions> form_predictions;
@@ -51,6 +60,10 @@ struct PossibleUsernameData {
   // Returns whether the field identified by |renderer_id| has a
   // SINGLE_USERNAME prediction stored in |form_predictions|.
   bool HasSingleUsernameServerPrediction() const;
+
+  // Returns whether the field identified by |renderer_id| has
+  // any server prediction stored in |form_predictions|.
+  bool HasServerPrediction() const;
 };
 
 }  // namespace password_manager

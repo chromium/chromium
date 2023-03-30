@@ -296,6 +296,12 @@ BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
              "UsernameFirstFlowFallbackCrowdsourcing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables suggesting username in the save/update prompt in the case of
+// autocomplete="username".
+BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
+             "UsernameFirstFlowHonorAutocomplete",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables previewing password generation suggestion in the target form in
 // cleartext.
 BASE_FEATURE(kPasswordGenerationPreviewOnHover,

@@ -153,9 +153,11 @@ class FakeMojoPasswordManagerDriver
 
   void UserModifiedPasswordField() override;
 
-  void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const std::u16string& field_name,
-                                    const std::u16string& value) override;
+  void UserModifiedNonPasswordField(
+      autofill::FieldRendererId renderer_id,
+      const std::u16string& field_name,
+      const std::u16string& value,
+      bool autocomplete_attribute_has_username) override;
 
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;

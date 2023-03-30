@@ -410,12 +410,14 @@ void ContentPasswordManagerDriver::UserModifiedPasswordField() {
 void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
     autofill::FieldRendererId renderer_id,
     const std::u16string& field_name,
-    const std::u16string& value) {
+    const std::u16string& value,
+    bool autocomplete_attribute_has_username) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  GetPasswordManager()->OnUserModifiedNonPasswordField(this, renderer_id,
-                                                       field_name, value);
+  GetPasswordManager()->OnUserModifiedNonPasswordField(
+      this, renderer_id, field_name, value,
+      autocomplete_attribute_has_username);
   // A user has modified an input field, it wouldn't be a submission "after
   // Touch To Fill".
   client_->ResetSubmissionTrackingAfterTouchToFill();

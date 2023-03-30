@@ -148,7 +148,8 @@ class PasswordManager : public PasswordManagerInterface {
   void OnUserModifiedNonPasswordField(PasswordManagerDriver* driver,
                                       autofill::FieldRendererId renderer_id,
                                       const std::u16string& field_name,
-                                      const std::u16string& value);
+                                      const std::u16string& value,
+                                      bool autocomplete_attribute_has_username);
 
   // Handles user input and decides whether to show manual fallback for password
   // saving, i.e. the omnibox icon with the anchored hidden prompt.

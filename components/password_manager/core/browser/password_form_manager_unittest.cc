@@ -2193,7 +2193,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
   const std::u16string possible_username = u"test@example.com";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kUsernameFieldRendererId, username_field_name,
-      possible_username, base::Time::Now(), 0 /* driver_id */);
+      possible_username, base::Time::Now(), /*driver_id=*/0,
+      /*autocomplete_attribute_has_username=*/false);
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
@@ -2230,7 +2231,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", kUsernameFieldRendererId,
       username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2256,7 +2257,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", kSingleUsernameFieldRendererId,
       username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2293,7 +2294,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     const std::u16string field_name = u"username_field";
     PossibleUsernameData possible_username_data(
         saved_match_.signon_realm, kSingleUsernameFieldRendererId, field_name,
-        possible_username, base::Time::Now(), 0 /* driver_id */);
+        possible_username, base::Time::Now(), /*driver_id=*/0,
+        /*autocomplete_attribute_has_username=*/false);
     possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
     MockFieldInfoManager mock_field_manager;
@@ -2394,7 +2396,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId,
       u"username_field", submitted_form_.fields[kUsernameFieldIndex].value,
-      base::Time::Now(), 0 /* driver_id */);
+      base::Time::Now(), /*driver_id=*/0,
+      /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
   MockFieldInfoManager mock_field_manager;
@@ -2484,7 +2487,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   // Create possible username data.
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kUsernameFieldRendererId, kUsernameFieldName,
-      kPossibleUsername, base::Time::Now(), 0 /* driver_id */);
+      kPossibleUsername, base::Time::Now(), /*driver_id=*/0,
+      /*autocomplete_attribute_has_username=*/false);
   FormPredictions predictions;
   predictions.form_signature = kUsernameFormSignature;
   predictions.fields.push_back({
@@ -2577,7 +2581,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotesNamelessField) {
   const std::u16string field_name = u"";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId, field_name,
-      possible_username, base::Time::Now(), 0 /* driver_id */);
+      possible_username, base::Time::Now(), /*driver_id=*/0,
+      /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
   MockFieldInfoManager mock_field_manager;
@@ -2626,7 +2631,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(102u),
       username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false);
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
@@ -2657,6 +2662,37 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
           form_manager_->GetPendingCredentials().username_value.empty());
     }
   }
+}
+
+// Tests that boolean representing autocomplete = "username" is taken into
+// consideration when offering username in prompt in username first flow.
+TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUsernameFirstFlowHonorAutocomplete);
+
+  // A single password form is loaded on the page.
+  FormData submitted_form = observed_form_only_password_fields_;
+  CreateFormManager(submitted_form);
+  fetcher_->NotifyFetchCompleted();
+
+  // User types a password value.
+  submitted_form.fields[0].value = u"strongpassword";
+
+  // User entered single username data on the previous form.
+  const std::u16string single_username_value = u"single_username_value";
+  PossibleUsernameData possible_username_data(
+      saved_match_.signon_realm, autofill::FieldRendererId(102u),
+      u"username_field_name", single_username_value, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/true);
+
+  // Provisionally save the form on user input.
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               &possible_username_data));
+
+  // Check that a username is chosen from |possible_username_data|.
+  EXPECT_EQ(single_username_value,
+            form_manager_->GetPendingCredentials().username_value);
 }
 
 // Tests that probable change password submission is detected for a form that
@@ -3435,7 +3471,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kSingleUsernameFieldRendererId,
       username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -3460,7 +3496,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", kSingleUsernameFieldRendererId,
       username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
   FormData submitted_form = observed_form_only_password_fields_;

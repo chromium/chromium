@@ -28,7 +28,8 @@ class IsPossibleUsernameValidTest : public testing::Test {
       u"username_field" /* field name */,
       kUser /* value */,
       base::Time::Now() /* last_change */,
-      10 /* driver_id */};
+      /*driver_id=*/10,
+      /*autocomplete_attribute_has_username=*/false};
 };
 
 // Check that if more than |kPossibleUsernameExpirationTimeout| time has

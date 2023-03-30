@@ -4230,7 +4230,8 @@ class MockPrerenderPasswordManagerDriver
               UserModifiedNonPasswordField,
               (autofill::FieldRendererId renderer_id,
                const std::u16string& field_name,
-               const std::u16string& value),
+               const std::u16string& value,
+               bool autocomplete_attribute_has_username),
               (override));
   MOCK_METHOD(void,
               ShowPasswordSuggestions,
@@ -4299,8 +4300,11 @@ class MockPrerenderPasswordManagerDriver
     ON_CALL(*this, UserModifiedNonPasswordField)
         .WillByDefault([this](autofill::FieldRendererId renderer_id,
                               const std::u16string& field_name,
-                              const std::u16string& value) {
-          impl_->UserModifiedNonPasswordField(renderer_id, field_name, value);
+                              const std::u16string& value,
+                              bool autocomplete_attribute_has_username) {
+          impl_->UserModifiedNonPasswordField(
+              renderer_id, field_name, value,
+              autocomplete_attribute_has_username);
         });
     ON_CALL(*this, ShowPasswordSuggestions)
         .WillByDefault([this](base::i18n::TextDirection text_direction,
