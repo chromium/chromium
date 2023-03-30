@@ -4,9 +4,6 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.password_manager.core.browser.proto";
-
 package affiliation_pb;
 
 option optimize_for = LITE_RUNTIME;
