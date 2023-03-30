@@ -326,15 +326,24 @@ void PrivacySandboxService::PromptActionOccurredM1(
     if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
                                 true);
+      // It's possible the user is seeing this notice as part of an upgrade to
+      // EEA consent. In this instance, we shouldn't alter the control state,
+      // as the user may have already altered it in settings.
+      if (!pref_service_->GetBoolean(
+              prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+        pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+        pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                  true);
+      }
     } else {
       DCHECK(privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged,
                                 true);
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                true);
     }
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                              true);
   } else if (PromptAction::kConsentAccepted == action) {
     DCHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
@@ -659,9 +668,18 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
               : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
       return;
     }
+
+    case PromptSuppressedReason::
+        kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::kROWNoticeFlowCompleted);
+      return;
+    }
   }
 
   // Prompt was not suppressed explicitly at this point.
+  CHECK_EQ(prompt_suppressed_reason, PromptSuppressedReason::kNone);
 
   // Check if prompt was suppressed implicitly.
   if (IsM1PrivacySandboxEffectivelyManaged(pref_service_)) {
@@ -1325,7 +1343,20 @@ PrivacySandboxService::GetRequiredPromptTypeInternalM1(
         return PromptType::kM1NoticeEEA;
       }
     } else {
-      // A consent decision has not yet been made, so show the consent prompt.
+      // A consent decision has not yet been made. If the user has seen a notice
+      // and disabled Topics, we should not attempt to consent them. As they
+      // already have sufficient notice for the other APIs, no prompt is
+      // required.
+      if (pref_service->GetBoolean(
+              prefs::kPrivacySandboxM1RowNoticeAcknowledged) &&
+          !pref_service->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)) {
+        pref_service->SetInteger(
+            prefs::kPrivacySandboxM1PromptSuppressed,
+            static_cast<int>(
+                PromptSuppressedReason::
+                    kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration));
+        return PromptType::kNone;
+      }
       return PromptType::kM1Consent;
     }
   }

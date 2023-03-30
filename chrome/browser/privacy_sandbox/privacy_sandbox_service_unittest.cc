@@ -3894,6 +3894,23 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
 }
 
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest, ROWNoticeAckTopicsDisabled) {
+  // If the user saw the ROW notice, and then disable Topics from settings, and
+  // is now in EEA, they should not see a prompt.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kM1RowNoticeAcknowledged, true},
+                {StateKey::kM1TopicsEnabledUserPrefValue, false}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+          {OutputKey::kM1PromptSuppressedReason,
+           static_cast<int>(
+               PromptSuppressedReason::
+                   kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration)}});
+}
+
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest, PromptAction_ConsentAccepted) {
   // Confirm that when the service is informed that the consent prompt was
   // accepted, it correctly adjusts the Privacy Sandbox prefs.
@@ -3954,6 +3971,21 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
                  {OutputKey::kTopicsConsentGiven, false},
                  {OutputKey::kTopicsConsentLastUpdateReason,
                   privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue}});
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
+       PromptAction_EEANoticeAcknowledged_ROWNoticeAcknowledged) {
+  // Confirm that if the user has already acknowledged an ROW notice, that the
+  // EEA notice does not attempt to re-enable APIs. This is important for the
+  // ROW -> EEA upgrade flow, where the user may have already visited settings.
+  RunTestCase(TestState{{StateKey::kM1ConsentDecisionMade, true},
+                        {StateKey::kM1EEANoticeAcknowledged, false},
+                        {StateKey::kM1RowNoticeAcknowledged, true}},
+              TestInput{{InputKey::kPromptAction,
+                         static_cast<int>(PromptAction::kNoticeAcknowledge)}},
+              TestOutput{{OutputKey::kM1EEANoticeAcknowledged, true},
+                         {OutputKey::kM1FledgeEnabled, false},
+                         {OutputKey::kM1AdMeasurementEnabled, false}});
 }
 
 class PrivacySandboxServiceM1NoticePromptTest
