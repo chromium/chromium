@@ -42,8 +42,8 @@ class BorealisContextManagerImpl : public BorealisContextManager,
   virtual base::queue<std::unique_ptr<BorealisTask>> GetTasks();
 
  private:
-  // TODO(b/): remove this once the context manager impl is a
-  // BorealisStateManager.
+  // Empty marker struct used to distinguish running (which is a
+  // BorealisContext) from not running.
   struct NotRunning {};
 
   // The startup transition is used to move the context manager from
