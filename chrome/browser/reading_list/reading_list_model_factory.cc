@@ -64,7 +64,7 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<ReadingListModelImpl*>(
+  return static_cast<ReadingListModel*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
