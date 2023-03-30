@@ -38,7 +38,7 @@ class PasswordChangeMetricsRecorder {
 class PasswordChangeMetricsRecorderUma : public PasswordChangeMetricsRecorder {
  public:
   static constexpr char kUmaKey[] =
-      "PasswordManager.PasswordChangeFlowDuration";
+      "PasswordManager.PasswordChangeFlowDurationV2";
 
   PasswordChangeMetricsRecorderUma() = default;
   ~PasswordChangeMetricsRecorderUma() override;

@@ -81,13 +81,13 @@ TEST_F(PasswordChangeSuccessTrackerFactoryTest,
       kNotPhished);
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualHomepageFlow",
       1);
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow.ManualFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualHomepageFlow.ManualFlowPasswordChosen",
       1);
 }
 

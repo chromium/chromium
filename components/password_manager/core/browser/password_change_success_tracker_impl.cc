@@ -50,10 +50,13 @@ StringPiece SerializeEnumForUma(
     // Combine all manual flows for UMA reporting to reduce number of
     // histograms.
     case PasswordChangeSuccessTracker::StartEvent::kManualUnknownFlow:
+      return ".ManualUnknownFlow";
     case PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow:
+      return ".ManualWellKnownUrlFlow";
     case PasswordChangeSuccessTracker::StartEvent::kManualChangePasswordUrlFlow:
+      return ".ManualChangePasswordUrlFlow";
     case PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow:
-      return ".ManualFlow";
+      return ".ManualHomepageFlow";
     case PasswordChangeSuccessTracker::StartEvent::
         kDeprecatedManualResetLinkFlow:
       NOTREACHED();

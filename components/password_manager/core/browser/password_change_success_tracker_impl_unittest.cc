@@ -63,6 +63,11 @@ class MockPasswordChangeMetricsRecorder
               (override));
 };
 
+struct StartEventAndCorrespondingUmaString {
+  PasswordChangeSuccessTracker::StartEvent start_event;
+  std::string uma_string;
+};
+
 }  // namespace
 
 // Tests of |PasswordChangeMetricsRecorderUma|.
@@ -93,42 +98,72 @@ TEST_F(PasswordChangeMetricsRecorderUmaTest, RecordSingleMetricsEvent) {
                             base::Seconds(30));
 
   histogram_tester().ExpectUniqueTimeSample(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow",
       base::Seconds(30), 1);
 
   histogram_tester().ExpectUniqueTimeSample(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow.ManualFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow.ManualFlowPasswordChosen",
       base::Seconds(30), 1);
 }
 
-TEST_F(PasswordChangeMetricsRecorderUmaTest, RecordMultipleMetricsEvents) {
-  constexpr PasswordChangeSuccessTracker::StartEvent start_event1 =
-      PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow;
-  constexpr PasswordChangeSuccessTracker::EndEvent end_event1 =
+// Tests of |PasswordChangeMetricsRecorderUma| with different |StartEvent|.
+class PasswordChangeMetricsRecorderUmaParametrizedStartEvent
+    : public ::testing::TestWithParam<StartEventAndCorrespondingUmaString> {
+ public:
+  PasswordChangeMetricsRecorderUmaParametrizedStartEvent() = default;
+  ~PasswordChangeMetricsRecorderUmaParametrizedStartEvent() override = default;
+
+ protected:
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  PasswordChangeMetricsRecorderUma& recorder() { return recorder_; }
+
+ private:
+  base::HistogramTester histogram_tester_;
+  PasswordChangeMetricsRecorderUma recorder_;
+};
+
+TEST_P(PasswordChangeMetricsRecorderUmaParametrizedStartEvent,
+       RecordMultipleMetricsWithDifferentStartEvents) {
+  auto [start_event, uma_string] = GetParam();
+
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event =
       PasswordChangeSuccessTracker::EndEvent::
           kManualFlowGeneratedPasswordChosen;
-  constexpr PasswordChangeSuccessTracker::EndEvent end_event2 =
-      PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen;
   constexpr PasswordChangeSuccessTracker::EntryPoint entry_point1 =
       PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings;
 
-  recorder().OnFlowRecorded(kEtldPlus1, start_event1, end_event1, entry_point1,
-                            base::Seconds(30));
-  recorder().OnFlowRecorded(kEtldPlus1, start_event1, end_event2, entry_point1,
+  recorder().OnFlowRecorded(kEtldPlus1, start_event, end_event, entry_point1,
                             base::Seconds(30));
 
   histogram_tester().ExpectUniqueTimeSample(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
-      base::Seconds(30), 2);
-
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings." +
+          uma_string,
+      base::Seconds(30), 1);
   histogram_tester().ExpectUniqueTimeSample(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow.ManualFlowPasswordChosen",
-      base::Seconds(30), 2);
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings." +
+          uma_string + ".ManualFlowPasswordChosen",
+      base::Seconds(30), 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordChangeMetricsRecorderUmaParametrizedStartEvent,
+    testing::Values(
+        StartEventAndCorrespondingUmaString(
+            PasswordChangeSuccessTracker::StartEvent::
+                kManualChangePasswordUrlFlow,
+            "ManualChangePasswordUrlFlow"),
+        StartEventAndCorrespondingUmaString(
+            PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow,
+            "ManualHomepageFlow"),
+        StartEventAndCorrespondingUmaString(
+            PasswordChangeSuccessTracker::StartEvent::kManualUnknownFlow,
+            "ManualUnknownFlow"),
+        StartEventAndCorrespondingUmaString(
+            PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow,
+            "ManualWellKnownUrlFlow")));
 
 TEST_F(PasswordChangeMetricsRecorderUmaTest,
        RecordMultipleMetricsEventsWithDifferentDurations) {
@@ -148,30 +183,29 @@ TEST_F(PasswordChangeMetricsRecorderUmaTest,
                             duration2);
 
   histogram_tester().ExpectTimeBucketCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow",
       duration1, 1);
   histogram_tester().ExpectTimeBucketCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow",
       duration2, 1);
   histogram_tester().ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow",
       2);
 
   histogram_tester().ExpectTimeBucketCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow."
-      "ManualFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow.ManualFlowPasswordChosen",
       duration1, 1);
   histogram_tester().ExpectTimeBucketCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow.ManualFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow.ManualFlowPasswordChosen",
       duration2, 1);
   histogram_tester().ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow.ManualFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow.ManualFlowPasswordChosen",
       2);
 }
 
@@ -443,12 +477,12 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
       kNotPhished);
 
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow",
       1);
   histogram_tester.ExpectTotalCount(
-      "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
-      "ManualFlow.ManualFlowPasswordChosen",
+      "PasswordManager.PasswordChangeFlowDurationV2.LeakCheckInSettings."
+      "ManualWellKnownUrlFlow.ManualFlowPasswordChosen",
       1);
 }
 
