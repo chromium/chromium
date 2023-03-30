@@ -2,12 +2,12 @@
 
 **Get started [here](#setup)**.
 
-[Visual Studio Code (VS Code)](https://code.visualstudio.com) is a free,
-open source, lightweight and powerful code editor for Windows, Mac and Linux,
-based on [Electron](https://www.electronjs.org/)/Chromium.
-It has built-in support for JavaScript, TypeScript and Node.js and a rich
-extension ecosystem that adds intellisense, debugging, syntax highlighting etc.
-For many languages like C++, Python, Go, Java, it works without too much setup.
+[Visual Studio Code (VS Code)](https://code.visualstudio.com) is a free, open
+source, lightweight and powerful code editor for Windows, macOS and Linux, based
+on [Electron](https://www.electronjs.org/)/Chromium. It has built-in support for
+JavaScript, TypeScript and Node.js and a rich extension ecosystem that adds
+intellisense, debugging, syntax highlighting etc. For many languages like C++,
+Python, Go, Java, it works without too much setup.
 
 It is NOT a full-fledged IDE like Visual Studio. The two are completely
 separate products. The only commonality with Visual Studio is that both are
@@ -48,9 +48,8 @@ make changes, read the [documentation
 guidelines](documentation_guidelines.md) and
 [submit a change list](contributing.md).
 
-All file paths and commands have been tested on Linux. Windows and Mac might
-require a slightly different setup (e.g. `Ctrl` -> `Cmd`). Please update this
-page accordingly.
+All file paths and commands have been tested on Linux and macOS. Windows might
+require a slightly different setup. Please update this page accordingly.
 
 
 ## Setup
@@ -65,10 +64,11 @@ Follow the steps on [Setting up Visual Studio Code](https://code.visualstudio.co
 
 ### Usage
 
-To run it on Linux, just navigate to Chromium's `src` folder and type `code .`
-in a terminal. The argument to `code` is the base directory of the workspace. VS
-Code does not require project or solution files. However, it does store
-workspace settings in a `.vscode` folder in your base directory.
+To run it on Linux or on macOS, just navigate to Chromium's `src` folder and
+type `code .` in a terminal. The argument to `code` is the base directory of the
+workspace. VS Code does not require project or solution files. However, it does
+store workspace settings in a `.vscode` folder in your base directory (i.e. your
+project root folder).
 
 If you installed Code Insiders, the binary name is `code-insiders` instead.
 
@@ -97,7 +97,8 @@ the "Preferences: Open User Settings (JSON)" verb (for whatever reason, setting
 
 Up to now, you have a basic version of VS Code without much language support.
 Next, we will install some useful extensions. Jump to the extensions window
-(`Ctrl+Shift+X`) and install the extensions, or run the following commands.
+(`Ctrl+Shift+X`, or `Cmd+Shift+X` in macOS) and install the extensions, or run
+the following commands.
 
 You will most likely use the following extensions every day:
 
@@ -148,14 +149,14 @@ $ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo
 ```
 
 *   **chromium-codesearch** -
-    Mac and Linux only: adds ability to open the current line in [Chromium Code
+    macOS and Linux only: adds ability to open the current line in [Chromium Code
     Search](https://cs.chromium.org/). All other functionality is deprecated, so
     currently only of limited usefulness.
 *   [**change-case**](https://marketplace.visualstudio.com/items?itemName=wmaurer.change-case) -
     Quickly change the case of the current selection or current word.
 *   [**Markdown Preview Enhanced**](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced) -
     Preview markdown side-by-side with automatic scroll sync and many other
-    features with `ctrl+k v`. This document was written with this extension!
+    features with `Ctrl+k v`. This document was written with this extension!
 *   [**Todo Tree**](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree) -
     Displays comment tags like TODO/FIXME in a tree view in a dedicated sidebar.
 *   [**Bookmarks**](https://marketplace.visualstudio.com/items?itemName=alefragnani.Bookmarks) -
@@ -168,7 +169,7 @@ $ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo
     A basic spell checker that works well with camelCase code. It helps catch
     common spelling errors.
 *   [**HTML Preview**](https://marketplace.visualstudio.com/items?itemName=tht13.html-preview-vscode) -
-    Previews HTML files while editing with `ctrl+k v`.
+    Previews HTML files while editing with `Ctrl+k v`.
 *   [**Color Picker**](https://marketplace.visualstudio.com/items?itemName=anseki.vscode-color) -
     Visualizes color codes inline and provides color picker GUI to generates new
     color codes.
@@ -180,8 +181,9 @@ other useful extensions.
 
 ### Color Scheme
 
-Press `Ctrl+Shift+P, color, Enter` to pick a color scheme for the editor. There
-are also tons of [color schemes available for download on the
+Press `Ctrl+Shift+P (Cmd+Shift+P `in macOS`), color, Enter`  to pick a color
+scheme for the editor. There are also tons of [color schemes available for
+download on the
 marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes&sortBy=Downloads).
 
 ### Keyboard Shortcuts
@@ -189,9 +191,9 @@ marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=
 #### CheatSheet
 
 *   [Windows](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf)
-*   [Mac](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf)
+*   [macOS](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf)
 
-#### Useful Shortcuts
+#### Useful Shortcuts (Linux)
 
 *   `Ctrl+P` opens a search box to find and open a file.
 *   `F1` or `Ctrl+Shift+P` opens a search box to find a command (e.g. Tasks: Run
@@ -299,7 +301,7 @@ settings to enable better team development, or change settings locally to suit
 personal preference.
 
 To use these settings wholesale, enter the following commands into your terminal
-while at the src directory:
+while at the `src/` directory:
 
 ```bash
 $ mkdir .vscode/
@@ -325,10 +327,11 @@ $ cp tools/vscode/tasks.json .vscode
 Before running most of the tasks, you'll need to set the `chromeOutputDir` value
 in your `.vscode/tasks.json` file.
 
-Now you can run tasks by using `Ctrl+P` and typing "task " and then a number
-of your choice. If you select one of the build tasks, the build output will
-display in the terminal pane. Jump through build problems quickly using F8 /
-Shift-F8. See [task names](#task-names) for more info on running tasks.
+Now you can run tasks by using `Ctrl+P` (`Cmd+Shift+P` in macOS) and typing
+"task " and then a number of your choice. If you select one of the build tasks,
+the build output will display in the terminal pane. Jump through build problems
+quickly using F8 / Shift-F8. See [task names](#task-names) for more info on
+running tasks.
 
 If you have intellisense enabled but do not have include paths set up correctly,
 jumping through problems will also try to navigate through all the include files
@@ -455,11 +458,11 @@ $ cp tools/vscode/cpp.json .vscode/cpp.code-snippets
 
 #### The `out` folder
 
-Automatically generated code is put into a subfolder of out/, which means that
+Automatically generated code is put into a subfolder of `out/`, which means that
 these files are ignored by VS Code (see files.exclude above) and cannot be
-opened e.g. from quick-open (`Ctrl+P`).
-As of version 1.21, VS Code does not support negated glob commands, but you can
-define a set of exclude pattern to include only out/Debug/gen:
+opened e.g. from quick-open (`Ctrl+P`). As of version 1.21, VS Code does not
+support negated glob commands, but you can define a set of exclude pattern to
+include only `out/Debug/gen`:
 ```
 "files.exclude": {
   // Ignore build output folders. Except out/Debug/gen/
