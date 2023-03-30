@@ -24,8 +24,8 @@ namespace scheduled_task_util {
 // |task_time_field_name| - time of the day when the task should occur. The name
 // of the field is passed as an argument to ParseScheduledTask method.
 // |frequency| - frequency of reccurring task. Can be daily, weekly or monthly.
-// |day_of_week| - optional field, used for policies that recurr weekly.
-// |day_of_month| - optional field, used for policies that recurr monthly.
+// |day_of_week| - optional field, used for policies that recur weekly.
+// |day_of_month| - optional field, used for policies that recur monthly.
 absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
     const base::Value& value,
     const std::string& task_time_field_name);
