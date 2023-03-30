@@ -6052,6 +6052,12 @@ const char kReleaseTrackUiName[] = "Release track system tray UI";
 const char kReleaseTrackUiDescription[] =
     "Enables the release track UI in the system tray";
 
+extern const char kRenderArcNotificationsByChromeName[] =
+    "Render ARC notifications by ChromeOS";
+extern const char kRenderArcNotificationsByChromeDescription[] =
+    "Enables rendering ARC notifications using ChromeOS notification framework "
+    "if supported";
+
 const char kArcWindowPredictorName[] = "Enable ARC window predictor";
 const char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";

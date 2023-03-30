@@ -1813,6 +1813,11 @@ BASE_FEATURE(kReleaseTrackUi,
              "ReleaseTrackUi",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables rendering ARC notifications using ChromeOS notification framework
+BASE_FEATURE(kRenderArcNotificationsByChrome,
+             "RenderArcNotificationsByChrome",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the overview and desk reverse scrolling behaviors are changed
 // and if the user performs the old gestures, a notification or toast will show
 // up.
@@ -3146,6 +3151,10 @@ bool IsPerDeskZOrderEnabled() {
 
 bool IsReleaseTrackUiEnabled() {
   return base::FeatureList::IsEnabled(kReleaseTrackUi);
+}
+
+bool IsRenderArcNotificationsByChromeEnabled() {
+  return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
 }
 
 bool IsReverseScrollGesturesEnabled() {
