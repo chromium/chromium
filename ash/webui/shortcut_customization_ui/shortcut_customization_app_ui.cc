@@ -157,6 +157,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MODE_CHANGE},
       {"iconLabelOpenLauncher",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER},
+      {"iconLabelMenu", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MENU},
       {"iconLabelPower", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_POWER},
       {"iconLabelPrintScreen",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_PRINT_SCREEN},

@@ -545,11 +545,8 @@ TEST_F(AcceleratorConfigurationProviderTest, FilterOutHiddenAccelerators) {
       {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
        SHOW_TASK_MANAGER},
       // Accelerators that should be hidden from display.
-      {/*trigger_on_press=*/true, ui::VKEY_BROWSER_SEARCH, ui::EF_NONE,
-       TOGGLE_APP_LIST},
       {/*trigger_on_press=*/true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
        TOGGLE_APP_LIST},
-      {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_NONE, TOGGLE_APP_LIST},
       {/*trigger_on_press=*/false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
        TOGGLE_APP_LIST},
       {/*trigger_on_press=*/true, ui::VKEY_F14, ui::EF_NONE,
@@ -915,6 +912,8 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"insert", ash::GetKeyDisplay(ui::VKEY_INSERT));
   EXPECT_EQ(u"page up", ash::GetKeyDisplay(ui::VKEY_PRIOR));
   EXPECT_EQ(u"page down", ash::GetKeyDisplay(ui::VKEY_NEXT));
+  EXPECT_EQ(u"meta", ash::GetKeyDisplay(ui::VKEY_LWIN));
+  EXPECT_EQ(u"Menu", ash::GetKeyDisplay(ui::VKEY_MENU));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {

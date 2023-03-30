@@ -51,12 +51,8 @@ using HiddenAcceleratorMap =
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
   static auto hiddenAcceleratorMap = base::NoDestructor<HiddenAcceleratorMap>(
       {{TOGGLE_APP_LIST,
-        {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE,
+        {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
                          ui::Accelerator::KeyState::PRESSED),
-         ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE,
-                         ui::Accelerator::KeyState::RELEASED),
          ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
                          ui::Accelerator::KeyState::RELEASED)}},
        {SHOW_SHORTCUT_VIEWER,

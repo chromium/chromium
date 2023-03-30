@@ -41,6 +41,8 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
           {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
           {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+          {ui::KeyboardCode::VKEY_MENU, u"Menu"},
+          {ui::KeyboardCode::VKEY_LWIN, u"meta"},
           {ui::KeyboardCode::VKEY_HOME, u"home"},
           {ui::KeyboardCode::VKEY_END, u"end"},
           {ui::KeyboardCode::VKEY_DELETE, u"delete"},

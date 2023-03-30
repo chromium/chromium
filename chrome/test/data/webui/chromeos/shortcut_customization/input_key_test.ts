@@ -9,7 +9,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
-import {InputKeyElement, keyToIconNameMap} from 'chrome://shortcut-customization/js/input_key.js';
+import {InputKeyElement, KeyInputState, keyToIconNameMap} from 'chrome://shortcut-customization/js/input_key.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -123,5 +123,33 @@ suite('inputKeyTest', function() {
     assertTrue(isVisible(iconWrapperElement2));
     assertEquals('shortcut-customization-keys:search', iconElement2.icon);
     assertEquals('search', iconWrapperElement2.ariaLabel);
+  });
+
+  test('MetaKeyIsAlwaysModifier', async () => {
+    inputKeyElement = initInputKeyElement();
+    inputKeyElement.key = 'meta';
+    inputKeyElement.keyState = KeyInputState.ALPHANUMERIC_SELECTED;
+
+    manager!.setHasLauncherButton(true);
+    await flush();
+
+    // Should show launcher icon when hasLauncherButton is true.
+    const iconElement = inputKeyElement.shadowRoot!.querySelector(
+                            '#key-icon') as IronIconElement;
+    assertEquals('shortcut-customization-keys:launcher', iconElement.icon);
+    // 'meta' key should always be a modifier.
+    assertEquals(KeyInputState.MODIFIER_SELECTED, inputKeyElement.keyState);
+  });
+
+  test('OtherKeyStateUnchanged', async () => {
+    inputKeyElement = initInputKeyElement();
+    inputKeyElement.key = 'a';
+    inputKeyElement.keyState = KeyInputState.ALPHANUMERIC_SELECTED;
+
+    manager!.setHasLauncherButton(true);
+    await flush();
+
+    // other keys should keep their original state.
+    assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, inputKeyElement.keyState);
   });
 });
