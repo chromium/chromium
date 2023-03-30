@@ -79,8 +79,11 @@ public class IncognitoReauthCoordinatorFactoryTest {
     private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
     @Mock
     private IncognitoTabHost mIncognitoTabHostMock;
-    @Mock
-    private OnBackPressedCallback mOnBackPressedCallbackMock;
+
+    private OnBackPressedCallback mOnBackPressedCallbackMock = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {}
+    };
 
     private final boolean mIsTabbedActivity;
 

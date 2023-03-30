@@ -46,8 +46,11 @@ public class IncognitoReauthDialogTest {
     private ModalDialogManager mModalDialogManagerMock;
     @Mock
     private View mIncognitoReauthViewMock;
-    @Mock
-    private OnBackPressedCallback mOnBackPressedCallbackMock;
+
+    private OnBackPressedCallback mOnBackPressedCallbackMock = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {}
+    };
 
     private IncognitoReauthDialog mIncognitoReauthDialog;
 
@@ -60,8 +63,7 @@ public class IncognitoReauthDialogTest {
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(
-                mModalDialogManagerMock, mIncognitoReauthViewMock, mOnBackPressedCallbackMock);
+        verifyNoMoreInteractions(mModalDialogManagerMock, mIncognitoReauthViewMock);
     }
 
     @Test

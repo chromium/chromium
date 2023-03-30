@@ -61,14 +61,17 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Mock
     private View mIncognitoReauthViewMock;
     @Mock
-    private OnBackPressedCallback mOnBackPressedCallbackMock;
-    @Mock
     private PropertyModel mPropertyModelMock;
     @Mock
     private PropertyModelChangeProcessor mPropertyModelChangeProcessorMock;
 
     @Mock
     private IncognitoReauthDialog mIncognitoReauthDialogMock;
+
+    private OnBackPressedCallback mOnBackPressedCallbackMock = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {}
+    };
 
     private FullScreenIncognitoReauthCoordinator mFullScreenIncognitoReauthCoordinator;
 
