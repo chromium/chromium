@@ -1,0 +1,27 @@
+<!doctype html>
+<title>Scheduler: postTask to a detached window's scheduler</title>
+<link rel="help" href="https://github.com/WICG/scheduling-apis">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  onload = () => {
+    let didRun = false;
+    const frame = document.body.appendChild(document.createElement('iframe'));
+    const frameWindow = frame.contentWindow;
+    const controller = new frameWindow.TaskController();
+    document.body.removeChild(frame);
+    frameWindow.scheduler.postTask(() => { didRun = true; }, {signal: controller.signal});
+
+    t.step_timeout(() => {
+      assert_false(didRun, 'The task should not have run.');
+      t.done();
+    }, 10);
+  }
+}, 'Test scheduler.postTask() with a scheduler in a detached window');
+
+</script>
+
