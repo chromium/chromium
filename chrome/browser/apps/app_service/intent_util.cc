@@ -414,7 +414,7 @@ arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
     arc_intent->data = intent->url->spec();
   }
   if (intent->share_text.has_value() || intent->share_title.has_value() ||
-      intent->start_type.has_value()) {
+      intent->start_type.has_value() || !intent->extras.empty()) {
     arc_intent->extras = CreateArcIntentExtras(intent);
   }
   if (!intent->categories.empty()) {
@@ -428,9 +428,6 @@ arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
   }
   if (intent->ui_bypassed.has_value()) {
     arc_intent->ui_bypassed = intent->ui_bypassed.value();
-  }
-  if (!intent->extras.empty()) {
-    arc_intent->extras = intent->extras;
   }
   return arc_intent;
 }

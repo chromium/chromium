@@ -176,6 +176,50 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   EXPECT_EQ(activity_name, intent->activity_name.value());
 }
 
+TEST_F(IntentUtilsTest, CreateArcIntentExtras) {
+  // Test the case where both `share_type` and `extras` are filled in in intent.
+  const std::string& activity_name = "com.android.vending.AssetBrowserActivity";
+  const std::string& start_type = "initialStart";
+  const std::string& category = "android.intent.category.LAUNCHER";
+  apps::IntentPtr intent =
+      apps_util::MakeIntentForActivity(activity_name, start_type, category);
+  // Add extras other than share text, share type nor share title.
+  const std::string& extra_name = "android.intent.extra.TESTING";
+  const std::string& extra_value = "testing";
+  intent->extras = base::flat_map<std::string, std::string>();
+  intent->extras.insert(std::make_pair(extra_name, extra_value));
+
+  arc::mojom::IntentInfoPtr arc_intent =
+      apps_util::ConvertAppServiceToArcIntent(intent);
+
+  ASSERT_TRUE(intent);
+  ASSERT_TRUE(arc_intent);
+
+  std::string intent_str =
+      "#Intent;action=android.intent.action.MAIN;category=android.intent."
+      "category.LAUNCHER;launchFlags=0x10200000;component=com.android.vending/"
+      ".AssetBrowserActivity;S.org.chromium.arc.start_type=initialStart;"
+      "android.intent.extra.TESTING=testing;end";
+  EXPECT_EQ(intent_str,
+            apps_util::CreateLaunchIntent("com.android.vending", intent));
+
+  EXPECT_EQ(arc::kIntentActionMain, arc_intent->action);
+
+  // Check both share_type and extras exist in `arc_intent->extras`.
+  base::flat_map<std::string, std::string> extras;
+  extras.insert(std::make_pair("org.chromium.arc.start_type", start_type));
+  extras.insert(std::make_pair(extra_name, extra_value));
+  EXPECT_TRUE(arc_intent->extras.has_value());
+  EXPECT_EQ(extras, arc_intent->extras);
+
+  EXPECT_TRUE(arc_intent->categories.has_value());
+  EXPECT_EQ(category, arc_intent->categories.value()[0]);
+
+  arc_intent->extras = apps_util::CreateArcIntentExtras(intent);
+  EXPECT_TRUE(intent->activity_name.has_value());
+  EXPECT_EQ(activity_name, intent->activity_name.value());
+}
+
 TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
   apps::IntentPtr intent = apps_util::MakeShareIntent("text", "title");
   std::string intent_str =
