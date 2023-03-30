@@ -191,8 +191,7 @@ suite('AvatarCameraTest', function() {
     await waitAfterNextRender(avatarCameraElement);
 
     assertEquals(
-        null, avatarCameraElement.shadowRoot?.getElementById('loadingButton'),
-        'loading button hidden again');
+        'none', loadingButton.style.display, 'loading button hidden again');
   });
 
   test('calls saveCameraImage with data on confirmPhoto click', async () => {
