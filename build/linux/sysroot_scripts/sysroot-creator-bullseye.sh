@@ -13,7 +13,7 @@ DIST=bullseye
 # It should not be incremented when adding packages.
 SYSROOT_RELEASE=1
 
-ARCHIVE_TIMESTAMP=20221105T211506Z
+ARCHIVE_TIMESTAMP=20230329T085712Z
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian/$ARCHIVE_TIMESTAMP/"
 APT_SOURCES_LIST=(
   # Debian 12 (Bookworm) is needed for GTK4.  It should be kept before bullseye
@@ -204,6 +204,7 @@ DEBIAN_PACKAGES="\
   libkrb5support0
   liblcms2-2
   libldap-2.4-2
+  liblerc4
   libltdl7
   liblz4-1
   liblzma5
@@ -305,6 +306,7 @@ DEBIAN_PACKAGES="\
   libthai0
   libtiff-dev
   libtiff5
+  libtiff6
   libtiffxx5
   libtinfo6
   libtirpc3
@@ -336,6 +338,7 @@ DEBIAN_PACKAGES="\
   libwayland-server0
   libwebp-dev
   libwebp6
+  libwebp7
   libwebpdemux2
   libwebpmux3
   libwrap0
