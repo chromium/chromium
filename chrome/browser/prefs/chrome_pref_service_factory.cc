@@ -76,7 +76,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

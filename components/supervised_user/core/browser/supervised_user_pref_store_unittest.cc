@@ -9,15 +9,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -37,9 +35,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
 
   base::Value::Dict* changed_prefs() { return &changed_prefs_; }
 
-  bool initialization_completed() const {
-    return initialization_completed_;
-  }
+  bool initialization_completed() const { return initialization_completed_; }
 
   // PrefStore::Observer implementation:
   void OnPrefValueChanged(const std::string& key) override;
@@ -98,7 +94,6 @@ void SupervisedUserPrefStoreTest::TearDown() {
   service_.Shutdown();
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(SupervisedUserPrefStoreTest,
        ConfigureSettingsWithHistoryDeletionAllowed) {
   SupervisedUserPrefStoreFixture fixture(&service_);
@@ -118,7 +113,6 @@ TEST_F(SupervisedUserPrefStoreTest,
                   prefs::kAllowDeletingBrowserHistory),
               Optional(true));
 }
-#endif
 
 TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   SupervisedUserPrefStoreFixture fixture(&service_);

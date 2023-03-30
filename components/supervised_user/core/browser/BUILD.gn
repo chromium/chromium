@@ -17,6 +17,8 @@ static_library("browser") {
     "remote_web_approvals_manager.h",
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
+    "supervised_user_pref_store.cc",
+    "supervised_user_pref_store.h",
     "supervised_user_service_observer.h",
     "supervised_user_settings_service.cc",
     "supervised_user_settings_service.h",
@@ -29,17 +31,22 @@ static_library("browser") {
   ]
 
   public_deps = [
+    "//components/autofill/core/common",
+    "//components/history/core/common",
     "//components/keyed_service/core",
+    "//components/policy/core/common:common_constants",
+    "//components/safe_search_api",
     "//components/supervised_user/core/browser/proto",
+    "//extensions/buildflags",
     "//third_party/protobuf:protobuf_lite",
   ]
 
   deps = [
     "//base",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/google/core/common",
     "//components/prefs",
     "//components/resources:components_resources",
-    "//components/safe_search_api",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
@@ -61,6 +68,7 @@ source_set("unit_tests") {
     "kids_management_url_checker_client_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
     "supervised_user_error_page_unittest.cc",
+    "supervised_user_pref_store_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",
     "supervised_user_url_filter_unittest.cc",

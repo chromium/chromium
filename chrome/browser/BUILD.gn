@@ -7441,8 +7441,6 @@ static_library("browser") {
       "supervised_user/supervised_user_navigation_observer.h",
       "supervised_user/supervised_user_navigation_throttle.cc",
       "supervised_user/supervised_user_navigation_throttle.h",
-      "supervised_user/supervised_user_pref_store.cc",
-      "supervised_user/supervised_user_pref_store.h",
       "supervised_user/supervised_user_service.cc",
       "supervised_user/supervised_user_service.h",
       "supervised_user/supervised_user_service_factory.cc",

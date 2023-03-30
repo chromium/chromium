@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_pref_store.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,6 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/history/core/common/pref_names.h"
@@ -111,8 +110,7 @@ bool SupervisedUserPrefStore::IsInitializationComplete() const {
   return !!prefs_;
 }
 
-SupervisedUserPrefStore::~SupervisedUserPrefStore() {
-}
+SupervisedUserPrefStore::~SupervisedUserPrefStore() {}
 
 void SupervisedUserPrefStore::OnNewSettingsAvailable(
     const base::Value::Dict& settings) {
@@ -136,8 +134,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     // Copy supervised user settings to prefs.
     for (const auto& entry : kSupervisedUserSettingsPrefMapping) {
       const base::Value* value = settings.Find(entry.settings_name);
-      if (value)
+      if (value) {
         prefs_->SetValue(entry.pref_name, value->Clone());
+      }
     }
 
     // Manually set preferences that aren't direct copies of the settings value.
@@ -187,8 +186,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
   }
 
   if (!old_prefs) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnInitializationCompleted(true);
+    }
     return;
   }
 
@@ -197,8 +197,9 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 
   // Send out change notifications.
   for (const std::string& pref : changed_prefs) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnPrefValueChanged(pref);
+    }
   }
 }
 
