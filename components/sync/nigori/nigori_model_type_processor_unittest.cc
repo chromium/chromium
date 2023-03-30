@@ -14,10 +14,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/test/mock_commit_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,13 +103,6 @@ class MockNigoriSyncBridge : public NigoriSyncBridge {
               (override));
   MOCK_METHOD(std::unique_ptr<EntityData>, GetData, (), (override));
   MOCK_METHOD(void, ApplyDisableSyncChanges, (), (override));
-};
-
-class MockCommitQueue : public CommitQueue {
- public:
-  MockCommitQueue() = default;
-  ~MockCommitQueue() override = default;
-  MOCK_METHOD(void, NudgeForCommit, (), (override));
 };
 
 class NigoriModelTypeProcessorTest : public testing::Test {

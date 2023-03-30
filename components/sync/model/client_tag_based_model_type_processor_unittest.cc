@@ -474,7 +474,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
 
   FakeModelTypeSyncBridge::Store* db() const { return bridge()->mutable_db(); }
 
-  MockModelTypeWorker* worker() const { return worker_; }
+  MockModelTypeWorker* worker() const { return worker_.get(); }
 
   ClientTagBasedModelTypeProcessor* type_processor() const {
     return static_cast<ClientTagBasedModelTypeProcessor*>(
@@ -495,15 +495,12 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
 
   void OnReadyToConnect(std::unique_ptr<DataTypeActivationResponse> context) {
     model_type_state_ = context->model_type_state;
-    std::unique_ptr<MockModelTypeWorker> worker =
-        std::make_unique<MockModelTypeWorker>(model_type_state_,
-                                              type_processor());
-    // Keep an unsafe pointer to the commit queue the processor will use.
-    worker_ = worker.get();
+    worker_ = std::make_unique<MockModelTypeWorker>(model_type_state_,
+                                                    type_processor());
     // The context contains a proxy to the processor, but this call is
     // side-stepping that completely and connecting directly to the real
     // processor, since these tests are single-threaded and don't need proxies.
-    type_processor()->ConnectSync(std::move(worker));
+    type_processor()->ConnectSync(worker_->MakeForwardingCommitQueue());
     ASSERT_TRUE(run_loop_);
     run_loop_->Quit();
   }
@@ -544,8 +541,8 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   // This run loop is used to wait for OnReadyToConnect is called.
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  // The current mock queue, which is owned by |type_processor()|.
-  raw_ptr<MockModelTypeWorker> worker_;
+  // The current mock queue.
+  std::unique_ptr<MockModelTypeWorker> worker_;
 
   // Whether to expect an error from the processor (and from which site).
   absl::optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
@@ -1535,14 +1532,21 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 // Tests that GetLocalChanges honors max_entries parameter.
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldTruncateLocalChangesToMaxSize) {
-  InitializeToMetadataLoaded();
+  InitializeToReadyState();
+
+  // Avoid that the worker immediately invokes GetLocalChanges() as soon as it
+  // gets nudged, otherwise the test body cannot invoke GetLocalChanges()
+  // manually.
+  worker()->DisableGetLocalChangesUponNudge();
+
   WritePrefItem(bridge(), kKey1, kValue1);
   WritePrefItem(bridge(), kKey2, kValue2);
 
-  // Reqeust at most one intity per batch, ensure that only one was returned.
+  // Request at most one entity per batch, ensure that only one was returned.
   CommitRequestDataList commit_request;
   type_processor()->GetLocalChanges(
-      1, base::BindOnce(&CaptureCommitRequest, &commit_request));
+      /*max_entries=*/1,
+      base::BindOnce(&CaptureCommitRequest, &commit_request));
   EXPECT_EQ(1U, commit_request.size());
 }
 

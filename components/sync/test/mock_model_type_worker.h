@@ -48,7 +48,11 @@ class MockModelTypeWorker : public CommitQueue {
   // Callback when local changes are received from the processor.
   void LocalChangesReceived(CommitRequestDataList&& commit_request);
 
-  // Implementation of ModelTypeWorker.
+  // Returns a CommitQueue that forwards all calls to `this`, useful for APIs
+  // that need to take ownership of a CommitQueue.
+  std::unique_ptr<CommitQueue> MakeForwardingCommitQueue();
+
+  // Implementation for CommitQueue.
   void NudgeForCommit() override;
 
   // Getters to inspect the requests sent to this object.
@@ -147,6 +151,10 @@ class MockModelTypeWorker : public CommitQueue {
   void UpdateWithGarbageCollection(
       const sync_pb::GarbageCollectionDirective& gcd);
 
+  // Overrides the default behavior to immediately get local changes from the
+  // processor as soon as NudgeForCommit() is invoked.
+  void DisableGetLocalChangesUponNudge();
+
  private:
   // Generate an ID string.
   static std::string GenerateId(const ClientTagHash& tag_hash);
@@ -176,6 +184,8 @@ class MockModelTypeWorker : public CommitQueue {
   // Map of versions by client tag hash.
   // This is an essential part of the mocked server state.
   std::map<ClientTagHash, int64_t> server_versions_;
+
+  bool get_local_changes_upon_nudge_enabled_ = true;
 
   // WeakPtrFactory for this worker which will be sent to sync thread.
   base::WeakPtrFactory<MockModelTypeWorker> weak_ptr_factory_{this};

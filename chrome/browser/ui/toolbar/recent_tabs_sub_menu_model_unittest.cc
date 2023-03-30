@@ -41,6 +41,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -149,6 +150,11 @@ class RecentTabsSubMenuModelTest
     ASSERT_NE(nullptr, activation_response);
     ASSERT_NE(nullptr, activation_response->type_processor);
     sync_processor_ = std::move(activation_response->type_processor);
+
+    // ClientTagBasedModelTypeProcessor requires connecting before
+    // other interactions with the worker happen.
+    sync_processor_->ConnectSync(
+        std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     EnableSync();
   }

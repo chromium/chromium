@@ -141,6 +141,11 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
               loop.Quit();
             }));
     loop.Run();
+
+    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // interactions with the worker happen.
+    DCHECK(worker_);
+    real_processor_->ConnectSync(worker_->MakeForwardingCommitQueue());
   }
 
   std::map<std::string, std::unique_ptr<EntityData>> GetAllData() {

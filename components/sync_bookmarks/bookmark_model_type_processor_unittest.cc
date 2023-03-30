@@ -25,13 +25,13 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "components/undo/bookmark_undo_service.h"
@@ -227,11 +227,6 @@ void AssertState(const BookmarkModelTypeProcessor* processor,
   }
 }
 
-class MockCommitQueue : public syncer::CommitQueue {
- public:
-  MOCK_METHOD(void, NudgeForCommit, (), (override));
-};
-
 class ProxyCommitQueue : public syncer::CommitQueue {
  public:
   explicit ProxyCommitQueue(CommitQueue* commit_queue)
@@ -328,7 +323,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
     return &bookmark_undo_service_;
   }
   favicon::FaviconService* favicon_service() { return &favicon_service_; }
-  MockCommitQueue* mock_commit_queue() { return &mock_commit_queue_; }
+  syncer::MockCommitQueue* mock_commit_queue() { return &mock_commit_queue_; }
   BookmarkModelTypeProcessor* processor() { return processor_.get(); }
   base::MockCallback<base::RepeatingClosure>* schedule_save_closure() {
     return &schedule_save_closure_;
@@ -366,7 +361,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
       error_handler_;
   BookmarkUndoService bookmark_undo_service_;
   NiceMock<favicon::MockFaviconService> favicon_service_;
-  NiceMock<MockCommitQueue> mock_commit_queue_;
+  NiceMock<syncer::MockCommitQueue> mock_commit_queue_;
   std::unique_ptr<BookmarkModelTypeProcessor> processor_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };

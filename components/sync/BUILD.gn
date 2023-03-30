@@ -69,6 +69,8 @@ static_library("test_support") {
     "test/fake_sync_service.h",
     "test/forwarding_model_type_change_processor.cc",
     "test/forwarding_model_type_change_processor.h",
+    "test/mock_commit_queue.cc",
+    "test/mock_commit_queue.h",
     "test/mock_connection_manager.cc",
     "test/mock_connection_manager.h",
     "test/mock_debug_info_getter.cc",

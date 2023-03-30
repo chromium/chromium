@@ -32,6 +32,7 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/test/mock_commit_queue.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/webdata/common/web_database.h"
@@ -180,6 +181,11 @@ class AutocompleteSyncBridgeTest : public testing::Test {
               loop.Quit();
             }));
     loop.Run();
+
+    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // interactions with the worker happen.
+    real_processor_->ConnectSync(
+        std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // Initialize the processor with the initial sync already done.
     sync_pb::ModelTypeState state;

@@ -332,8 +332,6 @@ void ClientTagBasedModelTypeProcessor::ReportErrorImpl(const ModelError& error,
     return;
   }
 
-  model_error_ = error;
-
   const std::string type_suffix = ModelTypeToHistogramSuffix(type_);
   base::UmaHistogramEnumeration(kErrorSiteHistogramPrefix + type_suffix, site);
 
@@ -345,6 +343,8 @@ void ClientTagBasedModelTypeProcessor::ReportErrorImpl(const ModelError& error,
   if (IsConnected()) {
     DisconnectSync();
   }
+
+  model_error_ = error;
 
   // Shouldn't connect anymore.
   start_callback_.Reset();
@@ -370,6 +370,8 @@ ClientTagBasedModelTypeProcessor::GetControllerDelegate() {
 void ClientTagBasedModelTypeProcessor::ConnectSync(
     std::unique_ptr<CommitQueue> worker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!model_error_);
+
   DVLOG(1) << "Successfully connected " << ModelTypeToDebugString(type_);
 
   worker_ = std::move(worker);
@@ -380,6 +382,7 @@ void ClientTagBasedModelTypeProcessor::ConnectSync(
 void ClientTagBasedModelTypeProcessor::DisconnectSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsConnected());
+  DCHECK(!model_error_);
 
   DVLOG(1) << "Disconnecting sync for " << ModelTypeToDebugString(type_);
   weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
@@ -611,13 +614,12 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(max_entries, 0U);
+  DCHECK(IsConnected());
+  DCHECK(!model_error_);
 
-  // If there is a model error, it must have been reported already but hasn't
-  // reached the sync engine yet. In this case return directly to avoid
-  // interactions with the bridge.
   // In some cases local changes may be requested before entity tracker is
   // loaded. Just invoke the callback with empty list.
-  if (model_error_ || !entity_tracker_) {
+  if (!entity_tracker_) {
     std::move(callback).Run(CommitRequestDataList());
     return;
   }
@@ -652,6 +654,7 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsConnected());
   DCHECK(!model_error_);
 
   DCHECK(entity_tracker_)
@@ -736,6 +739,8 @@ bool HasClearAllDirective(
 void ClientTagBasedModelTypeProcessor::OnCommitFailed(
     SyncCommitError commit_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsConnected());
+  DCHECK(!model_error_);
 
   switch (bridge_->OnCommitAttemptFailed(commit_error)) {
     case ModelTypeSyncBridge::CommitAttemptFailedBehavior::
@@ -758,6 +763,7 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
     absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_ready_to_sync_);
+  DCHECK(IsConnected());
   DCHECK(!model_error_);
   DCHECK(!model_type_state.progress_marker().has_gc_directive());
 
@@ -821,8 +827,9 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
 void ClientTagBasedModelTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!model_error_);
   DCHECK(IsConnected());
+  DCHECK(!model_error_);
+
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
   sync_pb::ModelTypeState model_type_state =
