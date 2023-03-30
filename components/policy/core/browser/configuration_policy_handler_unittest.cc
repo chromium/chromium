@@ -852,7 +852,7 @@ TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED);
 
   const base::Value* value_expected_in_pref =
-      parsed_json->FindPath(kPolicyName);
+      parsed_json->GetDict().Find(kPolicyName);
 
   PolicyErrorMap errors;
   PrefValueMap prefs;
@@ -918,7 +918,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, ValidEmbeddedJson) {
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   const base::Value* value_expected_in_pref =
-      parsed_json->FindPath(kPolicyName);
+      parsed_json->GetDict().Find(kPolicyName);
 
   PolicyErrorMap errors;
   PrefValueMap prefs;
@@ -945,7 +945,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, InvalidEmbeddedJson) {
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   const base::Value* value_expected_in_pref =
-      parsed_json->FindPath(kPolicyName);
+      parsed_json->GetDict().Find(kPolicyName);
 
   PolicyErrorMap errors;
   PrefValueMap prefs;
@@ -972,7 +972,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, UnparsableJson) {
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   const base::Value* value_expected_in_pref =
-      parsed_json->FindPath(kPolicyName);
+      parsed_json->GetDict().Find(kPolicyName);
 
   PolicyErrorMap errors;
   PrefValueMap prefs;
@@ -999,7 +999,7 @@ TEST(SimpleJsonStringSchemaValidatingPolicyHandlerTest, WrongType) {
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   const base::Value* value_expected_in_pref =
-      parsed_json->FindPath(kPolicyName);
+      parsed_json->GetDict().Find(kPolicyName);
 
   PolicyErrorMap errors;
   PrefValueMap prefs;
