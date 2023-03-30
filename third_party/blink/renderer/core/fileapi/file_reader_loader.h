@@ -39,19 +39,23 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class BlobDataHandle;
-class DOMArrayBuffer;
-class FileReaderLoaderClient;
 class TextResourceDecoder;
 
 // Reads a Blob's content into memory.
@@ -63,9 +67,8 @@ class TextResourceDecoder;
 //
 // Each FileReaderLoader instance is only good for reading one Blob, and will
 // leak resources if used multiple times.
-class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
-  USING_FAST_MALLOC(FileReaderLoader);
-
+class CORE_EXPORT FileReaderLoader : public GarbageCollected<FileReaderLoader>,
+                                     public mojom::blink::BlobReaderClient {
  public:
   enum ReadType {
     kReadAsArrayBuffer,
@@ -109,6 +112,11 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
 
   bool HasFinishedLoading() const { return finished_loading_; }
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(array_buffer_result_);
+    visitor->Trace(client_);
+  }
+
  private:
   void Cleanup();
   void Failed(FileErrorCode);
@@ -130,14 +138,14 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
   void SetStringResult(const String&);
 
   ReadType read_type_;
-  FileReaderLoaderClient* client_;
+  WeakMember<FileReaderLoaderClient> client_;
   WTF::TextEncoding encoding_;
   String data_type_;
 
   ArrayBufferContents raw_data_;
   bool is_raw_data_converted_ = false;
 
-  Persistent<DOMArrayBuffer> array_buffer_result_;
+  Member<DOMArrayBuffer> array_buffer_result_;
   String string_result_;
 
   // The decoder used to decode the text data.
@@ -155,9 +163,7 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
   mojo::SimpleWatcher handle_watcher_;
-  // TODO(crbug.com/937038, crbug.com/1049056): Make FileReaderLoaderClient
-  // GarbageCollected. It will then be possible to use the HeapMojoReceiver
-  // wrapper for receiver_.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Receiver<mojom::blink::BlobReaderClient> receiver_{this};
   bool received_all_data_ = false;
   bool received_on_complete_ = false;
@@ -166,8 +172,6 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  base::WeakPtrFactory<FileReaderLoader> weak_factory_{this};
 };
 
 }  // namespace blink

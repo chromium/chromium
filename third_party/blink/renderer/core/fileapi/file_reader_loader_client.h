@@ -33,6 +33,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -40,7 +41,7 @@ enum class FileErrorCode;
 
 // For more information on how to read Blobs in your specific situation, see:
 // https://chromium.googlesource.com/chromium/src/+/HEAD/storage/browser/blob/README.md#accessing-reading
-class CORE_EXPORT FileReaderLoaderClient {
+class CORE_EXPORT FileReaderLoaderClient : public GarbageCollectedMixin {
  public:
   virtual ~FileReaderLoaderClient() = default;
 
@@ -55,6 +56,8 @@ class CORE_EXPORT FileReaderLoaderClient {
   }
   virtual void DidFinishLoading() = 0;
   virtual void DidFail(FileErrorCode) = 0;
+
+  void Trace(Visitor*) const override {}
 };
 
 }  // namespace blink

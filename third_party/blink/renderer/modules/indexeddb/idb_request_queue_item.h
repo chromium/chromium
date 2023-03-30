@@ -177,7 +177,7 @@ class IDBRequestQueueItem {
   //
   // nullptr for results that do not require post-processing and for results
   // whose post-processing has completed.
-  std::unique_ptr<IDBRequestLoader> loader_;
+  Persistent<IDBRequestLoader> loader_;
 
   // Called when result post-processing has completed.
   base::OnceClosure on_result_load_complete_;

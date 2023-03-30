@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
 
-#include <memory>
-
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -191,7 +189,7 @@ class MODULES_EXPORT ImageBitmapFactories final
     void DidFinishLoading() override;
     void DidFail(FileErrorCode) override;
 
-    std::unique_ptr<FileReaderLoader> loader_;
+    Member<FileReaderLoader> loader_;
     Member<ImageBitmapFactories> factory_;
     Member<ScriptPromiseResolver> resolver_;
     absl::optional<gfx::Rect> crop_rect_;

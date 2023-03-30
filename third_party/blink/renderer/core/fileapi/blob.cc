@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -64,22 +66,30 @@ class NullURLRegistry final : public URLRegistry {
 // Each client is only good for one Blob read operation.
 // Each instance owns itself and will delete itself in the callbacks.
 // This class is not thread-safe.
-class BlobFileReaderClient : public blink::FileReaderLoaderClient {
+class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
+                             public blink::FileReaderLoaderClient {
  public:
   BlobFileReaderClient(
       const scoped_refptr<BlobDataHandle> blob_data_handle,
       const scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const FileReaderLoader::ReadType read_type,
       ScriptPromiseResolver* resolver)
-      : loader_(std::make_unique<FileReaderLoader>(read_type,
-                                                   this,
-                                                   std::move(task_runner))),
+      : loader_(MakeGarbageCollected<FileReaderLoader>(read_type,
+                                                       this,
+                                                       std::move(task_runner))),
         resolver_(resolver),
-        read_type_(read_type) {
+        read_type_(read_type),
+        keep_alive_(this) {
     if (read_type_ == FileReaderLoader::kReadAsText) {
       loader_->SetEncoding("UTF-8");
     }
     loader_->Start(std::move(blob_data_handle));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(loader_);
+    visitor->Trace(resolver_);
+    blink::FileReaderLoaderClient::Trace(visitor);
   }
 
   ~BlobFileReaderClient() override = default;
@@ -87,7 +97,7 @@ class BlobFileReaderClient : public blink::FileReaderLoaderClient {
   void DidReceiveData() override {}
   void DidFail(FileErrorCode error_code) override {
     resolver_->Reject(file_error::CreateDOMException(error_code));
-    delete this;
+    keep_alive_.Clear();
   }
 
   void DidFinishLoading() override {
@@ -100,13 +110,14 @@ class BlobFileReaderClient : public blink::FileReaderLoaderClient {
     } else {
       NOTREACHED() << "Unknown ReadType supplied to BlobFileReaderClient";
     }
-    delete this;
+    keep_alive_.Clear();
   }
 
  private:
-  const std::unique_ptr<FileReaderLoader> loader_;
-  Persistent<ScriptPromiseResolver> resolver_;
+  Member<FileReaderLoader> loader_;
+  Member<ScriptPromiseResolver> resolver_;
   const FileReaderLoader::ReadType read_type_;
+  SelfKeepAlive<BlobFileReaderClient> keep_alive_;
 };
 
 Blob::Blob(scoped_refptr<BlobDataHandle> data_handle)
@@ -241,10 +252,11 @@ static ScriptPromise ReadBlobHelper(
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
 
-  new BlobFileReaderClient(blob_data_handle,
-                           ExecutionContext::From(script_state)
-                               ->GetTaskRunner(TaskType::kFileReading),
-                           read_type, resolver);
+  MakeGarbageCollected<BlobFileReaderClient>(
+      blob_data_handle,
+      ExecutionContext::From(script_state)
+          ->GetTaskRunner(TaskType::kFileReading),
+      read_type, resolver);
 
   return promise;
 }

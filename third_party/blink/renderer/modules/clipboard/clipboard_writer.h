@@ -80,7 +80,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  protected:
   ClipboardWriter(SystemClipboard* system_clipboard, ClipboardPromise* promise);
@@ -112,7 +112,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   // TaskRunner for reading files.
   const scoped_refptr<base::SingleThreadTaskRunner> file_reading_task_runner_;
   // This FileReaderLoader will load the Blob.
-  std::unique_ptr<FileReaderLoader> file_reader_;
+  Member<FileReaderLoader> file_reader_;
   // Access to the global sanitized system clipboard.
   Member<SystemClipboard> system_clipboard_;
 
