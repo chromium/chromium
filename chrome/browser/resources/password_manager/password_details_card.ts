@@ -149,6 +149,9 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private onEditPasswordDialogClosed_() {
+    // Only note is notified because updating username or password triggers
+    // recomputing of an id which updates the whole list of displayed passwords.
+    this.notifyPath('password.note');
     this.showEditPasswordDialog_ = false;
     this.extendAuthValidity_();
   }

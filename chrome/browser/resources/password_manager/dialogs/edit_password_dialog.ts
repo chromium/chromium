@@ -240,6 +240,11 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     };
     PasswordManagerImpl.getInstance()
         .changeSavedPassword(this.credential.id, params)
+        .then(() => {
+          this.credential.password = this.password_;
+          this.credential.username = this.username_;
+          this.credential.note = this.note_;
+        })
         .finally(() => {
           this.$.dialog.close();
         });
