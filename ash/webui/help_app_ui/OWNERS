@@ -1,6 +1,5 @@
 dstockwell@google.com
 callistus@google.com
-chrishall@chromium.org
 zufeng@google.com
 
 per-file *.mojom=set noparent
