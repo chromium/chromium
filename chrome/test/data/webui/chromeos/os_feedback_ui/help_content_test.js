@@ -10,6 +10,9 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
+/**
+ * @suppress {missingProperties} for test.skip is not defined in mocha-2.5.js
+ */
 export function helpContentTestSuite() {
   /** @type {?HelpContentElement} */
   let helpContentElement = null;
@@ -311,7 +314,8 @@ export function helpContentTestSuite() {
    *
    * Case 1: the query is empty.
    */
-  test('TopHelpContentNotAvailable', async () => {
+  // TODO(crbug.com/1401615): Flaky.
+  test.skip('TopHelpContentNotAvailable', async () => {
     // Initialize element with no content and empty query.
     await initializeHelpContentElement(
         /* contentList= */[], /* isQueryEmpty= */ true,
@@ -340,7 +344,8 @@ export function helpContentTestSuite() {
    *
    * Case 2: the query is NOT empty.
    */
-  test('SuggestedHelpContentNotAvailable', async () => {
+  // TODO(crbug.com/1401615): Flaky.
+  test.skip('SuggestedHelpContentNotAvailable', async () => {
     // Initialize element with no content and empty query.
     await initializeHelpContentElement(
         /* contentList= */[], /* isQueryEmpty= */ false,
