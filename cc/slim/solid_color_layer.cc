@@ -53,7 +53,7 @@ void SolidColorLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
       render_pass.CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(quad_state, quad_state->quad_layer_rect,
                quad_state->visible_quad_layer_rect, background_color(),
-               /*anti_aliasing_off=*/true);
+               /*anti_aliasing_off=*/false);
 }
 
 }  // namespace cc::slim
