@@ -33,6 +33,20 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
   net_config.cecpq2_enabled = mojo_config->cecpq2_enabled;
   net_config.ech_enabled = mojo_config->ech_enabled;
+  switch (mojo_config->insecure_hash_enabled) {
+    case network::mojom::insecure_hash_enabled_value::kUnset:
+      net_config.insecure_hash_enabled =
+          net::SSLContextConfig::insecure_hash_enabled_value::kUnset;
+      break;
+    case network::mojom::insecure_hash_enabled_value::kEnabled:
+      net_config.insecure_hash_enabled =
+          net::SSLContextConfig::insecure_hash_enabled_value::kEnabled;
+      break;
+    case network::mojom::insecure_hash_enabled_value::kDisabled:
+      net_config.insecure_hash_enabled =
+          net::SSLContextConfig::insecure_hash_enabled_value::kDisabled;
+      break;
+  }
   return net_config;
 }
 

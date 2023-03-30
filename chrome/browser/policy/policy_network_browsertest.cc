@@ -262,4 +262,107 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   EXPECT_EQ(base::ASCIIToUTF16(kECHFailureTitle), result.title);
 }
 
+class SHA1DisabledPolicyTest : public SSLPolicyTest {
+ public:
+  SHA1DisabledPolicyTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kSHA1ServerSignature);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SHA1DisabledPolicyTest, InsecureHashPolicy) {
+  net::SSLServerConfig ssl_config;
+  // Apply 0x303 to force TLS 1.2 and make the server limited to sha1.
+  ssl_config.version_min = 0x0303;
+  ssl_config.version_max = 0x0303;
+  ssl_config.signature_algorithm_for_testing = 0x0201;
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should be unable to load a page from the test server because the
+  // policy is unset, and the feature flag has disabled SHA1
+  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+
+  PolicyMap policies;
+  // Enable Insecure Handshake Hashes.
+  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
+            base::Value(true));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Should be able to load a page from the test server because policy has
+  // overridden the disabled feature flag.
+  EXPECT_TRUE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Disable the policy.
+  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Page loads should now fail as the policy has disabled SHA1.
+  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
+}
+
+class SHA1EnabledPolicyTest : public SSLPolicyTest {
+ public:
+  SHA1EnabledPolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kSHA1ServerSignature);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SHA1EnabledPolicyTest, InsecureHashPolicy) {
+  net::SSLServerConfig ssl_config;
+  // Apply 0x303 to force TLS 1.2 and make the server limited to sha1.
+  ssl_config.version_min = 0x0303;
+  ssl_config.version_max = 0x0303;
+  ssl_config.signature_algorithm_for_testing = 0x0201;
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // With the policy unset, we should be able to load a page from the test
+  // server because SHA1 is allowed by feature flag.
+  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  PolicyMap policies;
+  // Disable Insecure Handshake Hashes.
+  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // We should no longer be able to load a page, as the policy has
+  // disabled insecure hashes..
+  EXPECT_FALSE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
+
+  // Enable Insecure Handshake Hashes.
+  SetPolicy(&policies, key::kInsecureHashesInTLSHandshakesEnabled,
+            base::Value(true));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // With the policy set, we should be able to load a page from the test server
+  EXPECT_TRUE(GetBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled));
+  result = LoadPage("/title3.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of More Awesomeness", result.title);
+}
+
 }  // namespace policy

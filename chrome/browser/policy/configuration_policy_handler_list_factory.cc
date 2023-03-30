@@ -310,6 +310,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kThirdPartyStoragePartitioningBlockedForOrigins,
     prefs::kManagedThirdPartyStoragePartitioningBlockedForOrigins,
     base::Value::Type::LIST },
+  { key::kInsecureHashesInTLSHandshakesEnabled,
+    prefs::kInsecureHashesInTLSHandshakesEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

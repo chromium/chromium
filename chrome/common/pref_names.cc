@@ -2247,6 +2247,10 @@ const char kCECPQ2Enabled[] = "ssl.cecpq2_enabled";
 // If false, disable Encrypted ClientHello (ECH) in TLS connections.
 const char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";
 
+// If false, disallow insecure hashes for use in  TLS Handshakes.
+const char kInsecureHashesInTLSHandshakesEnabled[] =
+    "ssl.insecure_hash_enabled";
+
 // Boolean that specifies whether the built-in asynchronous DNS client is used.
 const char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 

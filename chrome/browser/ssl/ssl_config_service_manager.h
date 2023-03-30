@@ -67,6 +67,7 @@ class SSLConfigServiceManager {
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
   BooleanPrefMember cecpq2_enabled_;
   BooleanPrefMember ech_enabled_;
+  BooleanPrefMember insecure_hash_enabled_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;

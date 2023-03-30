@@ -22929,5 +22929,49 @@
         }
       }
     ]
+  },
+  "InsecureHashesInTLSHandshakesEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ssl.insecure_hash_enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "InsecureHashesInTLSHandshakesEnabled": true
+        },
+        "prefs": {
+          "ssl.insecure_hash_enabled": {
+            "value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+            "InsecureHashesInTLSHandshakesEnabled": false
+        },
+        "prefs": {
+          "ssl.insecure_hash_enabled": {
+            "value": false,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 }

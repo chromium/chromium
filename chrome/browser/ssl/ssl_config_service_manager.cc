@@ -141,6 +141,8 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
                        local_state_callback);
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
+  insecure_hash_enabled_.Init(prefs::kInsecureHashesInTLSHandshakesEnabled,
+                              local_state, local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -173,6 +175,10 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
                                 default_context_config.cecpq2_enabled);
   registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled,
                                 default_context_config.ech_enabled);
+  // Default value for this pref doesn't matter since it is only used when
+  // managed.
+  registry->RegisterBooleanPref(prefs::kInsecureHashesInTLSHandshakesEnabled,
+                                false);
 }
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
@@ -241,6 +247,16 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
   config->cecpq2_enabled =
       cecpq2_enabled_.GetValue() && variations_unrestricted_;
   config->ech_enabled = ech_enabled_.GetValue();
+
+  if (insecure_hash_enabled_.IsManaged()) {
+    config->insecure_hash_enabled =
+        insecure_hash_enabled_.GetValue()
+            ? network::mojom::insecure_hash_enabled_value::kEnabled
+            : network::mojom::insecure_hash_enabled_value::kDisabled;
+  } else {
+    config->insecure_hash_enabled =
+        network::mojom::insecure_hash_enabled_value::kUnset;
+  }
 
   return config;
 }

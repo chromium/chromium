@@ -32394,6 +32394,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1093"
       label="FileOrDirectoryPickerWithoutGestureAllowedForOrigins"/>
   <int value="1094" label="AppLaunchAutomation"/>
+  <int value="1095" label="InsecureHashesInTLSHandshakesEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

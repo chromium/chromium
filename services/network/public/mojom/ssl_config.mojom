@@ -9,6 +9,12 @@ enum SSLVersion {
   kTLS13,
 };
 
+enum insecure_hash_enabled_value {
+ kUnset,
+ kEnabled,
+ kDisabled,
+};
+
 // This is a combination of net::SSLContextConfig and
 // net::CertVerifier::Config's fields. See those two classes for descriptions.
 struct SSLConfig {
@@ -44,6 +50,11 @@ struct SSLConfig {
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
   // may be enabled or disabled, depending on feature flags.
   bool ech_enabled = true;
+
+  // If kEnabled, allows insecure hashes in TLS handshakes. If kDisabled,
+  // disallows insecure hashes in TLS handshakes. If kUnset use hashes
+  // determined by feature flags.
+  insecure_hash_enabled_value insecure_hash_enabled = kUnset;
 };
 
 // Receives SSL configuration updates.

@@ -395,7 +395,7 @@ int SSLConnectJob::DoSSLConnect() {
   // on a potentially unreliably network connection.
   ssl_config.disable_sha1_server_signatures =
       disable_legacy_crypto_with_fallback_ ||
-      !base::FeatureList::IsEnabled(features::kSHA1ServerSignature);
+      !ssl_client_context()->config().InsecureHashesInTLSHandshakesEnabled();
 
   if (ssl_client_context()->config().EncryptedClientHelloEnabled()) {
     if (ech_retry_configs_) {

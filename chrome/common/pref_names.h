@@ -852,6 +852,7 @@ extern const char kH2ClientCertCoalescingHosts[];
 extern const char kHSTSPolicyBypassList[];
 extern const char kCECPQ2Enabled[];
 extern const char kEncryptedClientHelloEnabled[];
+extern const char kInsecureHashesInTLSHandshakesEnabled[];
 
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kDnsOverHttpsMode[];
