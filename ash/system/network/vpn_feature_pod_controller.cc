@@ -82,10 +82,7 @@ std::unique_ptr<FeatureTile> VPNFeaturePodController::CreateTile(bool compact) {
   const std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_TOOLTIP);
   tile_->SetTooltipText(tooltip);
-  tile_->CreateDrillInButton(
-      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      tooltip);
+  tile_->CreateDecorativeDrillInButton(tooltip);
   // Init the tile with invisible state. `Update()` will update visibility.
   tile_->SetVisible(false);
   Update();

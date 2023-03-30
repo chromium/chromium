@@ -97,13 +97,14 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
 
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
-  const bool visible = nearby_share_delegate_->IsPodButtonVisible() &&
-                       session_controller->IsActiveUserSessionStarted() &&
-                       session_controller->IsUserPrimary() &&
-                       !session_controller->IsUserSessionBlocked() &&
-                       nearby_share_delegate_->IsEnabled();
-  tile_->SetVisible(visible);
-  if (visible) {
+  const bool target_visibility =
+      nearby_share_delegate_->IsPodButtonVisible() &&
+      session_controller->IsActiveUserSessionStarted() &&
+      session_controller->IsUserPrimary() &&
+      !session_controller->IsUserSessionBlocked() &&
+      nearby_share_delegate_->IsEnabled();
+  tile_->SetVisible(target_visibility);
+  if (target_visibility) {
     TrackVisibilityUMA();
   }
 

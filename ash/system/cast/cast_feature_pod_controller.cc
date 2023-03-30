@@ -107,10 +107,7 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
 
   tile->SetSubLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_DEVICES_AVAILABLE));
-  tile->CreateDrillInButton(
-      base::BindRepeating(&CastFeaturePodController::OnLabelPressed,
-                          weak_factory_.GetWeakPtr()),
-      tooltip);
+  tile->CreateDecorativeDrillInButton(tooltip);
 
   UpdateSublabelVisibility();
 

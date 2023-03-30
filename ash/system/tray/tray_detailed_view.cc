@@ -495,6 +495,7 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
     views::FocusRing::Install(item);
     views::InstallRoundRectHighlightPathGenerator(item, gfx::Insets(2),
                                                   /*corner_radius=*/0);
+    views::FocusRing::Get(item)->SetColorId(cros_tokens::kCrosSysFocusRing);
     // Unset the focus painter set by `ActionableView`.
     item->SetFocusPainter(nullptr);
   }

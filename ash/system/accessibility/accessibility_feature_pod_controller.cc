@@ -65,10 +65,7 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
   const std::u16string tooltip_text =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
   feature_tile->SetTooltipText(tooltip_text);
-  feature_tile->CreateDrillInButton(
-      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      tooltip_text);
+  feature_tile->CreateDecorativeDrillInButton(tooltip_text);
 
   AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
   LoginStatus login_status = Shell::Get()->session_controller()->login_status();

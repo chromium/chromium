@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/shell.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -79,6 +80,10 @@ class MockFeaturePodController : public FeaturePodControllerBase {
         u"Tooltip text");
   }
 
+  void CreateDecorativeDrillInButton() {
+    tile_->CreateDecorativeDrillInButton(u"Tooltip text");
+  }
+
   bool WasIconPressed() { return was_icon_pressed_; }
   bool WasLabelPressed() { return was_label_pressed_; }
 
@@ -112,6 +117,11 @@ class FeatureTileTest : public AshTestBase {
   void TearDown() override {
     widget_.reset();
     AshTestBase::TearDown();
+  }
+
+  void PressTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
   }
 
   std::unique_ptr<views::Widget> widget_;
@@ -161,12 +171,12 @@ TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
   EXPECT_FALSE(tile->IsToggled());
 }
 
-TEST_F(FeatureTileTest, PrimaryTile_DrillIn) {
+TEST_F(FeatureTileTest, PrimaryTile_DecorativeDrillIn) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  mock_controller->CreateDrillInButton();
+  mock_controller->CreateDecorativeDrillInButton();
   views::test::RunScheduledLayout(tile);
   ASSERT_TRUE(tile->drill_in_button());
   EXPECT_TRUE(tile->drill_in_button()->GetVisible());
@@ -181,7 +191,12 @@ TEST_F(FeatureTileTest, PrimaryTile_DrillIn) {
   EXPECT_TRUE(mock_controller->WasIconPressed());
   EXPECT_FALSE(tile->IsToggled());
 
-  // TODO(b/259280052): Ensure drill-in button does not focus.
+  // Ensure drill-in button doesn't focus.
+  auto* focus_manager = widget_->GetFocusManager();
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
 }
 
 TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
@@ -211,7 +226,49 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
   // Ensure `WasLabelPressed` after clicking drill-in button.
   EXPECT_TRUE(mock_controller->WasLabelPressed());
 
-  // TODO(b/259280052): Ensure drill-in button has focus.
+  // Ensure drill-in button has focus.
+  auto* focus_manager = widget_->GetFocusManager();
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
+  PressTab();
+  EXPECT_EQ(tile->drill_in_arrow(), focus_manager->GetFocusedView());
+}
+
+// Togglable tiles with a decorative drill-in button do not toggle when
+// clicked, but show a detailed view from where the user can trigger an action
+// which toggles the button state (e.g. selecting a VPN network).
+// Since this test uses mock feature tiles and cannot easily create detailed
+// views, this toggle behavior will be omitted.
+TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
+  auto mock_controller =
+      std::make_unique<MockFeaturePodController>(/*togglable=*/true);
+  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+
+  mock_controller->CreateDecorativeDrillInButton();
+  views::test::RunScheduledLayout(tile);
+  ASSERT_TRUE(tile->drill_in_button());
+  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
+
+  // Ensure icon is not pressed.
+  EXPECT_FALSE(mock_controller->WasIconPressed());
+
+  LeftClickOn(tile);
+
+  // Ensure icon was pressed after clicking it.
+  EXPECT_TRUE(mock_controller->WasIconPressed());
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
+
+  LeftClickOn(tile->drill_in_button());
+
+  // Ensure `WasLabelPressed` not pressed after clicking drill-in button.
+  EXPECT_FALSE(mock_controller->WasLabelPressed());
+
+  // Ensure drill-in button doesn't focus.
+  auto* focus_manager = widget_->GetFocusManager();
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
+  PressTab();
+  EXPECT_EQ(tile, focus_manager->GetFocusedView());
 }
 
 TEST_F(FeatureTileTest, CompactTile_LaunchSurface) {

@@ -96,10 +96,7 @@ std::unique_ptr<FeatureTile> IMEFeaturePodController::CreateTile(bool compact) {
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_SHORT));
   std::u16string tooltip = GetTooltipString();
   tile_->SetTooltipText(tooltip);
-  tile_->CreateDrillInButton(
-      base::BindRepeating(&IMEFeaturePodController::OnLabelPressed,
-                          weak_factory_.GetWeakPtr()),
-      tooltip);
+  tile_->CreateDecorativeDrillInButton(tooltip);
   // `Update` will update the visibility.
   tile_->SetVisible(false);
   Update();

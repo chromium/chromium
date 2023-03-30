@@ -74,10 +74,7 @@ std::unique_ptr<FeatureTile> LocaleFeaturePodController::CreateTile(
     std::u16string tooltip =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_TOOLTIP);
     tile->SetTooltipText(tooltip);
-    tile->CreateDrillInButton(
-        base::BindRepeating(&LocaleFeaturePodController::OnIconPressed,
-                            weak_factory_.GetWeakPtr()),
-        tooltip);
+    tile->CreateDecorativeDrillInButton(tooltip);
     tile->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE));
     tile->SetSubLabel(GetSubLabelText());
   }
