@@ -4977,6 +4977,7 @@ String AXNodeObject::TextAlternativeFromTooltip(
 
   if (name_sources) {
     NameSource& source = name_sources->back();
+    source.related_objects = *related_objects;
     source.text = *text_alternative;
     *found_text_alternative = true;
   }

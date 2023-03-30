@@ -2,36 +2,36 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover!<newline>'
-++++++button name=' Test popover! '
+++++++++staticText ignored invisible name='<newline>  Test popover!<newline>' nameFrom=contents
+++++++button name=' Test popover! ' nameFrom=popoverAttribute
 ++++++genericContainer ignored invisible
 ++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='<newline>    Test popover with image!<newline>    '
+++++++++++staticText ignored invisible name='<newline>    Test popover with image!<newline>    ' nameFrom=contents
 ++++++++++image ignored invisible
-++++++button name=' Test popover with image! test 123'
+++++++button name=' Test popover with image! test 123' nameFrom=popoverAttribute
 ++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover with rich content like a datatable.<newline>  '
+++++++++staticText ignored invisible name='<newline>  Test popover with rich content like a datatable.<newline>  ' nameFrom=contents
 ++++++++layoutTable ignored invisible
 ++++++++++genericContainer ignored invisible
 ++++++++++++layoutTableRow ignored invisible
 ++++++++++++++layoutTableCell ignored invisible
-++++++++++++++++staticText ignored invisible name='1'
+++++++++++++++++staticText ignored invisible name='1' nameFrom=contents
 ++++++++++++++layoutTableCell ignored invisible
-++++++++++++++++staticText ignored invisible name='2'
+++++++++++++++++staticText ignored invisible name='2' nameFrom=contents
 ++++++++++++layoutTableRow ignored invisible
 ++++++++++++++layoutTableCell ignored invisible
-++++++++++++++++staticText ignored invisible name='3'
+++++++++++++++++staticText ignored invisible name='3' nameFrom=contents
 ++++++++++++++layoutTableCell ignored invisible
-++++++++++++++++staticText ignored invisible name='4'
+++++++++++++++++staticText ignored invisible name='4' nameFrom=contents
 ++++++button
 ++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover with a textinput!<newline>  '
+++++++++staticText ignored invisible name='<newline>  Test popover with a textinput!<newline>  ' nameFrom=contents
 ++++++++genericContainer ignored invisible
 ++++++++++genericContainer ignored invisible
 ++++++++++++textField ignored invisible
 ++++++++++++++genericContainer ignored invisible
-++++++++++++++++staticText ignored invisible name='test'
+++++++++++++++++staticText ignored invisible name='test' nameFrom=contents
 ++++++button
 ++++++genericContainer ignored invisible
-++++++++staticText ignored invisible name='<newline>  Test popover with title in button to test description.<newline>'
-++++++button description='Test popover with title in button to test description.' name='the title' descriptionFrom=popoverAttribute
+++++++++staticText ignored invisible name='<newline>  Test popover with title in button to test description.<newline>' nameFrom=contents
+++++++button description='Test popover with title in button to test description.' name='the title' nameFrom=title descriptionFrom=popoverAttribute
