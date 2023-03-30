@@ -76,7 +76,7 @@ class ObserverHandlerWrapper {
       ObserverHandlerType handler_type,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::PeerConnectionInterface> pc,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer)
       : signaling_task_runner_(std::move(signaling_task_runner)),
@@ -298,7 +298,7 @@ class WebRtcSetDescriptionObserverHandlerTest
   }
 
  protected:
-  scoped_refptr<MockPeerConnectionInterface> pc_;
+  rtc::scoped_refptr<MockPeerConnectionInterface> pc_;
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;

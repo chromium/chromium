@@ -174,7 +174,7 @@ class MockPeerConnectionDependencyFactory
 
   ~MockPeerConnectionDependencyFactory() override;
 
-  scoped_refptr<webrtc::PeerConnectionInterface> CreatePeerConnection(
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> CreatePeerConnection(
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* frame,
       webrtc::PeerConnectionObserver* observer,

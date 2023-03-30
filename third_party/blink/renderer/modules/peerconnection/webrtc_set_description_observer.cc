@@ -52,7 +52,7 @@ WebRtcSetDescriptionObserverHandlerImpl::
     WebRtcSetDescriptionObserverHandlerImpl(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)
@@ -136,7 +136,7 @@ scoped_refptr<WebRtcSetLocalDescriptionObserverHandler>
 WebRtcSetLocalDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-    scoped_refptr<webrtc::PeerConnectionInterface> pc,
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
     scoped_refptr<WebRtcSetDescriptionObserver> observer) {
   return new rtc::RefCountedObject<WebRtcSetLocalDescriptionObserverHandler>(
@@ -148,7 +148,7 @@ WebRtcSetLocalDescriptionObserverHandler::
     WebRtcSetLocalDescriptionObserverHandler(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)
@@ -172,7 +172,7 @@ scoped_refptr<WebRtcSetRemoteDescriptionObserverHandler>
 WebRtcSetRemoteDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-    scoped_refptr<webrtc::PeerConnectionInterface> pc,
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
     scoped_refptr<WebRtcSetDescriptionObserver> observer) {
   return new rtc::RefCountedObject<WebRtcSetRemoteDescriptionObserverHandler>(
@@ -184,7 +184,7 @@ WebRtcSetRemoteDescriptionObserverHandler::
     WebRtcSetRemoteDescriptionObserverHandler(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)

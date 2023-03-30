@@ -344,13 +344,13 @@ MockPeerConnectionDependencyFactory::MockPeerConnectionDependencyFactory()
 
 MockPeerConnectionDependencyFactory::~MockPeerConnectionDependencyFactory() {}
 
-scoped_refptr<webrtc::PeerConnectionInterface>
+rtc::scoped_refptr<webrtc::PeerConnectionInterface>
 MockPeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* frame,
     webrtc::PeerConnectionObserver* observer,
     ExceptionState& exception_state) {
-  return new rtc::RefCountedObject<MockPeerConnectionImpl>(this, observer);
+  return rtc::make_ref_counted<MockPeerConnectionImpl>(this, observer);
 }
 
 scoped_refptr<webrtc::VideoTrackSourceInterface>

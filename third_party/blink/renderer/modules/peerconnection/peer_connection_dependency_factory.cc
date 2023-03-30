@@ -673,7 +673,7 @@ bool PeerConnectionDependencyFactory::PeerConnectionFactoryCreated() {
   return !!pc_factory_;
 }
 
-scoped_refptr<webrtc::PeerConnectionInterface>
+rtc::scoped_refptr<webrtc::PeerConnectionInterface>
 PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
@@ -696,8 +696,7 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {
-    // Convert from rtc::scoped_refptr to scoped_refptr
-    return pc_or_error.value().get();
+    return pc_or_error.value();
   } else {
     // Convert error
     ThrowExceptionFromRTCError(pc_or_error.error(), exception_state);

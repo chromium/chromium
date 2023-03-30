@@ -100,9 +100,9 @@ struct CrossThreadCopier<scoped_refptr<PeerConnectionInterface>>
 };
 
 template <>
-struct CrossThreadCopier<scoped_refptr<webrtc::StatsObserver>>
+struct CrossThreadCopier<rtc::scoped_refptr<webrtc::StatsObserver>>
     : public CrossThreadCopierPassThrough<
-          scoped_refptr<webrtc::StatsObserver>> {
+          rtc::scoped_refptr<webrtc::StatsObserver>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -448,9 +448,9 @@ class StatsResponse : public webrtc::StatsObserver {
 };
 
 void GetStatsOnSignalingThread(
-    const scoped_refptr<webrtc::PeerConnectionInterface>& pc,
+    const rtc::scoped_refptr<webrtc::PeerConnectionInterface>& pc,
     webrtc::PeerConnectionInterface::StatsOutputLevel level,
-    const scoped_refptr<webrtc::StatsObserver>& observer,
+    const rtc::scoped_refptr<webrtc::StatsObserver>& observer,
     rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> selector) {
   TRACE_EVENT0("webrtc", "GetStatsOnSignalingThread");
 
@@ -488,7 +488,7 @@ using RTCStatsReportCallbackInternal =
 
 void GetRTCStatsOnSignalingThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
-    scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     RTCStatsReportCallbackInternal callback,
     const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
     bool is_track_stats_deprecation_trial_enabled) {
@@ -749,12 +749,13 @@ class RTCPeerConnectionHandler::Observer
     // that `native_peer_connection_` was the last reference, we move it to the
     // signaling thread in a PostTask.
     signaling_thread_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](scoped_refptr<webrtc::PeerConnectionInterface> pc) {
-                         // The binding releases `pc` on the signaling thread as
-                         // this method goes out of scope.
-                       },
-                       std::move(native_peer_connection_)));
+        FROM_HERE,
+        base::BindOnce(
+            [](rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc) {
+              // The binding releases `pc` on the signaling thread as
+              // this method goes out of scope.
+            },
+            std::move(native_peer_connection_)));
   }
 
   void Initialize(
@@ -978,7 +979,7 @@ class RTCPeerConnectionHandler::Observer
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   // A copy of |handler_->native_peer_connection_| for use on the WebRTC
   // signaling thread.
-  scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
 };
 
 RTCPeerConnectionHandler::RTCPeerConnectionHandler(
@@ -1022,12 +1023,13 @@ RTCPeerConnectionHandler::~RTCPeerConnectionHandler() {
   // that `native_peer_connection_` was the last reference, we move it to the
   // signaling thread in a PostTask.
   signaling_thread_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<webrtc::PeerConnectionInterface> pc) {
-                       // The binding releases `pc` on the signaling thread as
-                       // this method goes out of scope.
-                     },
-                     std::move(native_peer_connection_)));
+      FROM_HERE,
+      base::BindOnce(
+          [](rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc) {
+            // The binding releases `pc` on the signaling thread as
+            // this method goes out of scope.
+          },
+          std::move(native_peer_connection_)));
 }
 
 void RTCPeerConnectionHandler::CloseAndUnregister() {
@@ -1540,7 +1542,7 @@ void RTCPeerConnectionHandler::RestartIce() {
 }
 
 void RTCPeerConnectionHandler::GetStandardStatsForTracker(
-    scoped_refptr<webrtc::RTCStatsCollectorCallback> observer) {
+    rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> observer) {
   native_peer_connection_->GetStats(observer.get());
 }
 
@@ -1571,8 +1573,7 @@ void RTCPeerConnectionHandler::getStats(
       selector = track_adapter_ref->webrtc_track();
   }
 
-  GetStats(observer.get(),
-           webrtc::PeerConnectionInterface::kStatsOutputLevelStandard,
+  GetStats(observer, webrtc::PeerConnectionInterface::kStatsOutputLevelStandard,
            std::move(selector));
 }
 
@@ -1581,15 +1582,14 @@ void RTCPeerConnectionHandler::getStats(
 // TODO(hbos): Rename old |getStats| and related functions to "getLegacyStats",
 // rename new |getStats|'s helper functions from "GetRTCStats*" to "GetStats*".
 void RTCPeerConnectionHandler::GetStats(
-    webrtc::StatsObserver* observer,
+    rtc::scoped_refptr<webrtc::StatsObserver> observer,
     webrtc::PeerConnectionInterface::StatsOutputLevel level,
     rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> selector) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   PostCrossThreadTask(
       *signaling_thread().get(), FROM_HERE,
       CrossThreadBindOnce(&GetStatsOnSignalingThread, native_peer_connection_,
-                          level, base::WrapRefCounted(observer),
-                          std::move(selector)));
+                          level, observer, std::move(selector)));
 }
 
 void RTCPeerConnectionHandler::GetStats(

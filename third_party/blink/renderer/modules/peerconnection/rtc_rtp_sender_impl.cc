@@ -187,7 +187,8 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
           RTCRtpSenderImpl::RTCRtpSenderInternalTraits> {
  public:
   RTCRtpSenderInternal(
-      scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+          native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpSenderState state,
       bool encoded_insertable_streams)
@@ -416,7 +417,8 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
     webrtc_sender_->SetStreams(std::move(ids));
   }
 
-  const scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
+  const rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+      native_peer_connection_;
   const scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map_;
   // Task runners and webrtc sender: Same information as stored in
   // |state_| but const and safe to touch on the signaling thread to
@@ -452,7 +454,7 @@ uintptr_t RTCRtpSenderImpl::getId(
 }
 
 RTCRtpSenderImpl::RTCRtpSenderImpl(
-    scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
     RtpSenderState state,
     bool encoded_insertable_streams)

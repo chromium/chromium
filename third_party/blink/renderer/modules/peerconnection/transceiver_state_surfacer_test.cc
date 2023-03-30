@@ -277,7 +277,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
   }
 
  protected:
-  scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

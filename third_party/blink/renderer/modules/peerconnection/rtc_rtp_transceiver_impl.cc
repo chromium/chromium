@@ -189,7 +189,8 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
           RTCRtpTransceiverImpl::RTCRtpTransceiverInternalTraits> {
  public:
   RTCRtpTransceiverInternal(
-      scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+          native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpTransceiverState state,
       bool encoded_insertable_streams)
@@ -336,7 +337,7 @@ uintptr_t RTCRtpTransceiverImpl::GetId(
 }
 
 RTCRtpTransceiverImpl::RTCRtpTransceiverImpl(
-    scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
     RtpTransceiverState transceiver_state,
     bool encoded_insertable_streams)

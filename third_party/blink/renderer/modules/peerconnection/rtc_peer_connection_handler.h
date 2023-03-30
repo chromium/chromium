@@ -243,8 +243,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Asynchronously calls native_peer_connection_->getStats on the signaling
   // thread.
   void GetStandardStatsForTracker(
-      scoped_refptr<webrtc::RTCStatsCollectorCallback> observer);
-  void GetStats(webrtc::StatsObserver* observer,
+      rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> observer);
+  void GetStats(rtc::scoped_refptr<webrtc::StatsObserver> observer,
                 webrtc::PeerConnectionInterface::StatsOutputLevel level,
                 rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> selector);
 
@@ -471,7 +471,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   CrossThreadPersistent<Observer> peer_connection_observer_;
 
   // |native_peer_connection_| is the libjingle native PeerConnection object.
-  scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
 
   // The last applied configuration. Used so that the constraints
   // used when constructing the PeerConnection carry over when

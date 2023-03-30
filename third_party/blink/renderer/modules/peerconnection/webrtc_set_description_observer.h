@@ -109,7 +109,7 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
   WebRtcSetDescriptionObserverHandlerImpl(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::PeerConnectionInterface> pc,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer);
 
@@ -142,7 +142,7 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner_;
-  scoped_refptr<webrtc::PeerConnectionInterface> pc_;
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;
   scoped_refptr<WebRtcSetDescriptionObserver> observer_;
 };
@@ -155,7 +155,7 @@ class MODULES_EXPORT WebRtcSetLocalDescriptionObserverHandler
   static scoped_refptr<WebRtcSetLocalDescriptionObserverHandler> Create(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::PeerConnectionInterface> pc,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer);
 
@@ -172,7 +172,7 @@ class MODULES_EXPORT WebRtcSetLocalDescriptionObserverHandler
   WebRtcSetLocalDescriptionObserverHandler(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::PeerConnectionInterface> pc,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer);
   ~WebRtcSetLocalDescriptionObserverHandler() override;
@@ -188,7 +188,7 @@ class MODULES_EXPORT WebRtcSetRemoteDescriptionObserverHandler
   static scoped_refptr<WebRtcSetRemoteDescriptionObserverHandler> Create(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::PeerConnectionInterface> pc,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer);
 
@@ -206,7 +206,7 @@ class MODULES_EXPORT WebRtcSetRemoteDescriptionObserverHandler
   WebRtcSetRemoteDescriptionObserverHandler(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::PeerConnectionInterface> pc,
+      rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
       scoped_refptr<WebRtcSetDescriptionObserver> observer);
   ~WebRtcSetRemoteDescriptionObserverHandler() override;

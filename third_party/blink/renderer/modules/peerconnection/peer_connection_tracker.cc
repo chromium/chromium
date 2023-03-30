@@ -819,7 +819,7 @@ void PeerConnectionTracker::GetStandardStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
   for (const auto& pair : peer_connection_local_id_map_) {
-    scoped_refptr<InternalStandardStatsObserver> observer(
+    rtc::scoped_refptr<InternalStandardStatsObserver> observer(
         new rtc::RefCountedObject<InternalStandardStatsObserver>(
             pair.value, main_thread_task_runner_,
             CrossThreadBindOnce(&PeerConnectionTracker::AddStandardStats,
@@ -837,7 +837,7 @@ void PeerConnectionTracker::GetLegacyStats() {
             pair.value, main_thread_task_runner_,
             CrossThreadBindOnce(&PeerConnectionTracker::AddLegacyStats,
                                 WrapCrossThreadWeakPersistent(this))));
-    pair.key->GetStats(observer.get(),
+    pair.key->GetStats(observer,
                        webrtc::PeerConnectionInterface::kStatsOutputLevelDebug,
                        nullptr);
   }

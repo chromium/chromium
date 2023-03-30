@@ -113,10 +113,10 @@ class MODULES_EXPORT RTCRtpReceiverImpl : public RTCRtpReceiverPlatform {
   static uintptr_t getId(
       const webrtc::RtpReceiverInterface* webrtc_rtp_receiver);
 
-  RTCRtpReceiverImpl(
-      scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
-      RtpReceiverState state,
-      bool encoded_insertable_streams);
+  RTCRtpReceiverImpl(rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+                         native_peer_connection,
+                     RtpReceiverState state,
+                     bool encoded_insertable_streams);
   RTCRtpReceiverImpl(const RTCRtpReceiverImpl& other);
   ~RTCRtpReceiverImpl() override;
 

@@ -137,10 +137,10 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
           RTCRtpReceiverImpl::RTCRtpReceiverInternal,
           RTCRtpReceiverImpl::RTCRtpReceiverInternalTraits> {
  public:
-  RTCRtpReceiverInternal(
-      scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
-      RtpReceiverState state,
-      bool encoded_insertable_streams)
+  RTCRtpReceiverInternal(rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+                             native_peer_connection,
+                         RtpReceiverState state,
+                         bool encoded_insertable_streams)
       : native_peer_connection_(std::move(native_peer_connection)),
         main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
@@ -240,7 +240,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
             is_track_stats_deprecation_trial_enabled));
   }
 
-  const scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
+  const rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+      native_peer_connection_;
   // Task runners and webrtc receiver: Same information as stored in
   // |state_| but const and safe to touch on the signaling thread to
   // avoid race with set_state().
@@ -274,7 +275,7 @@ uintptr_t RTCRtpReceiverImpl::getId(
 }
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(
-    scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+    rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     RtpReceiverState state,
     bool encoded_insertable_streams)
     : internal_(base::MakeRefCounted<RTCRtpReceiverInternal>(
