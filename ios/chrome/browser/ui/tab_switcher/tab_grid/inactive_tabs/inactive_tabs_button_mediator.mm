@@ -52,6 +52,13 @@ using ScopedWebStateListObservation =
   return self;
 }
 
+- (void)disconnect {
+  _consumer = nil;
+  _scopedWebStateListObservation.reset();
+  _webStateListObserverBridge.reset();
+  _webStateList = nullptr;
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)webStateList:(WebStateList*)webStateList

@@ -30,11 +30,11 @@ class WebStateList;
 // Tells the receiver to close the item with the `itemID` identifier.
 - (void)closeItemWithID:(NSString*)itemID;
 
-// Tells the receiver to stop observing the list and pushing updates to its
-// consumer, and to close all items of the web state list (the consumer will
-// disappear, there is no need to empty it explicitly).
-// Note: this mediator is then no longer useful and should be disposed of.
-- (void)shutdownAndCloseAllItems;
+// Tells the receiver to close all items of the web state list.
+- (void)closeAllItems;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 

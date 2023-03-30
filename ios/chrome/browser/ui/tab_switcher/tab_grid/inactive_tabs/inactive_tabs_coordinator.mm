@@ -73,7 +73,9 @@ const NSTimeInterval kDuration = 0.2;
          snapshotCache:snapshotCache];
   self.viewController.gridViewController.imageDataSource = self.mediator;
   self.viewController.gridViewController.menuProvider = self.menuProvider;
+}
 
+- (void)show {
   // Add the view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
   UIView* view = self.viewController.view;
@@ -103,9 +105,7 @@ const NSTimeInterval kDuration = 0.2;
                    }];
 }
 
-- (void)stop {
-  [super stop];
-
+- (void)hide {
   UIView* baseView = self.baseViewController.view;
 
   [baseView layoutIfNeeded];
@@ -115,12 +115,23 @@ const NSTimeInterval kDuration = 0.2;
         self.hiddenConstraint.active = YES;
         [baseView layoutIfNeeded];
       }
-      completion:^(BOOL finished) {
+      completion:^(BOOL success) {
         [self.viewController willMoveToParentViewController:nil];
         [self.viewController.view removeFromSuperview];
         [self.viewController removeFromParentViewController];
-        self.viewController = nil;
+        self.visibleConstraint = nil;
+        self.hiddenConstraint = nil;
       }];
+}
+
+- (void)stop {
+  [super stop];
+
+  [self.mediator disconnect];
+  self.mediator = nil;
+  self.viewController = nil;
+  self.visibleConstraint = nil;
+  self.hiddenConstraint = nil;
 }
 
 #pragma mark - GridViewControllerDelegate
@@ -288,7 +299,7 @@ const NSTimeInterval kDuration = 0.2;
 // Called when the user confirmed wanting to close all inactive tabs.
 - (void)closeAllInactiveTabs {
   [self.delegate inactiveTabsCoordinatorDidFinish:self];
-  [self.mediator shutdownAndCloseAllItems];
+  [self.mediator closeAllItems];
 }
 
 @end

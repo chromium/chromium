@@ -25,6 +25,13 @@
 @end
 
 // Handles interaction with the inactive tabs view controller.
+//
+// This coordinator lifetime starts the first time the Inactive Tabs grid is
+// displayed, and stops only when the regular tab grid is stopped.
+// `start` creates the relevant objects (VC, mediator, etc.), but doesn't show
+// the VC. Call `show`/`hide` to display/hide the inactive tabs grid.
+// By keeping this coordinator alive, the VC can be re-shown as is (i.e. same
+// scroll position).
 @interface InactiveTabsCoordinator : ChromeCoordinator
 
 // Delegate for dismissing the coordinator.
@@ -32,6 +39,12 @@
 
 // Provides the context menu for the tabs on the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
+
+// Animates in the grid of inactive tabs.
+- (void)show;
+
+// Animates out the grid of inactive tabs.
+- (void)hide;
 
 @end
 

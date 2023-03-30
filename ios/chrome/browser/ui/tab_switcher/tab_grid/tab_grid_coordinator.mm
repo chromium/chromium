@@ -878,6 +878,11 @@
   _bringAndroidTabsPromptCoordinator = nil;
   [_tabListFromAndroidCoordinator stop];
   _tabListFromAndroidCoordinator = nil;
+
+  [self.inactiveTabsButtonMediator disconnect];
+  self.inactiveTabsButtonMediator = nil;
+  [self.inactiveTabsCoordinator stop];
+  self.inactiveTabsCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
@@ -1067,16 +1072,18 @@
 
 - (void)showInactiveTabs {
   DCHECK(IsInactiveTabsEnabled());
-  if (self.inactiveTabsCoordinator) {
-    return;
+
+  if (!self.inactiveTabsCoordinator) {
+    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:_inactiveBrowser];
+    self.inactiveTabsCoordinator.delegate = self;
+    self.inactiveTabsCoordinator.menuProvider =
+        self.regularTabContextMenuHelper;
+    [self.inactiveTabsCoordinator start];
   }
 
-  self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:_inactiveBrowser];
-  self.inactiveTabsCoordinator.delegate = self;
-  self.inactiveTabsCoordinator.menuProvider = self.regularTabContextMenuHelper;
-  [self.inactiveTabsCoordinator start];
+  [self.inactiveTabsCoordinator show];
 }
 
 #pragma mark - InactiveTabsCoordinatorDelegate
@@ -1103,8 +1110,7 @@
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {
   DCHECK(IsInactiveTabsEnabled());
-  [self.inactiveTabsCoordinator stop];
-  self.inactiveTabsCoordinator = nil;
+  [self.inactiveTabsCoordinator hide];
 }
 
 #pragma mark - RecentTabsPresentationDelegate

@@ -153,18 +153,21 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 }
 
-- (void)shutdownAndCloseAllItems {
-  _consumer = nil;
-  _scopedWebStateObservation->RemoveAllObservations();
-  _scopedWebStateObservation.reset();
-  _scopedWebStateListObservation.reset();
-  [_snapshotCache removeObserver:self];
-  _appearanceCache = nil;
-
+- (void)closeAllItems {
   // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
   // tabs.
   _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+}
+
+- (void)disconnect {
+  _consumer = nil;
+  _scopedWebStateObservation.reset();
+  _webStateObserverBridge.reset();
+  _scopedWebStateListObservation.reset();
+  _webStateListObserverBridge.reset();
   _webStateList = nullptr;
+  [_snapshotCache removeObserver:self];
+  _appearanceCache = nil;
 }
 
 #pragma mark - CRWWebStateObserver
