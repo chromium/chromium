@@ -469,7 +469,15 @@ if (is_android) {
 }
 
 fuzzable_proto_library("affiliation_proto") {
-  sources = [ "affiliation/affiliation_api.proto" ]
+  proto_in_dir = "//"
+  sources = [ "protos/affiliation_api.proto" ]
+}
+
+if (is_android) {
+  proto_java_library("affiliation_proto_java") {
+    proto_path = "//"
+    sources = [ "protos/affiliation_api.proto" ]
+  }
 }
 
 static_library("password_hash_data") {
@@ -857,19 +865,27 @@ if (is_android) {
 
   fuzzable_proto_library("unified_password_manager_proto") {
     sources = [
+      "protos/list_affiliated_passwords_result.proto",
       "protos/list_passwords_result.proto",
       "protos/password_with_local_data.proto",
     ]
-    deps = [ "//components/sync/protocol" ]
+    deps = [
+      ":affiliation_proto",
+      "//components/sync/protocol",
+    ]
     proto_in_dir = "//"
   }
 
   proto_java_library("unified_password_manager_proto_java") {
     proto_path = "//"
     sources = [
+      "protos/list_affiliated_passwords_result.proto",
       "protos/list_passwords_result.proto",
       "protos/password_with_local_data.proto",
     ]
-    deps = [ "//components/sync/protocol:protocol_java" ]
+    deps = [
+      ":affiliation_proto_java",
+      "//components/sync/protocol:protocol_java",
+    ]
   }
 }
