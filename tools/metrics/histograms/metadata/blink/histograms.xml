@@ -238,8 +238,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.CanvasColorCache.Effectiveness." units="%"
-    expires_after="2023-06-01">
+<histogram name="Blink.Canvas.CanvasColorCache.Effectiveness" units="%"
+    expires_after="2024-04-01">
   <owner>sky@chromium.org</owner>
   <owner>junov@chromium.org</owner>
   <summary>
@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.MaximumStateStackDepth" units="stack depth"
-    expires_after="2023-11-01">
+    expires_after="2024-04-01">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -3757,7 +3757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{Host}.RenderTaskDuration.{Context}.{Filter}"
-    units="microseconds" expires_after="2023-05-11">
+    units="microseconds" expires_after="2024-04-01">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
@@ -3795,7 +3795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{Host}.{Heap}.{Context}" units="KB"
-    expires_after="2023-05-11">
+    expires_after="2024-04-01">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
