@@ -144,9 +144,6 @@ public class HistogramWatcher {
          * an int {@code value}.
          */
         public Builder expectIntRecordTimes(String histogram, int value, int times) {
-            if (value < 0) {
-                throw new IllegalArgumentException("Histograms cannot record negative values");
-            }
             if (times < 0) {
                 throw new IllegalArgumentException(
                         "Cannot expect records a negative number of times");

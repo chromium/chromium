@@ -136,7 +136,6 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
     sources = [
-      "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetricsTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalNativesTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalTestUtils.java",
@@ -168,6 +167,21 @@ if (is_android) {
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
+    ]
+  }
+
+  robolectric_library("junit") {
+    testonly = true
+    sources = [ "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetricsTest.java" ]
+    deps = [
+      ":supervised_user_metrics_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//chrome/android:chrome_java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
     ]
   }
 }

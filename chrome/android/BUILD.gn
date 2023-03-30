@@ -923,6 +923,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/share:java",
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/signin/services/android:junit",
+      "//chrome/browser/supervised_user:junit",
       "//chrome/browser/sync/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab:junit",

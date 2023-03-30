@@ -212,18 +212,6 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
 
     @Test
     @MediumTest
-    public void testNegativeValueExpectations_failure() {
-        try {
-            mWatcher = HistogramWatcher.newBuilder().expectIntRecord(TIMES_HISTOGRAM_1, -1).build();
-        } catch (IllegalArgumentException e) {
-            assertContains("negative", e.getMessage());
-            return;
-        }
-        Assert.fail("Expected IllegalArgumentException");
-    }
-
-    @Test
-    @MediumTest
     public void testZeroCountExpectations_failure() {
         try {
             mWatcher = HistogramWatcher.newBuilder()

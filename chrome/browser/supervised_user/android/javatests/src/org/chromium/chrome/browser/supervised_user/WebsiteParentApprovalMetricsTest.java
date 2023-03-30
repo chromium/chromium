@@ -6,60 +6,46 @@ package org.chromium.chrome.browser.supervised_user;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.metrics.HistogramTestRule;
-import org.chromium.base.test.util.Batch;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 
 /**
  * Tests the recording of the metrics within the local web approval flow.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class WebsiteParentApprovalMetricsTest {
-    @Rule
-    public final HistogramTestRule mHistogramTestRule = new HistogramTestRule();
-
-    @BeforeClass
-    public static void setUpClass() {
-        // Needs to load before HistogramTestRule is applied.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
-
     @Test
     @SmallTest
     public void recordOutcomeMetrics() {
         final String histogramName = "FamilyLinkUser.LocalWebApprovalOutcome";
 
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName,
+                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
+                        .APPROVED_BY_PARENT);
         WebsiteParentApprovalMetrics.recordOutcomeMetric(
                 WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
                         .APPROVED_BY_PARENT);
+        histogram.assertExpected();
 
-        int count = mHistogramTestRule.getHistogramValueCount(histogramName,
-                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
-                        .APPROVED_BY_PARENT);
-        Assert.assertEquals(1, count);
-
+        histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(histogramName,
+                                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
+                                        .PARENT_APPROVAL_CANCELLED,
+                                2)
+                        .build();
         WebsiteParentApprovalMetrics.recordOutcomeMetric(
                 WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
                         .PARENT_APPROVAL_CANCELLED);
         WebsiteParentApprovalMetrics.recordOutcomeMetric(
                 WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
                         .PARENT_APPROVAL_CANCELLED);
-
-        count = mHistogramTestRule.getHistogramValueCount(histogramName,
-                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
-                        .PARENT_APPROVAL_CANCELLED);
-        Assert.assertEquals(2, count);
-
-        count = mHistogramTestRule.getHistogramTotalCount(histogramName);
-        Assert.assertEquals(3, count);
+        histogram.assertExpected();
     }
 
     @Test
@@ -70,16 +56,15 @@ public class WebsiteParentApprovalMetricsTest {
         final int negativeErrorCode = -1;
         final int lowValueCode = 10; // Example: value of CommonStatusCode.DEVELOPER_ERROR.
 
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, negativeErrorCode);
         WebsiteParentApprovalMetrics.recordParentAuthenticationErrorCode(negativeErrorCode);
-        int count = mHistogramTestRule.getHistogramValueCount(histogramName, negativeErrorCode);
-        Assert.assertEquals(1, count);
+        histogram.assertExpected();
 
+        histogram = HistogramWatcher.newBuilder()
+                            .expectIntRecordTimes(histogramName, lowValueCode, 2)
+                            .build();
         WebsiteParentApprovalMetrics.recordParentAuthenticationErrorCode(lowValueCode);
         WebsiteParentApprovalMetrics.recordParentAuthenticationErrorCode(lowValueCode);
-        count = mHistogramTestRule.getHistogramValueCount(histogramName, lowValueCode);
-        Assert.assertEquals(2, count);
-
-        count = mHistogramTestRule.getHistogramTotalCount(histogramName);
-        Assert.assertEquals(3, count);
+        histogram.assertExpected();
     }
 }
