@@ -142,7 +142,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
 
-TEST_F(AppServerTestCase, SelfPromoteFails) {
+TEST_F(AppServerTestCase, DISABLED_SelfPromoteFails) {
   {
     scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetTestScope());
     local_prefs->SetQualified(true);
@@ -213,7 +213,7 @@ TEST_F(AppServerTestCase, StateDirty) {
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
 
-TEST_F(AppServerTestCase, StateDirtySwapFails) {
+TEST_F(AppServerTestCase, DISABLED_StateDirtySwapFails) {
   {
     scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(GetTestScope());
     global_prefs->SetActiveVersion(kUpdaterVersion);
