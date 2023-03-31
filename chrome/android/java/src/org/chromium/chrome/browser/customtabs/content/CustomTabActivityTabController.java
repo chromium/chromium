@@ -351,7 +351,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     @Nullable
     private Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
         if (mSavedInstanceStateSupplier.get() == null) return null;
-        tabModelOrchestrator.loadState(true);
+        tabModelOrchestrator.loadState(true, null);
         tabModelOrchestrator.restoreTabs(true);
         Tab tab = tabModelOrchestrator.getTabModelSelector().getCurrentTab();
         if (tab != null) {

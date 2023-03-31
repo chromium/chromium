@@ -35,6 +35,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
@@ -221,6 +222,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode.  All the tabs
@@ -1177,7 +1179,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
-        if (mHasDeterminedOverviewStateForCurrentSession) return;
+        if (mHasDeterminedOverviewStateForCurrentSession || isTablet()) return;
 
         mHasDeterminedOverviewStateForCurrentSession = true;
         boolean isOverviewVisible = isInOverviewMode();
@@ -1269,6 +1271,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             boolean noRestoreState =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
+            boolean shouldShowHomeSurfaceAtStartupOnTablet = false;
+            final AtomicBoolean isActiveUrlNTP = new AtomicBoolean(false);
             if (noRestoreState) {
                 // Clear the state files because they are inconsistent and useless from now on.
                 mTabModelOrchestrator.clearState();
@@ -1279,7 +1283,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // Never attempt to restore incognito tabs when this activity was previously swiped
                 // away in Recents. http://crbug.com/626629
                 boolean ignoreIncognitoFiles = !hadCipherData;
-                mTabModelOrchestrator.loadState(ignoreIncognitoFiles);
+                Callback<String> onStandardActiveIndexRead = null;
+                shouldShowHomeSurfaceAtStartupOnTablet = shouldShowNtpHomeSurfaceOnStartup();
+                if (shouldShowHomeSurfaceAtStartupOnTablet) {
+                    onStandardActiveIndexRead = url -> {
+                        if (!mTabModelSelector.isIncognitoSelected()
+                                && UrlUtilities.isNTPUrl(url)) {
+                            isActiveUrlNTP.set(true);
+                        }
+                    };
+                }
+                mTabModelOrchestrator.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
             }
 
             mInactivityTracker.register(this.getLifecycleDispatcher());
@@ -1316,6 +1330,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean activeTabBeingRestored = !isIntentWithEffect
                     || (shouldShowOverviewPageOnStart()
                             && !mTabModelSelector.isIncognitoSelected());
+
+            if (shouldShowHomeSurfaceAtStartupOnTablet && !isActiveUrlNTP.get()
+                    && !isIntentWithEffect && !hasTabWaitingForReparenting) {
+                ReturnToChromeUtil.createNewTab(getTabCreator(false));
+                activeTabBeingRestored = false;
+                mCreatedTabOnStartup = true;
+            }
 
             mTabModelOrchestrator.restoreTabs(activeTabBeingRestored);
 
@@ -3030,5 +3051,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(this);
         }
         return mIsStartSurfaceRefactorEnabled;
+    }
+
+    /**
+     * Returns whether to show a NTP as the home surface at startup on tablet.
+     */
+    private boolean shouldShowNtpHomeSurfaceOnStartup() {
+        assert mInactivityTracker != null;
+        return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                isTablet(), getIntent(), mTabModelSelector, mInactivityTracker);
     }
 }

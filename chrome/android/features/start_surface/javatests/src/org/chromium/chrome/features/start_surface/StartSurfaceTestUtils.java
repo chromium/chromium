@@ -275,6 +275,11 @@ public class StartSurfaceTestUtils {
      */
     public static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex)
             throws IOException {
+        createTabStateFile(tabIds, urls, selectedIndex, true);
+    }
+
+    private static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex,
+            boolean createStateFile) throws IOException {
         TabPersistentStore.TabModelMetadata normalInfo =
                 new TabPersistentStore.TabModelMetadata(selectedIndex);
         for (int i = 0; i < tabIds.length; i++) {
@@ -282,7 +287,9 @@ public class StartSurfaceTestUtils {
             String url = urls != null ? urls[i] : "about:blank";
             normalInfo.urls.add(url);
 
-            saveTabState(tabIds[i], false);
+            if (createStateFile) {
+                saveTabState(tabIds[i], false);
+            }
         }
         TabPersistentStore.TabModelMetadata incognitoInfo =
                 new TabPersistentStore.TabModelMetadata(0);
@@ -294,6 +301,17 @@ public class StartSurfaceTestUtils {
         FileOutputStream output = new FileOutputStream(stateFile);
         output.write(listData);
         output.close();
+    }
+
+    /**
+     * Creates a Tab state metadata file without creating Tab state files for the given Tab's info.
+     * @param tabIds All the Tab IDs in the normal tab model.
+     * @param urls All the Tab URLs in the normal tab model.
+     * @param selectedIndex The selected index of normal tab model.
+     */
+    public static void prepareTabStateMetadataFile(
+            int[] tabIds, @Nullable String[] urls, int selectedIndex) throws IOException {
+        createTabStateFile(tabIds, urls, selectedIndex, false);
     }
 
     /**

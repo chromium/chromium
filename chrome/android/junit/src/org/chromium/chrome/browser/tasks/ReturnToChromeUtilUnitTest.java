@@ -34,6 +34,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,7 +47,9 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepa
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
@@ -54,7 +57,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
-import org.chromium.base.test.util.DisabledTest;
 
 /** Unit tests for {@link ReturnToChromeUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -481,6 +483,41 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Startup.Android.IsHomepagePolicyManagerInitialized"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    public void testShowNtpAsHomeSurfaceAtStartupOnTablet() {
+        Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
+
+        // Sets main intent from launcher:
+        Intent intent = createMainIntentFromLauncher();
+
+        // Sets background time to make the return time arrive:
+        SharedPreferencesManager.getInstance().addToStringSet(
+                ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
+
+        // Tests the case when there isn't any Tab. Verifies that Start is only shown on tablets.
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(0).when(mTabModelSelector).getTotalTabCount();
+        Assert.assertTrue(HomepagePolicyManager.isInitializedWithNative());
+        Assert.assertTrue(HomepageManager.isHomepageEnabled());
+        Assert.assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                false, intent, mTabModelSelector, mInactivityTracker));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                true, intent, mTabModelSelector, mInactivityTracker));
+
+        // Tests the case when the total tab count > 0. Verifies that Start is only shown on
+        // tablets.
+        doReturn(1).when(mTabModelSelector).getTotalTabCount();
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                false, intent, mTabModelSelector, mInactivityTracker));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                true, intent, mTabModelSelector, mInactivityTracker));
     }
 
     private Intent createMainIntentFromLauncher() {
