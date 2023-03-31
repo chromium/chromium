@@ -51,10 +51,10 @@ suite('LacrosAppTest', function() {
   test('on-profile-info-changed event', function() {
     // Helper to test all the text values in the UI.
     function checkTextValues(expectedTitle: string, expectedSubtitle: string) {
-      const titleElement = app.shadowRoot!.querySelector('#title')!;
+      const titleElement = app.shadowRoot!.querySelector('.title')!;
       assertEquals(expectedTitle, titleElement.textContent!.trim());
 
-      const subtitleElement = app.shadowRoot!.querySelector('#subtitle')!;
+      const subtitleElement = app.shadowRoot!.querySelector('.subtitle')!;
       assertEquals(expectedSubtitle, subtitleElement.textContent!.trim());
     }
 
@@ -80,13 +80,13 @@ suite('LacrosAppTest', function() {
     });
 
     assertFalse(isChildVisible(app, '#info-box'));
-    assertFalse(isChildVisible(app, '#work-badge'));
+    assertFalse(isChildVisible(app, '.work-badge'));
 
     webUIListenerCallback('on-profile-info-changed', {
       managementDisclaimer: 'management-disclaimer',
     });
 
     assertTrue(isChildVisible(app, '#info-box'));
-    assertTrue(isChildVisible(app, '#work-badge'));
+    assertTrue(isChildVisible(app, '.work-badge'));
   });
 });

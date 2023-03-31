@@ -22,6 +22,7 @@
 #include "chrome/grit/intro_resources_map.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_google_chrome_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -93,12 +94,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   const bool is_device_managed =
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  source->AddBoolean("isDeviceManaged", is_device_managed);
 
-  source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
-  source->AddResourcePath("images/product-logo-animation.svg",
-                          IDR_PRODUCT_LOGO_ANIMATION_SVG);
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   source->AddResourcePath("images/left_illustration_dark.svg",
@@ -111,9 +107,20 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  source->AddBoolean("isDeviceManaged", is_device_managed);
+
+  source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
+  source->AddResourcePath("images/product-logo-animation.svg",
+                          IDR_PRODUCT_LOGO_ANIMATION_SVG);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/gshield.svg", IDR_GSHIELD_ICON_SVG);
 #endif
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  source->AddBoolean("isTangibleSyncEnabled",
+                     base::FeatureList::IsEnabled(switches::kTangibleSync));
 #endif
 
   source->AddString(

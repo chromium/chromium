@@ -1,4 +1,4 @@
-<style>
+<style include="tangible-sync-style-shared">
   :host {
     --buttons-container-max-width: 45%;
     color: var(--cr-primary-text-color);
@@ -9,6 +9,12 @@
     height: 244px;
     position: relative;
     width: 100%;
+  }
+
+  .tangible-sync-style #header-container {
+    height: unset;
+    position: unset;
+    width: unset;
   }
 
   #banner {
@@ -35,6 +41,12 @@
     z-index: 1;
   }
 
+  .tangible-sync-style #avatar-container {
+    --avatar-size: var(--tangible-sync-style-avatar-size);
+    bottom: unset;
+    position: relative;
+  }
+
   #avatar {
     border: 2px solid var(--md-background-color);
     border-radius: 50%;
@@ -42,7 +54,7 @@
     width: 100%;
   }
 
-  #work-badge {
+  .work-badge {
     --badge-width: 30px;
     --badge-offset: -6px;
     border: 3px solid white;
@@ -54,7 +66,7 @@
     width: var(--badge-width);
   }
 
-  #work-badge>iron-icon {
+  .work-badge>iron-icon {
     --work-icon-size: 20px;
     background-color: var(--md-background-color);
     border-radius: 50%;
@@ -65,7 +77,7 @@
     width: var(--work-icon-size);
   }
 
-  #content-container {
+  #text-container {
     --footer-margin: 40px;
     font-size: 14px;
     line-height: 20px;
@@ -76,7 +88,14 @@
     width: 382px;
   }
 
-  #content-container h2 {
+  .tangible-sync-style #text-container {
+    font-size: unset;
+    line-height: unset;
+    margin: unset;
+    width: unset;
+  }
+
+  .title {
     font-size: 24px;
     font-weight: 500;
     line-height: 32px;
@@ -103,6 +122,12 @@
     padding-inline-end: 18px;
     position: absolute;
     width: 530px;
+  }
+
+  .tangible-sync-style #info-box {
+    border: 1px solid var(--google-grey-200);
+    padding: 12px 0;
+    position: relative;
   }
 
   /* info-box is displayed as a flex-box. Because of that, the hidden property
@@ -134,36 +159,56 @@
     width: var(--icon-size);
   }
 
-  #buttons-container {
-    flex-wrap: wrap-reverse;
-    max-width: var(--buttons-container-max-width);
-    right: 0;
-  }
-
-  #buttons-container cr-button {
-    font-size: 1.16em;
-    margin: 5px 0;
-    min-width: 111px;
-  }
-
   .action-container {
     align-items: flex-end;
     bottom: 0;
     box-sizing: border-box;
     column-gap: 8px;
     display: flex;
+    flex-wrap: wrap-reverse;
     justify-content: flex-end;
     padding: 24px;
     position: absolute;
     width: 100%;
   }
 
+  cr-button {
+    font-size: 1.16em;
+    margin: 5px 0;
+    min-width: 111px;
+  }
+
+  .tangible-sync-style cr-button {
+    margin: unset;
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/left_illustration.svg);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(images/right_illustration.svg);
+  }
+
+  .main-container.tangible-sync-style {
+    height: calc(100vh - (var(--action-container-padding) +
+        var(--cr-button-height)));
+    width: 100vw;
+  }
+
+  .tangible-sync-style .content-container {
+    left: 50%;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   @media (prefers-color-scheme: dark) {
-    #work-badge {
+    .work-badge {
       border-color: var(--md-background-color);
     }
 
-    #work-badge>iron-icon {
+    .work-badge>iron-icon {
       box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
       color: white;
     }
@@ -175,36 +220,57 @@
     #icon-container {
       background-color: var(--google-grey-700);
     }
-  }
 
+    .tangible-sync-style-left-banner {
+      content: url(images/left_illustration_dark.svg);
+    }
+
+    .tangible-sync-style-right-banner {
+      content: url(images/right_illustration_dark.svg);
+    }
+
+    .tangible-sync-style #info-box {
+      border-color: var(--google-grey-600);
+    }
+  }
 </style>
 
-<div id="header-container">
-  <div id="banner"></div>
-  <div id="avatar-container">
-    <img id="avatar" alt="" src="[[pictureUrl_]]">
-    <div id="work-badge" hidden="[[!managementDisclaimer_]]">
-      <iron-icon class="icon" icon="cr:domain"></iron-icon>
+<div class$="main-container
+    [[getTangibleSyncStyleClass_(isTangibleSyncEnabled_)]]">
+  <img class="tangible-sync-style-left-banner" alt=""
+      hidden="[[!isTangibleSyncEnabled_]]">
+  <img class="tangible-sync-style-right-banner" alt=""
+      hidden="[[!isTangibleSyncEnabled_]]">
+  <div class="content-container">
+    <div id="header-container">
+      <div id="banner" hidden="[[isTangibleSyncEnabled_]]"></div>
+      <div id="avatar-container">
+        <img id="avatar" alt="" src="[[pictureUrl_]]">
+        <div class="work-badge" hidden="[[!managementDisclaimer_]]">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
+      </div>
+      </div>
+    <div id="text-container">
+      <h2 class="title">
+        [[title_]]
+      </h2>
+      <p class="subtitle" class="secondary">
+        [[subtitle_]]
+      </p>
+    </div>
+    <div id="info-box" hidden="[[!managementDisclaimer_]]">
+      <div id="icon-container">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+      <p id="enterprise-info">
+        [[managementDisclaimer_]]
+      </p>
     </div>
   </div>
-</div>
-<div id="content-container">
-  <h2 id="title">
-    [[title_]]
-  </h2>
-  <p id="subtitle" class="secondary">
-    [[subtitle_]]
-  </p>
-</div>
-<div id="info-box" hidden="[[!managementDisclaimer_]]">
-  <div id="icon-container">
-    <iron-icon icon="cr:domain"></iron-icon>
   </div>
-  <p id="enterprise-info">
-    [[managementDisclaimer_]]
-  </p>
-</div>
-<div id="buttons-container" class="action-container">
+  <div class$="action-container
+      [[getTangibleSyncStyleClass_(isTangibleSyncEnabled_)]]">
   <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
     disabled="[[disableProceedButton_]]">
     $i18n{proceedLabel}
