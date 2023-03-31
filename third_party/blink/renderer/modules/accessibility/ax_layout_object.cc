@@ -419,10 +419,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   DCHECK(initialized_);
 #endif
 
-  // Ignore continuations, they're duplicate copies of inline nodes with blocks
-  // inside. AXObjects are no longer created for these.
-  DCHECK(!layout_object_->IsElementContinuation());
-
   if (AXObject::ShouldIgnoreForHiddenOrInert(ignored_reasons)) {
     return true;
   }

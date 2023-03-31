@@ -1406,26 +1406,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            StyleRef().StyleType() == kPseudoIdNone && IsLayoutBlock() &&
            !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
   }
-  // If node has been split into continuations, it returns the first layout
-  // object generated for the node.
-  //
-  // TODO(1229581): Remove these continuation methods.
-  const LayoutObject* ContinuationRoot() const {
-    NOT_DESTROYED();
-    return GetNode() ? GetNode()->GetLayoutObject() : this;
-  }
-  LayoutObject* ContinuationRoot() {
-    NOT_DESTROYED();
-    return GetNode() ? GetNode()->GetLayoutObject() : this;
-  }
-  bool IsElementContinuation() const {
-    NOT_DESTROYED();
-    return GetNode() && GetNode()->GetLayoutObject() != this;
-  }
-  bool IsInlineElementContinuation() const {
-    NOT_DESTROYED();
-    return IsElementContinuation() && IsInline();
-  }
 
   bool IsFloating() const {
     NOT_DESTROYED();

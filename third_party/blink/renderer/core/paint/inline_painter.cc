@@ -47,8 +47,7 @@ void InlinePainter::Paint(const PaintInfo& paint_info) {
     ObjectPainter painter(layout_inline_);
     if (ShouldPaintDescendantOutlines(local_paint_info.phase))
       painter.PaintInlineChildrenOutlines(local_paint_info);
-    if (ShouldPaintSelfOutline(local_paint_info.phase) &&
-        !layout_inline_.IsElementContinuation()) {
+    if (ShouldPaintSelfOutline(local_paint_info.phase)) {
       painter.PaintOutline(local_paint_info, paint_offset);
     }
     return;

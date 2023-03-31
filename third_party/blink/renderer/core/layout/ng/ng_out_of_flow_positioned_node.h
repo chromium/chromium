@@ -186,9 +186,6 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
         static_position_vertical_edge(static_position.vertical_edge),
         is_for_fragmentation(false),
         inline_container(inline_container) {
-    DCHECK(!inline_container.container ||
-           inline_container.container ==
-               inline_container.container->ContinuationRoot());
     DCHECK(node.IsBlock());
   }
 
@@ -233,9 +230,6 @@ struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
         static_position(static_position),
         inline_container(inline_container),
         is_for_fragmentation(false) {
-    DCHECK(!inline_container.container ||
-           inline_container.container ==
-               inline_container.container->ContinuationRoot());
     DCHECK(node.IsBlock());
   }
 

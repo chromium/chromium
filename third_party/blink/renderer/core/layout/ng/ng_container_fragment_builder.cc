@@ -372,12 +372,6 @@ void NGContainerFragmentBuilder::
           To<LayoutInline>(layout_object_),
           /* relative_offset */ LogicalOffset());
     }
-
-    // Ensure that the inline_container is a continuation root.
-    if (candidate.inline_container.container) {
-      candidate.inline_container.container = To<LayoutInline>(
-          candidate.inline_container.container->ContinuationRoot());
-    }
   }
 }
 
@@ -783,9 +777,6 @@ void NGContainerFragmentBuilder::AdjustFixedposContainerInfo(
         *fixedpos_containing_block_fragment = box_fragment;
       }
     } else if (fixedpos_inline_container->container) {
-      // Ensure that the inline_container is a continuation root.
-      fixedpos_inline_container->container = To<LayoutInline>(
-          fixedpos_inline_container->container->ContinuationRoot());
       // Candidates whose containing block is inline are always positioned
       // inside closest parent block flow.
       if (box_fragment->GetLayoutObject() ==

@@ -375,8 +375,7 @@ void InlineFlowBox::DetermineSpacingForFlowBoxes(
     // Check to see if all initial lines are unconstructed.  If so, then
     // we know the inline began on this line (unless we are a continuation).
     LineBoxList* line_box_list = LineBoxes();
-    if (!line_box_list->First()->IsConstructed() &&
-        !GetLineLayoutItem().IsInlineElementContinuation()) {
+    if (!line_box_list->First()->IsConstructed()) {
       if (GetLineLayoutItem().StyleRef().BoxDecorationBreak() ==
           EBoxDecorationBreak::kClone)
         include_left_edge = include_right_edge = true;

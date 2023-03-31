@@ -1291,21 +1291,8 @@ void LayoutInline::UpdateHitTestResult(HitTestResult& result,
   if (result.InnerNode())
     return;
 
-  Node* n = GetNode();
   PhysicalOffset local_point = point;
-  if (n) {
-    if (IsInlineElementContinuation()) {
-      // We're in the continuation of a split inline. Adjust our local point to
-      // be in the coordinate space of the principal layoutObject's containing
-      // block. This will end up being the innerNode.
-      LayoutBlock* first_block = n->GetLayoutObject()->ContainingBlock();
-
-      // Get our containing block.
-      LayoutBox* block = ContainingBlock();
-      local_point += block->PhysicalLocation();
-      local_point -= first_block->PhysicalLocation();
-    }
-
+  if (Node* n = GetNode()) {
     result.SetNodeAndPosition(n, local_point);
   }
 }

@@ -158,10 +158,6 @@ class LineLayoutItem {
     return layout_object_->IsInlineBlockOrInlineTable();
   }
 
-  bool IsInlineElementContinuation() const {
-    return layout_object_->IsInlineElementContinuation();
-  }
-
   // TODO(dgrogan/eae): Replace isType with an enum in the API? As it stands
   // we mix isProperty and isType, which is confusing.
   bool IsLayoutBlock() const { return layout_object_->IsLayoutBlock(); }

@@ -812,19 +812,6 @@ void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
     // NGPhysicalBoxFragment::AddSelfOutlineRects().
     if (child->IsOutOfFlowPositioned())
       continue;
-
-    // Outline of an element continuation or anonymous block continuation is
-    // added when we iterate the continuation chain.
-    // See NGPhysicalBoxFragment::AddSelfOutlineRects().
-    if (!child->IsLineBox()) {
-      const LayoutObject* child_layout_object = child->GetLayoutObject();
-      if (auto* child_layout_block_flow =
-              DynamicTo<LayoutBlockFlow>(child_layout_object)) {
-        if (child_layout_object->IsElementContinuation()) {
-          continue;
-        }
-      }
-    }
     AddOutlineRectsForDescendant(child, outline_rects, additional_offset,
                                  outline_type, containing_block);
   }
