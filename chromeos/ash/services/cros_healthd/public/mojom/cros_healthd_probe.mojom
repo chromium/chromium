@@ -875,7 +875,7 @@ union SystemResult {
 
 // System Information.
 //
-// NextMinVersion: 1, NextIndex: 3
+// NextMinVersion: 2, NextIndex: 4
 [Stable]
 struct SystemInfo {
   // The info related to the OS.
@@ -885,6 +885,8 @@ struct SystemInfo {
   // The info from DMI (x86 only). The info from here should only be used for
   // logging and debugging.
   DmiInfo? dmi_info@2;
+  // The info related to Intel Platform Service Record (PSR).
+  [MinVersion=1] PsrInfo? psr_info@3;
 };
 
 // The OS information.
@@ -1014,6 +1016,90 @@ struct DmiInfo {
   string? product_version@9;
   // The system vendor name.
   string? sys_vendor@10;
+};
+
+// Platform Service Record (PSR) event.
+//
+// NextMinVersion: 1: NextIndex 3
+[Stable]
+struct PsrEvent {
+  // PSR event types.
+  //
+  // NextMinVersion: 1, NextIndex: 6
+  [Stable, Extensible]
+  enum EventType {
+    // An enum value not defined in this version of the enum definition.
+    [Default] kUnmappedEnumField = 0,
+    // Log has started.
+    kLogStart = 1,
+    // Log has ended.
+    kLogEnd = 2,
+    // CSME recovery
+    kCsmeRecovery = 3,
+    // Protected real-time counter failure.
+    kPrtcFailure = 4,
+    // Secure Version Number increased.
+    kSvnIncrease = 5,
+
+  };
+  EventType type@0;
+
+  // Time of occurrence.
+  uint32 time@1;
+  // Event data.
+  uint32 data@2;
+};
+
+// Platform Service Record (PSR) information.
+//
+// NextMinVersion: 1, NextIndex: 15
+[Stable]
+struct PsrInfo {
+  // The PSR log state.
+  //
+  // NextMinVersion: 1, NextIndex: 4
+  [Stable, Extensible]
+  enum LogState {
+    // An enum value not defined in this version of the enum definition.
+    [Default] kUnmappedEnumField = 0,
+    // PSR logging was not started yet.
+    kNotStarted = 1,
+    // PSR logging was started and currently running.
+    kStarted = 2,
+    // PSR logging was stopped due to some critical event.
+    kStopped = 3,
+  };
+  LogState log_state@0;
+
+  // PSR UUID.
+  string uuid@1;
+  // Platform UPID.
+  string upid@2;
+  // Logging start date in UNIX time.
+  uint32 log_start_date@3;
+  // OEM's name, ex: Panasonic.
+  string oem_name@4;
+  // OEM's make, ex: Toughbook.
+  string oem_make@5;
+  // OEM's model, ex: 55.
+  string oem_model@6;
+  // Country of device origin.
+  string manufacture_country@7;
+  // Additional OEM data.
+  string oem_data@8;
+  // All the counters will never be reset unless the FW is reflashed.
+  // Cumulative number of seconds at S0.
+  uint32 uptime_seconds@9;
+  // Cumulative number of S0->S5.
+  uint32 s5_counter@10;
+  // Cumulative number of S0->S4.
+  uint32 s4_counter@11;
+  // Cumulative number of S0->S3.
+  uint32 s3_counter@12;
+  // Cumulative number of warm resets (soft reboots).
+  uint32 warm_reset_counter@13;
+  // First 100 PSR events that have been saved.
+  array<PsrEvent> events@14;
 };
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
