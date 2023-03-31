@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// NearbyShareApiCallFlowImpl is a wrapper around OAuth2ApiCallFlow
+namespace ash::nearby {
+
+// NearbyApiCallFlowImpl is a wrapper around OAuth2ApiCallFlow
 // that provides convenience methods StartGetRequest, StartPostRequest,
 // and StartPatchRequest.
 // We assume the following:
@@ -23,17 +25,16 @@
 //   * A GET request encodes the request proto as query parameters and has no
 //     body,
 //   * The response body is the serialized response proto.
-class NearbyShareApiCallFlowImpl : public NearbyShareApiCallFlow,
-                                   public OAuth2ApiCallFlow {
+class NearbyApiCallFlowImpl : public NearbyApiCallFlow,
+                              public OAuth2ApiCallFlow {
  public:
-  NearbyShareApiCallFlowImpl();
-  ~NearbyShareApiCallFlowImpl() override;
+  NearbyApiCallFlowImpl();
+  ~NearbyApiCallFlowImpl() override;
 
-  NearbyShareApiCallFlowImpl(const NearbyShareApiCallFlowImpl&) = delete;
-  NearbyShareApiCallFlowImpl& operator=(const NearbyShareApiCallFlowImpl&) =
-      delete;
+  NearbyApiCallFlowImpl(const NearbyApiCallFlowImpl&) = delete;
+  NearbyApiCallFlowImpl& operator=(const NearbyApiCallFlowImpl&) = delete;
 
-  // NearbyShareApiCallFlow
+  // NearbyApiCallFlow
   void StartPostRequest(
       const GURL& request_url,
       const std::string& serialized_request,
@@ -105,4 +106,6 @@ class NearbyShareApiCallFlowImpl : public NearbyShareApiCallFlow,
       partial_network_annotation_;
 };
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
+}  // namespace ash::nearby
+
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_IMPL_H_

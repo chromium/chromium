@@ -22,8 +22,8 @@
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow_impl.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -62,7 +62,7 @@ const int32_t kPageSize1 = 1000;
 const int64_t kSeconds1 = 1594392109;
 const int64_t kSeconds2 = 1623336109;
 
-class FakeNearbyShareApiCallFlow : public NearbyShareApiCallFlow {
+class FakeNearbyShareApiCallFlow : public ash::nearby::NearbyApiCallFlow {
  public:
   FakeNearbyShareApiCallFlow() = default;
   ~FakeNearbyShareApiCallFlow() override = default;
@@ -135,7 +135,7 @@ class FakeNearbyShareApiCallFlow : public NearbyShareApiCallFlow {
 // Return the values associated with |key|, or fail the test if |key| isn't in
 // |query_parameters|
 std::vector<std::string> ExpectQueryStringValues(
-    const NearbyShareApiCallFlow::QueryParameters& query_parameters,
+    const ash::nearby::NearbyApiCallFlow::QueryParameters& query_parameters,
     const std::string& key) {
   std::vector<std::string> values;
   for (const std::pair<std::string, std::string>& pair : query_parameters) {
@@ -231,7 +231,8 @@ class NearbyShareClientImplTest : public testing::Test,
   const std::string& serialized_request() {
     return api_call_flow_->serialized_request_;
   }
-  const NearbyShareApiCallFlow::QueryParameters& request_as_query_parameters() {
+  const ash::nearby::NearbyApiCallFlow::QueryParameters&
+  request_as_query_parameters() {
     return api_call_flow_->request_as_query_parameters_;
   }
 

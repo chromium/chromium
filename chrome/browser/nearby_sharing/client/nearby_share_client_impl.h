@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,14 +33,15 @@ class GoogleServiceAuthError;
 class NearbyShareHttpNotifier;
 
 // An implementation of NearbyShareClient that fetches access tokens for the
-// primary account and makes HTTP calls using NearbyShareApiCallFlow. Callbacks
-// are guaranteed to not be invoked after NearbyShareClientImpl is destroyed.
+// primary account and makes HTTP calls using ash::nearby::NearbyApiCallFlow.
+// Callbacks are guaranteed to not be invoked after NearbyShareClientImpl is
+// destroyed.
 class NearbyShareClientImpl : public NearbyShareClient {
  public:
   // Creates the client using |url_loader_factory| to make the HTTP request
   // through |api_call_flow|.
   NearbyShareClientImpl(
-      std::unique_ptr<NearbyShareApiCallFlow> api_call_flow,
+      std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       NearbyShareHttpNotifier* notifier);
@@ -87,7 +88,7 @@ class NearbyShareClientImpl : public NearbyShareClient {
       const GURL& request_url,
       RequestType request_type,
       const absl::optional<std::string>& serialized_request,
-      const absl::optional<NearbyShareApiCallFlow::QueryParameters>&
+      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)>&& response_callback,
       ErrorCallback&& error_callback,
@@ -99,14 +100,14 @@ class NearbyShareClientImpl : public NearbyShareClient {
   void OnAccessTokenFetched(
       RequestType request_type,
       const absl::optional<std::string>& serialized_request,
-      const absl::optional<NearbyShareApiCallFlow::QueryParameters>&
+      const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
           request_as_query_parameters,
       base::OnceCallback<void(const ResponseProto&)>&& response_callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
-  // Called when NearbyShareApiCallFlow completes successfully to deserialize
-  // and return the result.
+  // Called when ash::nearby::NearbyApiCallFlow completes successfully to
+  // deserialize and return the result.
   template <class ResponseProto>
   void OnFlowSuccess(
       base::OnceCallback<void(const ResponseProto&)>&& result_callback,
@@ -116,7 +117,7 @@ class NearbyShareClientImpl : public NearbyShareClient {
   void OnApiCallFailed(NearbyShareHttpError error);
 
   // Constructs and executes the actual HTTP request.
-  std::unique_ptr<NearbyShareApiCallFlow> api_call_flow_;
+  std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow_;
 
   signin::IdentityManager* identity_manager_;
 

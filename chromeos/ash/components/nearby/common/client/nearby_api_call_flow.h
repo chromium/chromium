@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
-#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_H_
 
 #include <string>
 #include <utility>
@@ -16,15 +16,17 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-class NearbyShareApiCallFlow {
+namespace ash::nearby {
+
+class NearbyApiCallFlow {
  public:
   using ResultCallback =
       base::OnceCallback<void(const std::string& serialized_response)>;
   using ErrorCallback = base::OnceCallback<void(NearbyShareHttpError error)>;
   using QueryParameters = std::vector<std::pair<std::string, std::string>>;
 
-  NearbyShareApiCallFlow() = default;
-  virtual ~NearbyShareApiCallFlow() = default;
+  NearbyApiCallFlow() = default;
+  virtual ~NearbyApiCallFlow() = default;
 
   // Starts the API POST request call.
   //   |request_url|: The URL endpoint of the API request.
@@ -78,4 +80,6 @@ class NearbyShareApiCallFlow {
           partial_traffic_annotation) = 0;
 };
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
+}  // namespace ash::nearby
+
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_API_CALL_FLOW_H_

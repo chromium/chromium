@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow_impl.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
@@ -25,10 +25,12 @@ const char kPlatformTypeHeaderValue[] = "OSType.CHROME_OS";
 
 }  // namespace
 
-NearbyShareApiCallFlowImpl::NearbyShareApiCallFlowImpl() = default;
-NearbyShareApiCallFlowImpl::~NearbyShareApiCallFlowImpl() = default;
+namespace ash::nearby {
 
-void NearbyShareApiCallFlowImpl::StartPostRequest(
+NearbyApiCallFlowImpl::NearbyApiCallFlowImpl() = default;
+NearbyApiCallFlowImpl::~NearbyApiCallFlowImpl() = default;
+
+void NearbyApiCallFlowImpl::StartPostRequest(
     const GURL& request_url,
     const std::string& serialized_request,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -43,7 +45,7 @@ void NearbyShareApiCallFlowImpl::StartPostRequest(
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
 }
 
-void NearbyShareApiCallFlowImpl::StartPatchRequest(
+void NearbyApiCallFlowImpl::StartPatchRequest(
     const GURL& request_url,
     const std::string& serialized_request,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -58,7 +60,7 @@ void NearbyShareApiCallFlowImpl::StartPatchRequest(
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
 }
 
-void NearbyShareApiCallFlowImpl::StartGetRequest(
+void NearbyApiCallFlowImpl::StartGetRequest(
     const GURL& request_url,
     const QueryParameters& request_as_query_parameters,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -73,14 +75,14 @@ void NearbyShareApiCallFlowImpl::StartGetRequest(
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
 }
 
-void NearbyShareApiCallFlowImpl::SetPartialNetworkTrafficAnnotation(
+void NearbyApiCallFlowImpl::SetPartialNetworkTrafficAnnotation(
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   partial_network_annotation_ =
       std::make_unique<net::PartialNetworkTrafficAnnotationTag>(
           partial_traffic_annotation);
 }
 
-GURL NearbyShareApiCallFlowImpl::CreateApiCallUrl() {
+GURL NearbyApiCallFlowImpl::CreateApiCallUrl() {
   // Specifies that the server's response body should be formatted as a
   // serialized proto.
   request_url_ =
@@ -100,7 +102,7 @@ GURL NearbyShareApiCallFlowImpl::CreateApiCallUrl() {
   return request_url_;
 }
 
-net::HttpRequestHeaders NearbyShareApiCallFlowImpl::CreateApiCallHeaders() {
+net::HttpRequestHeaders NearbyApiCallFlowImpl::CreateApiCallHeaders() {
   // Inform the server that Chrome OS is making the request; this helps with
   // diagnostics.
   net::HttpRequestHeaders headers;
@@ -108,23 +110,23 @@ net::HttpRequestHeaders NearbyShareApiCallFlowImpl::CreateApiCallHeaders() {
   return headers;
 }
 
-std::string NearbyShareApiCallFlowImpl::CreateApiCallBody() {
+std::string NearbyApiCallFlowImpl::CreateApiCallBody() {
   return serialized_request_.value_or(std::string());
 }
 
-std::string NearbyShareApiCallFlowImpl::CreateApiCallBodyContentType() {
+std::string NearbyApiCallFlowImpl::CreateApiCallBodyContentType() {
   return serialized_request_ ? kProtobufContentType : std::string();
 }
 
 // Note: Unlike OAuth2ApiCallFlow, we do *not* determine the request type
 // based on whether or not the body is empty.
-std::string NearbyShareApiCallFlowImpl::GetRequestTypeForBody(
+std::string NearbyApiCallFlowImpl::GetRequestTypeForBody(
     const std::string& body) {
   DCHECK(!request_http_method_.empty());
   return request_http_method_;
 }
 
-void NearbyShareApiCallFlowImpl::ProcessApiCallSuccess(
+void NearbyApiCallFlowImpl::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   if (!body) {
@@ -134,7 +136,7 @@ void NearbyShareApiCallFlowImpl::ProcessApiCallSuccess(
   std::move(result_callback_).Run(std::move(*body));
 }
 
-void NearbyShareApiCallFlowImpl::ProcessApiCallFailure(
+void NearbyApiCallFlowImpl::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
@@ -156,7 +158,9 @@ void NearbyShareApiCallFlowImpl::ProcessApiCallFailure(
   std::move(error_callback_).Run(*error);
 }
 net::PartialNetworkTrafficAnnotationTag
-NearbyShareApiCallFlowImpl::GetNetworkTrafficAnnotationTag() {
+NearbyApiCallFlowImpl::GetNetworkTrafficAnnotationTag() {
   DCHECK(partial_network_annotation_);
   return *partial_network_annotation_;
 }
+
+}  // namespace ash::nearby

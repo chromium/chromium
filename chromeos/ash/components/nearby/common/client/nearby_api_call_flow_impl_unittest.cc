@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow_impl.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -34,9 +34,10 @@ const char kGet[] = "GET";
 const char kPost[] = "POST";
 const char kPatch[] = "PATCH";
 
-const NearbyShareApiCallFlow::QueryParameters&
+const ash::nearby::NearbyApiCallFlow::QueryParameters&
 GetTestRequestProtoAsQueryParameters() {
-  static const base::NoDestructor<NearbyShareApiCallFlow::QueryParameters>
+  static const base::NoDestructor<
+      ash::nearby::NearbyApiCallFlow::QueryParameters>
       request_as_query_parameters(
           {{"field1", "value1a"}, {"field1", "value1b"}, {"field2", "value2"}});
   return *request_as_query_parameters;
@@ -48,7 +49,7 @@ GetTestRequestProtoAsQueryParameters() {
 // |request_as_query_parameters| is only non-null for GET requests.
 GURL UrlWithQueryParameters(
     const std::string& url,
-    const absl::optional<NearbyShareApiCallFlow::QueryParameters>&
+    const absl::optional<ash::nearby::NearbyApiCallFlow::QueryParameters>&
         request_as_query_parameters) {
   GURL url_with_qp(url);
 
@@ -68,9 +69,11 @@ GURL UrlWithQueryParameters(
 
 }  // namespace
 
-class NearbyShareApiCallFlowImplTest : public testing::Test {
+namespace ash::nearby {
+
+class NearbyApiCallFlowImplTest : public testing::Test {
  protected:
-  NearbyShareApiCallFlowImplTest()
+  NearbyApiCallFlowImplTest()
       : shared_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
@@ -84,12 +87,12 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
 
   void StartPostRequestApiCallFlowWithSerializedRequest(
       const std::string& serialized_request) {
-    flow_.StartPostRequest(
-        GURL(kRequestUrl), serialized_request, shared_factory_, kAccessToken,
-        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnResult,
-                       base::Unretained(this)),
-        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnError,
-                       base::Unretained(this)));
+    flow_.StartPostRequest(GURL(kRequestUrl), serialized_request,
+                           shared_factory_, kAccessToken,
+                           base::BindOnce(&NearbyApiCallFlowImplTest::OnResult,
+                                          base::Unretained(this)),
+                           base::BindOnce(&NearbyApiCallFlowImplTest::OnError,
+                                          base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckNearbySharingClientHttpPostRequest(serialized_request);
   }
@@ -100,12 +103,12 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
 
   void StartPatchRequestApiCallFlowWithSerializedRequest(
       const std::string& serialized_request) {
-    flow_.StartPatchRequest(
-        GURL(kRequestUrl), serialized_request, shared_factory_, kAccessToken,
-        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnResult,
-                       base::Unretained(this)),
-        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnError,
-                       base::Unretained(this)));
+    flow_.StartPatchRequest(GURL(kRequestUrl), serialized_request,
+                            shared_factory_, kAccessToken,
+                            base::BindOnce(&NearbyApiCallFlowImplTest::OnResult,
+                                           base::Unretained(this)),
+                            base::BindOnce(&NearbyApiCallFlowImplTest::OnError,
+                                           base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckNearbySharingClientHttpPatchRequest(serialized_request);
   }
@@ -116,15 +119,13 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
   }
 
   void StartGetRequestApiCallFlowWithRequestAsQueryParameters(
-      const NearbyShareApiCallFlow::QueryParameters&
-          request_as_query_parameters) {
-    flow_.StartGetRequest(
-        GURL(kRequestUrl), request_as_query_parameters, shared_factory_,
-        kAccessToken,
-        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnResult,
-                       base::Unretained(this)),
-        base::BindOnce(&NearbyShareApiCallFlowImplTest::OnError,
-                       base::Unretained(this)));
+      const NearbyApiCallFlow::QueryParameters& request_as_query_parameters) {
+    flow_.StartGetRequest(GURL(kRequestUrl), request_as_query_parameters,
+                          shared_factory_, kAccessToken,
+                          base::BindOnce(&NearbyApiCallFlowImplTest::OnResult,
+                                         base::Unretained(this)),
+                          base::BindOnce(&NearbyApiCallFlowImplTest::OnError,
+                                         base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckNearbySharingClientHttpGetRequest(request_as_query_parameters);
   }
@@ -192,8 +193,7 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
   }
 
   void CheckNearbySharingClientHttpGetRequest(
-      const NearbyShareApiCallFlow::QueryParameters&
-          request_as_query_parameters) {
+      const NearbyApiCallFlow::QueryParameters& request_as_query_parameters) {
     const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
         *test_url_loader_factory_.pending_requests();
     ASSERT_EQ(1u, pending.size());
@@ -292,52 +292,52 @@ class NearbyShareApiCallFlowImplTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
-  NearbyShareApiCallFlowImpl flow_;
+  NearbyApiCallFlowImpl flow_;
 };
 
-TEST_F(NearbyShareApiCallFlowImplTest, PostRequestSuccess) {
+TEST_F(NearbyApiCallFlowImplTest, PostRequestSuccess) {
   StartPostRequestApiCallFlow();
   CompleteCurrentPostRequest(net::OK, net::HTTP_OK, kSerializedResponseProto);
   EXPECT_EQ(kSerializedResponseProto, *result_);
   EXPECT_FALSE(network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, PatchRequestSuccess) {
+TEST_F(NearbyApiCallFlowImplTest, PatchRequestSuccess) {
   StartPatchRequestApiCallFlow();
   CompleteCurrentPatchRequest(net::OK, net::HTTP_OK, kSerializedResponseProto);
   EXPECT_EQ(kSerializedResponseProto, *result_);
   EXPECT_FALSE(network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, GetRequestSuccess) {
+TEST_F(NearbyApiCallFlowImplTest, GetRequestSuccess) {
   StartGetRequestApiCallFlow();
   CompleteCurrentGetRequest(net::OK, net::HTTP_OK, kSerializedResponseProto);
   EXPECT_EQ(kSerializedResponseProto, *result_);
   EXPECT_FALSE(network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, PostRequestFailure) {
+TEST_F(NearbyApiCallFlowImplTest, PostRequestFailure) {
   StartPostRequestApiCallFlow();
   CompleteCurrentPostRequest(net::ERR_FAILED);
   EXPECT_FALSE(result_);
   EXPECT_EQ(NearbyShareHttpError::kOffline, *network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, PatchRequestFailure) {
+TEST_F(NearbyApiCallFlowImplTest, PatchRequestFailure) {
   StartPatchRequestApiCallFlow();
   CompleteCurrentPatchRequest(net::ERR_FAILED);
   EXPECT_FALSE(result_);
   EXPECT_EQ(NearbyShareHttpError::kOffline, *network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, GetRequestFailure) {
+TEST_F(NearbyApiCallFlowImplTest, GetRequestFailure) {
   StartGetRequestApiCallFlow();
   CompleteCurrentPostRequest(net::ERR_FAILED);
   EXPECT_FALSE(result_);
   EXPECT_EQ(NearbyShareHttpError::kOffline, *network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, RequestStatus500) {
+TEST_F(NearbyApiCallFlowImplTest, RequestStatus500) {
   StartPostRequestApiCallFlow();
   CompleteCurrentPostRequest(net::OK, net::HTTP_INTERNAL_SERVER_ERROR,
                              "Nearby Sharing Meltdown.");
@@ -345,7 +345,7 @@ TEST_F(NearbyShareApiCallFlowImplTest, RequestStatus500) {
   EXPECT_EQ(NearbyShareHttpError::kInternalServerError, *network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, PatchRequestStatus500) {
+TEST_F(NearbyApiCallFlowImplTest, PatchRequestStatus500) {
   StartPatchRequestApiCallFlow();
   CompleteCurrentPatchRequest(net::OK, net::HTTP_INTERNAL_SERVER_ERROR,
                               "Nearby Sharing Meltdown.");
@@ -353,7 +353,7 @@ TEST_F(NearbyShareApiCallFlowImplTest, PatchRequestStatus500) {
   EXPECT_EQ(NearbyShareHttpError::kInternalServerError, *network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, GetRequestStatus500) {
+TEST_F(NearbyApiCallFlowImplTest, GetRequestStatus500) {
   StartGetRequestApiCallFlow();
   CompleteCurrentPostRequest(net::OK, net::HTTP_INTERNAL_SERVER_ERROR,
                              "Nearby Sharing Meltdown.");
@@ -362,7 +362,7 @@ TEST_F(NearbyShareApiCallFlowImplTest, GetRequestStatus500) {
 }
 
 // The empty string is a valid protocol buffer message serialization.
-TEST_F(NearbyShareApiCallFlowImplTest, PostRequestWithNoBody) {
+TEST_F(NearbyApiCallFlowImplTest, PostRequestWithNoBody) {
   StartPostRequestApiCallFlowWithSerializedRequest(std::string());
   CompleteCurrentPostRequest(net::OK, net::HTTP_OK, kSerializedResponseProto);
   EXPECT_EQ(kSerializedResponseProto, *result_);
@@ -370,14 +370,14 @@ TEST_F(NearbyShareApiCallFlowImplTest, PostRequestWithNoBody) {
 }
 
 // The empty string is a valid protocol buffer message serialization.
-TEST_F(NearbyShareApiCallFlowImplTest, PatchRequestWithNoBody) {
+TEST_F(NearbyApiCallFlowImplTest, PatchRequestWithNoBody) {
   StartPatchRequestApiCallFlowWithSerializedRequest(std::string());
   CompleteCurrentPatchRequest(net::OK, net::HTTP_OK, kSerializedResponseProto);
   EXPECT_EQ(kSerializedResponseProto, *result_);
   EXPECT_FALSE(network_error_);
 }
 
-TEST_F(NearbyShareApiCallFlowImplTest, GetRequestWithNoQueryParameters) {
+TEST_F(NearbyApiCallFlowImplTest, GetRequestWithNoQueryParameters) {
   StartGetRequestApiCallFlowWithRequestAsQueryParameters(
       {} /* request_as_query_parameters */);
   CompleteCurrentPostRequest(net::OK, net::HTTP_OK, kSerializedResponseProto);
@@ -386,7 +386,7 @@ TEST_F(NearbyShareApiCallFlowImplTest, GetRequestWithNoQueryParameters) {
 }
 
 // The empty string is a valid protocol buffer message serialization.
-TEST_F(NearbyShareApiCallFlowImplTest, PostResponseWithNoBody) {
+TEST_F(NearbyApiCallFlowImplTest, PostResponseWithNoBody) {
   StartPostRequestApiCallFlow();
   CompleteCurrentPostRequest(net::OK, net::HTTP_OK, std::string());
   EXPECT_EQ(std::string(), *result_);
@@ -394,7 +394,7 @@ TEST_F(NearbyShareApiCallFlowImplTest, PostResponseWithNoBody) {
 }
 
 // The empty string is a valid protocol buffer message serialization.
-TEST_F(NearbyShareApiCallFlowImplTest, PatchResponseWithNoBody) {
+TEST_F(NearbyApiCallFlowImplTest, PatchResponseWithNoBody) {
   StartPatchRequestApiCallFlow();
   CompleteCurrentPatchRequest(net::OK, net::HTTP_OK, std::string());
   EXPECT_EQ(std::string(), *result_);
@@ -402,9 +402,11 @@ TEST_F(NearbyShareApiCallFlowImplTest, PatchResponseWithNoBody) {
 }
 
 // The empty string is a valid protocol buffer message serialization.
-TEST_F(NearbyShareApiCallFlowImplTest, GetResponseWithNoBody) {
+TEST_F(NearbyApiCallFlowImplTest, GetResponseWithNoBody) {
   StartGetRequestApiCallFlow();
   CompleteCurrentPostRequest(net::OK, net::HTTP_OK, std::string());
   EXPECT_EQ(std::string(), *result_);
   EXPECT_FALSE(network_error_);
 }
+
+}  // namespace ash::nearby
