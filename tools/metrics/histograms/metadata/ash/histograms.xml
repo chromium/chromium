@@ -4872,7 +4872,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Search.DriveFileSuggestDataValidation.Status"
     enum="DriveFileSuggestDataValidationStatus" expires_after="2023-08-12">
   <owner>andrewxu@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     The outcome of drive file suggestion data validation. Recorded once per
     validation.
@@ -5262,24 +5261,6 @@ chromium-metrics-reviews@google.com.
     subsequently activated. In other words this metric is only recorded if a
     shelf button pressed action causes a window to be minimized and the very
     next shelf button pressed action causes the same window to be activated.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.UkmLogger.HasNightLightSchedule" enum="Boolean"
-    expires_after="2020-09-27">
-  <owner>wrong@chromium.org</owner>
-  <summary>
-    Whether or not the user had set up a night light schedule at the time of
-    night light event logging.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Shelf.UkmLogger.NumAvailableBluetoothDevices"
-    units="count" expires_after="2020-09-27">
-  <owner>wrong@chromium.org</owner>
-  <summary>
-    The number of Bluetooth devices available at the time of Bluetooth event
-    logging.
   </summary>
 </histogram>
 

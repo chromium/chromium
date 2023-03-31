@@ -23965,6 +23965,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="UserSettingsEvent">
+  <obsolete>
+    Removed 3/2023
+  </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
   <summary>
