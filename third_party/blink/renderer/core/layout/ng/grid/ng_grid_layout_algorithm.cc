@@ -604,7 +604,7 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
 
     NGConstraintSpace unused_space;
     NGFragmentGeometry unused_fragment_geometry;
-    auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
+    const auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
         subgrid_data, &unused_space, &unused_fragment_geometry);
 
     subtree_size += subgrid_algorithm.BuildGridSizingSubtree(
@@ -1564,6 +1564,31 @@ void NGGridLayoutAlgorithm::InitializeTrackCollection(
   track_collection.InitializeSets(available_size, GutterSize(track_direction));
 }
 
+namespace {
+
+GridTrackSizingDirection RelativeDirectionInSubgrid(
+    GridTrackSizingDirection track_direction,
+    const NGSubgriddedItemData& subgrid_data) {
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const bool is_for_columns = subgrid_data->is_parallel_with_root_grid ==
+                              (track_direction == kForColumns);
+  return is_for_columns ? kForColumns : kForRows;
+}
+
+absl::optional<GridTrackSizingDirection> RelativeDirectionInSubgrid(
+    const absl::optional<GridTrackSizingDirection>& opt_track_direction,
+    const NGSubgriddedItemData& subgrid_data) {
+  DCHECK(subgrid_data.IsSubgrid());
+
+  if (opt_track_direction) {
+    return RelativeDirectionInSubgrid(*opt_track_direction, subgrid_data);
+  }
+  return absl::nullopt;
+}
+
+}  // namespace
+
 void NGGridLayoutAlgorithm::InitializeTrackSizes(
     const NGGridSizingSubtree& sizing_subtree,
     const NGSubgriddedItemData& opt_subgrid_data,
@@ -1634,11 +1659,12 @@ void NGGridLayoutAlgorithm::InitializeTrackSizes(
 
     NGConstraintSpace unused_space;
     NGFragmentGeometry unused_fragment_geometry;
-    auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
+    const auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
         subgrid_data, &unused_space, &unused_fragment_geometry);
 
-    subgrid_algorithm.InitializeTrackSizes(next_subgrid_subtree, subgrid_data,
-                                           opt_track_direction);
+    subgrid_algorithm.InitializeTrackSizes(
+        next_subgrid_subtree, subgrid_data,
+        RelativeDirectionInSubgrid(opt_track_direction, subgrid_data));
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }
@@ -1821,12 +1847,13 @@ void NGGridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
     NGConstraintSpace unused_space;
     NGFragmentGeometry unused_fragment_geometry;
-    auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
+    const auto subgrid_algorithm = CreateSubgridLayoutAlgorithm(
         subgrid_data, &unused_space, &unused_fragment_geometry);
 
     subgrid_algorithm.CompleteTrackSizingAlgorithm(
-        next_subgrid_subtree, subgrid_data, track_direction, sizing_constraint,
-        opt_needs_additional_pass);
+        next_subgrid_subtree, subgrid_data,
+        RelativeDirectionInSubgrid(track_direction, subgrid_data),
+        sizing_constraint, opt_needs_additional_pass);
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }

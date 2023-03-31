@@ -9,7 +9,7 @@ namespace blink {
 std::unique_ptr<NGGridLayoutTrackCollection>
 NGSubgriddedItemData::CreateSubgridCollection(
     GridTrackSizingDirection track_direction) const {
-  DCHECK(item_data_in_parent_->IsSubgrid());
+  DCHECK(item_data_in_parent_ && item_data_in_parent_->IsSubgrid());
 
   const bool is_for_columns_in_parent =
       item_data_in_parent_->is_parallel_with_root_grid
