@@ -416,7 +416,7 @@ sk_sp<SkImage> ReadImage(
 
   if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown) {
     // Point `image_` directly to the data in the transfer cache.
-    auto image = SkImage::MakeFromRaster(pixmaps[0], nullptr, nullptr);
+    auto image = SkImages::RasterFromPixmap(pixmaps[0], nullptr, nullptr);
     if (!image) {
       DLOG(ERROR) << "Failed to create image from pixmap";
       return nullptr;
@@ -450,7 +450,7 @@ sk_sp<SkImage> ReadImage(
     std::vector<sk_sp<SkImage>> plane_images;
     for (int i = 0; i < num_pixmaps; i++) {
       sk_sp<SkImage> plane =
-          SkImage::MakeFromRaster(pixmaps[i], nullptr, nullptr);
+          SkImages::RasterFromPixmap(pixmaps[i], nullptr, nullptr);
       if (!plane) {
         DLOG(ERROR) << "Failed to create image from plane pixmap";
         return nullptr;
@@ -723,7 +723,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     if (!image_->peekPixels(&pixmap)) {
       NOTREACHED() << "Image should be referencing transfer buffer SkPixmap";
     }
-    image_ = SkImage::MakeRasterCopy(pixmap);
+    image_ = SkImages::RasterFromPixmapCopy(pixmap);
     if (!image_) {
       DLOG(ERROR) << "Failed to create raster copy";
       return false;

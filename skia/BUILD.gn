@@ -44,6 +44,7 @@ config("skia_config") {
     "SK_UNTIL_CRBUG_1187654_IS_FIXED",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
+    "SK_DISABLE_LEGACY_IMAGE_FACTORIES",
   ]
 
   include_dirs = [ "//third_party/skia" ]
