@@ -55,7 +55,7 @@ class ModelExecutionScheduler {
   // TODO(shaktisahu): Do we want to store that failure reason in the DB
   // instead? We might treat different failures differently next time.
   virtual void OnModelExecutionCompleted(
-      SegmentId segment_id,
+      const proto::SegmentInfo& segment_info,
       std::unique_ptr<ModelExecutionResult> result) = 0;
 };
 

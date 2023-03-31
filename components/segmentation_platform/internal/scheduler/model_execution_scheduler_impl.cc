@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -71,7 +72,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
   outstanding_requests_.insert(std::make_pair(
       segment_id,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), segment_id)));
+                     weak_ptr_factory_.GetWeakPtr(), segment_info)));
   auto request = std::make_unique<ExecutionRequest>();
   request->model_provider =
       model_execution_manager_->GetProvider(segment_info.segment_id());
@@ -83,17 +84,17 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
 }
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
-    SegmentId segment_id,
+    const proto::SegmentInfo& segment_info,
     std::unique_ptr<ModelExecutionResult> result) {
   // TODO(shaktisahu): Check ModelExecutionStatus and handle failure cases.
   // Should we save it to DB?
+  SegmentId segment_id = segment_info.segment_id();
   proto::PredictionResult segment_result;
   bool success = result->status == ModelExecutionStatus::kSuccess;
   if (success) {
-    segment_result.mutable_result()->Add(result->scores.begin(),
-                                         result->scores.end());
-    segment_result.set_timestamp_us(
-        clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    segment_result = metadata_utils::CreatePredictionResult(
+        result->scores, segment_info.model_metadata().output_config(),
+        clock_->Now());
   }
 
   segment_database_->SaveSegmentResult(

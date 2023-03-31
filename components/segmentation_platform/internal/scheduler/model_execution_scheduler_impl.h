@@ -52,7 +52,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   void RequestModelExecutionForEligibleSegments(bool expired_only) override;
   void RequestModelExecution(const proto::SegmentInfo& segment_info) override;
   void OnModelExecutionCompleted(
-      SegmentId segment_id,
+      const proto::SegmentInfo& segment_info,
       std::unique_ptr<ModelExecutionResult> score) override;
 
  private:

@@ -175,7 +175,7 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
   EXPECT_CALL(observer1_, OnModelExecutionCompleted(kTestSegmentId)).Times(1);
   float score = 0.4;
   model_execution_scheduler_->OnModelExecutionCompleted(
-      kTestSegmentId,
+      *segment_info,
       std::make_unique<ModelExecutionResult>(
           ModelProvider::Request(), ModelProvider::Response(1, score)));
 

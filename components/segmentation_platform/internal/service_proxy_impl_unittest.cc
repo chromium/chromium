@@ -62,7 +62,8 @@ class MockModelExecutionScheduler : public ModelExecutionScheduler {
   MOCK_METHOD(void, RequestModelExecutionForEligibleSegments, (bool));
   MOCK_METHOD(void,
               OnModelExecutionCompleted,
-              (SegmentId, (std::unique_ptr<ModelExecutionResult>)));
+              (const proto::SegmentInfo&,
+               (std::unique_ptr<ModelExecutionResult>)));
 };
 
 class MockModelExecutionManager : public ModelExecutionManager {
@@ -302,10 +303,7 @@ TEST_F(ServiceProxyImplTest, OverwriteResult) {
 
   service_proxy_impl_->SetExecutionService(&execution);
 
-  EXPECT_CALL(*scheduler,
-              OnModelExecutionCompleted(
-                  SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, _))
-      .Times(1);
+  EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(1);
   service_proxy_impl_->OverwriteResult(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0.7);
 

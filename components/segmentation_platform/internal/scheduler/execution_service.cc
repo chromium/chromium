@@ -98,8 +98,10 @@ void ExecutionService::OverwriteModelExecutionResult(
   // TODO(ritikagup): Change the use of this according to MultiOutputModel.
   auto execution_result = std::make_unique<ModelExecutionResult>(
       ModelProvider::Request(), ModelProvider::Response(1, result.first));
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(segment_id);
   model_execution_scheduler_->OnModelExecutionCompleted(
-      segment_id, std::move(execution_result));
+      segment_info, std::move(execution_result));
 }
 
 void ExecutionService::RefreshModelResults() {
