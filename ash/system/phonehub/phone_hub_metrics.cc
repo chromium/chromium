@@ -236,4 +236,14 @@ void LogRecentAppsStateOnBubbleOpened(RecentAppsUiState ui_state) {
   }
 }
 
+void LogRecentAppsTransitionToFailedLatency(const base::TimeDelta latency) {
+  base::UmaHistogramTimes("PhoneHub.RecentApps.TransitionToFailed.Latency",
+                          latency);
+}
+
+void LogRecentAppsTransitionToSuccessLatency(const base::TimeDelta latency) {
+  base::UmaHistogramTimes("PhoneHub.RecentApps.TransitionToSuccess.Latency",
+                          latency);
+}
+
 }  // namespace ash::phone_hub_metrics
