@@ -36,6 +36,7 @@ public class MediaSessionImpl extends MediaSession {
 
     private boolean mIsControllable;
     private Boolean mIsSuspended;
+    private boolean mIsActive;
     private MediaMetadata mMetadata;
     private List<MediaImage> mImagesList;
     private HashSet<Integer> mActionSet;
@@ -48,7 +49,7 @@ public class MediaSessionImpl extends MediaSession {
     public void addObserver(MediaSessionObserver observer) {
         mObservers.addObserver(observer);
         if (mIsSuspended != null) {
-            observer.mediaSessionStateChanged(mIsControllable, mIsSuspended);
+            observer.mediaSessionStateChanged(mIsControllable, mIsSuspended, mIsActive);
         }
         if (mMetadata != null) {
             observer.mediaSessionMetadataChanged(mMetadata);
@@ -101,6 +102,17 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @Override
+    public void scrubTo(long millis) {
+        assert millis >= 0 : "Attempted to scrub to a negative posision";
+        MediaSessionImplJni.get().seekTo(mNativeMediaSessionAndroid, MediaSessionImpl.this, millis);
+    }
+
+    @Override
+    public void setMute(boolean mute) {
+        MediaSessionImplJni.get().setMute(mNativeMediaSessionAndroid, MediaSessionImpl.this, mute);
+    }
+
+    @Override
     public void didReceiveAction(int action) {
         MediaSessionImplJni.get()
                 .didReceiveAction(mNativeMediaSessionAndroid, MediaSessionImpl.this, action);
@@ -135,12 +147,15 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @CalledByNative
-    private void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
+    private void mediaSessionStateChanged(
+            boolean isControllable, boolean isSuspended, boolean isActive) {
         mIsControllable = isControllable;
         mIsSuspended = isSuspended;
+        mIsActive = isActive;
 
         for (mObserversIterator.rewind(); mObserversIterator.hasNext(); ) {
-            mObserversIterator.next().mediaSessionStateChanged(isControllable, isSuspended);
+            mObserversIterator.next().mediaSessionStateChanged(
+                    isControllable, isSuspended, isActive);
         }
     }
 
@@ -202,7 +217,8 @@ public class MediaSessionImpl extends MediaSession {
         void seek(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
 
         void seekTo(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
-
+        void scrubTo(long nativeMediaSessionAndroid, MediaSessionImpl caller, long millis);
+        void setMute(long nativeMediaSessionAndroid, MediaSessionImpl caller, boolean mute);
         void didReceiveAction(long nativeMediaSessionAndroid, MediaSessionImpl caller, int action);
 
         void requestSystemAudioFocus(long nativeMediaSessionAndroid, MediaSessionImpl caller);

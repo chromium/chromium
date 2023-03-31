@@ -48,6 +48,17 @@ public abstract class MediaSession {
      */
     public abstract void seekTo(long millis);
 
+    /**
+     * Scrubs ("fast seek") the media session to a specific point relative from the beginning
+     * of the media. The number of milliseconds should not be negative.
+     */
+    public abstract void scrubTo(long millis);
+
+    /**
+     * Mutes the media session.
+     */
+    public abstract void setMute(boolean mute);
+
     /** Notify the media session that an action has been performed. */
     public abstract void didReceiveAction(int action);
 

@@ -56,8 +56,10 @@ public abstract class MediaSessionObserver {
      * Called when the observed {@link MediaSession} state has changed.
      * @param isControllable If the session can be resumed or suspended.
      * @param isSuspended if the session currently suspended or not.
+     * @param isActive if the session is active.
      */
-    public void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {}
+    public void mediaSessionStateChanged(
+            boolean isControllable, boolean isSuspended, boolean isActive) {}
 
     /**
      * Called when the {@link MediaSession} metadata has changed.

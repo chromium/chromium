@@ -83,20 +83,26 @@ void MediaSessionAndroid::MediaSessionInfoChanged(
   bool is_paused = session_info->playback_state ==
                    media_session::mojom::MediaPlaybackState::kPaused;
 
+  bool is_active =
+      session_info->state !=
+      media_session::mojom::MediaSessionInfo::SessionState::kInactive;
+
   // The media session info changed event might be called more often than we
   // need to notify Android since we only need a couple of bits of data.
   // Therefore, we only notify Android if the bits have changed.
-  if (is_paused == is_paused_ &&
+  if (is_active == is_active_ && is_paused == is_paused_ &&
       is_controllable_ == session_info->is_controllable) {
     return;
   }
 
+  is_active_ = is_active;
   is_paused_ = is_paused;
   is_controllable_ = session_info->is_controllable;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_MediaSessionImpl_mediaSessionStateChanged(
-      env, j_local_session, session_info->is_controllable, is_paused);
+  Java_MediaSessionImpl_mediaSessionStateChanged(env, j_local_session,
+                                                 session_info->is_controllable,
+                                                 is_paused, is_active_);
 }
 
 void MediaSessionAndroid::MediaSessionMetadataChanged(
@@ -211,6 +217,23 @@ void MediaSessionAndroid::SeekTo(
   DCHECK(media_session_);
   DCHECK_GE(millis, 0) << "Attempted to seek to a negative position";
   media_session_->SeekTo(base::Milliseconds(millis));
+}
+
+void MediaSessionAndroid::ScrubTo(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_obj,
+    const jlong millis) {
+  DCHECK(media_session_);
+  DCHECK_GE(millis, 0) << "Attempted to seek to a negative position";
+  media_session_->ScrubTo(base::Milliseconds(millis));
+}
+
+void MediaSessionAndroid::SetMute(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_obj,
+    const jboolean mute) {
+  DCHECK(media_session_);
+  media_session_->SetMute(mute);
 }
 
 void MediaSessionAndroid::DidReceiveAction(JNIEnv* env,
