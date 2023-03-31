@@ -243,8 +243,8 @@ void LaserPointerView::UpdateBuffer() {
     TRACE_EVENT1("ui", "LaserPointerView::UpdateBuffer::Paint", "damage",
                  damage_rect.ToString());
 
-    ScopedPaint paint(this, damage_rect);
-    Draw(paint.canvas());
+    auto paint = GetScopedPaint(damage_rect);
+    Draw(paint->canvas());
   }
 
   UpdateSurface(laser_content_rect_, damage_rect, /*auto_refresh=*/true);

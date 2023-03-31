@@ -9,14 +9,8 @@
 #include <vector>
 
 #include "ash/fast_ink/fast_ink_host.h"
-#include "ui/aura/window.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-
-namespace gfx {
-class GpuMemoryBuffer;
-}  // namespace gfx
 
 namespace fast_ink {
 
@@ -37,40 +31,26 @@ class FastInkView : public views::View {
       aura::Window* container);
 
   // Update content and damage rectangles for surface. See
-  // FastInkHost::UpdateSurface for more detials.
+  // FastInkHost::UpdateSurface for more details.
   void UpdateSurface(const gfx::Rect& content_rect,
                      const gfx::Rect& damage_rect,
                      bool auto_refresh);
 
-  virtual FastInkHost::PresentationCallback GetPresentationCallback();
+  // Gets a handle that paints to the GPU buffer that is associated with the
+  // FastInk surface without flickers.
+  std::unique_ptr<ash::FastInkHost::ScopedPaint> GetScopedPaint(
+      const gfx::Rect& damage_rect_in_window) const;
 
  protected:
-  // Helper class that provides flicker free painting to a GPU memory buffer.
-  class ScopedPaint {
-   public:
-    ScopedPaint(FastInkView* view, const gfx::Rect& damage_rect_in_window);
-
-    ScopedPaint(const ScopedPaint&) = delete;
-    ScopedPaint& operator=(const ScopedPaint&) = delete;
-
-    ~ScopedPaint();
-
-    gfx::Canvas& canvas() { return canvas_; }
-
-   private:
-    gfx::GpuMemoryBuffer* const gpu_memory_buffer_;
-    // Damage rect in the buffer coordinates.
-    const gfx::Rect damage_rect_;
-    gfx::Canvas canvas_;
-  };
-
   FastInkView();
 
-  void SetFastInkHost(std::unique_ptr<FastInkHost> host);
-  FastInkHost* host() { return host_.get(); }
+  ash::FastInkHost* host() { return host_.get(); }
+  void SetFastInkHost(std::unique_ptr<ash::FastInkHost> host);
+
+  virtual ash::FastInkHost::PresentationCallback GetPresentationCallback();
 
  private:
-  std::unique_ptr<FastInkHost> host_;
+  std::unique_ptr<ash::FastInkHost> host_;
 };
 
 }  // namespace fast_ink

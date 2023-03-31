@@ -11,10 +11,8 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_canvas.h"
 #include "ui/aura/window.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/views/widget/widget.h"
 
 namespace cursor {
 namespace {
@@ -104,8 +102,7 @@ views::UniqueWidgetPtr CursorView::Create(const gfx::Point& initial_location,
       container);
 }
 
-fast_ink::FastInkHost::PresentationCallback
-CursorView::GetPresentationCallback() {
+ash::FastInkHost::PresentationCallback CursorView::GetPresentationCallback() {
   return base::BindRepeating(&CursorView::DidPresentCompositorFrame,
                              base::Unretained(this));
 }
@@ -235,8 +232,9 @@ void CursorView::OnTimerTick() {
     TRACE_EVENT1("ui", "CursorView::Paint", "damage_rect",
                  damage_rect.ToString());
 
-    ScopedPaint paint(this, damage_rect);
-    cc::PaintCanvas* sk_canvas = paint.canvas().sk_canvas();
+    auto paint = GetScopedPaint(damage_rect);
+
+    cc::PaintCanvas* sk_canvas = paint->canvas().sk_canvas();
     sk_canvas->translate(SkIntToScalar(location_.x() - cursor_hotspot_.x()),
                          SkIntToScalar(location_.y() - cursor_hotspot_.y()));
 
@@ -252,11 +250,11 @@ void CursorView::OnTimerTick() {
       flags.setImageFilter(motion_blur_filter_);
       sk_canvas->saveLayer(blur_rect, flags);
       sk_canvas->concat(SkM44(motion_blur_matrix_));
-      paint.canvas().DrawImageInt(cursor_image_, 0, 0);
+      paint->canvas().DrawImageInt(cursor_image_, 0, 0);
       sk_canvas->restore();
     } else {
       // Fast path for when motion blur is not present.
-      paint.canvas().DrawImageInt(cursor_image_, 0, 0);
+      paint->canvas().DrawImageInt(cursor_image_, 0, 0);
     }
   }
 
