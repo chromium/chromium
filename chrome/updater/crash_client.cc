@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,6 +24,7 @@
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
+#include "third_party/crashpad/crashpad/client/simulate_crash.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -78,6 +80,9 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
 
   if (!InitializeDatabaseOnly(updater_scope))
     return false;
+
+  base::debug::SetDumpWithoutCrashingFunction(
+      []() { CRASHPAD_SIMULATE_CRASH(); });
 
 #if BUILDFLAG(IS_WIN)
   // Catch exceptions thrown from a window procedure.
