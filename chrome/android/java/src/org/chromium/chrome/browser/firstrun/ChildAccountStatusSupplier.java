@@ -35,18 +35,14 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     /**
      * Creates ChildAccountStatusSupplier and starts fetching the child account status.
      * @param accountManagerFacade {@link AccountManagerFacade} instance to use for getting accounts
-     * @param appRestrictionInfo Optional instance of {@link FirstRunAppRestrictionInfo} that can
-     *         be used to check app restrictions (see class-level JavaDoc). If null is passed - this
-     *         {@link ChildAccountStatusSupplier} will ignore app restrictions and rely solely on
-     *         {@link AccountManagerFacade}.
+     * @param appRestrictionInfo instance of {@link FirstRunAppRestrictionInfo} that can
+     *         be used to check app restrictions (see class-level JavaDoc).
      */
     public ChildAccountStatusSupplier(AccountManagerFacade accountManagerFacade,
-            @Nullable FirstRunAppRestrictionInfo appRestrictionInfo) {
+            FirstRunAppRestrictionInfo appRestrictionInfo) {
         mChildAccountStatusStartTime = SystemClock.elapsedRealtime();
 
-        if (appRestrictionInfo != null) {
-            appRestrictionInfo.getHasAppRestriction(this::onAppRestrictionDetected);
-        }
+        appRestrictionInfo.getHasAppRestriction(this::onAppRestrictionDetected);
 
         accountManagerFacade.getAccounts().then(accounts -> {
             AccountUtils.checkChildAccountStatus(accountManagerFacade, accounts,

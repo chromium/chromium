@@ -65,7 +65,6 @@ public class FirstRunFlowSequencerTest {
     private static class TestFirstRunFlowSequencerDelegate
             extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
         public boolean isSyncAllowed;
-        public boolean shouldSkipFirstUseHints;
         public boolean shouldShowSearchEnginePage;
 
         @Override
@@ -85,8 +84,8 @@ public class FirstRunFlowSequencerTest {
 
         public TestFirstRunFlowSequencer(Activity activity) {
             super(activity,
-                    new ChildAccountStatusSupplier(
-                            AccountManagerFacadeProvider.getInstance(), null));
+                    new ChildAccountStatusSupplier(AccountManagerFacadeProvider.getInstance(),
+                            FirstRunAppRestrictionInfo.takeMaybeInitialized()));
         }
 
         @Override
