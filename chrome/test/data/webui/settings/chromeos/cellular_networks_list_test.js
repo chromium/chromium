@@ -374,8 +374,7 @@ suite('CellularNetworksList', function() {
       });
 
   test(
-      'Hide download eSIM link when installing new profile or restrict ' +
-          'cellular network',
+      'Hide download eSIM link when installing / refreshing / restricted by policy',
       async () => {
         eSimManagerRemote.addEuiccForTest(0);
         init();
@@ -407,15 +406,19 @@ suite('CellularNetworksList', function() {
         assertFalse(esimLocalizedLink.hidden);
         assertTrue(noESimFoundMessage.hidden);
 
-        cellularNetworkList.cellularDeviceState = {
-          type: NetworkType.kCellular,
-          deviceState: DeviceStateType.kEnabled,
-          inhibitReason: InhibitReason.kInstallingProfile,
-        };
-        addESimSlot();
-        await flushAsync();
-        assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
-            '#eSimNoNetworkFound'));
+        for (const inhibitReason
+                 of [InhibitReason.kInstallingProfile,
+                     InhibitReason.kRefreshingProfileList]) {
+          cellularNetworkList.cellularDeviceState = {
+            type: NetworkType.kCellular,
+            deviceState: DeviceStateType.kEnabled,
+            inhibitReason: inhibitReason,
+          };
+          addESimSlot();
+          await flushAsync();
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#eSimNoNetworkFound'));
+        }
       });
 
   test('Fire show cellular setup event on add cellular clicked', async () => {
@@ -514,7 +517,7 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.cellularDeviceState = {
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kRefreshingProfileList,
+      inhibitReason: InhibitReason.kResettingEuiccMemory,
     };
     addESimSlot();
     await flushAsync();

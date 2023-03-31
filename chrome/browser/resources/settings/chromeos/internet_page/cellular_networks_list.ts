@@ -566,7 +566,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       inhibitReason: InhibitReason,
       eSimNetworks: NetworkList.NetworkListItemType[],
       eSimPendingProfiles: NetworkList.CustomItemState[]): boolean {
-    if (inhibitReason === InhibitReason.kInstallingProfile) {
+    if (inhibitReason === InhibitReason.kInstallingProfile ||
+        inhibitReason === InhibitReason.kRefreshingProfileList) {
       return false;
     }
 
