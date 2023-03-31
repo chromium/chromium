@@ -162,7 +162,7 @@ class DownloadDisplayController : public FullscreenObserver,
   raw_ptr<Browser> browser_;
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       observation_{this};
-  raw_ptr<content::DownloadManager> download_manager_;
+  raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;
