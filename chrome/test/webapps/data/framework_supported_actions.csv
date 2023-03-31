@@ -16,6 +16,7 @@ check_app_navigation,                                  🌕, 🌕,  🌕,   🌕
 check_app_navigation_is_start_url,                     🌕, 🌕,  🌕,   🌕,
 check_no_toolbar,                                      🌕, 🌕,  🌕,   🌕,
 check_platform_shortcut_and_icon,                      🌕, 🌓,  🌓,   🌓,
+check_pwa_window_created,                              🌕, 🌕,  🌕,   🌕,
 check_site_handles_file,                               🌕, 🌕,  🌕,   🌑,
 check_site_not_handles_file,                           🌕, 🌕,  🌕,   🌑,
 check_tab_created,                                     🌕, 🌕,  🌕,   🌕,
