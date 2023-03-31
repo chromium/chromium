@@ -90,7 +90,8 @@ void NFCProxy::CancelPush() {
   nfc_remote_->CancelPush();
 }
 
-void NFCProxy::MakeReadOnly(device::mojom::blink::NFC::PushCallback cb) {
+void NFCProxy::MakeReadOnly(
+    device::mojom::blink::NFC::MakeReadOnlyCallback cb) {
   EnsureMojoConnection();
   nfc_remote_->MakeReadOnly(std::move(cb));
 }
