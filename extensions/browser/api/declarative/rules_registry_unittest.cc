@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
@@ -25,8 +26,6 @@ const int key = extensions::RulesRegistryService::kDefaultRulesRegistryID;
 }  // namespace
 
 namespace extensions {
-
-using api_test_utils::ParseDictionary;
 
 TEST(RulesRegistryTest, FillOptionalIdentifiers) {
   content::BrowserTaskEnvironment task_environment;
@@ -192,7 +191,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
   content::BrowserTaskEnvironment task_environment;
 
   // Create extension
-  absl::optional<base::Value::Dict> manifest = ParseDictionary(
+  base::Value::Dict manifest = base::test::ParseJsonDict(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -225,7 +224,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "}");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(std::move(*manifest))
+          .SetManifest(std::move(manifest))
           .SetID(kExtensionId)
           .Build();
 
@@ -238,7 +237,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
   registry->GetAllRules(kExtensionId, &get_rules);
 
   ASSERT_EQ(2u, get_rules.size());
-  absl::optional<base::Value::Dict> expected_rule_0 = ParseDictionary(
+  base::Value::Dict expected_rule_0 = base::test::ParseJsonDict(
       "{"
       "  \"id\": \"000\","
       "  \"priority\": 200,"
@@ -251,9 +250,9 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "    \"instanceType\" : \"declarativeContent.PageStateMatcher\""
       "  }]"
       "}");
-  EXPECT_EQ(*expected_rule_0, get_rules[0]->ToValue());
+  EXPECT_EQ(expected_rule_0, get_rules[0]->ToValue());
 
-  absl::optional<base::Value::Dict> expected_rule_1 = ParseDictionary(
+  base::Value::Dict expected_rule_1 = base::test::ParseJsonDict(
       "{"
       "  \"id\": \"_0_\","
       "  \"priority\": 100,"
@@ -265,7 +264,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "    \"instanceType\" : \"declarativeContent.PageStateMatcher\""
       "  }]"
       "}");
-  EXPECT_EQ(*expected_rule_1, get_rules[1]->ToValue());
+  EXPECT_EQ(expected_rule_1, get_rules[1]->ToValue());
 }
 
 // Tests verifies that rules defined in the manifest cannot be deleted but
@@ -274,7 +273,7 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
   content::BrowserTaskEnvironment task_environment;
 
   // Create extension
-  absl::optional<base::Value::Dict> manifest = ParseDictionary(
+  base::Value::Dict manifest = base::test::ParseJsonDict(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -293,7 +292,7 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
       "}");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(std::move(*manifest))
+          .SetManifest(std::move(manifest))
           .SetID(kExtensionId)
           .Build();
 
