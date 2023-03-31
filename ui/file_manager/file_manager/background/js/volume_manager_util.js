@@ -140,10 +140,12 @@ volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
             volumeMetadata.vmType);
       })
       .then(async (volumeInfo) => {
-        if (util.isFilesAppExperimental()) {
-          await volumeInfo.resolveDisplayRoot();
+        // resolveDisplayRoot() is a promise, but instead of using await here,
+        // we just pass a onSuccess function to it, because we don't want to it
+        // to interfere the startup time.
+        volumeInfo.resolveDisplayRoot(() => {
           getStore().dispatch(addVolume({volumeMetadata, volumeInfo}));
-        }
+        });
         return volumeInfo;
       })
       .catch(

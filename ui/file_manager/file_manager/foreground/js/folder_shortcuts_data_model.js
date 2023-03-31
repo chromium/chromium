@@ -184,9 +184,7 @@ export class FolderShortcutsDataModel extends EventTarget {
         }
         // If something changed, then save.
         if (changed) {
-          if (util.isFilesAppExperimental()) {
-            this.store_.dispatch(refreshFolderShortcut({entries: this.array_}));
-          }
+          this.store_.dispatch(refreshFolderShortcut({entries: this.array_}));
           this.save_();
         }
         queueCallback();
@@ -316,9 +314,7 @@ export class FolderShortcutsDataModel extends EventTarget {
    */
   add(value) {
     const result = this.addInternal_(value);
-    if (util.isFilesAppExperimental()) {
-      this.store_.dispatch(addFolderShortcut(value));
-    }
+    this.store_.dispatch(addFolderShortcut({entry: value}));
     metrics.recordUserAction('FolderShortcut.Add');
     this.save_();
     return result;
@@ -370,9 +366,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   remove(value) {
     const result = this.removeInternal_(value);
     if (result !== -1) {
-      if (util.isFilesAppExperimental()) {
-        this.store_.dispatch(removeFolderShortcut(value));
-      }
+      this.store_.dispatch(removeFolderShortcut({key: value.toURL()}));
       this.save_();
       metrics.recordUserAction('FolderShortcut.Remove');
     }

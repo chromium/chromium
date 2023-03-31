@@ -198,12 +198,11 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
       vmType: 'arcvm',
     });
 
-    // Wait for the placeholder to appear, which should be disabled. The
-    // directory shouldn't appear in the details list.
-    // TODO(b/267133288): Check why the dir doesn't appear and fix if necessary.
+    // Wait for the placeholder "Play files" to appear, the directory tree item
+    // should be disabled, but the file row shouldn't be disabled.
     await remoteCall.waitAndClickElement(dialog, disabledFakeTreeItem);
     await remoteCall.waitForFiles(
-        dialog, [downloadsRow, linuxFilesRow],
+        dialog, [downloadsRow, playFilesRow, linuxFilesRow],
         {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
     // Click the close button to dismiss the dialog.

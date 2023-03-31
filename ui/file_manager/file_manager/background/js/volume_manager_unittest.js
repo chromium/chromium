@@ -17,6 +17,7 @@ import {volumeManagerUtil} from './volume_manager_util.js';
 let mockChrome;
 let mockData;
 let createVolumeInfoOriginal;
+let webkitResolveLocalFileSystemURLOriginal;
 
 export function setUp() {
   mockData = {
@@ -113,7 +114,7 @@ export function setUp() {
       volumeLabel: '',
       volumeType: VolumeManagerCommon.VolumeType.ANDROID_FILES,
       isReadOnly: false,
-      provile: getMockProfile(),
+      profile: getMockProfile(),
       configurable: false,
       watchable: true,
       source: VolumeManagerCommon.Source.SYSTEM,
@@ -126,6 +127,25 @@ export function setUp() {
     'android_files:0': new MockFileSystem('android_files:0'),
   };
 
+  const driveFs =
+      mockData.fileSystemMap_['drive:drive-foobar%40chromium.org-hash'];
+  driveFs.populate(['/root/', '/team_drives/', '/Computers/']);
+
+  // Mock window.webkitResolveLocalFileSystemURL to return entries for DriveFS.
+  webkitResolveLocalFileSystemURLOriginal =
+      window.webkitResolveLocalFileSystemURL;
+  window.webkitResolveLocalFileSystemURL = (url, success) => {
+    const match = url.match(/^filesystem:drive:.*(\/.*)/);
+    if (match) {
+      const path = match[1];
+      const entry = driveFs.entries[path];
+      if (entry) {
+        return setTimeout(success, 0, entry);
+      }
+    }
+    throw new DOMException('Unknown drive url: ' + url, 'NotFoundError');
+  };
+
   createVolumeInfoOriginal = volumeManagerUtil.createVolumeInfo;
 }
 
@@ -136,6 +156,10 @@ export function tearDown() {
 
   // Restore the createVolumeInfo() function.
   volumeManagerUtil.createVolumeInfo = createVolumeInfoOriginal;
+
+  // Restore window.webkitResolveLocalFileSystemURL.
+  window.webkitResolveLocalFileSystemURL =
+      webkitResolveLocalFileSystemURLOriginal;
 }
 
 async function waitAllVolumes(volumeManager) {

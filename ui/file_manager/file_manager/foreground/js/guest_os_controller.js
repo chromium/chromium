@@ -58,16 +58,14 @@ export class GuestOsController {
    */
   async onMountableGuestsChanged(guests) {
     const store = getStore();
-    if (util.isFilesAppExperimental()) {
-      const newGuestIdSet = new Set(guests.map(guest => guest.id));
-      const state = store.getState();
-      // Remove non-existed guest os.
-      for (const uiEntryKey of state.uiEntries) {
-        const uiEntry = getEntry(state, uiEntryKey);
-        if (uiEntry && 'guest_id' in uiEntry &&
-            !newGuestIdSet.has(uiEntry.guest_id)) {
-          store.dispatch(removeUiEntry({key: uiEntryKey}));
-        }
+    const newGuestIdSet = new Set(guests.map(guest => guest.id));
+    const state = store.getState();
+    // Remove non-existing guest os.
+    for (const uiEntryKey of state.uiEntries) {
+      const uiEntry = getEntry(state, uiEntryKey);
+      if (uiEntry && 'guest_id' in uiEntry &&
+          !newGuestIdSet.has(uiEntry.guest_id)) {
+        store.dispatch(removeUiEntry({key: uiEntryKey}));
       }
     }
     this.directoryTree_.dataModel.guestOsPlaceholders = guests.map(guest => {
@@ -82,9 +80,7 @@ export class GuestOsController {
         navigationModelItem.disabled = this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.GUEST_OS);
       }
-      if (util.isFilesAppExperimental()) {
-        store.dispatch(addUiEntry({entry: guestOsEntry}));
-      }
+      store.dispatch(addUiEntry({entry: guestOsEntry}));
       return navigationModelItem;
     });
 

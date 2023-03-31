@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
@@ -64,14 +64,10 @@ export class CrostiniController {
           str('LINUX_FILES_ROOT_LABEL'), NavigationModelItemType.CROSTINI,
           crostiniEntry);
       crostiniNavigationModelItem.disabled = this.disabled_;
-      if (util.isFilesAppExperimental()) {
-        getStore().dispatch(addUiEntry({entry: crostiniEntry}));
-      }
+      getStore().dispatch(addUiEntry({entry: crostiniEntry}));
     } else {
       crostiniNavigationModelItem = null;
-      if (util.isFilesAppExperimental()) {
-        getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
-      }
+      getStore().dispatch(removeUiEntry({key: crostiniPlaceHolderKey}));
     }
     this.directoryTree_.dataModel.linuxFilesItem = crostiniNavigationModelItem;
     // Redraw the tree to ensure 'Linux files' is added/removed.

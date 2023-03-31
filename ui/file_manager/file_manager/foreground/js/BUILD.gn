@@ -328,7 +328,6 @@ js_library("mock_thumbnail_loader") {
 js_library("android_app_list_model") {
   deps = [
     "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs/ts:store",
   ]
 }

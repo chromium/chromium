@@ -314,9 +314,7 @@ export class VolumeManagerImpl extends EventTarget {
             } else {
               console.debug(`Unmounted '${volumeId}'`);
             }
-            if (util.isFilesAppExperimental()) {
-              getStore().dispatch(removeVolume({volumeId}));
-            }
+            getStore().dispatch(removeVolume({volumeId}));
             this.volumeInfoList.remove(volumeId);
             this.finishRequest_(requestKey, status);
             return;
