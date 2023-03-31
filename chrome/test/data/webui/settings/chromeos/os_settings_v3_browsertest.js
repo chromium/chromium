@@ -356,6 +356,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'internet_page/internet_detail_subpage_tests.js',
    {enabled: ['ash::features::kApnRevamp']}
  ],
+ ['InternetPageNetworkSummary', 'internet_page/network_summary_test.js'],
  [
    'InternetPageNetworkSummaryItem',
    'internet_page/network_summary_item_test.js'
@@ -417,7 +418,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.js'],
  ['NetworkProxySection', 'network_proxy_section_test.js'],
- ['NetworkSummary', 'network_summary_test.js'],
  ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
