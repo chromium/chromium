@@ -25,7 +25,7 @@ class ScopedAppGLStateRestoreImpl : public ScopedAppGLStateRestore::Impl {
 
   ~ScopedAppGLStateRestoreImpl() override;
 
- protected:
+ private:
   void SaveHWUIState(bool save_restore);
   void RestoreHWUIState(bool save_restore);
 

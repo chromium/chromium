@@ -25,7 +25,7 @@ class ScopedAppGLStateRestoreImplAngle : public ScopedAppGLStateRestore::Impl {
 
   ~ScopedAppGLStateRestoreImplAngle() override;
 
- protected:
+ private:
 #if DCHECK_IS_ON()
   EGLContext egl_context_ = EGL_NO_CONTEXT;
 #endif
