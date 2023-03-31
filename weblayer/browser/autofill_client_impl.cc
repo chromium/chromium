@@ -363,6 +363,13 @@ void AutofillClientImpl::PropagateAutofillPredictions(
   NOTREACHED();
 }
 
+void AutofillClientImpl::DidFillOrPreviewForm(
+    autofill::mojom::RendererFormDataAction action,
+    autofill::AutofillTriggerSource trigger_source,
+    bool is_refill) {
+  NOTREACHED();
+}
+
 void AutofillClientImpl::DidFillOrPreviewField(
     const std::u16string& autofilled_value,
     const std::u16string& profile_full_name) {

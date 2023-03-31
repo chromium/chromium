@@ -497,6 +497,11 @@ void ChromeAutofillClientIOS::PropagateAutofillPredictions(
   password_manager_->ProcessAutofillPredictions(password_manager_driver, forms);
 }
 
+void ChromeAutofillClientIOS::DidFillOrPreviewForm(
+    mojom::RendererFormDataAction action,
+    AutofillTriggerSource trigger_source,
+    bool is_refill) {}
+
 void ChromeAutofillClientIOS::DidFillOrPreviewField(
     const std::u16string& autofilled_value,
     const std::u16string& profile_full_name) {}

@@ -157,6 +157,9 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
   void PropagateAutofillPredictions(
       autofill::AutofillDriver* driver,
       const std::vector<autofill::FormStructure*>& forms) override;
+  void DidFillOrPreviewForm(autofill::mojom::RendererFormDataAction action,
+                            autofill::AutofillTriggerSource trigger_source,
+                            bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;

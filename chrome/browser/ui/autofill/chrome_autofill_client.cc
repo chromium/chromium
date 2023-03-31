@@ -104,6 +104,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
+#include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
@@ -119,6 +120,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
 #include "ui/android/window_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
@@ -1049,6 +1051,21 @@ void ChromeAutofillClient::PropagateAutofillPredictions(
     password_manager_driver->GetPasswordManager()->ProcessAutofillPredictions(
         password_manager_driver, forms);
   }
+}
+
+void ChromeAutofillClient::DidFillOrPreviewForm(
+    mojom::RendererFormDataAction action,
+    AutofillTriggerSource trigger_source,
+    bool is_refill) {
+#if BUILDFLAG(IS_ANDROID)
+  if (action == mojom::RendererFormDataAction::kFill &&
+      trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
+      !is_refill) {
+    // TODO(crbug.com/1428492): Test that the message was announced.
+    autofill::AnnounceTextForA11y(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM));
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutofillClient::DidFillOrPreviewField(

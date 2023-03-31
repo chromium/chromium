@@ -285,6 +285,12 @@ class MockAutofillClient : public autofill::AutofillClient {
                const std::vector<autofill::FormStructure*>&),
               (override));
   MOCK_METHOD(void,
+              DidFillOrPreviewForm,
+              (autofill::mojom::RendererFormDataAction action,
+               autofill::AutofillTriggerSource trigger_source,
+               bool is_refill),
+              (override));
+  MOCK_METHOD(void,
               DidFillOrPreviewField,
               (const std::u16string&, const std::u16string&),
               (override));

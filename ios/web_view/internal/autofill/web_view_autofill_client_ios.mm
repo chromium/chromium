@@ -367,6 +367,11 @@ void WebViewAutofillClientIOS::PropagateAutofillPredictions(
                                                ->web_frame()];
 }
 
+void WebViewAutofillClientIOS::DidFillOrPreviewForm(
+    mojom::RendererFormDataAction action,
+    AutofillTriggerSource trigger_source,
+    bool is_refill) {}
+
 void WebViewAutofillClientIOS::DidFillOrPreviewField(
     const std::u16string& autofilled_value,
     const std::u16string& profile_full_name) {}
