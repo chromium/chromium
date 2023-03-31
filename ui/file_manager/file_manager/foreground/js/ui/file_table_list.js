@@ -258,7 +258,7 @@ export class FileTableList extends TableList {
    * @param {number} y Y coordinate value.
    * @param {number=} opt_width Width of the coordinate.
    * @param {number=} opt_height Height of the coordinate.
-   * @return {Array<number>} Index list of hit elements.
+   * @return {!Array<number>} Index list of hit elements.
    */
   getHitElements(x, y, opt_width, opt_height) {
     const fileListModel = /** @type {FileListModel} */ (this.dataModel);

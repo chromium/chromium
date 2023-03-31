@@ -58,6 +58,9 @@ if (is_chromeos_ash) {
     "js_module_root=gen/ash/webui/common/resources/",
     "browser_resolver_prefix_replacements=\"chrome://resources/ash/common/=./\"",
     "browser_resolver_prefix_replacements=\"//resources/ash/common/=./\"",
+    "js_module_root=" +
+        rebase_path("//chrome/test/data/webui/", root_build_dir),
+    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
   ]
 }
 
