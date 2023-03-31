@@ -8,7 +8,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/application_context/application_context.h"
@@ -31,9 +30,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
@@ -42,7 +38,6 @@
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_coordinator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
@@ -60,7 +55,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     ClearBrowsingDataCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
-    PasswordDetailsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
     PrivacySafeBrowsingCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
@@ -77,10 +71,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // Saved passwords settings coordinator.
 @property(nonatomic, strong) PasswordsCoordinator* savedPasswordsCoordinator;
-
-// Password details coordinator.
-@property(nonatomic, strong)
-    PasswordDetailsCoordinator* passwordDetailsCoordinator;
 
 @property(nonatomic, strong)
     ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
@@ -262,27 +252,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
         showSavedPasswordsAndStartPasswordCheck:YES
                                showCancelButton:showCancelButton];
   }
-
-  return navigationController;
-}
-
-+ (instancetype)
-    passwordDetailsControllerForBrowser:(Browser*)browser
-                               delegate:
-                                   (id<SettingsNavigationControllerDelegate>)
-                                       delegate
-                             credential:
-                                 (password_manager::CredentialUIEntry)credential
-                       showCancelButton:(BOOL)showCancelButton {
-  CHECK(browser);
-
-  SettingsNavigationController* navigationController =
-      [[SettingsNavigationController alloc]
-          initWithRootViewController:nil
-                             browser:browser
-                            delegate:delegate];
-  [navigationController showPasswordDetailsForCredential:credential
-                                        showCancelButton:showCancelButton];
 
   return navigationController;
 }
@@ -689,21 +658,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   }
 }
 
-- (void)showPasswordDetailsForCredential:
-            (password_manager::CredentialUIEntry)credential
-                        showCancelButton:(BOOL)showCancelButton {
-  CHECK(!self.passwordDetailsCoordinator);
-  self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
-      initWithBaseNavigationController:self
-                               browser:self.browser
-                            credential:credential
-                          reauthModule:[[ReauthenticationModule alloc] init]
-                  supportMoveToAccount:YES];
-  self.passwordDetailsCoordinator.delegate = self;
-  self.passwordDetailsCoordinator.showCancelButton = showCancelButton;
-  [self.passwordDetailsCoordinator start];
-}
-
 // Stops the underlying passwords coordinator if it exists.
 - (void)stopPasswordsCoordinator {
   [self.savedPasswordsCoordinator stop];
@@ -757,17 +711,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   DCHECK_EQ(self.savedPasswordsCoordinator, coordinator);
   [self stopPasswordsCoordinator];
-}
-
-#pragma mark PasswordDetailsCoordinatorDelegate
-
-- (void)passwordDetailsCoordinatorDidRemove:
-    (PasswordDetailsCoordinator*)coordinator {
-  [self closeSettings];
-  DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
-  [self.passwordDetailsCoordinator stop];
-  self.passwordDetailsCoordinator.delegate = nil;
-  self.passwordDetailsCoordinator = nil;
 }
 
 #pragma mark - ClearBrowsingDataCoordinatorDelegate

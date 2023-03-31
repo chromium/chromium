@@ -62,8 +62,7 @@
 
 // Module containing the reauthentication mechanism for viewing and copying
 // passwords.
-// Has to be strong for password bottom sheet feature or else it becomes nil.
-@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+@property(nonatomic, weak) ReauthenticationModule* reauthenticationModule;
 
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
@@ -161,9 +160,7 @@
   self.viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   self.viewController.reauthModule = self.reauthenticationModule;
-  if (self.showCancelButton) {
-    [self.viewController setupLeftCancelButton];
-  }
+
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
@@ -176,7 +173,7 @@
 
 #pragma mark - PasswordDetailsHandler
 
-- (void)passwordDetailsTableViewControllerWasDismissed {
+- (void)passwordDetailsTableViewControllerDidDisappear {
   [self.delegate passwordDetailsCoordinatorDidRemove:self];
 }
 

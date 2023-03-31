@@ -195,7 +195,7 @@ const int kMinNoteCharAmountForWarning = 901;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-  [self.handler passwordDetailsTableViewControllerWasDismissed];
+  [self.handler passwordDetailsTableViewControllerDidDisappear];
   [super viewDidDisappear:animated];
 }
 
@@ -1386,11 +1386,6 @@ const int kMinNoteCharAmountForWarning = 901;
                                handler:movePasswordHandler];
 }
 
-- (void)dismissView {
-  [self.view endEditing:YES];
-  [self.handler passwordDetailsTableViewControllerWasDismissed];
-}
-
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
@@ -1500,15 +1495,6 @@ const int kMinNoteCharAmountForWarning = 901;
 - (void)showEditViewWithoutAuthentication {
   self.showPasswordWithoutAuth = YES;
   [self editButtonPressed];
-}
-
-- (void)setupLeftCancelButton {
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(dismissView)];
-  self.backButtonItem = cancelButton;
-  self.navigationItem.leftBarButtonItem = self.backButtonItem;
 }
 
 @end
