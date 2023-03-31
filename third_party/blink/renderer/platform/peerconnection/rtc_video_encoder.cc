@@ -97,6 +97,20 @@ bool IsZeroCopyTabCaptureEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+bool IsNV12GpuMemoryBufferVideoFrame(const webrtc::VideoFrame& input_image) {
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> video_frame_buffer =
+      input_image.video_frame_buffer();
+  if (video_frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative) {
+    return false;
+  }
+  const scoped_refptr<media::VideoFrame> frame =
+      static_cast<blink::WebRtcVideoFrameAdapter*>(video_frame_buffer.get())
+          ->getMediaVideoFrame();
+  CHECK(frame);
+  return frame->format() == media::PIXEL_FORMAT_NV12 &&
+         frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+}
+
 class SignaledValue {
  public:
   SignaledValue() : event(nullptr), val(nullptr) {}
@@ -499,6 +513,11 @@ void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
   }
 }
 
+bool SupportGpuMemoryBufferEncoding() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kVideoCaptureUseGpuMemoryBuffer);
+}
+
 bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
   if (content_type == webrtc::VideoContentType::SCREENSHARE) {
     // Zero copy screen capture.
@@ -528,6 +547,10 @@ bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
 }  // namespace
 
 namespace features {
+// Initialize VideoEncodeAccelerator on the first encode.
+BASE_FEATURE(kWebRtcInitializeOnFirstFrame,
+             "WebRtcInitializeEncoderOnFirstFrame",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Fallback from hardware encoder (if available) to software, for WebRTC
 // screensharing that uses temporal scalability.
 BASE_FEATURE(kWebRtcScreenshareSwEncoding,
@@ -1668,6 +1691,11 @@ RTCVideoEncoder::~RTCVideoEncoder() {
   DCHECK(!impl_);
 }
 
+bool RTCVideoEncoder::IsCodecInitializationPending() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  return vea_config_.has_value();
+}
+
 int32_t RTCVideoEncoder::InitializeEncoder(
     const media::VideoEncodeAccelerator::Config& vea_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
@@ -1795,14 +1823,31 @@ int32_t RTCVideoEncoder::InitEncode(
         media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 
-  media::VideoEncodeAccelerator::Config vea_config(
+  vea_config_ = media::VideoEncodeAccelerator::Config(
       pixel_format, input_visible_size, profile_,
       media::Bitrate::ConstantBitrate(bitrate_bps),
       /*initial_framerate=*/absl::nullopt,
       /*gop_length=*/absl::nullopt,
       /*h264_output_level=*/absl::nullopt, is_constrained_h264_, storage_type,
       vea_content_type, spatial_layers, inter_layer_pred);
-  return InitializeEncoder(vea_config);
+
+  if (!base::FeatureList::IsEnabled(features::kWebRtcInitializeOnFirstFrame)) {
+    int32_t initialization_ret = InitializeEncoder(*vea_config_);
+    vea_config_.reset();
+    if (initialization_ret != WEBRTC_VIDEO_CODEC_OK) {
+      Release();
+      CHECK(!impl_);
+    }
+    return initialization_ret;
+  }
+
+  // If we initialize the encoder on the first Encode(), then |encoder_info| is
+  // not updated by the encoder implementation. But the RTCVideoEncoder client
+  // gets |encoder_info_|. So we update |encoder_info_| from the configured
+  // |spatial_layers| and |pixel_format| as if it is updated the encoder
+  // implementation.
+  PreInitializeEncoder(spatial_layers, pixel_format);
+  return WEBRTC_VIDEO_CODEC_OK;
 }
 
 int32_t RTCVideoEncoder::Encode(
@@ -1819,6 +1864,32 @@ int32_t RTCVideoEncoder::Encode(
 
   if (has_error_)
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+
+  if (IsCodecInitializationPending()) {
+    if (IsNV12GpuMemoryBufferVideoFrame(input_image) &&
+        SupportGpuMemoryBufferEncoding()) {
+      vea_config_->input_format = media::PIXEL_FORMAT_NV12;
+      vea_config_->storage_type =
+          media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
+    } else {
+      vea_config_->input_format = media::PIXEL_FORMAT_I420;
+      vea_config_->storage_type =
+          media::VideoEncodeAccelerator::Config::StorageType::kShmem;
+    }
+    int32_t initialization_val = InitializeEncoder(*vea_config_);
+    vea_config_.reset();
+    if (initialization_val != WEBRTC_VIDEO_CODEC_OK) {
+      SetError();
+      Release();
+      CHECK(!impl_);
+      pending_rate_params_.reset();
+      return initialization_val;
+    }
+    if (pending_rate_params_) {
+      SetRates(*pending_rate_params_);
+      pending_rate_params_.reset();
+    }
+  }
 
   const bool want_key_frame =
       frame_types && frame_types->size() &&
@@ -1903,6 +1974,8 @@ int32_t RTCVideoEncoder::Release() {
 void RTCVideoEncoder::SetRates(
     const webrtc::VideoEncoder::RateControlParameters& parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  TRACE_EVENT1("webrtc", "SetRates", "parameters",
+               parameters.bitrate.ToString());
   DVLOG(3) << __func__ << " new_bit_rate=" << parameters.bitrate.ToString()
            << ", frame_rate=" << parameters.framerate_fps;
   if (!impl_) {
@@ -1913,6 +1986,10 @@ void RTCVideoEncoder::SetRates(
   if (has_error_)
     return;
 
+  if (IsCodecInitializationPending()) {
+    pending_rate_params_ = parameters;
+    return;
+  }
   PostCrossThreadTask(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(
@@ -1924,6 +2001,39 @@ void RTCVideoEncoder::SetRates(
 webrtc::VideoEncoder::EncoderInfo RTCVideoEncoder::GetEncoderInfo() const {
   base::AutoLock auto_lock(lock_);
   return encoder_info_;
+}
+
+void RTCVideoEncoder::PreInitializeEncoder(
+    const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
+        spatial_layers,
+    media::VideoPixelFormat pixel_format) {
+  size_t num_spatial_layers = 1;
+  size_t num_temporal_layers = 1;
+  if (!spatial_layers.empty()) {
+    num_spatial_layers = spatial_layers.size();
+    num_temporal_layers = spatial_layers[0].num_of_temporal_layers;
+  }
+
+  base::AutoLock auto_lock(lock_);
+  for (size_t i = 0; i < num_spatial_layers; ++i) {
+    switch (num_temporal_layers) {
+      case 1:
+        encoder_info_.fps_allocation[i] = {255};
+        break;
+      case 2:
+        encoder_info_.fps_allocation[i] = {255 / 2, 255};
+        break;
+      case 3:
+        encoder_info_.fps_allocation[i] = {255 / 4, 255 / 2, 255};
+        break;
+      default:
+        NOTREACHED() << "Unexpected temporal layers: " << num_temporal_layers;
+    }
+  }
+  auto preferred_pixel_format = pixel_format == media::PIXEL_FORMAT_I420
+                                    ? webrtc::VideoFrameBuffer::Type::kI420
+                                    : webrtc::VideoFrameBuffer::Type::kNV12;
+  encoder_info_.preferred_pixel_formats = {preferred_pixel_format};
 }
 
 void RTCVideoEncoder::UpdateEncoderInfo(
