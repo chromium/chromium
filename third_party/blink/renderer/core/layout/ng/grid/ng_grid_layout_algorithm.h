@@ -97,7 +97,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.
   LayoutUnit ContributionSizeForGridItem(
-      const NGGridLayoutData& layout_data,
+      const NGGridSizingSubtree& sizing_subtree,
       GridItemContributionType contribution_type,
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
@@ -115,10 +115,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |track_collection|.
   void CalculateAlignmentBaselines(
-      const NGGridLayoutData& layout_data,
+      const NGGridSizingSubtree& sizing_subtree,
+      GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
-      GridItems* grid_items,
-      NGGridSizingTrackCollection* track_collection,
       bool* opt_needs_additional_pass = nullptr) const;
 
   // Initialize the track collections of a given grid sizing data.
@@ -165,16 +164,15 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
-  void ResolveIntrinsicTrackSizes(const NGGridLayoutData& layout_data,
-                                  SizingConstraint sizing_constraint,
-                                  NGGridSizingTrackCollection* track_collection,
-                                  GridItems* grid_items) const;
+  void ResolveIntrinsicTrackSizes(const NGGridSizingSubtree& sizing_subtree,
+                                  GridTrackSizingDirection track_direction,
+                                  SizingConstraint sizing_constraint) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
       GridItemDataPtrVector::iterator group_begin,
       GridItemDataPtrVector::iterator group_end,
-      const NGGridLayoutData& layout_data,
-      const bool is_group_spanning_flex_track,
+      const NGGridSizingSubtree& sizing_subtree,
+      bool is_group_spanning_flex_track,
       SizingConstraint sizing_constraint,
       GridItemContributionType contribution_type,
       NGGridSizingTrackCollection* track_collection) const;
@@ -185,10 +183,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void StretchAutoTracks(SizingConstraint sizing_constraint,
                          NGGridSizingTrackCollection* track_collection) const;
 
-  void ExpandFlexibleTracks(const NGGridLayoutData& layout_data,
-                            SizingConstraint sizing_constraint,
-                            NGGridSizingTrackCollection* track_collection,
-                            GridItems* grid_items) const;
+  void ExpandFlexibleTracks(const NGGridSizingSubtree& sizing_subtree,
+                            GridTrackSizingDirection track_direction,
+                            SizingConstraint sizing_constraint) const;
 
   // Gets the specified [column|row]-gap of the grid.
   LayoutUnit GutterSize(GridTrackSizingDirection track_direction) const;
@@ -203,7 +200,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutData& layout_data,
       const LogicalSize& containing_grid_area_size,
       absl::optional<LayoutUnit> opt_fixed_block_size,
-      NGGridLayoutSubtree&& layout_subtree,
+      NGGridLayoutSubtree&& opt_layout_subtree = NGGridLayoutSubtree(),
       bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
           absl::nullopt) const;
@@ -212,7 +209,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridItemData& grid_item,
       const NGGridLayoutData& layout_data,
       LogicalRect* containing_grid_area,
-      NGGridLayoutSubtree&& layout_subtree = NGGridLayoutSubtree(),
+      NGGridLayoutSubtree&& opt_layout_subtree = NGGridLayoutSubtree(),
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
@@ -220,7 +217,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   NGConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& grid_item,
-      const NGGridLayoutData& layout_data,
+      const NGGridSizingSubtree& sizing_subtree,
       GridTrackSizingDirection track_direction,
       absl::optional<LayoutUnit> opt_fixed_block_size = absl::nullopt) const;
 

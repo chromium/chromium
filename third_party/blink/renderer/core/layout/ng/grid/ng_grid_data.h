@@ -266,7 +266,7 @@ class NGGridLayoutSubtree
                : !grid_tree_ && !other.grid_tree_;
   }
 
-  const NGGridLayoutData& SubtreeRootData() const {
+  const NGGridLayoutData& LayoutData() const {
     DCHECK(grid_tree_);
     return grid_tree_->LayoutData(subtree_root_);
   }

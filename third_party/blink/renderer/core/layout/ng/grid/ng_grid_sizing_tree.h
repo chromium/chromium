@@ -55,6 +55,8 @@ class NGSubgriddedItemData {
 
 constexpr NGSubgriddedItemData kNoSubgriddedItemData;
 
+// This class represents a grid tree (see `ng_grid_subtree.h`) and contains the
+// necessary data to perform the track sizing algorithm of its nested subgrids.
 class CORE_EXPORT NGGridSizingTree {
   DISALLOW_NEW();
 
@@ -96,10 +98,26 @@ class CORE_EXPORT NGGridSizingTree {
     return tree_data_[index]->subtree_size;
   }
 
+  void AddSubgriddedItemLookupData(NGSubgriddedItemData&& subgridded_item_data);
+
+  NGSubgriddedItemData LookupSubgriddedItemData(
+      const GridItemData& grid_item) const;
+
  private:
+  using SubgriddedItemDataLookupMap =
+      HeapHashMap<Member<const LayoutBox>, NGSubgriddedItemData>;
+
+  // In order to correctly determine the available space of a subgridded item,
+  // which might be measured by a different grid than its parent grid, this map
+  // stores the item's `NGSubgriddedItemData`, whose layout data should be used
+  // to compute its span size within its parent grid's tracks.
+  Persistent<SubgriddedItemDataLookupMap> subgridded_item_data_lookup_map_;
+
   Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;
 };
 
+// This class represents a subtree in a `NGGridSizingTree` and provides seamless
+// traversal over the tree and access to the sizing tree's lookup methods.
 class NGGridSizingSubtree
     : public NGGridSubtree<NGGridSizingSubtree, const NGGridSizingTree*> {
   STACK_ALLOCATED();
@@ -115,7 +133,19 @@ class NGGridSizingSubtree
                       wtf_size_t subtree_root)
       : NGGridSubtree(sizing_tree, parent_end_index, subtree_root) {}
 
+  NGGridLayoutData& LayoutData() const {
+    DCHECK(grid_tree_);
+    return grid_tree_->At(subtree_root_).layout_data;
+  }
+
+  NGSubgriddedItemData LookupSubgriddedItemData(
+      const GridItemData& grid_item) const {
+    DCHECK(grid_tree_);
+    return grid_tree_->LookupSubgriddedItemData(grid_item);
+  }
+
   NGGridSizingTree::GridTreeNode& SubtreeRootData() const {
+    DCHECK(grid_tree_);
     return grid_tree_->At(subtree_root_);
   }
 };

@@ -37,4 +37,27 @@ scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
   return layout_tree;
 }
 
+void NGGridSizingTree::AddSubgriddedItemLookupData(
+    NGSubgriddedItemData&& subgridded_item_data) {
+  const auto* item_layout_box = subgridded_item_data->node.GetLayoutBox();
+
+  if (!subgridded_item_data_lookup_map_) {
+    subgridded_item_data_lookup_map_ =
+        MakeGarbageCollected<SubgriddedItemDataLookupMap>();
+  }
+
+  DCHECK(!subgridded_item_data_lookup_map_->Contains(item_layout_box));
+  subgridded_item_data_lookup_map_->insert(item_layout_box,
+                                           std::move(subgridded_item_data));
+}
+
+NGSubgriddedItemData NGGridSizingTree::LookupSubgriddedItemData(
+    const GridItemData& grid_item) const {
+  const auto* item_layout_box = grid_item.node.GetLayoutBox();
+
+  DCHECK(subgridded_item_data_lookup_map_ &&
+         subgridded_item_data_lookup_map_->Contains(item_layout_box));
+  return subgridded_item_data_lookup_map_->at(item_layout_box);
+}
+
 }  // namespace blink
