@@ -163,6 +163,11 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
         l10n_util::GetStringFUTF16(
             IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS,
             base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
+    html_source->AddString(
+        "googleDriveDisconnectedFrom",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GOOGLE_DRIVE_DISCONNECTED_FROM,
+            base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
   }
 
   html_source->AddBoolean("enableDriveFsBulkPinning",

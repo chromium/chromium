@@ -39,10 +39,12 @@ suite('<settings-google-drive-subpage>', function() {
   });
 
   test('drive connect label is updated when pref is changed', function() {
-    // Update the preference and ensure the text has the value "Connect".
+    // Update the preference and ensure the text has the value "Connect
+    // account".
     page.setPrefValue('gdata.disabled', true);
     flush();
-    assertEquals(connectDisconnectButton!.textContent!.trim(), 'Connect');
+    assertEquals(
+        connectDisconnectButton!.textContent!.trim(), 'Connect account');
 
     // Update the preference and ensure the text has the value "Disconnect".
     page.setPrefValue('gdata.disabled', false);
