@@ -839,7 +839,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   } else {
     [cell hideActivityIndicator];
   }
-  if (_visible && cell.itemIdentifier == _lastInsertedItemID) {
+  if (_contentAppeared && cell.itemIdentifier == _lastInsertedItemID) {
     cell.hidden = YES;
   }
 }
