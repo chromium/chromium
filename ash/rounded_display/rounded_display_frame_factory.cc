@@ -32,8 +32,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -334,12 +334,15 @@ void RoundedDisplayFrameFactory::AppendQuad(
   // Since a single gutter is created for the full layer and we re-render the
   // full texture making the quad_rect same as the layer_rect.
   const gfx::Rect& quad_rect = layer_rect;
-  const gfx::RectF quad_rect_f(layer_rect);
 
+  // Since the gutter texture is drawn into a buffer of exact size, therefore
+  // we do not need to scale uv coordinates (zoom in or out on texture) to fit
+  // the buffer size.
   texture_quad->SetNew(
       quad_state, quad_rect, quad_rect,
       /*needs_blending=*/true, resource.id,
-      /*premultiplied=*/true, quad_rect_f.origin(), quad_rect_f.bottom_right(),
+      /*premultiplied=*/true, /*uv_top_left=*/gfx::PointF(0, 0),
+      /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background=*/SkColors::kTransparent, kVertexOpacity,
       /*flipped=*/false,
       /*nearest=*/false,
