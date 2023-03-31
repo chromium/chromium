@@ -420,6 +420,7 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
   ASSERT_THAT(
       last_webapk_request()->update_reasons(),
       ::testing::ElementsAre(webapk::WebApk::PRIMARY_ICON_HASH_DIFFERS));
+  ASSERT_TRUE(last_webapk_request()->app_identity_update_supported());
 
   // Check we still only have 1 version of |app_id| installed.
   ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),

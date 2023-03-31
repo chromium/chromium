@@ -175,6 +175,10 @@ void AddUpdateParams(webapk::WebApk* webapk,
   // The |manifest_url| is used as a key on Android, so the |manifest_url| sent
   // to the server to query a particular app should always be the same.
   webapk->set_manifest_url(web_apk_info->manifest_url);
+  // Any changes to web app identity which make it through to App Service will
+  // have gone through an update policy check, which makes it safe to update
+  // the WebAPK too.
+  webapk->set_app_identity_update_supported(true);
 
   auto manifest = webapk->manifest();
   if (manifest.short_name() != web_apk_info->name) {
