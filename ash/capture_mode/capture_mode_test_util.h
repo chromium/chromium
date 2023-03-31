@@ -22,6 +22,7 @@ class FilePath;
 }  // namespace base
 
 namespace gfx {
+class Image;
 class Point;
 }  // namespace gfx
 
@@ -127,6 +128,10 @@ void PressAndReleaseKeyOnVK(ui::test::EventGenerator* event_generator,
                             ui::KeyboardCode key_code,
                             int flags = ui::EF_NONE,
                             int source_device_id = ui::ED_UNKNOWN_DEVICE);
+
+// Reads a PNG image from disk and decodes it. Returns the bitmap image, if the
+// bitmap was successfully read from disk or an empty gfx::Image otherwise.
+gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path);
 
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-

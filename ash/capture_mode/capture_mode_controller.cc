@@ -34,6 +34,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
@@ -721,19 +722,18 @@ CaptureModeController::GetCurrentCaptureFolder() const {
 }
 
 void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
-  if (pending_dlp_check_)
-    return;
+  CaptureInstantScreenshot(
+      CaptureModeEntryType::kCaptureAllDisplays, CaptureModeSource::kFullscreen,
+      base::BindOnce(&CaptureModeController::PerformScreenshotsOfAllDisplays,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
-  if (!delegate_->IsCaptureAllowedByPolicy()) {
-    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
-    return;
-  }
-
-  pending_dlp_check_ = true;
-  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
-      &CaptureModeController::
-          OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays,
-      weak_ptr_factory_.GetWeakPtr()));
+void CaptureModeController::CaptureScreenshotOfGivenWindow(
+    aura::Window* given_window) {
+  CaptureInstantScreenshot(
+      CaptureModeEntryType::kCaptureGivenWindow, CaptureModeSource::kWindow,
+      base::BindOnce(&CaptureModeController::PerformScreenshotOfGivenWindow,
+                     weak_ptr_factory_.GetWeakPtr(), given_window));
 }
 
 void CaptureModeController::PerformCapture() {
@@ -1888,19 +1888,55 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
   recording_start_time_ = base::TimeTicks();
 }
 
-void CaptureModeController::
-    OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays(bool proceed) {
-  pending_dlp_check_ = false;
-  if (!proceed)
+void CaptureModeController::CaptureInstantScreenshot(
+    CaptureModeEntryType entry_type,
+    CaptureModeSource source,
+    base::OnceClosure instant_screenshot_callback) {
+  if (pending_dlp_check_) {
     return;
+  }
 
-  // Due to fact that the DLP warning dialog may take a while, check policy
-  // again even though we checked in CaptureScreenshotsOfAllDisplays().
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
     return;
   }
 
+  pending_dlp_check_ = true;
+  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
+      &CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot,
+      weak_ptr_factory_.GetWeakPtr(), entry_type, source,
+      std::move(instant_screenshot_callback)));
+}
+
+void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
+    CaptureModeEntryType entry_type,
+    CaptureModeSource source,
+    base::OnceClosure instant_screenshot_callback,
+    bool proceed) {
+  pending_dlp_check_ = false;
+  if (!proceed) {
+    return;
+  }
+
+  // Due to fact that the DLP warning dialog may take a while, check the
+  // enterprise policy again even though we checked in
+  // `CaptureInstantScreenshot()`.
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+
+  std::move(instant_screenshot_callback).Run();
+
+  // Since this doesn't create a capture mode session, log metrics here.
+  RecordCaptureModeEntryType(entry_type);
+  RecordCaptureModeConfiguration(
+      CaptureModeType::kImage, source,
+      recording_type_,  // This parameter will be ignored.
+      /*audio_on=*/false, /*is_in_projector_mode=*/false);
+}
+
+void CaptureModeController::PerformScreenshotsOfAllDisplays() {
   // Get a vector of RootWindowControllers with primary root window at first.
   const std::vector<RootWindowController*> controllers =
       RootWindowController::root_window_controllers();
@@ -1917,13 +1953,13 @@ void CaptureModeController::
                                      : BuildImagePathForDisplay(display_index));
     ++display_index;
   }
+}
 
-  // Since this doesn't create a capture mode session, log metrics here.
-  RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
-  RecordCaptureModeConfiguration(
-      CaptureModeType::kImage, CaptureModeSource::kFullscreen,
-      recording_type_,  // This parameter will be ignored.
-      /*audio_on=*/false, /*is_in_projector_mode=*/false);
+void CaptureModeController::PerformScreenshotOfGivenWindow(
+    aura::Window* given_window) {
+  const CaptureParams capture_params{given_window,
+                                     gfx::Rect(given_window->bounds().size())};
+  CaptureImage(capture_params, BuildImagePath());
 }
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(

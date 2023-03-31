@@ -23,14 +23,18 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/constants.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -254,6 +258,31 @@ void PressAndReleaseKeyOnVK(ui::test::EventGenerator* event_generator,
                             int source_device_id) {
   PressKeyOnVK(event_generator, key_code, flags, source_device_id);
   ReleaseKeyOnVK(event_generator, key_code, flags, source_device_id);
+}
+
+gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  // No need to read the image file, if the path doesn't exist.
+  if (!base::PathExists(image_path)) {
+    return gfx::Image();
+  }
+
+  std::string image_data;
+  if (!base::ReadFileToString(image_path, &image_data)) {
+    LOG(ERROR) << "Failed to read PNG file from disk.";
+    return gfx::Image();
+  }
+
+  gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
+      base::MakeRefCounted<base::RefCountedString>(std::move(image_data)));
+
+  if (image.IsEmpty()) {
+    LOG(ERROR) << "Failed to decode PNG file.";
+  }
+
+  return image;
 }
 
 // -----------------------------------------------------------------------------
