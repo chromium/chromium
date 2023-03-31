@@ -63999,6 +63999,19 @@
         {}
        ]
       ],
+      "border-collapse-empty-row.html": [
+       "c4114a145df0c18ee6745c3cb3e74388609a9eb9",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/tables/border-collapse-empty-row-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "border-collapse-offset-001.xht": [
        "68dde59a0ccd3249680b24abe6a9c837b7741de6",
        [
@@ -268265,6 +268278,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "a1de27d5e771121e2a8b1f6d2e4dd24dfd9be0d1",
+     []
+    ],
+    "mtime.json": [
+     "da42d4cab7eae98c2a24d452da62bb94ef70e723",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -281730,6 +281753,10 @@
       ],
       "border-collapse-dynamic-table-003-ref.xht": [
        "f7a02c8e04cefa46c4326d8dc433c04e74274527",
+       []
+      ],
+      "border-collapse-empty-row-ref.html": [
+       "ca1108ccd7bf733e26e3bb6f9105404063da942a",
        []
       ],
       "border-collapse-offset-001-ref.xht": [
@@ -324586,6 +324613,10 @@
        "c51bdf26c47a0a64df6518a1ecbcc406599d7b9e",
        []
       ],
+      "kind-of-widget-fallback-input-search-border-start-end-radius-001.html.ini": [
+       "0ff933e196208f5c4d7af55e2c30c54aa439840e",
+       []
+      ],
       "kind-of-widget-fallback-input-search-border-top-color-001.html.ini": [
        "77f434e3149bb27cabde9fe6c394f35175ee3ee3",
        []
@@ -331609,6 +331640,10 @@
      ],
      "backdrop-filter-clip-rounded-clip-ref.html": [
       "bdadb35fff9591e95a6d128070767e6ceb6906c9",
+      []
+     ],
+     "backdrop-filter-clip-rounded-clip.html.ini": [
+      "6f3f2000b90673e54c0040b1d8b1e73fe3d7a4b3",
       []
      ],
      "backdrop-filter-clipped-ref.html": [
@@ -340196,6 +340231,26 @@
       ],
       "request-error.js": [
        "cf77313f5bc3096aa5862c6508a231eea582bd61",
+       []
+      ],
+      "request-headers.any-expected.txt": [
+       "0356f9f6734eda52ba0bd005b675b1cfab8742dc",
+       []
+      ],
+      "request-headers.any.js.ini": [
+       "651c439f7bc85c6be6afcd62cc6e802738137a60",
+       []
+      ],
+      "request-headers.any.serviceworker-expected.txt": [
+       "0356f9f6734eda52ba0bd005b675b1cfab8742dc",
+       []
+      ],
+      "request-headers.any.sharedworker-expected.txt": [
+       "0356f9f6734eda52ba0bd005b675b1cfab8742dc",
+       []
+      ],
+      "request-headers.any.worker-expected.txt": [
+       "0356f9f6734eda52ba0bd005b675b1cfab8742dc",
        []
       ],
       "request-reset-attributes.https-expected.txt": [
@@ -357371,7 +357426,7 @@
          []
         ],
         "canPlayType.html.ini": [
-         "886fdb70fbe6c996fc0590a41b7bfffb496dfd99",
+         "a1ff639a264b4955bdd4df9f8f7c862532b9020c",
          []
         ]
        },
@@ -389158,7 +389213,7 @@
       []
      ],
      "h264-profile-levels.https.html.ini": [
-      "ddaa0f7755e9db4f19ac03a812a12b11095eb9f3",
+      "11078b80d968a38bc97a6f33114155da43455875",
       []
      ],
      "rtp-demuxing.html.ini": [
@@ -394227,7 +394282,7 @@
      []
     ],
     "xr_viewport_scale.https.html.ini": [
-     "2e8e4877e6262537eee9855e73fec852ca3d6ed8",
+     "ddaea7231633085d91d9bed0d03bd22aa5e9201e",
      []
     ]
    },
@@ -493947,7 +494002,7 @@
        ]
       ],
       "request-headers.any.js": [
-       "6de5dc16e96e3ce33e6eb21e2935b58a9a23857d",
+       "22925e01b6923c3dae8a9624c8b16b1fad83d2f9",
        [
         "fetch/api/request/request-headers.any.html",
         {
