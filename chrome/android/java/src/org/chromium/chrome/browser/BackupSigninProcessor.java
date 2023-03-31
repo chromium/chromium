@@ -75,8 +75,9 @@ public final class BackupSigninProcessor {
     private static void signinAndEnableSync(@NonNull Account account, Activity activity) {
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                .signinAndEnableSync(SigninAccessPoint.POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
-                        account, new SignInCallback() {
+                .signinAndEnableSync(account,
+                        SigninAccessPoint.POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
+                        new SignInCallback() {
                             @Override
                             public void onSignInComplete() {
                                 UnifiedConsentServiceBridge

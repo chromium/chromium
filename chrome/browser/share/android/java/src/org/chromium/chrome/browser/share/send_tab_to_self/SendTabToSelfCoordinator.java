@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -115,17 +116,18 @@ public class SendTabToSelfCoordinator {
                 String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
             Account account = AccountUtils.createAccountFromName(accountEmail);
-            signinManager.signin(account, new SigninManager.SignInCallback() {
-                @Override
-                public void onSignInComplete() {
-                    mOnSignInCompleteCallback.run();
-                }
+            signinManager.signin(account, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
+                    new SigninManager.SignInCallback() {
+                        @Override
+                        public void onSignInComplete() {
+                            mOnSignInCompleteCallback.run();
+                        }
 
-                @Override
-                public void onSignInAborted() {
-                    // TODO(crbug.com/1219434) Consider calling onSignInErrorCallback here.
-                }
-            });
+                        @Override
+                        public void onSignInAborted() {
+                            // TODO(crbug.com/1219434) Consider calling onSignInErrorCallback here.
+                        }
+                    });
         }
 
         @Override

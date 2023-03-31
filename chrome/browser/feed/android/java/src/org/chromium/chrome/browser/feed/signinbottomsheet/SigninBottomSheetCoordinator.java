@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
@@ -51,30 +52,32 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     public void signIn(
             String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
         Account account = AccountUtils.createAccountFromName(accountEmail);
+        SigninManager.SignInCallback callback = new SigninManager.SignInCallback() {
+            @Override
+            public void onSignInComplete() {
+                RecordHistogram.recordBooleanHistogram(
+                        "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
+                mController.hideContent(mController.getCurrentSheetContent(), true);
+            }
+
+            @Override
+            public void onSignInAborted() {
+                RecordHistogram.recordBooleanHistogram(
+                        "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", false);
+                // onSignInErrorCallback is called by the WebSigninBridge which is
+                // not implemented in this signin flow as we do not need to wait for
+                // cookies to propagate before proceeding with the Feed refresh.
+                // Instead of calling
+                // AccountPickerBottomSheetMediator.onSigninFailed() from the signin
+                // bridge we directly perform the creation of the "try again" bottom
+                // sheet view:
+                mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
+            }
+        };
+
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
             if (mSigninManager.isSigninAllowed()) {
-                mSigninManager.signin(account, new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        RecordHistogram.recordBooleanHistogram(
-                                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
-                                true);
-                        mController.hideContent(mController.getCurrentSheetContent(), true);
-                    }
-
-                    @Override
-                    public void onSignInAborted() {
-                        RecordHistogram.recordBooleanHistogram(
-                                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful",
-                                false);
-                        // onSignInErrorCallback is called by the WebSigninBridge which is not
-                        // implemented in this signin flow as we do not need to wait for cookies to
-                        // propagate before proceeding with the Feed refresh. Instead of calling
-                        // AccountPickerBottomSheetMediator.onSigninFailed() from the signin bridge
-                        // we directly perform the creation of the "try again" bottom sheet view:
-                        mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
-                    }
-                });
+                mSigninManager.signin(account, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, callback);
             } else {
                 makeSigninNotAllowedToast();
                 mController.hideContent(mController.getCurrentSheetContent(), true);

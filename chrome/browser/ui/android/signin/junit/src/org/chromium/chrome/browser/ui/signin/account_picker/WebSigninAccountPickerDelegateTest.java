@@ -43,6 +43,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -122,7 +123,8 @@ public class WebSigninAccountPickerDelegateTest {
                 .create(eq(mProfileMock), eq(mCoreAccountInfo),
                         mWebSigninBridgeListenerCaptor.capture());
         calledInOrder.verify(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.WEB_SIGNIN), any());
         mWebSigninBridgeListenerCaptor.getValue().onSigninSucceeded();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
@@ -132,12 +134,13 @@ public class WebSigninAccountPickerDelegateTest {
     @Test
     public void testSignInAborted() {
         doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(1);
+            SigninManager.SignInCallback callback = invocation.getArgument(2);
             callback.onSignInAborted();
             return null;
         })
                 .when(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.WEB_SIGNIN), any());
         mDelegate.signIn(TEST_EMAIL, error -> {});
         verify(mWebSigninBridgeMock).destroy();
     }
@@ -158,7 +161,8 @@ public class WebSigninAccountPickerDelegateTest {
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(eq(mProfileMock), eq(mCoreAccountInfo), any());
         calledInOrder.verify(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.WEB_SIGNIN), any());
     }
 
     @Test

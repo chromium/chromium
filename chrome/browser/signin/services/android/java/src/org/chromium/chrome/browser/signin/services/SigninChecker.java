@@ -120,8 +120,9 @@ public class SigninChecker implements AccountTrackerService.Observer {
     private void resigninAfterAccountRename(String newAccountName, boolean shouldEnableSync) {
         mSigninManager.signOut(SignoutReason.ACCOUNT_EMAIL_UPDATED, () -> {
             if (shouldEnableSync) {
-                mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
-                        AccountUtils.createAccountFromName(newAccountName), new SignInCallback() {
+                mSigninManager.signinAndEnableSync(
+                        AccountUtils.createAccountFromName(newAccountName),
+                        SigninAccessPoint.ACCOUNT_RENAMED, new SignInCallback() {
                             @Override
                             public void onSignInComplete() {
                                 SyncService.get().setFirstSetupComplete(
@@ -132,7 +133,8 @@ public class SigninChecker implements AccountTrackerService.Observer {
                             public void onSignInAborted() {}
                         });
             } else {
-                mSigninManager.signin(AccountUtils.createAccountFromName(newAccountName), null);
+                mSigninManager.signin(AccountUtils.createAccountFromName(newAccountName),
+                        SigninAccessPoint.ACCOUNT_RENAMED, null);
             }
         }, false);
     }
@@ -160,7 +162,8 @@ public class SigninChecker implements AccountTrackerService.Observer {
                     };
                     mSigninManager.wipeSyncUserData(() -> {
                         RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
-                        mSigninManager.signin(childAccount, signInCallback);
+                        mSigninManager.signin(
+                                childAccount, SigninAccessPoint.FORCED_SIGNIN, signInCallback);
                     });
                     return;
                 }

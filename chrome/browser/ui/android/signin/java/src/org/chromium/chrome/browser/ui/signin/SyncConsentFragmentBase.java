@@ -266,7 +266,7 @@ public abstract class SyncConsentFragmentBase
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             signinManager.signinAndEnableSync(
-                    mSigninAccessPoint, account, new SigninManager.SignInCallback() {
+                    account, mSigninAccessPoint, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
                             if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)

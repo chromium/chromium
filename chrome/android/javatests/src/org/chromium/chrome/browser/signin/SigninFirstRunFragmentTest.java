@@ -166,7 +166,7 @@ public class SigninFirstRunFragmentTest {
     private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
 
     private Promise<Void> mNativeInitializationPromise;
-    private FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
+    private final FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
     private CustomSigninFirstRunFragment mFragment;
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
@@ -359,12 +359,12 @@ public class SigninFirstRunFragmentTest {
                     .thenReturn(mIdentityManagerMock);
         });
         doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(1);
+            SigninManager.SignInCallback callback = invocation.getArgument(2);
             callback.onSignInAborted();
             return null;
         })
                 .when(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL1)), any());
+                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL1)), anyInt(), any());
         launchActivityWithFragment();
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
 
@@ -582,7 +582,7 @@ public class SigninFirstRunFragmentTest {
                 R.string.sync_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).perform(click());
 
-        verify(mSigninManagerMock, never()).signin(any(), any());
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
@@ -1197,8 +1197,8 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
 
         // Sign-in isn't processed by SigninFirstRunFragment for child accounts.
-        verify(mSigninManagerMock, never()).signin(any(), any());
-        verify(mSigninManagerMock, never()).signinAndEnableSync(anyInt(), any(), any());
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        verify(mSigninManagerMock, never()).signinAndEnableSync(any(), anyInt(), any());
     }
 
     private void checkFragmentWhenSigninIsDisabledByPolicy() {

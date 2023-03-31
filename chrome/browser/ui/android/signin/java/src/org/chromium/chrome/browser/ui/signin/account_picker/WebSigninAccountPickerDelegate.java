@@ -20,6 +20,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -70,7 +71,7 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
                             createWebSigninBridgeListener(
                                     mCurrentTab, mContinueUrl, onSignInErrorCallback));
             mSigninManager.signin(AccountUtils.createAccountFromName(accountEmail),
-                    new SigninManager.SignInCallback() {
+                    SigninAccessPoint.WEB_SIGNIN, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
                             // After the sign-in is finished in Chrome, we still need to wait for

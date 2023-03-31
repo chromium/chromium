@@ -50,7 +50,7 @@ public final class SigninTestUtil {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             signinManager.signin(AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
-                    new SigninManager.SignInCallback() {
+                    SigninAccessPoint.UNKNOWN, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
                             callbackHelper.notifyCalled();
@@ -87,9 +87,9 @@ public final class SigninTestUtil {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
-            signinManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN,
+            signinManager.signinAndEnableSync(
                     AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
-                    new SigninManager.SignInCallback() {
+                    SigninAccessPoint.UNKNOWN, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
                             if (syncService != null) {

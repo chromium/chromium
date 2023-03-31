@@ -246,40 +246,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         });
     }
 
-    /**
-     * Starts the sign-in flow, and executes the callback when finished.
-     *
-     * The sign-in flow goes through the following steps:
-     *
-     *   - Wait for AccountTrackerService to be seeded.
-     *   - Complete sign-in with the native IdentityManager.
-     *   - Call the callback if provided.
-     *
-     * @param account The account to sign in to.
-     * @param callback Optional callback for when the sign-in process is finished.
-     */
     @Override
-    public void signin(Account account, @Nullable SignInCallback callback) {
-        signinInternal(SignInState.createForSignin(account, callback));
+    public void signin(Account account, @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback callback) {
+        signinInternal(SignInState.createForSignin(accessPoint, account, callback));
     }
 
-    /**
-     * Starts the sign-in flow, and executes the callback when finished.
-     *
-     * The sign-in flow goes through the following steps:
-     *
-     *   - Wait for AccountTrackerService to be seeded.
-     *   - Wait for policy to be checked for the account.
-     *   - If managed, wait for the policy to be fetched.
-     *   - Complete sign-in with the native IdentityManager.
-     *   - Call the callback if provided.
-     *
-     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
-     * @param account The account to sign in to.
-     * @param callback Optional callback for when the sign-in process is finished.
-     */
     @Override
-    public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
+    public void signinAndEnableSync(Account account, @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback) {
         signinInternal(SignInState.createForSigninAndEnableSync(accessPoint, account, callback));
     }
@@ -676,11 +650,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         /**
          * State for the sign-in flow that doesn't enable sync.
          *
+         * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
          * @param account The account to sign in to.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
-        static SignInState createForSignin(Account account, @Nullable SignInCallback callback) {
-            return new SignInState(null, account, callback, false);
+        static SignInState createForSignin(@SigninAccessPoint int accessPoint, Account account,
+                @Nullable SignInCallback callback) {
+            return new SignInState(accessPoint, account, callback, false);
         }
 
         /**

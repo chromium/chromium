@@ -35,6 +35,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -291,8 +292,8 @@ public class SigninFirstRunMediator
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        signinManager.signin(
-                AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
+        signinManager.signin(AccountUtils.createAccountFromName(mSelectedAccountName),
+                SigninAccessPoint.SIGNIN_PROMO, new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         if (mDestroyed) {
