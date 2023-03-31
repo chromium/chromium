@@ -8,6 +8,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/snapshots/features.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -34,6 +35,9 @@ enum class PageLoadedSnapshotResult {
   kMaxValue = kSnapshotSucceeded,
 };
 
+// MIME type of PDF.
+const char kMimeTypePDF[] = "application/pdf";
+
 }  // namespace
 
 SnapshotTabHelper::~SnapshotTabHelper() {
@@ -59,9 +63,14 @@ void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
 void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   was_loading_during_last_snapshot_ = web_state_->IsLoading();
 
+  bool is_pdf = web_state_->GetContentsMimeType() == kMimeTypePDF;
   bool showing_native_content =
       web::GetWebClient()->IsAppSpecificURL(web_state_->GetLastCommittedURL());
-  if (!showing_native_content && web_state_->CanTakeSnapshot()) {
+  bool can_use_wkwebview_api =
+      base::FeatureList::IsEnabled(kPDFSnapshot)
+          ? !is_pdf && !showing_native_content && web_state_->CanTakeSnapshot()
+          : !showing_native_content && web_state_->CanTakeSnapshot();
+  if (can_use_wkwebview_api) {
     // Take the snapshot using the optimized WKWebView snapshotting API for
     // pages loaded in the web view when the WebState snapshot API is available.
     [snapshot_generator_ updateWebViewSnapshotWithCompletion:callback];
