@@ -302,6 +302,15 @@ export class BrowsingContextProcessor {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async process_script_removePreloadScript(
+    _params: Script.RemovePreloadScriptParameters
+  ): Promise<Script.RemovePreloadScriptResult> {
+    throw new Message.UnknownErrorException('Not implemented.');
+
+    return {};
+  }
+
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {

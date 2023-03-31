@@ -304,6 +304,8 @@ export namespace Script {
     return parseObject(params, DisownParametersSchema);
   }
 
+  export const PreloadScriptSchema = zod.string();
+
   export const AddPreloadScriptParametersSchema = zod.object({
     expression: zod.string(),
     sandbox: zod.string().optional(),
@@ -313,6 +315,16 @@ export namespace Script {
     params: object
   ): ScriptTypes.AddPreloadScriptParameters {
     return parseObject(params, AddPreloadScriptParametersSchema);
+  }
+
+  export const RemovePreloadScriptParametersSchema = zod.object({
+    script: PreloadScriptSchema,
+  });
+
+  export function parseRemovePreloadScriptParams(
+    params: object
+  ): ScriptTypes.RemovePreloadScriptParameters {
+    return parseObject(params, RemovePreloadScriptParametersSchema);
   }
 
   const ChannelIdSchema = zod.string();

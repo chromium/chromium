@@ -45,10 +45,14 @@ export type BiDiMethod =
   | 'script.disown'
   | 'script.evaluate'
   | 'script.getRealms'
+  | 'script.removePreloadScript'
   | 'session.status'
   | 'session.subscribe'
   | 'session.unsubscribe';
 // keep-sorted end
+
+export type EmptyResult = Record<string, never>;
+export type EmptyResultWithCommandId = {id: number} | EmptyResult;
 
 export namespace Message {
   export type OutgoingMessage =
@@ -63,16 +67,11 @@ export namespace Message {
     channel?: string;
   };
 
-  export type CommandRequest = {id: number} & (
-    | BrowsingContext.Command
-    | Script.Command
-    | Session.Command
-    | CDP.Command
-  );
+  export type CommandRequest = Pick<RawCommandRequest, 'id'> &
+    (BrowsingContext.Command | Script.Command | Session.Command | CDP.Command);
 
-  export type CommandResponse = {
-    id: number;
-  } & CommandResponseResult;
+  export type CommandResponse = Pick<RawCommandRequest, 'id'> &
+    CommandResponseResult;
 
   export type CommandResponseResult =
     | BrowsingContext.CommandResult
@@ -479,13 +478,15 @@ export namespace Script {
     | CallFunctionCommand
     | GetRealmsCommand
     | DisownCommand
-    | AddPreloadScriptCommand;
+    | AddPreloadScriptCommand
+    | RemovePreloadScriptCommand;
   export type CommandResult =
     | EvaluateResult
     | CallFunctionResult
     | GetRealmsResult
     | DisownResult
-    | AddPreloadScriptResult;
+    | AddPreloadScriptResult
+    | RemovePreloadScriptResult;
   export type Event = MessageEvent;
 
   export type Realm = string;
@@ -698,6 +699,17 @@ export namespace Script {
   export type AddPreloadScriptResult = {
     script: PreloadScript;
   };
+
+  export type RemovePreloadScriptCommand = {
+    method: 'script.removePreloadScript';
+    params: RemovePreloadScriptParameters;
+  };
+
+  export type RemovePreloadScriptParameters = {
+    script: PreloadScript;
+  };
+
+  export type RemovePreloadScriptResult = EmptyResultWithCommandId;
 
   export type ChannelId = string;
 

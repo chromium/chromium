@@ -274,6 +274,11 @@ class BidiParserImpl implements BidiParser {
   ): Script.AddPreloadScriptParameters {
     return Parser.Script.parseAddPreloadScriptParams(params);
   }
+  parseRemovePreloadScriptParams(
+    params: object
+  ): Script.RemovePreloadScriptParameters {
+    return Parser.Script.parseRemovePreloadScriptParams(params);
+  }
 
   parseGetRealmsParams(params: object): Script.GetRealmsParameters {
     return Parser.Script.parseGetRealmsParams(params);

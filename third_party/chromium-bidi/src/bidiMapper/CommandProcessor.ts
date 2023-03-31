@@ -40,6 +40,9 @@ export interface BidiParser {
   parseAddPreloadScriptParams(
     params: object
   ): Script.AddPreloadScriptParameters;
+  parseRemovePreloadScriptParams(
+    params: object
+  ): Script.RemovePreloadScriptParameters;
   parseGetRealmsParams(params: object): Script.GetRealmsParameters;
   parseCallFunctionParams(params: object): Script.CallFunctionParameters;
   parseEvaluateParams(params: object): Script.EvaluateParameters;
@@ -62,6 +65,12 @@ class BidiNoOpParser implements BidiParser {
     params: object
   ): Script.AddPreloadScriptParameters {
     return params as Script.AddPreloadScriptParameters;
+  }
+
+  parseRemovePreloadScriptParams(
+    params: object
+  ): Script.RemovePreloadScriptParameters {
+    return params as Script.RemovePreloadScriptParameters;
   }
 
   parseGetRealmsParams(params: object): Script.GetRealmsParameters {
@@ -209,6 +218,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       case 'script.addPreloadScript':
         return this.#contextProcessor.process_script_addPreloadScript(
           this.#parser.parseAddPreloadScriptParams(commandData.params)
+        );
+      case 'script.removePreloadScript':
+        return this.#contextProcessor.process_script_removePreloadScript(
+          this.#parser.parseRemovePreloadScriptParams(commandData.params)
         );
       case 'script.getRealms':
         return this.#contextProcessor.process_script_getRealms(
