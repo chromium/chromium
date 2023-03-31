@@ -82,14 +82,13 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
         identity_test_env_.identity_manager();
     observer_bridge_ = std::make_unique<signin::IdentityManagerObserverBridge>(
         identity_manager, observer_bridge_delegate_);
-    account_id_ = CoreAccountId("accountid");
-    account_info_.account_id = account_id_;
+    account_info_.account_id = CoreAccountId::FromGaiaId("joegaia");
     account_info_.gaia = "joegaia";
     account_info_.email = "joe@example.com";
 
     const std::string gaia_id = signin::GetTestGaiaIdForEmail("1@mail.com");
     gaia::ListedAccount one;
-    one.id = CoreAccountId(gaia_id);
+    one.id = CoreAccountId::FromGaiaId(gaia_id);
     just_one_.push_back(one);
   }
   ~IdentityManagerObserverBridgeTest() override {}
@@ -120,7 +119,6 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<signin::IdentityManagerObserverBridge> observer_bridge_;
   ObserverBridgeDelegateFake* observer_bridge_delegate_;
-  CoreAccountId account_id_;
   CoreAccountInfo account_info_;
   const std::vector<gaia::ListedAccount> no_account_;
   std::vector<gaia::ListedAccount> just_one_;

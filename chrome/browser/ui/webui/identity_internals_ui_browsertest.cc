@@ -28,12 +28,12 @@ void IdentityInternalsUIBrowserTest::SetupTokenCache(int number_of_tokens) {
     token_id += token_number;
     std::string extension_id("extension");
     extension_id += token_number;
-    std::string account_id("account");
-    account_id += token_number;
+    std::string gaia_id("account");
+    gaia_id += token_number;
     std::vector<std::string> scopes;
     scopes.emplace_back("scope_1_" + token_number);
     scopes.emplace_back("scope_2_" + token_number);
-    AddTokenToCache(token_id, extension_id, account_id, scopes, kOneHour);
+    AddTokenToCache(token_id, extension_id, gaia_id, scopes, kOneHour);
   }
 }
 
@@ -48,7 +48,7 @@ void IdentityInternalsUIBrowserTest::SetupTokenCacheWithStoreApp() {
 void IdentityInternalsUIBrowserTest::AddTokenToCache(
     const std::string& token_id,
     const std::string& extension_id,
-    const std::string& account_id,
+    const std::string& gaia_id,
     const std::vector<std::string>& scopes,
     int time_to_live) {
   std::set<std::string> scopes_set(scopes.begin(), scopes.end());
@@ -57,9 +57,9 @@ void IdentityInternalsUIBrowserTest::AddTokenToCache(
           token_id, scopes_set, base::Seconds(time_to_live));
 
   CoreAccountInfo user_info;
-  user_info.account_id = CoreAccountId(account_id);
-  user_info.gaia = account_id;
-  user_info.email = "user_email_" + account_id;
+  user_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
+  user_info.gaia = gaia_id;
+  user_info.email = "user_email_" + gaia_id + "@foo.com";
 
   extensions::ExtensionTokenKey key(extension_id, user_info, scopes_set);
   extensions::IdentityAPI::GetFactoryInstance()

@@ -26,7 +26,7 @@ class UserApprovedAccountListManagerTest : public PlatformTest {
   // Returns AccountInfo1.
   CoreAccountInfo GetAccountInfo1() {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId("test1");
+    account_info.account_id = CoreAccountId::FromGaiaId("test1");
     account_info.gaia = "test1";
     account_info.email = "test1@gmail.com";
     return account_info;
@@ -35,7 +35,7 @@ class UserApprovedAccountListManagerTest : public PlatformTest {
   // Returns AccountInfo2.
   CoreAccountInfo GetAccountInfo2() {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId("test2");
+    account_info.account_id = CoreAccountId::FromGaiaId("test2");
     account_info.gaia = "test2";
     account_info.email = "test2@gmail.com";
     return account_info;

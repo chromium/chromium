@@ -368,7 +368,8 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
         &ClientTagBasedModelTypeProcessorTest::ErrorReceived,
         base::Unretained(this));
     request.cache_guid = cache_guid;
-    request.authenticated_account_id = CoreAccountId(authenticated_account_id);
+    request.authenticated_account_id =
+        CoreAccountId::FromString(authenticated_account_id);
     request.sync_mode = sync_mode;
     request.configuration_start_time = base::Time::Now();
 

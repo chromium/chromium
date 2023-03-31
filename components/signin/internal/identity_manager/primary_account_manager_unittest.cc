@@ -465,7 +465,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 
   CreatePrimaryAccountManager();
 
-  EXPECT_EQ(CoreAccountId(gaia_id),
+  EXPECT_EQ(CoreAccountId::FromGaiaId(gaia_id),
             manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   EXPECT_EQ(gaia_id, user_prefs_.GetString(prefs::kGoogleServicesAccountId));
 }
@@ -492,7 +492,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   client_prefs->SetString(prefs::kGoogleServicesAccountId, gaia_id);
 
   CreatePrimaryAccountManager();
-  EXPECT_EQ(CoreAccountId(gaia_id),
+  EXPECT_EQ(CoreAccountId::FromGaiaId(gaia_id),
             manager_->GetPrimaryAccountId(ConsentLevel::kSync));
   EXPECT_EQ(gaia_id, user_prefs_.GetString(prefs::kGoogleServicesAccountId));
 

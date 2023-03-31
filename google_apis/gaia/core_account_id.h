@@ -73,11 +73,9 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   // Create a CoreAccountId object from an email.
   // Returns an empty CoreAccountId if |email| is empty.
   static CoreAccountId FromEmail(const std::string& email);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // ---------------------------------------- ---------------------------------
 
-  // --------------------------------------------------------------------------
-  // -------------------- ONLY FOR TESTING ------------------------------------
 #if defined(UNIT_TEST)
   // The following constructors are only used for testing. The reason for this
   // is that they are currently being removed, but they are extensively used by
@@ -86,12 +84,7 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   // TODO(crbug.com/1028578): Update the tests to use one of FromEmail(),
   // FromGaia() or FromString() methods above.
   explicit CoreAccountId(const char* id) : id_(id) {}
-
-  explicit CoreAccountId(std::string&& id) : id_(std::move(id)) {}
-
-  explicit CoreAccountId(const std::string& id) : id_(id) {}
 #endif  // defined(UNIT_TEST)
-  // --------------------------------------------------------------------------
 
  private:
   std::string id_;

@@ -272,7 +272,8 @@ TEST_F(SigninHelperLacrosTest, NoAccountAvailable) {
   // Simmulate the mapper adding the account to the profile.
   identity_test_env()->MakeAccountAvailable(email);
 
-  EXPECT_CALL(helper_complete, Run(CoreAccountId(gaia_id))).Times(1);
+  EXPECT_CALL(helper_complete, Run(CoreAccountId::FromGaiaId(gaia_id)))
+      .Times(1);
 
   // `AccountProfileMapper` expects a call of `OnAccountUpserted()` before
   // completing the account addition.

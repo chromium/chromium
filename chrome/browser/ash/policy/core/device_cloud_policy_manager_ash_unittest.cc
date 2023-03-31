@@ -836,7 +836,8 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
 
       // For the refresh token for the robot account to be visible, the robot
       // account ID must not be empty.
-      token_service->set_robot_account_id_for_testing(CoreAccountId("dummy"));
+      token_service->set_robot_account_id_for_testing(
+          CoreAccountId::FromRobotEmail("robot_account@gserviceaccount.com"));
 
       EXPECT_TRUE(token_service->RefreshTokenIsAvailable());
       EXPECT_EQ(device_policy_->GetBlob(),

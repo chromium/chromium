@@ -167,9 +167,9 @@ const std::string kGaiaId1 = signin::GetTestGaiaIdForEmail("1@mail.com");
 const std::string kGaiaId2 = signin::GetTestGaiaIdForEmail("2@mail.com");
 const std::string kGaiaId3 = signin::GetTestGaiaIdForEmail("3@mail.com");
 
-const ListedAccount one(Account(CoreAccountId(kGaiaId1)));
-const ListedAccount two(Account(CoreAccountId(kGaiaId2)));
-const ListedAccount three(Account(CoreAccountId(kGaiaId3)));
+const ListedAccount one(Account(CoreAccountId::FromGaiaId(kGaiaId1)));
+const ListedAccount two(Account(CoreAccountId::FromGaiaId(kGaiaId2)));
+const ListedAccount three(Account(CoreAccountId::FromGaiaId(kGaiaId3)));
 
 const std::vector<ListedAccount> no_accounts{};
 const std::vector<ListedAccount> just_one{one};

@@ -29,7 +29,7 @@ class IdentityInternalsUIBrowserTest : public WebUIBrowserTest {
  private:
   void AddTokenToCache(const std::string& token_id,
                        const std::string& extension_id,
-                       const std::string& account_id,
+                       const std::string& gaia_id,
                        const std::vector<std::string>& scopes,
                        int time_to_live);
 };

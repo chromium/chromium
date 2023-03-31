@@ -116,8 +116,8 @@ class AccountReconcilorDelegateTest
     : public AccountReconcilorDelegate,
       public ::testing::TestWithParam<AccountReconcilorDelegateTestParam> {
  public:
-  AccountReconcilorDelegateTest() {}
-  ~AccountReconcilorDelegateTest() override {}
+  AccountReconcilorDelegateTest() = default;
+  ~AccountReconcilorDelegateTest() override = default;
 
   // Parses a cookie string and converts it into ListedAccounts.
   std::vector<gaia::ListedAccount> GaiaAccountsFromString(
@@ -125,7 +125,7 @@ class AccountReconcilorDelegateTest
     std::vector<gaia::ListedAccount> gaia_accounts;
     for (const char& c : account_string) {
       gaia::ListedAccount account;
-      account.id = CoreAccountId(std::string(1, c));
+      account.id = CoreAccountId::FromGaiaId(std::string(1, c));
       gaia_accounts.push_back(account);
     }
     return gaia_accounts;
@@ -135,11 +135,11 @@ class AccountReconcilorDelegateTest
 TEST_P(AccountReconcilorDelegateTest, ReorderChromeAccountsForReconcile) {
   // Decode test parameters.
   CoreAccountId first_account =
-      CoreAccountId(std::string(GetParam().first_account));
+      CoreAccountId::FromGaiaId(std::string(GetParam().first_account));
   std::vector<CoreAccountId> chrome_accounts;
   for (int i = 0; GetParam().chrome_accounts[i] != '\0'; ++i) {
-    chrome_accounts.push_back(
-        CoreAccountId(std::string(1, GetParam().chrome_accounts[i])));
+    chrome_accounts.push_back(CoreAccountId::FromGaiaId(
+        std::string(1, GetParam().chrome_accounts[i])));
   }
   ASSERT_TRUE(first_account.empty() ||
               base::Contains(chrome_accounts, first_account))

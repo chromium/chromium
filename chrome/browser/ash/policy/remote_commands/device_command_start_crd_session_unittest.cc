@@ -320,7 +320,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   void SetRobotAccountUserName(const std::string& user_name) {
     DeviceOAuth2TokenService* token_service =
         DeviceOAuth2TokenServiceFactory::Get();
-    token_service->set_robot_account_id_for_testing(CoreAccountId(user_name));
+    token_service->set_robot_account_id_for_testing(
+        CoreAccountId::FromRobotEmail(user_name));
   }
 
   void ClearOAuthToken() { oauth_token_ = absl::nullopt; }
@@ -557,11 +558,11 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
        ShouldPassRobotAccountNameToDelegate) {
   LogInAsKioskUser();
 
-  SetRobotAccountUserName("robot-account");
+  SetRobotAccountUserName("robot.account@gserviceaccount.com");
 
   EXPECT_SUCCESS(RunJobAndWaitForResult());
 
-  EXPECT_EQ("robot-account",
+  EXPECT_EQ("robot.account@gserviceaccount.com",
             crd_host_delegate().session_parameters().user_name);
 }
 

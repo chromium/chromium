@@ -117,7 +117,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
             (id<IdentityManagerObserverBridgeDelegate>)mediator;
     struct signin::AccountsInCookieJarInfo cookieJarInfo;
     gaia::ListedAccount account;
-    account.id = CoreAccountId(base::SysNSStringToUTF8(identity.gaiaID));
+    account.id =
+        CoreAccountId::FromGaiaId(base::SysNSStringToUTF8(identity.gaiaID));
     cookieJarInfo.signed_in_accounts.push_back(account);
     const GoogleServiceAuthError error(GoogleServiceAuthError::State::NONE);
     [identityManagerObserverBridgeDelegate
@@ -143,7 +144,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
             (id<IdentityManagerObserverBridgeDelegate>)mediator;
     struct signin::AccountsInCookieJarInfo cookieJarInfo;
     gaia::ListedAccount account;
-    account.id = CoreAccountId(base::SysNSStringToUTF8(identity.gaiaID));
+    account.id =
+        CoreAccountId::FromGaiaId(base::SysNSStringToUTF8(identity.gaiaID));
     cookieJarInfo.signed_in_accounts.push_back(account);
     const GoogleServiceAuthError error(
         GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
