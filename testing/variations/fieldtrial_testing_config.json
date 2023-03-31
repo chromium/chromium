@@ -5690,25 +5690,6 @@
             ]
         }
     ],
-    "GroupAutoCreationAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_tab_group_auto_creation": "false",
-                        "show_open_in_tab_group_menu_item_first": "true"
-                    },
-                    "enable_features": [
-                        "TabGridLayoutAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "GwpAsanLinux": [
         {
             "platforms": [

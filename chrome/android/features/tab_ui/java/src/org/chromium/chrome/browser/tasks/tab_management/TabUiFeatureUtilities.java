@@ -55,8 +55,8 @@ public class TabUiFeatureUtilities {
     private static final String TAB_GROUP_AUTO_CREATION_PARAM = "enable_tab_group_auto_creation";
 
     public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_AUTO_CREATION =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, TAB_GROUP_AUTO_CREATION_PARAM, true);
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                    TAB_GROUP_AUTO_CREATION_PARAM, false);
 
     // Field trial parameter for configuring the "Open in new tab" and "Open in new tab in group"
     // item order in the context menu.
@@ -65,7 +65,7 @@ public class TabUiFeatureUtilities {
 
     public static final BooleanCachedFieldTrialParameter SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, false);
+                    SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, true);
 
     // Field trial parameter for controlling share tabs in TabSelectionEditorV2.
     private static final String TAB_SELECTION_EDITOR_V2_SHARE_PARAM = "enable_share";

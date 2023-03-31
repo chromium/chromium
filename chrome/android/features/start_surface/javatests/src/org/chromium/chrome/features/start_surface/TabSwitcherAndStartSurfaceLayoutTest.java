@@ -1719,14 +1719,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mActivityTestRule.loadUrl(mUrl);
         Tab parentTab = cta.getTabModelSelector().getCurrentTab();
 
-        // Create a tab whose parent tab is parentTab.
+        // Create a tab group.
         TabCreator tabCreator =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
         LoadUrlParams loadUrlParams = new LoadUrlParams(mUrl);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> tabCreator.createNewTab(
-                                loadUrlParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, parentTab));
+                        -> tabCreator.createNewTab(loadUrlParams,
+                                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, parentTab));
         Tab childTab = cta.getTabModelSelector().getCurrentModel().getTabAt(1);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
