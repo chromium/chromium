@@ -126,7 +126,8 @@ public class ShareHelper {
         if (callback != null) {
             window.showIntent(intent, callback, null);
         } else {
-            // TODO(https://crbug.com/1414893): Allow startActivity w/o result via WindowAndroid.
+            // TODO(https://crbug.com/1414893): Allow startActivity w/o result via
+            // WindowAndroid.
             Activity activity = window.getActivity().get();
             activity.startActivity(intent);
         }

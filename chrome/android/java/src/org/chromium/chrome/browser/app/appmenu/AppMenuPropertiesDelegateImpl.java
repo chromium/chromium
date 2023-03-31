@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -1267,8 +1266,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @param item The menu item that is used for direct share.
      */
     protected void updateDirectShareMenuItem(MenuItem item) {
-        Intent shareIntent = ShareHelper.getShareTextAppCompatibilityIntent();
-        Pair<Drawable, CharSequence> directShare = ShareHelper.getShareableIconAndName(shareIntent);
+        Pair<Drawable, CharSequence> directShare = ShareHelper.getShareableIconAndNameForText();
         Drawable directShareIcon = directShare.first;
         CharSequence directShareTitle = directShare.second;
 

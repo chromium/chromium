@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconBut
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.MailTo;
 import android.net.Uri;
@@ -883,9 +882,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param isLink Whether the item is SHARE_LINK.
      */
     private static Pair<Drawable, CharSequence> createRecentShareAppInfo(boolean isLink) {
-        Intent shareIntent = isLink ? ShareHelper.getShareTextAppCompatibilityIntent()
-                                    : ShareHelper.getShareImageAppCompatibilityIntent();
-        return ShareHelper.getShareableIconAndName(shareIntent);
+        return isLink ? ShareHelper.getShareableIconAndNameForText()
+                      // Use jpeg as a generic image type to be shared. Most apps accepting jpeg
+                      // should also accept other image types.
+                      : ShareHelper.getShareableIconAndNameForFileContentType("image/jpeg");
     }
 
     /**

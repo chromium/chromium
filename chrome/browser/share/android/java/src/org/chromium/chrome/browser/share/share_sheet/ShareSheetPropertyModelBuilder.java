@@ -171,14 +171,12 @@ class ShareSheetPropertyModelBuilder {
         if (!Collections.disjoint(contentTypes,
                     Arrays.asList(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.LINK_PAGE_VISIBLE,
                             ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT))) {
-            resolveInfoList.addAll(mPackageManager.queryIntentActivities(
-                    ShareHelper.getShareTextAppCompatibilityIntent(), 0));
+            resolveInfoList.addAll(ShareHelper.getCompatibleAppsForSharingText());
         }
         if (!Collections.disjoint(contentTypes,
                     Arrays.asList(ContentType.IMAGE, ContentType.IMAGE_AND_LINK,
                             ContentType.OTHER_FILE_TYPE))) {
-            resolveInfoList.addAll(mPackageManager.queryIntentActivities(
-                    ShareHelper.getShareFileAppCompatibilityIntent(fileContentType), 0));
+            resolveInfoList.addAll(ShareHelper.getCompatibleAppsForSharingFiles(fileContentType));
         }
         return resolveInfoList;
     }

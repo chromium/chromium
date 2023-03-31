@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -116,37 +118,32 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
         intent.setComponent(component);
-        fireIntent(params.getWindow(), intent, null);
+        try {
+            fireIntent(params.getWindow(), intent, null);
+        } catch (ActivityNotFoundException exception) {
+            // In rare cases when the component set for the send intent is not found, swallow the
+            // errors.
+            Log.e(TAG, exception.getMessage());
+            ChromePureJavaExceptionReporter.reportJavaException(exception);
+        }
     }
 
     /**
      * Convenience method to create an Intent to retrieve all the apps that support sharing text.
      */
-    public static Intent getShareTextAppCompatibilityIntent() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "");
-        intent.putExtra(Intent.EXTRA_TEXT, "");
-        intent.setType("text/plain");
-        return intent;
-    }
-
-    /**
-     * Convenience method to create an Intent to retrieve all the apps that support sharing image.
-     */
-    public static Intent getShareImageAppCompatibilityIntent() {
-        return getShareFileAppCompatibilityIntent("image/jpeg");
+    public static List<ResolveInfo> getCompatibleAppsForSharingText() {
+        return PackageManagerUtils.queryIntentActivities(getShareTextAppCompatibilityIntent(),
+                PackageManager.MATCH_DEFAULT_ONLY | PackageManager.GET_RESOLVED_FILTER);
     }
 
     /**
      * Convenience method to create an Intent to retrieve all the apps that support sharing {@code
      * fileContentType}.
      */
-    public static Intent getShareFileAppCompatibilityIntent(String fileContentType) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setType(fileContentType);
-        return intent;
+    public static List<ResolveInfo> getCompatibleAppsForSharingFiles(String fileContentType) {
+        return PackageManagerUtils.queryIntentActivities(
+                getShareFileAppCompatibilityIntent(fileContentType),
+                PackageManager.MATCH_DEFAULT_ONLY | PackageManager.GET_RESOLVED_FILTER);
     }
 
     /**
@@ -164,11 +161,27 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     }
 
     /**
+     * Convenience method to retrieve the most recent app that support sharing text.
+     */
+    public static Pair<Drawable, CharSequence> getShareableIconAndNameForText() {
+        return getShareableIconAndName(getShareTextAppCompatibilityIntent());
+    }
+
+    /**
+     * Convenience method to retrieve the most recent app that support sharing {@code
+     * fileContentType}.
+     */
+    public static Pair<Drawable, CharSequence> getShareableIconAndNameForFileContentType(
+            String fileContentType) {
+        return getShareableIconAndName(getShareFileAppCompatibilityIntent(fileContentType));
+    }
+
+    /**
      * Get the icon and name of the most recently shared app by certain app.
      * @param shareIntent Intent used to get list of apps support sharing.
      * @return The Image and the String of the recently shared Icon.
      */
-    public static Pair<Drawable, CharSequence> getShareableIconAndName(Intent shareIntent) {
+    private static Pair<Drawable, CharSequence> getShareableIconAndName(Intent shareIntent) {
         Drawable directShareIcon = null;
         CharSequence directShareTitle = null;
 
@@ -240,6 +253,26 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             ChromeCustomShareAction.Provider customActions) {
         new CustomActionChosenReceiver(callback, customActions)
                 .sendChooserIntent(window, sharingIntent);
+    }
+
+    private static Intent getShareTextAppCompatibilityIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(Intent.EXTRA_TEXT, "");
+        intent.setType("text/plain");
+        return intent;
+    }
+
+    /**
+     * Convenience method to create an Intent to retrieve all the apps that support sharing {@code
+     * fileContentType}.
+     */
+    private static Intent getShareFileAppCompatibilityIntent(String fileContentType) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.setType(fileContentType);
+        return intent;
     }
 
     /**
