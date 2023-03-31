@@ -175,9 +175,14 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
       now - *last_partial_view_shown_time_ < kShowPartialViewMinInterval) {
     return {};
   }
-  last_partial_view_shown_time_ = absl::make_optional(now);
+  if (!download::IsDownloadBubblePartialViewEnabled(profile_)) {
+    return {};
+  }
   std::vector<DownloadUIModelPtr> list =
       GetDownloadUIModels(/*is_main_view=*/false);
+  if (!list.empty()) {
+    last_partial_view_shown_time_ = absl::make_optional(now);
+  }
   base::UmaHistogramCounts100("Download.Bubble.PartialViewSize", list.size());
   return list;
 }

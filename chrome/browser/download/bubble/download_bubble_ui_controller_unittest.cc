@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
@@ -501,6 +502,33 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar4.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[3]);
+  EXPECT_EQ(controller().GetPartialView().size(), 1u);
+}
+
+// Tests that the partial view timer doesn't start if the partial view was
+// empty and thus not shown.
+TEST_F(DownloadBubbleUIControllerTest, EmptyPartialViewDoesNotPreventOpening) {
+  EXPECT_EQ(controller().GetPartialView().size(), 0u);
+
+  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
+                   download::DownloadItem::COMPLETE, "Download");
+  // Partial view is returned despite previous call to GetPartialView less than
+  // 15 seconds ago.
+  EXPECT_EQ(controller().GetPartialView().size(), 1u);
+}
+
+// Test that the preference suppresses the partial view.
+TEST_F(DownloadBubbleUIControllerTest, PrefSuppressesPartialView) {
+  download::SetDownloadBubblePartialViewEnabled(profile(), false);
+
+  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
+                   download::DownloadItem::COMPLETE, "Download");
+
+  EXPECT_EQ(controller().GetPartialView().size(), 0u);
+
+  download::SetDownloadBubblePartialViewEnabled(profile(), true);
   EXPECT_EQ(controller().GetPartialView().size(), 1u);
 }
 
