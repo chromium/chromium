@@ -21,8 +21,7 @@
 
 namespace ash {
 
-SystemWebAppIntegrationTest::SystemWebAppIntegrationTest()
-    : SystemWebAppManagerBrowserTest(false /* install_mock */) {}
+SystemWebAppIntegrationTest::SystemWebAppIntegrationTest() = default;
 
 SystemWebAppIntegrationTest::~SystemWebAppIntegrationTest() = default;
 

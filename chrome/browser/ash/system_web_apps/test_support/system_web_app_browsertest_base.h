@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -25,11 +26,13 @@ namespace ash {
 
 enum class SystemWebAppType;
 class SystemWebAppManager;
-class TestSystemWebAppInstallation;
 
 class SystemWebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
  public:
-  // Performs common initialization for testing SystemWebAppManager features.
+  // Subclasses should call |SetSystemWebAppInstallation| in their constructor
+  // to specify a test system web app to install.
+  //
+  // Otherwise, this test fixture installs all default-enabled system web apps.
   SystemWebAppBrowserTestBase();
   SystemWebAppBrowserTestBase(const SystemWebAppBrowserTestBase&) = delete;
   SystemWebAppBrowserTestBase& operator=(const SystemWebAppBrowserTestBase&) =
@@ -39,12 +42,10 @@ class SystemWebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
 
   // Returns the SystemWebAppManager for browser()->profile(). For incognito
   // profiles, this will be the SystemWebAppManager of the original profile.
-  // Returns TestSystemWebAppManager if initialized with |install_mock| true.
   SystemWebAppManager& GetManager();
 
-  // Returns SystemWebAppType of mocked app, only valid if |install_mock|
-  // is true.
-  SystemWebAppType GetMockAppType();
+  // Returns SystemWebAppType of the installed app.
+  SystemWebAppType GetAppType();
 
   // Returns the start URL based on the given |params|.
   GURL GetStartUrl(const apps::AppLaunchParams& params);
@@ -89,7 +90,11 @@ class SystemWebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
   size_t GetSystemWebAppBrowserCount(SystemWebAppType type);
 
  protected:
-  std::unique_ptr<TestSystemWebAppInstallation> maybe_installation_;
+  // Subclasses can use this method to specify the test system web app it
+  // intends to install. This method should only be called in a subclass
+  // constructor at most once.
+  void SetSystemWebAppInstallation(
+      std::unique_ptr<TestSystemWebAppInstallation> installation);
 
  private:
   std::unique_ptr<KeyedService> CreateWebAppProvider(Profile* profile);
@@ -103,15 +108,15 @@ class SystemWebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
                                   Browser** out_browser);
 
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+
+  std::unique_ptr<TestSystemWebAppInstallation> installation_ = nullptr;
 };
 
 class SystemWebAppManagerBrowserTest
     : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
-  // If true, |install_mock| installs a WebUIController that serves a mock
-  // System PWA, and ensures the WebAppProvider associated with the startup
-  // profile is a FakeWebAppProviderCreator.
-  explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
+  // Installs a single-windowed mock system web app.
+  SystemWebAppManagerBrowserTest();
 
   SystemWebAppManagerBrowserTest(const SystemWebAppManagerBrowserTest&) =
       delete;

@@ -36,15 +36,15 @@ SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
   return *swa_manager;
 }
 
-SystemWebAppType SystemWebAppBrowserTestBase::GetMockAppType() {
-  CHECK(maybe_installation_);
-  return maybe_installation_->GetType();
+SystemWebAppType SystemWebAppBrowserTestBase::GetAppType() {
+  CHECK(installation_);
+  return installation_->GetType();
 }
 
 void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
   // Wait for the System Web Apps to install.
-  if (maybe_installation_) {
-    maybe_installation_->WaitForAppInstall();
+  if (installation_) {
+    installation_->WaitForAppInstall();
   } else {
     GetManager().InstallSystemAppsForTesting();
   }
@@ -141,7 +141,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(SystemWebAppType type) {
 }
 
 GURL SystemWebAppBrowserTestBase::GetStartUrl() {
-  return GetStartUrl(LaunchParamsForApp(GetMockAppType()));
+  return GetStartUrl(LaunchParamsForApp(GetAppType()));
 }
 
 size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
@@ -152,12 +152,15 @@ size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
   });
 }
 
-SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
-    bool install_mock) {
-  if (install_mock) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
-  }
+void SystemWebAppBrowserTestBase::SetSystemWebAppInstallation(
+    std::unique_ptr<TestSystemWebAppInstallation> installation) {
+  CHECK(!installation_);
+  installation_ = std::move(installation);
+}
+
+SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest() {
+  SetSystemWebAppInstallation(
+      TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp());
 }
 
 }  // namespace ash

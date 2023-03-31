@@ -440,14 +440,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMinimized) {
 }
 
 class SystemWebAppSessionRestoreTestChromeOS
-    : public ash::SystemWebAppManagerBrowserTest {
+    : public TestProfileTypeMixin<ash::SystemWebAppBrowserTestBase> {
  public:
-  SystemWebAppSessionRestoreTestChromeOS()
-      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ =
+  SystemWebAppSessionRestoreTestChromeOS() {
+    auto installation =
         ash::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
-    maybe_installation_->set_update_policy(
+    installation->set_update_policy(
         ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+    SetSystemWebAppInstallation(std::move(installation));
   }
 
   ~SystemWebAppSessionRestoreTestChromeOS() override = default;
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
   // Wait for the app to install, launch, and load, otherwise the app might not
   // be restored.
   WaitForTestSystemAppInstall();
-  LaunchApp(GetMockAppType());
+  LaunchApp(GetAppType());
 
   auto app_params = Browser::CreateParams::CreateForApp(
       test_app_name1, true, gfx::Rect(), browser()->profile(), true);

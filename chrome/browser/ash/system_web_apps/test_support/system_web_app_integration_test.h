@@ -18,7 +18,8 @@ enum class SystemWebAppType;
 
 // Test harness for how ChromeOS System Web Apps integrate with the System Web
 // App platform.
-class SystemWebAppIntegrationTest : public SystemWebAppManagerBrowserTest {
+class SystemWebAppIntegrationTest
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   SystemWebAppIntegrationTest();
   SystemWebAppIntegrationTest(const SystemWebAppIntegrationTest&) = delete;
