@@ -42,3 +42,17 @@
 
 # crbug.com/1416437
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.*
+
+# crbug.com/1429436
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testUndoToolbarGroup
+
+# crbug.com/1429439
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsOnly
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionView
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
+
+# crbug.com/1429444
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testTabSwitcherScrim
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherOnNoNextTab
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcher_RefactorEnabled
