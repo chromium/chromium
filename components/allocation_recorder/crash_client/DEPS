@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/crash/core",
-  "+third_party/crashpad",
-]
