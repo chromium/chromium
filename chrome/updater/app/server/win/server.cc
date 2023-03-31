@@ -59,31 +59,6 @@ std::wstring COMGroupInternal(UpdaterScope scope) {
   return GetCOMGroup(L"Internal", scope);
 }
 
-// Update the registry value for the "UninstallCmdLine" under the UPDATER_KEY.
-bool SwapUninstallCmdLine(UpdaterScope scope,
-                          const base::FilePath& updater_path,
-                          HKEY root,
-                          WorkItemList* list) {
-  CHECK(list);
-
-  base::CommandLine uninstall_if_unused_command(updater_path);
-
-  // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
-  // unused, instead of requiring server starts.
-  uninstall_if_unused_command.AppendSwitch(kWakeSwitch);
-  if (IsSystemInstall(scope)) {
-    uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
-  }
-  uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
-  uninstall_if_unused_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                                kLoggingModuleSwitchValue);
-  list->AddSetRegValueWorkItem(
-      root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
-      uninstall_if_unused_command.GetCommandLineString(), true);
-
-  return true;
-}
-
 HRESULT AddAllowedAce(HANDLE object,
                       SE_OBJECT_TYPE object_type,
                       const CSid& sid,
@@ -168,8 +143,22 @@ bool SwapGoogleUpdate(UpdaterScope scope,
   list->AddSetRegValueWorkItem(
       root, google_update_appid_key, KEY_WOW64_32KEY, kRegValueName,
       base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
+  list->AddSetRegValueWorkItem(
+      root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
+      [scope, &updater_path]() {
+        base::CommandLine uninstall_if_unused_command(updater_path);
+        uninstall_if_unused_command.AppendSwitch(kWakeSwitch);
+        if (IsSystemInstall(scope)) {
+          uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
+        }
+        uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
+        uninstall_if_unused_command.AppendSwitchASCII(
+            kLoggingModuleSwitch, kLoggingModuleSwitchValue);
+        return uninstall_if_unused_command.GetCommandLineString();
+      }(),
+      true);
 
-  return SwapUninstallCmdLine(scope, updater_path, root, list);
+  return true;
 }
 
 // Uninstall the GoogleUpdate services, run values, scheduled tasks, and files.
