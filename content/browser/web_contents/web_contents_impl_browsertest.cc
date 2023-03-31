@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -5926,7 +5927,24 @@ class PCScanFeature {
 // Initialize PCScanFeature before WebContentsImplBrowserTest to make sure that
 // the feature is enabled within the entire lifetime of the test.
 class WebContentsImplStarScanBrowserTest : private PCScanFeature,
-                                           public WebContentsImplBrowserTest {};
+                                           public WebContentsImplBrowserTest {
+ public:
+  void SetUp() override {
+    // Since ReconfigureAfterFeatureListInit() has been already invoked at
+    // FeatureListScopedToEachTest::OnTestStart(), we cannot enable PCScan
+    // and cannot re-reconfigure partition roots here. This causes DCHECK()
+    // failure at PerfromcScan().
+    if (!base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) &&
+        !base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPCScanBrowserOnly) &&
+        !base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPCScanRendererOnly)) {
+      GTEST_SKIP() << "PCScanFeature is not enabled. Need --enable-features"
+                   << "=PartitionAllocPCScan";
+    }
+    WebContentsImplBrowserTest::SetUp();
+  }
+};
 
 }  // namespace
 

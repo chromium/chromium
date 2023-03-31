@@ -91,10 +91,7 @@ class BASE_EXPORT PartitionAllocSupport {
       std::string stacktrace);
 #endif
 
-  static PartitionAllocSupport* Get() {
-    static auto* singleton = new PartitionAllocSupport();
-    return singleton;
-  }
+  static PartitionAllocSupport* Get();
 
   static BrpConfiguration GetBrpConfiguration(const std::string& process_type);
 

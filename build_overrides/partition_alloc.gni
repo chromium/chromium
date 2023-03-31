@@ -34,11 +34,17 @@ if (is_ios) {
 # Sanitizers replace the allocator, don't use our own.
 _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 
-# - Component build support is disabled on all platforms. It is known to cause
-#   issues on some (e.g. Windows with shims, Android with non-universal symbol
-#   wrapping), and has not been validated on others.
+# - Component build support is disabled on all platforms except Linux. It is
+#   known to cause issues on some (e.g. Windows with shims, Android with
+#   non-universal symbol wrapping), and has not been validated on others.
+# - Disable on Linux when component and debug build are used together, because
+#   PA-E caused lots of timeouts on Linux Tests(dbg).
+#   TODO(crbug.com/1429450): fix the timeout issue and enable on linux debug
+#   and component build.
 # - Windows: debug CRT is not compatible, see below.
-_disable_partition_alloc_everywhere = is_component_build || (is_win && is_debug)
+_disable_partition_alloc_everywhere =
+    (is_linux && is_component_build && is_debug) ||
+    (!is_linux && is_component_build) || (is_win && is_debug)
 
 # - NaCl: No plans to support it.
 # - iOS: Depends on ios_partition_alloc_enabled.

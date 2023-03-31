@@ -827,6 +827,11 @@ void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
   // experiments.
 }
 
+PartitionAllocSupport* PartitionAllocSupport::Get() {
+  static auto* singleton = new PartitionAllocSupport();
+  return singleton;
+}
+
 PartitionAllocSupport::PartitionAllocSupport() = default;
 
 void PartitionAllocSupport::ReconfigureForTests() {
