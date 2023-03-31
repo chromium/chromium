@@ -40075,15 +40075,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2737" label="WebShareCanShare"/>
   <int value="2738" label="PriorityHints"/>
   <int value="2739" label="TextAutosizedCrossSiteIframe"/>
-  <int value="2740" label="V8RTCQuicTransport_Constructor"/>
-  <int value="2741" label="V8RTCQuicTransport_Transport_AttributeGetter"/>
-  <int value="2742" label="V8RTCQuicTransport_State_AttributeGetter"/>
-  <int value="2743" label="V8RTCQuicTransport_GetKey_Method"/>
-  <int value="2744" label="V8RTCQuicTransport_GetStats_Method"/>
-  <int value="2745" label="V8RTCQuicTransport_Connect_Method"/>
-  <int value="2746" label="V8RTCQuicTransport_Listen_Method"/>
-  <int value="2747" label="V8RTCQuicTransport_Stop_Method"/>
-  <int value="2748" label="V8RTCQuicTransport_CreateStream_Method"/>
+  <int value="2740" label="OBSOLETE_V8RTCQuicTransport_Constructor"/>
+  <int value="2741"
+      label="OBSOLETE_V8RTCQuicTransport_Transport_AttributeGetter"/>
+  <int value="2742" label="OBSOLETE_V8RTCQuicTransport_State_AttributeGetter"/>
+  <int value="2743" label="OBSOLETE_V8RTCQuicTransport_GetKey_Method"/>
+  <int value="2744" label="OBSOLETE_V8RTCQuicTransport_GetStats_Method"/>
+  <int value="2745" label="OBSOLETE_V8RTCQuicTransport_Connect_Method"/>
+  <int value="2746" label="OBSOLETE_V8RTCQuicTransport_Listen_Method"/>
+  <int value="2747" label="OBSOLETE_V8RTCQuicTransport_Stop_Method"/>
+  <int value="2748" label="OBSOLETE_V8RTCQuicTransport_CreateStream_Method"/>
   <int value="2749" label="V8RTCIceTransport_Constructor"/>
   <int value="2750" label="V8RTCIceTransport_Role_AttributeGetter"/>
   <int value="2751" label="V8RTCIceTransport_State_AttributeGetter"/>
@@ -40093,21 +40094,22 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2755" label="V8RTCIceTransport_GetSelectedCandidatePair_Method"/>
   <int value="2756" label="V8RTCIceTransport_GetLocalParameters_Method"/>
   <int value="2757" label="V8RTCIceTransport_GetRemoteParameters_Method"/>
-  <int value="2758" label="V8RTCQuicStream_Transport_AttributeGetter"/>
-  <int value="2759" label="V8RTCQuicStream_State_AttributeGetter"/>
-  <int value="2760" label="V8RTCQuicStream_ReadBufferedAmount_AttributeGetter"/>
+  <int value="2758" label="OBSOLETE_V8RTCQuicStream_Transport_AttributeGetter"/>
+  <int value="2759" label="OBSOLETE_V8RTCQuicStream_State_AttributeGetter"/>
+  <int value="2760"
+      label="OBSOLETE_V8RTCQuicStream_ReadBufferedAmount_AttributeGetter"/>
   <int value="2761"
-      label="V8RTCQuicStream_MaxReadBufferedAmount_AttributeGetter"/>
+      label="OBSOLETE_V8RTCQuicStream_MaxReadBufferedAmount_AttributeGetter"/>
   <int value="2762"
-      label="V8RTCQuicStream_WriteBufferedAmount_AttributeGetter"/>
+      label="OBSOLETE_V8RTCQuicStream_WriteBufferedAmount_AttributeGetter"/>
   <int value="2763"
-      label="V8RTCQuicStream_MaxWriteBufferedAmount_AttributeGetter"/>
-  <int value="2764" label="V8RTCQuicStream_ReadInto_Method"/>
-  <int value="2765" label="V8RTCQuicStream_Write_Method"/>
-  <int value="2766" label="V8RTCQuicStream_Reset_Method"/>
+      label="OBSOLETE_V8RTCQuicStream_MaxWriteBufferedAmount_AttributeGetter"/>
+  <int value="2764" label="OBSOLETE_V8RTCQuicStream_ReadInto_Method"/>
+  <int value="2765" label="OBSOLETE_V8RTCQuicStream_Write_Method"/>
+  <int value="2766" label="OBSOLETE_V8RTCQuicStream_Reset_Method"/>
   <int value="2767"
-      label="V8RTCQuicStream_WaitForWriteBufferedAmountBelow_Method"/>
-  <int value="2768" label="V8RTCQuicStream_WaitForReadable_Method"/>
+      label="OBSOLETE_V8RTCQuicStream_WaitForWriteBufferedAmountBelow_Method"/>
+  <int value="2768" label="OBSOLETE_V8RTCQuicStream_WaitForReadable_Method"/>
   <int value="2769" label="HTMLTemplateElement"/>
   <int value="2770" label="NoSysexWebMIDIWithoutPermission"/>
   <int value="2771" label="NoSysexWebMIDIOnInsecureOrigin"/>
@@ -40217,10 +40219,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2865" label="HidGetDevices"/>
   <int value="2866" label="HidRequestDevice"/>
   <int value="2867"
-      label="V8RTCQuicTransport_MaxDatagramLength_AttributeGetter"/>
-  <int value="2868" label="V8RTCQuicTransport_ReadyToSendDatagram_Method"/>
-  <int value="2869" label="V8RTCQuicTransport_SendDatagram_Method"/>
-  <int value="2870" label="V8RTCQuicTransport_ReceiveDatagrams_Method"/>
+      label="OBSOLETE_V8RTCQuicTransport_MaxDatagramLength_AttributeGetter"/>
+  <int value="2868"
+      label="OBSOLETE_V8RTCQuicTransport_ReadyToSendDatagram_Method"/>
+  <int value="2869" label="OBSOLETE_V8RTCQuicTransport_SendDatagram_Method"/>
+  <int value="2870"
+      label="OBSOLETE_V8RTCQuicTransport_ReceiveDatagrams_Method"/>
   <int value="2871" label="CSSValueContainStyle"/>
   <int value="2872" label="WebShareSuccessfulContainingFiles"/>
   <int value="2873" label="WebShareSuccessfulWithoutFiles"/>
@@ -40544,13 +40548,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3178" label="V8FileSystemDirectoryHandle_Resolve_Method"/>
   <int value="3179" label="V8FileSystemHandle_IsSameEntry_Method"/>
   <int value="3180"
-      label="OBSOLETEV8RTCRtpSender_CreateEncodedAudioStreams_Method"/>
+      label="OBSOLETE_V8RTCRtpSender_CreateEncodedAudioStreams_Method"/>
   <int value="3181"
-      label="OBSOLETEV8RTCRtpSender_CreateEncodedVideoStreams_Method"/>
+      label="OBSOLETE_V8RTCRtpSender_CreateEncodedVideoStreams_Method"/>
   <int value="3182"
-      label="OBSOLETEV8RTCRtpReceiver_CreateEncodedAudioStreams_Method"/>
+      label="OBSOLETE_V8RTCRtpReceiver_CreateEncodedAudioStreams_Method"/>
   <int value="3183"
-      label="OBSOLETEV8RTCRtpReceiver_CreateEncodedVideoStreams_Method"/>
+      label="OBSOLETE_V8RTCRtpReceiver_CreateEncodedVideoStreams_Method"/>
   <int value="3184" label="QuicTransport"/>
   <int value="3185" label="QuicTransportStreamApis"/>
   <int value="3186" label="QuicTransportDatagramApis"/>
