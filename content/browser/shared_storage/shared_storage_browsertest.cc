@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
@@ -6754,6 +6755,73 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
       "TypeError: The \"private-aggregation\" Permissions Policy denied the "
       "method on privateAggregation",
       base::UTF16ToUTF8(console_observer.messages()[0].message));
+}
+
+// This is a regression test for crbug.com/1428110.
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       SimultaneousOperationsReportsArentBatchedTogether) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_CALL(browser_client(),
+              LogWebFeatureForCurrentPage(
+                  shell()->web_contents()->GetPrimaryMainFrame(),
+                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
+  EXPECT_CALL(
+      browser_client(),
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(browser_client(), IsSharedStorageAllowed)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/slow_and_fast_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(/*num_closures=*/3, run_loop.QuitClosure());
+
+  int num_one_contribution_reports = 0;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .Times(3)
+      .WillRepeatedly(
+          testing::Invoke([&](AggregatableReportRequest request,
+                              PrivateAggregationBudgetKey budget_key) {
+            if (request.payload_contents().contributions.size() == 1u) {
+              EXPECT_EQ(request.payload_contents().contributions[0].bucket, 3);
+              EXPECT_EQ(request.payload_contents().contributions[0].value, 1);
+              ++num_one_contribution_reports;
+            } else {
+              ASSERT_EQ(request.payload_contents().contributions.size(), 2u);
+              EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+              EXPECT_EQ(request.payload_contents().contributions[0].value, 1);
+              EXPECT_EQ(request.payload_contents().contributions[1].bucket, 2);
+              EXPECT_EQ(request.payload_contents().contributions[1].value, 1);
+            }
+            EXPECT_EQ(request.shared_info().reporting_origin, a_test_origin_);
+            EXPECT_EQ(budget_key.origin(), a_test_origin_);
+            EXPECT_EQ(budget_key.api(),
+                      PrivateAggregationBudgetKey::Api::kSharedStorage);
+            barrier.Run();
+          }));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.run('slow-operation', {keepAlive: true});
+      sharedStorage.run('slow-operation', {keepAlive: true});
+      sharedStorage.run('fast-operation');
+    )"));
+
+  run_loop.Run();
+
+  // Ensures we saw exactly one report for the fast operation (and therefore two
+  // for the slow operations).
+  EXPECT_EQ(num_one_contribution_reports, 1);
 }
 
 class SharedStorageSelectURLLimitBrowserTest

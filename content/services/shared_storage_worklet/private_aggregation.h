@@ -5,12 +5,14 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_PRIVATE_AGGREGATION_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_PRIVATE_AGGREGATION_H_
 
-#include <vector>
+#include <stdint.h>
+
+#include <map>
 
 #include "base/memory/raw_ref.h"
+#include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
@@ -25,7 +27,8 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
   PrivateAggregation(
       blink::mojom::SharedStorageWorkletServiceClient& client,
       bool private_aggregation_permissions_policy_allowed,
-      blink::mojom::PrivateAggregationHost& private_aggregation_host);
+      blink::mojom::PrivateAggregationHost& private_aggregation_host,
+      SharedStorageWorkletGlobalScope& global_scope);
   ~PrivateAggregation() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -35,11 +38,12 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
 
   const char* GetTypeName() override;
 
-  // Flushes any Private Aggregation contributions and resets the local state.
-  // Should be called whenever an operation finishes running.
-  void FlushAndReset();
+  void OnOperationStarted(int64_t operation_id);
+  void OnOperationFinished(int64_t operation_id);
 
  private:
+  struct OperationState;
+
   void SendHistogramReport(gin::Arguments* args);
   void EnableDebugMode(gin::Arguments* args);
 
@@ -50,14 +54,12 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
   bool private_aggregation_permissions_policy_allowed_;
 
   raw_ref<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
+  raw_ref<SharedStorageWorkletGlobalScope> global_scope_;
 
   bool has_recorded_use_counters_ = false;
 
-  // Defaults to debug mode being disabled.
-  blink::mojom::DebugModeDetails debug_mode_details_;
-
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      private_aggregation_contributions_;
+  // Keyed by a per-invocation operation ID.
+  std::map<int64_t, OperationState> operation_states_;
 };
 
 }  // namespace shared_storage_worklet

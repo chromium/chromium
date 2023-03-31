@@ -5,6 +5,9 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_GLOBAL_SCOPE_H_
 
+#include <stdint.h>
+
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -68,16 +71,28 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
       const std::vector<uint8_t>& serialized_data,
       blink::mojom::SharedStorageWorkletService::RunOperationCallback callback);
 
+  base::OnceClosure StartOperationForTesting();
+
+  // Returns the unique ID for the currently running operation.
+  int64_t GetCurrentOperationId() const;
+
  private:
   void Register(gin::Arguments* args);
 
   friend class SharedStorageWorkletGlobalScopeTest;
 
-  void FlushAndResetPrivateAggregation();
+  // Sets continuation-preserved embedder data to allow us to identify this
+  // particular operation invocation later, even after asynchronous operations.
+  // Returns a closure that should be run when the operation finishes.
+  base::OnceClosure StartOperation();
 
-  v8::Isolate* Isolate();
+  // Notifies the `private_aggregation_` that the operation with the given ID
+  // has finished.
+  void FinishOperation(int64_t operation_id);
 
-  v8::Local<v8::Context> LocalContext();
+  v8::Isolate* Isolate() const;
+
+  v8::Local<v8::Context> LocalContext() const;
 
   bool private_aggregation_permissions_policy_allowed_;
 
@@ -95,6 +110,8 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
   std::unique_ptr<UnnamedOperationHandler> unnamed_operation_handler_;
 
   std::map<std::string, v8::Global<v8::Function>> operation_definition_map_;
+
+  int64_t operation_counter_ = 0;
 
   // If this worklet is inside a fenced frame or a URN iframe,
   // `embedder_context_` represents any contextual information written to the

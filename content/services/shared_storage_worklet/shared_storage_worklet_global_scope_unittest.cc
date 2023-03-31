@@ -2334,12 +2334,14 @@ class SharedStoragePrivateAggregationTest
     EXPECT_TRUE(error_message.empty());
   }
 
+  // error_message` being `nullptr` indicates no error is expected.
   void ExecuteScriptAndValidateContribution(
       const std::string& script_body,
       absl::uint128 expected_bucket,
       int expected_value,
       blink::mojom::DebugModeDetailsPtr expected_debug_mode_details =
-          blink::mojom::DebugModeDetails::New()) {
+          blink::mojom::DebugModeDetails::New(),
+      std::string* error_message = nullptr) {
     EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
         .WillOnce(testing::Invoke(
             [&](std::vector<
@@ -2355,19 +2357,20 @@ class SharedStoragePrivateAggregationTest
               EXPECT_TRUE(debug_mode_details == expected_debug_mode_details);
             }));
 
-    ExecuteScriptExpectNoError(script_body);
+    if (error_message == nullptr) {
+      ExecuteScriptExpectNoError(script_body);
+    } else {
+      ExecuteScript(script_body, error_message);
+    }
 
     EXPECT_TRUE(test_client()->observed_record_use_counter_call());
   }
 
-  std::string ExecuteScriptReturningError(
-      const std::string& script_body,
-      bool flush_and_reset_private_aggregation = true) {
+  std::string ExecuteScriptReturningError(const std::string& script_body) {
     EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport).Times(0);
 
     std::string error_message;
-    ExecuteScript(script_body, &error_message,
-                  flush_and_reset_private_aggregation);
+    ExecuteScript(script_body, &error_message);
     EXPECT_FALSE(error_message.empty());
 
     // These tests all invoke sendHistogramReport (albeit incorrectly), so the
@@ -2377,20 +2380,17 @@ class SharedStoragePrivateAggregationTest
   }
 
  private:
-  void ExecuteScript(const std::string& script_body,
-                     std::string* out_error,
-                     bool flush_and_reset_private_aggregation = true) {
+  void ExecuteScript(const std::string& script_body, std::string* out_error) {
     WorkletV8Helper::HandleScope scope(Isolate());
     v8::Local<v8::Context> context = LocalContext();
     v8::Context::Scope context_scope(context);
+    base::OnceClosure operation_completion_closure =
+        global_scope_->StartOperationForTesting();
 
     WorkletV8Helper::CompileAndRunScript(
         LocalContext(), script_body, GURL("https://example.test"), out_error);
 
-    if (flush_and_reset_private_aggregation) {
-      // Ensures that Private Aggregation is flushed and reset after.
-      SimulateRunOperation("", {});
-    }
+    std::move(operation_completion_closure).Run();
   }
 };
 
@@ -2572,26 +2572,33 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
 TEST_F(SharedStoragePrivateAggregationTest,
        EnableDebugModeCalledTwice_SecondCallFails) {
-  std::string error_str = ExecuteScriptReturningError(
-      R"(
-        privateAggregation.enableDebugMode({debug_key: 1234n});
-        privateAggregation.enableDebugMode();
-      )",
-      /*flush_and_reset_private_aggregation=*/false);
+  std::string error_str;
 
-  EXPECT_EQ(error_str,
-            "https://example.test/:3 Uncaught TypeError: enableDebugMode may "
-            "be called at most once.");
-
-  // Note that the first call still applies to future requests.
+  // Note that the first call still applies to future requests if the error is
+  // caught. Here, we rethrow it to check its value.
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
+      R"(
+        let error;
+        try {
+          privateAggregation.enableDebugMode({debug_key: 1234n});
+          privateAggregation.enableDebugMode();
+        } catch (e) {
+          error = e;
+        }
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        throw error;
+      )",
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
       blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
-          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)),
+      &error_str);
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:10 Uncaught TypeError: enableDebugMode may "
+            "be called at most once.");
 }
 
 // Note that FLEDGE worklets have different behavior in this case.

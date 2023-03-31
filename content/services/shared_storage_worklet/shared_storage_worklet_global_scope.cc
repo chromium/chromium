@@ -4,10 +4,15 @@
 
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/services/shared_storage_worklet/console.h"
 #include "content/services/shared_storage_worklet/private_aggregation.h"
@@ -25,6 +30,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-initialization.h"
+#include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
 
 namespace shared_storage_worklet {
@@ -122,7 +128,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   if (private_aggregation_host) {
     private_aggregation_ = std::make_unique<PrivateAggregation>(
         *client, private_aggregation_permissions_policy_allowed_,
-        *private_aggregation_host);
+        *private_aggregation_host, *this);
     global
         ->Set(context, gin::StringToSymbol(Isolate(), "privateAggregation"),
               private_aggregation_->GetWrapper(Isolate()).ToLocalChecked())
@@ -179,11 +185,10 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   }
 
   WorkletV8Helper::HandleScope scope(Isolate());
+  base::OnceClosure operation_completion_cb = StartOperation();
   url_selection_operation_handler_->RunOperation(
       LocalContext(), name, urls, serialized_data,
-      std::move(callback).Then(base::BindOnce(
-          &SharedStorageWorkletGlobalScope::FlushAndResetPrivateAggregation,
-          weak_ptr_factory_.GetWeakPtr())));
+      std::move(callback).Then(std::move(operation_completion_cb)));
 }
 
 void SharedStorageWorkletGlobalScope::RunOperation(
@@ -201,11 +206,10 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   }
 
   WorkletV8Helper::HandleScope scope(Isolate());
+  base::OnceClosure operation_completion_cb = StartOperation();
   unnamed_operation_handler_->RunOperation(
       LocalContext(), name, serialized_data,
-      std::move(callback).Then(base::BindOnce(
-          &SharedStorageWorkletGlobalScope::FlushAndResetPrivateAggregation,
-          weak_ptr_factory_.GetWeakPtr())));
+      std::move(callback).Then(std::move(operation_completion_cb)));
 }
 
 void SharedStorageWorkletGlobalScope::Register(gin::Arguments* args) {
@@ -263,17 +267,42 @@ void SharedStorageWorkletGlobalScope::Register(gin::Arguments* args) {
       name, v8::Global<v8::Function>(isolate, run_function.As<v8::Function>()));
 }
 
-void SharedStorageWorkletGlobalScope::FlushAndResetPrivateAggregation() {
+base::OnceClosure SharedStorageWorkletGlobalScope::StartOperationForTesting() {
+  return StartOperation();
+}
+
+base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation() {
+  int64_t operation_id = operation_counter_++;
+
+  v8::Local<v8::Context> context = LocalContext();
+
+  context->SetContinuationPreservedEmbedderData(
+      v8::BigInt::New(context->GetIsolate(), operation_id));
+
   if (private_aggregation_) {
-    private_aggregation_->FlushAndReset();
+    private_aggregation_->OnOperationStarted(operation_id);
+  }
+  return base::BindOnce(&SharedStorageWorkletGlobalScope::FinishOperation,
+                        weak_ptr_factory_.GetWeakPtr(), operation_id);
+}
+
+void SharedStorageWorkletGlobalScope::FinishOperation(int64_t operation_id) {
+  if (private_aggregation_) {
+    private_aggregation_->OnOperationFinished(operation_id);
   }
 }
 
-v8::Isolate* SharedStorageWorkletGlobalScope::Isolate() {
+int64_t SharedStorageWorkletGlobalScope::GetCurrentOperationId() const {
+  v8::Local<v8::Value> data =
+      LocalContext()->GetContinuationPreservedEmbedderData();
+  return data.As<v8::BigInt>()->Int64Value();
+}
+
+v8::Isolate* SharedStorageWorkletGlobalScope::Isolate() const {
   return isolate_holder_->isolate();
 }
 
-v8::Local<v8::Context> SharedStorageWorkletGlobalScope::LocalContext() {
+v8::Local<v8::Context> SharedStorageWorkletGlobalScope::LocalContext() const {
   return global_context_.Get(Isolate());
 }
 

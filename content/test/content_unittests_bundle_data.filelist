@@ -1568,6 +1568,7 @@ data/shared_storage/private_aggregation_permissions_policy_none.html
 data/shared_storage/private_aggregation_permissions_policy_none.html.mock-http-headers
 data/shared_storage/simple_module.js
 data/shared_storage/simple_module2.js
+data/shared_storage/slow_and_fast_module.js
 data/simple_database.html
 data/simple_links.html
 data/simple_page.html
