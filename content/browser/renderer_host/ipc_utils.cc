@@ -134,6 +134,17 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
   if (!VerifyInitiatorOrigin(process_id, params->initiator_origin))
     return false;
 
+  if (params->initiator_base_url) {
+    // `initiator_base_url` should only be defined for about:blank and
+    // about:srcdoc navigations, and should never be an empty GURL (if it is not
+    // nullopt).
+    if (params->initiator_base_url->is_empty() ||
+        !(out_validated_url->IsAboutBlank() ||
+          out_validated_url->IsAboutSrcdoc())) {
+      return false;
+    }
+  }
+
   // Verify that the initiator frame can navigate `current_rfh`.
   if (!VerifyNavigationInitiator(current_rfh, params->initiator_frame_token,
                                  process_id)) {

@@ -1880,7 +1880,6 @@ void NavigationControllerImpl::CreateInitialEntry() {
                            : ui::PAGE_TRANSITION_LINK;
   params->referrer = blink::mojom::Referrer::New();
 
-  // Create and insert the initial NavigationEntry.
   auto new_entry = std::make_unique<NavigationEntryImpl>(
       rfh->GetSiteInstance(), params->url, Referrer(*params->referrer),
       rfh->GetLastCommittedOrigin(), rfh->GetInheritedBaseUrl(),
@@ -1908,8 +1907,10 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   std::unique_ptr<NavigationEntryImpl> new_entry;
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
-  const absl::optional<GURL>& initiator_base_url =
-      request->common_params().initiator_base_url;
+  absl::optional<GURL> initiator_base_url;
+  if (params.url.IsAboutBlank() || params.url.IsAboutSrcdoc()) {
+    initiator_base_url = request->common_params().initiator_base_url;
+  }
 
   // First check if this is an in-page navigation.  If so, clone the current
   // entry instead of looking at the pending entry, because the pending entry
@@ -2231,8 +2232,10 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   // CloneAndReplace() call below, if a spot can't be found for it in the tree.
   const absl::optional<url::Origin>& initiator_origin =
       request->common_params().initiator_origin;
-  const absl::optional<GURL>& initiator_base_url =
-      request->common_params().initiator_base_url;
+  absl::optional<GURL> initiator_base_url;
+  if (params.url.IsAboutBlank() || params.url.IsAboutSrcdoc()) {
+    initiator_base_url = request->common_params().initiator_base_url;
+  }
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies =
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                   request->GetURL());

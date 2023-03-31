@@ -524,9 +524,10 @@ void FillNavigationParamsRequest(
   // Note: It's possible for initiator_base_url to be empty if this is an
   // error srcdoc page. See test
   // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-      common_params.initiator_base_url &&
-      (common_params.url.IsAboutSrcdoc() || common_params.url.IsAboutBlank())) {
+  if (common_params.initiator_base_url) {
+    CHECK(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+          (common_params.url.IsAboutSrcdoc() ||
+           common_params.url.IsAboutBlank()));
     navigation_params->fallback_base_url =
         common_params.initiator_base_url.value();
   } else {
@@ -584,8 +585,9 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       has_download_sandbox_flag, from_ad);
 
   absl::optional<GURL> initiator_base_url;
-  if (info->requestor_base_url.IsValid())
+  if (info->requestor_base_url.IsValid()) {
     initiator_base_url = info->requestor_base_url;
+  }
   return blink::mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),
       initiator_base_url, std::move(referrer),

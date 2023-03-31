@@ -1667,6 +1667,8 @@ NavigationRequest::NavigationRequest(
               ? absl::make_optional(FencedFrameProperties())
               : absl::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context) {
+  CHECK(!common_params_->initiator_base_url ||
+        !common_params_->initiator_base_url->is_empty());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
