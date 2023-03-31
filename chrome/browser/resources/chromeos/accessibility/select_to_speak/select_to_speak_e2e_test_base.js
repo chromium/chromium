@@ -57,15 +57,16 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
   triggerReadSelectedText() {
     assertFalse(this.mockTts.currentlySpeaking());
     assertEquals(this.mockTts.pendingUtterances().length, 0);
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeakConstants.READ_SELECTION_KEY_CODE});
+    selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+        [SelectToSpeakConstants.SEARCH_KEY_CODE]);
+    selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([
+      SelectToSpeakConstants.SEARCH_KEY_CODE,
+      SelectToSpeakConstants.READ_SELECTION_KEY_CODE,
+    ]);
     assertTrue(selectToSpeak.inputHandler_.isSelectionKeyDown_);
-    selectToSpeak.fireMockKeyUpEvent(
-        {keyCode: SelectToSpeakConstants.READ_SELECTION_KEY_CODE});
-    selectToSpeak.fireMockKeyUpEvent(
-        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
+    selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+        [SelectToSpeakConstants.SEARCH_KEY_CODE]);
+    selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([]);
   }
 
   /**
@@ -74,12 +75,15 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
    * @param {Object} upEvent The mouse-up event.
    */
   triggerReadMouseSelectedText(downEvent, upEvent) {
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
-    selectToSpeak.fireMockMouseDownEvent(downEvent);
-    selectToSpeak.fireMockMouseUpEvent(upEvent);
-    selectToSpeak.fireMockKeyUpEvent(
-        {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
+    selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+        [SelectToSpeakConstants.SEARCH_KEY_CODE]);
+    selectToSpeak.fireMockMouseEvent(
+        chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS,
+        downEvent.screenX, downEvent.screenY);
+    selectToSpeak.fireMockMouseEvent(
+        chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE,
+        upEvent.screenX, upEvent.screenY);
+    selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([]);
   }
 
   /**

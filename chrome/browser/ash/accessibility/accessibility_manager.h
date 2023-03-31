@@ -369,6 +369,14 @@ class AccessibilityManager
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value);
 
+  // Sends the keys currently pressed to the Select-to-speak extension.
+  void SendKeysCurrentlyDownToSelectToSpeak(
+      const std::set<ui::KeyboardCode>& pressed_keys);
+
+  // Sends a mouse event to the Select-to-speak extension.
+  void SendMouseEventToSelectToSpeak(ui::EventType type,
+                                     const gfx::PointF& position);
+
   // Called when Shimless RMA launches to enable accessibility features.
   void OnShimlessRmaLaunched();
 

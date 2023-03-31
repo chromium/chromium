@@ -25,7 +25,8 @@ class SelectToSpeakEventHandlerDelegateImpl
 
  private:
   // SelectToSpeakEventHandlerDelegate:
-  void DispatchKeyEvent(const ui::KeyEvent& event) override;
+  void DispatchKeysCurrentlyDown(
+      const std::set<ui::KeyboardCode>& pressed_keys) override;
   void DispatchMouseEvent(const ui::MouseEvent& event) override;
 };
 

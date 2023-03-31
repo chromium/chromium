@@ -5,22 +5,28 @@
 #ifndef ASH_PUBLIC_CPP_SELECT_TO_SPEAK_EVENT_HANDLER_DELEGATE_H_
 #define ASH_PUBLIC_CPP_SELECT_TO_SPEAK_EVENT_HANDLER_DELEGATE_H_
 
+#include <set>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {
-class KeyEvent;
 class MouseEvent;
 }  // namespace ui
 
 namespace ash {
 
-// Allows a client to implement Select-to-Speak.
-// TODO(katie): Consider combining DispatchMouseEvent and DispatchKeyEvent
-// into a single DispatchEvent function.
+// Allows a client to receive keyboard and mouse events from Chrome OS
+// in order to implement input handling in Select to Speak.
+// Chrome OS is the source of truth of keyboard and mouse state; Select
+// to Speak should defer to state sent by these methods in case of dropped
+// events.
 class ASH_PUBLIC_EXPORT SelectToSpeakEventHandlerDelegate {
  public:
-  // Sends a KeyEvent to the Select-to-Speak extension in Chrome.
-  virtual void DispatchKeyEvent(const ui::KeyEvent& event) = 0;
+  // Sends the currently pressed keys to the Select-to-Speak extension in
+  // Chrome.
+  virtual void DispatchKeysCurrentlyDown(
+      const std::set<ui::KeyboardCode>& pressed_keys) = 0;
 
   // Sends a MouseEvent to the Select-to-Speak extension in Chrome.
   virtual void DispatchMouseEvent(const ui::MouseEvent& event) = 0;

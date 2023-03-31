@@ -58,7 +58,7 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
           // Set the document selection. This will fire the changed event
           // above, allowing us to do the keystroke and test that speech
           // occurred properly.
-          const textNode = this.findTextNode(root, 'This is some text');
+          const textNode = this.findTextNode(root, text);
           chrome.automation.setDocumentSelection({
             anchorObject: textNode,
             anchorOffset,
@@ -791,4 +791,52 @@ AX_TEST_F(
 
       this.triggerReadSelectedText();
       assertEquals(false, this.mockTts.currentlySpeaking());
+    });
+
+AX_TEST_F(
+    'SelectToSpeakKeystrokeSelectionTest', 'SearchUpBeforeS', async function() {
+      // SelectToSpeakE2ETest.triggerReadSelectedText releases the 'S' key
+      // before the 'SEARCH' key.
+      // This test releases 'SEARCH' before 'S' to ensure that speech is still
+      // started.
+      const setFocusCallback = this.newCallback(async function(root) {
+        // Set the document selection. This will fire the changed event
+        // above, allowing us to do the keystroke and test that speech
+        // occurred properly.
+        const textNode = this.findTextNode(root, 'This is some text');
+        chrome.automation.setDocumentSelection({
+          anchorObject: textNode,
+          anchorOffset: 0,
+          focusObject: textNode,
+          focusOffset: 12,
+        });
+      });
+
+      const root = await this.runWithLoadedTree('<p>This is some text</p>');
+      // Set the selection.
+      setFocusCallback(root);
+      // Wait for Automation to update.
+      await this.waitForEvent(
+          root, 'documentSelectionChanged', /*capture=*/ false);
+      assertFalse(this.mockTts.currentlySpeaking());
+      assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+      // Speak selected text lifting the 'search' key before the 's' key.
+      selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+          [SelectToSpeakConstants.SEARCH_KEY_CODE]);
+      selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([
+        SelectToSpeakConstants.SEARCH_KEY_CODE,
+        SelectToSpeakConstants.READ_SELECTION_KEY_CODE,
+      ]);
+      assertTrue(selectToSpeak.inputHandler_.isSelectionKeyDown_);
+
+      // Release the SEARCH_KEY_CODE.
+      selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+          [SelectToSpeakConstants.READ_SELECTION_KEY_CODE]);
+      selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([]);
+
+      await this.waitForSpeech();
+      assertEquals(this.mockTts.pendingUtterances().length, 1);
+      this.assertEqualsCollapseWhitespace(
+          this.mockTts.pendingUtterances()[0], 'This is some');
     });

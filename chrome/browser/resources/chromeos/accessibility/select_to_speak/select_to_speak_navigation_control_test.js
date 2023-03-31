@@ -1021,14 +1021,15 @@ AX_TEST_F(
 
         // Perform Search key + S, which should restore focus to
         // panel.
-        selectToSpeak.fireMockKeyDownEvent(
-            {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
-        selectToSpeak.fireMockKeyDownEvent(
-            {keyCode: SelectToSpeakConstants.READ_SELECTION_KEY_CODE});
-        selectToSpeak.fireMockKeyUpEvent(
-            {keyCode: SelectToSpeakConstants.READ_SELECTION_KEY_CODE});
-        selectToSpeak.fireMockKeyUpEvent(
-            {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
+        selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+            [SelectToSpeakConstants.SEARCH_KEY_CODE]);
+        selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([
+          SelectToSpeakConstants.SEARCH_KEY_CODE,
+          SelectToSpeakConstants.READ_SELECTION_KEY_CODE,
+        ]);
+        selectToSpeak.sendMockSelectToSpeakKeysPressedChanged(
+            [SelectToSpeakConstants.SEARCH_KEY_CODE]);
+        selectToSpeak.sendMockSelectToSpeakKeysPressedChanged([]);
 
         // Verify focus is still on button within panel.
         chrome.automation.getFocus(this.newCallback(focusedNode => {

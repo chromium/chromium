@@ -5,9 +5,12 @@
 #ifndef ASH_EVENTS_SELECT_TO_SPEAK_EVENT_HANDLER_H_
 #define ASH_EVENTS_SELECT_TO_SPEAK_EVENT_HANDLER_H_
 
+#include <set>
+
 #include "ash/ash_export.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -104,6 +107,8 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
   ui::PointerId touch_id_ = ui::kPointerIdUnknown;
 
   ui::EventPointerType touch_type_ = ui::EventPointerType::kUnknown;
+
+  std::set<ui::KeyboardCode> keys_currently_down_;
 
   // The delegate used to send key events to the Select-to-Speak extension.
   SelectToSpeakEventHandlerDelegate* delegate_;

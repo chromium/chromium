@@ -33856,6 +33856,10 @@ Called by update_extension_histograms.py.-->
   <int value="506" label="SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED"/>
   <int value="507" label="SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED"/>
   <int value="508" label="OS_EVENTS_ON_AUDIO_JACK_EVENT"/>
+  <int value="509"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_KEYS_PRESSED_CHANGED"/>
+  <int value="510"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_MOUSE_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
