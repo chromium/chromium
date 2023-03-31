@@ -103,13 +103,13 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
       sender: "ServiceWorkerRaceNetworkRequest"
       description:
         "This request is issued by a navigation to fetch the content of the "
-        "page that is being navigated to, in the case where a service worker "
-        "has been registered for the page and the "
-        "ServiceWorkerBypassFetchHandler feature and the RaceNetworkRequest "
-        "param are enabled."
+        "page that is being navigated to, or by a renderer to fetch "
+        "subresources in the case where a service worker has been registered "
+        "for the page and the ServiceWorkerBypassFetchHandler feature and the "
+        "RaceNetworkRequest param are enabled."
       trigger:
         "Navigating Chrome (by clicking on a link, bookmark, history item, "
-        "using session restore, etc)."
+        "using session restore, etc) and subsequent resource loading."
       data:
         "Arbitrary site-controlled data can be included in the URL, HTTP "
         "headers, and request body. Requests may include cookies and "
@@ -123,7 +123,7 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
       user_data {
         type: ARBITRARY_DATA
       }
-      last_reviewed: "2023-03-11"
+      last_reviewed: "2023-03-22"
     }
     policy {
       cookies_allowed: YES
