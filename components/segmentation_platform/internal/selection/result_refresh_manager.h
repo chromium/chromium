@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/cached_result_writer.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/result.h"
@@ -44,7 +45,8 @@ class ResultRefreshManager {
   // expired.
   void RefreshModelResults(
       std::map<std::string, std::unique_ptr<SegmentResultProvider>>
-          result_providers);
+          result_providers,
+      ExecutionService* execution_service);
 
  private:
   // Gives result for the model based on `run_model`. If `run_model` is false,
@@ -52,11 +54,13 @@ class ResultRefreshManager {
   // executing model. It also saves to the result to database after model
   // execution.
   void GetCachedResultOrRunModel(SegmentResultProvider* segment_result_provider,
-                                 Config* config);
+                                 Config* config,
+                                 ExecutionService* execution_service);
 
   void OnGetCachedResultOrRunModel(
       SegmentResultProvider* segment_result_provider,
       Config* config,
+      ExecutionService* execution_service,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Configs for all registered clients.

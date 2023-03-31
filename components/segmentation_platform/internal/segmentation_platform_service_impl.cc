@@ -258,7 +258,8 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
     selector.second->OnPlatformInitialized(&execution_service_);
   }
 
-  result_refresh_manager_->RefreshModelResults(CreateSegmentResultProviders());
+  result_refresh_manager_->RefreshModelResults(CreateSegmentResultProviders(),
+                                               &execution_service_);
 
   request_dispatcher_->OnPlatformInitialized(success, &execution_service_,
                                              CreateSegmentResultProviders());
