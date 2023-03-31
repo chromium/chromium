@@ -59,7 +59,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
-<translation id="1291207594882862231">Effacer l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
+<translation id="1291207594882862231">Effacez l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
@@ -400,7 +400,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome est déjà en cours d'exécution ici.</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3187472288455401631">Mesure des performances des annonces</translation>
+<translation id="3187472288455401631">Performances des annonces</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> a été supprimé</translation>
@@ -1050,7 +1050,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6640207029842583248">Toujours bloquer</translation>
 <translation id="6641780377503683465">Supprimer <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Effacer</translation>
-<translation id="6645629752388991326">Contrôlez les appareils qui peuvent se connecter en utilisant ce téléphone comme clé de sécurité.</translation>
+<translation id="6645629752388991326">Contrôlez quels appareils peuvent se connecter en utilisant ce téléphone comme clé de sécurité.</translation>
 <translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier à distance la configuration de votre navigateur. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}one{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}other{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}}</translation>

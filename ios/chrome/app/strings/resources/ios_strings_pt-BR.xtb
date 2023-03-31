@@ -283,7 +283,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 
 Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="3080525922482950719">Você pode salvar páginas para ler depois ou off-line</translation>
-<translation id="3081338492074632642">A senha que você está salvando precisa corresponder à usada em <ph name="WEBSITE" /></translation>
+<translation id="3081338492074632642">A senha que você está salvando precisa ser a mesma usada em <ph name="WEBSITE" /></translation>
 <translation id="3103603146121354983">Preenchimento automático de senhas</translation>
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
@@ -967,7 +967,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8080028325999236607">Fechar todas as guias</translation>
 <translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
 <translation id="809543534949702122">Histórico de pesquisa</translation>
-<translation id="8101409298456377967">Crie, salve e gerencie suas senhas para que possa fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">Crie, salve e gerencie suas senhas para fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desativar</translation>
 <translation id="8114753159095730575">O download de arquivo está disponível. Opções disponíveis perto da parte inferior da tela.</translation>
 <translation id="81313319706244542">2. Toque em "Senhas"</translation>
