@@ -38,7 +38,6 @@ using testing::SaveArgPointee;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
 constexpr char kExampleSite[] = "https://example.com";
-const std::u16string kFirstTwelveDigits = u"411111111111";
 
 namespace autofill {
 namespace {
@@ -64,18 +63,12 @@ class TestAccessManager : public CreditCardAccessManager {
       : CreditCardAccessManager(driver,
                                 client,
                                 personal_data,
-                                /*credit_card_form_event_logger=*/nullptr) {
-    card_ = test::GetMaskedServerCard();
-    card_.set_record_type(CreditCard::FULL_SERVER_CARD);
-    card_.SetNumber(kFirstTwelveDigits + card_.number());
-  }
+                                /*credit_card_form_event_logger=*/nullptr) {}
 
   void FetchCreditCard(const CreditCard* card,
                        base::WeakPtr<Accessor> accessor) override {
-    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card_, u"");
+    accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card, u"");
   }
-
-  CreditCard card_;
 };
 
 class MockAutofillDriver : public TestContentAutofillDriver {
@@ -317,15 +310,43 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
                 .Build());
 }
 
-TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
+class CreditCardAccessoryControllerCardUnmaskTest
+    : public CreditCardAccessoryControllerTest,
+      public testing::WithParamInterface<CreditCard::RecordType> {
+ public:
+  CreditCardAccessoryControllerCardUnmaskTest() = default;
+  ~CreditCardAccessoryControllerCardUnmaskTest() override = default;
+
+  CreditCard GetCreditCard() {
+    switch (GetParam()) {
+      case CreditCard::LOCAL_CARD:
+        return test::GetCreditCard();
+      case CreditCard::MASKED_SERVER_CARD:
+        return test::GetMaskedServerCard();
+      case CreditCard::FULL_SERVER_CARD:
+        return test::GetFullServerCard();
+      case CreditCard::VIRTUAL_CARD: {
+        // The CreditCardAccessoryController will automatically create a virtual
+        // card for this masked server card.
+        CreditCard card = test::GetMaskedServerCard();
+        card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+        return card;
+      }
+    }
+  }
+
+  bool IsMaskedServerCard() {
+    return GetParam() == CreditCard::MASKED_SERVER_CARD;
+  }
+};
+
+TEST_P(CreditCardAccessoryControllerCardUnmaskTest, CardUnmask) {
   // TODO(crbug.com/1169167): Move this into setup once controllers don't push
   // updated sheets proactively anymore.
   controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
 
-  CreditCard card = test::GetMaskedServerCard();
+  CreditCard card = GetCreditCard();
   data_manager_.AddCreditCard(card);
-  data_manager_.AddCreditCard(test::GetCreditCard());
-
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
   ASSERT_TRUE(controller());
@@ -340,18 +361,23 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
 
   CreditCard card_to_unmask;
 
-  std::u16string expected_number = kFirstTwelveDigits + card.number();
-
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
   ASSERT_TRUE(rfh);
   FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
                          .renderer_id = FieldRendererId(123)};
 
   EXPECT_CALL(autofill_driver(),
-              RendererShouldFillFieldWithValue(field_id, expected_number));
+              RendererShouldFillFieldWithValue(field_id, card.number()));
 
   controller()->OnFillingTriggered(field_id, field);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardAccessoryControllerCardUnmaskTest,
+                         testing::Values(CreditCard::LOCAL_CARD,
+                                         CreditCard::MASKED_SERVER_CARD,
+                                         CreditCard::FULL_SERVER_CARD,
+                                         CreditCard::VIRTUAL_CARD));
 
 TEST_F(CreditCardAccessoryControllerTest,
        RefreshSuggestionsUnmaskedCachedCard) {

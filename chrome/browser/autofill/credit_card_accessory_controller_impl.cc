@@ -240,20 +240,9 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
     return;
   }
 
-  const CreditCard* matching_card = UnwrapCardOrVirtualCard(*card_iter);
-  switch (matching_card->record_type()) {
-    case CreditCard::RecordType::MASKED_SERVER_CARD:
-    case CreditCard::RecordType::VIRTUAL_CARD:
-      last_focused_field_id_ = focused_field_id;
-      GetManager()->GetCreditCardAccessManager()->FetchCreditCard(matching_card,
-                                                                  AsWeakPtr());
-      break;
-    case CreditCard::RecordType::LOCAL_CARD:
-    case CreditCard::RecordType::FULL_SERVER_CARD:
-      GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
-                                                    matching_card->number());
-      break;
-  }
+  last_focused_field_id_ = focused_field_id;
+  GetManager()->GetCreditCardAccessManager()->FetchCreditCard(
+      UnwrapCardOrVirtualCard(*card_iter), AsWeakPtr());
 }
 
 void CreditCardAccessoryControllerImpl::OnOptionSelected(
