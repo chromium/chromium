@@ -1498,6 +1498,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithCHIPSBrowserTest,
 class StorageAccessAPIEnterprisePolicyBrowserTest
     : public StorageAccessAPIBaseBrowserTest,
       public testing::WithParamInterface<
+          /* (origin, content_setting, is_storage_partitioned) */
           std::tuple<const char*, ContentSetting, bool>> {
  public:
   StorageAccessAPIEnterprisePolicyBrowserTest()
@@ -1527,6 +1528,27 @@ class StorageAccessAPIEnterprisePolicyBrowserTest
            GetContentOrigin() != kUrlA;
   }
 
+  // Derive a test name from parameter information.
+  static std::string TestName(const ::testing::TestParamInfo<ParamType>& info) {
+    const char* origin = std::get<0>(info.param);
+    ContentSetting content_setting = std::get<1>(info.param);
+    bool is_storage_partitioned = std::get<2>(info.param);
+    return base::JoinString(
+        {
+            origin == kHostA            ? "kHostA"
+            : origin == kOriginA        ? "kOriginA"
+            : origin == kUrlA           ? "kUrlA"
+            : origin == kHostASubdomain ? "kHostASubdomain"
+            : origin == kHostB          ? "kHostB"
+                                        : "empty",
+            content_setting == CONTENT_SETTING_DEFAULT ? "DEFAULT"
+            : content_setting == CONTENT_SETTING_ALLOW ? "ALLOW"
+                                                       : "BLOCK",
+            is_storage_partitioned ? "Partitioned" : "Unpartitioned",
+        },
+        "_");
+  }
+
  private:
   ContentSetting GetContentSetting() const { return std::get<1>(GetParam()); }
   const char* GetContentOrigin() const { return std::get<0>(GetParam()); }
@@ -1540,7 +1562,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(CONTENT_SETTING_DEFAULT,
                         CONTENT_SETTING_ALLOW,
                         CONTENT_SETTING_BLOCK),
-        testing::Bool()));
+        testing::Bool()),
+    StorageAccessAPIEnterprisePolicyBrowserTest::TestName);
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
                        PartitionedStorage) {
