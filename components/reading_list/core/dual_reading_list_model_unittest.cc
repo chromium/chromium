@@ -335,6 +335,8 @@ TEST_F(DualReadingListModelTest, MarkAllSeen) {
   ASSERT_FALSE(dual_model_->GetEntryByURL(kAccountUrl)->IsRead());
   ASSERT_FALSE(dual_model_->GetEntryByURL(kCommonUrl)->IsRead());
 
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(dual_model_.get()));
+
   {
     testing::InSequence seq1;
     EXPECT_CALL(observer_,
@@ -365,6 +367,9 @@ TEST_F(DualReadingListModelTest, MarkAllSeen) {
         .RetiresOnSaturation();
   }
 
+  EXPECT_CALL(observer_,
+              ReadingListModelCompletedBatchUpdates(dual_model_.get()));
+
   dual_model_->MarkAllSeen();
 
   EXPECT_TRUE(dual_model_->GetEntryByURL(kLocalUrl)->HasBeenSeen());
@@ -373,6 +378,47 @@ TEST_F(DualReadingListModelTest, MarkAllSeen) {
   EXPECT_FALSE(dual_model_->GetEntryByURL(kLocalUrl)->IsRead());
   EXPECT_FALSE(dual_model_->GetEntryByURL(kAccountUrl)->IsRead());
   EXPECT_FALSE(dual_model_->GetEntryByURL(kCommonUrl)->IsRead());
+}
+
+// Verifies that ReadingListModelBeganBatchUpdates and
+// ReadingListModelCompletedBatchUpdates are not invoked if MarkAllSeen() is a
+// no-op.
+TEST_F(DualReadingListModelTest, MarkAllSeenWhenAllEntriesHasBeenSeen) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now()).SetRead(false)},
+      /*initial_account_entries_builders=*/{}));
+  ASSERT_TRUE(dual_model_->loaded());
+  ASSERT_TRUE(dual_model_->GetEntryByURL(kUrl)->HasBeenSeen());
+
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates).Times(0);
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates).Times(0);
+  dual_model_->MarkAllSeen();
+}
+
+// Regression test for crbug.com/1429274: verifies that there is no infinite
+// loop if an observer calls MarkAllSeen() when
+// ReadingListModelCompletedBatchUpdates() is called.
+TEST_F(DualReadingListModelTest,
+       NoInfiniteLoopIfMarkallSeenCalledFromBatchUpdatesObserver) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{}));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  testing::InSequence seq1;
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(dual_model_.get()));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+  // Mimic the behavior of one of the observers by calling MarkAllSeen() when
+  // ReadingListModelCompletedBatchUpdates() is called.
+  EXPECT_CALL(observer_,
+              ReadingListModelCompletedBatchUpdates(dual_model_.get()))
+      .WillOnce([&]() { dual_model_->MarkAllSeen(); });
+
+  dual_model_->MarkAllSeen();
 }
 
 TEST_F(DualReadingListModelTest, BatchUpdates) {

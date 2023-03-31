@@ -121,7 +121,10 @@ void DualReadingListModel::MarkAllSeen() {
   DCHECK(loaded());
 
   std::unique_ptr<DualReadingListModel::ScopedReadingListBatchUpdate>
-      scoped_model_batch_updates = BeginBatchUpdates();
+      scoped_model_batch_updates;
+  if (unseen_entry_count_ != 0) {
+    scoped_model_batch_updates = BeginBatchUpdates();
+  }
 
   for (const auto& url : GetKeys()) {
     scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
