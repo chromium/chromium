@@ -31,6 +31,7 @@
   #title {
     color: var(--color-new-tab-page-primary-foreground);
     font-size: 15px;
+    font-weight: normal;
   }
 
   #chip {
@@ -93,7 +94,7 @@
       </div>
     </div>
   </template>
-  <span id="title"><slot></slot></span>
+  <h2 id="title"><slot></slot></h2>
   <template is="dom-if" if="[[chipText]]">
     <div id="chip">[[chipText]]</div>
   </template>
