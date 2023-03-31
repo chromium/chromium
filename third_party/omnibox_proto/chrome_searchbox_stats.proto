@@ -10,6 +10,8 @@ option java_outer_classname = 'ChromeSearchboxStatsProto';
 
 package omnibox.metrics;
 
+import "action_info.proto";
+
 // Chrome-specific version of searchbox_stats.proto containing a strict subset
 // of the fields in searchbox_stats.proto.
 //
@@ -29,6 +31,8 @@ message ChromeSearchboxStats {
     optional int32 index = 1 [default = -1];
     optional uint32 type = 2;
     repeated uint32 subtypes = 3;
+    optional int32 action_index = 7;
+    repeated ActionInfo action_info = 8;
   }
   optional SuggestionInfo assisted_query_info = 5;
   repeated SuggestionInfo available_suggestions = 6;

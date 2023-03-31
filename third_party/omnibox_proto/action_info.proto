@@ -30,5 +30,8 @@ enum ActionType {
 }
 
 message ActionInfo {
-  optional ActionType action_type = 1;
+  optional ActionType logs_action_type = 1;
+  optional string package_id = 2;
+  optional string action_uri = 4;
+  optional uint32 action_type = 6;
 }

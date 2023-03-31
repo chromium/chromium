@@ -62,20 +62,16 @@ message ActionInfo {
   // The URI to open when the action is invoked.
   optional string action_uri = 3;
 
-  // The type of an action.
-  optional metrics.ActionType action_type = 4;
+  // Action type for logging.
+  optional metrics.ActionType logs_action_type = 4;
 
   // When present, specifies the package to be used to execute the Action.
   optional string package_id = 5;
 
-  // When present, specifies the intent to send to the package to execute the
-  // Action.
-  optional string intent_name = 7;
+  // Action type.
+  optional ActionType action_type = 8;
 
-  // Kesem Action Type.
-  optional KesemActionType kesem_action_type = 8;
-
-  enum KesemActionType {
+  enum ActionType {
     DIRECTIONS = 2;
     CALL = 3;
     WEBSITE = 6;
