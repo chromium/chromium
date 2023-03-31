@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
+#include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
 #include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
@@ -56,6 +57,11 @@ UserEducationController::UserEducationController(
   if (features::IsCaptureModeTourEnabled()) {
     tutorial_controllers_.emplace(
         std::make_unique<CaptureModeTourController>());
+  }
+
+  if (features::IsHoldingSpaceTourEnabled()) {
+    tutorial_controllers_.emplace(
+        std::make_unique<HoldingSpaceTourController>());
   }
 
   if (features::IsWelcomeTourEnabled()) {

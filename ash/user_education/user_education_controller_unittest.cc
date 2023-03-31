@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
+#include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
@@ -117,6 +118,12 @@ TEST_P(UserEducationControllerTest, CaptureModeTourControllerExists) {
   EXPECT_EQ(!!CaptureModeTourController::Get(), IsCaptureModeTourEnabled());
 }
 
+// Verifies that the Holding Space Tour controller exists iff the feature is
+// enabled.
+TEST_P(UserEducationControllerTest, HoldingSpaceTourControllerExists) {
+  EXPECT_EQ(!!HoldingSpaceTourController::Get(), IsHoldingSpaceTourEnabled());
+}
+
 // Verifies that the Welcome Tour controller exists iff the feature is enabled.
 TEST_P(UserEducationControllerTest, WelcomeTourControllerExists) {
   EXPECT_EQ(!!WelcomeTourController::Get(), IsWelcomeTourEnabled());
@@ -145,6 +152,21 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
     ASSERT_TRUE(capture_mode_tour_controller);
     for (const auto& [tutorial_id, ignore] :
          static_cast<TutorialController*>(capture_mode_tour_controller)
+             ->GetTutorialDescriptions()) {
+      EXPECT_CALL(
+          *user_education_delegate,
+          RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _));
+    }
+  }
+
+  // Expect Holding Space Tour tutorials to be registered with user education
+  // services in the browser if and only if the Holding Space Tour feature is
+  // enabled.
+  if (IsHoldingSpaceTourEnabled()) {
+    auto* holding_space_tour_controller = HoldingSpaceTourController::Get();
+    ASSERT_TRUE(holding_space_tour_controller);
+    for (const auto& [tutorial_id, ignore] :
+         static_cast<TutorialController*>(holding_space_tour_controller)
              ->GetTutorialDescriptions()) {
       EXPECT_CALL(
           *user_education_delegate,
