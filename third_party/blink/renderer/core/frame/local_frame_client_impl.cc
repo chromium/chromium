@@ -398,7 +398,6 @@ void LocalFrameClientImpl::DispatchDidHandleOnloadEvents() {
 }
 
 void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
-    HistoryItem* item,
     WebHistoryCommitType commit_type,
     bool is_synchronously_committed,
     mojom::blink::SameDocumentNavigationType same_document_navigation_type,

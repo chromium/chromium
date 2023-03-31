@@ -905,8 +905,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       FrameScheduler::NavigationType::kSameDocument);
 
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
-      history_item_.Get(), commit_type, is_synchronously_committed,
-      same_document_navigation_type, is_client_redirect_, is_browser_initiated);
+      commit_type, is_synchronously_committed, same_document_navigation_type,
+      is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
 
   // If intercept() was called during this same-document navigation's
