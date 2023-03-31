@@ -41,7 +41,6 @@ TEST_F(PasswordSpecFetcherTest, DomainSuggestionProtoIsParsed) {
 
   EXPECT_TRUE(suggestions.has_password_requirements());
   EXPECT_TRUE(suggestions.password_requirements().has_lower_case());
-  EXPECT_TRUE(suggestions.password_requirements().has_lower_case());
   EXPECT_EQ(suggestions.password_requirements().lower_case().min(), 0u);
   EXPECT_EQ(suggestions.password_requirements().lower_case().max(), 0u);
   EXPECT_FALSE(suggestions.password_requirements().has_upper_case());
