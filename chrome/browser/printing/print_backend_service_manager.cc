@@ -659,7 +659,7 @@ PrintBackendServiceManager::RegisterClient(
     // ready by the time the client gets to point of invoking a Mojo call.
     DCHECK(absl::holds_alternative<std::string>(destination));
     bool is_sandboxed;
-    GetService(/*printer_name=*/absl::get<std::string>(destination),
+    GetService(remote_id, /*printer_name=*/absl::get<std::string>(destination),
                client_type, &is_sandboxed);
   }
 
@@ -695,7 +695,8 @@ bool PrintBackendServiceManager::PrinterDriverKnownToRequireElevatedPrivilege(
 #endif  // BUILDFLAG(IS_WIN)
 
 const mojo::Remote<mojom::PrintBackendService>&
-PrintBackendServiceManager::GetService(const std::string& printer_name,
+PrintBackendServiceManager::GetService(const RemoteId& remote_id,
+                                       const std::string& printer_name,
                                        ClientType client_type,
                                        bool* is_sandboxed) {
   // Determine if sandboxing is appropriate.  This might be already known for
@@ -738,7 +739,6 @@ PrintBackendServiceManager::GetService(const std::string& printer_name,
     }
   }
 
-  RemoteId remote_id = GetRemoteIdForPrinterName(printer_name);
   if (should_sandbox) {
     return GetServiceFromBundle(remote_id, client_type, /*sandboxed=*/true,
                                 sandboxed_remotes_bundles_);
@@ -1176,7 +1176,8 @@ PrintBackendServiceManager::GetServiceAndCallbackContextForQuery(
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForPrinterName(printer_name);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(printer_name, ClientType::kQuery, &context.is_sandboxed);
+  return GetService(context.remote_id, printer_name, ClientType::kQuery,
+                    &context.is_sandboxed);
 }
 
 const mojo::Remote<mojom::PrintBackendService>&
@@ -1186,7 +1187,7 @@ PrintBackendServiceManager::GetServiceAndCallbackContextForQueryWithUiClient(
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForQueryWithUiClientId(client_id);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(printer_name, ClientType::kQueryWithUi,
+  return GetService(context.remote_id, printer_name, ClientType::kQueryWithUi,
                     &context.is_sandboxed);
 }
 
@@ -1197,7 +1198,7 @@ PrintBackendServiceManager::GetServiceAndCallbackContextForPrintDocumentClient(
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForPrintDocumentClientId(client_id);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(printer_name, ClientType::kPrintDocument,
+  return GetService(context.remote_id, printer_name, ClientType::kPrintDocument,
                     &context.is_sandboxed);
 }
 

@@ -389,6 +389,7 @@ class PrintBackendServiceManager {
   // process to host the service if necessary. `is_sandboxed` is set to indicate
   // if the service was launched within a sandbox.
   const mojo::Remote<mojom::PrintBackendService>& GetService(
+      const RemoteId& remote_id,
       const std::string& printer_name,
       ClientType client_type,
       bool* is_sandboxed);
