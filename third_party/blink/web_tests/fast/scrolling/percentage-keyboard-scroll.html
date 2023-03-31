@@ -2,9 +2,10 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
-<div id="outerScroller" style="width: 400px; height: 400px; overflow: scroll;">
-  <!-- Set tabindex so the scroller is focusable even if layout hasn't yet run -->
-  <div id="innerScroller" tabindex=1 style="width: 200px; height: 200px; overflow: scroll;">
+<!-- Set tabindex so the outer scroller is not focusable even if layout hasn't yet run -->
+<div id="outerScroller" tabindex="-1" style="width: 400px; height: 400px; overflow: scroll;">
+  <!-- Set tabindex so the inner scroller is focusable even if layout hasn't yet run -->
+  <div id="innerScroller" tabindex="0" style="width: 200px; height: 200px; overflow: scroll;">
     <div style="width: 1000px; height:1000px;"></div>
   </div>
   <div style="width: 1000px; height:1000px;"></div>
@@ -42,4 +43,3 @@
   }
   addEventListener('load', runTest);
 </script>
-

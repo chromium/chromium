@@ -5044,10 +5044,12 @@ bool Element::DelegatesFocus() const {
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
 Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
   // GetFocusableArea should only be called as a fallback on elements which
-  // aren't focusable, unless we are looking for an initial focus candidate for
-  // a dialog element in which case we are looking for a keyboard focusable
-  // element and will be calling this for mouse focusable elements.
-  DCHECK(!IsFocusable() || FocusController::AdjustedTabIndex(*this) < 0);
+  // aren't mouse and keyboard focusable, unless we are looking for an initial
+  // focus candidate for a dialog element in which case we are looking for a
+  // keyboard focusable element and will be calling this for mouse focusable
+  // elements.
+  DCHECK(!IsMouseFocusable() || !IsKeyboardFocusable() ||
+         FocusController::AdjustedTabIndex(*this) < 0);
 
   // TODO(crbug.com/1018619): Support AREA -> IMG delegation.
   if (!DelegatesFocus()) {
@@ -5441,12 +5443,24 @@ bool Element::IsFocusableStyleAfterUpdate() const {
   return IsFocusableStyle();
 }
 
+bool Element::HasNoFocusableChildren() const {
+  for (Node* node = FlatTreeTraversal::FirstChild(*this); node;
+       node = FlatTreeTraversal::Next(*node, this)) {
+    if (Element* element = DynamicTo<Element>(node)) {
+      if (element->IsKeyboardFocusable()) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 bool Element::IsKeyboardFocusable() const {
   return isConnected() && IsFocusableStyleAfterUpdate() &&
          ((SupportsFocus() &&
            GetIntegralAttribute(html_names::kTabindexAttr, 0) >= 0) ||
           (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-           IsScrollableNode(this)));
+           IsScrollableNode(this) && HasNoFocusableChildren()));
 }
 
 bool Element::IsMouseFocusable() const {

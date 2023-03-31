@@ -786,6 +786,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // ComputedStyle is up to date;
   // e.g. by calling Document::UpdateStyleAndLayoutTree().
   bool IsFocusable() const;
+  virtual bool HasNoFocusableChildren() const;
   virtual bool IsKeyboardFocusable() const;
   virtual bool IsMouseFocusable() const;
   // IsBaseElementFocusable() is used by some subclasses to check if the base
