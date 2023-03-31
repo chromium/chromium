@@ -235,11 +235,6 @@ void WebSharedWorkerImpl::StartWorkerContext(
               : mojom::blink::InsecureRequestPolicy::kBlockAllMixedContent,
           FetchClientSettingsObject::InsecureNavigationsSet());
 
-  GetWorkerThread()->SetIsConstructorOriginSecure(
-      constructor_origin.IsPotentiallyTrustworthy() ||
-      SchemeRegistry::SchemeShouldBypassSecureContextCheck(
-          constructor_origin.Protocol()));
-
   auto worker_settings = std::make_unique<WorkerSettings>(
       false /* disable_reading_from_canvas */,
       false /* strict_mixed_content_checking */,

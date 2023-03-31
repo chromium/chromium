@@ -58,48 +58,13 @@
 
 namespace blink {
 
-// static
-SharedWorkerGlobalScope::ParsedCreationParams
-SharedWorkerGlobalScope::ParseCreationParams(
-    std::unique_ptr<GlobalScopeCreationParams> creation_params,
-    bool is_constructor_origin_secure) {
-  ParsedCreationParams params;
-
-  params.starter_secure_context = creation_params->starter_secure_context;
-  if (!RuntimeEnabledFeatures::SecureContextFixForSharedWorkersEnabled()) {
-    creation_params->starter_secure_context = is_constructor_origin_secure;
-  }
-
-  params.creation_params = std::move(creation_params);
-  return params;
-}
-
 SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
-    bool is_constructor_origin_secure,
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
     const SharedWorkerToken& token)
-    : SharedWorkerGlobalScope(ParseCreationParams(std::move(creation_params),
-                                                  is_constructor_origin_secure),
-                              thread,
-                              time_origin,
-                              token) {}
-
-SharedWorkerGlobalScope::SharedWorkerGlobalScope(
-    ParsedCreationParams parsed_creation_params,
-    SharedWorkerThread* thread,
-    base::TimeTicks time_origin,
-    const SharedWorkerToken& token)
-    : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
-                        thread,
-                        time_origin,
-                        false),
-      token_(token) {
-  if (IsSecureContext() && !parsed_creation_params.starter_secure_context) {
-    CountUse(mojom::blink::WebFeature::kSecureContextIncorrectForSharedWorker);
-  }
-}
+    : WorkerGlobalScope(std::move(creation_params), thread, time_origin, false),
+      token_(token) {}
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
 

@@ -49,7 +49,6 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
  public:
   SharedWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params,
-      bool is_constructor_origin_secure,
       SharedWorkerThread* thread,
       base::TimeTicks time_origin,
       const SharedWorkerToken& token);
@@ -103,22 +102,6 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   }
 
  private:
-  // TODO(https://crbug.com/780031): Remove this indirection once
-  // `starter_secure_context` is simply passed through to `WorkerGlobalScope`.
-  struct ParsedCreationParams {
-    std::unique_ptr<GlobalScopeCreationParams> creation_params;
-    bool starter_secure_context = false;
-  };
-
-  static ParsedCreationParams ParseCreationParams(
-      std::unique_ptr<GlobalScopeCreationParams> creation_params,
-      bool is_constructor_origin_secure);
-
-  SharedWorkerGlobalScope(ParsedCreationParams parsed_creation_params,
-                          SharedWorkerThread* thread,
-                          base::TimeTicks time_origin,
-                          const SharedWorkerToken& token);
-
   void DidReceiveResponseForClassicScript(
       WorkerClassicScriptLoader* classic_script_loader);
   void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
