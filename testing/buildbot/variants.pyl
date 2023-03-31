@@ -552,8 +552,8 @@
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '110.0.5423.0',
-      'cros_img': 'octopus-release/R110-15249.0.0',
+      'cros_chrome_version': '114.0.5676.0',
+      'cros_img': 'octopus-release/R114-15404.0.0',
       'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
