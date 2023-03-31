@@ -6686,6 +6686,7 @@ crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeou
 
 crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
+crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-below-viewport-offscreen-new.html [ Failure ]
 
 # Temporarily disabled for a v8 change
 crbug.com/1418938 http/tests/devtools/sources/debugger-step/debugger-step-into-event-listener.js [ Failure Skip ]
