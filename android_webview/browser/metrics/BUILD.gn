@@ -4,6 +4,8 @@
 
 source_set("metrics") {
   sources = [
+    "aw_client_side_sampling_status_metrics_provider.cc",
+    "aw_client_side_sampling_status_metrics_provider.h",
     "aw_component_metrics_provider_delegate.cc",
     "aw_component_metrics_provider_delegate.h",
     "aw_metrics_service_accessor.h",

@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 43
+// Next tag: 44
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -714,7 +714,7 @@ message SystemProfileProto {
   optional bool client_id_was_used_for_trial_assignment = 33;
 
   // The unhashed client_id for this report. This is a uuid in its canonical
-  // textual represetnation in the form 8-4-4-4-12 for a total of 36 characters.
+  // textual representation in the form 8-4-4-4-12 for a total of 36 characters.
   // Used to simulate field trial assignments for the client.
   optional string client_uuid = 34;
 
@@ -1151,6 +1151,19 @@ message SystemProfileProto {
   }
 
   optional AppPackageNameAllowlistFilter app_package_name_allowlist_filter = 42;
+
+  enum ClientSideSamplingStatus {
+    // Default value, no conclusion can be drawn.
+    SAMPLING_UNKNOWN = 0;
+    // Client-side sampling was applied.
+    SAMPLING_APPLIED = 1;
+    // Client-side sampling was not applied.
+    SAMPLING_NOT_APPLIED = 2;
+  }
+
+  // Specifies whether sampling was applied on the client. Older clients will
+  // not set this field, which will result in the default value of UNKNOWN.
+  optional ClientSideSamplingStatus client_side_sampling_status = 43;
 
   // The package which installed Chrome, as reported by
   // PackageManager.getInstallerPackageName().

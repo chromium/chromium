@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
+#include "android_webview/browser/metrics/aw_client_side_sampling_status_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_component_metrics_provider_delegate.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_server_side_allowlist_metrics_provider.h"
@@ -37,6 +38,9 @@ void AwMetricsServiceClientDelegate::RegisterAdditionalMetricsProviders(
       std::make_unique<tracing::AwBackgroundTracingMetricsProvider>());
   service->RegisterMetricsProvider(
       std::make_unique<AwServerSideAllowlistMetricsProvider>(
+          AwMetricsServiceClient::GetInstance()));
+  service->RegisterMetricsProvider(
+      std::make_unique<AwClientSideSamplingStatusMetricsProvider>(
           AwMetricsServiceClient::GetInstance()));
 }
 
