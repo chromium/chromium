@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.feed.feedmanagement;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -18,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -40,7 +43,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class FeedManagementMediator {
     private static final String TAG = "FeedManagementMdtr";
     private ModelList mModelList;
-    private final Context mContext;
+    private final Activity mActivity;
     private final FollowManagementLauncher mFollowManagementLauncher;
     private final AutoplayManagementLauncher mAutoplayManagementLauncher;
     private final @StreamKind int mInitiatingStreamKind;
@@ -61,11 +64,11 @@ public class FeedManagementMediator {
         void launchAutoplayManagement(Context mContext);
     }
 
-    FeedManagementMediator(Context context, ModelList modelList,
+    FeedManagementMediator(Activity activity, ModelList modelList,
             FollowManagementLauncher followLauncher, AutoplayManagementLauncher autoplayLauncher,
             @StreamKind int initiatingStreamKind) {
         mModelList = modelList;
-        mContext = context;
+        mActivity = activity;
         mFollowManagementLauncher = followLauncher;
         mAutoplayManagementLauncher = autoplayLauncher;
         mInitiatingStreamKind = initiatingStreamKind;
@@ -97,8 +100,8 @@ public class FeedManagementMediator {
 
     private PropertyModel generateListItem(
             int titleResource, int descriptionResource, OnClickListener listener) {
-        String title = mContext.getResources().getString(titleResource);
-        String description = mContext.getResources().getString(descriptionResource);
+        String title = mActivity.getResources().getString(titleResource);
+        String description = mActivity.getResources().getString(descriptionResource);
         return new PropertyModel.Builder(FeedManagementItemProperties.ALL_KEYS)
                 .with(FeedManagementItemProperties.TITLE_KEY, title)
                 .with(FeedManagementItemProperties.DESCRIPTION_KEY, description)
@@ -115,6 +118,8 @@ public class FeedManagementMediator {
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_PX";
     static final String EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP";
+    static final String EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION =
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION";
 
     // Launch a new activity in the same task with the given uri as a CCT.
     private void launchUriActivity(String uri) {
@@ -122,16 +127,15 @@ public class FeedManagementMediator {
         builder.setShowTitle(true);
         builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
         if (ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings.isEnabled()) {
-            int displayHeight = mContext.getResources().getDisplayMetrics().heightPixels;
-            int displayWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+            int displayHeight = getDisplayMetrics().heightPixels;
+            int displayWidth = getDisplayMetrics().widthPixels;
             int initialHeight = Math.max(displayHeight, displayWidth);
             int initialWidth = Math.max(displayHeight, displayWidth) / 2;
-            int breakPoint = (int) (Math.min(displayHeight, displayWidth)
-                            / mContext.getResources().getDisplayMetrics().density
-                    + 1);
+            int breakPoint =
+                    (int) (Math.min(displayHeight, displayWidth) / getDisplayMetrics().density + 1);
 
             CustomTabsIntent customTabsIntent = builder.build();
-            customTabsIntent.intent.setPackage(mContext.getPackageName());
+            customTabsIntent.intent.setPackage(mActivity.getPackageName());
             // Adding trusted extras lets us know that the intent came from Chrome.
             customTabsIntent.intent.putExtra(
                     TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
@@ -139,32 +143,49 @@ public class FeedManagementMediator {
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_INITIAL_HEIGHT_PX, initialHeight);
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_INITIAL_WIDTH_PX, initialWidth);
             customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP, breakPoint);
-            customTabsIntent.launchUrl(mContext, Uri.parse(uri));
+            customTabsIntent.intent.putExtra(EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
+            customTabsIntent.launchUrl(mActivity, Uri.parse(uri));
         } else {
             Intent intent = builder.build().intent;
-            intent.setPackage(mContext.getPackageName());
+            intent.setPackage(mActivity.getPackageName());
             // Adding trusted extras lets us know that the intent came from Chrome.
             intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken());
             intent.setData(Uri.parse(uri));
             intent.setAction(Intent.ACTION_VIEW);
             intent.setClassName(
-                    mContext, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
+                    mActivity, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Needed for pre-N versions of android.
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
-            mContext.startActivity(intent);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, mActivity.getPackageName());
+            mActivity.startActivity(intent);
         }
         // TODO(https://crbug.com/1195209): Record uma by calling ReportOtherUserAction
         // on the stream.
     }
 
+    // The #getRealMetrics() method will give the physical size of the screen, which is
+    // generally fine when the app is not in multi-window mode and #getMetrics() will give the
+    // height excludes the decor views, so not suitable for our case. But in multi-window mode,
+    // we have no much choice, the closest way is to use #getMetrics() method.
+    private DisplayMetrics getDisplayMetrics() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        if (ApiCompatibilityUtils.isInMultiWindowMode(mActivity)) {
+            mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        } else {
+            mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+        }
+
+        return displayMetrics;
+    }
+
     // Copied from IntentHandler, which is in chrome_java, so we can't call it directly.
     private PendingIntent getAuthenticationToken() {
         Intent fakeIntent = new Intent();
-        ComponentName fakeComponentName = new ComponentName(mContext.getPackageName(), "FakeClass");
+        ComponentName fakeComponentName =
+                new ComponentName(mActivity.getPackageName(), "FakeClass");
         fakeIntent.setComponent(fakeComponentName);
         int mutabililtyFlag = 0;
         mutabililtyFlag = ApiHelperForM.getPendingIntentImmutableFlag();
-        return PendingIntent.getActivity(mContext, 0, fakeIntent, mutabililtyFlag);
+        return PendingIntent.getActivity(mActivity, 0, fakeIntent, mutabililtyFlag);
     }
 
     @VisibleForTesting
@@ -196,7 +217,7 @@ public class FeedManagementMediator {
         Log.d(TAG, "Autoplay click caught.");
         FeedServiceBridge.reportOtherUserAction(
                 mInitiatingStreamKind, FeedUserActionType.OPENED_AUTOPLAY_SETTINGS);
-        mAutoplayManagementLauncher.launchAutoplayManagement(mContext);
+        mAutoplayManagementLauncher.launchAutoplayManagement(mActivity);
     }
 
     @VisibleForTesting
@@ -204,6 +225,6 @@ public class FeedManagementMediator {
         Log.d(TAG, "Following click caught.");
         FeedServiceBridge.reportOtherUserAction(
                 mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
-        mFollowManagementLauncher.launchFollowManagement(mContext);
+        mFollowManagementLauncher.launchFollowManagement(mActivity);
     }
 }
