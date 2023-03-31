@@ -117,7 +117,8 @@
     assert_false(popover1.matches(':open'),'pointerup (outside the popover) should trigger light dismiss');
   },'Popovers close on pointerup, not pointerdown');
 
-  promise_test(async () => {
+  promise_test(async (t) => {
+    t.add_cleanup(() => popover1.hidePopover());
     assert_false(popover1.matches(':open'));
     popover1.showPopover();
     assert_true(popover1.matches(':open'));
@@ -132,17 +133,16 @@
     await testOne('pointerdown');
     await testOne('mouseup');
     await testOne('mousedown');
-    popover1.hidePopover();
   },'Synthetic events can\'t close popovers');
 
-  promise_test(async () => {
+  promise_test(async (t) => {
+    t.add_cleanup(() => popover1.hidePopover());
     popover1.showPopover();
     await clickOn(inside1After);
     assert_true(popover1.matches(':open'));
     await sendTab();
     assert_equals(document.activeElement,afterp1,'Focus should move to a button outside the popover');
     assert_true(popover1.matches(':open'));
-    popover1.hidePopover();
   },'Moving focus outside the popover should not dismiss the popover');
 
   promise_test(async () => {
