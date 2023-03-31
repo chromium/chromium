@@ -52,6 +52,15 @@ class WebContentHandler {
   // WebContentHandler.
   virtual bool IsMainFrame(int frame_id) = 0;
 
+  // Removes all the infobars which are attached to web_contents_
+  // and for which ShouldExpire() returns true, if the navigation frame_id
+  // is the main frame.
+  // TODO(b/273692421): frame_id will be moved from the interstitial into
+  // WebContentHandler.
+  // TODO(b/273692421): Add unit (or browser test) coverage for the moved
+  // methods that currently have no test coverage.
+  virtual void CleanUpInfoBarOnMainFrame(int frame_id) = 0;
+
   static const char* GetLocalApprovalDurationMillisecondsHistogram();
   static const char* GetLocalApprovalResultHistogram();
 

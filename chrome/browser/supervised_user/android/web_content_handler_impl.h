@@ -30,6 +30,7 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
                             const std::u16string& child_display_name,
                             ApprovalRequestInitiatedCallback callback) override;
   bool IsMainFrame(int frame_id) override;
+  void CleanUpInfoBarOnMainFrame(int frame_id) override;
 
  private:
   void OnLocalApprovalRequestCompleted(

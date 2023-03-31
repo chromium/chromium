@@ -7,7 +7,11 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/common/url_constants.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
 #include "components/url_matcher/url_util.h"
+#include "content/public/browser/navigation_details.h"
+#include "content/public/browser/navigation_entry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #include "url/url_constants.h"
@@ -62,6 +66,34 @@ bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents) {
 
   return outer_most_content->GetLastCommittedURL() ==
          GURL(chrome::kChromeUIEDUCoexistenceLoginURLV2);
+}
+
+void CleanUpInfoBarForContent(content::WebContents* web_contents) {
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (manager) {
+    content::LoadCommittedDetails details;
+    // |details.is_same_document| is default false, and |details.is_main_frame|
+    // is default true. This results in is_navigation_to_different_page()
+    // returning true.
+    DCHECK(details.is_navigation_to_different_page());
+    content::NavigationController& controller = web_contents->GetController();
+    details.entry = controller.GetVisibleEntry();
+    if (controller.GetLastCommittedEntry()) {
+      details.previous_entry_index = controller.GetLastCommittedEntryIndex();
+      details.previous_main_frame_url =
+          controller.GetLastCommittedEntry()->GetURL();
+    }
+    for (int i = manager->infobar_count() - 1; i >= 0; --i) {
+      infobars::InfoBar* infobar = manager->infobar_at(i);
+
+      if (infobar->delegate()->ShouldExpire(
+              infobars::ContentInfoBarManager::
+                  NavigationDetailsFromLoadCommittedDetails(details))) {
+        manager->RemoveInfoBar(infobar);
+      }
+    }
+  }
 }
 
 }  // namespace supervised_user

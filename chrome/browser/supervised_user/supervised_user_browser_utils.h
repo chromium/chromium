@@ -18,6 +18,10 @@ bool IsSupportedChromeExtensionURL(const GURL& effective_url);
 // Returns true if the parent allowlist should be skipped.
 bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents);
 
+// Removes all the infobars which are attached to |web_contents| and for
+// which ShouldExpire() returns true.
+void CleanUpInfoBarForContent(content::WebContents* web_contents);
+
 }  // namespace supervised_user
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_BROWSER_UTILS_H_

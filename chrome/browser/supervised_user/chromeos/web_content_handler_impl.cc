@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -108,6 +109,12 @@ void WebContentHandlerImpl::RequestLocalApproval(
 
 bool WebContentHandlerImpl::IsMainFrame(int frame_id) {
   return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id;
+}
+
+void WebContentHandlerImpl::CleanUpInfoBarOnMainFrame(int frame_id) {
+  if (web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id) {
+    supervised_user::CleanUpInfoBarForContent(web_contents_.get());
+  }
 }
 
 void WebContentHandlerImpl::OnLocalApprovalRequestCompleted(

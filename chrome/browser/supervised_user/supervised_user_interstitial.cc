@@ -22,18 +22,12 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -110,34 +104,6 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCloser);
 
-// Removes all the infobars which are attached to |web_contents| and for
-// which ShouldExpire() returns true.
-void CleanUpInfoBar(content::WebContents* web_contents) {
-  infobars::ContentInfoBarManager* manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (manager) {
-    content::LoadCommittedDetails details;
-    // |details.is_same_document| is default false, and |details.is_main_frame|
-    // is default true. This results in is_navigation_to_different_page()
-    // returning true.
-    DCHECK(details.is_navigation_to_different_page());
-    content::NavigationController& controller = web_contents->GetController();
-    details.entry = controller.GetVisibleEntry();
-    if (controller.GetLastCommittedEntry()) {
-      details.previous_entry_index = controller.GetLastCommittedEntryIndex();
-      details.previous_main_frame_url =
-          controller.GetLastCommittedEntry()->GetURL();
-    }
-    for (int i = manager->infobar_count() - 1; i >= 0; --i) {
-      infobars::InfoBar* infobar = manager->infobar_at(i);
-      if (infobar->delegate()->ShouldExpire(
-              infobars::ContentInfoBarManager::
-                  NavigationDetailsFromLoadCommittedDetails(details)))
-        manager->RemoveInfoBar(infobar);
-    }
-  }
-}
-
 // TODO(b/250924204): Implement shared logic to get the user's given name.
 std::u16string GetActiveUserFirstName() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -163,8 +129,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
           web_contents, std::move(web_content_handler), supervised_user_service,
           url, reason, frame_id, interstitial_navigation_id));
 
-  if (web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id)
-    CleanUpInfoBar(web_contents);
+  interstitial->web_content_handler()->CleanUpInfoBarOnMainFrame(frame_id);
 
   // Caller is responsible for deleting the interstitial.
   return interstitial;

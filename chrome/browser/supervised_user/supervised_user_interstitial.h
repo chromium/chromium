@@ -103,6 +103,9 @@ class SupervisedUserInterstitial {
     return interstitial_navigation_id_;
   }
   const GURL& url() const { return url_; }
+  supervised_user::WebContentHandler* web_content_handler() {
+    return web_content_handler_.get();
+  }
 
  private:
   SupervisedUserInterstitial(
