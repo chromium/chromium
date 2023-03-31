@@ -799,7 +799,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
 }
 
-- (void)testEmptyState {
+// TODO(crbug.com/1429491) Re-enable flaky test.
+- (void)DISABLED_testEmptyState {
   [self loadTestURLs];
   [self openHistoryPanel];
 
