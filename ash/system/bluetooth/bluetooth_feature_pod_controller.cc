@@ -300,10 +300,10 @@ void BluetoothFeaturePodController::UpdateTileStateIfExists() {
   if (!tile_->GetVisible()) {
     TrackVisibilityUMA();
   }
-  tile_->SetEnabled(modification_state_ ==
-                    BluetoothModificationState::kCanModifyBluetooth);
   tile_->SetToggled(
       bluetooth_config::IsBluetoothEnabledOrEnabling(system_state_));
+  tile_->SetEnabled(modification_state_ ==
+                    BluetoothModificationState::kCanModifyBluetooth);
   tile_->SetVisible(true);
   tile_->SetVectorIcon(ComputeButtonIcon());
   tile_->SetLabel(ComputeButtonLabel());
