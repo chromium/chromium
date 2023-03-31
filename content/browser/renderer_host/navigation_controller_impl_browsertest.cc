@@ -115,7 +115,10 @@ const char kAddFrameWithSrcScript[] =
 
 class NavigationControllerBrowserTestBase : public ContentBrowserTest {
  public:
-  NavigationControllerBrowserTestBase() = default;
+  NavigationControllerBrowserTestBase() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kQueueNavigationsWhileWaitingForCommit, {{"level", "full"}}}}, {});
+  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -155,6 +158,9 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
     std::u16string actual_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
@@ -19260,6 +19266,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   if (!AreAllSitesIsolatedForTesting())
     return;
 
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the first navigation will be stuck at
+    // the "pending commit" stage forever, causing the second navigation to be
+    // queued indefinitely, and the test will timeout.
+    // TODO(https://crbug.com/1220337): Rewrite the test to defer the first
+    // navigation instead, so that it won't cause the second navigation to be
+    // stuck.
+    return;
+  }
+
   const GURL main_frame_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   const GURL main_frame_url_2(embedded_test_server()->GetURL("/title2.html"));
@@ -22865,6 +22881,192 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Assert that the `url_b2` navigation committed successfully.
   ASSERT_TRUE(b2_nav.WaitForNavigationFinished());
   EXPECT_TRUE(b2_nav.was_successful());
+}
+
+// Test that ConcurrentNavigationsCommitDeferringCondition will queue BFCache
+// restore navigations as long as there is a pending commit RenderFrameHost.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       BFCacheRestoreDeferredWhenPendingCommitRFHExists) {
+  if (!ShouldAvoidRedundantNavigationCancellations() ||
+      !IsBackForwardCacheEnabled()) {
+    return;
+  }
+
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL url_3(embedded_test_server()->GetURL("c.com", "/title3.html"));
+
+  // Load `url_1`, then `url_2`.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  // Start loading `url_3`, but ignore its DidCommit IPC, so that it will stay
+  // at the "pending commit" stage indefinitely. Then, start a back navigation
+  // to `url_1`, which should try to do a back/forward cache restore.
+  TestNavigationManager pending_commit_nav_manager(contents(), url_3);
+  TestActivationManager bfcache_nav_manager(contents(), url_1);
+  {
+    // Note that we need to scope the lifetime of DidCommitNavigationCanceller
+    // to avoid crashing during the same-document navigation later on.
+    DidCommitNavigationCanceller ignore_url_3_commit(
+        contents(), url_3,
+        base::BindLambdaForTesting([&]() { controller.GoBack(); }));
+    shell()->LoadURL(url_3);
+    EXPECT_TRUE(pending_commit_nav_manager.WaitForResponse());
+    // Check that a speculative RenderFrameHost was created for the navigation
+    // to `url_3`. Continue the `url_3` navigation, which will stay at the
+    // "pending commit" stage.
+    RenderFrameHostImplWrapper spec_rfh(
+        root->render_manager()->speculative_frame_host());
+    EXPECT_TRUE(spec_rfh.get());
+
+    pending_commit_nav_manager.ResumeNavigation();
+
+    // Ensure that the BFCache restore navigation starts correctly.
+    EXPECT_TRUE(bfcache_nav_manager.WaitForBeforeChecks());
+
+    // The pending commit RenderFrameHost for `url_3` is still around.
+    EXPECT_EQ(spec_rfh.get(), root->render_manager()->speculative_frame_host());
+    EXPECT_TRUE(spec_rfh->HasPendingCommitForCrossDocumentNavigation());
+  }
+
+  // The BFCache restore got queued as there is a pending commit RFH.
+  bfcache_nav_manager.ResumeActivation();
+  NavigationRequest* bfcache_nav = static_cast<NavigationRequest*>(
+      bfcache_nav_manager.GetNavigationHandle());
+  EXPECT_TRUE(bfcache_nav->IsQueued());
+
+  // Do a same-document navigation in the renderer, which will create and
+  // destruct a NavigationRequest on the browser side. This should not cause the
+  // queued BFCache restore to continue, as there is still a pending commit
+  // RFH.
+  GURL url_2_foo(embedded_test_server()->GetURL("b.com", "/title2.html#foo"));
+  EXPECT_TRUE(ExecJs(contents(), "location.href = '#foo'"));
+  EXPECT_EQ(url_2_foo, contents()->GetLastCommittedURL());
+  EXPECT_TRUE(bfcache_nav->IsQueued());
+
+  // Trigger the pending commit RFH & NavigationRequest deletion, so that the
+  // BFCache restore can commit. Note that the pending commit RFH deletion can't
+  // actually happen in real life, but this is the best we can do since we've
+  // dropped the DidCommit IPC before. Ideally, we would just re-trigger the
+  // DidCommit IPC that we dropped, so that the pending commit RFH &
+  // NavigationRequest will finish the commit and trigger the resume callback of
+  // the queued navigation, but there's currently no way to do that in test.
+  // Also, normally we discourage the deletion of pending commit RFHs as that
+  // will result in a confused renderer, but in this case the renderer for
+  // `url_3` is a brand new renderer that we will never reuse anyways, so it's
+  // fine to discard the pending commit RFH.
+  // TODO(https://crbug.com/1220337): Use ResumeCommitClosureSetObserver and
+  // BeginNavigationInCommitCallbackInterceptor instead of doing this.
+  root->render_manager()->DiscardSpeculativeRenderFrameHostForShutdown();
+  EXPECT_TRUE(pending_commit_nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(pending_commit_nav_manager.was_committed());
+
+  // Ensure that the BFCache restore can commit successfully now.
+  bfcache_nav_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(bfcache_nav_manager.was_successful());
+  EXPECT_EQ(url_1, contents()->GetLastCommittedURL());
+}
+
+// Same as above, but the BFCached RenderFrameHost gets evicted while it is
+// queued, causing the NavigationRequest to not resume after the pending commit
+// navigation finished committing.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    BFCacheRestoreDeferredAndEvictedWhenPendingCommitRFHExists) {
+  if (!ShouldAvoidRedundantNavigationCancellations() ||
+      !IsBackForwardCacheEnabled()) {
+    return;
+  }
+
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL url_3(embedded_test_server()->GetURL("c.com", "/title3.html"));
+
+  // Load `url_1`, then `url_2`.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImplWrapper url_1_rfh(root->current_frame_host());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  // The previous RenderFrameHost should be BFCached.
+  EXPECT_TRUE(url_1_rfh->IsInBackForwardCache());
+
+  // Start loading `url_3`, but ignore its DidCommit IPC, so that it will stay
+  // at the "pending commit" stage indefinitely. Then, start a back navigation
+  // to `url_1`, which should try to do a back/forward cache restore.
+  TestNavigationManager pending_commit_nav_manager(contents(), url_3);
+  TestActivationManager bfcache_nav_manager(contents(), url_1);
+  {
+    DidCommitNavigationCanceller ignore_url_3_commit(
+        contents(), url_3,
+        base::BindLambdaForTesting([&]() { controller.GoBack(); }));
+    shell()->LoadURL(url_3);
+    EXPECT_TRUE(pending_commit_nav_manager.WaitForResponse());
+    // Check that a speculative RenderFrameHost was created for the navigation
+    // to `url_3`. Continue the `url_3` navigation, which will stay at the
+    // "pending commit" stage.
+    RenderFrameHostImplWrapper spec_rfh(
+        root->render_manager()->speculative_frame_host());
+    EXPECT_TRUE(spec_rfh.get());
+
+    pending_commit_nav_manager.ResumeNavigation();
+
+    // Ensure that the BFCache restore navigation starts correctly.
+    EXPECT_TRUE(bfcache_nav_manager.WaitForBeforeChecks());
+
+    // The pending commit RenderFrameHost for `url_3` is still around.
+    EXPECT_EQ(spec_rfh.get(), root->render_manager()->speculative_frame_host());
+    EXPECT_TRUE(spec_rfh->HasPendingCommitForCrossDocumentNavigation());
+  }
+
+  // The BFCache restore got queued as there is a pending commit RFH.
+  bfcache_nav_manager.ResumeActivation();
+  NavigationRequest* bfcache_nav = static_cast<NavigationRequest*>(
+      bfcache_nav_manager.GetNavigationHandle());
+  EXPECT_TRUE(bfcache_nav->IsQueued());
+
+  // Evict the BFCache entry for `url_1_rfh`. This will cause the BFCache
+  // restore navigation to be marked for "restart", posting a task to start
+  // a new history navigation that won't try to do a BFCache restore.
+  DisableBFCacheForRFHForTesting(url_1_rfh.get());
+
+  // Trigger the pending commit RFH & NavigationRequest deletion, so that the
+  // BFCache restore can continue. Note that the pending commit RFH deletion
+  // can't actually happen in real life, but this is the best we can do since
+  // we've dropped the DidCommit IPC before. Ideally, we would just re-trigger
+  // the DidCommit IPC that we dropped, so that the pending commit RFH &
+  // NavigationRequest will finish the commit and trigger the resume callback of
+  // the queued navigation, but there's currently no way to do that in test.
+  // Also, normally we discourage the deletion of pending commit RFHs as that
+  // will result in a confused renderer, but in this case the renderer for
+  // `url_3` is a brand new renderer that we will never reuse anyways, so it's
+  // fine to discard the pending commit RFH.
+  // TODO(https://crbug.com/1220337): Use ResumeCommitClosureSetObserver and
+  // BeginNavigationInCommitCallbackInterceptor instead of doing this.
+  TestNavigationManager new_history_navigation_manager(contents(), url_1);
+  root->render_manager()->DiscardSpeculativeRenderFrameHostForShutdown();
+  EXPECT_TRUE(pending_commit_nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(pending_commit_nav_manager.was_committed());
+
+  // Ensure that the BFCache restore is still deferred, and eventually gets
+  // cancelled, because the corresponding BFCache entry no longer exists.
+  EXPECT_TRUE(bfcache_nav->IsQueued());
+  bfcache_nav_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(bfcache_nav_manager.was_committed());
+
+  // A new history navigation to `url_1` was triggered after the BFCache restore
+  // failed, and it commits successfully.
+  EXPECT_TRUE(new_history_navigation_manager.WaitForResponse());
+  EXPECT_TRUE(new_history_navigation_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(new_history_navigation_manager.was_successful());
+  EXPECT_EQ(url_1, contents()->GetLastCommittedURL());
 }
 
 INSTANTIATE_TEST_SUITE_P(

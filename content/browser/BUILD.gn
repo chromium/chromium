@@ -1591,6 +1591,8 @@ source_set("browser") {
     "renderer_host/code_cache_host_impl.h",
     "renderer_host/commit_deferring_condition_runner.cc",
     "renderer_host/commit_deferring_condition_runner.h",
+    "renderer_host/concurrent_navigations_commit_deferring_condition.cc",
+    "renderer_host/concurrent_navigations_commit_deferring_condition.h",
     "renderer_host/cookie_utils.cc",
     "renderer_host/cookie_utils.h",
     "renderer_host/cross_origin_opener_policy_access_report_manager.cc",

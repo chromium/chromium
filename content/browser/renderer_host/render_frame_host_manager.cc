@@ -1095,13 +1095,14 @@ void RenderFrameHostManager::RestorePage(
   // in the long run. For now, and to avoid complex edge cases, we simply reuse
   // it to preserve the understood logic in CommitPending.
 
-  // When navigation queueing is disabled, there should be no speculative RFH at
-  // this point. With BackForwardCache, it should have never been created, and
-  // with prerender activation, it should have been cleared out earlier.
-  // TODO(https://crbug.com/1220337): Ensure we aren't deleting a pending commit
-  // RFH.
-  DCHECK(ShouldAvoidRedundantNavigationCancellations() ||
-         !speculative_render_frame_host_);
+  // There should be no speculative RFH at this point. With BackForwardCache, it
+  // should have never been created, and with prerender activation, it should
+  // have been cleared out earlier. If a speculative RenderFrameHost used for
+  // another NavigationRequest existed, then it must be a pending commit RFH,
+  // which would delay the activation navigation from getting here (see also
+  // ConcurrentNavigationsCommitDeferringCondition) until the pending commit
+  // RFH finished the commit and becomes the current RenderFrameHost.
+  DCHECK(!speculative_render_frame_host_);
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "spec_rfh_exists",
                         !!speculative_render_frame_host_);
   speculative_render_frame_host_ = stored_page->TakeRenderFrameHost();
@@ -1308,10 +1309,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     // navigation race should be fairly rare, so for navigation queueing, do the
     // simple thing and give up trying to assign a RenderFrameHost for the
     // navigation.
-    if (speculative_render_frame_host_ &&
-        speculative_render_frame_host_
-            ->HasPendingCommitForCrossDocumentNavigation() &&
-        ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
+        request->ShouldQueueDueToExistingPendingCommitRFH()) {
       return base::unexpected(
           GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
     }
@@ -1395,9 +1394,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       // order for the browser and the renderer state to remain in sync. See
       // https://crbug.com/838348.
       if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-          speculative_render_frame_host_ &&
-          speculative_render_frame_host_
-              ->HasPendingCommitForCrossDocumentNavigation()) {
+          request->ShouldQueueDueToExistingPendingCommitRFH()) {
         return base::unexpected(
             GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
       }

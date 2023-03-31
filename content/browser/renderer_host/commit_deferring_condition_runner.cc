@@ -7,9 +7,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
+#include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
+#include "content/common/features.h"
 #include "content/public/browser/commit_deferring_condition.h"
 
 namespace content {
@@ -112,6 +114,11 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
 
   AddCondition(
       ViewTransitionCommitDeferringCondition::MaybeCreate(navigation_request));
+
+  if (ShouldAvoidRedundantNavigationCancellations()) {
+    AddCondition(ConcurrentNavigationsCommitDeferringCondition::MaybeCreate(
+        navigation_request, navigation_type_));
+  }
 
   // The BFCache deferring condition should run after all other conditions
   // since it'll disable eviction on a cached renderer.

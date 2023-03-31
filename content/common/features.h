@@ -34,11 +34,12 @@ BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
 // proxy.
 BASE_DECLARE_FEATURE(kConsolidatedIPCForProxyCreation);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
-
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
 // See https://crbug.com/838348 and https://crbug.com/1220337.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
+
+// The levels for the kQueueNavigationsWhileWaitingForCommit feature.
 enum class NavigationQueueingFeatureLevel {
   // Feature is disabled.
   kNone,

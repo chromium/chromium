@@ -992,7 +992,7 @@ class BeginNavigationInCommitCallbackInterceptor::ObserverInstaller
 
   // WebContentsObserver overrides:
   void DidStartNavigation(NavigationHandle* handle) override {
-    NavigationRequest::From(handle)->set_resume_commit_closure_for_test(
+    NavigationRequest::From(handle)->set_resume_commit_closure(
         base::BindLambdaForTesting(
             [observer = std::make_unique<ResumeCommitClosureSetObserver>(
                  std::move(original_navigation_), std::move(original_params_),

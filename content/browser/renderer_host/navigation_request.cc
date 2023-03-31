@@ -65,6 +65,7 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -2075,22 +2076,6 @@ NavigationRequest::~NavigationRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "NavigationRequest",
                                   navigation_id_);
 
-  // In theory, this only needs to run when deleting a NavigationRequest with an
-  // associated RenderFrameHost that is:
-  //
-  // - the speculative RenderFrameHost
-  // - and that speculative RenderFrameHost was previously in the pending commit
-  //   state.
-  //
-  // In practice, it is safer to just always run this; trying to resume a
-  // NavigationRequest's attempt to commit "too soon" will just re-queue the
-  // request, whereas accidentally forgetting to resume it sometimes will lead
-  // to a navigation just silently not working.
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-      frame_tree_node_->navigation_request()) {
-    frame_tree_node_->navigation_request()->ResumeCommitIfNeeded();
-  }
-
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
@@ -2174,6 +2159,25 @@ NavigationRequest::~NavigationRequest() {
         rfh->EvictFromBackForwardCacheWithReason(
             BackForwardCacheMetrics::NotRestoredReason::
                 kNavigationCancelledWhileRestoring);
+      }
+    }
+  }
+
+  // This navigation has finished. See if there is another NavigationRequest
+  // that lives in the associated FrameTreeNode that satisfies these conditions:
+  // - Is currently queued to wait for a pending commit navigation to finish
+  // - Is not the NavigationRequest that is currently being destructed itself
+  // - Is not a failed Back/Forward Cache restore that is waiting to be
+  // restarted as a new navigation (as that navigation is basically inactive).
+  if (NavigationRequest* request = frame_tree_node_->navigation_request()) {
+    if (request->IsQueued() && request != this &&
+        !request->restarting_back_forward_cached_navigation_) {
+      // It might be possible for the pending commit RFH to still exist, e.g. if
+      // the navigation being destructed is an unrelated navigation
+      // (same-document navigation etc). In that case, don't continue the queued
+      // navigation just yet.
+      if (!request->ShouldQueueDueToExistingPendingCommitRFH()) {
+        request->ResumeCommit();
       }
     }
   }
@@ -4189,6 +4193,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
           // future.
           break;
         case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
+          DCHECK(ShouldQueueDueToExistingPendingCommitRFH());
           // This closure is posted to the event loop, so it must use WeakPtr.
           resume_commit_closure_ = base::BindOnce(
               &NavigationRequest::SelectFrameHostForOnResponseStarted,
@@ -9221,13 +9226,33 @@ void NavigationRequest::ComputeDownloadPolicy() {
   // [Interstitial]
 }
 
-void NavigationRequest::ResumeCommitIfNeeded() {
-  DCHECK(ShouldQueueNavigationsWhenPendingCommitRFHExists());
+bool NavigationRequest::ShouldQueueDueToExistingPendingCommitRFH() const {
+  CHECK_EQ(this, frame_tree_node_->navigation_request());
+  CHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST);
+
+  if (RenderFrameHostImpl* speculative_rfh =
+          frame_tree_node_->render_manager()->speculative_frame_host()) {
+    // Queue the navigation if there is a pending commit RenderFrameHost.
+    return speculative_rfh->HasPendingCommitForCrossDocumentNavigation();
+  }
+  return false;
+}
+
+void NavigationRequest::ResumeCommit() {
+  DCHECK(ShouldAvoidRedundantNavigationCancellations());
+  DCHECK(!ShouldQueueDueToExistingPendingCommitRFH());
   // TODO(crbug.com/1220337): Add some metrics for how often:
   // - this is run
   // - how long navigations remain queued
   // - how often it ends up having to simply re-queue itself
   if (resume_commit_closure_) {
+    // Post a task so that we resume the navigation asynchronously. Note
+    // that we're guaranteed to not have a new RFH get into a pending commit
+    // stage in between the time we post this task and the time we run it.
+    // `this` is the previously-queued NavigationRequest and is still owned by
+    // the `FrameTreeNode`. If a new `NavigationRequest` is created, it will
+    // replace and delete `this` and the resume callback for `this` will be
+    // skipped.
     base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
         FROM_HERE, std::move(resume_commit_closure_));
   }

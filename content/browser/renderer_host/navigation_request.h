@@ -683,6 +683,10 @@ class CONTENT_EXPORT NavigationRequest
     ready_to_commit_callback_for_testing_ = std::move(callback);
   }
 
+  // Whether this navigation is queued, waiting for an existing pending commit
+  // RenderFrameHost to finish navigating.
+  bool IsQueued() const { return !!resume_commit_closure_; }
+
   void set_renderer_cancellation_window_ended_callback(
       base::OnceClosure callback) {
     DCHECK(!renderer_cancellation_window_ended());
@@ -1154,7 +1158,18 @@ class CONTENT_EXPORT NavigationRequest
   // request and is instead pulled from the committed context on the main frame.
   bool GetIsThirdPartyCookiesUserBypassEnabled();
 
-  void set_resume_commit_closure_for_test(base::OnceClosure closure) {
+  // Returns true if there is a speculative RFH that has a pending commit
+  // cross-document navigation, and this NavigationRequest is not a pending
+  // commit NavigationRequest itself. This means that this navigation should be
+  // queued (i.e. wait for the pending commit navigation to finish committing),
+  // before continuing and creating a new speculative RFH to commit in, so that
+  // it won't cause the existing pending commit RFH to be deleted. This function
+  // should only be called for navigations that are owned by the FrameTreeNode
+  // (i.e. it hasn't moved to the RenderFrameHost that it will commit in yet),
+  // as only those navigations can be queued.
+  bool ShouldQueueDueToExistingPendingCommitRFH() const;
+
+  void set_resume_commit_closure(base::OnceClosure closure) {
     resume_commit_closure_ = std::move(closure);
   }
 
@@ -1813,9 +1828,10 @@ class CONTENT_EXPORT NavigationRequest
     return common_params_->download_policy;
   }
 
-  // Called on FrameTreeNode's NavigationRequest (if any) when another
-  // NavigationRequest associated with the same FrameTreeNode is destroyed.
-  void ResumeCommitIfNeeded();
+  // Called on FrameTreeNode's queued NavigationRequest (if any) when another
+  // NavigationRequest associated with the same FrameTreeNode is destroyed and
+  // the queued NavigationRequest can be resumed.
+  void ResumeCommit();
 
   // Used to detect if the page being navigated to is participating in the
   // related deprecation trial and recording that in NavigationControllerImpl.
@@ -2463,19 +2479,15 @@ class CONTENT_EXPORT NavigationRequest
 
   // If the browser has asked the renderer to commit the navigation in a
   // speculative RenderFrameHost, but the renderer has not yet responded, a
-  // subsequent navigation request will be suspended if it also reaches the
-  // ready to commit state. A suspended navigation should populate this field
-  // with a closure that resumes committing the navigation when run.
+  // subsequent navigation request will be queued when it is about to pick its
+  // final RenderFrameHost, to avoid deleting the previous navigation's pending
+  // commit RenderFrameHost. A queued navigation should populate this field with
+  // a closure that resumes committing the navigation when run.
   //
-  // 1. The closure should always be bound with a `WeakPtr` receiver. To avoid
-  //    weird reentrancy bugs, it will be run as a non-nested posted task, which
-  //    means the original NavigationRequest could already be deleted by the
-  //    time the closure runs.
-  // 2. The closure may run spuriously, i.e. it may be invoked even if a
-  //    speculative RenderFrameHost is still in the pending commit state and
-  //    still preventing any other navigations from committing. If this happens,
-  //    the closure should re-queue itself. For more background, please see the
-  //    comments in the implementation of `ResumeCommitIfNeeded()`.
+  // The closure should always be bound with a `WeakPtr` receiver. To avoid
+  // weird reentrancy bugs, it will be run as a non-nested posted task, which
+  // means the original NavigationRequest could already be deleted by the
+  // time the closure runs.
   base::OnceClosure resume_commit_closure_;
 
   // Records whether the new document will commit inside another BrowsingContext
