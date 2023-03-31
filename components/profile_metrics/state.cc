@@ -91,8 +91,4 @@ void LogProfileAllAccountsNames(AllAccountsNames names) {
   base::UmaHistogramEnumeration("Profile.AllAccounts.Names", names);
 }
 
-void LogProfileAllAccountsCategories(AllAccountsCategories categories) {
-  base::UmaHistogramEnumeration("Profile.AllAccounts.Categories", categories);
-}
-
 }  // namespace profile_metrics

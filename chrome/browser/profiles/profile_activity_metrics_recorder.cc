@@ -115,7 +115,7 @@ void RecordAccountMetrics(const Profile* profile) {
     return;
   }
 
-  entry->RecordAccountMetrics();
+  entry->RecordAccountNamesMetric();
 }
 
 }  // namespace

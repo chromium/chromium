@@ -30,32 +30,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Profile.AddSignInFlowOutcome"
     enum="ProfileSignedInFlowOutcome" expires_after="2023-08-20">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the outcome of signed-in profile creation whenever it's started (by
     user choosing to sign-in in the first screen of the profile creation flow).
   </summary>
 </histogram>
 
-<histogram name="Profile.AllAccounts.Categories"
-    enum="ProfileAllAccountsCategories" expires_after="2023-04-30">
-  <owner>jkrcal@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Classification of what account categories out of {consumer, enterprise}
-    appear or appeared in this profile since the last time gaia cookies got
-    deleted. Thus, this also includes signed-out accounts. If both categories
-    appeared, it also distinguishes whether sync is enabled and for which of
-    them. Recorded on every activation of a Chrome window (for the respective
-    profile).
-  </summary>
-</histogram>
-
 <histogram name="Profile.AllAccounts.Names" enum="ProfileAllAccountsNames"
     expires_after="2023-08-08">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Classification of what gaia names appear or appeared in this profile since
     the last time gaia cookies got deleted. Thus, this also includes signed-out
@@ -86,8 +72,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Profile.Avatar" enum="ProfileAvatar"
     expires_after="2023-08-27">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>The frequency of selection of each avatar.</summary>
 </histogram>
 
@@ -460,7 +446,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Profile.NumberOfProfiles" units="profiles"
     expires_after="2023-08-20">
   <owner>droger@chromium.org</owner>
-  <owner>jkrcal@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts the number of profiles on a user's machine every 24 hours while
     Chrome is running.
@@ -472,8 +458,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Profile.NumberOfProfilesAtProfileSwitch" units="profiles"
     expires_after="2023-08-08">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the count of profiles for each profile switch (incl. switching
     between concurrently open profiles by activating their browser windows). The
@@ -485,7 +471,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Profile.NumberOfSignedInProfiles" units="profiles"
     expires_after="2023-08-27">
   <owner>droger@chromium.org</owner>
-  <owner>jkrcal@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts the number of signed-in (syncing) profiles on a user's machine every
     24 hours while Chrome is running.
@@ -539,8 +525,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Profile.State.Avatar" enum="ProfileAvatarState"
     expires_after="2023-08-08">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The state of profile avatars as would be displayed to the user in the
     profile picker. Recorded on startup of Chrome and whenever Chrome is used
@@ -550,8 +536,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Profile.State.LastUsed" units="days"
     expires_after="2023-08-27">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The number of days since a profile was last used. Recorded on startup of
     Chrome and whenever Chrome is used after at least 30 minutes of inactivity.
@@ -560,8 +546,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Profile.State.Name" enum="ProfileNameState"
     expires_after="2023-06-04">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The state of profile name as would be displayed to the user in the profile
     picker. Recorded on startup of Chrome and whenever Chrome is used after at
@@ -571,8 +557,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Profile.State.SyncEnabled" enum="BooleanEnabled"
     expires_after="2023-09-10">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The sync status of the profile. Recorded on startup of Chrome and whenever
     Chrome is used after at least 30 minutes of inactivity.
@@ -581,8 +567,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Profile.State.UnconsentedPrimaryAccountType"
     enum="ProfileUnconsentedPrimaryAccountType" expires_after="2023-09-03">
-  <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The type of profile's unconsented primary account. Recorded on startup of
     Chrome and whenever Chrome is used after at least 30 minutes of inactivity.

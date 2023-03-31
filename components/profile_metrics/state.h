@@ -63,20 +63,6 @@ enum class AllAccountsNames {
   kMaxValue = kMultipleNamesWithSync
 };
 
-// Classification of what account categories out of {consumer, enterprise}
-// appear or appeared in this profile since the last time gaia cookies got
-// deleted. Thus, this also includes signed-out accounts. If both categories
-// appeared, it also distinguishes whether sync is enabled and for which of
-// them. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class AllAccountsCategories {
-  kSingleCategory = 0,
-  kBothConsumerAndEnterpriseNoSync = 1,
-  kBothConsumerAndEnterpriseSyncingConsumer = 2,
-  kBothConsumerAndEnterpriseSyncingEnterprise = 3,
-  kMaxValue = kBothConsumerAndEnterpriseSyncingEnterprise
-};
-
 // Different types of reporting for profile state. This is used as a histogram
 // suffix.
 enum class StateSuffix {
@@ -117,9 +103,6 @@ void LogProfileDeletionContext(bool is_last_profile, bool no_browser_windows);
 
 // Records the state of account names used in multi-login.
 void LogProfileAllAccountsNames(AllAccountsNames names);
-
-// Records the state of account categories used in multi-login.
-void LogProfileAllAccountsCategories(AllAccountsCategories categories);
 
 }  // namespace profile_metrics
 

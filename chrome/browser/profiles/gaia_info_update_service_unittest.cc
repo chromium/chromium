@@ -279,27 +279,19 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
 
   // Test correct histogram recording for all accounts info that has no getters.
   base::HistogramTester tester;
-  entry->RecordAccountMetrics();
+  entry->RecordAccountNamesMetric();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
       /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*expected_count=*/1);
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Categories",
-      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
       /*expected_count=*/1);
 
   // Log out and record the metric again, sign-out wipes previous info in the
   // entry so again the default values get reported.
   identity_test_env()->SetCookieAccounts({});
-  entry->RecordAccountMetrics();
+  entry->RecordAccountNamesMetric();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
       /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
-      /*expected_count=*/2);
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Categories",
-      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
       /*expected_count=*/2);
 
   std::string email2 = "pat2@example.com";
@@ -315,20 +307,13 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
 
   // Because due to the complete sign-out, the info about the previous account
   // got wiped. Thus the same default metrics get recorded again, despite the
-  // second account has a different gaia name and a different account category
-  // than the first one.
-  entry->RecordAccountMetrics();
+  // second account has a different gaia name than the first one.
+  entry->RecordAccountNamesMetric();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
       /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
       /*expected_count=*/3);
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Categories",
-      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
-      /*expected_count=*/3);
   tester.ExpectTotalCount("Profile.AllAccounts.Names", /*expected_count=*/3);
-  tester.ExpectTotalCount("Profile.AllAccounts.Categories",
-                          /*expected_count=*/3);
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
@@ -354,34 +339,23 @@ TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
 
   // Test correct histogram recording for all accounts info that has no getters.
-  // The two accounts have both different gaia names and account categories.
+  // The two accounts have different gaia names.
   base::HistogramTester tester;
-  entry->RecordAccountMetrics();
+  entry->RecordAccountNamesMetric();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
       /*sample=*/profile_metrics::AllAccountsNames::kMultipleNamesWithoutSync,
-      /*expected_count=*/1);
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Categories",
-      /*sample=*/
-      profile_metrics::AllAccountsCategories::kBothConsumerAndEnterpriseNoSync,
       /*expected_count=*/1);
 
   // Log out and record the metric again, sign-out wipes previous info in the
   // entry so the default values get reported.
   identity_test_env()->SetCookieAccounts({});
-  entry->RecordAccountMetrics();
+  entry->RecordAccountNamesMetric();
   tester.ExpectBucketCount(
       "Profile.AllAccounts.Names",
       /*sample=*/profile_metrics::AllAccountsNames::kLikelySingleName,
       /*expected_count=*/1);
-  tester.ExpectBucketCount(
-      "Profile.AllAccounts.Categories",
-      /*sample=*/profile_metrics::AllAccountsCategories::kSingleCategory,
-      /*expected_count=*/1);
   tester.ExpectTotalCount("Profile.AllAccounts.Names", /*expected_count=*/2);
-  tester.ExpectTotalCount("Profile.AllAccounts.Categories",
-                          /*expected_count=*/2);
 }
 #endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
