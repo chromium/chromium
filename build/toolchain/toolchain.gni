@@ -84,7 +84,7 @@ if (host_os == "win") {
 
   stamp_command = "cmd /c type nul > \"{{output}}\""
   copy_command =
-      "$python_path $_tool_wrapper_path recursive-mirror {{source}} {{output}}"
+      "\"$python_path\" $_tool_wrapper_path recursive-mirror {{source}} {{output}}"
 } else {
   stamp_command = "touch {{output}}"
   copy_command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"

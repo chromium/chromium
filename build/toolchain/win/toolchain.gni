@@ -153,7 +153,7 @@ template("single_msvc_toolchain") {
       # (it needs %LIB% set to find libraries), and to work around its bugs.
       # Note trailing space:
       linker_wrapper =
-          "$python_path $_tool_wrapper_path link-wrapper $env False "
+          "\"$python_path\" $_tool_wrapper_path link-wrapper $env False "
       sys_lib_flags = ""
     }
 
@@ -184,7 +184,7 @@ template("single_msvc_toolchain") {
             rebase_path(toolchain_coverage_instrumentation_input_file,
                         root_build_dir)
       }
-      coverage_wrapper = "$python_path " + coverage_wrapper + " "
+      coverage_wrapper = "\"$python_path\" " + coverage_wrapper + " "
     } else {
       coverage_wrapper = ""
     }
@@ -234,7 +234,7 @@ template("single_msvc_toolchain") {
     }
 
     tool("rc") {
-      command = "$python_path $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
+      command = "\"$python_path\" $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
       depsformat = "msvc"
       outputs = [ "$object_subdir/{{source_name_part}}.res" ]
       description = "RC {{output}}"
@@ -288,17 +288,17 @@ template("single_msvc_toolchain") {
           # It's lld only because the script zaps obj Timestamp which
           # link.exe /incremental looks at.
           ml_py = rebase_path("//build/toolchain/win/ml.py", root_build_dir)
-          ml = "$python_path $ml_py $ml"
+          ml = "\"$python_path\" $ml_py $ml"
         }
       }
       if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
         # TODO(thakis): Stop using asm-wrapper when using clang.
-        command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+        command = "\"$python_path\" $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
       } else {
         # armasm64.exe does not support definitions passed via the command
         # line. (Fortunately, they're not needed for compiling the V8
         # snapshot, which is the only time this assembler is required.)
-        command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
+        command = "\"$python_path\" $_tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
       }
 
       description = "ASM {{output}}"
@@ -316,7 +316,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -329,7 +329,7 @@ template("single_msvc_toolchain") {
         # Do not use rsp files in this (common) case because they occupy the
         # ninja main thread, and {{rlibs}} have shorter command lines than
         # fully linked targets.
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -340,7 +340,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -351,7 +351,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
@@ -362,7 +362,7 @@ template("single_msvc_toolchain") {
         depfile = "{{output}}.d"
         rspfile = "$rust_outfile.rsp"
         rspfile_content = "{{rustdeps}} {{externs}}"
-        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
+        command = "\"$python_path\" \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_windows_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} $sys_lib_flags RUSTENV {{rustenv}}"
         description = "RUST $rust_outfile"
         rust_sysroot = rust_sysroot_relative_to_out
         outputs = [ rust_outfile ]
