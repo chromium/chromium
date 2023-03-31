@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -52,6 +53,14 @@ class AXMenuList final : public AXLayoutObject {
 
   AXObject* GetOrCreateMockPopupChild();
 
+  const WTF::Vector<gfx::Rect>& GetOptionsBounds() const {
+    return options_bounds_;
+  }
+
+  void SetOptionsBounds(const WTF::Vector<gfx::Rect>& options_bounds) {
+    options_bounds_ = options_bounds;
+  }
+
  private:
   friend class AXMenuListOption;
 
@@ -61,6 +70,8 @@ class AXMenuList final : public AXLayoutObject {
   void AddChildren() override;
 
   bool IsCollapsed() const;
+
+  WTF::Vector<gfx::Rect> options_bounds_;
 };
 
 template <>

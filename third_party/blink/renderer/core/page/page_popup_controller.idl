@@ -46,4 +46,5 @@
     // rectangle to fit in the current screen. Popups sometimes need to be
     // positioned on other screens.
     void setWindowRect(long x, long y,long width, long height);
+    void setMenuListOptionsBoundsInAXTree(sequence<DOMRect> options_bounds);
 };

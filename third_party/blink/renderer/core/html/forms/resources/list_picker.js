@@ -30,6 +30,21 @@ function handleArgumentsTimeout() {
   initialize({});
 }
 
+/**
+ * @param {!Element} parent
+ * @param {!Array} optionBounds
+ */
+function buildOptionBoundsArray(parent, optionBounds) {
+  for (let i = 0; i < parent.children.length; i++) {
+    const child = parent.children[i];
+    if (child.tagName === 'OPTION') {
+      optionBounds[child.index] = child.getBoundingClientRect();
+    } else if (child.tagName === 'OPTGROUP') {
+      buildOptionBoundsArray(child, optionBounds)
+    }
+  }
+}
+
 class ListPicker extends Picker {
   /**
    * @param {!Element} element
@@ -314,6 +329,7 @@ class ListPicker extends Picker {
     if (this.config_.baseStyle.textAlign)
       this.selectElement_.style.textAlign = this.config_.baseStyle.textAlign;
     this.updateChildren_(this.selectElement_, this.config_);
+    this.setMenuListOptionsBoundsInAXTree_();
   }
 
   update_() {
@@ -404,6 +420,7 @@ class ListPicker extends Picker {
     this.selectElement_.appendChild(fragment);
     this.selectElement_.classList.add('wrap');
     this.delayedChildrenConfig_ = null;
+    this.setMenuListOptionsBoundsInAXTree_();
   }
 
   findReusableItem_(parent, config, startIndex) {
@@ -496,6 +513,12 @@ class ListPicker extends Picker {
       }
     }
     this.applyItemStyle_(element, config.style);
+  }
+
+  setMenuListOptionsBoundsInAXTree_() {
+    var optionBounds = [];
+    buildOptionBoundsArray(this.selectElement_, optionBounds);
+    window.pagePopupController.setMenuListOptionsBoundsInAXTree(optionBounds);
   }
 }
 

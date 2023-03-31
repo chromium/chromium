@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -694,6 +695,30 @@ void InternalPopupMenu::DisconnectClient() {
   // Cannot be done during finalization, so instead done when the
   // layout object is destroyed and disconnected.
   Dispose();
+}
+
+void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
+    WTF::Vector<gfx::Rect>& options_bounds,
+    gfx::Point popup_origin) {
+  WebFrameWidgetImpl* widget =
+      WebLocalFrameImpl::FromFrame(owner_element_->GetDocument().GetFrame())
+          ->LocalRootFrameWidget();
+  if (!widget) {
+    return;
+  }
+
+  gfx::Rect widget_view_rect = widget->ViewRect();
+  popup_origin.Offset(-widget_view_rect.x(), -widget_view_rect.y());
+  popup_origin = widget->DIPsToRoundedBlinkSpace(popup_origin);
+
+  for (auto& option_bounds : options_bounds) {
+    option_bounds.Offset(popup_origin.x(), popup_origin.y());
+  }
+
+  AXObjectCache* cache = owner_element_->GetDocument().ExistingAXObjectCache();
+  if (cache) {
+    cache->SetMenuListOptionsBounds(owner_element_, options_bounds);
+  }
 }
 
 }  // namespace blink

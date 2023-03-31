@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -113,6 +114,9 @@ class CORE_EXPORT PagePopupClient {
                           SharedBuffer*);
   static void AddProperty(const char* name, const gfx::Rect&, SharedBuffer*);
   void AddLocalizedProperty(const char* name, int resource_id, SharedBuffer*);
+
+  virtual void SetMenuListOptionsBoundsInAXTree(WTF::Vector<gfx::Rect>&,
+                                                gfx::Point) {}
 
  protected:
   void AdjustSettingsFromOwnerColorScheme(Settings& popup_settings);

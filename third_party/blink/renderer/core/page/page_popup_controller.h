@@ -32,14 +32,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_POPUP_CONTROLLER_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 class CSSFontSelector;
 class Document;
+class DOMRect;
 class Page;
 class PagePopup;
 class PagePopupClient;
@@ -69,8 +72,13 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
 
   void Trace(Visitor*) const override;
 
+  void setMenuListOptionsBoundsInAXTree(
+      HeapVector<Member<DOMRect>>& options_bounds);
+
  private:
   PagePopup& popup_;
+
+  WTF::Vector<gfx::Rect> options_bounds_;
 
  protected:
   PagePopupClient* popup_client_;

@@ -173,13 +173,10 @@ void AXMenuListOption::GetRelativeBounds(
 
   // When a <select> is collapsed, the bounds of its options are the same as
   // that of the containing <select>.
-  // It is not necessary to compute the bounds of options in an expanded select.
   // On Mac and Android, the menu list is native and already accessible; those
   // are the platforms where we need AXMenuList so that the options can be part
   // of the accessibility tree when collapsed, and there's never going to be a
   // need to expose the bounds of options on those platforms.
-  // On Windows and Linux, AXObjectCacheImpl::UseAXMenuList() will return false,
-  // and therefore this code should not be reached.
 
   auto* select = To<HTMLOptionElement>(GetNode())->OwnerSelectElement();
   AXObject* ax_menu_list = AXObjectCache().GetOrCreate(select);
@@ -187,7 +184,13 @@ void AXMenuListOption::GetRelativeBounds(
     return;
   DCHECK(ax_menu_list->IsMenuList());
   DCHECK(ax_menu_list->GetLayoutObject());
-  if (ax_menu_list->GetLayoutObject()) {
+  WTF::Vector<gfx::Rect> options_bounds =
+      To<AXMenuList>(ax_menu_list)->GetOptionsBounds();
+  if (options_bounds.size()) {
+    int index = To<HTMLOptionElement>(GetNode())->index();
+    DCHECK_GT(options_bounds.size(), (unsigned int)index);
+    out_bounds_in_container = gfx::RectF(options_bounds.at(index));
+  } else if (ax_menu_list->GetLayoutObject()) {
     ax_menu_list->GetRelativeBounds(out_container, out_bounds_in_container,
                                     out_container_transform, clips_children);
   }
