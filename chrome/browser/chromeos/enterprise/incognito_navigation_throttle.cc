@@ -57,14 +57,10 @@ std::string GetIncognitoNavigationBlockedErrorPage(
       "incognitoBlockedMissingExtensionsTitle",
       l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_NAVIGATION_MISSING_TITLE,
                                        missing_extension.size()));
-  strings.Set("incognitoBlockedMissingExtensionsMessagePart1",
+  strings.Set("incognitoBlockedMissingExtensionsMessage",
               l10n_util::GetPluralStringFUTF16(
-                  IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS_PART_1,
+                  IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS,
                   missing_extension.size()));
-  strings.Set("incognitoBlockedMissingExtensionsMessagePart2",
-              l10n_util::GetStringUTF16(
-                  IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS_PART_2));
-
   strings.Set("blockingExtensions", std::move(blocking_extension));
   strings.Set("missingExtensions", std::move(missing_extension));
 

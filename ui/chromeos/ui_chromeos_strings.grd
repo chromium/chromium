@@ -1938,13 +1938,10 @@
               =1 {Can’t find extension}
               other {Can’t find extensions}}
       </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS_PART_1" desc="First part of the message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
+      <message name="IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS" desc="Message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
         {COUNT, plural,
-              =1 {An extension with the ID}
-              other {Extensions with the IDs}}
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS_PART_2" desc="Second part of the message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
-        can’t be located. Contact your administrator.
+              =1 {An extension with the ID <ph name="BEGIN_LIST">&lt;ul id="mising-extensions" &gt;</ph><ph name="END_LIST">&lt;/ul&gt;</ph> can’t be located. Contact your administrator.}
+              other {Extensions with the IDs <ph name="BEGIN_LIST">&lt;ul id="mising-extensions" &gt;</ph><ph name="END_LIST">&lt;/ul&gt;</ph> can’t be located. Contact your administrator.}}
       </message>
 
       <!-- Settings strings -->
