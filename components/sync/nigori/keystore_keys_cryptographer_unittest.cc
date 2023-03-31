@@ -21,7 +21,7 @@ std::string ComputeKeystoreKeyName(const std::string& keystore_key) {
   std::string key_name;
   Nigori::CreateByDerivation(KeyDerivationParams::CreateForPbkdf2(),
                              keystore_key)
-      ->Permute(Nigori::Password, kNigoriKeyName, &key_name);
+      ->GetKeyName(&key_name);
   return key_name;
 }
 

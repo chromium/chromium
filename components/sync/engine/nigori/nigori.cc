@@ -200,14 +200,11 @@ std::unique_ptr<Nigori> Nigori::CreateByImport(
   return nigori;
 }
 
-// Permute[Kenc,Kmac](type || name)
-bool Nigori::Permute(Type type,
-                     const std::string& name,
-                     std::string* permuted) const {
-  DCHECK_LT(0U, name.size());
-
+// Permute[Kenc,Kmac](Nigori::Password || kNigoriKeyName)
+bool Nigori::GetKeyName(std::string* permuted) const {
+  static constexpr char kNigoriKeyName[] = "nigori-key";
   NigoriStream plaintext;
-  plaintext << type << name;
+  plaintext << Nigori::Password << kNigoriKeyName;
 
   crypto::Encryptor encryptor;
   if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC,

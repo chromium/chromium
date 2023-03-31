@@ -16,7 +16,7 @@ namespace {
 
 std::string ComputeNigoriName(const Nigori& nigori) {
   std::string key_name;
-  nigori.Permute(Nigori::Password, kNigoriKeyName, &key_name);
+  nigori.GetKeyName(&key_name);
   return key_name;
 }
 

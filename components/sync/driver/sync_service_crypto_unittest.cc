@@ -52,8 +52,7 @@ sync_pb::EncryptedData MakeEncryptedData(
       Nigori::CreateByDerivation(derivation_params, passphrase);
 
   std::string nigori_name;
-  EXPECT_TRUE(
-      nigori->Permute(Nigori::Type::Password, kNigoriKeyName, &nigori_name));
+  EXPECT_TRUE(nigori->GetKeyName(&nigori_name));
 
   const std::string unencrypted = "test";
   sync_pb::EncryptedData encrypted;

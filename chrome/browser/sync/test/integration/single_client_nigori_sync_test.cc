@@ -89,8 +89,7 @@ MATCHER_P(IsDataEncryptedWith, key_params, "") {
   std::unique_ptr<syncer::Nigori> nigori = syncer::Nigori::CreateByDerivation(
       key_params.derivation_params, key_params.password);
   std::string nigori_name;
-  EXPECT_TRUE(nigori->Permute(syncer::Nigori::Type::Password,
-                              syncer::kNigoriKeyName, &nigori_name));
+  EXPECT_TRUE(nigori->GetKeyName(&nigori_name));
   return encrypted_data.key_name() == nigori_name;
 }
 
@@ -147,7 +146,7 @@ std::string ComputeKeyName(const KeyParamsForTesting& key_params) {
   std::string key_name;
   syncer::Nigori::CreateByDerivation(key_params.derivation_params,
                                      key_params.password)
-      ->Permute(syncer::Nigori::Password, syncer::kNigoriKeyName, &key_name);
+      ->GetKeyName(&key_name);
   return key_name;
 }
 

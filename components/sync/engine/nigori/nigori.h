@@ -20,8 +20,6 @@ namespace syncer {
 
 class KeyDerivationParams;
 
-inline constexpr char kNigoriKeyName[] = "nigori-key";
-
 // A (partial) implementation of Nigori, a protocol to securely store secrets in
 // the cloud. This implementation does not support server authentication or
 // assisted key derivation.
@@ -53,13 +51,11 @@ class Nigori {
       const std::string& encryption_key,
       const std::string& mac_key);
 
-  // Derives a secure lookup name from |type| and |name|. If |hostname|,
-  // |username| and |password| are kept constant, a given |type| and |name| pair
-  // always yields the same |permuted| value. Note that |permuted| will be
-  // Base64 encoded.
-  // TODO(crbug.com/1407696): inline |type| and |name|, they are hardcoded
-  // constants.
-  bool Permute(Type type, const std::string& name, std::string* permuted) const;
+  // Derives a secure lookup name for |this|, computed as
+  // Permute[Kenc,Kmac](Nigori::Password || "nigori-key") as per Nigori
+  // protocol. Note that |permuted| will be Base64 encoded.
+  // TODO(crbug.com/1407696) change signature to: string GetKeyName().
+  bool GetKeyName(std::string* permuted) const;
 
   // Encrypts |value|. Note that the returned value is Base64 encoded.
   std::string Encrypt(const std::string& value) const;

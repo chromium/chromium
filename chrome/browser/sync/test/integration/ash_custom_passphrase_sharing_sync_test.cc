@@ -73,7 +73,7 @@ std::string PrefValueToProtoString(const base::Value& value) {
 
 std::string ComputeKeyName(const syncer::Nigori& nigori) {
   std::string key_name;
-  nigori.Permute(syncer::Nigori::Password, syncer::kNigoriKeyName, &key_name);
+  nigori.GetKeyName(&key_name);
   return key_name;
 }
 
