@@ -4,5 +4,5 @@
   "manifest_version": 2,
   "permissions": ["tabs"],
   "optional_permissions": ["http://*/*"],
-  "background": { "scripts": ["background.js"] }
+  "background": { "scripts": ["background.js"], "persistent": true }
 }

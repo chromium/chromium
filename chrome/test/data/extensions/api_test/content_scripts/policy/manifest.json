@@ -3,5 +3,5 @@
   "version": "1",
   "manifest_version": 2,
   "permissions": ["tabs", "*://example.com/*"],
-  "background": { "scripts": ["background.js"] }
+  "background": { "scripts": ["background.js"], "persistent": true }
 }

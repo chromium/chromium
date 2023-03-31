@@ -4,7 +4,8 @@
   "version": "0.1",
   "manifest_version": 2,
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "default_locale": "en",
   "content_scripts": [
@@ -17,4 +18,3 @@
     "tabs", "http://*/*", "file://*/*"
   ]
 }
-

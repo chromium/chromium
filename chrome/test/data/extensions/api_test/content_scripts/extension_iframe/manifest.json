@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests that a chrome-extension iframe gets messaging privileges",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "bookmarks", "storage"],
   "content_scripts": [

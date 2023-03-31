@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests that content scripts are not injected into about:blank iframes, even after document.write().",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs"],
   "content_scripts": [

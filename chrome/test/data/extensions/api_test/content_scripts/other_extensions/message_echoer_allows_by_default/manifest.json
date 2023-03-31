@@ -4,5 +4,8 @@
   "version": "1.0",
   "manifest_version": 2,
   "description": "Is used in tests to verify that a content script can talk to an extension that has no custom external_connectible value.",
-  "background": { "scripts": ["background.js"] }
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
 }

@@ -4,7 +4,8 @@
   "version": "0.3",
   "manifest_version": 2,
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://*/*"],
   "content_scripts": [

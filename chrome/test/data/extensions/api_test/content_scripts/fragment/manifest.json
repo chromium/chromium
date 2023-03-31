@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests content scripts running with navigation to fragments within a page",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "permissions": ["tabs"],
   "content_scripts": [

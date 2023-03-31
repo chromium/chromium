@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests that content scripts are injected in about:blank and about:srcdoc frames if it has access to the parent frame.",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "optional_permissions": ["*://*/*"],
   "content_scripts": [

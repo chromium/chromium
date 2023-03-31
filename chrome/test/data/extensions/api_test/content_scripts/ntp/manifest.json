@@ -8,6 +8,6 @@
     "js": ["script.js"],
     "run_at": "document_end"
   }],
-  "background": {"scripts": ["background.js"]},
+  "background": {"scripts": ["background.js"], "persistent": true},
   "permissions": ["tabs", "*://*/*"]
 }

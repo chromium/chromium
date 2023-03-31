@@ -5,5 +5,8 @@
   "manifest_version": 2,
   "description": "Tests is used to test if another extension can inject its script.",
   "permissions": [ "tabs" ],
-  "background": { "scripts": ["background.js"] }
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
 }

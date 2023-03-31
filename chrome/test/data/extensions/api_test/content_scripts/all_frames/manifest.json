@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests the all_frames property of content script declarations.",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs"],
   "content_scripts": [

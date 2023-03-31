@@ -4,8 +4,8 @@
   "manifest_version": 2,
   "description": "Tests the behavior of fetching a blob:chrome-extension:// URL from a content script.",
   "background": {
-    "persistent": true,
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs"],
   "content_scripts": [
