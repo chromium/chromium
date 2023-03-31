@@ -215,7 +215,7 @@ void MetricReportingManagerLacros::DelayedInit() {
 void MetricReportingManagerLacros::InitNetworkCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto network_bandwidth_sampler = std::make_unique<NetworkBandwidthSampler>(
-      g_browser_process->network_quality_tracker(), profile_);
+      g_browser_process->network_quality_tracker(), profile_->GetWeakPtr());
 
   // Network bandwidth telemetry.
   InitPeriodicCollector(

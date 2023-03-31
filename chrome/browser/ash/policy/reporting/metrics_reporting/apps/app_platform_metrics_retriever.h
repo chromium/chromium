@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_PLATFORM_METRICS_RETRIEVER_H_
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -24,7 +24,7 @@ class AppPlatformMetricsRetriever
   using AppPlatformMetricsCallback =
       base::OnceCallback<void(::apps::AppPlatformMetrics*)>;
 
-  explicit AppPlatformMetricsRetriever(Profile* profile);
+  explicit AppPlatformMetricsRetriever(base::WeakPtr<Profile> profile);
   AppPlatformMetricsRetriever(const AppPlatformMetricsRetriever&) = delete;
   AppPlatformMetricsRetriever& operator=(const AppPlatformMetricsRetriever&) =
       delete;
@@ -49,7 +49,7 @@ class AppPlatformMetricsRetriever
   void OnAppPlatformMetricsServiceWillBeDestroyed() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ptr<Profile> profile_;
+  const base::WeakPtr<Profile> profile_;
 
   // Observer that tracks initialization of the `AppPlatformMetrics` component.
   base::ScopedObservation<::apps::AppPlatformMetricsService,

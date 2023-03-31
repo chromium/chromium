@@ -5,15 +5,18 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace reporting {
 
-AppPlatformMetricsRetriever::AppPlatformMetricsRetriever(Profile* profile)
+AppPlatformMetricsRetriever::AppPlatformMetricsRetriever(
+    base::WeakPtr<Profile> profile)
     : profile_(profile) {}
 
 AppPlatformMetricsRetriever::~AppPlatformMetricsRetriever() = default;
@@ -21,11 +24,17 @@ AppPlatformMetricsRetriever::~AppPlatformMetricsRetriever() = default;
 void AppPlatformMetricsRetriever::GetAppPlatformMetrics(
     AppPlatformMetricsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(
-      ::apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_))
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  if (!profile_) {
+    // Profile destructed, so we return nullptr.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  DCHECK(::apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      profile_.get()))
       << "App service unavailable for profile";
   auto* const app_service_proxy =
-      ::apps::AppServiceProxyFactory::GetForProfile(profile_);
+      ::apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   DCHECK(app_service_proxy) << "App service proxy unavailable";
   if (app_service_proxy->AppPlatformMetrics()) {
     // `AppPlatformMetrics` component already initialized, so we return the

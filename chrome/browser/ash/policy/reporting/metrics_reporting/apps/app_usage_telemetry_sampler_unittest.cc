@@ -71,6 +71,10 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     ::ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
+
+    // Set up app usage telemetry sampler for the test profile.
+    app_usage_telemetry_sampler_ =
+        std::make_unique<AppUsageTelemetrySampler>(profile_->GetWeakPtr());
   }
 
   // Simulates app usage for the specified app usage duration by aggregating
@@ -137,7 +141,7 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  AppUsageTelemetrySampler app_usage_telemetry_sampler_;
+  std::unique_ptr<AppUsageTelemetrySampler> app_usage_telemetry_sampler_;
 
  private:
   raw_ptr<::ash::FakeChromeUserManager> fake_user_manager_;
@@ -155,7 +159,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectAppUsageDataForInstance) {
 
   // Attempt to collect this data and verify reported data.
   test::TestEvent<absl::optional<MetricData>> test_event;
-  app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+  app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
   const absl::optional<MetricData> metric_data_result = test_event.result();
   ASSERT_TRUE(metric_data_result.has_value());
   const MetricData& metric_data = metric_data_result.value();
@@ -174,7 +178,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectAppUsageDataForInstance) {
 
 TEST_F(AppUsageTelemetrySamplerTest, NoAppUsageData) {
   test::TestEvent<absl::optional<MetricData>> test_event;
-  app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+  app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
   const absl::optional<MetricData> metric_data_result = test_event.result();
   ASSERT_FALSE(metric_data_result.has_value());
 }
@@ -191,7 +195,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectResetAppUsageData) {
   // Attempt to collect this data and verify data is reset after it is reported.
   {
     test::TestEvent<absl::optional<MetricData>> test_event;
-    app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+    app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
     const absl::optional<MetricData> metric_data_result = test_event.result();
     ASSERT_TRUE(metric_data_result.has_value());
     VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, base::TimeDelta());
@@ -201,7 +205,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectResetAppUsageData) {
   // nothing is reported.
   {
     test::TestEvent<absl::optional<MetricData>> test_event;
-    app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+    app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
     const absl::optional<MetricData> metric_data_result = test_event.result();
     ASSERT_FALSE(metric_data_result.has_value());
   }
@@ -219,7 +223,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectSubsequentAppUsageData) {
   // Attempt to collect this data and verify data is reset after it is reported.
   {
     test::TestEvent<absl::optional<MetricData>> test_event;
-    app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+    app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
     const absl::optional<MetricData> metric_data_result = test_event.result();
     ASSERT_TRUE(metric_data_result.has_value());
     VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, base::TimeDelta());
@@ -232,7 +236,7 @@ TEST_F(AppUsageTelemetrySamplerTest, CollectSubsequentAppUsageData) {
   // collection is reported.
   {
     test::TestEvent<absl::optional<MetricData>> test_event;
-    app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+    app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
     const absl::optional<MetricData> metric_data_result = test_event.result();
     ASSERT_TRUE(metric_data_result.has_value());
     const MetricData& metric_data = metric_data_result.value();
@@ -266,7 +270,7 @@ TEST_F(AppUsageTelemetrySamplerTest,
 
   // Attempt to collect usage data and verify data being reported.
   test::TestEvent<absl::optional<MetricData>> test_event;
-  app_usage_telemetry_sampler_.MaybeCollect(test_event.cb());
+  app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
   const absl::optional<MetricData> metric_data_result = test_event.result();
   ASSERT_TRUE(metric_data_result.has_value());
   const MetricData& metric_data = metric_data_result.value();
@@ -283,6 +287,25 @@ TEST_F(AppUsageTelemetrySamplerTest,
   // Verify data is reset in the pref store now that it has been reported.
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId1, base::TimeDelta());
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId2, base::TimeDelta());
+}
+
+TEST_F(AppUsageTelemetrySamplerTest, CollectDataAfterProfileDestructed) {
+  // Simulate app usage so we have data in the pref store to work with.
+  static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  CreateOrUpdateAppUsageForInstance(kInstanceId, kAppUsageDuration);
+  ASSERT_THAT(profile_->GetPrefs()->GetDict(::apps::kAppUsageTime).size(),
+              Eq(1UL));
+  VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
+
+  // Destroy the test profile.
+  profile_.reset();
+
+  // Attempt to collect usage data and verify no data is being reported.
+  test::TestEvent<absl::optional<MetricData>> test_event;
+  app_usage_telemetry_sampler_->MaybeCollect(test_event.cb());
+  const absl::optional<MetricData> metric_data_result = test_event.result();
+  ASSERT_FALSE(metric_data_result.has_value());
 }
 
 }  // namespace

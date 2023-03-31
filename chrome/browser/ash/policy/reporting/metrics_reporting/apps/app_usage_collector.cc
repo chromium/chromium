@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace reporting {
 
@@ -24,10 +25,12 @@ namespace reporting {
 std::unique_ptr<AppUsageCollector> AppUsageCollector::Create(
     Profile* profile,
     const ReportingSettings* reporting_settings) {
+  DCHECK(profile);
   auto app_platform_metrics_retriever =
-      std::make_unique<AppPlatformMetricsRetriever>(profile);
-  return base::WrapUnique(new AppUsageCollector(
-      profile, reporting_settings, std::move(app_platform_metrics_retriever)));
+      std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr());
+  return base::WrapUnique(
+      new AppUsageCollector(profile->GetWeakPtr(), reporting_settings,
+                            std::move(app_platform_metrics_retriever)));
 }
 
 // static
@@ -36,12 +39,14 @@ std::unique_ptr<AppUsageCollector> AppUsageCollector::CreateForTest(
     const ReportingSettings* reporting_settings,
     std::unique_ptr<AppPlatformMetricsRetriever>
         app_platform_metrics_retriever) {
-  return base::WrapUnique(new AppUsageCollector(
-      profile, reporting_settings, std::move(app_platform_metrics_retriever)));
+  DCHECK(profile);
+  return base::WrapUnique(
+      new AppUsageCollector(profile->GetWeakPtr(), reporting_settings,
+                            std::move(app_platform_metrics_retriever)));
 }
 
 AppUsageCollector::AppUsageCollector(
-    Profile* profile,
+    base::WeakPtr<Profile> profile,
     const ReportingSettings* reporting_settings,
     std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever)
     : profile_(profile),
@@ -70,11 +75,10 @@ void AppUsageCollector::OnAppUsage(const std::string& app_id,
                                    ::apps::AppType app_type,
                                    const base::UnguessableToken& instance_id,
                                    base::TimeDelta running_time) {
-  DCHECK(profile_);
   DCHECK(reporting_settings_);
   auto is_enabled = metrics::kReportDeviceAppInfoDefaultValue;
   reporting_settings_->GetBoolean(::ash::kReportDeviceAppInfo, &is_enabled);
-  if (!is_enabled) {
+  if (!profile_ || !is_enabled) {
     return;
   }
 
@@ -102,6 +106,8 @@ void AppUsageCollector::CreateOrUpdateAppUsageEntry(
     ::apps::AppType app_type,
     const base::UnguessableToken& instance_id,
     const base::TimeDelta& running_time) {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
+  DCHECK(profile_);
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),
                                        ::apps::kAppUsageTime);
   const auto& instance_id_string = instance_id.ToString();
@@ -110,7 +116,7 @@ void AppUsageCollector::CreateOrUpdateAppUsageEntry(
     ::apps::AppPlatformMetrics::UsageTime usage_time;
     usage_time.app_id = app_id;
     usage_time.app_type_name =
-        ::apps::GetAppTypeName(profile_, app_type, app_id,
+        ::apps::GetAppTypeName(profile_.get(), app_type, app_id,
                                ::apps::LaunchContainer::kLaunchContainerNone);
     usage_time.reporting_usage_time = running_time;
     usage_dict_pref->SetByDottedPath(instance_id_string,

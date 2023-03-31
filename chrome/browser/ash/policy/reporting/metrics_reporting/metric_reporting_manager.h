@@ -174,8 +174,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitNetworkConfiguredSampler(const std::string& sampler_name,
                                     std::unique_ptr<Sampler> sampler);
 
-  // Initializes app telemetry samplers.
-  void InitAppCollectors();
+  // Initializes app telemetry samplers for the given profile.
+  void InitAppCollectors(Profile* profile);
 
   void InitAudioCollectors();
 

@@ -23,8 +23,9 @@ namespace reporting {
 // static
 std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForProfile(
     Profile* profile) {
+  DCHECK(profile);
   auto app_platform_metrics_retriever =
-      std::make_unique<AppPlatformMetricsRetriever>(profile);
+      std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr());
   return base::WrapUnique(
       new AppEventsObserver(std::move(app_platform_metrics_retriever)));
 }

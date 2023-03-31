@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -17,31 +17,15 @@
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
-namespace {
 
-// Returns the primary user profile. We use this every time we need to access
-// the profile so we can prevent dangling pointer references.
-Profile* GetPrimaryUserProfile() {
-  const ::user_manager::User* const primary_user =
-      ::user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(primary_user->is_profile_created());
-  auto* const profile =
-      ::ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  DCHECK(profile);
-  return profile;
-}
-
-}  // namespace
-
-AppUsageTelemetrySampler::AppUsageTelemetrySampler() = default;
+AppUsageTelemetrySampler::AppUsageTelemetrySampler(
+    base::WeakPtr<Profile> profile)
+    : profile_(profile) {}
 
 AppUsageTelemetrySampler::~AppUsageTelemetrySampler() = default;
 
@@ -53,12 +37,17 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
-  auto* const profile = GetPrimaryUserProfile();
+  if (!profile_) {
+    // Profile has be destructed. Return.
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   MetricData metric_data;
   auto* const app_usage_data = metric_data.mutable_telemetry_data()
                                    ->mutable_app_telemetry()
                                    ->mutable_app_usage_data();
-  const PrefService* const user_prefs = profile->GetPrefs();
+  const PrefService* const user_prefs = profile_->GetPrefs();
   if (!user_prefs->HasPrefPath(::apps::kAppUsageTime)) {
     // No usage data in the pref store.
     std::move(callback).Run(absl::nullopt);
@@ -76,7 +65,8 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
       continue;
     }
 
-    ::apps::AppType app_type = ::apps::GetAppType(profile, usage_time.app_id);
+    ::apps::AppType app_type =
+        ::apps::GetAppType(profile_.get(), usage_time.app_id);
     AppUsageData::AppUsage* const app_usage =
         app_usage_data->mutable_app_usage()->Add();
     app_usage->set_app_instance_id(usage_it.first);
@@ -100,8 +90,8 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
 void AppUsageTelemetrySampler::ResetAppUsageDataInPrefStore(
     const AppUsageData* app_usage_data) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-  auto* const profile = GetPrimaryUserProfile();
-  ScopedDictPrefUpdate usage_dict_pref(profile->GetPrefs(),
+  DCHECK(profile_);
+  ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),
                                        ::apps::kAppUsageTime);
   for (const auto& usage_info : app_usage_data->app_usage()) {
     const std::string& instance_id = usage_info.app_instance_id();

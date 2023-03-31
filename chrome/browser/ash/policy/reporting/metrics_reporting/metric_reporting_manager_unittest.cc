@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
@@ -33,6 +34,7 @@
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -959,19 +961,22 @@ class EventDrivenTelemetryCollectorPoolTest
         .WillByDefault(Return(ByMove(std::move(https_latency_collector))));
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   raw_ptr<CollectorBase> https_latency_collector_ptr_;
   raw_ptr<CollectorBase> network_telemetry_collector_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
+  ::ash::ScopedTestingCrosSettings cros_settings_;
+
+  // Placeholder test profile needed for initializing downstream components.
+  TestingProfile profile_;
 };
 
 TEST_P(EventDrivenTelemetryCollectorPoolTest,
        SettingBasedTelemetry_AffiliatedOnly) {
   EventDrivenTelemetryCollectorPoolTestCase test_case = GetParam();
 
-  ash::ScopedTestingCrosSettings cros_settings;
   base::Value::List telemetry_list;
   telemetry_list.Append("invalid");
   telemetry_list.Append("network_telemetry");
@@ -979,8 +984,8 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
   telemetry_list.Append("https_latency");  // duplicate.
   telemetry_list.Append("invalid");
 
-  cros_settings.device_settings()->Set(test_case.setting_name,
-                                       base::Value(std::move(telemetry_list)));
+  cros_settings_.device_settings()->Set(test_case.setting_name,
+                                        base::Value(std::move(telemetry_list)));
 
   ON_CALL(*mock_delegate_, IsDeprovisioned).WillByDefault(Return(false));
   ON_CALL(*mock_delegate_, IsAffiliated).WillByDefault(Return(true));
@@ -995,7 +1000,7 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
 
   ASSERT_TRUE(event_telemetry.empty());
 
-  metric_reporting_manager->OnLogin(nullptr);
+  metric_reporting_manager->OnLogin(&profile_);
 
   event_telemetry =
       metric_reporting_manager->GetTelemetryCollectors(test_case.event_type);

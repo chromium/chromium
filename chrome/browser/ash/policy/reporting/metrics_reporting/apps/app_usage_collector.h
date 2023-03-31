@@ -45,7 +45,7 @@ class AppUsageCollector : public ::apps::AppPlatformMetrics::Observer {
   ~AppUsageCollector() override;
 
  private:
-  AppUsageCollector(Profile* profile,
+  AppUsageCollector(base::WeakPtr<Profile> profile,
                     const ReportingSettings* reporting_settings,
                     std::unique_ptr<AppPlatformMetricsRetriever>
                         app_platform_metrics_retriever);
@@ -71,11 +71,12 @@ class AppUsageCollector : public ::apps::AppPlatformMetrics::Observer {
                                    const base::UnguessableToken& instance_id,
                                    const base::TimeDelta& running_time);
 
-  // Pointer to the user profile. Required to save usage data to the user pref
+  // Weak pointer to the user profile. Used to save usage data to the user pref
   // store.
-  const raw_ptr<Profile> profile_;
+  const base::WeakPtr<Profile> profile_;
 
-  // Pointer to the reporting settings. Used to control usage data collection.
+  // Pointer to the reporting settings component that outlives the
+  // `AppUsageCollector`. Used to control usage data collection.
   const raw_ptr<const ReportingSettings> reporting_settings_;
 
   // Retriever that retrieves the `AppPlatformMetrics` component so the usage

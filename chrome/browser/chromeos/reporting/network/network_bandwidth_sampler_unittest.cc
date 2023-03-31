@@ -48,7 +48,7 @@ class NetworkBandwidthSamplerTest : public ::testing::Test {
 TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedByDefault) {
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_);
+                                  profile_->GetWeakPtr());
 
   ::reporting::test::TestEvent<absl::optional<MetricData>> test_event;
   sampler.MaybeCollect(test_event.cb());
@@ -60,7 +60,7 @@ TEST_F(NetworkBandwidthSamplerTest, ReportsDownloadSpeedWhenPrefSet) {
   SetPrefValue(true);
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_);
+                                  profile_->GetWeakPtr());
 
   ::reporting::test::TestEvent<absl::optional<MetricData>> test_event;
   sampler.MaybeCollect(test_event.cb());
@@ -77,7 +77,7 @@ TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedWhenPrefUnset) {
   SetPrefValue(false);
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_);
+                                  profile_->GetWeakPtr());
 
   ::reporting::test::TestEvent<absl::optional<MetricData>> test_event;
   sampler.MaybeCollect(test_event.cb());
@@ -88,7 +88,7 @@ TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedWhenPrefUnset) {
 TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedIfUnavailable) {
   SetPrefValue(true);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_);
+                                  profile_->GetWeakPtr());
 
   ::reporting::test::TestEvent<absl::optional<MetricData>> test_event;
   sampler.MaybeCollect(test_event.cb());
@@ -100,7 +100,7 @@ TEST_F(NetworkBandwidthSamplerTest, ReportsUpdatedDownloadSpeed) {
   SetPrefValue(true);
   UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
   NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
-                                  profile_);
+                                  profile_->GetWeakPtr());
 
   // Update download speed so we can verify that the sampler reports the new
   // value.
@@ -116,6 +116,22 @@ TEST_F(NetworkBandwidthSamplerTest, ReportsUpdatedDownloadSpeed) {
                 ->mutable_bandwidth_data()
                 ->download_speed_kbps(),
             download_speed_kbps);
+}
+
+TEST_F(NetworkBandwidthSamplerTest, CollectAfterProfileDestructed) {
+  SetPrefValue(true);
+  UpdateDownloadSpeedKbps(kInitDownloadSpeedKbps);
+  NetworkBandwidthSampler sampler(g_browser_process->network_quality_tracker(),
+                                  profile_->GetWeakPtr());
+
+  // Destroy the test profile.
+  profile_manager_.DeleteAllTestingProfiles();
+
+  // Verify no data is reported.
+  ::reporting::test::TestEvent<absl::optional<MetricData>> test_event;
+  sampler.MaybeCollect(test_event.cb());
+  auto result = test_event.result();
+  ASSERT_FALSE(result.has_value());
 }
 
 }  // namespace

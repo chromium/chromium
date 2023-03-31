@@ -326,7 +326,7 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
 
   if (base::FeatureList::IsEnabled(kEnableAppMetricsReporting) &&
       delegate_->IsAppServiceAvailableForProfile(profile)) {
-    InitAppCollectors();
+    InitAppCollectors(profile);
   }
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
@@ -490,7 +490,7 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
 
   // Network bandwidth telemetry.
   auto network_bandwidth_sampler = std::make_unique<NetworkBandwidthSampler>(
-      g_browser_process->network_quality_tracker(), profile);
+      g_browser_process->network_quality_tracker(), profile->GetWeakPtr());
   network_bandwidth_collector_ = delegate_->CreatePeriodicCollector(
       network_bandwidth_sampler.get(), user_telemetry_report_queue_.get(),
       &reporting_settings_,
@@ -519,10 +519,10 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
   samplers_.push_back(std::move(sampler));
 }
 
-void MetricReportingManager::InitAppCollectors() {
+void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto app_usage_telemetry_sampler =
-      std::make_unique<AppUsageTelemetrySampler>();
+      std::make_unique<AppUsageTelemetrySampler>(profile->GetWeakPtr());
   InitPeriodicCollector(
       kAppTelemetry, app_usage_telemetry_sampler.get(),
       user_telemetry_report_queue_.get(),
