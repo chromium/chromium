@@ -12,7 +12,6 @@ import android.os.RemoteException;
 import android.util.SparseArray;
 import android.view.Surface;
 
-import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnguessableToken;
@@ -90,8 +89,6 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
             initializeLibrary();
             return;
         }
-
-        JNIUtils.enableSelectiveJniRegistration();
 
         LibraryLoader libraryLoader = LibraryLoader.getInstance();
         libraryLoader.getMediator().initInChildProcess();

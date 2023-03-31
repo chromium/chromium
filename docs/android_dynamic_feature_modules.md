@@ -460,11 +460,7 @@ on all Chrome build variants, including Monochrome (unlike base module JNI).
 extern "C" {
 // This JNI registration method is found and called by module framework code.
 JNI_GENERATOR_EXPORT bool JNI_OnLoad_foo(JNIEnv* env) {
-  if (!base::android::IsSelectiveJniRegistrationEnabled(env) &&
-      !foo::RegisterNonMainDexNatives(env)) {
-    return false;
-  }
-  if (!foo::RegisterMainDexNatives(env)) {
+  if (!foo::RegisterNatives(env)) {
     return false;
   }
   return true;

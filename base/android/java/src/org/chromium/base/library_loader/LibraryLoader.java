@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.NativeLibraryLoadedStatus.NativeLibraryLoadedStatusProvider;
@@ -82,7 +81,7 @@ public class LibraryLoader {
 
     private static boolean sBrowserStartupBlockedForTesting;
 
-    // Helps mInitializedForTesting and mLoadStateForTesting to be removed by R8.
+    // Helps mInitializedForTesting and mLoadedForTesting to be removed by R8.
     private static boolean sEnableStateForTesting;
 
     // One-way switch becomes true when the libraries are initialized (by calling
@@ -96,20 +95,12 @@ public class LibraryLoader {
     // synchronization.
     private boolean mFallbackToSystemLinker;
 
-    // State that only transitions one-way from 0->1->2. Volatile for the same reasons as
-    // mInitialized.
-    @IntDef({LoadState.NOT_LOADED, LoadState.MAIN_DEX_LOADED, LoadState.LOADED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface LoadState {
-        int NOT_LOADED = 0;
-        int MAIN_DEX_LOADED = 1;
-        int LOADED = 2;
-    }
-    private volatile @LoadState int mLoadState;
+    // State that only transitions from false->true. Volatile for the same reasons as mInitialized.
+    private volatile boolean mLoaded;
 
-    // Tracks mLoadState, but can be reset to NOT_LOADED between tests to ensure that each test that
+    // Tracks mLoaded, but can be reset to NOT_LOADED between tests to ensure that each test that
     // requires native explicitly loads it.
-    private @LoadState int mLoadStateForTesting;
+    private boolean mLoadedForTesting;
 
     // Tracks mInitialized, but can be reset to false between tests to ensure that each test that
     // requires native explicitly loads it.
@@ -122,10 +113,6 @@ public class LibraryLoader {
     // The type of process the shared library is loaded in. Gets passed to native after loading.
     // Avoids locking: should be initialized very early.
     private @LibraryProcessType int mLibraryProcessType;
-
-    // Makes sure non-Main Dex initialization happens only once. Does not use any class members
-    // except the volatile |mLoadState|.
-    private final Object mNonMainDexLock = new Object();
 
     // Mediates all communication between Linker instances in different processes.
     private final MultiProcessMediator mMediator = new MultiProcessMediator();
@@ -145,7 +132,7 @@ public class LibraryLoader {
     @GuardedBy("mLock")
     private boolean mLibraryPreloaderCalled;
 
-    // Similar to |mLoadState| but is limited case of being loaded in app zygote.
+    // Similar to |mLoaded| but is limited case of being loaded in app zygote.
     // This is exposed to clients.
     @GuardedBy("mLock")
     private boolean mLoadedByZygote;
@@ -422,11 +409,6 @@ public class LibraryLoader {
         if (BuildConfig.ENABLE_ASSERTS) {
             NativeLibraryLoadedStatus.setProvider(new NativeLibraryLoadedStatusProvider() {
                 @Override
-                public boolean areMainDexNativeMethodsReady() {
-                    return isMainDexLoaded();
-                }
-
-                @Override
                 public boolean areNativeMethodsReady() {
                     return isLoaded();
                 }
@@ -463,7 +445,7 @@ public class LibraryLoader {
     public void setNativeLibraryPreloader(NativeLibraryPreloader loader) {
         synchronized (mLock) {
             assert mLibraryPreloader == null;
-            assert mLoadState == LoadState.NOT_LOADED;
+            assert !mLoaded;
             mLibraryPreloader = loader;
         }
     }
@@ -529,25 +511,9 @@ public class LibraryLoader {
      */
     public void ensureInitialized() {
         if (isInitialized()) return;
-        ensureMainDexInitialized();
-        loadNonMainDex();
-    }
-
-    /**
-     * This method blocks until the native library is initialized, and the Main Dex is loaded
-     * (MainDex JNI is registered).
-     *
-     * You should use this if you would like to use isolated parts of the native library that don't
-     * depend on content initialization, and only use MainDex classes with JNI.
-     *
-     * However, you should be careful not to call this too early in startup on the UI thread, or you
-     * may significantly increase the time to first draw.
-     */
-    public void ensureMainDexInitialized() {
         synchronized (mLock) {
             if (DEBUG) logLinkerUsed();
-            loadMainDexAlreadyLocked(
-                    ContextUtils.getApplicationContext().getApplicationInfo(), false);
+            loadAlreadyLocked(ContextUtils.getApplicationContext().getApplicationInfo(), false);
             initializeAlreadyLocked();
         }
     }
@@ -594,13 +560,7 @@ public class LibraryLoader {
     @Deprecated
     @VisibleForTesting
     public boolean isLoaded() {
-        return mLoadState == LoadState.LOADED
-                && (!sEnableStateForTesting || mLoadStateForTesting == LoadState.LOADED);
-    }
-
-    private boolean isMainDexLoaded() {
-        return mLoadState >= LoadState.MAIN_DEX_LOADED
-                && (!sEnableStateForTesting || mLoadStateForTesting >= LoadState.MAIN_DEX_LOADED);
+        return mLoaded && (!sEnableStateForTesting || mLoadedForTesting);
     }
 
     /**
@@ -627,7 +587,7 @@ public class LibraryLoader {
      * Causes LibraryLoader to pretend that native libraries have not yet been initialized.
      */
     public void resetForTesting() {
-        mLoadStateForTesting = LoadState.NOT_LOADED;
+        mLoadedForTesting = false;
         mInitializedForTesting = false;
         sEnableStateForTesting = true;
     }
@@ -641,20 +601,17 @@ public class LibraryLoader {
      */
     public void loadNowOverrideApplicationContext(Context appContext) {
         synchronized (mLock) {
-            if (mLoadState != LoadState.NOT_LOADED
-                    && appContext != ContextUtils.getApplicationContext()) {
+            if (mLoaded && appContext != ContextUtils.getApplicationContext()) {
                 throw new IllegalStateException("Attempt to load again from alternate context.");
             }
-            loadMainDexAlreadyLocked(appContext.getApplicationInfo(), /* inZygote= */ false);
+            loadAlreadyLocked(appContext.getApplicationInfo(), /* inZygote= */ false);
         }
-        loadNonMainDex();
     }
 
     public void loadNowInZygote(ApplicationInfo appInfo) {
         synchronized (mLock) {
-            assert mLoadState == LoadState.NOT_LOADED;
-            loadMainDexAlreadyLocked(appInfo, /* inZygote= */ true);
-            loadNonMainDex();
+            assert !mLoaded;
+            loadAlreadyLocked(appInfo, /* inZygote= */ true);
             mLoadedByZygote = true;
         }
     }
@@ -759,14 +716,14 @@ public class LibraryLoader {
     // triggering JNI_OnLoad in native code.
     @GuardedBy("mLock")
     @VisibleForTesting
-    protected void loadMainDexAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
-        if (mLoadState >= LoadState.MAIN_DEX_LOADED) {
-            if (sEnableStateForTesting && mLoadStateForTesting == LoadState.NOT_LOADED) {
-                mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
+    protected void loadAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
+        if (mLoaded) {
+            if (sEnableStateForTesting && !mLoadedForTesting) {
+                mLoadedForTesting = true;
             }
             return;
         }
-        try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadMainDexAlreadyLocked")) {
+        try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadAlreadyLocked")) {
             assert !mInitialized;
             assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED || inZygote;
 
@@ -788,39 +745,15 @@ public class LibraryLoader {
             long loadTimeMs = uptimeTimer.getElapsedMillis();
 
             if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
-            mLoadState = LoadState.MAIN_DEX_LOADED;
+            mLoaded = true;
             if (sEnableStateForTesting) {
-                mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
+                mLoadedForTesting = true;
             }
 
             getMediator().recordLoadTimeHistogram(loadTimeMs);
             getMediator().recordLoadThreadTimeHistogram(threadTimeTimer.getElapsedMillis());
         } catch (UnsatisfiedLinkError e) {
             throw new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED, e);
-        }
-    }
-
-    @VisibleForTesting
-    protected void loadNonMainDex() {
-        if (mLoadState == LoadState.LOADED) {
-            if (sEnableStateForTesting) {
-                mLoadStateForTesting = LoadState.LOADED;
-            }
-            return;
-        }
-        synchronized (mNonMainDexLock) {
-            assert mLoadState != LoadState.NOT_LOADED;
-            if (mLoadState == LoadState.LOADED) return;
-            try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadNonMainDex")) {
-                if (!JNIUtils.isSelectiveJniRegistrationEnabled()) {
-                    // On M+ the native symbols are exported, and registering natives seems fast.
-                    LibraryLoaderJni.get().registerNonMainDexJni();
-                }
-                mLoadState = LoadState.LOADED;
-                if (sEnableStateForTesting) {
-                    mLoadStateForTesting = LoadState.LOADED;
-                }
-            }
         }
     }
 
@@ -838,7 +771,7 @@ public class LibraryLoader {
     // switch the Java CommandLine will delegate all calls the native CommandLine).
     @GuardedBy("mLock")
     private void ensureCommandLineSwitchedAlreadyLocked() {
-        assert isMainDexLoaded();
+        assert isLoaded();
         if (mCommandLineSwitched) {
             return;
         }
@@ -901,10 +834,8 @@ public class LibraryLoader {
         // From now on, keep tracing in sync with native.
         TraceEvent.onNativeTracingReady();
 
-        // From this point on, native code is ready to use, but non-MainDex JNI may not yet have
-        // been registered. Check isInitialized() to be sure that initialization is fully complete.
-        // Note that this flag can be accessed asynchronously, so any initialization
-        // must be performed before.
+        // From this point on, native code is ready to use. Note that this flag can be accessed
+        // asynchronously, so any initialization must be performed before.
         mInitialized = true;
         if (sEnableStateForTesting) {
             mInitializedForTesting = true;
@@ -957,11 +888,11 @@ public class LibraryLoader {
      */
     protected static void setLibrariesLoadedForNativeTests() {
         LibraryLoader self = getInstance();
-        self.mLoadState = LoadState.LOADED;
+        self.mLoaded = true;
         self.mInitialized = true;
         if (sEnableStateForTesting) {
             self.mInitializedForTesting = true;
-            self.mLoadStateForTesting = LoadState.LOADED;
+            self.mLoadedForTesting = true;
         }
     }
 
@@ -979,9 +910,5 @@ public class LibraryLoader {
         // Performs auxiliary initialization useful right after the native library load. Returns
         // true on success and false on failure.
         boolean libraryLoaded(@LibraryProcessType int processType);
-
-        // Registers JNI for non-main processes. For details see android_native_libraries.md,
-        // android_dynamic_feature_modules.md and jni_generator/README.md
-        void registerNonMainDexJni();
     }
 }

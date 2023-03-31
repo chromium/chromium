@@ -15,7 +15,6 @@ import java.util.Map;
 @MainDex
 public class JNIUtils {
     private static final String TAG = "JNIUtils";
-    private static Boolean sSelectiveJniRegistrationEnabled;
     private static ClassLoader sJniClassLoader;
 
     /**
@@ -49,26 +48,6 @@ public class JNIUtils {
      */
     public static void setClassLoader(ClassLoader classLoader) {
         sJniClassLoader = classLoader;
-    }
-
-    /**
-     * @return whether or not the current process supports selective JNI registration.
-     */
-    @CalledByNative
-    public static boolean isSelectiveJniRegistrationEnabled() {
-        if (sSelectiveJniRegistrationEnabled == null) {
-            sSelectiveJniRegistrationEnabled = false;
-        }
-        return sSelectiveJniRegistrationEnabled;
-    }
-
-    /**
-     * Allow this process to selectively perform JNI registration. This must be called before
-     * loading native libraries or it will have no effect.
-     */
-    public static void enableSelectiveJniRegistration() {
-        assert sSelectiveJniRegistrationEnabled == null;
-        sSelectiveJniRegistrationEnabled = true;
     }
 
     /**

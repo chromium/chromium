@@ -14,13 +14,7 @@ JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  if (!base::android::IsSelectiveJniRegistrationEnabled(env)) {
-    if (!RegisterNonMainDexNatives(env)) {
-      return -1;
-    }
-  }
-
-  if (!RegisterMainDexNatives(env)) {
+  if (!RegisterNatives(env)) {
     return -1;
   }
   return JNI_VERSION_1_4;

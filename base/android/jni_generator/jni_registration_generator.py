@@ -3,11 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Generates GEN_JNI.java (or N.java) and helper for manual JNI registration.
-
-Creates a header file with two static functions: RegisterMainDexNatives() and
-RegisterNonMainDexNatives(). Together, these will use manual JNI registration
-to register all native methods that exist within an application."""
+"""Generates GEN_JNI.java (or N.java) and optional header for manual JNI
+registration.
+"""
 
 import argparse
 import collections
@@ -33,9 +31,7 @@ MERGEABLE_KEYS = [
     'PROXY_NATIVE_SIGNATURES',
     'FORWARDING_PROXY_METHODS',
     'PROXY_NATIVE_METHOD_ARRAY',
-    'PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX',
-    'REGISTER_MAIN_DEX_NATIVES',
-    'REGISTER_NON_MAIN_DEX_NATIVES',
+    'REGISTER_NATIVES',
 ]
 
 
@@ -45,8 +41,7 @@ def _Generate(options, java_file_paths):
   Generates a srcjar containing a single class, GEN_JNI, that contains all
   native method declarations.
 
-  Optionally generates a header file that provides functions
-  (RegisterMainDexNatives and RegisterNonMainDexNatives) to perform
+  Optionally generates a header file that provides RegisterNatives to perform
   JNI registration.
 
   Args:
@@ -70,7 +65,7 @@ def _Generate(options, java_file_paths):
     for key in MERGEABLE_KEYS:
       combined_dict[key] = ''.join(d.get(key, '') for d in module_results)
 
-    # PROXY_NATIVE_SIGNATURES and PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX will have
+    # PROXY_NATIVE_SIGNATURES and PROXY_NATIVE_METHOD_ARRAY will have
     # duplicates for JNI multiplexing since all native methods with similar
     # signatures map to the same proxy. Similarly, there may be multiple switch
     # case entries for the same proxy signatures.
@@ -81,9 +76,8 @@ def _Generate(options, java_file_paths):
           signature for signature in proxy_signatures_list)
 
       proxy_native_array_list = sorted(
-          set(combined_dict['PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX'].split(
-              '},\n')))
-      combined_dict['PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX'] = '},\n'.join(
+          set(combined_dict['PROXY_NATIVE_METHOD_ARRAY'].split('},\n')))
+      combined_dict['PROXY_NATIVE_METHOD_ARRAY'] = '},\n'.join(
           p for p in proxy_native_array_list if p != '') + '}'
 
       signature_to_cases = collections.defaultdict(list)
@@ -164,10 +158,9 @@ def _DictForPath(options, path):
   content_namespace = jni_generator.ExtractJNINamespace(contents)
   jni_params = jni_generator.JniParams(fully_qualified_class)
   jni_params.ExtractImportsAndInnerClasses(contents)
-  is_main_dex = jni_generator.IsMainDexJavaClass(contents)
   dict_generator = DictionaryGenerator(options, found_module_name,
                                        content_namespace, fully_qualified_class,
-                                       natives, jni_params, is_main_dex)
+                                       natives, jni_params)
   return dict_generator.Generate()
 
 
@@ -257,19 +250,13 @@ ${JNI_NATIVE_METHOD_ARRAY}\
 ${PROXY_NATIVE_METHOD_ARRAY}\
 
 ${JNI_NATIVE_METHOD}
-// Step 4: Main dex and non-main dex registration functions.
+// Step 4: Registration function.
 
 namespace ${NAMESPACE} {
 
-bool RegisterMainDexNatives(JNIEnv* env) {\
-${REGISTER_MAIN_DEX_PROXY_NATIVES}
-${REGISTER_MAIN_DEX_NATIVES}
-  return true;
-}
-
-bool RegisterNonMainDexNatives(JNIEnv* env) {\
+bool RegisterNatives(JNIEnv* env) {\
 ${REGISTER_PROXY_NATIVES}
-${REGISTER_NON_MAIN_DEX_NATIVES}
+${REGISTER_NATIVES}
   return true;
 }
 
@@ -299,19 +286,8 @@ ${REGISTER_NON_MAIN_DEX_NATIVES}
     proxy_native_array = ''
     proxy_natives_registration = ''
 
-  if registration_dict['PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX']:
-    sub_dict['REGISTRATION_NAME'] += 'MAIN_DEX'
-    sub_dict['ESCAPED_PROXY_CLASS'] += 'MAIN_DEX'
-    sub_dict['KMETHODS'] = (
-        registration_dict['PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX'])
-    proxy_native_array += registration_template.substitute(sub_dict)
-    main_dex_call = registration_call.substitute(sub_dict)
-  else:
-    main_dex_call = ''
-
   registration_dict['PROXY_NATIVE_METHOD_ARRAY'] = proxy_native_array
   registration_dict['REGISTER_PROXY_NATIVES'] = proxy_natives_registration
-  registration_dict['REGISTER_MAIN_DEX_PROXY_NATIVES'] = main_dex_call
 
   if options.manual_jni_registration:
     registration_dict['MANUAL_REGISTRATION'] = manual_registration.substitute(
@@ -437,7 +413,7 @@ class DictionaryGenerator(object):
   """Generates an inline header file for JNI registration."""
 
   def __init__(self, options, module_name, content_namespace,
-               fully_qualified_class, natives, jni_params, main_dex):
+               fully_qualified_class, natives, jni_params):
     self.options = options
     self.module_name = module_name
     self.content_namespace = content_namespace
@@ -447,7 +423,6 @@ class DictionaryGenerator(object):
     self.fully_qualified_class = fully_qualified_class
     self.jni_params = jni_params
     self.class_name = self.fully_qualified_class.split('/')[-1]
-    self.main_dex = main_dex
     self.helper = jni_generator.HeaderFileGeneratorHelper(
         self.class_name,
         self.module_name,
@@ -525,10 +500,7 @@ JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
         jni_generator.GetRegistrationFunctionName(self.fully_qualified_class)
     }
     register_body = template.substitute(value)
-    if self.main_dex:
-      self._SetDictValue('REGISTER_MAIN_DEX_NATIVES', register_body)
-    else:
-      self._SetDictValue('REGISTER_NON_MAIN_DEX_NATIVES', register_body)
+    self._SetDictValue('REGISTER_NON_NATIVES', register_body)
 
   def _AddJNINativeMethodsArrays(self):
     """Returns the implementation of the array of native methods."""
@@ -599,15 +571,10 @@ ${KMETHODS}
   def _AddProxyNativeMethodKStrings(self):
     """Returns KMethodString for wrapped native methods in all_classes """
 
-    if self.main_dex or self.options.enable_jni_multiplexing:
-      key = 'PROXY_NATIVE_METHOD_ARRAY_MAIN_DEX'
-    else:
-      key = 'PROXY_NATIVE_METHOD_ARRAY'
-
     proxy_k_strings = ('\n'.join(
         self._GetKMethodArrayEntry(p) for p in self.proxy_natives))
 
-    self._SetDictValue(key, proxy_k_strings)
+    self._SetDictValue('PROXY_NATIVE_METHOD_ARRAY', proxy_k_strings)
 
   def _SubstituteNativeMethods(self, template):
     """Substitutes NAMESPACE, JAVA_CLASS and KMETHODS in the provided
