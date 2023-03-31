@@ -109,7 +109,9 @@ DelegatingUkmRecorder::Delegate::~Delegate() = default;
 void DelegatingUkmRecorder::Delegate::UpdateSourceURL(ukm::SourceId source_id,
                                                       const GURL& url) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->UpdateSourceURL(source_id, url);
+    if (ptr_) {
+      ptr_->UpdateSourceURL(source_id, url);
+    }
     return;
   }
   task_runner_->PostTask(
@@ -121,7 +123,9 @@ void DelegatingUkmRecorder::Delegate::UpdateAppURL(ukm::SourceId source_id,
                                                    const GURL& url,
                                                    const AppType app_type) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->UpdateAppURL(source_id, url, app_type);
+    if (ptr_) {
+      ptr_->UpdateAppURL(source_id, url, app_type);
+    }
     return;
   }
   task_runner_->PostTask(
@@ -133,7 +137,9 @@ void DelegatingUkmRecorder::Delegate::RecordNavigation(
     ukm::SourceId source_id,
     const UkmSource::NavigationData& navigation_data) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->RecordNavigation(source_id, navigation_data);
+    if (ptr_) {
+      ptr_->RecordNavigation(source_id, navigation_data);
+    }
     return;
   }
   task_runner_->PostTask(
@@ -143,7 +149,9 @@ void DelegatingUkmRecorder::Delegate::RecordNavigation(
 
 void DelegatingUkmRecorder::Delegate::AddEntry(mojom::UkmEntryPtr entry) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->AddEntry(std::move(entry));
+    if (ptr_) {
+      ptr_->AddEntry(std::move(entry));
+    }
     return;
   }
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&UkmRecorder::AddEntry, ptr_,
@@ -153,7 +161,9 @@ void DelegatingUkmRecorder::Delegate::AddEntry(mojom::UkmEntryPtr entry) {
 void DelegatingUkmRecorder::Delegate::MarkSourceForDeletion(
     ukm::SourceId source_id) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    ptr_->MarkSourceForDeletion(source_id);
+    if (ptr_) {
+      ptr_->MarkSourceForDeletion(source_id);
+    }
     return;
   }
   task_runner_->PostTask(
