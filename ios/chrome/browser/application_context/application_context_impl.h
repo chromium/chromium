@@ -107,6 +107,15 @@ class ApplicationContextImpl : public ApplicationContext {
   // service, the policy connector must live outside the keyed services.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
 
+  // Must be destroyed after `chrome_browser_state_manager_` as some of the
+  // KeyedService register themselves as NetworkConnectionObserver and need
+  // to unregister themselves before NetworkConnectionTracker destruction. Must
+  // also be destroyed after `gcm_driver_` and `metrics_services_manager_` since
+  // these own objects that register themselves as NetworkConnectionObservers.
+  std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
+  std::unique_ptr<network::NetworkConnectionTracker>
+      network_connection_tracker_;
+
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
@@ -115,13 +124,6 @@ class ApplicationContextImpl : public ApplicationContext {
       metrics_services_manager_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
-
-  // Must be destroyed after `chrome_browser_state_manager_` as some of the
-  // KeyedService register themselves as NetworkConnectionObserver and need
-  // to unregister themselves before NetworkConnectionTracker destruction.
-  std::unique_ptr<network::NetworkChangeManager> network_change_manager_;
-  std::unique_ptr<network::NetworkConnectionTracker>
-      network_connection_tracker_;
 
   std::unique_ptr<ios::ChromeBrowserStateManager> chrome_browser_state_manager_;
   std::string application_locale_;
