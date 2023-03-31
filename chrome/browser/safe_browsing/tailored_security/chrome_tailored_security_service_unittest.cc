@@ -10,6 +10,8 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -32,6 +34,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -95,11 +98,11 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(
-        "primary_account", IdentityTestEnvironmentProfileAdaptor::
-                               GetIdentityTestEnvironmentFactories());
+    profile_ = profile_manager_.CreateTestingProfile("primary_account",
+                                                     GetTestingFactories());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+    GetIdentityTestEnv()->SetTestURLLoaderFactory(&test_url_loader_factory_);
     GetIdentityTestEnv()->MakePrimaryAccountAvailable(
         "test@foo.com", signin::ConsentLevel::kSync);
     prefs_ = profile_->GetTestingPrefService();
@@ -111,6 +114,17 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
     chrome_tailored_security_service_ =
         std::make_unique<TestChromeTailoredSecurityService>(profile_);
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() {
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.emplace_back(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            &test_url_loader_factory_));
+    return factories;
   }
 
   void TearDown() override {
@@ -187,6 +201,7 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   // This is required to create browser tabs in the tests.
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_environment_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;

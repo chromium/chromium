@@ -18,12 +18,14 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/dips_browser_signin_detector.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
@@ -176,6 +178,11 @@ DIPSService::DIPSService(content::BrowserContext* context)
                            weak_factory_.GetWeakPtr()));
   if (repeating_timer_) {
     repeating_timer_->Start();
+  }
+
+  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(context))) {
+    dips_browser_signin_detector_.emplace(this, identity_manager);
   }
 }
 
