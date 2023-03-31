@@ -19,6 +19,7 @@
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -71,6 +72,7 @@ TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
   ASSERT_EQ(device_info.version_info.channel, chrome::GetChannel());
   ASSERT_EQ(device_info.hardware_id, "FOOBAR D0G-F4N-C1UB");
   ASSERT_EQ(device_info.locale, kTestLocale);
+  ASSERT_EQ(device_info.custom_label_tag, absl::nullopt);
 }
 
 TEST_F(DeviceInfoManagerTest, CheckDeviceInfoNoLanguagePreference) {
@@ -94,6 +96,7 @@ TEST_F(DeviceInfoManagerTest, DeviceInfoToProto) {
   device_info.version_info.platform = "12345.0.0";
   device_info.version_info.channel = version_info::Channel::STABLE;
   device_info.locale = "en-US";
+  device_info.custom_label_tag = "COOL-OEM";
 
   proto::ClientDeviceContext device_context = device_info.ToDeviceContext();
 
@@ -104,6 +107,7 @@ TEST_F(DeviceInfoManagerTest, DeviceInfoToProto) {
   EXPECT_EQ(device_context.versions().chrome_ash(), "10.10.10");
   EXPECT_EQ(device_context.versions().chrome_os_platform(), "12345.0.0");
   EXPECT_EQ(device_context.hardware_id(), "FOOBAR D0G-F4N-C1UB");
+  EXPECT_EQ(device_context.custom_label_tag(), "COOL-OEM");
 
   proto::ClientUserContext user_context = device_info.ToUserContext();
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -56,6 +57,39 @@ apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
   return apps::proto::ClientUserContext::USERTYPE_UNKNOWN;
 }
 
+// Adds version numbers and custom label tag to `info`, returning the updated
+// object. Called on a background thread, since loading these values may block.
+apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info) {
+  info.version_info.ash_chrome = version_info::GetVersionNumber();
+  absl::optional<std::string> platform_version =
+      chromeos::version_loader::GetVersion(
+          chromeos::version_loader::VERSION_SHORT);
+  info.version_info.platform = platform_version.value_or("unknown");
+  info.version_info.channel = chrome::GetChannel();
+
+  // Load device identifiers from chromeos-config, as per
+  // https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config/README.md#identity.
+  constexpr char kCustomLabelFileName[] =
+      "/run/chromeos-config/v1/identity/custom-label-tag";
+  constexpr char kCustomizationIdFileName[] =
+      "/run/chromeos-config/v1/identity/customization-id";
+
+  // Attempt to load the custom-label tag from kCustomLabelFileName first. Older
+  // devices may instead have a "customization id" stored at
+  // kCustomizationIdFileName. If neither file exists, the device has no
+  // custom-label tag, and `info.custom_label_tag` should remain unset.
+  std::string custom_label;
+  if (base::ReadFileToString(base::FilePath(kCustomLabelFileName),
+                             &custom_label)) {
+    info.custom_label_tag = custom_label;
+  } else if (base::ReadFileToString(base::FilePath(kCustomizationIdFileName),
+                                    &custom_label)) {
+    info.custom_label_tag = custom_label;
+  }
+
+  return info;
+}
+
 }  // namespace
 
 namespace apps {
@@ -78,6 +112,9 @@ proto::ClientDeviceContext DeviceInfo::ToDeviceContext() const {
   device_context.mutable_versions()->set_chrome_os_platform(
       version_info.platform);
   device_context.set_hardware_id(hardware_id);
+  if (custom_label_tag.has_value()) {
+    device_context.set_custom_label_tag(custom_label_tag.value());
+  }
 
   return device_context;
 }
@@ -97,21 +134,17 @@ DeviceInfoManager::~DeviceInfoManager() = default;
 
 // This method populates:
 //  - board
-//  - version_info.ash_chrome
 //  - user_type
-//  - channel
 //  - hardware_id
 // The method then asynchronously populates:
-//  - version_info.platform (OnPlatformVersionNumber)
+//  - version_info and custom_label_tag (LoadVersionAndCustomLabel)
 //  - model (OnModelInfo)
 void DeviceInfoManager::GetDeviceInfo(
     base::OnceCallback<void(DeviceInfo)> callback) {
   DeviceInfo device_info;
 
   device_info.board = base::ToLowerASCII(base::SysInfo::HardwareModelName());
-  device_info.version_info.ash_chrome = version_info::GetVersionNumber();
   device_info.user_type = apps::DetermineUserType(profile_);
-  device_info.version_info.channel = chrome::GetChannel();
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
@@ -131,18 +164,14 @@ void DeviceInfoManager::GetDeviceInfo(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&chromeos::version_loader::GetVersion,
-                     chromeos::version_loader::VERSION_SHORT),
-      base::BindOnce(&DeviceInfoManager::OnPlatformVersionNumber,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(device_info)));
+      base::BindOnce(&LoadVersionAndCustomLabel, std::move(device_info)),
+      base::BindOnce(&DeviceInfoManager::OnLoadedVersionAndCustomLabel,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DeviceInfoManager::OnPlatformVersionNumber(
+void DeviceInfoManager::OnLoadedVersionAndCustomLabel(
     base::OnceCallback<void(DeviceInfo)> callback,
-    DeviceInfo device_info,
-    const absl::optional<std::string>& version) {
-  device_info.version_info.platform = version.value_or("unknown");
+    DeviceInfo device_info) {
   base::SysInfo::GetHardwareInfo(base::BindOnce(
       &DeviceInfoManager::OnModelInfo, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), std::move(device_info)));
@@ -161,6 +190,8 @@ std::ostream& operator<<(std::ostream& os, const DeviceInfo& device_info) {
   os << "- Board: " << device_info.board << std::endl;
   os << "- Model: " << device_info.model << std::endl;
   os << "- Hardware ID: " << device_info.hardware_id << std::endl;
+  os << "- Custom Label: " << device_info.custom_label_tag.value_or("(empty)")
+     << std::endl;
   os << "- User Type: " << device_info.user_type << std::endl;
   os << "- Locale: " << device_info.locale << std::endl;
   os << device_info.version_info;

@@ -55,6 +55,12 @@ struct DeviceInfo {
   // "REDRIX-CLQY C4B-G4H-D3D-U7F-X54-I9N".
   std::string hardware_id;
 
+  // The custom-label tag for the device sending the request, used to
+  // distinguish between variations of a device which have different branding
+  // but the same hardware. Only set for devices with custom-label variants.
+  // e.g. "OEM-1".
+  absl::optional<std::string> custom_label_tag;
+
   // The user type of the profile currently running. e.g. "unmanaged"
   std::string user_type;
 
@@ -85,9 +91,9 @@ class DeviceInfoManager {
   void GetDeviceInfo(base::OnceCallback<void(DeviceInfo)> callback);
 
  private:
-  void OnPlatformVersionNumber(base::OnceCallback<void(DeviceInfo)> callback,
-                               DeviceInfo device_info,
-                               const absl::optional<std::string>& version);
+  void OnLoadedVersionAndCustomLabel(
+      base::OnceCallback<void(DeviceInfo)> callback,
+      DeviceInfo device_info);
   void OnModelInfo(base::OnceCallback<void(DeviceInfo)> callback,
                    DeviceInfo device_info,
                    base::SysInfo::HardwareInfo hardware_info);

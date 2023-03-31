@@ -65,6 +65,11 @@ message ClientDeviceContext {
 
   // The HWID identifier for the device sending the request.
   optional string hardware_id = 5;
+
+  // The custom-label tag for the device sending the request, used to
+  // distinguish between variations of a device which have different branding
+  // but the same hardware. Only set for devices with custom-label variants.
+  optional string custom_label_tag = 7;
 }
 
 // Context about the user of the client device making this request.
