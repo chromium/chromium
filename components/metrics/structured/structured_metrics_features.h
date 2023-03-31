@@ -7,8 +7,7 @@
 
 #include "base/feature_list.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
@@ -43,7 +42,10 @@ int GetFileLimitPerScan();
 // exceeding this memory limit will be discarded. Defaults to 50KB.
 int GetFileSizeByteLimit();
 
-}  // namespace structured
-}  // namespace metrics
+// Returns the parameter used to control what projects are allowed to be
+// recorded.
+std::string GetDisabledProjects();
+
+}  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_FEATURES_H_

@@ -40,7 +40,8 @@ enum class EventRecordingState {
   kProviderUninitialized = 1,
   kRecordingDisabled = 2,
   kProviderMissing = 3,
-  kMaxValue = kProviderMissing,
+  kProjectDisallowed = 4,
+  kMaxValue = kProjectDisallowed,
 };
 
 // Describes the action taken by KeyData::ValidateAndGetKey on a particular user

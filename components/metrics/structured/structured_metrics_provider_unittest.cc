@@ -217,6 +217,11 @@ class StructuredMetricsProviderTest : public testing::Test {
     return proto;
   }
 
+  // Adds a project to the disallowed projects list.
+  void AddDisallowedProject(uint64_t project_name_hash) {
+    provider_->AddDisallowedProjectForTest(project_name_hash);
+  }
+
   // Simulates the three external events that the structure metrics system cares
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
@@ -1136,6 +1141,22 @@ TEST_F(StructuredMetricsProviderTest, EventsClone) {
   EXPECT_EQ(event.recorded_time_since_boot(),
             cloned_event.recorded_time_since_boot());
   EXPECT_EQ(event.metric_values(), cloned_event.metric_values());
+}
+
+TEST_F(StructuredMetricsProviderTest, DisallowedProjectAreDropped) {
+  Init();
+
+  AddDisallowedProject(kProjectOneHash);
+
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_two::TestEventThree()
+      .SetTestMetricFour("value")
+      .Record();
+
+  const auto data = GetIndependentMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events(0).project_name_hash(), kProjectTwoHash);
 }
 
 }  // namespace metrics::structured

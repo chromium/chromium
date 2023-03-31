@@ -30,6 +30,9 @@ constexpr base::FeatureParam<int> kLimitFilesPerScanParam{&kStructuredMetrics,
 constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
     &kStructuredMetrics, "file_byte_limit", 50000};
 
+constexpr base::FeatureParam<std::string> kDisallowedProjectsParam{
+    &kStructuredMetrics, "disabled_projects", ""};
+
 bool IsIndependentMetricsUploadEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kStructuredMetrics, "enable_independent_metrics_upload", true);
@@ -41,6 +44,10 @@ int GetFileLimitPerScan() {
 
 int GetFileSizeByteLimit() {
   return kFileSizeByteLimitParam.Get();
+}
+
+std::string GetDisabledProjects() {
+  return kDisallowedProjectsParam.Get();
 }
 
 }  // namespace metrics::structured

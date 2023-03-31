@@ -4,6 +4,7 @@
 
 #include "components/metrics/structured/structured_metrics_provider.h"
 
+#include <sstream>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -11,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/external_metrics.h"
@@ -200,8 +202,6 @@ void StructuredMetricsProvider::OnEventRecord(const Event& event) {
     LogEventRecordingState(EventRecordingState::kProviderUninitialized);
     RecordEventBeforeInitialization(event);
     return;
-  } else {
-    LogEventRecordingState(EventRecordingState::kRecorded);
   }
 
   DCHECK(profile_key_data_->is_initialized());
@@ -236,11 +236,15 @@ void StructuredMetricsProvider::OnRecordingEnabled() {
   DCHECK(base::CurrentUIThread::IsSet());
   // Enable recording only if structured metrics' feature flag is enabled.
   recording_enabled_ = base::FeatureList::IsEnabled(kStructuredMetrics);
+  if (recording_enabled_) {
+    CacheDisallowedProjectsSet();
+  }
 }
 
 void StructuredMetricsProvider::OnRecordingDisabled() {
   DCHECK(base::CurrentUIThread::IsSet());
   recording_enabled_ = false;
+  disallowed_projects_.clear();
 }
 
 void StructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
@@ -412,6 +416,13 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
   }
   const auto* event_validator = maybe_event_validator.value();
 
+  if (!CanUploadProject(project_validator->project_hash())) {
+    LogEventRecordingState(EventRecordingState::kProjectDisallowed);
+    return;
+  }
+
+  LogEventRecordingState(EventRecordingState::kRecorded);
+
   // The |events_| persistent proto contains two repeated fields, uma_events
   // and non_uma_events. uma_events is added to the ChromeUserMetricsExtension
   // on a call to ProvideCurrentSessionData, which is the standard UMA upload
@@ -568,6 +579,33 @@ void StructuredMetricsProvider::HashUnhashedEventsAndPersist() {
     RecordEvent(unhashed_events_.front());
     unhashed_events_.pop_front();
   }
+}
+
+bool StructuredMetricsProvider::CanUploadProject(
+    uint64_t project_name_hash) const {
+  return !disallowed_projects_.contains(project_name_hash);
+}
+
+void StructuredMetricsProvider::CacheDisallowedProjectsSet() {
+  const std::string& disallowed_list = GetDisabledProjects();
+  if (disallowed_list.empty()) {
+    return;
+  }
+
+  for (const auto& value :
+       base::SplitString(disallowed_list, ",", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_NONEMPTY)) {
+    uint64_t project_name_hash;
+    // Parse the string and keep only perfect conversions.
+    if (base::StringToUint64(value, &project_name_hash)) {
+      disallowed_projects_.insert(project_name_hash);
+    }
+  }
+}
+
+void StructuredMetricsProvider::AddDisallowedProjectForTest(
+    uint64_t project_name_hash) {
+  disallowed_projects_.insert(project_name_hash);
 }
 
 }  // namespace metrics::structured

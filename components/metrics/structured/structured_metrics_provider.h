@@ -8,6 +8,7 @@
 #include <deque>
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -132,6 +133,15 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // not be called to populate the SystemProfile.
   void ProvideSystemProfile(SystemProfileProto* system_profile);
 
+  // Checks if |project_name_hash| can be uploaded.
+  bool CanUploadProject(uint64_t project_name_hash) const;
+
+  // Builds a cache of disallow projects from the Finch controlled variable.
+  void CacheDisallowedProjectsSet();
+
+  // Adds a project to the diallowed list for testing.
+  void AddDisallowedProjectForTest(uint64_t project_name_hash);
+
   // Beyond this number of logging events between successive calls to
   // ProvideCurrentSessionData, we stop recording events.
   static int kMaxEventsPerUpload;
@@ -224,6 +234,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // Interface for providing the SystemProfile to metrics.
   // See chrome/browser/metrics/chrome_metrics_service_client.h
   base::raw_ptr<metrics::MetricsProvider> system_profile_provider_;
+
+  // A set of projects that are not allowed to be recorded. This is a cache of
+  // GetDisabledProjects().
+  base::flat_set<uint64_t> disallowed_projects_;
 
   base::WeakPtrFactory<StructuredMetricsProvider> weak_factory_{this};
 };
