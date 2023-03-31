@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -180,8 +181,9 @@ class ZeroconfPrinterDetectorTest : public testing::Test {
   }
   ~ZeroconfPrinterDetectorTest() override = default;
 
-  void CreateDetector() {
-    detector_ = ZeroconfPrinterDetector::CreateForTesting(&listers_);
+  void CreateDetector(base::flat_set<std::string> ippRejectList = {}) {
+    detector_ =
+        ZeroconfPrinterDetector::CreateForTesting(&listers_, ippRejectList);
     // The previously allocated listers_ are swapped into the detector_, and so
     // the unique_ptr values of the listers_ map are no longer valid at this
     // point.  The ipp[se]_lister_ raw pointers are kept as seperate members to
@@ -506,6 +508,33 @@ TEST_F(ZeroconfPrinterDetectorTest, ServiceTypePriorities) {
   ExpectPrintersAre({MakeExpectedPrinter("Printer5", ServiceType::kLpd)});
 
   lpd_lister_->Remove("Printer5");
+  CompleteTasks();
+  // No entries left.
+  ExpectPrintersEmpty();
+}
+
+// Test a printer that is known not to work with IPP/IPPS and make sure a
+// different protocol is chosen.
+TEST_F(ZeroconfPrinterDetectorTest, RejectIpp) {
+  std::string badIppPrinter = "manufacturer awesome printer-name";
+  base::flat_set<std::string> rejectList;
+  // We have to add the _ty suffix to match how MakeServiceDescription and
+  // MakeExpectedPrinter work.
+  rejectList.insert(badIppPrinter + "_ty");
+  // Advertise on IPP and LPD services.
+  ipp_lister_->Announce(MakeServiceDescription(
+      badIppPrinter, ZeroconfPrinterDetector::kIppServiceName));
+  ipps_lister_->Announce(MakeServiceDescription(
+      badIppPrinter, ZeroconfPrinterDetector::kIppsServiceName));
+  lpd_lister_->Announce(MakeServiceDescription(
+      badIppPrinter, ZeroconfPrinterDetector::kLpdServiceName));
+  CreateDetector(rejectList);
+  CompleteTasks();
+
+  // Should be rejected for IPPS-E and IPP-E, so it should only exist in LPD.
+  ExpectPrintersAre({MakeExpectedPrinter(badIppPrinter, ServiceType::kLpd)});
+
+  lpd_lister_->Remove(badIppPrinter);
   CompleteTasks();
   // No entries left.
   ExpectPrintersEmpty();

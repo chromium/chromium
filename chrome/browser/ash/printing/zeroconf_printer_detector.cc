@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/hash/md5.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -47,6 +48,16 @@ constexpr std::array<const char*, 6> kServiceNames = {
     ZeroconfPrinterDetector::kSocketServiceName,
     ZeroconfPrinterDetector::kLpdServiceName,
 };
+
+// Certain printers advertise IPP/IPPS but are known not to work with that
+// protocol.  Don't allow IPP/IPPS connections for printers in this list.
+// Printers in this list should be all lowercase.  See b/268531843 for more
+// context.
+constexpr auto kIppRejectList = base::MakeFixedFlatSet<base::StringPiece>({
+    "brother mfc-9340cdw",
+    "canon mx490 series",
+    "canon mg3000 series",
+});
 
 namespace {
 
@@ -258,7 +269,8 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
  public:
   // Normal constructor, connects to service discovery.
   ZeroconfPrinterDetectorImpl()
-      : discovery_client_(ServiceDiscoverySharedClient::GetInstance()) {
+      : discovery_client_(ServiceDiscoverySharedClient::GetInstance()),
+        rejectIppPrinters_(kIppRejectList.begin(), kIppRejectList.end()) {
     for (const char* service_type : kServiceNames) {
       CreateDeviceLister(service_type);
     }
@@ -267,7 +279,9 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
   // Testing constructor, uses injected backends.
   explicit ZeroconfPrinterDetectorImpl(
       std::map<std::string, std::unique_ptr<ServiceDiscoveryDeviceLister>>*
-          device_listers) {
+          device_listers,
+      base::flat_set<std::string>& ippRejectList)
+      : rejectIppPrinters_(ippRejectList) {
     device_listers_.swap(*device_listers);
     for (auto& entry : device_listers_) {
       entry.second->Start();
@@ -300,6 +314,14 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
     DetectedPrinter printer;
     if (!ConvertToPrinter(service_type, service_description, metadata,
                           &printer)) {
+      return;
+    }
+    std::string lowercase_key =
+        base::ToLowerASCII(printer.printer.make_and_model());
+    if ((service_type == kIppServiceName || service_type == kIppsServiceName) &&
+        rejectIppPrinters_.contains(lowercase_key)) {
+      PRINTER_LOG(EVENT) << "Rejecting " << lowercase_key
+                         << " for service type " << service_type;
       return;
     }
     base::AutoLock auto_lock(printers_lock_);
@@ -418,6 +440,9 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
       device_listers_;
 
   OnPrintersFoundCallback on_printers_found_callback_;
+
+  // A set of printers known not to work with IPP/IPPS protocol.
+  base::flat_set<std::string> rejectIppPrinters_;
 };
 
 }  // namespace
@@ -431,8 +456,10 @@ std::unique_ptr<ZeroconfPrinterDetector> ZeroconfPrinterDetector::Create() {
 std::unique_ptr<ZeroconfPrinterDetector>
 ZeroconfPrinterDetector::CreateForTesting(
     std::map<std::string, std::unique_ptr<ServiceDiscoveryDeviceLister>>*
-        device_listers) {
-  return std::make_unique<ZeroconfPrinterDetectorImpl>(device_listers);
+        device_listers,
+    base::flat_set<std::string>& ippRejectList) {
+  return std::make_unique<ZeroconfPrinterDetectorImpl>(device_listers,
+                                                       ippRejectList);
 }
 
 }  // namespace ash
