@@ -374,7 +374,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cardNumberItem.keyboardType = UIKeyboardTypeNumberPad;
   cardNumberItem.hideIcon = !isEditing;
   cardNumberItem.delegate = self;
-  cardNumberItem.delegate = self;
   // Hide credit card icon when editing.
   if (!isEditing) {
     cardNumberItem.identifyingIcon =
