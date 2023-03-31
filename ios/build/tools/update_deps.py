@@ -177,6 +177,14 @@ def add_missing_deps(srcdir, target, deps):
     changed = False
     first_deps_variable_line_index = -1
     target_name = target_name.replace("+", "\\+")
+
+    # Handles the internal targets from ios_app_bundle and
+    # ios_framework_bundle templates.
+    for suffix in ('_executable', '_shared_library'):
+        if target_name.endswith(suffix):
+            target_name = target_name[:-len(suffix)]
+            break
+
     target_rule = re.compile("\s*[a-z_]*\(\"%s\"\) {" % target_name)
     with open(build_gn_file, "r") as build_gn:
         all_lines = build_gn.readlines()
