@@ -58,6 +58,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
@@ -621,8 +622,9 @@ void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
   // ignore the result of |FinishCollectingThreatDetails()|. TriggerManager will
   // take care of whether report should be sent.
   trigger_manager_->FinishCollectingThreatDetails(
-      safe_browsing::TriggerType::GAIA_PASSWORD_REUSE, web_contents,
-      base::Milliseconds(0), did_proceed, /*num_visit=*/0,
+      safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
+      GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
+      /*num_visits=*/0,
       TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),
                                                web_contents));
 }

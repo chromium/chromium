@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -166,7 +167,8 @@ void AwSafeBrowsingBlockingPage::FinishThreatDetails(
                          ->GetSafeBrowsingTriggerManager()
                          ->FinishCollectingThreatDetails(
                              safe_browsing::TriggerType::SECURITY_INTERSTITIAL,
-                             web_contents(), delay, did_proceed, num_visits,
+                             safe_browsing::GetWebContentsKey(web_contents()),
+                             delay, did_proceed, num_visits,
                              sb_error_ui()->get_error_display_options());
 
   if (report_sent) {

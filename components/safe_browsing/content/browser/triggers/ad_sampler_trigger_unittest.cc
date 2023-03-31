@@ -9,6 +9,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/content/browser/triggers/mock_trigger_manager.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -85,6 +86,10 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
   }
 
+  WebContentsKey web_contents_key() {
+    return GetWebContentsKey(web_contents());
+  }
+
   MockTriggerManager* get_trigger_manager() { return &trigger_manager_; }
   base::HistogramTester* get_histograms() { return &histograms_; }
 
@@ -155,7 +160,7 @@ TEST_F(AdSamplerTriggerTest, PageWithMultipleAds) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
-                                            web_contents(), _, _, _, _))
+                                            web_contents_key(), _, _, _, _))
       .Times(2);
 
   // This page contains two ads - one identifiable by its URL, the other by the
@@ -188,7 +193,7 @@ TEST_F(AdSamplerTriggerTest, ReportRejectedByTriggerManager) {
       .WillOnce(Return(false));
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
-                                            web_contents(), _, _, _, _))
+                                            web_contents_key(), _, _, _, _))
       .Times(0);
 
   // One ad on the page, identified by its URL.

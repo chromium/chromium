@@ -127,22 +127,23 @@ class TriggerManagerTest : public ::testing::Test {
   bool FinishCollectingThreatDetails(const TriggerType trigger_type,
                                      content::WebContents* web_contents,
                                      bool expect_report_sent) {
+    WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
     if (expect_report_sent) {
       MockThreatDetails* threat_details = static_cast<MockThreatDetails*>(
-          trigger_manager_.data_collectors_map_[web_contents]
+          trigger_manager_.data_collectors_map_[web_contents_key]
               .threat_details.get());
       EXPECT_CALL(*threat_details, FinishCollection(_, _)).Times(1);
     }
     SBErrorOptions options =
         TriggerManager::GetSBErrorDisplayOptions(pref_service_, web_contents);
     bool result = trigger_manager_.FinishCollectingThreatDetails(
-        trigger_type, web_contents, base::TimeDelta(), false, 0, options);
+        trigger_type, web_contents_key, base::TimeDelta(), false, 0, options);
 
     // Invoke the callback if the report was to be sent.
     if (expect_report_sent) {
       // Allow the ThreatDetails to complete, then remove it.
       base::RunLoop().RunUntilIdle();
-      trigger_manager_.ThreatDetailsDone(web_contents);
+      trigger_manager_.ThreatDetailsDone(web_contents_key);
     }
 
     return result;
@@ -166,86 +167,104 @@ TEST_F(TriggerManagerTest, StartAndFinishCollectingThreatDetails) {
   // Basic workflow is to start and finish data collection with a single
   // WebContents.
   content::WebContents* web_contents1 = CreateWebContents();
+  WebContentsKey web_contents_key1 = GetWebContentsKey(web_contents1);
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents1));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents1)));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key1)));
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents1, true));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
 
   // More complex scenarios can happen, where collection happens on two
   // WebContents at the same time, possibly starting and completing in different
   // order.
   content::WebContents* web_contents2 = CreateWebContents();
+  WebContentsKey web_contents_key2 = GetWebContentsKey(web_contents2);
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents1));
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents2));
-  EXPECT_THAT(data_collectors_map(),
-              UnorderedElementsAre(Key(web_contents1), Key(web_contents2)));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_THAT(
+      data_collectors_map(),
+      UnorderedElementsAre(Key(web_contents_key1), Key(web_contents_key2)));
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents1).threat_details);
-  EXPECT_NE(data_collectors_map().find(web_contents2),
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
+  EXPECT_NE(data_collectors_map().find(web_contents_key2),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents2).threat_details);
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key2).threat_details);
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents2, true));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents1).threat_details);
-  EXPECT_NE(data_collectors_map().find(web_contents2),
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
+  EXPECT_NE(data_collectors_map().find(web_contents_key2),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents2).threat_details);
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key2).threat_details);
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents1, true));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents1).threat_details);
-  EXPECT_NE(data_collectors_map().find(web_contents2),
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
+  EXPECT_NE(data_collectors_map().find(web_contents_key2),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents2).threat_details);
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key2).threat_details);
 
   // Calling Start twice with the same WebContents is an error, and will return
   // false the second time. But it can still be completed normally.
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents1));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
   EXPECT_FALSE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents1));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents1, true));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
 
   // Calling Finish twice with the same WebContents is an error, and will return
   // false the second time. It's basically a no-op.
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents1));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_NE(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_NE(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents1, true));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
   EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                              web_contents1, false));
-  EXPECT_NE(data_collectors_map().find(web_contents1),
+  EXPECT_NE(data_collectors_map().find(web_contents_key1),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents1).threat_details);
+  EXPECT_EQ(nullptr,
+            data_collectors_map().at(web_contents_key1).threat_details);
 }
 
 TEST_F(TriggerManagerTest, NoDataCollection_Incognito) {
@@ -290,14 +309,16 @@ TEST_F(TriggerManagerTest, UserOptedOutOfSBER_DataCollected_NoReportSent) {
   // report will be sent when data collection ends.
   SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
   content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents)));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
   EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                              web_contents, false));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
 TEST_F(TriggerManagerTest, UserOptsOutOfSBER_DataCollected_NoReportSent) {
@@ -305,17 +326,19 @@ TEST_F(TriggerManagerTest, UserOptsOutOfSBER_DataCollected_NoReportSent) {
   // then no report is sent. Note that the test fixture opts the user into
   // Extended Reporting by default.
   content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents)));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
 
   SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
 
   EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                              web_contents, false));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
 TEST_F(TriggerManagerTest, UserOptsInToSBER_DataCollected_ReportSent) {
@@ -324,17 +347,19 @@ TEST_F(TriggerManagerTest, UserOptsInToSBER_DataCollected_ReportSent) {
   // also be sent.
   SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
   content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents)));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
 
   SetPref(prefs::kSafeBrowsingScoutReportingEnabled, true);
 
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                             web_contents, true));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
 TEST_F(TriggerManagerTest,
@@ -342,45 +367,49 @@ TEST_F(TriggerManagerTest,
   // If the user loses the ability to opt-in to SBER in the middle of data
   // collection then the report will not be sent.
   content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents)));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
 
   // Remove the ability to opt-in to SBER.
   SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
 
   EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                              web_contents, false));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
 TEST_F(TriggerManagerTest, NoCollectionWhenOutOfQuota) {
   // Triggers are not allowed to collect data when they're out of quota, even if
   // all other conditions are as expected.
   content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
 
   // Turn on the AD_SAMPLE trigger inside the throttler and confirm that it can
   // fire normally.
   SetTriggerHasQuota(TriggerType::AD_SAMPLE, true);
   EXPECT_TRUE(
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents)));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
                                             web_contents, true));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 
   // Turn off the AD_SAMPLE trigger inside the throttler, the trigger should no
   // longer be able to fire.
   SetTriggerHasQuota(TriggerType::AD_SAMPLE, false);
   EXPECT_FALSE(
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
 TEST_F(TriggerManagerTest, NoCollectionWhenSBERDisabledByPolicy) {
@@ -401,17 +430,19 @@ TEST_F(TriggerManagerTest, AdSamplerTrigger) {
   // Check the conditions required for the Ad Sampler trigger to fire. It needs
   // opt-in to start collecting data, scout opt-in, and quota.
   content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
 
   // The default setup in this test makes the trigger fire (all prefs enabled,
   // all triggers have quota).
   EXPECT_TRUE(
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
-  EXPECT_THAT(data_collectors_map(), UnorderedElementsAre(Key(web_contents)));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
   EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
                                             web_contents, true));
-  EXPECT_NE(data_collectors_map().find(web_contents),
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
             data_collectors_map().end());
-  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents).threat_details);
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 
   // Disabling SBEROptInAllowed disables this trigger.
   SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);

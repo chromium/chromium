@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
+#include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -143,8 +144,9 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   // Finish computing threat details. TriggerManager will decide if its safe to
   // send the report.
   bool report_sent = trigger_manager_->FinishCollectingThreatDetails(
-      TriggerType::SECURITY_INTERSTITIAL, web_contents(), delay, did_proceed,
-      num_visits, sb_error_ui()->get_error_display_options());
+      TriggerType::SECURITY_INTERSTITIAL, GetWebContentsKey(web_contents()),
+      delay, did_proceed, num_visits,
+      sb_error_ui()->get_error_display_options());
 
   if (report_sent) {
     controller()->metrics_helper()->RecordUserInteraction(
