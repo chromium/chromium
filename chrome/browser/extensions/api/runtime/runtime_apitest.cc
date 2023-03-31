@@ -739,8 +739,28 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetServiceWorkerContext) {
          }])";
   EXPECT_THAT(contexts, base::test::IsJson(kExpected));
 
-  // TODO(crbug/1426192): Add tests for retrieving a service worker context
-  // when there isn't an active worker.
+  // Now, wait for the extension worker to terminate and verify that no
+  // no contexts are retrieved.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension().id());
+  // In order to be able to call the API, we need to open a new tab to an
+  // extension resource.
+  const GURL extension_page_url = extension().GetResourceURL("page.html");
+  content::RenderFrameHost* new_host =
+      ui_test_utils::NavigateToURL(browser(), extension_page_url);
+  ASSERT_TRUE(new_host);
+
+  std::string result;
+  static constexpr char kScript[] =
+      R"((async () => {
+           let contexts =
+               await chrome.runtime.getContexts({contextTypes: ['BACKGROUND']});
+           domAutomationController.send(JSON.stringify(contexts));
+         })();)";
+  EXPECT_TRUE(
+      content::ExecuteScriptAndExtractString(new_host, kScript, &result));
+  // No contexts should have been returned.
+  EXPECT_EQ("[]", result);
 }
 
 // Tests the filter matching behavior of `runtime.getContexts()`.
