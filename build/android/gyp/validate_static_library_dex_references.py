@@ -12,6 +12,7 @@ import zipfile
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 from pylib.dex import dex_parser
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 _FLAGS_PATH = (
     '//chrome/android/java/static_library_dex_reference_workarounds.flags')
@@ -49,8 +50,7 @@ def _DexFilesFromPath(path):
 def main(args):
   args = build_utils.ExpandFileArgs(args)
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--depfile', required=True, help='Path to output depfile.')
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument(
       '--stamp', required=True, help='Path to file to touch upon success.')
   parser.add_argument(
@@ -86,7 +86,7 @@ def main(args):
 
   input_paths = [args.static_library_dex] + args.static_library_dependent_dexes
   build_utils.Touch(args.stamp)
-  build_utils.WriteDepfile(args.depfile, args.stamp, inputs=input_paths)
+  action_helpers.write_depfile(args.depfile, args.stamp, inputs=input_paths)
 
 
 if __name__ == '__main__':

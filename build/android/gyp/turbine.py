@@ -11,8 +11,10 @@ import sys
 import time
 import zipfile
 
+import compile_java
 import javac_output_processor
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def ProcessJavacOutput(output, target_name):
@@ -25,7 +27,7 @@ def main(argv):
   build_utils.InitLogging('TURBINE_DEBUG')
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument('--target-name', help='Fully qualified GN target name.')
   parser.add_argument(
       '--turbine-jar-path', required=True, help='Path to the turbine jar file.')
@@ -60,10 +62,10 @@ def main(argv):
                       help='Kotlin jar to be merged into the output jar.')
   options, unknown_args = parser.parse_known_args(argv)
 
-  options.classpath = build_utils.ParseGnList(options.classpath)
-  options.processorpath = build_utils.ParseGnList(options.processorpath)
-  options.processors = build_utils.ParseGnList(options.processors)
-  options.java_srcjars = build_utils.ParseGnList(options.java_srcjars)
+  options.classpath = action_helpers.parse_gn_list(options.classpath)
+  options.processorpath = action_helpers.parse_gn_list(options.processorpath)
+  options.processors = action_helpers.parse_gn_list(options.processors)
+  options.java_srcjars = action_helpers.parse_gn_list(options.java_srcjars)
 
   files = []
   for arg in unknown_args:
@@ -124,10 +126,9 @@ def main(argv):
 
   # Use AtomicOutput so that output timestamps are not updated when outputs
   # are not changed.
-  with build_utils.AtomicOutput(options.jar_path) as output_jar, \
-      build_utils.AtomicOutput(options.generated_jar_path) as generated_jar:
-    cmd += ['--output', output_jar.name, '--gensrc_output', generated_jar.name]
-
+  with action_helpers.atomic_output(options.jar_path) as output_jar, \
+      action_helpers.atomic_output(options.generated_jar_path) as gensrc_jar:
+    cmd += ['--output', output_jar.name, '--gensrc_output', gensrc_jar.name]
     process_javac_output_partial = functools.partial(
         ProcessJavacOutput, target_name=options.target_name)
 
@@ -151,7 +152,8 @@ def main(argv):
     # in the depfile.
     depfile_deps = (options.classpath + options.processorpath +
                     options.java_srcjars)
-    build_utils.WriteDepfile(options.depfile, options.jar_path, depfile_deps)
+    action_helpers.write_depfile(options.depfile, options.jar_path,
+                                 depfile_deps)
 
 
 if __name__ == '__main__':

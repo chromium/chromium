@@ -14,6 +14,7 @@ import time
 import compile_java
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _RunCompiler(args,
@@ -97,7 +98,7 @@ def _RunCompiler(args,
 
 def _ParseOptions(argv):
   parser = argparse.ArgumentParser()
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
 
   parser.add_argument('--java-srcjars',
                       action='append',
@@ -125,8 +126,8 @@ def _ParseOptions(argv):
 
   args, extra_args = parser.parse_known_args(argv)
 
-  args.classpath = build_utils.ParseGnList(args.classpath)
-  args.java_srcjars = build_utils.ParseGnList(args.java_srcjars)
+  args.classpath = action_helpers.parse_gn_list(args.classpath)
+  args.java_srcjars = action_helpers.parse_gn_list(args.java_srcjars)
 
   source_files = []
   for arg in extra_args:
@@ -174,7 +175,7 @@ def main(argv):
   if args.depfile:
     # GN already knows of the source files, so avoid listing individual files
     # in the depfile.
-    build_utils.WriteDepfile(args.depfile, args.jar_path, args.classpath)
+    action_helpers.write_depfile(args.depfile, args.jar_path, args.classpath)
 
 
 if __name__ == '__main__':

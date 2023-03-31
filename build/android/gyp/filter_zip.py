@@ -9,6 +9,7 @@ import shutil
 import sys
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def CreatePathTransform(exclude_globs, include_globs):
@@ -50,11 +51,11 @@ def main():
   argv = build_utils.ExpandFileArgs(sys.argv[1:])
   args = parser.parse_args(argv)
 
-  args.exclude_globs = build_utils.ParseGnList(args.exclude_globs)
-  args.include_globs = build_utils.ParseGnList(args.include_globs)
+  args.exclude_globs = action_helpers.parse_gn_list(args.exclude_globs)
+  args.include_globs = action_helpers.parse_gn_list(args.include_globs)
 
   path_transform = CreatePathTransform(args.exclude_globs, args.include_globs)
-  with build_utils.AtomicOutput(args.output) as f:
+  with action_helpers.atomic_output(args.output) as f:
     if path_transform:
       build_utils.MergeZips(f.name, [args.input], path_transform=path_transform)
     else:

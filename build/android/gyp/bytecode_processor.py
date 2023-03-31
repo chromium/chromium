@@ -9,9 +9,9 @@ import argparse
 import sys
 
 import javac_output_processor
-
 from util import build_utils
 from util import server_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _AddSwitch(parser, val):
@@ -49,13 +49,15 @@ def main(argv):
                                   force=args.use_build_server):
     return
 
-  args.sdk_classpath_jars = build_utils.ParseGnList(args.sdk_classpath_jars)
-  args.direct_classpath_jars = build_utils.ParseGnList(
+  args.sdk_classpath_jars = action_helpers.parse_gn_list(
+      args.sdk_classpath_jars)
+  args.direct_classpath_jars = action_helpers.parse_gn_list(
       args.direct_classpath_jars)
-  args.full_classpath_jars = build_utils.ParseGnList(args.full_classpath_jars)
-  args.full_classpath_gn_targets = build_utils.ParseGnList(
+  args.full_classpath_jars = action_helpers.parse_gn_list(
+      args.full_classpath_jars)
+  args.full_classpath_gn_targets = action_helpers.parse_gn_list(
       args.full_classpath_gn_targets)
-  args.missing_classes_allowlist = build_utils.ParseGnList(
+  args.missing_classes_allowlist = action_helpers.parse_gn_list(
       args.missing_classes_allowlist)
 
   verbose = '--verbose' if args.verbose else '--not-verbose'

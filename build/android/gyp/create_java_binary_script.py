@@ -15,6 +15,7 @@ import os
 import sys
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 # The java command must be executed in the current directory because there may
 # be user-supplied paths in the args. The script receives the classpath relative
@@ -110,7 +111,7 @@ def main(argv):
 
   classpath = []
   for cp_arg in args.classpath:
-    classpath += build_utils.ParseGnList(cp_arg)
+    classpath += action_helpers.parse_gn_list(cp_arg)
 
   run_dir = os.path.dirname(args.output)
   classpath = [os.path.relpath(p, run_dir) for p in classpath]
@@ -121,7 +122,7 @@ def main(argv):
     java_home = build_utils.JAVA_HOME
   java_path = os.path.relpath(os.path.join(java_home, 'bin', 'java'), run_dir)
 
-  with build_utils.AtomicOutput(args.output, mode='w') as script:
+  with action_helpers.atomic_output(args.output, mode='w') as script:
     script.write(
         script_template.format(classpath=('"%s"' % '", "'.join(classpath)),
                                java_path=repr(java_path),

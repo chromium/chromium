@@ -11,6 +11,7 @@ import string
 import sys
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 SCRIPT_TEMPLATE = string.Template("""\
 #!/usr/bin/env python3
@@ -109,7 +110,7 @@ def main(args):
         'TARGET_CPU':
         repr(args.target_cpu),
         'SYSTEM_IMAGE_LOCALES':
-        repr(build_utils.ParseGnList(args.system_image_locales)),
+        repr(action_helpers.parse_gn_list(args.system_image_locales)),
         'DEFAULT_MODULES':
         repr(args.default_modules),
     }

@@ -10,9 +10,10 @@ import re
 import shlex
 import sys
 import xml.dom.minidom as minidom
+from xml.etree import ElementTree
 
 from util import build_utils
-from xml.etree import ElementTree
+import action_helpers  # build_utils adds //build to sys.path.
 
 ANDROID_NAMESPACE = 'http://schemas.android.com/apk/res/android'
 TOOLS_NAMESPACE = 'http://schemas.android.com/tools'
@@ -81,7 +82,7 @@ def ParseManifest(path):
 
 
 def SaveManifest(doc, path):
-  with build_utils.AtomicOutput(path) as f:
+  with action_helpers.atomic_output(path) as f:
     f.write(ElementTree.tostring(doc.getroot(), encoding='UTF-8'))
 
 

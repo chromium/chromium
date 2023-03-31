@@ -22,6 +22,7 @@
 ../../../third_party/markupsafe/__init__.py
 ../../../third_party/markupsafe/_compat.py
 ../../../third_party/markupsafe/_native.py
+../../action_helpers.py
 ../../gn_helpers.py
 create_r_txt.py
 util/__init__.py

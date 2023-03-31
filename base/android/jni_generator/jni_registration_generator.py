@@ -22,6 +22,7 @@ import zipfile
 
 import jni_generator
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 # All but FULL_CLASS_NAME, which is used only for sorting.
 MERGEABLE_KEYS = [
@@ -103,10 +104,10 @@ def _Generate(options, java_file_paths):
     combined_dict['HEADER_GUARD'] = header_guard
     combined_dict['NAMESPACE'] = options.namespace
     header_content = CreateFromDict(options, module_name, combined_dict)
-    with build_utils.AtomicOutput(options.header_path, mode='w') as f:
+    with action_helpers.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
 
-  with build_utils.AtomicOutput(options.srcjar_path) as f:
+  with action_helpers.atomic_output(options.srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       for module_name, combined_dict in combined_dicts.items():
 
@@ -851,7 +852,7 @@ def _MakeProxySignature(options, proxy_native):
 
 def main(argv):
   arg_parser = argparse.ArgumentParser()
-  build_utils.AddDepfileOption(arg_parser)
+  action_helpers.add_depfile_arg(arg_parser)
 
   arg_parser.add_argument(
       '--sources-files',
@@ -919,7 +920,7 @@ def main(argv):
         'Invalid arguments: --manual-jni-registration without --header-path. '
         'Cannot manually register JNI if there is no output header file.')
 
-  sources_files = sorted(set(build_utils.ParseGnList(args.sources_files)))
+  sources_files = sorted(set(action_helpers.parse_gn_list(args.sources_files)))
 
   java_file_paths = []
   for f in sources_files:
@@ -931,8 +932,8 @@ def main(argv):
   _Generate(args, java_file_paths)
 
   if args.depfile:
-    build_utils.WriteDepfile(args.depfile, args.srcjar_path,
-                             sources_files + java_file_paths)
+    action_helpers.write_depfile(args.depfile, args.srcjar_path,
+                                 sources_files + java_file_paths)
 
 
 if __name__ == '__main__':

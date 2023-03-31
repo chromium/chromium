@@ -8,6 +8,7 @@ import re
 import sys
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 sys.path.append(
     os.path.abspath(
@@ -23,7 +24,7 @@ def ExpandWrappedPathLists(args):
   for arg in args:
     m = _WRAPPED_PATH_LIST_RE.match(arg)
     if m:
-      for p in build_utils.ParseGnList(m.group(2)):
+      for p in action_helpers.parse_gn_list(m.group(2)):
         expanded_args.extend([m.group(1), '@WrappedPath(%s)' % p])
     else:
       expanded_args.append(arg)

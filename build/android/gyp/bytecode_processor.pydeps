@@ -16,6 +16,7 @@
 ../../../third_party/colorama/src/colorama/win32.py
 ../../../third_party/colorama/src/colorama/winterm.py
 ../../../tools/android/modularization/convenience/lookup_dep.py
+../../action_helpers.py
 ../../gn_helpers.py
 ../list_java_targets.py
 ../pylib/__init__.py

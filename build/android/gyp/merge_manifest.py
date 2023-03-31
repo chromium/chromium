@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ElementTree
 
 from util import build_utils
 from util import manifest_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 
@@ -67,7 +68,7 @@ def _ProcessOtherManifest(manifest_path, target_sdk_version,
 def main(argv):
   argv = build_utils.ExpandFileArgs(argv)
   parser = argparse.ArgumentParser(description=__doc__)
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument('--manifest-merger-jar',
                       help='Path to SDK\'s manifest merger jar.',
                       required=True)
@@ -95,7 +96,7 @@ def main(argv):
                       help='Treat all warnings as errors.')
   args = parser.parse_args(argv)
 
-  with build_utils.AtomicOutput(args.output) as output:
+  with action_helpers.atomic_output(args.output) as output:
     cmd = build_utils.JavaCmd() + [
         '-cp',
         args.manifest_merger_jar,
@@ -114,7 +115,7 @@ def main(argv):
           'MAX_SDK_VERSION=' + args.max_sdk_version,
       ]
 
-    extras = build_utils.ParseGnList(args.extras)
+    extras = action_helpers.parse_gn_list(args.extras)
 
     with contextlib.ExitStack() as stack:
       root_manifest, package = stack.enter_context(
@@ -145,7 +146,7 @@ def main(argv):
           fail_on_output=args.warnings_as_errors)
 
   if args.depfile:
-    build_utils.WriteDepfile(args.depfile, args.output, inputs=extras)
+    action_helpers.write_depfile(args.depfile, args.output, inputs=extras)
 
 
 if __name__ == '__main__':

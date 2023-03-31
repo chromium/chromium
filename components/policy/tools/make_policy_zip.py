@@ -13,6 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              os.pardir, os.pardir, os.pardir,
                              'build', 'android', 'gyp'))
 from util import build_utils
+import action_helpers
 
 
 def main():
@@ -47,7 +48,7 @@ def main():
     else:
       file_list.append(file_to_add)
 
-  with build_utils.AtomicOutput(args.output) as f:
+  with action_helpers.atomic_output(args.output) as f:
     build_utils.DoZip(file_list, f, args.base_dir, timestamp=args.timestamp)
 
 

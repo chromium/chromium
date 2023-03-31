@@ -10,6 +10,7 @@ import os
 import sys
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _ParseArgs(args):
@@ -49,7 +50,7 @@ def _ParseArgs(args):
                       help='Output for `aapt2 optimize`.')
   options = parser.parse_args(args)
 
-  options.resources_config_paths = build_utils.ParseGnList(
+  options.resources_config_paths = action_helpers.parse_gn_list(
       options.resources_config_paths)
 
   if options.resources_path_map_out_path and not options.short_resource_paths:

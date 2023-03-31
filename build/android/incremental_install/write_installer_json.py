@@ -14,6 +14,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'gyp'))
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _ParseArgs(args):
@@ -44,8 +45,8 @@ def _ParseArgs(args):
                       help='Print a warning about proguard being disabled')
 
   options = parser.parse_args(args)
-  options.dex_files = build_utils.ParseGnList(options.dex_files)
-  options.native_libs = build_utils.ParseGnList(options.native_libs)
+  options.dex_files = action_helpers.parse_gn_list(options.dex_files)
+  options.native_libs = action_helpers.parse_gn_list(options.native_libs)
   return options
 
 
@@ -60,7 +61,7 @@ def main(args):
       'split_globs': options.split_globs,
   }
 
-  with build_utils.AtomicOutput(options.output_path, mode='w+') as f:
+  with action_helpers.atomic_output(options.output_path, mode='w+') as f:
     json.dump(data, f, indent=2, sort_keys=True)
 
 

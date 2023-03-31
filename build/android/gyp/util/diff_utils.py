@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import difflib
 import os
 import sys
 
-import difflib
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _SkipOmitted(line):
@@ -96,7 +97,7 @@ def AddCommandLineFlags(parser):
 
 def CheckExpectations(actual_data, options, custom_msg=''):
   if options.actual_file:
-    with build_utils.AtomicOutput(options.actual_file) as f:
+    with action_helpers.atomic_output(options.actual_file) as f:
       f.write(actual_data.encode('utf8'))
   if options.expected_file_base:
     actual_data = _GenerateDiffWithOnlyAdditons(options.expected_file_base,

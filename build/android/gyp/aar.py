@@ -16,9 +16,7 @@ from xml.etree import ElementTree
 import zipfile
 
 from util import build_utils
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             os.pardir, os.pardir)))
+import action_helpers  # build_utils adds //build to sys.path.
 import gn_helpers
 
 
@@ -165,7 +163,7 @@ def main():
 
   args = parser.parse_args()
 
-  args.resource_exclusion_globs = build_utils.ParseGnList(
+  args.resource_exclusion_globs = action_helpers.parse_gn_list(
       args.resource_exclusion_globs)
   if args.ignore_resources:
     args.resource_exclusion_globs.append('res/*')

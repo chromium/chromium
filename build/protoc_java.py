@@ -22,6 +22,8 @@ import shutil
 import subprocess
 import sys
 
+import action_helpers
+
 sys.path.append(os.path.join(os.path.dirname(__file__), 'android', 'gyp'))
 from util import build_utils
 
@@ -41,7 +43,7 @@ def _EnforceJavaPackage(proto_srcs):
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument('--protoc', required=True, help='Path to protoc binary.')
   parser.add_argument('--plugin', help='Path to plugin executable')
   parser.add_argument('--proto-path',
@@ -96,7 +98,7 @@ def main(argv):
   if options.depfile:
     assert options.srcjar
     deps = options.protos + [options.protoc]
-    build_utils.WriteDepfile(options.depfile, options.srcjar, deps)
+    action_helpers.write_depfile(options.depfile, options.srcjar, deps)
 
   if options.stamp:
     build_utils.Touch(options.stamp)

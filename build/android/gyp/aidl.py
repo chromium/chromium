@@ -14,6 +14,7 @@ import sys
 import zipfile
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def main(argv):
@@ -23,10 +24,10 @@ def main(argv):
   option_parser.add_option('--includes',
                            help='Directories to add as import search paths.')
   option_parser.add_option('--srcjar', help='Path for srcjar output.')
-  build_utils.AddDepfileOption(option_parser)
+  action_helpers.add_depfile_arg(option_parser)
   options, args = option_parser.parse_args(argv[1:])
 
-  options.includes = build_utils.ParseGnList(options.includes)
+  options.includes = action_helpers.parse_gn_list(options.includes)
 
   with build_utils.TempDir() as temp_dir:
     for f in args:
@@ -34,7 +35,7 @@ def main(argv):
       output = os.path.join(temp_dir, classname + '.java')
       aidl_cmd = [options.aidl_path]
       aidl_cmd += [
-        '-p' + s for s in build_utils.ParseGnList(options.imports)
+          '-p' + s for s in action_helpers.parse_gn_list(options.imports)
       ]
       aidl_cmd += ['-I' + s for s in options.includes]
       aidl_cmd += [
@@ -43,7 +44,7 @@ def main(argv):
       ]
       build_utils.CheckOutput(aidl_cmd)
 
-    with build_utils.AtomicOutput(options.srcjar) as f:
+    with action_helpers.atomic_output(options.srcjar) as f:
       with zipfile.ZipFile(f, 'w') as srcjar:
         for path in build_utils.FindInDirectory(temp_dir, '*.java'):
           with open(path) as fileobj:
@@ -57,7 +58,7 @@ def main(argv):
     include_files = []
     for include_dir in options.includes:
       include_files += build_utils.FindInDirectory(include_dir, '*.java')
-    build_utils.WriteDepfile(options.depfile, options.srcjar, include_files)
+    action_helpers.write_depfile(options.depfile, options.srcjar, include_files)
 
 
 if __name__ == '__main__':

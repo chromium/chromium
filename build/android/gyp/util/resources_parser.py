@@ -9,6 +9,7 @@ from xml.etree import ElementTree
 
 from util import build_utils
 from util import resource_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 _TextSymbolEntry = collections.namedtuple(
     'RTextEntry', ('java_type', 'resource_type', 'name', 'value'))
@@ -141,7 +142,7 @@ class RTxtGenerator:
 
   def WriteRTxtFile(self, rtxt_path):
     resources = self._CollectResourcesListFromDirectories()
-    with build_utils.AtomicOutput(rtxt_path, mode='w') as f:
+    with action_helpers.atomic_output(rtxt_path, mode='w') as f:
       for resource in resources:
         line = '{0.java_type} {0.resource_type} {0.name} {0.value}\n'.format(
             resource)

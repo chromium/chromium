@@ -16,6 +16,7 @@ import zipfile
 import dex
 from util import build_utils
 from util import diff_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
     # A separate expectation file is created for these files.
@@ -28,7 +29,7 @@ _DUMP_DIR_NAME = 'r8inputs_dir'
 def _ParseOptions():
   args = build_utils.ExpandFileArgs(sys.argv[1:])
   parser = argparse.ArgumentParser()
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument('--r8-path',
                       required=True,
                       help='Path to the R8.jar to use.')
@@ -148,10 +149,11 @@ def _ParseOptions():
     parser.error('Cannot use both --force-enable-assertions and '
                  '--assertion-handler')
 
-  options.classpath = build_utils.ParseGnList(options.classpath)
-  options.proguard_configs = build_utils.ParseGnList(options.proguard_configs)
-  options.input_paths = build_utils.ParseGnList(options.input_paths)
-  options.extra_mapping_output_paths = build_utils.ParseGnList(
+  options.classpath = action_helpers.parse_gn_list(options.classpath)
+  options.proguard_configs = action_helpers.parse_gn_list(
+      options.proguard_configs)
+  options.input_paths = action_helpers.parse_gn_list(options.input_paths)
+  options.extra_mapping_output_paths = action_helpers.parse_gn_list(
       options.extra_mapping_output_paths)
 
   if options.feature_names:
@@ -162,7 +164,7 @@ def _ParseOptions():
       parser.error('Invalid feature argument lengths.')
 
     options.feature_jars = [
-        build_utils.ParseGnList(x) for x in options.feature_jars
+        action_helpers.parse_gn_list(x) for x in options.feature_jars
     ]
 
   split_map = {}
@@ -556,7 +558,7 @@ def _MaybeWriteStampAndDepFile(options, inputs):
     build_utils.Touch(options.stamp)
     output = options.stamp
   if options.depfile:
-    build_utils.WriteDepfile(options.depfile, output, inputs=inputs)
+    action_helpers.write_depfile(options.depfile, output, inputs=inputs)
 
 
 def _IterParentContexts(context_name, split_contexts_by_name):
@@ -630,9 +632,9 @@ def _Run(options):
   if options.expected_file:
     diff_utils.CheckExpectations(merged_configs, options)
     if options.only_verify_expectations:
-      build_utils.WriteDepfile(options.depfile,
-                               options.actual_file,
-                               inputs=depfile_inputs)
+      action_helpers.write_depfile(options.depfile,
+                                   options.actual_file,
+                                   inputs=depfile_inputs)
       return
 
   if options.keep_rules_output_path:

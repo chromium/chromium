@@ -14,18 +14,18 @@ import os
 import posixpath
 import shutil
 import sys
+from xml.etree import ElementTree
 import zipfile
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 from pylib.utils import dexdump
 
+import bundletool
 from util import build_utils
 from util import manifest_utils
 from util import resource_utils
-from xml.etree import ElementTree
-
-import bundletool
+import action_helpers  # build_utils adds //build to sys.path.
 
 # Location of language-based assets in bundle modules.
 _LOCALES_SUBDIR = 'assets/locales/'
@@ -123,16 +123,17 @@ def _ParseArgs(args):
       help='Check if services are in base module if isolatedSplits is enabled.')
 
   options = parser.parse_args(args)
-  options.module_zips = build_utils.ParseGnList(options.module_zips)
-  options.rtxt_in_paths = build_utils.ParseGnList(options.rtxt_in_paths)
-  options.pathmap_in_paths = build_utils.ParseGnList(options.pathmap_in_paths)
+  options.module_zips = action_helpers.parse_gn_list(options.module_zips)
+  options.rtxt_in_paths = action_helpers.parse_gn_list(options.rtxt_in_paths)
+  options.pathmap_in_paths = action_helpers.parse_gn_list(
+      options.pathmap_in_paths)
 
   if len(options.module_zips) == 0:
     raise Exception('The module zip list cannot be empty.')
 
   # Merge all uncompressed assets into a set.
   uncompressed_list = []
-  for entry in build_utils.ParseGnList(options.uncompressed_assets):
+  for entry in action_helpers.parse_gn_list(options.uncompressed_assets):
     # Each entry has the following format: 'zipPath' or 'srcPath:zipPath'
     pos = entry.find(':')
     if pos >= 0:
@@ -144,7 +145,8 @@ def _ParseArgs(args):
 
   # Check that all split dimensions are valid
   if options.split_dimensions:
-    options.split_dimensions = build_utils.ParseGnList(options.split_dimensions)
+    options.split_dimensions = action_helpers.parse_gn_list(
+        options.split_dimensions)
     for dim in options.split_dimensions:
       if dim.upper() not in _ALL_SPLIT_DIMENSIONS:
         parser.error('Invalid split dimension "%s" (expected one of: %s)' % (

@@ -8,10 +8,9 @@ import argparse
 import os
 import sys
 
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 from util import build_utils
 from util import resource_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _FilterUnusedResources(r_text_in, r_text_out, unused_resources_config):
@@ -37,7 +36,7 @@ def _FilterUnusedResources(r_text_in, r_text_out, unused_resources_config):
 def main(args):
   parser = argparse.ArgumentParser()
 
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument('--script',
                       required=True,
                       help='Path to the unused resources detector script.')
@@ -66,7 +65,7 @@ def main(args):
                       help='Path to output the aapt2 config to.')
   args = build_utils.ExpandFileArgs(args)
   options = parser.parse_args(args)
-  options.dependencies_res_zips = (build_utils.ParseGnList(
+  options.dependencies_res_zips = (action_helpers.parse_gn_list(
       options.dependencies_res_zips))
 
   # in case of no resources, short circuit early.
@@ -108,8 +107,8 @@ def main(args):
                     options.dexes) + [options.r_text_in]
     if options.proguard_mapping:
       depfile_deps.append(options.proguard_mapping)
-    build_utils.WriteDepfile(options.depfile, options.output_config,
-                             depfile_deps)
+    action_helpers.write_depfile(options.depfile, options.output_config,
+                                 depfile_deps)
 
 
 if __name__ == '__main__':

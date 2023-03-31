@@ -8,6 +8,7 @@ import argparse
 import os
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 _SCRIPT_HEADER = """\
 # AUTO-GENERATED FILE.  DO NOT MODIFY.
@@ -108,7 +109,7 @@ def main():
 
   script = ''.join(script_content)
 
-  with build_utils.AtomicOutput(options.output, mode='w') as f:
+  with action_helpers.atomic_output(options.output, mode='w') as f:
     f.write(script)
 
 

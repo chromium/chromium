@@ -26,10 +26,10 @@ import datetime
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             os.pardir, os.pardir, os.pardir,
-                             'build', 'android', 'gyp'))
-from util import build_utils
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'build'))
+import action_helpers
+
 
 # six is a dependency of javalang
 sys.path.insert(
@@ -226,7 +226,7 @@ def main(args):
       'CLASS_NAME': clazz.name,
       'METHODS': '\n'.join(['    ' + m for m in formatted_public_methods])
   }
-  with build_utils.AtomicOutput(options.output, mode='w') as f:
+  with action_helpers.atomic_output(options.output, mode='w') as f:
     f.write(_FILE_TEMPLATE.format(**file_dict))
 
 

@@ -18,6 +18,7 @@ from util import jar_info_utils
 from util import md5_check
 from util import resources_parser
 from util import resource_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _ParseArgs(args):
@@ -27,7 +28,7 @@ def _ParseArgs(args):
     An options object as from argparse.ArgumentParser.parse_args()
   """
   parser = argparse.ArgumentParser(description=__doc__)
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
 
   parser.add_argument('--res-sources-path',
                       required=True,

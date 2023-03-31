@@ -566,6 +566,7 @@ import xml.dom.minidom
 
 from util import build_utils
 from util import resource_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 # Types that should never be used as a dependency of another build config.
@@ -1029,7 +1030,7 @@ def _CopyBuildConfigsForDebugging(debug_dir):
 
 def main(argv):
   parser = optparse.OptionParser()
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_option('--build-config', help='Path to build_config output.')
   parser.add_option('--store-deps-for-debugging-to',
                     help='Path to copy all transitive build config files to.')
@@ -1266,7 +1267,7 @@ def main(argv):
     return 0
 
   if options.fail:
-    parser.error('\n'.join(build_utils.ParseGnList(options.fail)))
+    parser.error('\n'.join(action_helpers.parse_gn_list(options.fail)))
 
   lib_options = ['unprocessed_jar_path', 'interface_jar_path']
   device_lib_options = ['device_jar_path', 'dex_path']
@@ -1332,17 +1333,18 @@ def main(argv):
                                     'system_java_library',
                                     'android_app_bundle_module')
 
-  deps_configs_paths = build_utils.ParseGnList(options.deps_configs)
-  public_deps_configs_paths = build_utils.ParseGnList(
+  deps_configs_paths = action_helpers.parse_gn_list(options.deps_configs)
+  public_deps_configs_paths = action_helpers.parse_gn_list(
       options.public_deps_configs)
   deps_configs_paths += public_deps_configs_paths
   deps = _DepsFromPaths(deps_configs_paths,
                         options.type,
                         recursive_resource_deps=options.recursive_resource_deps)
   public_deps = _DepsFromPaths(public_deps_configs_paths, options.type)
-  processor_deps = _DepsFromPaths(
-      build_utils.ParseGnList(options.annotation_processor_configs or ''),
-      options.type, filter_root_targets=False)
+  processor_deps = _DepsFromPaths(action_helpers.parse_gn_list(
+      options.annotation_processor_configs or ''),
+                                  options.type,
+                                  filter_root_targets=False)
 
   all_inputs = (deps.AllConfigPaths() + processor_deps.AllConfigPaths())
 
@@ -1442,7 +1444,7 @@ def main(argv):
     deps_info['merged_android_manifest'] = options.merged_android_manifest
 
   if options.bundled_srcjars:
-    deps_info['bundled_srcjars'] = build_utils.ParseGnList(
+    deps_info['bundled_srcjars'] = action_helpers.parse_gn_list(
         options.bundled_srcjars)
 
   if options.target_sources_file:
@@ -1558,16 +1560,17 @@ def main(argv):
     all_asset_sources = []
     if options.asset_renaming_sources:
       all_asset_sources.extend(
-          build_utils.ParseGnList(options.asset_renaming_sources))
+          action_helpers.parse_gn_list(options.asset_renaming_sources))
     if options.asset_sources:
-      all_asset_sources.extend(build_utils.ParseGnList(options.asset_sources))
+      all_asset_sources.extend(
+          action_helpers.parse_gn_list(options.asset_sources))
 
     deps_info['assets'] = {
         'sources': all_asset_sources
     }
     if options.asset_renaming_destinations:
-      deps_info['assets']['outputs'] = (
-          build_utils.ParseGnList(options.asset_renaming_destinations))
+      deps_info['assets']['outputs'] = (action_helpers.parse_gn_list(
+          options.asset_renaming_destinations))
     if options.disable_asset_compression:
       deps_info['assets']['disable_compression'] = True
     if options.treat_as_locale_paks:
@@ -1662,19 +1665,20 @@ def main(argv):
     config['deps_info']['extra_package_names'] = extra_package_names
 
   # These are .jars to add to javac classpath but not to runtime classpath.
-  extra_classpath_jars = build_utils.ParseGnList(options.extra_classpath_jars)
+  extra_classpath_jars = action_helpers.parse_gn_list(
+      options.extra_classpath_jars)
   if extra_classpath_jars:
     extra_classpath_jars.sort()
     deps_info['extra_classpath_jars'] = extra_classpath_jars
 
-  mergeable_android_manifests = build_utils.ParseGnList(
+  mergeable_android_manifests = action_helpers.parse_gn_list(
       options.mergeable_android_manifests)
   mergeable_android_manifests.sort()
   if mergeable_android_manifests:
     deps_info['mergeable_android_manifests'] = mergeable_android_manifests
 
   extra_proguard_classpath_jars = []
-  proguard_configs = build_utils.ParseGnList(options.proguard_configs)
+  proguard_configs = action_helpers.parse_gn_list(options.proguard_configs)
   if proguard_configs:
     # Make a copy of |proguard_configs| since it's mutated below.
     deps_info['proguard_configs'] = list(proguard_configs)
@@ -1810,7 +1814,8 @@ def main(argv):
       deps_info['lint_android_manifest'] = options.android_manifest
 
   if options.type == 'android_app_bundle':
-    module_config_paths = build_utils.ParseGnList(options.module_build_configs)
+    module_config_paths = action_helpers.parse_gn_list(
+        options.module_build_configs)
     module_configs = [GetDepConfig(c) for c in module_config_paths]
     module_configs_by_name = {d['module_name']: d for d in module_configs}
     per_module_fields = [
@@ -2071,17 +2076,17 @@ def main(argv):
 
       all_inputs.append(options.secondary_abi_shared_libraries_runtime_deps)
 
-    native_library_placeholder_paths = build_utils.ParseGnList(
+    native_library_placeholder_paths = action_helpers.parse_gn_list(
         options.native_lib_placeholders)
     native_library_placeholder_paths.sort()
 
-    secondary_native_library_placeholder_paths = build_utils.ParseGnList(
+    secondary_native_library_placeholder_paths = action_helpers.parse_gn_list(
         options.secondary_native_lib_placeholders)
     secondary_native_library_placeholder_paths.sort()
 
-    loadable_modules = build_utils.ParseGnList(options.loadable_modules)
+    loadable_modules = action_helpers.parse_gn_list(options.loadable_modules)
     loadable_modules.sort()
-    secondary_abi_loadable_modules = build_utils.ParseGnList(
+    secondary_abi_loadable_modules = action_helpers.parse_gn_list(
         options.secondary_abi_loadable_modules)
     secondary_abi_loadable_modules.sort()
 
@@ -2191,8 +2196,8 @@ def main(argv):
   build_utils.WriteJson(config, options.build_config, only_if_changed=True)
 
   if options.depfile:
-    build_utils.WriteDepfile(options.depfile, options.build_config,
-                             sorted(set(all_inputs)))
+    action_helpers.write_depfile(options.depfile, options.build_config,
+                                 sorted(set(all_inputs)))
 
   if options.store_deps_for_debugging_to:
     GetDepConfig(options.build_config)  # Add it to cache.

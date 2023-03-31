@@ -16,6 +16,7 @@ import zipfile
 
 import filter_zip
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 _ANDROID_BUILD_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -65,7 +66,7 @@ def _AddResources(aar_zip, resource_zips, include_globs):
 def main(args):
   args = build_utils.ExpandFileArgs(args)
   parser = argparse.ArgumentParser()
-  build_utils.AddDepfileOption(parser)
+  action_helpers.add_depfile_arg(parser)
   parser.add_argument('--output', required=True, help='Path to output aar.')
   parser.add_argument('--jars', required=True, help='GN list of jar inputs.')
   parser.add_argument('--dependencies-res-zips', required=True,
@@ -98,17 +99,19 @@ def main(args):
   if options.native_libraries and not options.abi:
     parser.error('You must provide --abi if you have native libs')
 
-  options.jars = build_utils.ParseGnList(options.jars)
-  options.dependencies_res_zips = build_utils.ParseGnList(
+  options.jars = action_helpers.parse_gn_list(options.jars)
+  options.dependencies_res_zips = action_helpers.parse_gn_list(
       options.dependencies_res_zips)
-  options.r_text_files = build_utils.ParseGnList(options.r_text_files)
-  options.proguard_configs = build_utils.ParseGnList(options.proguard_configs)
-  options.native_libraries = build_utils.ParseGnList(options.native_libraries)
-  options.jar_excluded_globs = build_utils.ParseGnList(
+  options.r_text_files = action_helpers.parse_gn_list(options.r_text_files)
+  options.proguard_configs = action_helpers.parse_gn_list(
+      options.proguard_configs)
+  options.native_libraries = action_helpers.parse_gn_list(
+      options.native_libraries)
+  options.jar_excluded_globs = action_helpers.parse_gn_list(
       options.jar_excluded_globs)
-  options.jar_included_globs = build_utils.ParseGnList(
+  options.jar_included_globs = action_helpers.parse_gn_list(
       options.jar_included_globs)
-  options.resource_included_globs = build_utils.ParseGnList(
+  options.resource_included_globs = action_helpers.parse_gn_list(
       options.resource_included_globs)
 
   with tempfile.NamedTemporaryFile(delete=False) as staging_file:
@@ -152,7 +155,7 @@ def main(args):
   if options.depfile:
     all_inputs = (options.jars + options.dependencies_res_zips +
                   options.r_text_files + options.proguard_configs)
-    build_utils.WriteDepfile(options.depfile, options.output, all_inputs)
+    action_helpers.write_depfile(options.depfile, options.output, all_inputs)
 
 
 if __name__ == '__main__':

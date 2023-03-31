@@ -12,6 +12,7 @@ import zipfile
 
 from util import build_utils
 from util import java_cpp_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 
 class FeatureParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
@@ -100,7 +101,7 @@ def _Main(argv):
                       metavar='INPUTFILE')
   args = parser.parse_args(argv)
 
-  with build_utils.AtomicOutput(args.srcjar) as f:
+  with action_helpers.atomic_output(args.srcjar) as f:
     with zipfile.ZipFile(f, 'w', zipfile.ZIP_STORED) as srcjar:
       data, path = _Generate(args.inputs, args.template)
       build_utils.AddToZipHermetic(srcjar, path, data=data)

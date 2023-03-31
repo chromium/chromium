@@ -17,6 +17,7 @@ from xml.etree import ElementTree
 sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir, 'gyp'))
 from util import build_utils
 from util import manifest_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 _INCREMENTAL_APP_NAME = 'org.chromium.incrementalinstall.BootstrapApplication'
 _META_DATA_APP_NAME = 'incremental-install-real-app'
@@ -97,7 +98,7 @@ def main(raw_args):
 
   new_manifest_data = _ProcessManifest(options.src_manifest,
                                        options.disable_isolated_processes)
-  with build_utils.AtomicOutput(options.dst_manifest) as out_manifest:
+  with action_helpers.atomic_output(options.dst_manifest) as out_manifest:
     out_manifest.write(new_manifest_data)
 
 

@@ -28,6 +28,7 @@ _BUILD_ANDROID_GYP = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp')
 sys.path.insert(1, _BUILD_ANDROID_GYP)
 
 from util import build_utils
+import action_helpers  # build_utils adds //build to sys.path.
 
 # Match single line comments, multiline comments, character literals, and
 # double-quoted strings.
@@ -1543,7 +1544,7 @@ def GenerateJNIHeader(input_file, output_file, options):
     print(e)
     sys.exit(1)
   if output_file:
-    with build_utils.AtomicOutput(output_file, mode='w') as f:
+    with action_helpers.atomic_output(output_file, mode='w') as f:
       f.write(content)
   else:
     print(content)
