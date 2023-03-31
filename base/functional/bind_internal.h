@@ -929,8 +929,8 @@ struct InvokeHelper<false, ReturnType, indices...> {
   }
 };
 
-template <typename ReturnType, size_t... indices>
-struct InvokeHelper<true, ReturnType, indices...> {
+template <typename ReturnType, size_t index_target, size_t... index_tail>
+struct InvokeHelper<true, ReturnType, index_target, index_tail...> {
   // WeakCalls are only supported for functions with a void return type.
   // Otherwise, the function result would be undefined if the WeakPtr<>
   // is invalidated.
@@ -941,13 +941,18 @@ struct InvokeHelper<true, ReturnType, indices...> {
   static inline void MakeItSo(Functor&& functor,
                               BoundArgsTuple&& bound,
                               RunArgs&&... args) {
-    if (!std::get<0>(bound)) {
+    static_assert(index_target == 0);
+    // Note the validity of the weak pointer should be tested _after_ it is
+    // unwrapped, otherwise it creates a race for weak pointer implementations
+    // that allow cross-thread usage and perform `Lock()` in Unwrap() traits.
+    const auto& target = Unwrap(std::get<0>(bound));
+    if (!target) {
       return;
     }
     using Traits = MakeFunctorTraits<Functor>;
     Traits::Invoke(
-        std::forward<Functor>(functor),
-        Unwrap(std::get<indices>(std::forward<BoundArgsTuple>(bound)))...,
+        std::forward<Functor>(functor), target,
+        Unwrap(std::get<index_tail>(std::forward<BoundArgsTuple>(bound)))...,
         std::forward<RunArgs>(args)...);
   }
 };
