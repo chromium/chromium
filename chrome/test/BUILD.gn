@@ -4036,6 +4036,7 @@ if (!is_android) {
         "../browser/ash/policy/core/device_attributes_browsertest.cc",
         "../browser/ash/policy/core/device_cloud_policy_browsertest.cc",
         "../browser/ash/policy/core/device_local_account_browsertest.cc",
+        "../browser/ash/policy/core/remote_commands_browsertest.cc",
         "../browser/ash/policy/core/user_cloud_policy_manager_ash_browsertest.cc",
         "../browser/ash/policy/display/device_display_cros_browser_test.cc",
         "../browser/ash/policy/display/device_display_cros_browser_test.h",
