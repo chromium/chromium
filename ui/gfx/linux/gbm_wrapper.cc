@@ -308,11 +308,47 @@ class Device final : public ui::GbmDevice {
       const std::vector<uint64_t>& modifiers) override {
     if (modifiers.empty())
       return CreateBuffer(format, size, flags);
-    struct gbm_bo* bo = gbm_bo_create_with_modifiers(
-        device_, size.width(), size.height(), format, modifiers.data(),
-        modifiers.size());
-    if (!bo)
+
+    std::vector<uint64_t> filtered_modifiers =
+        GetFilteredModifiers(format, flags, modifiers);
+    struct gbm_bo* bo = nullptr;
+    while (filtered_modifiers.size() > 0) {
+      bo = gbm_bo_create_with_modifiers(device_, size.width(), size.height(),
+                                        format, filtered_modifiers.data(),
+                                        filtered_modifiers.size());
+      if (!bo) {
+        return nullptr;
+      }
+
+      struct gbm_import_fd_modifier_data fd_data;
+      fd_data.width = size.width();
+      fd_data.height = size.height();
+      fd_data.format = format;
+      fd_data.num_fds = gbm_bo_get_plane_count(bo);
+      fd_data.modifier = gbm_bo_get_modifier(bo);
+
+      for (size_t i = 0; i < static_cast<size_t>(fd_data.num_fds); ++i) {
+        fd_data.fds[i] = GetPlaneFdForBo(bo, i);
+        fd_data.strides[i] = gbm_bo_get_stride_for_plane(bo, i);
+        fd_data.offsets[i] = gbm_bo_get_offset(bo, i);
+      }
+
+      struct gbm_bo* bo_import =
+          gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, flags);
+      if (bo_import) {
+        gbm_bo_destroy(bo_import);
+        break;
+      } else {
+        gbm_bo_destroy(bo);
+        bo = nullptr;
+        AddModifierToBlocklist(format, flags, fd_data.modifier);
+        filtered_modifiers =
+            GetFilteredModifiers(format, flags, filtered_modifiers);
+      }
+    }
+    if (!bo) {
       return nullptr;
+    }
 
     return CreateBufferForBO(bo, format, size, flags);
   }
@@ -357,16 +393,8 @@ class Device final : public ui::GbmDevice {
     struct gbm_bo* bo =
         gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, gbm_flags);
     if (!bo) {
-      if (gbm_flags & GBM_BO_USE_SCANOUT) {
-        gbm_flags &= ~GBM_BO_USE_SCANOUT;
-        bo = gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data,
-                           gbm_flags);
-      }
-
-      if (!bo) {
-        LOG(ERROR) << "nullptr returned from gbm_bo_import";
-        return nullptr;
-      }
+      LOG(ERROR) << "nullptr returned from gbm_bo_import";
+      return nullptr;
     }
 
     return std::make_unique<Buffer>(bo, format, gbm_flags, handle.modifier,
@@ -396,7 +424,33 @@ class Device final : public ui::GbmDevice {
 #endif
 
  private:
+  std::vector<uint64_t> GetFilteredModifiers(
+      uint32_t format,
+      uint32_t flags,
+      const std::vector<uint64_t>& modifiers) {
+    std::vector<uint64_t> filtered_modifiers = modifiers;
+
+    for (const auto& [entry_format, entry_flags, entry_modifier] :
+         modifier_blocklist_) {
+      if (entry_format == format && entry_flags == flags) {
+        filtered_modifiers.erase(
+            std::remove(filtered_modifiers.begin(), filtered_modifiers.end(),
+                        entry_modifier),
+            filtered_modifiers.end());
+      }
+    }
+
+    return filtered_modifiers;
+  }
+
+  void AddModifierToBlocklist(uint32_t format,
+                              uint32_t flags,
+                              uint64_t modifier) {
+    modifier_blocklist_.push_back({format, flags, modifier});
+  }
+
   const raw_ptr<gbm_device> device_;
+  std::vector<std::tuple<uint32_t, uint32_t, uint64_t>> modifier_blocklist_;
 };
 
 }  // namespace gbm_wrapper
