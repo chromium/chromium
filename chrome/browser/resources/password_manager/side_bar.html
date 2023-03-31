@@ -27,8 +27,8 @@
         path="checkup" href="/checkup" on-click="onItemClick_">
       <iron-icon icon="passwords-icon:checkup"></iron-icon>
       <span>$i18n{checkup}</span>
-      <div id="compromisedPasswords"
-          hidden$="[[!compromisedPasswords_]]">[[compromisedPasswords_]]</div>
+      <div id="compromisedPasswords" hidden$="[[!compromisedPasswords_]]">
+        [[getCompromisedPasswordsBadge_(compromisedPasswords_)]]</div>
     </a>
     <a id="settings" role="menuitem" class="page-item cr-nav-menu-item"
         path="settings" href="/settings" on-click="onItemClick_">
