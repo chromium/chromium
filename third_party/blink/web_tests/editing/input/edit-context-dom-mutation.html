@@ -202,7 +202,7 @@
     editContext.addEventListener("textupdate", e => {
       assert_equals(e.updateRangeStart, 6);
       assert_equals(e.updateRangeEnd, 8);
-      assert_equals(e.updateText, '');
+      assert_equals(e.text, '');
       got_textupdate_event = true;
     });
 
@@ -236,7 +236,7 @@
     editContext.addEventListener("textupdate", e => {
       assert_equals(e.updateRangeStart, 6);
       assert_equals(e.updateRangeEnd, 8);
-      assert_equals(e.updateText, '');
+      assert_equals(e.text, '');
       got_textupdate_event = true;
     });
 
@@ -270,7 +270,7 @@
     editContext.addEventListener("textupdate", e => {
       assert_equals(e.updateRangeStart, 0);
       assert_equals(e.updateRangeEnd, 5);
-      assert_equals(e.updateText, '');
+      assert_equals(e.text, '');
       got_textupdate_event = true;
     });
 
@@ -307,7 +307,7 @@
     editContext.addEventListener("textupdate", e => {
       assert_equals(e.updateRangeStart, 6);
       assert_equals(e.updateRangeEnd, 11);
-      assert_equals(e.updateText, '');
+      assert_equals(e.text, '');
       got_textupdate_event = true;
     });
 

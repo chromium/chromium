@@ -9410,11 +9410,11 @@ interface TextTrackList : EventTarget
     setter onremovetrack
 interface TextUpdateEvent : Event
     attribute @@toStringTag
-    getter newSelectionEnd
-    getter newSelectionStart
+    getter selectionEnd
+    getter selectionStart
+    getter text
     getter updateRangeEnd
     getter updateRangeStart
-    getter updateText
     method constructor
 interface TimeRanges
     attribute @@toStringTag

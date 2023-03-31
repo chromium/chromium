@@ -43,7 +43,7 @@ test(function() {
   const test = document.getElementById('test');
   test.innerHTML = "";
   editContext.addEventListener("textupdate", e => {
-    test.innerHTML = e.updateText;
+    test.innerHTML = e.text;
   });
   test.editContext = editContext;
   test.focus();
@@ -170,7 +170,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase() + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
   test.focus();
   test.editContext = editContext;
@@ -187,7 +187,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase() + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
   test.editContext = editContext;
   test.focus();
@@ -221,7 +221,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase() + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -242,7 +242,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
   editContext.addEventListener("textformatupdate", e => {
     //TODO: Currently Chromium only fires default styles
@@ -273,12 +273,12 @@ test(function() {
   editContext1.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
   editContext2.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toLowerCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toLowerCase()  + buffer.substr(e.updateRangeEnd);
   });
   test.editContext = editContext1;
   test.focus();
@@ -305,7 +305,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
   editContext.addEventListener("compositionstart", e => {
     // Update the text in the div
@@ -336,7 +336,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -358,7 +358,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -380,7 +380,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -417,7 +417,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -447,7 +447,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -478,7 +478,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -503,7 +503,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -537,7 +537,7 @@ test(function() {
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext;
@@ -561,13 +561,13 @@ test(function() {
   editContext1.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   editContext2.addEventListener("textupdate", e => {
     // Update the text in the div
     const buffer = test.innerText;
-    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText.toLowerCase()  + buffer.substr(e.updateRangeEnd);
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toLowerCase()  + buffer.substr(e.updateRangeEnd);
   });
 
   test.editContext = editContext1;

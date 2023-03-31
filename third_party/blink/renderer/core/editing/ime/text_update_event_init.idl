@@ -5,12 +5,12 @@
 // The initial parameters for the textupdate event.
 
 // Spec draft:
-// https://w3c.github.io/editing/docs/EditContext/index.html#textupdateevent
+// https://w3c.github.io/edit-context/#textupdateevent
 
 dictionary TextUpdateEventInit : EventInit {
     unsigned long updateRangeStart;
     unsigned long updateRangeEnd;
-    DOMString updateText;
-    unsigned long newSelectionStart;
-    unsigned long newSelectionEnd;
+    DOMString text;
+    unsigned long selectionStart;
+    unsigned long selectionEnd;
 };

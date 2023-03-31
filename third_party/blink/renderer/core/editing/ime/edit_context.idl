@@ -7,7 +7,7 @@
 // advanced editing scenarios.
 
 // Spec draft:
-// https://w3c.github.io/editing/docs/EditContext/index.html#the-editcontext-interface
+// https://w3c.github.io/edit-context/#editcontext-interface
 
 [
     Exposed=Window,

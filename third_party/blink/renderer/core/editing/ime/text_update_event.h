@@ -38,26 +38,26 @@ class CORE_EXPORT TextUpdateEvent final : public Event {
                   const String& update_text,
                   uint32_t update_range_start,
                   uint32_t update_range_end,
-                  uint32_t new_selection_start,
-                  uint32_t new_selection_end);
+                  uint32_t selection_start,
+                  uint32_t selection_end);
   static TextUpdateEvent* Create(const AtomicString& type,
                                  const TextUpdateEventInit* initializer);
   ~TextUpdateEvent() override;
 
-  String updateText() const;
+  String text() const;
   uint32_t updateRangeStart() const;
   uint32_t updateRangeEnd() const;
-  uint32_t newSelectionStart() const;
-  uint32_t newSelectionEnd() const;
+  uint32_t selectionStart() const;
+  uint32_t selectionEnd() const;
 
   const AtomicString& InterfaceName() const override;
   // member variables to keep track of the event parameters
  private:
-  String update_text_;
+  String text_;
   uint32_t update_range_start_ = 0;
   uint32_t update_range_end_ = 0;
-  uint32_t new_selection_start_ = 0;
-  uint32_t new_selection_end_ = 0;
+  uint32_t selection_start_ = 0;
+  uint32_t selection_end_ = 0;
 };
 
 }  // namespace blink

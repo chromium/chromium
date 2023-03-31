@@ -5,7 +5,7 @@
 // TextFormat describes how the text in a composition should be styled.
 
 // Spec draft:
-// https://w3c.github.io/editing/docs/EditContext/index.html#textformatupdateevent
+// https://w3c.github.io/edit-context/#textformatupdateevent
 
 [
     Exposed=Window,

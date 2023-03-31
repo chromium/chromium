@@ -9,7 +9,7 @@
 // fired).
 
 // Spec draft:
-// https://w3c.github.io/editing/docs/EditContext/index.html#textupdateevent
+// https://w3c.github.io/edit-context/#textupdateevent
 
 [
     Exposed=Window,
@@ -18,7 +18,7 @@
     constructor(DOMString type, optional TextUpdateEventInit options = {});
     readonly attribute unsigned long updateRangeStart;
     readonly attribute unsigned long updateRangeEnd;
-    readonly attribute DOMString updateText;
-    readonly attribute unsigned long newSelectionStart;
-    readonly attribute unsigned long newSelectionEnd;
+    readonly attribute DOMString text;
+    readonly attribute unsigned long selectionStart;
+    readonly attribute unsigned long selectionEnd;
 };

@@ -13,8 +13,9 @@ namespace blink {
 TextUpdateEvent::TextUpdateEvent(const AtomicString& type,
                                  const TextUpdateEventInit* initializer)
     : Event(type, initializer) {
-  if (initializer->hasUpdateText())
-    update_text_ = initializer->updateText();
+  if (initializer->hasText()) {
+    text_ = initializer->text();
+  }
 
   if (initializer->hasUpdateRangeStart())
     update_range_start_ = initializer->updateRangeStart();
@@ -22,25 +23,27 @@ TextUpdateEvent::TextUpdateEvent(const AtomicString& type,
   if (initializer->hasUpdateRangeEnd())
     update_range_end_ = initializer->updateRangeEnd();
 
-  if (initializer->hasNewSelectionStart())
-    new_selection_start_ = initializer->newSelectionStart();
+  if (initializer->hasSelectionStart()) {
+    selection_start_ = initializer->selectionStart();
+  }
 
-  if (initializer->hasNewSelectionEnd())
-    new_selection_end_ = initializer->newSelectionEnd();
+  if (initializer->hasSelectionEnd()) {
+    selection_end_ = initializer->selectionEnd();
+  }
 }
 
 TextUpdateEvent::TextUpdateEvent(const AtomicString& type,
-                                 const String& update_text,
+                                 const String& text,
                                  uint32_t update_range_start,
                                  uint32_t update_range_end,
-                                 uint32_t new_selection_start,
-                                 uint32_t new_selection_end)
+                                 uint32_t selection_start,
+                                 uint32_t selection_end)
     : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
-      update_text_(update_text),
+      text_(text),
       update_range_start_(update_range_start),
       update_range_end_(update_range_end),
-      new_selection_start_(new_selection_start),
-      new_selection_end_(new_selection_end) {}
+      selection_start_(selection_start),
+      selection_end_(selection_end) {}
 
 TextUpdateEvent* TextUpdateEvent::Create(
     const AtomicString& type,
@@ -50,8 +53,8 @@ TextUpdateEvent* TextUpdateEvent::Create(
 
 TextUpdateEvent::~TextUpdateEvent() = default;
 
-String TextUpdateEvent::updateText() const {
-  return update_text_;
+String TextUpdateEvent::text() const {
+  return text_;
 }
 
 uint32_t TextUpdateEvent::updateRangeStart() const {
@@ -62,11 +65,11 @@ uint32_t TextUpdateEvent::updateRangeEnd() const {
   return update_range_end_;
 }
 
-uint32_t TextUpdateEvent::newSelectionStart() const {
-  return new_selection_start_;
+uint32_t TextUpdateEvent::selectionStart() const {
+  return selection_start_;
 }
-uint32_t TextUpdateEvent::newSelectionEnd() const {
-  return new_selection_end_;
+uint32_t TextUpdateEvent::selectionEnd() const {
+  return selection_end_;
 }
 
 const AtomicString& TextUpdateEvent::InterfaceName() const {
