@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_http_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_logs_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_prefs_handler.h"
+#include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_trigger_handler.h"
 #include "chrome/browser/ui/webui/nearby_internals/quick_pair/quick_pair_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -47,6 +48,7 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
       std::make_unique<NearbyInternalsHttpHandler>(context));
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsPrefsHandler>(context));
+  web_ui->AddMessageHandler(std::make_unique<NearbyInternalsPresenceHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<NearbyInternalsUiTriggerHandler>(context));
   web_ui->AddMessageHandler(std::make_unique<QuickPairHandler>());
