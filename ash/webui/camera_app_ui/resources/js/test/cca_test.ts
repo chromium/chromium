@@ -83,9 +83,6 @@ function getElementList(component: UIComponent): HTMLElement[] {
   assert(selector !== undefined, 'Invalid UIComponent value.');
 
   const elements = Array.from(dom.getAll(selector, HTMLElement));
-  if (elements.length === 0) {
-    throw new Error(`Cannot find element with selector ${selector}`);
-  }
   return elements;
 }
 
@@ -97,10 +94,7 @@ function getVisibleElementList(component: UIComponent): HTMLElement[] {
   const elements = getElementList(component);
   const visibleElements =
       elements.filter((element) => isVisibleElement(element));
-  if (visibleElements.length === 0) {
-    throw new Error(`There are no visible elements of component ${component}`);
-  }
-  return elements;
+  return visibleElements;
 }
 
 /**
@@ -116,7 +110,7 @@ function isVisibleElement(element: HTMLElement): boolean {
 /**
  * Resolves HTMLElement of the specified ui |component|. If |index| is
  * specified, returns the |index|'th element, else returns the first element
- * found.
+ * found. This will throw an error if it cannot be resolved.
  */
 function resolveElement(component: UIComponent, index = 0): HTMLElement {
   const elements = getElementList(component);
@@ -127,7 +121,7 @@ function resolveElement(component: UIComponent, index = 0): HTMLElement {
 }
 
 /**
- * Returns the |index|'th visible HTMLElement of the specified ui |component|.
+ * Resolves the |index|'th visible HTMLElement of the specified ui |component|.
  */
 function resolveVisibleElement(component: UIComponent, index = 0): HTMLElement {
   const elements = getVisibleElementList(component);
@@ -206,6 +200,14 @@ export class CCATest {
    */
   static countVisibleUI(component: UIComponent): number {
     return getVisibleElementList(component).length;
+  }
+
+  /**
+   * Returns whether the UI exist in the current DOM tree.
+   */
+  static exists(component: UIComponent): boolean {
+    const elements = getElementList(component);
+    return elements.length > 0;
   }
 
   /**
