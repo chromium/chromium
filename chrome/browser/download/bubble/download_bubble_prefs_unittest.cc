@@ -144,4 +144,29 @@ TEST_F(DownloadBubblePrefsTest, ShouldSuppressIph) {
   EXPECT_TRUE(ShouldSuppressDownloadBubbleIph(profile_));
 }
 
+TEST_F(DownloadBubblePrefsTest, IsPartialViewEnabled) {
+  // Test default value.
+  EXPECT_TRUE(IsDownloadBubblePartialViewEnabled(profile_));
+  EXPECT_TRUE(IsDownloadBubblePartialViewEnabledDefaultValue(profile_));
+
+  // Set value.
+  SetDownloadBubblePartialViewEnabled(profile_, false);
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabled(profile_));
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultValue(profile_));
+
+  SetDownloadBubblePartialViewEnabled(profile_, true);
+  EXPECT_TRUE(IsDownloadBubblePartialViewEnabled(profile_));
+  // This should still be false because it has been set to an explicit value.
+  EXPECT_FALSE(IsDownloadBubblePartialViewEnabledDefaultValue(profile_));
+}
+
+TEST_F(DownloadBubblePrefsTest, PartialViewImpressions) {
+  // Test default value.
+  EXPECT_EQ(DownloadBubblePartialViewImpressions(profile_), 0);
+
+  // Set value.
+  SetDownloadBubblePartialViewImpressions(profile_, 1);
+  EXPECT_EQ(DownloadBubblePartialViewImpressions(profile_), 1);
+}
+
 }  // namespace download

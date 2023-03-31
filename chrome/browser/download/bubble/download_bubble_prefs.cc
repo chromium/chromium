@@ -64,4 +64,30 @@ bool ShouldSuppressDownloadBubbleIph(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kDownloadBubbleIphSuppression);
 }
 
+bool IsDownloadBubblePartialViewEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kDownloadBubblePartialViewEnabled);
+}
+
+void SetDownloadBubblePartialViewEnabled(Profile* profile, bool enabled) {
+  profile->GetPrefs()->SetBoolean(prefs::kDownloadBubblePartialViewEnabled,
+                                  enabled);
+}
+
+bool IsDownloadBubblePartialViewEnabledDefaultValue(Profile* profile) {
+  return profile->GetPrefs()
+      ->FindPreference(prefs::kDownloadBubblePartialViewEnabled)
+      ->IsDefaultValue();
+}
+
+int DownloadBubblePartialViewImpressions(Profile* profile) {
+  return profile->GetPrefs()->GetInteger(
+      prefs::kDownloadBubblePartialViewImpressions);
+}
+
+void SetDownloadBubblePartialViewImpressions(Profile* profile, int count) {
+  profile->GetPrefs()->SetInteger(prefs::kDownloadBubblePartialViewImpressions,
+                                  count);
+}
+
 }  // namespace download

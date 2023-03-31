@@ -54,6 +54,20 @@ const char kDownloadRestrictions[] = "download_restrictions";
 // set to false, the old download shelf UI will be shown instead.
 const char kDownloadBubbleEnabled[] = "download_bubble_enabled";
 
+// A boolean specifying whether the partial download bubble (which shows up
+// automatically when downloads are complete) should be enabled. True (partial
+// bubble will show automatically) by default.
+const char kDownloadBubblePartialViewEnabled[] =
+    "download_bubble.partial_view_enabled";
+
+// An integer counting the number of download bubble partial view impressions.
+// The partial view shows up automatically when downloads are complete. This
+// is used to decide whether to show the setting for suppressing the partial
+// view in the partial view itself. Only counts up to 6; any further impressions
+// will not increment the count.
+const char kDownloadBubblePartialViewImpressions[] =
+    "download_bubble.partial_view_impressions";
+
 // A boolean specifying whether the download bubble IPH should be suppressed.
 // This will be set to true for users who are using the download bubble prior
 // to the addition of the IPH, so that the IPH will not be shown to users who
