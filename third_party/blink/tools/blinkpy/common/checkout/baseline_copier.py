@@ -16,6 +16,7 @@ from blinkpy.common.checkout.baseline_optimizer import (
     find_redundant_locations,
 )
 from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.models.testharness_results import ABBREVIATED_ALL_PASS
 
 SourceMap = Dict[BaselineLocation, BaselineLocation]
 CopyOperation = Tuple[Optional[str], str]
@@ -189,6 +190,8 @@ class BaselineCopier:
             if source:
                 self._fs.maybe_make_directory(self._fs.dirname(dest))
                 self._fs.copyfile(source, dest)
+            else:
+                self._fs.write_text_file(dest, ABBREVIATED_ALL_PASS)
 
     def _random_digest(self) -> ResultDigest:
         """Synthesize a digest that is guaranteed to not equal any other.

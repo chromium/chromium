@@ -748,33 +748,29 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertRegex(message.getvalue(), 'MOCK Try Mac\n')
         self.assertRegex(message.getvalue(), 'MOCK Try Win\n')
 
-    def test_implicit_all_pass_warning(self):
+    def test_abbreviated_all_pass_generation(self):
         baseline_name = self.mac_port.output_filename(
             'one/text-fail.html', self.mac_port.BASELINE_SUFFIX, '.txt')
         self._remove(baseline_name)
-        self.tool.user.set_canned_responses(['n'])
         options = self.command_options(builders=['MOCK Try Linux'])
         exit_code = self.command.execute(options, ['one/text-fail.html'],
                                          self.tool)
-        self.assertNotEqual(exit_code, 0)
-        # Since `test-mac-mac10.11` is not rebaselined, there should not be a
-        # warning for `test-mac-mac10.10`.
+        self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Rebaselining one/text-fail.html\n',
-            'WARNING: The following nonexistent paths will not be rebaselined '
-            'because of explicitly provided tests or builders:\n',
-            'WARNING:   /mock-checkout/third_party/blink/web_tests/'
-            'flag-specific/disable-site-isolation-trials/'
-            'one/text-fail-expected.txt\n',
-            'WARNING:   /mock-checkout/third_party/blink/web_tests/'
-            'platform/test-linux-precise/one/text-fail-expected.txt\n',
-            'WARNING: These baselines risk being clobbered because they fall '
-            'back to others that will be replaced.\n',
-            'WARNING: If results are expected to vary by platform or virtual '
-            'suite, consider rerunning `rebaseline-cl` without any arguments '
-            'to rebaseline the paths listed above too.\n',
-            'WARNING: See crbug.com/1324638 for details.\n',
-            'INFO: Continue?\n',
-            'WARNING: Cancelling rebaseline attempt.\n',
         ])
+        self.assertRegex(
+            self._read('flag-specific/disable-site-isolation-trials/'
+                       'one/text-fail-expected.txt'),
+            'All subtests passed and are omitted for brevity')
+        self.assertRegex(
+            self._read('platform/test-linux-precise/'
+                       'one/text-fail-expected.txt'),
+            'All subtests passed and are omitted for brevity')
+        # Since `test-mac-mac10.11` is not rebaselined, there should not be an
+        # abbreviated all-pass baseline for `test-mac-mac10.10`.
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-mac-mac10.10/'
+                             'one/text-fail-expected.txt')))

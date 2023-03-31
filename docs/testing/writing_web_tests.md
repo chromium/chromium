@@ -291,8 +291,8 @@ The baselines are generated automatically when appropriate by
 [rebaselining tools](./web_test_expectations.md).
 
 Text baselines for `testharness.js` should be avoided, as having a text baseline
-associated with a `testharness.js` indicates the presence of a bug. For this
-reason, CLs that add text baselines must include a
+associated with a `testharness.js` test usually indicates the presence of a bug.
+For this reason, CLs that add text baselines must include a
 [crbug.com](https://crbug.com) link for an issue tracking the removal of the
 text expectations.
 
@@ -303,6 +303,24 @@ text expectations.
 * Web tests that cannot be upstreamed to WPT should use JavaScript to
   document Blink's current behavior, rather than using JavaScript to document
   desired behavior and a text file to document current behavior.
+
+*** promo
+Because of [baseline fallback](./web_test_baseline_fallback.md), it may not be
+possible to [represent a platform-specific all-`PASS`
+status](https://crbug.com/1324638) by the platform baseline's absence. In such
+rare cases, `blink_tool.py rebaseline-cl` will generate a dummy baseline
+indicating to `run_web_tests.py` that all subtests are meant to pass:
+
+```
+This is a testharness.js-based test.
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
+Harness: the test ran to completion.
+```
+
+`blink_tool.py optimize-baselines` will automatically remove these dummy
+baselines once all platforms are all-`PASS`.
+***
 
 ### The js-test.js Legacy Harness
 

@@ -49,7 +49,6 @@ from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import Artifact, WebTestResult
-from blinkpy.common.system.user import User
 from blinkpy.tool.commands.command import Command, check_dir_option
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationRemover, TestExpectations
@@ -346,30 +345,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
         self._baselines_to_copy.clear()
         with self._message_pool(self._worker_factory) as pool:
-            pool.run([('find_baselines_to_copy', test, suffix, group)
+            pool.run([('copy_baselines', test, suffix, group)
                       for test, group in groups.items()
                       for suffix in self._suffixes_for_group(group)])
-        implicit_all_pass = [
-            dest for source, dest in self._baselines_to_copy if not source
-        ]
-        if implicit_all_pass:
-            _log.warning(
-                'The following nonexistent paths will not be rebaselined '
-                'because of explicitly provided tests or builders:')
-            for baseline in sorted(implicit_all_pass):
-                _log.warning('  %s', baseline)
-            _log.warning('These baselines risk being clobbered because they '
-                         'fall back to others that will be replaced.')
-            _log.warning(
-                'If results are expected to vary by platform or virtual suite, '
-                'consider rerunning `rebaseline-cl` without any arguments to '
-                'rebaseline the paths listed above too.')
-            _log.warning('See crbug.com/1324638 for details.')
-            if not self._tool.user.confirm(default=User.DEFAULT_NO):
-                raise RebaselineCancellation
-        with self._message_pool(self._worker_factory) as pool:
-            pool.run([('write_copy', source, dest)
-                      for source, dest in self._baselines_to_copy if source])
 
     def _group_tests_by_base(
         self,
@@ -518,11 +496,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
         rebaselinable_set = self._filter_baseline_set(test_baseline_set)
         groups = self._group_tests_by_base(rebaselinable_set)
-        try:
-            self._copy_baselines(groups)
-        except RebaselineCancellation:
-            _log.warning('Cancelling rebaseline attempt.')
-            return 1
+        self._copy_baselines(groups)
         self._download_baselines(groups)
 
         exit_code = 0
@@ -645,10 +619,6 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         self.rebaseline(options, test_baseline_set)
 
 
-class RebaselineCancellation(Exception):
-    """Represents a cancelled rebaseline attempt."""
-
-
 class BaselineCache:
     """An in-memory cache keyed on a baseline's hash digest.
 
@@ -698,8 +668,7 @@ class Worker:
         self._connection = connection
         self._dry_run = dry_run
         self._commands = {
-            'find_baselines_to_copy': self._find_baselines_to_copy,
-            'write_copy': self._write_copy,
+            'copy_baselines': self._copy_baselines,
             'download_baselines': self._download_baselines,
         }
 
@@ -717,16 +686,16 @@ class Worker:
         else:
             self._connection.post(name)
 
-    def _find_baselines_to_copy(self, test_name: str, suffix: str,
-                                group: TestBaselineSet):
-        return list(
+    def _copy_baselines(self, test_name: str, suffix: str,
+                        group: TestBaselineSet):
+        copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
-
-    def _write_copy(self, source: str, dest: str):
         if self._dry_run:
-            _log.info('Would have copied %s -> %s', source, dest)
+            for source, dest in sorted(copies, key=lambda copy: copy[1]):
+                _log.debug('Would have copied %s -> %s', source
+                           or '<all-pass>', dest)
         else:
-            self._copier.write_copies([(source, dest)])
+            self._copier.write_copies(copies)
 
     def _download_baselines(self, group: RebaselineGroup):
         self._baseline_cache.clear()

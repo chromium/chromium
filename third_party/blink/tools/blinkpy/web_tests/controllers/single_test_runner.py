@@ -406,7 +406,7 @@ class SingleTestRunner(object):
                     self._convert_to_str(driver_output.text)):
                 if self._report_extra_baseline(
                         driver_output, '.txt',
-                        'is a all-pass testharness test'):
+                        'is an all-pass testharness test'):
                     # TODO(wangxianzhu): Make this a failure.
                     pass
             elif testharness_results.is_testharness_output(
@@ -467,10 +467,15 @@ class SingleTestRunner(object):
         if not testharness_results.is_testharness_output(
                 self._convert_to_str(driver_output.text)):
             return False, []
-        if self._options.ignore_testharness_expected_txt:
+        if (self._options.ignore_testharness_expected_txt
+                # Any kind of all-pass baseline is equivalent to any other kind of
+                # all-pass. This condition forces skipping the text comparison.
+                or testharness_results.is_all_pass_testharness_result(
+                    self._convert_to_str(expected_driver_output.text))):
             expected_driver_output.text = b''
         elif expected_driver_output.text:
-            # Will compare text if there is expected text.
+            # Will compare text if there is expected text that is not all-pass
+            # (e.g., has "interesting output").
             return False, []
         if not testharness_results.is_testharness_output_passing(
                 self._convert_to_str(driver_output.text)):

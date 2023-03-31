@@ -5,6 +5,14 @@
 
 _TESTHARNESSREPORT_HEADER = 'This is a testharness.js-based test.'
 _TESTHARNESSREPORT_FOOTER = 'Harness: the test ran to completion.'
+_ALL_PASS_MARKER = 'All subtests passed and are omitted for brevity.'
+ABBREVIATED_ALL_PASS = '\n'.join([
+    _TESTHARNESSREPORT_HEADER,
+    _ALL_PASS_MARKER,
+    'See https://chromium.googlesource.com/chromium/src/+/HEAD/'
+    'docs/testing/writing_web_tests.md#Text-Test-Baselines for details.',
+    _TESTHARNESSREPORT_FOOTER,
+]) + '\n'
 
 
 def is_all_pass_testharness_result(content_text):
@@ -46,7 +54,7 @@ def is_testharness_output_passing(content_text):
     at_least_one_pass = False
 
     for line in lines:
-        if line.startswith('PASS'):
+        if line.startswith('PASS') or line.startswith(_ALL_PASS_MARKER):
             at_least_one_pass = True
             continue
         if (line.startswith('FAIL') or line.startswith('TIMEOUT')

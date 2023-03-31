@@ -35,6 +35,7 @@ from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.models.testharness_results import ABBREVIATED_ALL_PASS
 
 ALL_PASS_TESTHARNESS_RESULT = """This is a testharness.js-based test.
 PASS woohoo
@@ -543,6 +544,18 @@ class BaselineOptimizerTest(BaselineTest):
             }, {
                 'platform/linux': None,
                 'platform/win': None
+            })
+
+    def test_all_pass_testharness_abbreviated_with_full(self):
+        self._assert_optimization(
+            {
+                'platform/mac-mac11': ALL_PASS_TESTHARNESS_RESULT,
+                'platform/mac-mac12': ABBREVIATED_ALL_PASS,
+                'platform/mac': ALL_PASS_TESTHARNESS_RESULT2,
+            }, {
+                'platform/mac-mac11': None,
+                'platform/mac-mac12': None,
+                'platform/mac': None,
             })
 
     def test_all_pass_testharness_at_win_and_mac_not_redundant(self):
