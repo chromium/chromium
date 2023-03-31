@@ -2919,7 +2919,6 @@
     {
       name: "ScrollEndEvents",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "ScrollTimeline",
