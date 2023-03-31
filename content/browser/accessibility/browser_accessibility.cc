@@ -17,7 +17,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
-#include "content/common/ax_serialization_utils.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -782,7 +781,11 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     // did not include page scale factor, we need to apply it now.
     // TODO(crbug.com/1074116): this should probably apply visual viewport
     // offset as well.
-    if (!content::AXShouldIncludePageScaleFactorInRoot()) {
+    bool should_include_page_scale_factor_in_root = false;
+    #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+      should_include_page_scale_factor_in_root = true;
+    #endif
+    if (!should_include_page_scale_factor_in_root) {
       BrowserAccessibilityManager* root_manager =
           manager()->GetManagerForRootFrame();
       if (root_manager)

@@ -71,8 +71,6 @@ source_set("common") {
 
   sources = [
     "all_messages.h",
-    "ax_serialization_utils.cc",
-    "ax_serialization_utils.h",
     "background_fetch/background_fetch_types.cc",
     "background_fetch/background_fetch_types.h",
     "color_parser.cc",
