@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
-#include "third_party/blink/renderer/core/css/css_style_sheet_ids.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -1059,7 +1058,7 @@ InspectorStyleSheet::InspectorStyleSheet(
     InspectorResourceContainer* resource_container)
     : InspectorStyleSheetBase(
           listener,
-          CSSStyleSheetIds::IdForCSSStyleSheet(page_style_sheet)),
+          IdentifiersFactory::IdForCSSStyleSheet(page_style_sheet)),
       resource_container_(resource_container),
       network_agent_(network_agent),
       page_style_sheet_(page_style_sheet),
