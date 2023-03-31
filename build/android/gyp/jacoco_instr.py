@@ -216,7 +216,12 @@ def _RunInstrumentCommand(parser):
       # Check if coverage recipe decided to instrument everything by overriding
       # the try builder default setting(selective instrumentation). This can
       # happen in cases like a DEPS roll of jacoco library
-      if INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN in affected_files:
+
+      # Note: This token is preceded by ../../ because the paths to be
+      # instrumented are expected to be relative to the build directory.
+      # See _rebase_paths() at https://bit.ly/40oiixX
+      token = '../../' + INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN
+      if token in affected_files:
         affected_source_files = None
       else:
         source_set = set(source_files)
