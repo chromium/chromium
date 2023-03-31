@@ -13,6 +13,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -29,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -163,6 +165,7 @@ class TabListRecyclerView
      * completion of {@link DynamicResource#triggerBitmapCapture()}.
      */
     private boolean mSuppressCapture = true;
+    private int mToolbarHairlineColor;
 
     /**
      * Basic constructor to use during inflation from xml.
@@ -281,6 +284,20 @@ class TabListRecyclerView
         if (!animate) mFadeInAnimator.end();
     }
 
+    /**
+     * Updates the toolbar hairline drawable color appropriately for the regular and incognito tab
+     * models.
+     * @param color The toolbar hairline color.
+     */
+    void setToolbarHairlineColor(@ColorInt int color) {
+        mToolbarHairlineColor = color;
+        // If the drawable is already initialized, update its color when switching between regular
+        // and incognito tab models.
+        if (mShadowImageView != null) {
+            mShadowImageView.setImageTintList(ColorStateList.valueOf(color));
+        }
+    }
+
     void setShadowVisibility(boolean shouldShowShadow) {
         if (mShadowImageView == null) {
             Context context = getContext();
@@ -312,6 +329,7 @@ class TabListRecyclerView
             }
         }
 
+        mShadowImageView.setImageTintList(ColorStateList.valueOf(mToolbarHairlineColor));
         if (shouldShowShadow && mShadowImageView.getVisibility() != VISIBLE) {
             mShadowImageView.setVisibility(VISIBLE);
         } else if (!shouldShowShadow && mShadowImageView.getVisibility() != GONE) {
@@ -739,5 +757,10 @@ class TabListRecyclerView
     @VisibleForTesting
     ImageView getShadowImageViewForTesting() {
         return mShadowImageView;
+    }
+
+    @VisibleForTesting
+    int getToolbarHairlineColorForTesting() {
+        return mToolbarHairlineColor;
     }
 }

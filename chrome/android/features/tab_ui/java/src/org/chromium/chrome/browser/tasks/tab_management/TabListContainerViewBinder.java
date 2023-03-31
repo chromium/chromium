@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.ViewUtils;
@@ -48,8 +49,11 @@ class TabListContainerViewBinder {
                 view.startHiding(model.get(ANIMATE_VISIBILITY_CHANGES));
             }
         } else if (IS_INCOGNITO == propertyKey) {
-            view.setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(
-                    view.getContext(), model.get(IS_INCOGNITO)));
+            int primaryBackgroundColor = ChromeColors.getPrimaryBackgroundColor(
+                    view.getContext(), model.get(IS_INCOGNITO));
+            view.setBackgroundColor(primaryBackgroundColor);
+            view.setToolbarHairlineColor(ThemeUtils.getToolbarHairlineColor(
+                    view.getContext(), primaryBackgroundColor, model.get(IS_INCOGNITO)));
         } else if (VISIBILITY_LISTENER == propertyKey) {
             view.setVisibilityListener(model.get(VISIBILITY_LISTENER));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
