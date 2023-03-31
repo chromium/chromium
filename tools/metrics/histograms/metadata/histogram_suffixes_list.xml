@@ -2101,6 +2101,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="GpuRasterization" label="GpuRasterization"/>
   <suffix name="Webgl" label="Webgl"/>
   <suffix name="Webgl2" label="Webgl2"/>
+  <suffix name="Webgpu" label="Webgpu"/>
   <affected-histogram name="GPU.BlocklistFeatureTestResults"/>
 </histogram_suffixes>
 
