@@ -277,7 +277,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
-  suite('No eSIM profiles flow', function() {
+  suite('Add eSIM flow with zero pending profiles', function() {
     let euicc;
 
     setup(async function() {
@@ -423,123 +423,13 @@ suite('CrComponentsEsimFlowUiTest', function() {
     });
   });
 
-  suite('Single eSIM profile flow', function() {
-    let profile;
-
-    setup(async function() {
-      eSimManagerRemote.addEuiccForTest(1);
-      const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
-      const profileList = await availableEuiccs.euiccs[0].getProfileList();
-      profile = profileList.profiles[0];
-      eSimPage.initSubflow();
-    });
-
-    test('Successful install', async function() {
-      await assertProfileLoadingPageAndContinue();
-      await flushAsync();
-      // Should go directly to final page.
-      await assertFinalPageAndPressDoneButton(false);
-
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
-    });
-
-    test('Unsuccessful install', async function() {
-      profile.setProfileInstallResultForTest(ProfileInstallResult.kFailure);
-
-      await assertProfileLoadingPageAndContinue();
-      await flushAsync();
-      // Should go directly to final page.
-      await assertFinalPageAndPressDoneButton(true);
-
-      endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
-    });
-
-    test('Valid confirmation code', async function() {
-      profile.setProfileInstallResultForTest(
-          ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-      await assertProfileLoadingPageAndContinue();
-      await flushAsync();
-      // Confirmation code page should be showing.
-      assertConfirmationCodePage(
-          /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ ButtonState.HIDDEN);
-
-      profile.setProfileInstallResultForTest(ProfileInstallResult.kSuccess);
-      await enterConfirmationCode(
-          /*backButtonState*/ ButtonState.HIDDEN);
-
-      // Should go to final page.
-      await assertFinalPageAndPressDoneButton(false);
-
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
-    });
-
-    test('Invalid confirmation code', async function() {
-      profile.setProfileInstallResultForTest(
-          ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-      await assertProfileLoadingPageAndContinue();
-      await flushAsync();
-      // Confirmation code page should be showing.
-      assertConfirmationCodePage(
-          /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ ButtonState.HIDDEN);
-
-      profile.setProfileInstallResultForTest(ProfileInstallResult.kFailure);
-      const confirmationCodeInput =
-          await enterConfirmationCode(ButtonState.HIDDEN);
-
-      // Should still be at confirmation code page with input showing error.
-      assertConfirmationCodePage(
-          /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ ButtonState.HIDDEN);
-      assertTrue(confirmationCodeInput.invalid);
-
-      endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
-    });
-
-    test('Navigate backwards from confirmation code', async function() {
-      profile.setProfileInstallResultForTest(
-          ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-      await assertProfileLoadingPageAndContinue();
-      await flushAsync();
-      // Confirmation code page should be showing.
-      assertConfirmationCodePage(
-          /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ ButtonState.HIDDEN);
-      confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
-
-      endFlowAndVerifyResult(
-          ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
-    });
-
-    test('End flow before single profile fetched', function() {
-      // Note that if there is only a single profile, it is automatically
-      // installed. If the fetch is not complete by the time the user exits the
-      // dialog, a |CANCELLED_WITHOUT_ERROR| is emitted.
-      endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
-    });
-
-    test('No available network after installation', async function() {
-      // Right after installation, internet connection is lost and the dialog
-      // closes, NO_NETWORK should not be reported.
-      // flushAsync is needed because installation has a slight delay to
-      // simulate time taken to install.
-      await flushAsync();
-      takeWifiNetworkOffline();
-      await flushAsync();
-
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
-    });
-  });
-
-  suite('Multiple eSIM profiles flow', function() {
+  suite('add eSIM flow with pending profiles', function() {
     let euicc;
 
-    setup(async function() {
-      eSimManagerRemote.addEuiccForTest(2);
+    async function setupWithProfiles(profileCount) {
+      assertGT(profileCount, 0);
+
+      eSimManagerRemote.addEuiccForTest(profileCount);
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
       euicc = availableEuiccs.euiccs[0];
       eSimPage.initSubflow();
@@ -550,7 +440,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should go to profile discovery page.
       assertProfileDiscoveryPage();
       assertFocusDefaultButtonEventFired();
-    });
+    }
 
     function skipDiscovery() {
       // Simulate pressing 'Skip'.
@@ -573,63 +463,71 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ ButtonState.ENABLED);
     }
 
-    test('Skip discovery flow', async function() {
-      skipDiscovery();
+    [1, 2].forEach(profileCount => function() {
+      test(`Skip discovery flow (${profileCount} profiles)`, async function() {
+        await setupWithProfiles(profileCount);
 
-      await navigateForwardForInstall(
-          activationCodePage,
-          /*backButtonState*/ ButtonState.ENABLED);
+        skipDiscovery();
 
-      // Should now be at the final page.
-      await assertFinalPageAndPressDoneButton(false);
+        await navigateForwardForInstall(
+            activationCodePage,
+            /*backButtonState*/ ButtonState.ENABLED);
 
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+        // Should now be at the final page.
+        await assertFinalPageAndPressDoneButton(false);
+
+        endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+      });
     });
 
-    test(
-        'Navigate backwards from skip discovery flow with confirmation code',
-        async function() {
-          skipDiscovery();
+    [1, 2].forEach(profileCount => function() {
+      test(
+          'Navigate backwards from skip discovery flow with confirmation code',
+          async function() {
+            await setupWithProfiles(profileCount);
 
-          euicc.setProfileInstallResultForTest(
-              ProfileInstallResult.kErrorNeedsConfirmationCode);
+            skipDiscovery();
 
-          await navigateForwardForInstall(
-              activationCodePage,
-              /*backButtonState*/ ButtonState.ENABLED);
+            euicc.setProfileInstallResultForTest(
+                ProfileInstallResult.kErrorNeedsConfirmationCode);
 
-          // Confirmation code page should be showing.
-          assertConfirmationCodePage(
-              /*forwardButtonShouldBeEnabled*/ false,
-              /*backButtonState*/ ButtonState.ENABLED);
-          assertFocusDefaultButtonEventFired();
-          confirmationCodePage.$$('#confirmationCode').value =
-              'CONFIRMATION_CODE';
-          assertFalse(focusDefaultButtonEventFired);
+            await navigateForwardForInstall(
+                activationCodePage,
+                /*backButtonState*/ ButtonState.ENABLED);
 
-          // Simulate pressing 'Backward'.
-          eSimPage.navigateBackward();
-          await flushAsync();
+            // Confirmation code page should be showing.
+            assertConfirmationCodePage(
+                /*forwardButtonShouldBeEnabled*/ false,
+                /*backButtonState*/ ButtonState.ENABLED);
+            assertFocusDefaultButtonEventFired();
+            confirmationCodePage.$$('#confirmationCode').value =
+                'CONFIRMATION_CODE';
+            assertFalse(focusDefaultButtonEventFired);
 
-          assertActivationCodePage(
-              /*forwardButtonShouldBeEnabled*/ true,
-              /*backButtonState*/ ButtonState.ENABLED);
-          assertFocusDefaultButtonEventFired();
-          assertEquals(
-              activationCodePage.$$('#activationCode').value,
-              ACTIVATION_CODE_VALID);
+            // Simulate pressing 'Backward'.
+            eSimPage.navigateBackward();
+            await flushAsync();
 
-          eSimPage.navigateBackward();
-          await flushAsync();
+            assertActivationCodePage(
+                /*forwardButtonShouldBeEnabled*/ true,
+                /*backButtonState*/ ButtonState.ENABLED);
+            assertFocusDefaultButtonEventFired();
+            assertEquals(
+                activationCodePage.$$('#activationCode').value,
+                ACTIVATION_CODE_VALID);
 
-          assertProfileDiscoveryPage();
-          assertFocusDefaultButtonEventFired();
-          assertEquals(
-              eSimPage.forwardButtonLabel, 'Skip & Set up new profile');
+            eSimPage.navigateBackward();
+            await flushAsync();
 
-          endFlowAndVerifyResult(
-              ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
-        });
+            assertProfileDiscoveryPage();
+            assertFocusDefaultButtonEventFired();
+            assertEquals(
+                eSimPage.forwardButtonLabel, 'Skip & Set up new profile');
+
+            endFlowAndVerifyResult(
+                ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+          });
+    });
 
     async function selectProfile() {
       // Select the first profile on the list.
@@ -646,81 +544,120 @@ suite('CrComponentsEsimFlowUiTest', function() {
           /*backButtonState*/ ButtonState.HIDDEN);
     }
 
-    test('Select profile flow', async function() {
-      await selectProfile();
+    [1, 2].forEach(profileCount => function() {
+      test('Select profile flow', async function() {
+        await setupWithProfiles(profileCount);
 
-      await flushAsync();
-      // Should now be at the final page.
-      await assertFinalPageAndPressDoneButton(false);
+        await selectProfile();
 
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+        await flushAsync();
+        // Should now be at the final page.
+        await assertFinalPageAndPressDoneButton(false);
+
+        endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+      });
     });
 
-    test('Select profile with valid confirmation code flow', async function() {
-      const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
-      const profileList = await availableEuiccs.euiccs[0].getProfileList();
-      profileList.profiles[0].setProfileInstallResultForTest(
-          ProfileInstallResult.kErrorNeedsConfirmationCode);
+    [1, 2].forEach(profileCount => function() {
+      test(
+          'Select profile with valid confirmation code flow', async function() {
+            await setupWithProfiles(profileCount);
 
-      await selectProfile();
+            const availableEuiccs =
+                await eSimManagerRemote.getAvailableEuiccs();
+            const profileList =
+                await availableEuiccs.euiccs[0].getProfileList();
+            profileList.profiles[0].setProfileInstallResultForTest(
+                ProfileInstallResult.kErrorNeedsConfirmationCode);
 
-      // Confirmation code page should be showing.
-      assertConfirmationCodePage(
-          /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ ButtonState.ENABLED);
-      assertFocusDefaultButtonEventFired();
+            await selectProfile();
 
-      profileList.profiles[0].setProfileInstallResultForTest(
-          ProfileInstallResult.kSuccess);
-      await enterConfirmationCode(
-          /*backButtonState*/ ButtonState.ENABLED);
+            // Confirmation code page should be showing.
+            assertConfirmationCodePage(
+                /*forwardButtonShouldBeEnabled*/ false,
+                /*backButtonState*/ ButtonState.ENABLED);
+            assertFocusDefaultButtonEventFired();
 
-      // Should go to final page.
-      await assertFinalPageAndPressDoneButton(false);
-      assertFocusDefaultButtonEventFired();
+            profileList.profiles[0].setProfileInstallResultForTest(
+                ProfileInstallResult.kSuccess);
+            await enterConfirmationCode(
+                /*backButtonState*/ ButtonState.ENABLED);
 
-      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+            // Should go to final page.
+            await assertFinalPageAndPressDoneButton(false);
+            assertFocusDefaultButtonEventFired();
+
+            endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+          });
     });
 
-    test(
-        'Navigate backwards from select profile with confirmation code flow',
-        async function() {
-          const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
-          const profileList = await availableEuiccs.euiccs[0].getProfileList();
-          profileList.profiles[0].setProfileInstallResultForTest(
-              ProfileInstallResult.kErrorNeedsConfirmationCode);
+    [1, 2].forEach(profileCount => function() {
+      test(
+          'Navigate backwards from select profile with confirmation code flow',
+          async function() {
+            await setupWithProfiles(profileCount);
 
-          await selectProfile();
-          await flushAsync();
+            const availableEuiccs =
+                await eSimManagerRemote.getAvailableEuiccs();
+            const profileList =
+                await availableEuiccs.euiccs[0].getProfileList();
+            profileList.profiles[0].setProfileInstallResultForTest(
+                ProfileInstallResult.kErrorNeedsConfirmationCode);
 
-          // Confirmation code page should be showing.
-          assertConfirmationCodePage(
-              /*forwardButtonShouldBeEnabled*/ false,
-              /*backButtonState*/ ButtonState.ENABLED);
-          confirmationCodePage.$$('#confirmationCode').value =
-              'CONFIRMATION_CODE';
+            await selectProfile();
+            await flushAsync();
 
-          eSimPage.navigateBackward();
-          await flushAsync();
+            // Confirmation code page should be showing.
+            assertConfirmationCodePage(
+                /*forwardButtonShouldBeEnabled*/ false,
+                /*backButtonState*/ ButtonState.ENABLED);
+            confirmationCodePage.$$('#confirmationCode').value =
+                'CONFIRMATION_CODE';
 
-          assertProfileDiscoveryPage();
-          assertEquals(eSimPage.forwardButtonLabel, 'Next');
+            eSimPage.navigateBackward();
+            await flushAsync();
 
-          endFlowAndVerifyResult(
-              ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
-        });
+            assertProfileDiscoveryPage();
+            assertEquals(eSimPage.forwardButtonLabel, 'Next');
 
-
-    test('End flow before installation attempted', async function() {
-      await flushAsync();
-      endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
+            endFlowAndVerifyResult(
+                ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+          });
     });
 
-    test('No available network before installation', async function() {
-      takeWifiNetworkOffline();
-      await flushAsync();
+    [1, 2].forEach(profileCount => function() {
+      test('End flow before installation attempted', async function() {
+        await setupWithProfiles(profileCount);
 
-      endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
+        await flushAsync();
+        endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
+      });
+    });
+
+    [1, 2].forEach(profileCount => function() {
+      test('No available network before installation', async function() {
+        await setupWithProfiles(profileCount);
+
+        takeWifiNetworkOffline();
+        await flushAsync();
+
+        endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
+      });
+    });
+
+    [1, 2].forEach(profileCount => function() {
+      test('No available network after installation', async function() {
+        await setupWithProfiles(profileCount);
+
+        await selectProfile();
+        await flushAsync();
+        // Right after installation, internet connection is lost and the dialog
+        // closes, NO_NETWORK should not be reported.
+        takeWifiNetworkOffline();
+        await flushAsync();
+
+        endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
+      });
     });
   });
 
