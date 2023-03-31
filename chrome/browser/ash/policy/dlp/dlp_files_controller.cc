@@ -770,7 +770,7 @@ void DlpFilesController::CheckIfDownloadAllowed(
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
       FileAction::kDownload,
-      base::BindOnce(  // TODO(b/270015718): Unify to ReturnIfActionAllowed.
+      base::BindOnce(
           [](CheckIfDlpAllowedCallback result_callback,
              const std::vector<std::pair<
                  FileDaemonInfo, ::dlp::RestrictionLevel>>& files_levels) {
@@ -850,8 +850,8 @@ void DlpFilesController::CheckIfLaunchAllowed(
   }
 
   chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request, base::BindOnce(&DlpFilesController::LaunchIfAllowed,
-                              weak_ptr_factory_.GetWeakPtr(),
+      request, base::BindOnce(&DlpFilesController::ReturnIfActionAllowed,
+                              weak_ptr_factory_.GetWeakPtr(), FileAction::kOpen,
                               std::move(result_callback)));
 }
 
@@ -1292,8 +1292,8 @@ void DlpFilesController::ReturnDlpMetadata(
   std::move(result_callback).Run(std::move(result));
 }
 
-// TODO(b/270015718): Unify to ReturnIfActionAllowed.
-void DlpFilesController::LaunchIfAllowed(
+void DlpFilesController::ReturnIfActionAllowed(
+    FileAction action,
     CheckIfDlpAllowedCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
   if (response.has_error_message()) {
@@ -1303,7 +1303,12 @@ void DlpFilesController::LaunchIfAllowed(
     return;
   }
 
-  if (!response.files_paths().empty()) {
+  if (response.files_paths().empty()) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
+  if (action == FileAction::kOpen) {
     ShowNotification(
         kOpenBlockedNotificationId,
         l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE),
@@ -1313,26 +1318,14 @@ void DlpFilesController::LaunchIfAllowed(
     std::move(result_callback).Run(/*is_allowed=*/false);
     return;
   }
-  std::move(result_callback).Run(/*is_allowed=*/true);
-}
 
-// TODO(b/270015718): Unify to ReturnIfActionAllowed.
-void DlpFilesController::ReturnIfDropAllowed(
-    CheckIfDlpAllowedCallback result_callback,
-    ::dlp::CheckFilesTransferResponse response) {
-  if (response.has_error_message()) {
-    LOG(ERROR) << "Failed to get check files transfer, error: "
-               << response.error_message();
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
-
-  if (!response.files_paths().empty()) {
+  if (action == FileAction::kMove) {
     // TODO(b/269609831): Show correct notification here.
     std::move(result_callback).Run(/*is_allowed=*/false);
     return;
   }
-  std::move(result_callback).Run(/*is_allowed=*/true);
+
+  NOTREACHED();
 }
 
 void DlpFilesController::MaybeReportEvent(
@@ -1483,9 +1476,10 @@ void DlpFilesController::ContinueCheckIfDropAllowed(
   }
   request.set_file_action(::dlp::FileAction::MOVE);
 
-  auto return_drop_allowed_cb = base::BindOnce(
-      &DlpFilesController::ReturnIfDropAllowed, weak_ptr_factory_.GetWeakPtr(),
-      std::move(result_callback));
+  auto return_drop_allowed_cb =
+      base::BindOnce(&DlpFilesController::ReturnIfActionAllowed,
+                     weak_ptr_factory_.GetWeakPtr(), FileAction::kMove,
+                     std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_drop_allowed_cb));
 }

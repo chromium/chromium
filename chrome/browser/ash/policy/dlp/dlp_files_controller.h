@@ -264,11 +264,11 @@ class DlpFilesController {
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
 
-  void LaunchIfAllowed(CheckIfDlpAllowedCallback result_callback,
-                       ::dlp::CheckFilesTransferResponse response);
-
-  void ReturnIfDropAllowed(CheckIfDlpAllowedCallback result_callback,
-                           ::dlp::CheckFilesTransferResponse response);
+  // Runs `result_callback` with true if `action` is allowed. It runs
+  // `result_callback` with false and shows the required UI otherwise.
+  void ReturnIfActionAllowed(FileAction action,
+                             CheckIfDlpAllowedCallback result_callback,
+                             ::dlp::CheckFilesTransferResponse response);
 
   // Reports an event if a `DlpReportingManager` instance exists. When
   // `dst_pattern` is missing, we report `dst.component.value()` instead. When
