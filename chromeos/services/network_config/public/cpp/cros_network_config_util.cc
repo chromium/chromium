@@ -64,8 +64,10 @@ mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
   return mojom::ApnAuthenticationType::kAutomatic;
 }
 
-mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
-  if (ip_type.empty() || ip_type == ::onc::cellular_apn::kIpTypeAutomatic) {
+mojom::ApnIpType OncApnIpTypeToMojo(
+    const absl::optional<std::string>& ip_type) {
+  if (!ip_type.has_value() || ip_type->empty() ||
+      ip_type == ::onc::cellular_apn::kIpTypeAutomatic) {
     return mojom::ApnIpType::kAutomatic;
   }
   if (ip_type == ::onc::cellular_apn::kIpTypeIpv4) {
@@ -78,7 +80,7 @@ mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
     return mojom::ApnIpType::kIpv4Ipv6;
   }
 
-  NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type;
+  NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type.value();
   return mojom::ApnIpType::kAutomatic;
 }
 
@@ -377,8 +379,8 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
 
   if (is_apn_revamp_enabled) {
     apn->id = GetString(onc_apn, ::onc::cellular_apn::kId);
-    apn->ip_type = OncApnIpTypeToMojo(
-        GetRequiredString(onc_apn, ::onc::cellular_apn::kIpType));
+    apn->ip_type =
+        OncApnIpTypeToMojo(GetString(onc_apn, ::onc::cellular_apn::kIpType));
     apn->apn_types = OncApnTypesToMojo(
         GetRequiredStringList(onc_apn, ::onc::cellular_apn::kApnTypes));
   }

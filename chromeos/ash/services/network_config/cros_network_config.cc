@@ -3376,7 +3376,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   // insertion order
   new_apns.Insert(new_apns.begin(), base::Value(MojoApnToOnc(*apn)));
 
-  NET_LOG(USER) << "CreateCustomApn: Setting user APNs for: " << network_guid
+  NET_LOG(USER) << "CreateCustomApn: Setting custom APNs for: " << network_guid
                 << ": " << new_apns.size();
   if (!DoesDefaultApnExist(new_apns)) {
     NET_LOG(ERROR)
@@ -3396,7 +3396,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                   guid, std::move(new_apns));
             } else {
               NET_LOG(ERROR)
-                  << "CreateCustomApn: Failed to update the user APN "
+                  << "CreateCustomApn: Failed to update the custom APN "
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
@@ -3458,7 +3458,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
         /*success=*/false, std::move(removed_apn_apn_types));
     return;
   }
-  NET_LOG(USER) << "RemoveCustomApn: Setting user APNs for: " << network_guid
+  NET_LOG(USER) << "RemoveCustomApn: Setting custom APNs for: " << network_guid
                 << ": " << new_apns.size();
   if (!new_apns.empty() && !DoesDefaultApnExist(new_apns)) {
     NET_LOG(ERROR)
@@ -3478,7 +3478,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
                   guid, std::move(new_apns));
             } else {
               NET_LOG(ERROR)
-                  << "RemoveCustomApn: Failed to update the user APN "
+                  << "RemoveCustomApn: Failed to update the custom APN "
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
@@ -3573,7 +3573,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     return;
   }
 
-  NET_LOG(USER) << "ModifyCustomApn: Setting user APNs for: " << network_guid
+  NET_LOG(USER) << "ModifyCustomApn: Setting custom APNs for: " << network_guid
                 << ": " << new_custom_apns.size();
   SetPropertiesInternal(
       network_guid, *network,
@@ -3589,7 +3589,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
                   guid, std::move(new_apns));
             } else {
               NET_LOG(ERROR)
-                  << "ModifyCustomApn: Failed to update the user APN "
+                  << "ModifyCustomApn: Failed to update the custom APN "
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
