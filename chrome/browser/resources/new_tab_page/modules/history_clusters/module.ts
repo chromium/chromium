@@ -184,6 +184,12 @@ export class HistoryClustersModuleElement extends I18nMixin
         this.cluster.label.substring(1, this.cluster.label.length - 1));
     this.recordClick_(HistoryClusterElementType.SHOW_ALL);
   }
+
+  private onOpenAllInTabGroupClick_() {
+    const urls = [this.searchResultPage, ...this.cluster.visits].map(
+        visit => visit.normalizedUrl);
+    HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(urls);
+  }
 }
 
 customElements.define(

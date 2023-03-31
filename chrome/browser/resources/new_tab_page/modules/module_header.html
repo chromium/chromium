@@ -115,6 +115,7 @@
   <span id="description">[[descriptionText]]</span>
 </template>
 <cr-action-menu id="actionMenu">
+  <slot name="action-menu-items"></slot>
   <template is="dom-if" if="[[showDismissButton]]">
     <button id="dismissButton" class="dropdown-item"
         on-click="onDismissButtonClick_">
