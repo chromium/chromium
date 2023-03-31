@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/inspect/cpp/component.h>
 
@@ -85,8 +86,8 @@ int main(int argc, char** argv) {
 
   // Publish the fuchsia.component.resolution.Resolver for the cast: scheme.
   CastResolver resolver;
-  const base::ScopedServiceBinding<fuchsia::component::resolution::Resolver>
-      resolver_binding(outgoing_directory, &resolver);
+  const base::ScopedNaturalServiceBinding resolver_binding(outgoing_directory,
+                                                           &resolver);
 
   // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
   WebInstanceHost web_instance_host(*outgoing_directory);
