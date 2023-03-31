@@ -137,9 +137,9 @@ export function getWallpaperSrc(image: CurrentWallpaper|null): string|null {
   /**
    * Add a key query parameter to cache bust when the image changes.
    *
-   * TODO(b/274473526): UnitId is used as the key for online wallpaper images so
+   * TODO(b/276360067): UnitId is used as the key for online wallpaper images so
    * we need to bust the cache to show the correct variant when it changes.
-   * Remove &timestamp param after b/273615271 is implemented.
+   * Remove &timestamp param after b/276360067 is implemented.
    */
   return `/wallpaper.jpg?key=${encodeURIComponent(image.key)}&${Date.now()}`;
 }
