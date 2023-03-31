@@ -63,6 +63,7 @@ namespace ash::network_config {
 namespace {
 
 namespace mojom = ::chromeos::network_config::mojom;
+using ::chromeos::network_config::CustomApnListToOnc;
 using ::chromeos::network_config::GetApnProperties;
 using ::chromeos::network_config::GetBoolean;
 using ::chromeos::network_config::GetDictionary;
@@ -72,7 +73,6 @@ using ::chromeos::network_config::GetRequiredManagedString;
 using ::chromeos::network_config::GetString;
 using ::chromeos::network_config::ManagedDictionary;
 using ::chromeos::network_config::OncApnTypesToMojo;
-using ::chromeos::network_config::UserApnListToOnc;
 using ::user_manager::UserManager;
 
 // Error strings from networking_private_api.cc. TODO(1004434): Enumerate
@@ -3386,7 +3386,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   }
 
   SetPropertiesInternal(
-      network_guid, *network, UserApnListToOnc(network_guid, &new_apns),
+      network_guid, *network, CustomApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
           [](const std::string& guid, base::Value::List new_apns,
              mojom::ApnPropertiesPtr apn, bool success,
@@ -3468,7 +3468,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
   }
 
   SetPropertiesInternal(
-      network_guid, *network, UserApnListToOnc(network_guid, &new_apns),
+      network_guid, *network, CustomApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
           [](const std::string& guid, base::Value::List new_apns,
              std::vector<mojom::ApnType> apn_types, bool success,
@@ -3576,7 +3576,8 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   NET_LOG(USER) << "ModifyCustomApn: Setting user APNs for: " << network_guid
                 << ": " << new_custom_apns.size();
   SetPropertiesInternal(
-      network_guid, *network, UserApnListToOnc(network_guid, &new_custom_apns),
+      network_guid, *network,
+      CustomApnListToOnc(network_guid, &new_custom_apns),
       base::BindOnce(
           [](const std::string& guid, base::Value::List new_apns,
              std::vector<mojom::ApnType> old_apn_types,

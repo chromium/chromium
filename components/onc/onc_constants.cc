@@ -107,6 +107,7 @@ const char kActivationType[] = "ActivationType";
 const char kAllowRoaming[] = "AllowRoaming";
 const char kAPN[] = "APN";
 const char kAPNList[] = "APNList";
+const char kCustomAPNList[] = "CustomAPNList";
 const char kESN[] = "ESN";
 const char kFamily[] = "Family";
 const char kFirmwareRevision[] = "FirmwareRevision";
@@ -150,7 +151,6 @@ const char kTechnologyLte[] = "LTE";
 const char kTechnologyLteAdvanced[] = "LTEAdvanced";
 const char kTechnologyUmts[] = "UMTS";
 const char kTechnology5gNr[] = "5GNR";
-const char kUserAPNList[] = "UserAPNList";
 }  // namespace cellular
 
 namespace cellular_provider {

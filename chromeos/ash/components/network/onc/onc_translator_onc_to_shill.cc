@@ -496,7 +496,7 @@ void LocalTranslator::TranslateCellular() {
   // User APNs for a Cellular network can be enabled/disabled by the user.
   // Shill should only get enabled user APNs to create the data connection.
   if (const base::Value::List* user_apn_list =
-          onc_object_->FindList(::onc::cellular::kUserAPNList)) {
+          onc_object_->FindList(::onc::cellular::kCustomAPNList)) {
     base::Value::List enabled_apns;
     for (const base::Value& apn : *user_apn_list) {
       const std::string& state =
@@ -510,7 +510,7 @@ void LocalTranslator::TranslateCellular() {
       translator.TranslateFields();
       enabled_apns.Append(std::move(shill_apn));
     }
-    shill_dictionary_->Set(shill::kCellularUserApnListProperty,
+    shill_dictionary_->Set(shill::kCellularCustomApnListProperty,
                            base::Value(std::move(enabled_apns)));
   }
 

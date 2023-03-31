@@ -61,9 +61,9 @@ int GetWirelessSignalStrength(const mojom::NetworkStateProperties* network);
 bool IsInhibited(const mojom::DeviceStateProperties* device);
 
 // Returns an ONC dictionary for network with guid |network_guid| containing a
-// configuration of the network's user APN list.
-base::Value::Dict UserApnListToOnc(const std::string& network_guid,
-                                   const base::Value::List* user_apn_list);
+// configuration of the network's custom APN list.
+base::Value::Dict CustomApnListToOnc(const std::string& network_guid,
+                                     const base::Value::List* custom_apn_list);
 
 // Converts a list of APN types in the ONC representation to the Mojo enum
 // representation.

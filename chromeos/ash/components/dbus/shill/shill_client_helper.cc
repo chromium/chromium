@@ -473,7 +473,7 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       // use aa{ss}.
       const auto& list_view = value.GetList();
       if ((list_view.size() > 0 && list_view.front().is_dict()) ||
-          name == shill::kCellularUserApnListProperty) {
+          name == shill::kCellularCustomApnListProperty) {
         // aa{ss} to support WireGuard.Peers
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("aa{ss}", &variant_writer);

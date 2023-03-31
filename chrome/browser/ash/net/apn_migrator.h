@@ -38,10 +38,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
 
-  // Creates an ONC configuration object for the Shill property user_apn_list
+  // Creates an ONC configuration object for the custom APN list Shill property
   // containing |apn_list|, and applies it for the cellular |network|.
-  void SetShillUserApnListForNetwork(const NetworkState& network,
-                                     const base::Value::List* apn_list);
+  void SetShillCustomApnListForNetwork(const NetworkState& network,
+                                       const base::Value::List* apn_list);
 
   // Migrate the |network|'s custom APNs to the APN Revamp feature. If the
   // migration requires the network's managed properties, this function will

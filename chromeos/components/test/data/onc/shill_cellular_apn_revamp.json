@@ -10,7 +10,7 @@
     "username": "test-username",
     "password": "test-password"
   },
-  "Cellular.UserAPNList": [
+  "Cellular.CustomAPNList": [
     {
       "apn": "test-apn-1",
       "apn_source": "ui",
