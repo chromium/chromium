@@ -127,9 +127,7 @@ bool LayoutMultiColumnFlowThread::CanContainSpannerInParentFragmentationContext(
     return false;
   return !block_flow->CreatesNewFormattingContext() &&
          !block_flow->CanContainFixedPositionObjects() &&
-         block_flow->GetPaginationBreakability(fragmentation_engine_) !=
-             LayoutBox::kForbidBreaks &&
-         !IsMultiColumnContainer(*block_flow);
+         !block_flow->IsMonolithic() && !IsMultiColumnContainer(*block_flow);
 }
 
 static inline bool HasAnyColumnSpanners(
@@ -683,9 +681,9 @@ LayoutMultiColumnFlowThread::EnclosingFragmentationContext(
   // fragmentation context. As such, what kind of fragmentation that goes on
   // inside this multicol container is completely opaque to the ancestors.
   if (constraint == kIsolateUnbreakableContainers &&
-      MultiColumnBlockFlow()->GetPaginationBreakability(
-          fragmentation_engine_) == kForbidBreaks)
+      MultiColumnBlockFlow()->IsMonolithic()) {
     return nullptr;
+  }
   if (auto* enclosing_flow_thread = EnclosingFlowThread(constraint))
     return enclosing_flow_thread;
   return View()->FragmentationContext();
@@ -1051,15 +1049,6 @@ void LayoutMultiColumnFlowThread::AddColumnSetToThread(
   } else {
     multi_column_set_list_.insert(column_set);
   }
-}
-
-void LayoutMultiColumnFlowThread::InsertedIntoTree() {
-  NOT_DESTROYED();
-  LayoutFlowThread::InsertedIntoTree();
-  if (MultiColumnBlockFlow()->IsLayoutNGObject())
-    fragmentation_engine_ = kNGFragmentationEngine;
-  else
-    fragmentation_engine_ = kLegacyFragmentationEngine;
 }
 
 void LayoutMultiColumnFlowThread::WillBeRemovedFromTree() {

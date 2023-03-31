@@ -883,8 +883,7 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
   LayoutUnit logical_top_estimate;
   bool is_paginated = View()->GetLayoutState()->IsPaginated();
   bool needs_block_direction_location_set_before_layout =
-      is_paginated &&
-      positioned_object->GetLegacyPaginationBreakability() != kForbidBreaks;
+      is_paginated && !positioned_object->IsMonolithic();
   bool bogus_logical_top_estimate = false;
   if (needs_block_direction_location_set_before_layout) {
     // Out-of-flow objects are normally positioned after layout (while in-flow

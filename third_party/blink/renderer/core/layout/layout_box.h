@@ -1607,37 +1607,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return false;
   }
 
-  // Page / column breakability inside block-level objects.
-  enum PaginationBreakability {
-    kAllowAnyBreaks,  // No restrictions on breaking. May examine children to
-                      // find possible break points.
-    kForbidBreaks,  // Forbid breaks inside this object. Content cannot be split
-                    // nicely into smaller pieces.
-    kAvoidBreaks  // Preferably avoid breaks. If not possible, examine children
-                  // to find possible break points.
-  };
-  enum FragmentationEngine {
-    kLegacyFragmentationEngine,
-    kNGFragmentationEngine,
-    kUnknownFragmentationEngine
-  };
-  // |is_ng_fragmentation| must be true if we're in an NG block fragmentation
-  // context. We need to specify which engine we're using for fragmentation,
-  // since anything being laid out by the other engine will need to be treated
-  // as monolithic (kForbidBreaks), since the two engines cannot cooperate on
-  // block fragmentation.
-  virtual PaginationBreakability GetPaginationBreakability(
-      FragmentationEngine) const;
-  PaginationBreakability GetLegacyPaginationBreakability() const {
-    NOT_DESTROYED();
-    return GetPaginationBreakability(kLegacyFragmentationEngine);
-  }
-  PaginationBreakability GetNGPaginationBreakability() const {
-    NOT_DESTROYED();
-    return GetPaginationBreakability(kNGFragmentationEngine);
-  }
+  // Return true if this box is monolithic, i.e. unbreakable in a fragmentation
+  // context.
+  virtual bool IsMonolithic() const;
 
-  bool HasUnsplittableScrollingOverflow(FragmentationEngine) const;
+  bool HasUnsplittableScrollingOverflow() const;
 
   LayoutRect LocalCaretRect(
       const InlineBox*,

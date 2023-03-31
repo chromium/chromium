@@ -1897,8 +1897,7 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
   // We cannot enter legacy layout for something fragmentable if we're inside an
   // NG block fragmentation context. LayoutNG and legacy block fragmentation
   // cannot cooperate within the same fragmentation context.
-  DCHECK(!constraint_space.HasBlockFragmentation() ||
-         box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
+  DCHECK(!constraint_space.HasBlockFragmentation() || box_->IsMonolithic());
 
   const NGLayoutResult* old_layout_result = box_->GetSingleCachedLayoutResult();
   const NGLayoutResult* old_measure_result = box_->GetCachedMeasureResult();

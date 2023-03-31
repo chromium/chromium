@@ -68,9 +68,7 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
   // instead of |LayoutObject|, because this function cannot handle block
   // fragmented objects. We can come here only when |this| cannot traverse
   // fragments, or the parent is legacy.
-  DCHECK(Base::GetNGPaginationBreakability() ==
-             LayoutNGBlockFlow::kForbidBreaks ||
-         !Base::CanTraversePhysicalFragments() ||
+  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).
@@ -103,9 +101,7 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
   Base::CheckIsNotDestroyed();
 
   // See |Paint()|.
-  DCHECK(Base::GetNGPaginationBreakability() ==
-             LayoutNGBlockFlow::kForbidBreaks ||
-         !Base::CanTraversePhysicalFragments() ||
+  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).

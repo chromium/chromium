@@ -31,10 +31,9 @@ class LayoutNGMathMLBlockFlow final : public LayoutNGBlockFlow {
     return true;
   }
 
-  PaginationBreakability GetPaginationBreakability(
-      FragmentationEngine) const final {
+  bool IsMonolithic() const final {
     NOT_DESTROYED();
-    return kForbidBreaks;
+    return true;
   }
 };
 

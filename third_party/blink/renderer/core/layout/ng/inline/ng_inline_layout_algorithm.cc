@@ -626,8 +626,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
   LayoutObject* layout_object = item.GetLayoutObject();
   DCHECK(layout_object);
   DCHECK(layout_object->IsAtomicInlineLevel());
-  DCHECK_EQ(To<LayoutBox>(layout_object)->GetNGPaginationBreakability(),
-            LayoutBox::kForbidBreaks);
+  DCHECK(To<LayoutBox>(layout_object)->IsMonolithic());
   layout_object->SetIsTruncated(false);
 
   item_result->has_edge = true;

@@ -354,7 +354,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   bool CanContainSpannerInParentFragmentationContext(const LayoutObject&) const;
 
   void AddColumnSetToThread(LayoutMultiColumnSet*) override;
-  void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
   void FlowThreadDescendantWasInserted(LayoutObject*) final;
   void FlowThreadDescendantWillBeRemoved(LayoutObject*) final;
@@ -401,8 +400,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // context, if any. In
   // the coordinate space of the enclosing fragmentation context.
   LayoutUnit block_offset_in_enclosing_fragmentation_context_;
-
-  FragmentationEngine fragmentation_engine_ = kUnknownFragmentationEngine;
 
   // Set when column heights are out of sync with actual layout.
   bool column_heights_changed_;

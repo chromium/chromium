@@ -986,9 +986,7 @@ void PrePaintTreeWalk::WalkChildren(
           // monolithic content. We may re-enter
           // LayoutNGBoxFragment-accompanied traversal if we get to a
           // descendant that supports that.
-          DCHECK(
-              !box->FlowThreadContainingBlock() ||
-              (box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks));
+          DCHECK(!box->FlowThreadContainingBlock() || box->IsMonolithic());
 
           traversable_fragment = nullptr;
         }

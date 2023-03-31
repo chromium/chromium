@@ -156,9 +156,7 @@ LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
   Base::CheckIsNotDestroyed();
 
   // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
-  DCHECK(Base::GetNGPaginationBreakability() ==
-             LayoutNGBlockFlow::kForbidBreaks ||
-         !Base::CanTraversePhysicalFragments() ||
+  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
   DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
 
@@ -196,9 +194,7 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
   Base::CheckIsNotDestroyed();
 
   // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
-  DCHECK(Base::GetNGPaginationBreakability() ==
-             LayoutNGBlockFlow::kForbidBreaks ||
-         !Base::CanTraversePhysicalFragments() ||
+  DCHECK(Base::IsMonolithic() || !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
   // We may get here in multiple-fragment cases if the object is repeated
   // (inside table headers and footers, for instance).

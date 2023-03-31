@@ -72,9 +72,7 @@ LayoutState::LayoutState(LayoutBox& layout_object,
   // Disable pagination for objects we don't support. For now this includes
   // overflow:scroll/auto, inline blocks and writing mode roots. Additionally,
   // pagination inside SVG is not allowed.
-  if (layout_object.GetLegacyPaginationBreakability() ==
-          LayoutBox::kForbidBreaks ||
-      layout_object_->IsSVGChild()) {
+  if (layout_object.IsMonolithic() || layout_object_->IsSVGChild()) {
     flow_thread_ = nullptr;
     is_paginated_ = false;
     return;

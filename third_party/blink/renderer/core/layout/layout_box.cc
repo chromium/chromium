@@ -7201,8 +7201,7 @@ bool LayoutBox::PercentageLogicalHeightIsResolvable() const {
 }
 
 DISABLE_CFI_PERF
-bool LayoutBox::HasUnsplittableScrollingOverflow(
-    FragmentationEngine engine) const {
+bool LayoutBox::HasUnsplittableScrollingOverflow() const {
   NOT_DESTROYED();
   // Fragmenting scrollbars is only problematic in interactive media, e.g.
   // multicol on a screen. If we're printing, which is non-interactive media, we
@@ -7210,62 +7209,25 @@ bool LayoutBox::HasUnsplittableScrollingOverflow(
   if (GetDocument().Printing())
     return false;
 
-  // In LayoutNG, treat any scrollable container as monolithic.
-  if (engine == kNGFragmentationEngine)
-    return IsScrollContainer();
-
-  // We will paginate as long as we don't scroll overflow in the pagination
-  // direction.
-  bool is_horizontal = IsHorizontalWritingMode();
-  if ((is_horizontal && !ScrollsOverflowY()) ||
-      (!is_horizontal && !ScrollsOverflowX()))
-    return false;
-
-  // We do have overflow. We'll still be willing to paginate as long as the
-  // block has auto logical height, auto or undefined max-logical-height and a
-  // zero or auto min-logical-height.
-  // Note this is just a heuristic, and it's still possible to have overflow
-  // under these conditions, but it should work out to be good enough for common
-  // cases. Paginating overflow with scrollbars present is not the end of the
-  // world and is what we used to do in the old model anyway.
-  return StyleRef().LogicalHeight().IsSpecified() ||
-         (StyleRef().LogicalMaxHeight().IsSpecified() &&
-          (!StyleRef().LogicalMaxHeight().IsPercentOrCalc() ||
-           PercentageLogicalHeightIsResolvable())) ||
-         (StyleRef().LogicalMinHeight().IsSpecified() &&
-          (!StyleRef().LogicalMinHeight().IsPercentOrCalc() ||
-           PercentageLogicalHeightIsResolvable()));
+  // Treat any scrollable container as monolithic.
+  return IsScrollContainer();
 }
 
-LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability(
-    FragmentationEngine engine) const {
+bool LayoutBox::IsMonolithic() const {
   NOT_DESTROYED();
   // TODO(almaher): Don't consider a writing mode root monolitic if
   // IsLayoutNGFlexibleBox(). The breakability should be handled at the item
   // level. (Likely same for Table and Grid).
-  if (ShouldBeConsideredAsReplaced() ||
-      HasUnsplittableScrollingOverflow(engine) ||
+  if (ShouldBeConsideredAsReplaced() || HasUnsplittableScrollingOverflow() ||
       (Parent() && IsWritingModeRoot()) ||
       (IsFixedPositioned() && GetDocument().Printing() &&
        IsA<LayoutView>(Container())) ||
       ShouldApplySizeContainment() || IsFrameSet() ||
       StyleRef().HasLineClamp()) {
-    return kForbidBreaks;
+    return true;
   }
 
-  if (engine != kUnknownFragmentationEngine) {
-    // If the object isn't using the same engine as the fragmentation context,
-    // it must be treated as monolithic.
-    if (IsLayoutNGObject() != (engine == kNGFragmentationEngine))
-      return kForbidBreaks;
-  }
-
-  EBreakInside break_value = BreakInside();
-  if (break_value == EBreakInside::kAvoid ||
-      break_value == EBreakInside::kAvoidPage ||
-      break_value == EBreakInside::kAvoidColumn)
-    return kAvoidBreaks;
-  return kAllowAnyBreaks;
+  return false;
 }
 
 LayoutUnit LayoutBox::LineHeight(bool /*firstLine*/,
