@@ -26,6 +26,30 @@ const char kTailoredSecurityEnabledDialogSettingsButtonClicked[] =
 const char kTailoredSecurityEnabledDialogDismissed[] =
     "SafeBrowsing.AccountIntegration.EnabledDialog.Dismissed";
 
+const char* GetUserActionString(TailoredSecurityOutcome outcome, bool enable) {
+  switch (outcome) {
+    case TailoredSecurityOutcome::kShown:
+      return enable ? kTailoredSecurityEnabledDialogShown
+                    : kTailoredSecurityDisabledDialogShown;
+    case TailoredSecurityOutcome::kAccepted:
+      return enable ? kTailoredSecurityEnabledDialogOkButtonClicked
+                    : kTailoredSecurityDisabledDialogOkButtonClicked;
+
+    case TailoredSecurityOutcome::kDismissed:
+      return enable ? kTailoredSecurityEnabledDialogDismissed
+                    : kTailoredSecurityDisabledDialogDismissed;
+
+    case TailoredSecurityOutcome::kSettings:
+      return enable ? kTailoredSecurityEnabledDialogSettingsButtonClicked
+                    : kTailoredSecurityDisabledDialogSettingsButtonClicked;
+    default:
+      CHECK(false) << "Attempted to get a user action string for an "
+                      "unsupported outcome: "
+                   << static_cast<int>(outcome);
+      return "";
+  }
+}
+
 void RecordEnabledNotificationResult(
     TailoredSecurityNotificationResult result) {
   base::UmaHistogramEnumeration(
