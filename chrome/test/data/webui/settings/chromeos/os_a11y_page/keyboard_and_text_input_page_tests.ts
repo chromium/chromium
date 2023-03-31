@@ -4,19 +4,24 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {SettingsKeyboardAndTextInputPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('KeyboardAndTextInputPageTests', function() {
-  let page = null;
+suite('<settings-keyboard-and-text-input-page>', () => {
+  let page: SettingsKeyboardAndTextInputPageElement;
+  let prefElement: SettingsPrefsElement;
 
   async function initPage() {
-    const prefElement = document.createElement('settings-prefs');
+    prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
     await CrSettingsPrefs.initialized;
 
@@ -26,15 +31,13 @@ suite('KeyboardAndTextInputPageTests', function() {
     flush();
   }
 
-  setup(function() {
-    PolymerTest.clearBody();
+  setup(() => {
     Router.getInstance().navigateTo(routes.A11Y_KEYBOARD_AND_TEXT_INPUT);
   });
 
-  teardown(function() {
-    if (page) {
-      page.remove();
-    }
+  teardown(() => {
+    page.remove();
+    prefElement.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -58,8 +61,10 @@ suite('KeyboardAndTextInputPageTests', function() {
     flush();
 
     // Dictation toggle.
-    const dictationSetting = page.shadowRoot.querySelector('#enableDictation');
-    assertTrue(!!dictationSetting);
+    const dictationSetting =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableDictation');
+    assert(dictationSetting);
     assertTrue(dictationSetting.checked);
     assertEquals('Dictation', dictationSetting.label);
     assertEquals(
@@ -68,11 +73,13 @@ suite('KeyboardAndTextInputPageTests', function() {
 
     // Dictation locale menu.
     const dictationLocaleMenuLabel =
-        page.shadowRoot.querySelector('#dictationLocaleMenuLabel');
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#dictationLocaleMenuLabel');
     const dictationLocaleMenuSubtitle =
-        page.shadowRoot.querySelector('#dictationLocaleMenuSubtitle');
-    assertTrue(!!dictationLocaleMenuLabel);
-    assertTrue(!!dictationLocaleMenuSubtitle);
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#dictationLocaleMenuSubtitle');
+    assert(dictationLocaleMenuLabel);
+    assert(dictationLocaleMenuSubtitle);
     assertEquals('Language', dictationLocaleMenuLabel.innerText);
     assertEquals(
         'English (United States) is processed locally and works offline',
@@ -127,14 +134,13 @@ suite('KeyboardAndTextInputPageTests', function() {
       },
     ];
     webUIListenerCallback('dictation-locales-set', locales);
-    page.dictationLocaleSubtitleOverride_ = 'Testing';
     flush();
 
     page.setPrefValue('settings.a11y.dictation_locale', 'en-US');
     flush();
     assertEquals(
         'English (United States) is processed locally and works offline',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
     // Changing the Dictation locale pref should change the subtitle
     // computation.
@@ -143,28 +149,27 @@ suite('KeyboardAndTextInputPageTests', function() {
         'Couldn’t download Spanish speech files. Download will be attempted ' +
             'later. Speech is sent to Google for processing until download ' +
             'is completed.',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
     page.setPrefValue('settings.a11y.dictation_locale', 'de');
     assertEquals(
         'German speech is sent to Google for processing',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
 
+
+    // Only use the subtitle override once.
+    page.set('useDictationLocaleSubtitleOverride_', true);
+    page.set('dictationLocaleSubtitleOverride_', 'Testing');
+
+    assertEquals('Testing', page.get('dictationLocaleMenuSubtitle_'));
+    assertFalse(page.get('useDictationLocaleSubtitleOverride_'));
     page.setPrefValue('settings.a11y.dictation_locale', 'fr-FR');
     assertEquals(
         'French (France) speech is sent to Google for processing',
-        page.computeDictationLocaleSubtitle_());
-
-    // Only use the subtitle override once.
-    page.useDictationLocaleSubtitleOverride_ = true;
-    assertEquals('Testing', page.computeDictationLocaleSubtitle_());
-    assertFalse(page.useDictationLocaleSubtitleOverride_);
-    assertEquals(
-        'French (France) speech is sent to Google for processing',
-        page.computeDictationLocaleSubtitle_());
+        page.get('dictationLocaleMenuSubtitle_'));
   });
 
-  test('some parts are hidden in kiosk mode', async function() {
+  test('some parts are hidden in kiosk mode', async () => {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
       showTabletModeShelfNavigationButtonsSettings: true,
@@ -172,7 +177,7 @@ suite('KeyboardAndTextInputPageTests', function() {
     await initPage();
     flush();
 
-    const subpageLinks = page.root.querySelectorAll('cr-link-row');
+    const subpageLinks = page.root!.querySelectorAll('cr-link-row');
     subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
   });
 
@@ -189,8 +194,10 @@ suite('KeyboardAndTextInputPageTests', function() {
 
     flush();
 
-    const deepLinkElement = page.shadowRoot.querySelector('#enableSwitchAccess')
-                                .shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement =
+        page.shadowRoot!.querySelector('#enableSwitchAccess')!.shadowRoot!
+            .querySelector('cr-toggle');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -210,13 +217,14 @@ suite('KeyboardAndTextInputPageTests', function() {
           flush();
           const router = Router.getInstance();
 
-          const subpageButton = page.shadowRoot.querySelector(selector);
-          assertTrue(!!subpageButton);
+          const subpageButton =
+              page.shadowRoot!.querySelector<CrLinkRowElement>(selector);
+          assert(subpageButton);
 
           subpageButton.click();
           assertEquals(route, router.currentRoute);
           assertNotEquals(
-              subpageButton, page.shadowRoot.activeElement,
+              subpageButton, page.shadowRoot!.activeElement,
               `${selector} should not be focused`);
 
           const popStateEventPromise = eventToPromise('popstate', window);
@@ -227,7 +235,7 @@ suite('KeyboardAndTextInputPageTests', function() {
           assertEquals(
               routes.A11Y_KEYBOARD_AND_TEXT_INPUT, router.currentRoute);
           assertEquals(
-              subpageButton, page.shadowRoot.activeElement,
+              subpageButton, page.shadowRoot!.activeElement,
               `${selector} should be focused`);
         });
   });
@@ -252,13 +260,14 @@ suite('KeyboardAndTextInputPageTests', function() {
   ];
 
   settingsToggleButtons.forEach(({id, prefKey}) => {
-    test(`Accessibility toggle button syncs to prefs: ${id}`, async function() {
+    test(`Accessibility toggle button syncs to prefs: ${id}`, async () => {
       await initPage();
       // Find the toggle and ensure that it's:
       // 1. Not checked
       // 2. The associated pref is off
-      const toggle = page.shadowRoot.querySelector(`#${id}`);
-      assertTrue(!!toggle);
+      const toggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(`#${id}`);
+      assert(toggle);
       assertFalse(toggle.checked);
       let pref = page.getPref(prefKey);
       assertFalse(pref.value);

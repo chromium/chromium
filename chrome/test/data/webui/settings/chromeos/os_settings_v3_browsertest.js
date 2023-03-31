@@ -370,10 +370,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['KerberosAccounts', 'kerberos_accounts_test.js'],
  ['KerberosPage', 'kerberos_page_test.js'],
  [
-   'KeyboardAndTextInputPage',
-   'keyboard_and_text_input_page_tests.js',
- ],
- [
    'KeyboardShortcutBanner',
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
@@ -423,6 +419,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_tests.js',
+ ],
+ [
+   'OsA11yPageKeyboardAndTextInputPage',
+   'os_a11y_page/keyboard_and_text_input_page_tests.js',
  ],
  [
    'OsA11yPageTextToSpeechPage',

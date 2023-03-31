@@ -46,7 +46,7 @@ const SettingsKeyboardAndTextInputPageElementBase =
     DeepLinkingMixin(RouteOriginMixin(
         PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsKeyboardAndTextInputPageElement extends
+export class SettingsKeyboardAndTextInputPageElement extends
     SettingsKeyboardAndTextInputPageElementBase {
   static get is() {
     return 'settings-keyboard-and-text-input-page';
