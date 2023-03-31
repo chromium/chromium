@@ -9,7 +9,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
-namespace fast_ink {
+namespace ash {
 
 FastInkView::FastInkView() = default;
 
@@ -37,7 +37,7 @@ views::UniqueWidgetPtr FastInkView::CreateWidgetWithContents(
       widget->SetContentsView(std::move(fast_ink_view));
   widget->SetBounds(screen_bounds);
 
-  auto fast_ink_host = std::make_unique<ash::FastInkHost>();
+  auto fast_ink_host = std::make_unique<FastInkHost>();
   fast_ink_host->Init(widget->GetNativeWindow());
 
   // PresentationCallback must to be set after `fast_ink_host` is initialized.
@@ -59,17 +59,17 @@ void FastInkView::UpdateSurface(const gfx::Rect& content_rect,
   }
 }
 
-std::unique_ptr<ash::FastInkHost::ScopedPaint> FastInkView::GetScopedPaint(
+std::unique_ptr<FastInkHost::ScopedPaint> FastInkView::GetScopedPaint(
     const gfx::Rect& damage_rect_in_window) const {
   return host_->CreateScopedPaint(damage_rect_in_window);
 }
 
-ash::FastInkHost::PresentationCallback FastInkView::GetPresentationCallback() {
-  return ash::FastInkHost::PresentationCallback();
+FastInkHost::PresentationCallback FastInkView::GetPresentationCallback() {
+  return FastInkHost::PresentationCallback();
 }
 
-void FastInkView::SetFastInkHost(std::unique_ptr<ash::FastInkHost> host) {
+void FastInkView::SetFastInkHost(std::unique_ptr<FastInkHost> host) {
   host_ = std::move(host);
 }
 
-}  // namespace fast_ink
+}  // namespace ash

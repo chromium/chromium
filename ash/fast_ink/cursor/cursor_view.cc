@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
 
-namespace cursor {
+namespace ash {
 namespace {
 
 // Amount of time without cursor movement before entering stationary state.
@@ -96,13 +96,13 @@ CursorView::~CursorView() {
 views::UniqueWidgetPtr CursorView::Create(const gfx::Point& initial_location,
                                           bool is_motion_blur_enabled,
                                           aura::Window* container) {
-  return fast_ink::FastInkView::CreateWidgetWithContents(
+  return FastInkView::CreateWidgetWithContents(
       base::WrapUnique(
           new CursorView(initial_location, is_motion_blur_enabled)),
       container);
 }
 
-ash::FastInkHost::PresentationCallback CursorView::GetPresentationCallback() {
+FastInkHost::PresentationCallback CursorView::GetPresentationCallback() {
   return base::BindRepeating(&CursorView::DidPresentCompositorFrame,
                              base::Unretained(this));
 }
@@ -343,4 +343,4 @@ void CursorView::DidPresentCompositorFrame(
                      feedback.interval));
 }
 
-}  // namespace cursor
+}  // namespace ash

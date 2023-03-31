@@ -25,7 +25,7 @@ namespace views {
 class View;
 }  // namespace views
 
-namespace fast_ink {
+namespace ash {
 
 // Base class for a fast ink based pointer controller. Enables/disables
 // the pointer, receives points and passes them off to be rendered.
@@ -107,6 +107,6 @@ class FastInkPointerController : public ui::EventHandler {
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_local_;
 };
 
-}  // namespace fast_ink
+}  // namespace ash
 
 #endif  // ASH_FAST_INK_FAST_INK_POINTER_CONTROLLER_H_

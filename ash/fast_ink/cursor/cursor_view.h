@@ -21,11 +21,11 @@ namespace gfx {
 struct PresentationFeedback;
 }
 
-namespace cursor {
+namespace ash {
 
 // CursorView class can be used to display a cursor image with minimal
 // latency/jank and optional motion blur.
-class CursorView : public fast_ink::FastInkView,
+class CursorView : public FastInkView,
                    public viz::DelayBasedTimeSourceClient,
                    public ui::CursorController::CursorObserver {
  public:
@@ -50,8 +50,8 @@ class CursorView : public fast_ink::FastInkView,
   void OnTimerTick() override;
 
  protected:
-  // ash::FastInkView override.
-  ash::FastInkHost::PresentationCallback GetPresentationCallback() override;
+  // FastInkView override.
+  FastInkHost::PresentationCallback GetPresentationCallback() override;
 
  private:
   CursorView(const gfx::Point& initial_location, bool is_motion_blur_enabled);
@@ -102,6 +102,6 @@ class CursorView : public fast_ink::FastInkView,
   base::WeakPtrFactory<CursorView> weak_ptr_factory_{this};
 };
 
-}  // namespace cursor
+}  // namespace ash
 
 #endif  // ASH_FAST_INK_CURSOR_CURSOR_VIEW_H_

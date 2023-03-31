@@ -8,12 +8,8 @@
 #include "ash/system/palette/palette_tray.h"
 #include "ui/display/display.h"
 
-namespace fast_ink {
-class FastInkPoints;
-}
-
 namespace ash {
-
+class FastInkPoints;
 class LaserPointerController;
 
 // An api for testing the LaserPointerController class.
@@ -32,8 +28,8 @@ class LaserPointerControllerTestApi {
   bool IsShowingLaserPointer() const;
   bool IsFadingAway() const;
   PaletteTray* GetPaletteTrayOnDisplay(int64_t display_id) const;
-  const fast_ink::FastInkPoints& laser_points() const;
-  const fast_ink::FastInkPoints& predicted_laser_points() const;
+  const FastInkPoints& laser_points() const;
+  const FastInkPoints& predicted_laser_points() const;
 
  private:
   LaserPointerController* instance_;
