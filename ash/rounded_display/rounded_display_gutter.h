@@ -5,9 +5,7 @@
 #ifndef ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_GUTTER_H_
 #define ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_GUTTER_H_
 
-#include <cstdint>
 #include <memory>
-#include <utility>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -98,16 +96,16 @@ class ASH_EXPORT RoundedDisplayGutter {
   // For example, texture generated for gutter for top-left rounded corner and a
   // texture generated for gutter with bottom-left rounded corner are identical
   // in terms of size, buffer format etc but will have unique ui_source_id.
-  uint32_t ui_source_id() const;
+  UiSourceId ui_source_id() const;
 
   // Paints all the corner's mask textures on the canvas.
   void Paint(gfx::Canvas* canvas) const;
 
  private:
   gfx::Rect CalculateGutterBounds() const;
-  int32_t CalculateUiSourceId() const;
+  UiSourceId CalculateUiSourceId() const;
 
-  int32_t ui_source_id_ = kInvalidUiSourceId;
+  UiSourceId ui_source_id_ = kInvalidUiSourceId;
 
   // The rounded display corners that the gutter draws.
   const std::vector<RoundedCorner> corners_;

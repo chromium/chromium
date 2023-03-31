@@ -4,7 +4,6 @@
 
 #include "ash/rounded_display/rounded_display_gutter_factory.h"
 
-#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -24,25 +23,25 @@ using RoundedCornerPosition = RoundedDisplayGutter::RoundedCorner::Position;
 // Create RoundedCorner for a given position of the display.
 RoundedDisplayGutter::RoundedCorner CreateRoundedCornerForDisplay(
     RoundedCornerPosition position,
-    const gfx::RoundedCornersF& display_radii,
-    const gfx::Size& display_size) {
+    const gfx::RoundedCornersF& panel_radii,
+    const gfx::Size& panel_size) {
   switch (position) {
     case RoundedCornerPosition::kUpperLeft:
-      return RoundedCorner(position, display_radii.upper_left(),
+      return RoundedCorner(position, panel_radii.upper_left(),
                            gfx::Point(0, 0));
     case RoundedCornerPosition::kUpperRight:
       return RoundedCorner(
-          position, display_radii.upper_right(),
-          gfx::Point(display_size.width() - display_radii.upper_right(), 0));
+          position, panel_radii.upper_right(),
+          gfx::Point(panel_size.width() - panel_radii.upper_right(), 0));
     case RoundedCornerPosition::kLowerLeft:
       return RoundedCorner(
-          position, display_radii.lower_left(),
-          gfx::Point(0, display_size.height() - display_radii.lower_left()));
+          position, panel_radii.lower_left(),
+          gfx::Point(0, panel_size.height() - panel_radii.lower_left()));
     case RoundedCornerPosition::kLowerRight:
       return RoundedCorner(
-          position, display_radii.lower_right(),
-          gfx::Point(display_size.width() - display_radii.lower_right(),
-                     display_size.height() - display_radii.lower_right()));
+          position, panel_radii.lower_right(),
+          gfx::Point(panel_size.width() - panel_radii.lower_right(),
+                     panel_size.height() - panel_radii.lower_right()));
   }
 }
 
@@ -50,8 +49,8 @@ RoundedDisplayGutter::RoundedCorner CreateRoundedCornerForDisplay(
 // `corner_positions_bit_mask`. We do not create the gutter if all of
 // rounded_corners of the gutter have zero radius.
 std::unique_ptr<RoundedDisplayGutter> CreateGutter(
-    const gfx::Size& display_size,
-    const gfx::RoundedCornersF& display_radii,
+    const gfx::Size& panel_size,
+    const gfx::RoundedCornersF& panel_radii,
     int corner_positions_bit_mask,
     bool is_overlay_gutter) {
   std::vector<RoundedCorner> corners;
@@ -61,12 +60,12 @@ std::unique_ptr<RoundedDisplayGutter> CreateGutter(
         RoundedCorner::kUpperLeft, RoundedCorner::kUpperRight}) {
     if (corner_positions_bit_mask & position) {
       corners.push_back(
-          CreateRoundedCornerForDisplay(position, display_radii, display_size));
+          CreateRoundedCornerForDisplay(position, panel_radii, panel_size));
     }
   }
 
   // We only create a gutter if at least one its corners paint.
-  for (auto& corner : corners) {
+  for (const auto& corner : corners) {
     if (corner.DoesPaint()) {
       return RoundedDisplayGutter::CreateGutter(std::move(corners),
                                                 is_overlay_gutter);
@@ -88,23 +87,22 @@ void MaybeAppendGutter(
 
 std::vector<std::unique_ptr<RoundedDisplayGutter>>
 RoundedDisplayGutterFactory::CreateOverlayGutters(
-    const gfx::Size& display_panel_size,
-    const gfx::RoundedCornersF& display_radii,
+    const gfx::Size& panel_size,
+    const gfx::RoundedCornersF& panel_radii,
     bool create_vertical_gutters) {
   std::vector<std::unique_ptr<RoundedDisplayGutter>> gutters;
-  gutters.reserve(2);
 
   if (create_vertical_gutters) {
     // Left overlay gutter.
     MaybeAppendGutter(gutters,
-                      CreateGutter(display_panel_size, display_radii,
+                      CreateGutter(panel_size, panel_radii,
                                    RoundedCornerPosition::kUpperLeft |
                                        RoundedCornerPosition::kLowerLeft,
                                    /*is_overlay_gutter=*/true));
 
     // Right overlay gutter.
     MaybeAppendGutter(gutters,
-                      CreateGutter(display_panel_size, display_radii,
+                      CreateGutter(panel_size, panel_radii,
                                    RoundedCornerPosition::kUpperRight |
                                        RoundedCornerPosition::kLowerRight,
                                    /*is_overlay_gutter=*/true));
@@ -112,14 +110,14 @@ RoundedDisplayGutterFactory::CreateOverlayGutters(
   } else {
     // Upper overlay gutter.
     MaybeAppendGutter(gutters,
-                      CreateGutter(display_panel_size, display_radii,
+                      CreateGutter(panel_size, panel_radii,
                                    RoundedCornerPosition::kUpperLeft |
                                        RoundedCornerPosition::kUpperRight,
                                    /*is_overlay_gutter=*/true));
 
     // Lower overlay gutter.
     MaybeAppendGutter(gutters,
-                      CreateGutter(display_panel_size, display_radii,
+                      CreateGutter(panel_size, panel_radii,
                                    RoundedCornerPosition::kLowerLeft |
                                        RoundedCornerPosition::kLowerRight,
                                    /*is_overlay_gutter=*/true));
@@ -130,23 +128,22 @@ RoundedDisplayGutterFactory::CreateOverlayGutters(
 
 std::vector<std::unique_ptr<RoundedDisplayGutter>>
 RoundedDisplayGutterFactory::CreateNonOverlayGutters(
-    const gfx::Size& display_panel_size,
-    const gfx::RoundedCornersF& display_radii) {
+    const gfx::Size& panel_size,
+    const gfx::RoundedCornersF& panel_radii) {
   std::vector<std::unique_ptr<RoundedDisplayGutter>> gutters;
-  gutters.reserve(4);
 
-  MaybeAppendGutter(gutters, CreateGutter(display_panel_size, display_radii,
+  MaybeAppendGutter(gutters, CreateGutter(panel_size, panel_radii,
                                           0 | RoundedCornerPosition::kUpperLeft,
                                           /*is_overlay_gutter=*/false));
   MaybeAppendGutter(gutters,
-                    CreateGutter(display_panel_size, display_radii,
+                    CreateGutter(panel_size, panel_radii,
                                  0 | RoundedCornerPosition::kUpperRight,
                                  /*is_overlay_gutter=*/false));
-  MaybeAppendGutter(gutters, CreateGutter(display_panel_size, display_radii,
+  MaybeAppendGutter(gutters, CreateGutter(panel_size, panel_radii,
                                           0 | RoundedCornerPosition::kLowerLeft,
                                           /*is_overlay_gutter=*/false));
   MaybeAppendGutter(gutters,
-                    CreateGutter(display_panel_size, display_radii,
+                    CreateGutter(panel_size, panel_radii,
                                  0 | RoundedCornerPosition::kLowerRight,
                                  /*is_overlay_gutter=*/false));
 

@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/rounded_display/rounded_display_gutter.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/size.h"
+
+namespace gfx {
+class Size;
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace ash {
 
@@ -27,14 +29,18 @@ class ASH_EXPORT RoundedDisplayGutterFactory {
 
   ~RoundedDisplayGutterFactory() = default;
 
+  // Creates drawable overlay gutters. An overlay gutter is considered drawable
+  // if it has at least one RoundedDisplayCorners with non-zero radius.
   std::vector<std::unique_ptr<RoundedDisplayGutter>> CreateOverlayGutters(
-      const gfx::Size& display_panel_size,
-      const gfx::RoundedCornersF& display_radii,
+      const gfx::Size& panel_size,
+      const gfx::RoundedCornersF& panel_radii,
       bool create_vertical_gutters);
 
+  // Creates drawable non-overlay gutters. A non-overlay gutter is considered
+  // drawable if it has at least one RoundedDisplayCorners with non-zero radius.
   std::vector<std::unique_ptr<RoundedDisplayGutter>> CreateNonOverlayGutters(
-      const gfx::Size& display_panel_size,
-      const gfx::RoundedCornersF& display_radii);
+      const gfx::Size& panel_size,
+      const gfx::RoundedCornersF& panel_radii);
 };
 
 }  // namespace ash

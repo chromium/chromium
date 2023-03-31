@@ -5,7 +5,6 @@
 #ifndef ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_PROVIDER_H_
 #define ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_PROVIDER_H_
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -94,7 +93,7 @@ class ASH_EXPORT RoundedDisplayProvider {
 
   // The current display state for which rounded display is enabled.
   float current_device_scale_factor_ = 0.0;
-  display::Display::Rotation current_rotation_ =
+  display::Display::Rotation current_logical_rotation_ =
       display::Display::Rotation::ROTATE_0;
   gfx::RoundedCornersF current_panel_radii_;
 
@@ -113,7 +112,7 @@ class ASH_EXPORT RoundedDisplayProvider {
   // Represents the surface on which the `host_` render the mask textures of the
   // rounded-display corners. It gets destroyed when its window_tree_host
   // is destroyed.
-  base::raw_ptr<aura::Window> host_window_;
+  base::raw_ptr<aura::Window> host_window_ = nullptr;
 
   // Responsible to render the mask textures by submitting compositor frames.
   std::unique_ptr<RoundedDisplayHost> host_;

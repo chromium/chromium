@@ -49,7 +49,7 @@ constexpr viz::ResourceFormat kResourceFormat =
 gfx::Transform GetRootRotationTransform(const aura::Window& host_window) {
   // Root transform has both the rotation and scaling of the whole UI, therefore
   // we need undo the scaling of UI to get the rotation transform.
-  auto* host = host_window.GetHost();
+  const auto* host = host_window.GetHost();
   gfx::Transform root_rotation_transform = host->GetRootTransform();
 
   float device_scale_factor = host_window.layer()->device_scale_factor();
@@ -211,7 +211,7 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
       viz::CompositorRenderPass::Create(/*shared_quad_state_list_size=*/1u,
                                         /*quad_list_size=*/6u);
 
-  display::Display display =
+  const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(&host_window);
 
   gfx::Rect output_rect(display.GetSizeInPixel());
@@ -221,7 +221,7 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
   gfx::Transform root_rotation_inverse =
       GetRootRotationTransform(host_window).GetCheckedInverse();
 
-  for (auto* gutter : gutters) {
+  for (const auto* gutter : gutters) {
     DCHECK(gutter);
 
     auto resource = Draw(*gutter, resource_manager);
@@ -310,17 +310,16 @@ void RoundedDisplayFrameFactory::AppendQuad(
     const gfx::Transform& buffer_to_target_transform,
     const RoundedDisplayGutter& gutter,
     viz::CompositorRenderPass& render_pass_out) const {
-  const gfx::Size& gutter_size_in_pixels = gutter.bounds().size();
-
   // Each gutter can be thought of as a single ui::Layer that produces only one
-  // quad. Therefore the layer_rect and visible_layer_rect is the size of the
-  // `gutter_size_in_pixels`. (layer is the same size as the texture produced
-  // and it is all visible)
+  // quad. Therefore the layer should be of the same size as the texture
+  // produced by the gutter making layer_rect the size of the gutter in pixels.
+  const gfx::Rect layer_rect(gutter.bounds().size());
+
   viz::SharedQuadState* quad_state =
       render_pass_out.CreateAndAppendSharedQuadState();
   quad_state->SetAll(buffer_to_target_transform,
-                     /*layer_rect=*/gfx::Rect(gutter_size_in_pixels),
-                     /*visible_layer_rect=*/gfx::Rect(gutter_size_in_pixels),
+                     /*layer_rect=*/layer_rect,
+                     /*visible_layer_rect=*/layer_rect,
                      /*filter_info=*/gfx::MaskFilterInfo(),
                      /*clip=*/absl::nullopt, /*contents_opaque=*/false,
                      /*opacity_f=*/1.f,
@@ -332,19 +331,19 @@ void RoundedDisplayFrameFactory::AppendQuad(
 
   constexpr float kVertexOpacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-  // Each frame, we re-render the full texture therefore quad_rect is the size
-  // of the texture i.e `gutter_size_in_pixels`.
-  gfx::Rect quad_rect(gutter_size_in_pixels);
+  // Since a single gutter is created for the full layer and we re-render the
+  // full texture making the quad_rect same as the layer_rect.
+  const gfx::Rect& quad_rect = layer_rect;
+  const gfx::RectF quad_rect_f(layer_rect);
 
-  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       /*needs_blending=*/true, resource.id,
-                       /*premultiplied=*/true, gfx::RectF(quad_rect).origin(),
-                       gfx::RectF(quad_rect).bottom_right(),
-                       /*background=*/SkColors::kTransparent, kVertexOpacity,
-                       /*flipped=*/false,
-                       /*nearest=*/false,
-                       /*secure_output=*/false,
-                       gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(
+      quad_state, quad_rect, quad_rect,
+      /*needs_blending=*/true, resource.id,
+      /*premultiplied=*/true, quad_rect_f.origin(), quad_rect_f.bottom_right(),
+      /*background=*/SkColors::kTransparent, kVertexOpacity,
+      /*flipped=*/false,
+      /*nearest=*/false,
+      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 
   texture_quad->set_resource_size_in_pixels(resource.size);
 

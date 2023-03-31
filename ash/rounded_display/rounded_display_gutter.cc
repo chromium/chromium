@@ -146,15 +146,15 @@ RoundedDisplayGutter::RoundedDisplayGutter(std::vector<RoundedCorner>&& corners,
 
 RoundedDisplayGutter::~RoundedDisplayGutter() = default;
 
-uint32_t RoundedDisplayGutter::ui_source_id() const {
+UiSourceId RoundedDisplayGutter::ui_source_id() const {
   return ui_source_id_;
 }
 
-int32_t RoundedDisplayGutter::CalculateUiSourceId() const {
-  uint32_t ui_source_id = 0;
+UiSourceId RoundedDisplayGutter::CalculateUiSourceId() const {
+  UiSourceId ui_source_id = kInvalidUiSourceId;
   // Value of the position mask of the gutter will give a unique value for any
   // combination of RoundedDisplayCorners.
-  for (auto& corner : corners_) {
+  for (const auto& corner : corners_) {
     ui_source_id |= corner.position();
   }
 
@@ -164,7 +164,7 @@ int32_t RoundedDisplayGutter::CalculateUiSourceId() const {
 gfx::Rect RoundedDisplayGutter::CalculateGutterBounds() const {
   gfx::Rect gutter_bounds;
 
-  for (auto& corner : corners_) {
+  for (const auto& corner : corners_) {
     gutter_bounds.Union(corner.bounds());
   }
 
@@ -176,7 +176,7 @@ const gfx::Rect& RoundedDisplayGutter::bounds() const {
 }
 
 void RoundedDisplayGutter::Paint(gfx::Canvas* canvas) const {
-  for (auto& corner : corners_) {
+  for (const auto& corner : corners_) {
     canvas->Save();
     const gfx::Vector2d offset =
         corner.bounds().OffsetFromOrigin() - bounds().OffsetFromOrigin();

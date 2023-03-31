@@ -5,7 +5,6 @@
 #ifndef ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_HOST_H_
 #define ASH_ROUNDED_DISPLAY_ROUNDED_DISPLAY_HOST_H_
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
