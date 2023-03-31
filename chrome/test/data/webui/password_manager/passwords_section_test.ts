@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {AddPasswordDialogElement, AuthTimedOutDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {AddPasswordDialogElement, AuthTimedOutDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, PrefsBrowserProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -12,8 +12,9 @@ import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_prox
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
+import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 /**
  * @param subsection The passwords subsection element that will be checked.
@@ -64,6 +65,7 @@ suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let pluralString: TestPluralStringProxy;
   let syncProxy: TestSyncBrowserProxy;
+  let prefsProxy: TestPrefsBrowserProxy;
 
   async function createPasswordsSection(): Promise<PasswordsSectionElement> {
     const section: PasswordsSectionElement =
@@ -83,6 +85,9 @@ suite('PasswordsSectionTest', function() {
     PluralStringProxyImpl.setInstance(pluralString);
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
+    prefsProxy = new TestPrefsBrowserProxy();
+    PrefsBrowserProxyImpl.setInstance(prefsProxy);
+    prefsProxy.prefs = makePasswordManagerPrefs();
     Router.getInstance().updateRouterParams(new URLSearchParams());
     return flushTasks();
   });
@@ -414,5 +419,34 @@ suite('PasswordsSectionTest', function() {
 
     // Now import passwords option is hidden.
     assertTrue(section.$.importPasswords.hidden);
+  });
+
+  test('add button hidden when pref disabled', async function() {
+    prefsProxy.prefs = [{
+      key: 'credentials_enable_service',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    }];
+
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertFalse(isVisible(section.$.addPasswordButton));
+  });
+
+  test('import hidden when policy disabled', async function() {
+    prefsProxy.prefs = [{
+      key: 'credentials_enable_service',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    }];
+
+    const section = await createPasswordsSection();
+
+    assertFalse(isVisible(section.$.importPasswords));
   });
 });

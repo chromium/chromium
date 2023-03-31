@@ -10,9 +10,11 @@ import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
 import './user_utils_mixin.js';
+import './prefs/pref_mixin.js';
 // <if expr="_google_chrome">
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
+
 // </if>
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -26,6 +28,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
+import {PrefMixin} from './prefs/pref_mixin.js';
 // <if expr="_google_chrome">
 import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 // </if>
@@ -42,7 +45,7 @@ export interface PasswordsSectionElement {
 }
 
 const PasswordsSectionElementBase =
-    UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
+    PrefMixin(UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -97,6 +100,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         value: null,
       },
       // </if>
+
+      passwordManagerDisabled_: {
+        type: Boolean,
+        computed: 'computePasswordManagerDisabled_(pref)',
+      },
     };
   }
 
@@ -109,10 +117,17 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   // <if expr="_google_chrome">
   private promoCard_: PromoCard|null;
   // </if>
+  private passwordManagerDisabled_: boolean;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
   private authTimedOutListener_: (() => void)|null;
+
+  constructor() {
+    super();
+
+    this.prefKey = 'credentials_enable_service';
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -237,7 +252,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private showImportPasswordsOption_(): boolean {
-    if (!this.groups_) {
+    if (!this.groups_ || this.passwordManagerDisabled_) {
       return false;
     }
     return this.groups_.length === 0;
@@ -257,6 +272,15 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.promoCard_ = null;
   }
   // </if>
+
+  private computePasswordManagerDisabled_(): boolean {
+    if (!this.pref) {
+      return true;
+    }
+    return this.pref!.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !this.pref!.value;
+  }
 }
 
 declare global {
