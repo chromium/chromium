@@ -28,6 +28,7 @@ class Browser;
 class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(PermissionPromptBubbleView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionPromptBubbleViewIdentifier);
   PermissionPromptBubbleView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
@@ -75,7 +76,6 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   const UrlIdentity url_identity_;
   const std::u16string accessible_window_title_;
   const std::u16string window_title_;
-  bool should_show_allow_this_time_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_VIEW_H_

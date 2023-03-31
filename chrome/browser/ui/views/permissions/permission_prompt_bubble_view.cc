@@ -14,7 +14,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -185,6 +184,9 @@ absl::optional<std::u16string> GetExtraText(
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+                                      kPermissionPromptBubbleViewIdentifier);
+
 PermissionPromptBubbleView::PermissionPromptBubbleView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
@@ -207,12 +209,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   // as the default action.
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 
-  SetProperty(views::kElementIdentifierKey, kPermissionPromptBubbleElementId);
-
-  should_show_allow_this_time_button_ =
-      GetShowAllowThisTimeButton(*delegate.get());
-
-  if (should_show_allow_this_time_button_) {
+  if (GetShowAllowThisTimeButton(*delegate.get())) {
     // Host every button in the extra_view to have full control over the width
     // of the dialog.
     SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -235,8 +232,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
         base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS));
-    allow_always_button->SetProperty(views::kElementIdentifierKey,
-                                     kPermissionPromptAllowButtonElementId);
 
     auto block_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&PermissionPromptBubbleView::DenyPermission,
@@ -297,6 +292,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extra_text_label->SetMultiLine(true);
   }
+  SetProperty(views::kElementIdentifierKey,
+              kPermissionPromptBubbleViewIdentifier);
 }
 
 PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
@@ -319,11 +316,6 @@ void PermissionPromptBubbleView::Show() {
     widget->ShowInactive();
 
   SizeToContents();
-
-  if (!should_show_allow_this_time_button_) {
-    GetOkButton()->SetProperty(views::kElementIdentifierKey,
-                               kPermissionPromptAllowButtonElementId);
-  }
 }
 
 void PermissionPromptBubbleView::AddRequestLine(

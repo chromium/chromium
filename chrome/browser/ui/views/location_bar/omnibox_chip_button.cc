@@ -7,7 +7,6 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "components/vector_icons/vector_icons.h"
@@ -21,7 +20,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
-#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -49,7 +47,6 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
   constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   animation_->SetSlideDuration(kAnimationDuration);
-  SetProperty(views::kElementIdentifierKey, kPermissionRequestChipElementId);
 
   UpdateIconAndColors();
 }

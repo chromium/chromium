@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -129,8 +128,6 @@ PageInfoMainView::PageInfoMainView(
   permissions_view_ = AddChildView(std::make_unique<views::View>());
   permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-
-  SetProperty(views::kElementIdentifierKey, kPageInfoElementId);
 
   site_settings_view_ = AddChildView(CreateContainerView());
 
@@ -277,8 +274,6 @@ void PageInfoMainView::SetPermissionInfo(
   content_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   content_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
-  content_view->SetProperty(views::kElementIdentifierKey,
-                            kPageInfoPermissionsElementId);
 
   // If there is a permission that supports one time grants, offset all other
   // permissions to align toggles.

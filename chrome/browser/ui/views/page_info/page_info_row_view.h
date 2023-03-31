@@ -49,8 +49,6 @@ class PageInfoRowView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
-  const std::u16string& GetTitleForTesting();
-
  private:
   friend class test::PageInfoBubbleViewTestApi;
 

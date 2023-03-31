@@ -80,8 +80,6 @@ class PageInfoMainView : public views::View,
   // ChosenObjectViewObserver:
   void OnChosenObjectDeleted(const PageInfoUI::ChosenObjectInfo& info) override;
 
-  int GetVisiblePermissionsForTesting() const { return toggle_rows_.size(); }
-
  protected:
   // TODO(olesiamarukhno): Was used for tests, will update it after redesigning
   // moves forward.
