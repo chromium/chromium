@@ -28,12 +28,10 @@ web::WebState* WebOmniboxEditModelDelegateImpl::GetWebState() {
 }
 
 void WebOmniboxEditModelDelegateImpl::OnKillFocus() {
-  // TODO(crbug.com/818648): disable fullscreen in LocationBarMediator.
   [focus_delegate_ omniboxDidResignFirstResponder];
 }
 
 void WebOmniboxEditModelDelegateImpl::OnSetFocus() {
-  // TODO(crbug.com/818648): reenable fullscreen in LocationBarMediator.
   [focus_delegate_ omniboxDidBecomeFirstResponder];
 }
 
