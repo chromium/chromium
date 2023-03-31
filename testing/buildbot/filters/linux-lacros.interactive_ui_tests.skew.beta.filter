@@ -1,0 +1,17 @@
+# This filter is used for version skew testing.
+#
+# If you want to disable a test only for version skew testing,
+# you should add the test here, not in the source code.
+
+# Older versions of ash don't support injecting touch events via weston-test.
+-TabDragging/*/1
+-TabDragging/*/3
+
+# Can be removed when ash >= M110
+-SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
+-TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
+-WidgetInputMethodInteractiveTest.Activation
+-WidgetInputMethodInteractiveTest.OneWindow
+-WidgetInputMethodInteractiveTest.TwoWindows
+-DesktopWindowTreeHostPlatformImplTest.Deactivate
+-ExtensionApiTest.WindowOpenFocus

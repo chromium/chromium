@@ -293,6 +293,11 @@ source_set("interactive_ui_tests_filters") {
   data = [
     "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter",
     "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
+
+    # TODO(crbug.com/1429632): Remove these filters.
+    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.beta.filter",
+    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.dev.filter",
+    "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.stable.filter",
     "//testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter",
     "//testing/buildbot/filters/mac.mac11-arm64-rel.interactive_ui_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter",

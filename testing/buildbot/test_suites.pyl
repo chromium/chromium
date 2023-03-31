@@ -4203,6 +4203,48 @@
       },
     },
 
+    'linux_lacros_chrome_interactive_ui_tests_version_skew_beta': {
+      'interactive_ui_tests version skew beta': {
+        'name': 'interactive_ui_tests',
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.beta.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
+    'linux_lacros_chrome_interactive_ui_tests_version_skew_dev': {
+      'interactive_ui_tests version skew dev': {
+        'name': 'interactive_ui_tests',
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.dev.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
+    'linux_lacros_chrome_interactive_ui_tests_version_skew_stable': {
+      'interactive_ui_tests version skew stable': {
+        'name': 'interactive_ui_tests',
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.stable.filter',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
     'linux_lacros_specific_gtests': {
       'lacros_chrome_unittests': {},
       'ozone_unittests': {},
@@ -7287,8 +7329,20 @@
       'linux_lacros_chrome_interactive_ui_tests_version_skew': {
         'variants': [
           'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
+        ]
+      },
+      'linux_lacros_chrome_interactive_ui_tests_version_skew_beta': {
+        'variants': [
           'LACROS_VERSION_SKEW_BETA',
+        ]
+      },
+      'linux_lacros_chrome_interactive_ui_tests_version_skew_dev': {
+        'variants': [
+          'LACROS_VERSION_SKEW_DEV',
+        ]
+      },
+      'linux_lacros_chrome_interactive_ui_tests_version_skew_stable': {
+        'variants': [
           'LACROS_VERSION_SKEW_STABLE',
         ]
       },
