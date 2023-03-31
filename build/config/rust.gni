@@ -103,10 +103,7 @@ declare_args() {
   # Support for chrome://crash-rust to check crash dump collection works.
   enable_rust_crash = enable_all_rust_features
 
-  # Build the Rust bindgen tool. This requires libclang
-  enable_rust_bindgen = enable_all_rust_features
-
-  # Support for Rust mojo bindings. Needs bindgen.
+  # Support for Rust mojo bindings.
   enable_rust_mojo = enable_all_rust_features
 
   # Support for the 'gnrt' Rust tool.
