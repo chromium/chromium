@@ -1091,8 +1091,6 @@ void HistoryBackend::InitImpl(
   // we only set db_ to the created database if creation is successful. That
   // way other methods won't do anything as db_ is still null.
 
-  TimeTicks beginning_time = TimeTicks::Now();
-
   // Compute the file names.
   history_dir_ = history_database_params.history_dir;
 
@@ -1188,8 +1186,6 @@ void HistoryBackend::InitImpl(
 
   // Start expiring old stuff.
   expirer_.StartExpiringOldStuff(base::Days(kExpireDaysThreshold));
-
-  LOCAL_HISTOGRAM_TIMES("History.InitTime", TimeTicks::Now() - beginning_time);
 }
 
 void HistoryBackend::OnMemoryPressure(
