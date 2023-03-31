@@ -8,86 +8,85 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "components/viz/common/quads/compositor_frame_metadata.h"
-#include "components/viz/common/resources/resource_id.h"
+#include "ash/ash_export.h"
+#include "ash/frame_sink/frame_sink_host.h"
 #include "ui/gfx/canvas.h"
+
+namespace viz {
+class CompositorFrame;
+}  // namespace viz
 
 namespace gfx {
 class GpuMemoryBuffer;
-struct PresentationFeedback;
+class Rect;
 }  // namespace gfx
 
-namespace fast_ink {
+namespace ash {
 
 // FastInkHost is used to support low-latency rendering. It supports
 // 'auto-refresh' mode which provide minimum latency updates for the
 // associated window. 'auto-refresh' mode will take advantage of HW overlays
 // when possible and trigger continuous updates.
-class FastInkHost {
+class ASH_EXPORT FastInkHost : public FrameSinkHost {
  public:
-  // Convert the rect in window's coordinate to the buffer's coordinate.  If the
-  // window is rotated, the damaged_rect will also be rotated, for example. The
-  // size is clamped by |buffer_size| to ensure it does not exceeds the buffer
-  // size.
-  static gfx::Rect BufferRectFromWindowRect(
-      const gfx::Transform& window_to_buffer_transform,
-      const gfx::Size& buffer_size,
-      const gfx::Rect& damage_rect);
+  // Provides flicker free painting to a GPU memory buffer.
+  class ScopedPaint {
+   public:
+    ScopedPaint(const FastInkHost* host,
+                const gfx::Rect& damage_rect_in_window);
 
-  using PresentationCallback =
-      base::RepeatingCallback<void(const gfx::PresentationFeedback&)>;
+    ScopedPaint(const ScopedPaint&) = delete;
+    ScopedPaint& operator=(const ScopedPaint&) = delete;
 
-  // Creates a FastInkView.
-  FastInkHost(aura::Window* host_window,
-              const PresentationCallback& presentation_callback);
-  ~FastInkHost();
+    ~ScopedPaint();
+
+    gfx::Canvas& canvas() { return canvas_; }
+
+   private:
+    gfx::GpuMemoryBuffer* gpu_memory_buffer_;
+
+    // Damage rect in the buffer coordinates.
+    const gfx::Rect damage_rect_;
+    gfx::Canvas canvas_;
+  };
+
+  FastInkHost();
+
   FastInkHost(const FastInkHost&) = delete;
   FastInkHost& operator=(const FastInkHost&) = delete;
 
-  // Update content and damage rectangles for surface. |auto_refresh| should
-  // be set to true if continuous updates are expected within content rectangle.
-  void UpdateSurface(const gfx::Rect& content_rect,
-                     const gfx::Rect& damage_rect,
-                     bool auto_refresh);
+  ~FastInkHost() override;
 
-  aura::Window* host_window() { return host_window_; }
+  std::unique_ptr<FastInkHost::ScopedPaint> CreateScopedPaint(
+      const gfx::Rect& damage_rect_in_window) const;
+
   const gfx::Transform& window_to_buffer_transform() const {
     return window_to_buffer_transform_;
   }
-  gfx::GpuMemoryBuffer* gpu_memory_buffer() { return gpu_memory_buffer_.get(); }
+
+  // FrameSinkHost:
+  void Init(aura::Window* host_window) override;
+  void InitForTesting(
+      aura::Window* host_window,
+      std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) override;
+
+ protected:
+  // FrameSinkHost:
+  std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
+      const viz::BeginFrameAck& begin_frame_ack,
+      UiResourceManager& resource_manager,
+      bool auto_update,
+      const gfx::Size& last_submitted_frame_size,
+      float last_submitted_frame_dsf) override;
 
  private:
-  class LayerTreeFrameSinkHolder;
-  struct Resource;
+  void InitializeFastInkBuffer(aura::Window* host_window);
 
-  void SubmitCompositorFrame();
-  void SubmitPendingCompositorFrame();
-  void ReclaimResource(std::unique_ptr<Resource> resource);
-  void DidReceiveCompositorFrameAck();
-  void DidPresentCompositorFrame(const gfx::PresentationFeedback& feedback);
-
-  aura::Window* host_window_;
-  const PresentationCallback presentation_callback_;
-  gfx::Transform window_to_buffer_transform_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-  // The size of |gpu_memory_buffer_|.
-  gfx::Size buffer_size_;
-  // The bounds of the content to be pushed in window coordinates.
-  gfx::Rect content_rect_;
-  // The damage rect in window coordinates.
-  gfx::Rect damage_rect_;
-  // When true it keeps pushing entire buffer with hw overlay option.
-  bool auto_refresh_ = false;
-  bool pending_compositor_frame_ = false;
-  bool pending_compositor_frame_ack_ = false;
-  viz::ResourceIdGenerator id_generator_;
-  // Cached resources that can be reused.
-  std::vector<std::unique_ptr<Resource>> returned_resources_;
-  std::unique_ptr<LayerTreeFrameSinkHolder> frame_sink_holder_;
-  base::WeakPtrFactory<FastInkHost> weak_ptr_factory_{this};
+
+  gfx::Transform window_to_buffer_transform_;
 };
 
-}  // namespace fast_ink
+}  // namespace ash
 
 #endif  // ASH_FAST_INK_FAST_INK_HOST_H_
