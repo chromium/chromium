@@ -120,7 +120,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 #if !BUILDFLAG(IS_ANDROID)
     dialog_model()->StartFlow(
         AuthenticatorRequestDialogModel::TransportAvailabilityInfo(),
-        /*is_conditional_mediation=*/true, /*prefer_native_api=*/false);
+        /*is_conditional_mediation=*/true);
     dialog_model()->ReplaceCredListForTesting(std::move(creds));
 #else
     delegate_->OnWebAuthnRequestPending(

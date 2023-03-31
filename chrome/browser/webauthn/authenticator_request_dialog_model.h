@@ -297,15 +297,9 @@ class AuthenticatorRequestDialogModel {
   // If |is_conditional_mediation| is true, credentials will be shown on the
   // password autofill instead of the full-blown page-modal UI.
   //
-  // |prefer_native_api| indicates that the UI should jump directly to the
-  // system WebAuthn UI if there's no better option. This is currently only
-  // meaningful on Windows, but the parameter exists on all platforms to avoid
-  // too much #ifdef soup.
-  //
   // Valid action when at step: kNotStarted.
-  void StartFlow(TransportAvailabilityInfo transport_availability,
-                 bool is_conditional_mediation,
-                 bool prefer_native_api);
+  void StartFlow(TransportAvailabilityInfo trasport_availability,
+                 bool is_conditional_mediation);
 
   // Restarts the UX flow.
   void StartOver();
@@ -687,12 +681,7 @@ class AuthenticatorRequestDialogModel {
   void ContactNextPhoneByName(const std::string& name);
 
   // PopulateMechanisms fills in |mechanisms_|.
-  //
-  // |prefer_native_api| indicates that the UI should jump directly to the
-  // system WebAuthn UI if there's no better option. This is currently only
-  // meaningful on Windows, but the parameter exists on all platforms to avoid
-  // too much #ifdef soup.
-  void PopulateMechanisms(bool prefer_native_api);
+  void PopulateMechanisms();
 
   // IndexOfPriorityMechanism returns the index, in |mechanisms_|, of the
   // Mechanism that should be triggered immediately, if any.

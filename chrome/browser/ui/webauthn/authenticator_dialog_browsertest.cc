@@ -320,8 +320,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
 #endif
 
     model_->StartFlow(std::move(transport_availability),
-                      /*is_conditional_mediation=*/false,
-                      /*prefer_native_api=*/false);
+                      /*is_conditional_mediation=*/false);
   }
 
  private:

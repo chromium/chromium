@@ -86,10 +86,6 @@ class ChromeWebAuthenticationDelegate
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
 #endif
-#if BUILDFLAG(IS_WIN)
-  void OperationSucceeded(content::BrowserContext* browser_context,
-                          bool used_win_api) override;
-#endif
 #if BUILDFLAG(IS_MAC)
   absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       content::BrowserContext* browser_context) override;

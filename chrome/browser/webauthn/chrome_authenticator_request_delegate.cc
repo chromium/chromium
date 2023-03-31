@@ -111,14 +111,6 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
       });
 }
 
-#if BUILDFLAG(IS_WIN)
-// kWebAuthnLastOperationWasNativeAPI is a boolean preference that records
-// whether the last successful operation used the Windows native API. If so
-// then we'll try and jump directly to it next time.
-const char kWebAuthnLastOperationWasNativeAPI[] =
-    "webauthn.last_op_used_native_api";
-#endif
-
 #if BUILDFLAG(IS_MAC)
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
@@ -310,23 +302,6 @@ bool ChromeWebAuthenticationDelegate::IsFocused(
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
-#if BUILDFLAG(IS_WIN)
-void ChromeWebAuthenticationDelegate::OperationSucceeded(
-    content::BrowserContext* browser_context,
-    bool used_win_api) {
-  // If a registration or assertion operation was successful, record whether the
-  // Windows native API was used for it. If so we'll jump directly to the native
-  // UI for the next operation.
-  Profile* const profile = Profile::FromBrowserContext(browser_context);
-  if (profile->IsOffTheRecord()) {
-    return;
-  }
-
-  profile->GetPrefs()->SetBoolean(kWebAuthnLastOperationWasNativeAPI,
-                                  used_win_api);
-}
-#endif
-
 absl::optional<bool> ChromeWebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         content::RenderFrameHost* render_frame_host) {
@@ -413,7 +388,6 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kSecurityKeyPermitAttestation);
 #if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(kWebAuthnLastOperationWasNativeAPI, false);
   LocalCredentialManagementWin::RegisterProfilePrefs(registry);
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -789,19 +763,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  bool jump_to_native_ui = false;
-#if BUILDFLAG(IS_WIN)
-  // Conditional requests always show the Chrome UI first because the UI is
-  // triggered from "Use passkey from another device" in autofill, and it would
-  // be confusing if the caBLE option wasn't presented after that.
-  if (!is_conditional_) {
-    PrefService* const prefs =
-        user_prefs::UserPrefs::Get(GetRenderFrameHost()->GetBrowserContext());
-    jump_to_native_ui = prefs->GetBoolean(kWebAuthnLastOperationWasNativeAPI);
-  }
-#endif
-
-  dialog_model_->StartFlow(std::move(data), is_conditional_, jump_to_native_ui);
+  dialog_model_->StartFlow(std::move(data), is_conditional_);
 
   if (g_observer) {
     g_observer->UIShown(this);

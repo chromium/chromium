@@ -551,7 +551,7 @@ void GetAssertionRequestHandler::AuthenticatorRemoved(
       state_ = State::kFinished;
       std::move(completion_callback_)
           .Run(GetAssertionStatus::kAuthenticatorRemovedDuringPINEntry,
-               absl::nullopt, nullptr);
+               absl::nullopt);
     }
   }
 }
@@ -640,7 +640,7 @@ void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
   DCHECK_EQ(selected_authenticator_for_pin_uv_auth_token_, authenticator);
   if (error) {
     state_ = State::kFinished;
-    std::move(completion_callback_).Run(*error, absl::nullopt, authenticator);
+    std::move(completion_callback_).Run(*error, absl::nullopt);
     return;
   }
 
@@ -696,21 +696,20 @@ void GetAssertionRequestHandler::HandleResponse(
     if (status != CtapDeviceResponseCode::kSuccess) {
       std::move(completion_callback_)
           .Run(WinCtapDeviceResponseCodeToGetAssertionStatus(status),
-               absl::nullopt, authenticator);
+               absl::nullopt);
       return;
     }
     if (!ResponseValid(*authenticator, request, options_, responses)) {
       FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                       << authenticator->GetDisplayName();
       std::move(completion_callback_)
-          .Run(GetAssertionStatus::kWinNotAllowedError, absl::nullopt,
-               authenticator);
+          .Run(GetAssertionStatus::kWinNotAllowedError, absl::nullopt);
       return;
     }
 
     std::move(completion_callback_)
         .Run(WinCtapDeviceResponseCodeToGetAssertionStatus(status),
-             std::move(responses), authenticator);
+             std::move(responses));
     return;
   }
 #endif
@@ -746,8 +745,8 @@ void GetAssertionRequestHandler::HandleResponse(
   if (!maybe_result) {
     if (state_ == State::kWaitingForResponseWithToken) {
       std::move(completion_callback_)
-          .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt,
-               authenticator);
+          .Run(GetAssertionStatus::kAuthenticatorResponseInvalid,
+               absl::nullopt);
     } else {
       FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                       << " from " << authenticator->GetDisplayName();
@@ -762,8 +761,7 @@ void GetAssertionRequestHandler::HandleResponse(
     FIDO_LOG(ERROR) << "Failing assertion request due to status "
                     << static_cast<int>(status) << " from "
                     << authenticator->GetDisplayName();
-    std::move(completion_callback_)
-        .Run(*maybe_result, absl::nullopt, authenticator);
+    std::move(completion_callback_).Run(*maybe_result, absl::nullopt);
     return;
   }
 
@@ -771,8 +769,7 @@ void GetAssertionRequestHandler::HandleResponse(
     FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                     << authenticator->GetDisplayName();
     std::move(completion_callback_)
-        .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt,
-             authenticator);
+        .Run(GetAssertionStatus::kAuthenticatorResponseInvalid, absl::nullopt);
     return;
   }
 
@@ -788,7 +785,7 @@ void GetAssertionRequestHandler::HandleResponse(
 
   ReportGetAssertionResponseTransport(authenticator);
   std::move(completion_callback_)
-      .Run(GetAssertionStatus::kSuccess, std::move(responses), authenticator);
+      .Run(GetAssertionStatus::kSuccess, std::move(responses));
 }
 
 void GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch(
@@ -800,7 +797,7 @@ void GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch(
   CancelActiveAuthenticators(authenticator->GetId());
   std::move(completion_callback_)
       .Run(GetAssertionStatus::kAuthenticatorMissingUserVerification,
-           absl::nullopt, nullptr);
+           absl::nullopt);
 }
 
 void GetAssertionRequestHandler::DispatchRequestWithToken(

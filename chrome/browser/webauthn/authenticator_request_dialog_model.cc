@@ -196,8 +196,7 @@ void AuthenticatorRequestDialogModel::HideDialog() {
 
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
-    bool use_conditional_mediation,
-    bool prefer_native_api) {
+    bool use_conditional_mediation) {
   DCHECK(!started_);
   DCHECK_EQ(current_step(), Step::kNotStarted);
 
@@ -205,7 +204,7 @@ void AuthenticatorRequestDialogModel::StartFlow(
   transport_availability_ = std::move(transport_availability);
   use_conditional_mediation_ = use_conditional_mediation;
 
-  PopulateMechanisms(prefer_native_api);
+  PopulateMechanisms();
   if (base::FeatureList::IsEnabled(device::kWebAuthnNewPrioritiesImpl)) {
     priority_mechanism_index_ = IndexOfPriorityMechanism();
   } else {
@@ -1093,8 +1092,7 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
   DCHECK(found_name);
 }
 
-void AuthenticatorRequestDialogModel::PopulateMechanisms(
-    bool prefer_native_api) {
+void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
   const bool is_passkey_request =

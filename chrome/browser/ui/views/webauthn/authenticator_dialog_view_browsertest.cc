@@ -118,8 +118,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
     if (name == "default") {
       dialog_model_->StartFlow(
           device::FidoRequestHandlerBase::TransportAvailabilityInfo(),
-          /*use_location_bar_bubble=*/false,
-          /*prefer_native_api=*/false);
+          /*is_conditional_mediation=*/false);
       dialog_model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kTimedOut);
       content::WebContents* const web_contents =
@@ -147,8 +146,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
           /*paired_phones=*/{phone},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       dialog_model_->StartFlow(std::move(transport_availability),
-                               /*use_location_bar_bubble=*/false,
-                               /*prefer_native_api=*/false);
+                               /*is_conditional_mediation=*/false);
 
       // The dialog is owned by the Views hierarchy so this is a non-owning
       // pointer.

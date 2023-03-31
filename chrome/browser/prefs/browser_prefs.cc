@@ -833,6 +833,12 @@ const char kDarkLightModeNudgeLeftToShowCount[] =
     "ash.dark_light_mode.educational_nudge";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 03/2023.
+#if BUILDFLAG(IS_WIN)
+const char kWebAuthnLastOperationWasNativeAPI[] =
+    "webauthn.last_op_used_native_api";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1132,6 +1138,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kDarkLightModeNudgeLeftToShowCount,
                                 ash::kDarkLightModeNudgeMaxShownCount);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 03/2023.
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(kWebAuthnLastOperationWasNativeAPI, false);
+#endif
 }
 
 }  // namespace
@@ -2191,6 +2202,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kDarkLightModeNudgeLeftToShowCount);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 03/2023.
+#if BUILDFLAG(IS_WIN)
+  profile_prefs->ClearPref(kWebAuthnLastOperationWasNativeAPI);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

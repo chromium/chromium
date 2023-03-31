@@ -149,8 +149,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void OnSignResponse(
       device::GetAssertionStatus status_code,
       absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
-          response_data,
-      const device::FidoAuthenticator* authenticator);
+          response_data);
 
   // Begins a timeout at the beginning of a request.
   void BeginRequestTimeout(absl::optional<base::TimeDelta> timeout);

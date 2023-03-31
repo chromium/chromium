@@ -1336,12 +1336,6 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
 
-#if BUILDFLAG(IS_WIN)
-      GetWebAuthenticationDelegate()->OperationSucceeded(
-          GetBrowserContext(),
-          authenticator->GetType() == device::AuthenticatorType::kWinNative);
-#endif
-
       absl::optional<device::FidoTransportProtocol> transport =
           authenticator->AuthenticatorTransport();
       bool is_transport_used_internal = false;
@@ -1485,8 +1479,7 @@ void AuthenticatorCommonImpl::OnRegisterResponseAttestationDecided(
 void AuthenticatorCommonImpl::OnSignResponse(
     device::GetAssertionStatus status_code,
     absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
-        response_data,
-    const device::FidoAuthenticator* authenticator) {
+        response_data) {
   DCHECK(!response_data || !response_data->empty());  // empty vector is invalid
   if (!request_handler_) {
     // Either the callback was called immediately and |request_handler_| has not
@@ -1555,13 +1548,6 @@ void AuthenticatorCommonImpl::OnSignResponse(
 
   DCHECK_EQ(status_code, device::GetAssertionStatus::kSuccess);
   DCHECK(response_data.has_value());
-  DCHECK(authenticator);
-
-#if BUILDFLAG(IS_WIN)
-  GetWebAuthenticationDelegate()->OperationSucceeded(
-      GetBrowserContext(),
-      authenticator->GetType() == device::AuthenticatorType::kWinNative);
-#endif
 
   // Show an account picker for discoverable credential requests (empty allow
   // lists). Responses with a single credential are considered pre-selected if

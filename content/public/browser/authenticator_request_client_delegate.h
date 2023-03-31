@@ -138,15 +138,6 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       const url::Origin& caller_origin);
 #endif  // !IS_ANDROID
 
-#if BUILDFLAG(IS_WIN)
-  // OperationSucceeded is called when a registration or assertion operation
-  // succeeded. It communicates whether the Windows API was used or not. The
-  // implementation may wish to use this information to guide the UI for future
-  // operations towards the types of security keys that the user tends to use.
-  virtual void OperationSucceeded(BrowserContext* browser_context,
-                                  bool used_win_api);
-#endif
-
 #if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
 
