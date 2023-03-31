@@ -112,6 +112,10 @@
     top: 0;
   }
 
+  :host-context([chrome-refresh-2023]) #addProfileButtonLabel {
+    left: 0;
+  }
+
   iron-icon[icon='profiles:add'] {
     --iron-icon-height: var(--profile-card-avatar-icon-size);
     --iron-icon-width: var(--profile-card-avatar-icon-size);
@@ -121,10 +125,13 @@
 
   #browseAsGuestButton {
     margin-inline-start: var(--footer-spacing);
+    padding: 8px 16px;
   }
 
   #browseAsGuestButton > iron-icon {
-    margin-inline-end: 8px;
+    margin-inline-end: 0;
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
   }
 
   cr-checkbox {
@@ -193,8 +200,8 @@
 </div>
 <div class="footer">
   <cr-button id="browseAsGuestButton" on-click="onLaunchGuestProfileClick_">
-    <iron-icon icon="profiles:account-circle"></iron-icon>
-    <div>$i18n{browseAsGuestButton}</div>
+    <iron-icon icon="profiles:account-circle" slot="prefix-icon"></iron-icon>
+    $i18n{browseAsGuestButton}
   </cr-button>
   <cr-checkbox id="askOnStartup" checked="{{askOnStartup_}}"
       on-change="onAskOnStartupChangedByUser_" hidden$="[[hideAskOnStartup_]]">
