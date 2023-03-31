@@ -64027,7 +64027,6 @@ from previous Chrome versions.
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>
   <int value="1255967063" label="IsolatedSandboxedIframesName:enabled"/>
-  <int value="1257066395" label="EnableSavedDesks:disabled"/>
   <int value="1257482622" label="PageAlmostIdle:enabled"/>
   <int value="1257533754" label="UseDownloadOfflineContentProvider:disabled"/>
   <int value="1257663962" label="CommercePriceTracking:disabled"/>
@@ -64626,7 +64625,6 @@ from previous Chrome versions.
   <int value="1594993731" label="BluetoothRevamp:enabled"/>
   <int value="1595208893" label="AudioWorkletRealtimeThread:enabled"/>
   <int value="1595796800" label="CameraAppLowStorageWarning:disabled"/>
-  <int value="1596407332" label="EnableSavedDesks:enabled"/>
   <int value="1596615083"
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>

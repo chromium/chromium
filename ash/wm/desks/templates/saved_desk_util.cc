@@ -56,17 +56,9 @@ bool AreDesksTemplatesEnabled() {
   return features::AreDesksTemplatesEnabled();
 }
 
-bool IsDeskSaveAndRecallEnabled() {
-  if (IsGuestSession())
-    return false;
-
-  return features::IsSavedDesksEnabled();
-}
-
 bool IsSavedDesksEnabled() {
-  return AreDesksTemplatesEnabled() || IsDeskSaveAndRecallEnabled();
+  return !IsGuestSession();
 }
-
 SavedDeskDialogController* GetSavedDeskDialogController() {
   auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession())

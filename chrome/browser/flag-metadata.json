@@ -2180,11 +2180,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-desks-save-and-recall",
-    "owners": [ "dandersson", "yongshun", "janetmac" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-desks-templates",
     "owners": [ "dandersson", "janetmac", "richui", "yongshun" ],
     "expiry_milestone": 120

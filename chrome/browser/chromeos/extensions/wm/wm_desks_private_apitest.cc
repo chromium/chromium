@@ -20,8 +20,7 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
  public:
   WmDesksPrivateApiTest() {
     scoped_feature_list.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kEnableSavedDesks,
-                              ash::features::kDesksTemplates},
+        /*enabled_features=*/{ash::features::kDesksTemplates},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
 

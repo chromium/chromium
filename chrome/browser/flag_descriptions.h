@@ -2937,9 +2937,6 @@ extern const char kDeskButtonDescription[];
 extern const char kDesks16Name[];
 extern const char kDesks16Description[];
 
-extern const char kDesksSaveAndRecallName[];
-extern const char kDesksSaveAndRecallDescription[];
-
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 

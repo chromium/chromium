@@ -429,8 +429,7 @@ class SavedDeskTest : public OverviewTestBase {
 
   // OverviewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesksTemplates, features::kEnableSavedDesks}, {});
+    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates}, {});
     OverviewTestBase::SetUp();
 
     // The `FullRestoreSaveHandler` isn't setup during tests so every window we

@@ -259,24 +259,15 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
   active_profile_ = profile;
   DCHECK(active_profile_);
 
-  if (ash::features::IsSavedDesksEnabled()) {
-    save_and_recall_desks_storage_manager_ =
-        std::make_unique<desks_storage::LocalDeskDataManager>(
-            active_profile_->GetPath(), account_id);
+  save_and_recall_desks_storage_manager_ =
+      std::make_unique<desks_storage::LocalDeskDataManager>(
+          active_profile_->GetPath(), account_id);
 
-    if (ash::saved_desk_util::AreDesksTemplatesEnabled() &&
-        ash::features::IsDeskTemplateSyncEnabled()) {
-      saved_desk_storage_manager_ =
-          std::make_unique<desks_storage::DeskModelWrapper>(
-              save_and_recall_desks_storage_manager_.get());
-    }
-
-  } else {
-    if (!ash::features::IsDeskTemplateSyncEnabled()) {
-      desk_templates_storage_manager_ =
-          std::make_unique<desks_storage::LocalDeskDataManager>(
-              active_profile_->GetPath(), account_id);
-    }
+  if (ash::saved_desk_util::AreDesksTemplatesEnabled() &&
+      ash::features::IsDeskTemplateSyncEnabled()) {
+    saved_desk_storage_manager_ =
+        std::make_unique<desks_storage::DeskModelWrapper>(
+            save_and_recall_desks_storage_manager_.get());
   }
 
   auto policy_desk_templates_it =
@@ -508,27 +499,17 @@ void DesksClient::LaunchAppsFromTemplate(
 }
 
 desks_storage::DeskModel* DesksClient::GetDeskModel() {
-  if (ash::features::IsSavedDesksEnabled()) {
-    if (!ash::saved_desk_util::AreDesksTemplatesEnabled() ||
-        !ash::features::IsDeskTemplateSyncEnabled()) {
-      DCHECK(save_and_recall_desks_storage_manager_.get());
-      return save_and_recall_desks_storage_manager_.get();
-    }
+  if (!ash::saved_desk_util::AreDesksTemplatesEnabled() ||
+      !ash::features::IsDeskTemplateSyncEnabled()) {
+    DCHECK(save_and_recall_desks_storage_manager_.get());
+    return save_and_recall_desks_storage_manager_.get();
+  }
     DCHECK(saved_desk_storage_manager_);
     saved_desk_storage_manager_->SetDeskSyncBridge(
         static_cast<desks_storage::DeskSyncBridge*>(
             DeskSyncServiceFactory::GetForProfile(active_profile_)
                 ->GetDeskModel()));
     return saved_desk_storage_manager_.get();
-  } else {
-    if (ash::features::IsDeskTemplateSyncEnabled()) {
-      return DeskSyncServiceFactory::GetForProfile(active_profile_)
-          ->GetDeskModel();
-    }
-
-    DCHECK(desk_templates_storage_manager_.get());
-    return desk_templates_storage_manager_.get();
-  }
 }
 
 // Sets the preconfigured desk template. Data contains the contents of the JSON

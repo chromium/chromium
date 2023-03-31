@@ -9110,12 +9110,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-desks-save-and-recall", flag_descriptions::kDesksSaveAndRecallName,
-     flag_descriptions::kDesksSaveAndRecallDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableSavedDesks)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
     {"safe-mode-for-cached-flags",
      flag_descriptions::kSafeModeForCachedFlagsName,

@@ -701,10 +701,6 @@ BASE_FEATURE(kEnableSamlNotificationOnPasswordChangeSuccess,
              "EnableSamlNotificationOnPasswordChangeSuccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableSavedDesks,
-             "EnableSavedDesks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 BASE_FEATURE(kEnableAllSystemWebApps,
@@ -3183,10 +3179,6 @@ bool IsSameAppWindowCycleEnabled() {
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
   return base::FeatureList::IsEnabled(
       kEnableSamlNotificationOnPasswordChangeSuccess);
-}
-
-bool IsSavedDesksEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSavedDesks);
 }
 
 bool IsSeparateNetworkIconsEnabled() {

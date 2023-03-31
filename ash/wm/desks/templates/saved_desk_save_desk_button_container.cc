@@ -158,7 +158,7 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
             &kSaveDeskAsTemplateIcon));
   }
 
-  if (saved_desk_util::IsDeskSaveAndRecallEnabled()) {
+  if (saved_desk_util::IsSavedDesksEnabled()) {
     save_desk_for_later_button_ =
         AddChildView(std::make_unique<SavedDeskSaveDeskButton>(
             save_for_later_callback,

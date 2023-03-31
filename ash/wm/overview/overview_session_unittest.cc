@@ -3038,8 +3038,9 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   // flip for Save & Recall has truly landed, remove the `NoSavedDesks` variant
   // of this test below and remove the Save & Recall feature check at the start
   // of this test.
-  if (GetParam() || !saved_desk_util::IsDeskSaveAndRecallEnabled())
+  if (GetParam() || !saved_desk_util::IsSavedDesksEnabled()) {
     return;
+  }
 
   auto window3 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));
@@ -3090,8 +3091,9 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
 TEST_P(OverviewSessionTest, AccessibilityFocusAnnotatorNoSavedDesks) {
   // If saved desk is enabled, the a11y order changes. This is tested in
   // the saved desk test suite.
-  if (GetParam() || saved_desk_util::IsDeskSaveAndRecallEnabled())
+  if (GetParam() || saved_desk_util::IsSavedDesksEnabled()) {
     return;
+  }
 
   auto window3 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));

@@ -5112,11 +5112,6 @@ extern const char kDesks16Name[] = "Enable up to 16 virtual desks";
 extern const char kDesks16Description[] =
     "When enabled, up to 16 virtual desks are allowed.";
 
-const char kDesksSaveAndRecallName[] = "Desks Save and Recall";
-const char kDesksSaveAndRecallDescription[] =
-    "Save a desk and its applications so that they can be recalled at a later "
-    "time.";
-
 const char kDesksTemplatesName[] = "Desk Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

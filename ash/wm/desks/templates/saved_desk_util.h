@@ -22,8 +22,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 ASH_EXPORT bool AreDesksTemplatesEnabled();
 
-ASH_EXPORT bool IsDeskSaveAndRecallEnabled();
-
 ASH_EXPORT bool IsSavedDesksEnabled();
 
 // Will return null if overview mode is not active.
