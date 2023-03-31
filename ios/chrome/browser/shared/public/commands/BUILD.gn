@@ -27,6 +27,8 @@ source_set("commands") {
     "load_query_commands.h",
     "new_tab_page_commands.h",
     "omnibox_commands.h",
+    "open_lens_input_selection_command.h",
+    "open_lens_input_selection_command.mm",
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
     "page_info_commands.h",

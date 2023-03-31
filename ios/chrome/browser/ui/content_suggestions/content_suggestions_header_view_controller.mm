@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -438,7 +439,12 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 - (void)openLens {
   base::RecordAction(
       UserMetricsAction("Mobile.LensIOS.NewTabPageEntrypointTapped"));
-  [self.dispatcher openInputSelectionForEntrypoint:LensEntrypoint::NewTabPage];
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::NewTabPage
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self.dispatcher openLensInputSelection:command];
 }
 
 - (void)loadVoiceSearch:(id)sender {
