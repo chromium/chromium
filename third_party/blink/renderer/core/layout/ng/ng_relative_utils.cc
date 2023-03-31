@@ -95,25 +95,8 @@ LogicalOffset ComputeRelativeOffsetForBoxFragment(
   const auto& child_style = fragment.Style();
   DCHECK_EQ(child_style.GetPosition(), EPosition::kRelative);
 
-  LogicalOffset relative_offset = ComputeRelativeOffset(
-      child_style, container_writing_direction, available_size);
-
-  const auto* block_flow =
-      DynamicTo<LayoutBlockFlow>(fragment.GetLayoutObject());
-  if (!block_flow)
-    return relative_offset;
-
-  // We may be within a split-inline. This isn't ideal, but we need to walk up
-  // our inline ancestor chain applying any relative offsets.
-  for (const LayoutObject* layout_object =
-           block_flow->InlineElementContinuation();
-       layout_object && layout_object->IsLayoutInline();
-       layout_object = layout_object->Parent()) {
-    relative_offset += ComputeRelativeOffset(
-        layout_object->StyleRef(), container_writing_direction, available_size);
-  }
-
-  return relative_offset;
+  return ComputeRelativeOffset(child_style, container_writing_direction,
+                               available_size);
 }
 
 LogicalOffset ComputeRelativeOffsetForInline(const NGConstraintSpace& space,

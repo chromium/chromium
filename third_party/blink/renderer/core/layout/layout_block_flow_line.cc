@@ -1900,11 +1900,6 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
   max_logical_width = std::max(max_logical_width, inline_max);
 }
 
-static bool IsInlineWithOutlineAndContinuation(const LayoutObject& o) {
-  return o.IsLayoutInline() && o.StyleRef().HasOutline() &&
-         !o.IsElementContinuation() && To<LayoutInline>(o).Continuation();
-}
-
 bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
   NOT_DESTROYED();
   const LayoutObject* object_to_check = this;
@@ -2004,9 +1999,6 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
         }
         o->ClearNeedsLayout();
       }
-
-      if (IsInlineWithOutlineAndContinuation(*o))
-        SetContainsInlineWithOutlineAndContinuation(true);
     }
 
     // Now all |DirtyLineBoxesForObject()| is done. We can safely start
@@ -2406,32 +2398,6 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
       AddContentsVisualOverflow(visual_overflow);
     }
   }
-
-  if (!ContainsInlineWithOutlineAndContinuation())
-    return;
-
-  // Add outline rects of continuations of descendant inlines into visual
-  // overflow of this block.
-  PhysicalRect outline_bounds_of_all_continuations;
-  for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
-       walker.Advance()) {
-    const LayoutObject& o = *walker.Current().GetLayoutObject();
-    if (!IsInlineWithOutlineAndContinuation(o))
-      continue;
-
-    const ComputedStyle& style = o.StyleRef();
-    Vector<PhysicalRect> outline_rects;
-    To<LayoutInline>(o).AddOutlineRectsForContinuations(
-        outline_rects, PhysicalOffset(),
-        style.OutlineRectsShouldIncludeBlockVisualOverflow());
-    if (!outline_rects.empty()) {
-      PhysicalRect outline_bounds = UnionRect(outline_rects);
-      outline_bounds.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(
-          style, OutlineInfo::GetFromStyle(style))));
-      outline_bounds_of_all_continuations.Unite(outline_bounds);
-    }
-  }
-  AddContentsVisualOverflow(outline_bounds_of_all_continuations);
 }
 
 void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {

@@ -411,15 +411,15 @@ void InlineFlowBox::DetermineSpacingForFlowBoxes(
         include_left_edge = include_right_edge = true;
       } else if (ltr) {
         if (!NextForSameLayoutObject() &&
-            ((last_line || is_last_object_on_line) &&
-             !inline_flow.Continuation()))
+            ((last_line || is_last_object_on_line))) {
           include_right_edge = true;
+        }
       } else {
         if ((!PrevForSameLayoutObject() ||
              PrevForSameLayoutObject()->IsConstructed()) &&
-            ((last_line || is_last_object_on_line) &&
-             !inline_flow.Continuation()))
+            ((last_line || is_last_object_on_line))) {
           include_left_edge = true;
+        }
       }
     }
   }

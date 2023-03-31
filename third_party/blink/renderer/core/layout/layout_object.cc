@@ -740,30 +740,6 @@ LayoutObject* LayoutObject::NextInPreOrder() const {
   return NextInPreOrderAfterChildren();
 }
 
-bool LayoutObject::IsForElement() const {
-  if (!IsAnonymous()) {
-    return true;
-  }
-
-  // When a block is inside of an inline, the part of the inline that
-  // wraps the block is represented in the layout tree by a block that
-  // is marked as anonymous, but has a continuation that's not
-  // anonymous.
-
-  if (!IsBox()) {
-    return false;
-  }
-
-  auto* continuation = To<LayoutBox>(this)->Continuation();
-  if (!continuation || continuation->IsAnonymous()) {
-    return false;
-  }
-
-  DCHECK(continuation->IsInline());
-  DCHECK(IsLayoutBlockFlow());
-  return true;
-}
-
 bool LayoutObject::HasClipRelatedProperty() const {
   NOT_DESTROYED();
   // This function detects a bunch of properties that can potentially affect
@@ -1727,8 +1703,9 @@ LayoutObject* LayoutObject::NonAnonymousAncestor() const {
 LayoutObject* LayoutObject::NearestAncestorForElement() const {
   NOT_DESTROYED();
   LayoutObject* ancestor = Parent();
-  while (ancestor && !ancestor->IsForElement())
+  while (ancestor && ancestor->IsAnonymous()) {
     ancestor = ancestor->Parent();
+  }
   return ancestor;
 }
 
@@ -2299,9 +2276,6 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
         " \"%s\" ", To<LayoutText>(this)->GetText().Ascii().c_str());
   }
 
-  if (VirtualContinuation())
-    string_builder.AppendFormat(" continuation=%p", VirtualContinuation());
-
   if (GetNode()) {
     while (string_builder.length() < show_tree_character_offset)
       string_builder.Append(' ');
@@ -2381,31 +2355,6 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
   }
   NOTREACHED();
   return StyleRef();
-}
-
-const ComputedStyle* LayoutObject::SlowStyleForContinuationOutline() const {
-  NOT_DESTROYED();
-  // Fail fast using bitfields is done in |StyleForContinuationOutline|.
-  DCHECK(IsAnonymous() && !IsInline());
-  const auto* block_flow = DynamicTo<LayoutBlockFlow>(this);
-  if (!block_flow)
-    return nullptr;
-
-  // Check ancestors of the continuation in case nested inline boxes; e.g.
-  // <span style="outline: auto">
-  //   <span>
-  //     <div>block</div>
-  //   </span>
-  // </span>
-  for (const LayoutObject* continuation = block_flow->Continuation();
-       UNLIKELY(continuation && continuation->IsLayoutInline());
-       continuation = continuation->Parent()) {
-    const ComputedStyle& style = continuation->StyleRef();
-    if (style.OutlineStyleIsAuto() &&
-        NGOutlineUtils::HasPaintedOutline(style, continuation->GetNode()))
-      return &style;
-  }
-  return nullptr;
 }
 
 // Called when an object that was floating or positioned becomes a normal flow
@@ -3937,13 +3886,6 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
   for (; destroy_root_parent && destroy_root_parent->IsAnonymous();
        destroy_root = destroy_root_parent,
        destroy_root_parent = destroy_root_parent->Parent()) {
-    // Anonymous block continuations are tracked and destroyed elsewhere (see
-    // the bottom of LayoutBlockFlow::RemoveChild)
-    auto* destroy_root_parent_block =
-        DynamicTo<LayoutBlockFlow>(destroy_root_parent);
-    if (destroy_root_parent_block &&
-        destroy_root_parent_block->IsAnonymousBlockContinuation())
-      break;
     // A flow thread is tracked by its containing block. Whether its children
     // are removed or not is irrelevant.
     if (destroy_root_parent->IsLayoutFlowThread())
@@ -3966,6 +3908,7 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     if (destroy_root->PreviousSibling())
       break;
     if (const LayoutObject* sibling = destroy_root->NextSibling()) {
+      // TODO(ikilpatrick): Delete this branch - logic unreachable.
       if (destroy_root->GetNode()) {
         // When there are inline continuations, there may be multiple layout
         // objects generated from the same node, and those are special. They
@@ -3979,7 +3922,6 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
       if (sibling)
         break;
       DCHECK(destroy_root->IsLayoutInline());
-      DCHECK(To<LayoutInline>(destroy_root)->Continuation());
     }
   }
 

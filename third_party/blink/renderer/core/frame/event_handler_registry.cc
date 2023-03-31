@@ -287,11 +287,6 @@ void EventHandlerRegistry::NotifyHandlersChanged(
     if (auto* node = target->ToNode()) {
       if (auto* layout_object = node->GetLayoutObject()) {
         layout_object->MarkEffectiveAllowedTouchActionChanged();
-        auto* continuation = layout_object->VirtualContinuation();
-        while (continuation) {
-          continuation->MarkEffectiveAllowedTouchActionChanged();
-          continuation = continuation->VirtualContinuation();
-        }
       }
     } else if (auto* dom_window = target->ToLocalDOMWindow()) {
       // This event handler is on a window. Ensure the layout view is
@@ -304,11 +299,6 @@ void EventHandlerRegistry::NotifyHandlersChanged(
     if (auto* node = target->ToNode()) {
       if (auto* layout_object = node->GetLayoutObject()) {
         layout_object->MarkBlockingWheelEventHandlerChanged();
-        auto* continuation = layout_object->VirtualContinuation();
-        while (continuation) {
-          continuation->MarkBlockingWheelEventHandlerChanged();
-          continuation = continuation->VirtualContinuation();
-        }
       }
     } else if (auto* dom_window = target->ToLocalDOMWindow()) {
       // This event handler is on a window. Ensure the layout view is

@@ -20,10 +20,6 @@ FragmentDataIterator::FragmentDataIterator(const LayoutObject& object) {
   }
 
   if (object.IsInLayoutNGInlineFormattingContext()) {
-    // TODO(mstensho): Avoid falling back to legacy code when there are
-    // continuations, as that will look bad if we're block-fragmented.
-    if (object.VirtualContinuation())
-      return;
     cursor_.emplace();
     cursor_->MoveToIncludingCulledInline(object);
   }

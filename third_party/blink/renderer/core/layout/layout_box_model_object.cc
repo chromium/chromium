@@ -107,18 +107,6 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
 
 }  // namespace
 
-// The HashMap for storing continuation pointers.
-// The continuation chain is a singly linked list. As such, the HashMap's value
-// is the next pointer associated with the key.
-typedef HeapHashMap<WeakMember<const LayoutBoxModelObject>,
-                    Member<LayoutBoxModelObject>>
-    ContinuationMap;
-static ContinuationMap& GetContinuationMap() {
-  DEFINE_STATIC_LOCAL(Persistent<ContinuationMap>, map,
-                      (MakeGarbageCollected<ContinuationMap>()));
-  return *map;
-}
-
 LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
     : LayoutObject(node) {}
 
@@ -136,8 +124,6 @@ LayoutBoxModelObject::~LayoutBoxModelObject() = default;
 
 void LayoutBoxModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
-  // A continuation of this LayoutObject should be destroyed at subclasses.
-  DCHECK(!Continuation());
 
   if (!DocumentBeingDestroyed()) {
     GetDocument()
@@ -414,10 +400,9 @@ void LayoutBoxModelObject::AddOutlineRectsForNormalChildren(
     // Outline of an element continuation or anonymous block continuation is
     // added when we iterate the continuation chain.
     // See LayoutBlock::AddOutlineRects() and LayoutInline::AddOutlineRects().
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-    if (child->IsElementContinuation() ||
-        (child_block_flow && child_block_flow->IsAnonymousBlockContinuation()))
+    if (child->IsElementContinuation()) {
       continue;
+    }
 
     AddOutlineRectsForDescendant(*child, rects, additional_offset,
                                  include_block_overflows);
@@ -459,8 +444,8 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     // So the LayoutInline needs to add rects for children and continuations
     // only.
     To<LayoutInline>(descendant)
-        .AddOutlineRectsForChildrenAndContinuations(rects, additional_offset,
-                                                    include_block_overflows);
+        .AddOutlineRectsForNormalChildren(rects, additional_offset,
+                                          include_block_overflows);
     return;
   }
 
@@ -516,22 +501,6 @@ void LayoutBoxModelObject::QuadsInternal(Vector<gfx::QuadF>& quads,
     AbsoluteQuadsForSelf(quads, mode);
   else
     LocalQuadsForSelf(quads);
-
-  // Iterate over continuations, avoiding recursion in case there are
-  // many of them. See crbug.com/653767.
-  for (const LayoutBoxModelObject* continuation_object = Continuation();
-       continuation_object;
-       continuation_object = continuation_object->Continuation()) {
-    auto* continuation_block_flow =
-        DynamicTo<LayoutBlockFlow>(continuation_object);
-    DCHECK(continuation_object->IsLayoutInline() ||
-           (continuation_block_flow &&
-            continuation_block_flow->IsAnonymousBlockContinuation()));
-    if (map_to_absolute)
-      continuation_object->AbsoluteQuadsForSelf(quads);
-    else
-      continuation_object->LocalQuadsForSelf(quads);
-  }
 }
 
 gfx::RectF LayoutBoxModelObject::LocalBoundingBoxRectF() const {
@@ -681,7 +650,7 @@ PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
   if (IsLayoutNGContainingBlock(containing_block))
     return PhysicalOffset();
 
-  PhysicalOffset offset = AccumulateRelativePositionOffsets();
+  PhysicalOffset offset;
 
   // Objects that shrink to avoid floats normally use available line width when
   // computing containing block width. However in the case of relative
@@ -1127,22 +1096,6 @@ LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
 LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
   NOT_DESTROYED();
   return ContainingBlock()->AvailableLogicalWidth();
-}
-
-LayoutBoxModelObject* LayoutBoxModelObject::Continuation() const {
-  NOT_DESTROYED();
-  auto it = GetContinuationMap().find(this);
-  return it != GetContinuationMap().end() ? it->value : nullptr;
-}
-
-void LayoutBoxModelObject::SetContinuation(LayoutBoxModelObject* continuation) {
-  NOT_DESTROYED();
-  if (continuation) {
-    DCHECK(continuation->IsLayoutInline() || continuation->IsLayoutBlockFlow());
-    GetContinuationMap().Set(this, continuation);
-  } else {
-    GetContinuationMap().erase(this);
-  }
 }
 
 LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(

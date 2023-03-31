@@ -55,11 +55,9 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
 
   if (!context.painting_layer->NeedsPaintPhaseDescendantOutlines() &&
       ((object != context.painting_layer->GetLayoutObject() &&
-        object.StyleRef().HasOutline()) ||
-       // If this is a block-in-inline, it may need to paint outline.
-       // See |StyleForContinuationOutline|.
-       (layout_block_flow && layout_block_flow->StyleForContinuationOutline())))
+        object.StyleRef().HasOutline()))) {
     context.painting_layer->SetNeedsPaintPhaseDescendantOutlines();
+  }
 }
 
 void PaintInvalidator::UpdateFromTreeBuilderContext(
@@ -256,15 +254,6 @@ bool PaintInvalidator::InvalidatePaint(
   }
 
   if (object.SubtreeShouldCheckForPaintInvalidation()) {
-    context.subtree_flags |=
-        PaintInvalidatorContext::kSubtreeInvalidationChecking;
-  }
-
-  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation()) &&
-      // Need this only if the subtree needs to check geometry change.
-      PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(object)) {
-    // Force subtree invalidation checking to ensure invalidation of focus rings
-    // when continuation's geometry changes.
     context.subtree_flags |=
         PaintInvalidatorContext::kSubtreeInvalidationChecking;
   }

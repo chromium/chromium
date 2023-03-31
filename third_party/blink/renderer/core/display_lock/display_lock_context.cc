@@ -1096,36 +1096,12 @@ bool DisplayLockContext::ForceUnlockIfNeeded() {
   if (ShouldForceUnlock()) {
     if (IsLocked()) {
       Unlock();
-      // If we forced unlocked, then there is a chance that layout containment
-      // doesn't actually apply to our element. This means that we may have
-      // continuations, for which the dirty bits also need to be propagated.
-      // This should be a rare case, so we just ensure that each of the
-      // continuations needs a layout. Note that it is insufficient to set that
-      // child needs layout, since that bit may have already been present and
-      // not have been propagated up the (continuation's) ancestor chain.
-      if (auto* object = element_->GetLayoutObject()) {
-        // Only LayoutInlines should have continuations.
-        DCHECK(!object->VirtualContinuation() || object->IsLayoutInline());
-        for (auto* continuation = object->VirtualContinuation(); continuation;
-             continuation = continuation->VirtualContinuation()) {
-          continuation->SetNeedsLayout(
-              layout_invalidation_reason::kDisplayLock);
-        }
-      }
       // If we forced unlock, then we need to prevent subsequent calls to
       // Lock() until the next frame.
       SetRequestedState(EContentVisibility::kVisible, g_null_atom);
     }
     return true;
   }
-  // Check that if we have containment and we don't need to force unlock above,
-  // then we don't have continuations. Note that if we need to rebuild a layout
-  // tree here, then the check may fail due to the fact that we currently have a
-  // continuation which will be removed. So we only run the test if we don't
-  // need to rebuild the layout tree.
-  DCHECK(element_->NeedsRebuildLayoutTree(WhitespaceAttacher()) ||
-         !element_->GetLayoutObject() ||
-         !element_->GetLayoutObject()->VirtualContinuation());
   return false;
 }
 

@@ -1347,10 +1347,6 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
       // Issue full invalidation, in case the number of column rules have
       // changed.
       needs_full_invalidation = true;
-    } else if (block->StyleForContinuationOutline()) {
-      // When this is a block-in-inline created by |SplineInlines|, we may need
-      // to paint outlines for this. See |NGBoxFragmentPainter|.
-      needs_full_invalidation = true;
     }
 
     block->SetNeedsOverflowRecalc(
@@ -1730,13 +1726,9 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
       // Legacy compatibility. This flag is used in paint layer for
       // invalidation.
       if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
-        if (layout_inline->StyleRef().HasOutline() &&
-            !layout_inline->IsElementContinuation() &&
-            layout_inline->Continuation()) {
-          box_->SetContainsInlineWithOutlineAndContinuation(true);
-        }
-        if (UNLIKELY(layout_inline->HasSelfPaintingLayer()))
+        if (UNLIKELY(layout_inline->HasSelfPaintingLayer())) {
           layout_inline->Layer()->SetNeedsVisualOverflowRecalc();
+        }
       }
     }
   }

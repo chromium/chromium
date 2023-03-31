@@ -72,10 +72,6 @@ class LineLayoutInline : public LineLayoutBoxModel {
                                            accumulated_offset);
   }
 
-  LayoutBoxModelObject* Continuation() const {
-    return ToInline()->Continuation();
-  }
-
   InlineBox* CreateAndAppendInlineFlowBox() {
     return ToInline()->CreateAndAppendInlineFlowBox();
   }

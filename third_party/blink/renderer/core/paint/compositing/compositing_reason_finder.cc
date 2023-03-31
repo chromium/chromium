@@ -152,7 +152,7 @@ CompositingReasons CompositingReasonsFor3DSceneLeaf(
     return CompositingReason::kNone;
   }
 
-  if (layout_object.IsForElement() && !layout_object.StyleRef().Preserves3D()) {
+  if (!layout_object.IsAnonymous() && !layout_object.StyleRef().Preserves3D()) {
     const LayoutObject* parent_object =
         layout_object.NearestAncestorForElement();
     if (parent_object && parent_object->StyleRef().Preserves3D()) {

@@ -150,14 +150,6 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), child->StyleRef().Display());
 
-    // Preserve the position style of anonymous block continuations as they can
-    // have relative position when they contain block descendants of relative
-    // positioned inlines.
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-    if (child->IsInFlowPositioned() && child_block_flow &&
-        child_block_flow->IsAnonymousBlockContinuation())
-      new_style_builder.SetPosition(child->StyleRef().GetPosition());
-
     if (UNLIKELY(IsA<LayoutNGTextCombine>(child))) {
       if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
         // |LayoutNGTextCombine| will be removed when recalculating style for

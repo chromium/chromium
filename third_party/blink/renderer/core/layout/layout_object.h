@@ -1406,16 +1406,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            StyleRef().StyleType() == kPseudoIdNone && IsLayoutBlock() &&
            !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
   }
-  // This is similar to the negation of IsAnonymous, with a single difference.
-  // When a block is inside an inline, there is an anonymous block that is a
-  // continuation of the inline, wrapping the block that is inside it, as
-  // https://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level describes.
-  // That anonymous block also returns true here.  This allows us to track
-  // when layout object parent-child relationships correspond to DOM
-  // parent-child relationships.
-  bool IsForElement() const;
   // If node has been split into continuations, it returns the first layout
   // object generated for the node.
+  //
+  // TODO(1229581): Remove these continuation methods.
   const LayoutObject* ContinuationRoot() const {
     NOT_DESTROYED();
     return GetNode() ? GetNode()->GetLayoutObject() : this;
@@ -1431,19 +1425,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsInlineElementContinuation() const {
     NOT_DESTROYED();
     return IsElementContinuation() && IsInline();
-  }
-  virtual LayoutBoxModelObject* VirtualContinuation() const {
-    NOT_DESTROYED();
-    return nullptr;
-  }
-  // Returns the |ComputedStyle| to use for painting outlines. When |this| is
-  // a block in a continuation-chain, it may need to paint outlines if its
-  // ancestor inline boxes in the DOM tree has outlines.
-  const ComputedStyle* StyleForContinuationOutline() const {
-    NOT_DESTROYED();
-    if (UNLIKELY(IsAnonymous() && !IsInline()))
-      return SlowStyleForContinuationOutline();
-    return nullptr;
   }
 
   bool IsFloating() const {
@@ -3053,12 +3034,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
   }
 
-  // Only public for LayoutNG.
-  void SetContainsInlineWithOutlineAndContinuation(bool b) {
-    NOT_DESTROYED();
-    bitfields_.SetContainsInlineWithOutlineAndContinuation(b);
-  }
-
   static RespectImageOrientationEnum ShouldRespectImageOrientation(
       const LayoutObject*);
 
@@ -3493,11 +3468,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetBackgroundNeedsFullPaintInvalidation(true);
   }
 
-  bool ContainsInlineWithOutlineAndContinuation() const {
-    NOT_DESTROYED();
-    return bitfields_.ContainsInlineWithOutlineAndContinuation();
-  }
-
   void SetOutlineMayBeAffectedByDescendants(bool b) {
     NOT_DESTROYED();
     bitfields_.SetOutlineMayBeAffectedByDescendants(b);
@@ -3911,8 +3881,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   LayoutFlowThread* LocateFlowThreadContainingBlock() const;
   void RemoveFromLayoutFlowThreadRecursive(LayoutFlowThread*);
 
-  const ComputedStyle* SlowStyleForContinuationOutline() const;
-
   // It's unclear why Clang doesn't inline this.
   ALWAYS_INLINE
   StyleDifference AdjustStyleDifference(StyleDifference) const;
@@ -4060,7 +4028,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           notified_of_subtree_change_(false),
           consumes_subtree_change_notification_(false),
           children_inline_(false),
-          contains_inline_with_outline_and_continuation_(false),
           always_create_line_boxes_for_layout_inline_(false),
           background_is_known_to_be_obscured_(false),
           is_background_attachment_fixed_object_(false),
@@ -4289,10 +4256,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // from LayoutBlock
     ADD_BOOLEAN_BITFIELD(children_inline_, ChildrenInline);
-
-    // from LayoutBlockFlow
-    ADD_BOOLEAN_BITFIELD(contains_inline_with_outline_and_continuation_,
-                         ContainsInlineWithOutlineAndContinuation);
 
     // from LayoutInline
     ADD_BOOLEAN_BITFIELD(always_create_line_boxes_for_layout_inline_,

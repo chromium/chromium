@@ -175,8 +175,7 @@ class CORE_EXPORT NGInlineItem {
   bool HasEndEdge() const {
     DCHECK(Type() == kOpenTag || Type() == kCloseTag);
     // TODO(kojii): Should use break token when NG has its own tree building.
-    return !GetLayoutObject()->IsLayoutInline() ||
-           !To<LayoutInline>(GetLayoutObject())->Continuation();
+    return true;
   }
 
   void SetStyleVariant(NGStyleVariant style_variant) {

@@ -544,7 +544,6 @@ void LayoutBlockFlow::ResetLayout() {
   DCHECK(!IsLayoutNGObject()) << this;
   if (!FirstChild() && !IsAnonymousBlock())
     SetChildrenInline(true);
-  SetContainsInlineWithOutlineAndContinuation(false);
 
   // Text truncation kicks in if overflow isn't visible and text-overflow isn't
   // 'clip'. If this is an anonymous block, we have to examine the parent.
@@ -2486,16 +2485,6 @@ void LayoutBlockFlow::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
     AddLayoutOverflowFromFloats();
 }
 
-void LayoutBlockFlow::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                    MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  if (!IsAnonymousBlockContinuation()) {
-    LayoutBlock::AbsoluteQuads(quads, mode);
-    return;
-  }
-  LayoutBoxModelObject::AbsoluteQuads(quads, mode);
-}
-
 void LayoutBlockFlow::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
   return QuadsForSelfInternal(quads, 0, false);
 }
@@ -2752,16 +2741,6 @@ void LayoutBlockFlow::WillBeDestroyed() {
   // hover could crash otherwise.
   Children()->DestroyLeftoverChildren();
 
-  // Destroy our continuation before anything other than anonymous children.
-  // The reason we don't destroy it before anonymous children is that they may
-  // have continuations of their own that are anonymous children of our
-  // continuation.
-  LayoutBoxModelObject* continuation = Continuation();
-  if (continuation) {
-    continuation->Destroy();
-    SetContinuation(nullptr);
-  }
-
   if (!DocumentBeingDestroyed()) {
     // TODO(mstensho): figure out if we need this. We have no test coverage for
     // it. It looks like all line boxes have been removed at this point.
@@ -2825,14 +2804,6 @@ void LayoutBlockFlow::SetStaticInlinePositionForChild(
     LayoutUnit inline_position) {
   NOT_DESTROYED();
   child.Layer()->SetStaticInlinePosition(inline_position);
-}
-
-LayoutInline* LayoutBlockFlow::InlineElementContinuation() const {
-  NOT_DESTROYED();
-  LayoutBoxModelObject* continuation = Continuation();
-  return continuation && continuation->IsInline()
-             ? To<LayoutInline>(continuation)
-             : nullptr;
 }
 
 void LayoutBlockFlow::AddChild(LayoutObject* new_child,
@@ -2914,9 +2885,8 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 }
 
 static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
-  return block->IsAnonymousBlock() && !block->Continuation() &&
-         !block->BeingDestroyed() && !block->IsRubyRun() &&
-         !block->IsRubyBase();
+  return block->IsAnonymousBlock() && !block->BeingDestroyed() &&
+         !block->IsRubyRun() && !block->IsRubyBase();
 }
 
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
@@ -2937,8 +2907,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   LayoutObject* prev = old_child->PreviousSibling();
   LayoutObject* next = old_child->NextSibling();
   bool merged_anonymous_blocks = false;
-  if (prev && next && !old_child->IsInline() &&
-      !old_child->VirtualContinuation()) {
+  if (prev && next && !old_child->IsInline()) {
     auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
     auto* next_block_flow = DynamicTo<LayoutBlockFlow>(next);
     if (prev_block_flow && next_block_flow &&
@@ -2985,36 +2954,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     // If this was our last child be sure to clear out our line boxes.
     if (ChildrenInline())
       DeleteLineBoxTree();
-
-    // If we are an empty anonymous block in the continuation chain,
-    // we need to remove ourself and fix the continuation chain.
-    if (!BeingDestroyed() && IsAnonymousBlockContinuation()) {
-      LayoutObject* containing_block_ignoring_anonymous = ContainingBlock();
-      while (containing_block_ignoring_anonymous &&
-             containing_block_ignoring_anonymous->IsAnonymous())
-        containing_block_ignoring_anonymous =
-            containing_block_ignoring_anonymous->ContainingBlock();
-      for (LayoutObject* curr = this; curr;
-           curr =
-               curr->PreviousInPreOrder(containing_block_ignoring_anonymous)) {
-        if (curr->VirtualContinuation() != this)
-          continue;
-
-        // Found our previous continuation. We just need to point it to
-        // |this|'s next continuation.
-        LayoutBoxModelObject* next_continuation = Continuation();
-        if (curr->IsLayoutInline())
-          To<LayoutInline>(curr)->SetContinuation(next_continuation);
-        else if (auto* curr_block_flow = DynamicTo<LayoutBlockFlow>(curr))
-          curr_block_flow->SetContinuation(next_continuation);
-        else
-          NOTREACHED();
-
-        break;
-      }
-      SetContinuation(nullptr);
-      Destroy();
-    }
   } else if (!BeingDestroyed() &&
              !old_child->IsFloatingOrOutOfFlowPositioned() &&
              !old_child->IsAnonymousBlock()) {
@@ -3103,8 +3042,6 @@ static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
   // child's removal. Just bail if the anonymous child block is already being
   // destroyed. See crbug.com/282088
   if (child.BeingDestroyed())
-    return false;
-  if (child.Continuation())
     return false;
   // Ruby elements use anonymous wrappers for ruby runs and ruby bases by
   // design, so we don't remove them.
@@ -3240,10 +3177,6 @@ void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
     // anonymous wrappers as the
     // entire branch may be being destroyed.
     if (child_block_flow->BeingDestroyed())
-      return;
-    // We can't remove anonymous wrappers if they contain continuations as this
-    // means there are block children present.
-    if (child_block_flow->Continuation())
       return;
     // We are only interested in removing anonymous wrappers if there are inline
     // siblings underneath them.
@@ -3991,8 +3924,6 @@ Node* LayoutBlockFlow::NodeForHitTest() const {
     DCHECK(Parent()->IsLayoutInline());
     return Parent()->NodeForHitTest();
   }
-  if (UNLIKELY(IsAnonymousBlockContinuation()))
-    return Continuation()->NodeForHitTest();
   return LayoutBlock::NodeForHitTest();
 }
 
@@ -4059,19 +3990,6 @@ bool LayoutBlockFlow::HitTestFloats(HitTestResult& result,
   }
 
   return false;
-}
-
-PhysicalOffset LayoutBlockFlow::AccumulateRelativePositionOffsets() const {
-  NOT_DESTROYED();
-  if (!IsAnonymousBlock() || !IsInFlowPositioned())
-    return PhysicalOffset();
-  PhysicalOffset offset;
-  for (const LayoutObject* p = InlineElementContinuation();
-       p && p->IsLayoutInline(); p = p->Parent()) {
-    if (p->IsInFlowPositioned())
-      offset += To<LayoutInline>(p)->RelativePositionOffset();
-  }
-  return offset;
 }
 
 LayoutUnit LayoutBlockFlow::LogicalLeftFloatOffsetForLine(
@@ -4655,30 +4573,6 @@ void LayoutBlockFlow::AddOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
-  // For blocks inside inlines, we go ahead and include margins so that we run
-  // right up to the inline boxes above and below us (thus getting merged with
-  // them to form a single irregular shape).
-  const LayoutInline* inline_element_continuation = InlineElementContinuation();
-  if (inline_element_continuation) {
-    // FIXME: This check really isn't accurate.
-    bool next_inline_has_line_box = inline_element_continuation->FirstLineBox();
-    // FIXME: This is wrong. The principal layoutObject may not be the
-    // continuation preceding this block.
-    // FIXME: This is wrong for vertical writing-modes.
-    // https://bugs.webkit.org/show_bug.cgi?id=46781
-    bool prev_inline_has_line_box =
-        To<LayoutInline>(inline_element_continuation->ContinuationRoot())
-            ->FirstLineBox();
-    LayoutUnit top_margin =
-        prev_inline_has_line_box ? CollapsedMarginBefore() : LayoutUnit();
-    LayoutUnit bottom_margin =
-        next_inline_has_line_box ? CollapsedMarginAfter() : LayoutUnit();
-    if (top_margin || bottom_margin) {
-      PhysicalRect rect(additional_offset, Size());
-      rect.ExpandEdges(top_margin, LayoutUnit(), bottom_margin, LayoutUnit());
-      rects.push_back(rect);
-    }
-  }
 
   LayoutBlock::AddOutlineRects(rects, info, additional_offset,
                                include_block_overflows);
@@ -4706,15 +4600,6 @@ void LayoutBlockFlow::AddOutlineRects(
         rects.push_back(physical_rect);
       }
     }
-  }
-
-  if (inline_element_continuation) {
-    inline_element_continuation->AddOutlineRects(
-        rects, info,
-        additional_offset + (inline_element_continuation->ContainingBlock()
-                                 ->PhysicalLocation() -
-                             PhysicalLocation()),
-        include_block_overflows);
   }
 }
 

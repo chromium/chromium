@@ -1325,7 +1325,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
       context_.rendering_context_id = 0;
       context_.should_flatten_inherited_transform = true;
     }
-  } else if (object_.IsForElement()) {
+  } else if (!object_.IsAnonymous()) {
     // 3D rendering contexts follow the DOM ancestor chain, so
     // flattening should apply regardless of presence of transform.
     context_.rendering_context_id = 0;
@@ -2907,7 +2907,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateCssClip();
     UpdateFilter();
     UpdateOverflowControlsClip();
-  } else if (object_.IsForElement()) {
+  } else if (!object_.IsAnonymous()) {
     // 3D rendering contexts follow the DOM ancestor chain, so
     // flattening should apply regardless of presence of transform.
     context_.rendering_context_id = 0;

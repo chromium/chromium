@@ -575,18 +575,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return false;
   }
 
-  // Returns the continuation associated with |this|.
-  // Returns nullptr if no continuation is associated with |this|.
-  //
-  // See the section about CONTINUATIONS AND ANONYMOUS LAYOUTBLOCKFLOWS in
-  // LayoutInline for more details about them.
-  //
-  // Our implementation uses a HashMap to store them to avoid paying the cost
-  // for each LayoutBoxModelObject (|continuationMap| in the cpp file).
-  // public only for NGOutOfFlowLayoutPart, otherwise protected.
-  LayoutBoxModelObject* Continuation() const;
-
   void RecalcVisualOverflow() override;
+
+  void AddOutlineRectsForNormalChildren(Vector<PhysicalRect>&,
+                                        const PhysicalOffset& additional_offset,
+                                        NGOutlineType) const;
 
  protected:
   // Compute absolute quads for |this|, but not any continuations. May only be
@@ -602,16 +595,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
 
-  // Set the next link in the continuation chain.
-  //
-  // See continuation above for more details.
-  void SetContinuation(LayoutBoxModelObject*);
-
-  virtual PhysicalOffset AccumulateRelativePositionOffsets() const {
-    NOT_DESTROYED();
-    return PhysicalOffset();
-  }
-
   LayoutRect LocalCaretRectForEmptyElement(LayoutUnit width,
                                            LayoutUnit text_indent_offset) const;
 
@@ -624,9 +607,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   LayoutBlock* ContainingBlockForAutoHeightDetection(
       const Length& logical_height) const;
 
-  void AddOutlineRectsForNormalChildren(Vector<PhysicalRect>&,
-                                        const PhysicalOffset& additional_offset,
-                                        NGOutlineType) const;
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
                                     Vector<PhysicalRect>&,
                                     const PhysicalOffset& additional_offset,

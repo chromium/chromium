@@ -3362,7 +3362,7 @@ enum WebFeature {
   kClientHintsResourceWidth = 4048,
   kClientHintsViewportWidth = 4049,
   kInlineBoxIgnoringContinuation = 4050,
-  kOffsetWidthOrHeightIgnoringContinuation = 4051,
+  kOBSOLETE_OffsetWidthOrHeightIgnoringContinuation = 4051,
   kConditionalFocus = 4052,
   kV8Navigator_CreateAdRequest_Method = 4053,
   kV8Navigator_FinalizeAd_Method = 4054,

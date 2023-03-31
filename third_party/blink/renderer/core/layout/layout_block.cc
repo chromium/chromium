@@ -404,9 +404,6 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   DCHECK(!child->ChildrenInline());
   DCHECK_EQ(child->Parent(), this);
 
-  if (child->Continuation())
-    return;
-
   // Promote all the leftover anonymous block's children (to become children of
   // this block instead). We still want to keep the leftover block in the tree
   // for a moment, for notification purposes done further below (flow threads
@@ -578,17 +575,6 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
         child->IsOutOfFlowPositioned() || child->IsColumnSpanAll())
       continue;
 
-    // If the child contains inline with outline and continuation, its
-    // visual overflow computed during its layout might be inaccurate because
-    // the layout of continuations might not be up-to-date at that time.
-    // Re-add overflow from inline children to ensure its overflow covers
-    // the outline which may enclose continuations.
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-    if (child_block_flow &&
-        child_block_flow->ContainsInlineWithOutlineAndContinuation() &&
-        !child_block_flow->ChildPrePaintBlockedByDisplayLock()) {
-      child_block_flow->AddVisualOverflowFromInlineChildren();
-    }
     AddVisualOverflowFromChild(*child);
   }
 }
@@ -600,18 +586,6 @@ void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
     if ((!IsLayoutNGContainingBlock(this) && child->IsFloating()) ||
         child->IsOutOfFlowPositioned() || child->IsColumnSpanAll())
       continue;
-
-    // If the child contains inline with outline and continuation, its
-    // visual overflow computed during its layout might be inaccurate because
-    // the layout of continuations might not be up-to-date at that time.
-    // Re-add overflow from inline children to ensure its overflow covers
-    // the outline which may enclose continuations.
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-    if (child_block_flow &&
-        child_block_flow->ContainsInlineWithOutlineAndContinuation() &&
-        !child_block_flow->ChildPrePaintBlockedByDisplayLock()) {
-      child_block_flow->AddLayoutOverflowFromInlineChildren();
-    }
 
     AddLayoutOverflowFromChild(*child);
   }

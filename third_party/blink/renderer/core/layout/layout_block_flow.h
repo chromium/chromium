@@ -50,7 +50,6 @@ namespace blink {
 template <class Run>
 class BidiRunList;
 class BlockChildrenLayoutInfo;
-class LayoutInline;
 class LineInfo;
 class LineLayoutState;
 class LineWidth;
@@ -244,20 +243,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool ContainsFloat(LayoutBox*) const;
 
   void RemoveFloatingObjects();
-
-  LayoutBoxModelObject* VirtualContinuation() const final {
-    NOT_DESTROYED();
-    return Continuation();
-  }
-  bool IsAnonymousBlockContinuation() const {
-    NOT_DESTROYED();
-    return Continuation() && IsAnonymousBlock();
-  }
-
-  using LayoutBoxModelObject::Continuation;
-  using LayoutBoxModelObject::SetContinuation;
-
-  LayoutInline* InlineElementContinuation() const;
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
@@ -562,8 +547,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
                                              LayoutBox&);
-  void AbsoluteQuads(Vector<gfx::QuadF>&,
-                     MapCoordinatesFlags mode = 0) const override;
   void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const override;
   void AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                             MapCoordinatesFlags mode = 0) const override;
@@ -611,8 +594,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                        const HitTestLocation&,
                        const PhysicalOffset& accumulated_offset,
                        HitTestPhase) override;
-
-  PhysicalOffset AccumulateRelativePositionOffsets() const override;
 
  private:
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,

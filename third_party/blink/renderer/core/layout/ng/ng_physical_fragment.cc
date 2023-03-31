@@ -820,9 +820,9 @@ void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
       const LayoutObject* child_layout_object = child->GetLayoutObject();
       if (auto* child_layout_block_flow =
               DynamicTo<LayoutBlockFlow>(child_layout_object)) {
-        if (child_layout_object->IsElementContinuation() ||
-            child_layout_block_flow->IsAnonymousBlockContinuation())
+        if (child_layout_object->IsElementContinuation()) {
           continue;
+        }
       }
     }
     AddOutlineRectsForDescendant(child, outline_rects, additional_offset,
@@ -1036,7 +1036,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
     if (descendant_box->IsOutlineOwner()) {
       // We don't pass additional_offset here because the function requires
       // additional_offset to be the offset from the containing block.
-      descendant_layout_inline->AddOutlineRectsForChildrenAndContinuations(
+      descendant_layout_inline->AddOutlineRectsForNormalChildren(
           *outline_rects, PhysicalOffset(), outline_type);
     }
     return;

@@ -41456,7 +41456,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4048" label="ClientHintsResourceWidth"/>
   <int value="4049" label="ClientHintsViewportWidth"/>
   <int value="4050" label="InlineBoxIgnoringContinuation"/>
-  <int value="4051" label="OffsetWidthOrHeightIgnoringContinuation"/>
+  <int value="4051" label="OBSOLETE_OffsetWidthOrHeightIgnoringContinuation"/>
   <int value="4052" label="ConditionalFocus"/>
   <int value="4053" label="V8Navigator_CreateAdRequest_Method"/>
   <int value="4054" label="V8Navigator_FinalizeAd_Method"/>
