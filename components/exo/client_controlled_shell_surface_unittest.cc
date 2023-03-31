@@ -35,7 +35,6 @@
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/permission.h"
-#include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
@@ -1815,24 +1814,6 @@ TEST_P(ClientControlledShellSurfaceTest, SetOrientationLock) {
   EXPECT_FALSE(controller->rotation_locked());
 
   EnableTabletMode(false);
-}
-
-TEST_P(ClientControlledShellSurfaceTest, SetClientAccessibilityId) {
-  auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
-                           .SetNoCommit()
-                           .BuildClientControlledShellSurface();
-  auto* surface = shell_surface->root_surface();
-
-  EXPECT_FALSE(shell_surface->GetWidget());
-  shell_surface->SetClientAccessibilityId(0);
-  surface->Commit();
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  EXPECT_EQ(0, *GetShellClientAccessibilityId(window));
-  shell_surface->SetClientAccessibilityId(1);
-  EXPECT_EQ(1, *GetShellClientAccessibilityId(window));
-
-  shell_surface->SetClientAccessibilityId(-1);
-  EXPECT_FALSE(GetShellClientAccessibilityId(window));
 }
 
 // Tests adjust bounds locally should also request remote client bounds update.

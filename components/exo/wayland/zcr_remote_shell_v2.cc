@@ -98,7 +98,7 @@ const struct zcr_remote_surface_v2_interface remote_surface_implementation_v2 =
         zcr_remote_shell::remote_surface_set_orientation_lock,
         zcr_remote_shell::remote_surface_pip,
         zcr_remote_shell::remote_surface_set_aspect_ratio,
-        zcr_remote_shell::remote_surface_set_accessibility_id,
+        zcr_remote_shell::remote_surface_set_accessibility_id_DEPRECATED,
         zcr_remote_shell::remote_surface_set_pip_original_window,
         zcr_remote_shell::remote_surface_unset_pip_original_window,
         zcr_remote_shell::remote_surface_set_system_gesture_exclusion,

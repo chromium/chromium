@@ -335,9 +335,9 @@ void remote_surface_set_bounds(wl_client* client,
                                int32_t width,
                                int32_t height);
 
-void remote_surface_set_accessibility_id(wl_client* client,
-                                         wl_resource* resource,
-                                         int32_t accessibility_id);
+void remote_surface_set_accessibility_id_DEPRECATED(wl_client* client,
+                                                    wl_resource* resource,
+                                                    int32_t accessibility_id);
 void remote_surface_set_pip_original_window(wl_client* client,
                                             wl_resource* resource);
 void remote_surface_unset_pip_original_window(wl_client* client,

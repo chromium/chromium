@@ -169,10 +169,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Set the extra title for the surface.
   void SetExtraTitle(const std::u16string& extra_title);
 
-  // Set the accessibility ID provided by client for the surface. If
-  // |accessibility_id| is negative value, it will unset the ID.
-  void SetClientAccessibilityId(int32_t accessibility_id);
-
   // Rebind a surface as the root surface of the shell surface.
   void RebindRootSurface(Surface* root_surface,
                          bool can_minimize,
@@ -368,9 +364,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Client controlled specific accelerator target.
   std::unique_ptr<ClientControlledAcceleratorTarget> accelerator_target_;
-
-  // Accessibility ID provided by client.
-  absl::optional<int32_t> client_accessibility_id_;
 
   ash::ArcResizeLockType pending_resize_lock_type_ =
       ash::ArcResizeLockType::NONE;
