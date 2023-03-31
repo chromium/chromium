@@ -9,7 +9,7 @@
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
-import {NON_TEXT_NODE_NAMES}
+import {NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES}
     from '//ios/web/annotations/resources/annotations_constants.js';
 
 // Mark: Private properties
@@ -201,14 +201,17 @@ function decorateAnnotations(annotations: Annotation[]): void {
       break;
     }
 
-    // If the hit on a link, do not stylize. The check doesn't happen before
-    // the annotation loop above, to keep the running cursor's (annotationIndex)
-    // integrity.
+    // If the hit on a link (or other interactive tags), do not stylize. The
+    // check doesn't happen before the annotation loop above, to keep the
+    // running cursor's (annotationIndex) integrity. It also doesn't happen
+    // at text extraction, to allow these tag's text to participate in a bigger
+    // intent detection.
     let currentParentNode: Node|null = node.parentNode;
     while (currentParentNode) {
       if (currentParentNode instanceof HTMLElement &&
-          currentParentNode.tagName === 'A') {
+          NO_DECORATION_NODE_NAMES.has(currentParentNode.tagName)) {
         replacements = [];
+        failures++;
         break;
       }
       currentParentNode = currentParentNode.parentNode;
