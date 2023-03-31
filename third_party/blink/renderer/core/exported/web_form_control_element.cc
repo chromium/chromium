@@ -230,7 +230,7 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
     if (!Focused()) {
       DispatchFocusEvent();
     }
-    selectmenu->SetAutofillValue(value);
+    selectmenu->SetAutofillValue(value, autofill_state);
     if (!Focused()) {
       DispatchBlurEvent();
     }

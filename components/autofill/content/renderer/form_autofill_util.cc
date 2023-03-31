@@ -806,7 +806,7 @@ bool InferLabelFromAncestors(const WebFormControlElement& element,
 bool InferLabelForElement(const WebFormControlElement& element,
                           std::u16string& label,
                           FormFieldData::LabelSource& label_source) {
-  if (IsCheckableElement(element.DynamicTo<WebInputElement>())) {
+  if (IsCheckableElement(element)) {
     if (InferLabelFromNext(element, label, label_source))
       return true;
   }
@@ -2075,11 +2075,13 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
          IsTextInput(element.DynamicTo<WebInputElement>());
 }
 
-bool IsCheckableElement(const WebInputElement& element) {
-  if (element.IsNull())
+bool IsCheckableElement(const WebFormControlElement& element) {
+  WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  if (input_element.IsNull()) {
     return false;
+  }
 
-  return element.IsCheckbox() || element.IsRadioButton();
+  return input_element.IsCheckbox() || input_element.IsRadioButton();
 }
 
 bool IsCheckableElement(const WebElement& element) {

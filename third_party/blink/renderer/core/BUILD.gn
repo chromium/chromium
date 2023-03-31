@@ -1417,6 +1417,7 @@ source_set("unit_tests") {
     ":unit_test_support",
     "//build:chromeos_buildflags",
     "//cc",
+    "//components/autofill/core/common:features",
     "//components/paint_preview/common:common",
     "//components/shared_highlighting/core/common",
     "//components/shared_highlighting/core/common:data_driven_testing",

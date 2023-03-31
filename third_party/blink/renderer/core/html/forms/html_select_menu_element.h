@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_SELECT_MENU_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_SELECT_MENU_ELEMENT_H_
 
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -36,17 +37,21 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   HTMLOptionElement* selectedOption() const;
   String value() const;
-  void setValue(const String&, bool send_events = false);
+  void setValue(const String&,
+                bool send_events = false,
+                WebAutofillState autofill_state = WebAutofillState::kNotFilled);
   String valueForBinding() const { return value(); }
   void setValueForBinding(const String&);
   bool open() const;
 
-  void SetAutofillValue(const String& value);
+  void SetAutofillValue(const String& value, WebAutofillState autofill_state);
 
   // For ValidityState
   String validationMessage() const override;
   bool ValueMissing() const override;
 
+  void CloneNonAttributePropertiesFrom(const Element&,
+                                       CloneChildrenFlag) override;
   void ResetImpl() override;
 
   void Trace(Visitor*) const override;
@@ -94,7 +99,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void EnsureButtonPartIsValid();
   void EnsureSelectedValuePartIsValid();
   void EnsureListboxPartIsValid();
-  void SetSelectedOption(HTMLOptionElement* selected_option);
+  void SetSelectedOption(HTMLOptionElement* selected_option,
+                         bool send_events = false,
+                         WebAutofillState = WebAutofillState::kNotFilled);
   void SelectNextOption();
   void SelectPreviousOption();
   void UpdateSelectedValuePartContents();
@@ -133,6 +140,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   // HTMLFormControlElementWithState overrides:
   const AtomicString& FormControlType() const override;
+  void DefaultEventHandler(Event&) override;
   bool MayTriggerVirtualKeyboard() const override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
   void AppendToFormData(FormData&) override;

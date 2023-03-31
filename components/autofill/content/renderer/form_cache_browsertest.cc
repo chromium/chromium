@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -34,6 +36,7 @@ using testing::Field;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
+using CheckStatus = FormFieldData::CheckStatus;
 
 auto HasId(FormRendererId expected_id) {
   return Field("unique_renderer_id", &FormData::unique_renderer_id,
@@ -65,6 +68,8 @@ class FormCacheBrowserTest : public content::RenderViewTest {
     focus_test_utils_ = std::make_unique<test::FocusTestUtils>(
         base::BindRepeating(&FormCacheBrowserTest::ExecuteJavaScriptForTests,
                             base::Unretained(this)));
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableSelectMenu);
   }
   ~FormCacheBrowserTest() override = default;
   FormCacheBrowserTest(const FormCacheBrowserTest&) = delete;
@@ -76,6 +81,9 @@ class FormCacheBrowserTest : public content::RenderViewTest {
   }
 
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FormCacheBrowserTest, UpdatedForms) {
@@ -390,7 +398,61 @@ TEST_F(FormCacheBrowserTest, ExtractFormsAfterModification) {
   EXPECT_EQ(2u, unowned_form->fields.size());
 }
 
+struct FillElementData {
+  blink::WebFormControlElement& element;
+  std::u16string value;
+};
+
+FormFieldData* FindFieldByName(FormData& form_data,
+                               blink::WebString search_field_name) {
+  auto it = base::ranges::find(form_data.fields, search_field_name.Utf16(),
+                               &FormFieldData::name);
+  return it != form_data.fields.end() ? &*it : nullptr;
+}
+
+// Fills the fields referenced in `form_fill_data`. Fills `checkbox_element`, if
+// non-null. `autofill_initiating_element` is the element which initiates the
+// autofill.
+void FillAndCheckState(
+    const FormData& form_data,
+    const blink::WebFormControlElement& autofill_initiating_element,
+    const std::vector<FillElementData>& form_to_fill,
+    absl::optional<blink::WebInputElement> checkbox_element = absl::nullopt,
+    CheckStatus fill_checkbox_check_status =
+        CheckStatus::kCheckableButUnchecked) {
+  FormData values_to_fill = form_data;
+  for (const FillElementData& field_to_fill : form_to_fill) {
+    FormFieldData* value_to_fill = FindFieldByName(
+        values_to_fill, field_to_fill.element.NameForAutofill());
+    ASSERT_TRUE(value_to_fill != nullptr);
+    value_to_fill->value = field_to_fill.value;
+    value_to_fill->is_autofilled = true;
+  }
+
+  if (checkbox_element) {
+    FormFieldData* value_to_fill =
+        FindFieldByName(values_to_fill, checkbox_element->NameForAutofill());
+    ASSERT_TRUE(value_to_fill != nullptr);
+    value_to_fill->check_status = fill_checkbox_check_status;
+    value_to_fill->is_autofilled = true;
+  }
+
+  form_util::FillOrPreviewForm(values_to_fill, autofill_initiating_element,
+                               mojom::RendererFormDataAction::kFill);
+
+  for (const FillElementData& field_to_fill : form_to_fill) {
+    EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
+  }
+
+  if (checkbox_element) {
+    bool expect_checked = (fill_checkbox_check_status == CheckStatus::kChecked);
+    EXPECT_EQ(expect_checked, checkbox_element->IsChecked());
+  }
+}
+
 TEST_F(FormCacheBrowserTest, FillAndClear) {
+  // TODO(crbug.com/1422114): Make test work without explicit <selectmenu>
+  // tabindex.
   LoadHTML(R"(
     <input type="text" name="text" id="text">
     <input type="checkbox" checked name="checkbox" id="checkbox">
@@ -398,6 +460,10 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
       <option value="first">first</option>
       <option value="second" selected>second</option>
     </select>
+    <selectmenu name="selectmenu" id="selectmenu" tabindex=0>
+      <option value="uno">uno</option>
+      <option value="dos" selected>dos</option>
+    </selectmenu>
   )");
 
   FormCache form_cache(GetMainFrame());
@@ -407,26 +473,17 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  FormData values_to_fill = forms.updated_forms[0];
-  values_to_fill.fields[0].value = u"test";
-  values_to_fill.fields[0].is_autofilled = true;
-  values_to_fill.fields[1].check_status =
-      FormFieldData::CheckStatus::kCheckableButUnchecked;
-  values_to_fill.fields[1].is_autofilled = true;
-  values_to_fill.fields[2].value = u"first";
-  values_to_fill.fields[2].is_autofilled = true;
-
   WebDocument doc = GetMainFrame()->GetDocument();
   auto text = GetFormControlElementById(doc, "text");
   auto checkbox = GetElementById(doc, "checkbox").To<WebInputElement>();
   auto select_element = GetFormControlElementById(doc, "select");
+  auto selectmenu_element = GetFormControlElementById(doc, "selectmenu");
 
-  form_util::FillOrPreviewForm(values_to_fill, text,
-                               mojom::RendererFormDataAction::kFill);
-
-  EXPECT_EQ("test", text.Value().Ascii());
-  EXPECT_FALSE(checkbox.IsChecked());
-  EXPECT_EQ("first", select_element.Value().Ascii());
+  FillAndCheckState(forms.updated_forms[0], text,
+                    {{text, u"test"},
+                     {select_element, u"first"},
+                     {selectmenu_element, u"uno"}},
+                    checkbox, CheckStatus::kCheckableButUnchecked);
 
   // Validate that clearing works, in particular that the previous values
   // were saved correctly.
@@ -435,6 +492,7 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   EXPECT_EQ("", text.Value().Ascii());
   EXPECT_TRUE(checkbox.IsChecked());
   EXPECT_EQ("second", select_element.Value().Ascii());
+  EXPECT_EQ("dos", selectmenu_element.Value().Ascii());
 }
 
 // Tests that correct focus, change and blur events are emitted during the
@@ -502,6 +560,10 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
         <option value="first">first</option>
         <option value="second" selected>second</option>
       </select>
+      <selectmenu name="selectmenu" id="selectmenu">
+        <option value="first">first</option>
+        <option value="second" selected>second</option>
+      </selectmenu>
     </div>
   )");
 
@@ -513,6 +575,7 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   EXPECT_TRUE(forms.removed_forms.empty());
 
   EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_select_values_size());
+  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_selectmenu_values_size());
   EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_checked_state_size());
 
   ExecuteJavaScriptForTests(R"(
@@ -526,12 +589,15 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
   EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_select_values_size());
+  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_selectmenu_values_size());
   EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_checked_state_size());
 }
 
 // Test that the select element's user edited field state is set
 // to false after clearing the form.
 TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
+  // TODO(crbug.com/1422114): Make test work without explicit <selectmenu>
+  // tabindex.
   LoadHTML(R"(
     <input type="text" name="text" id="text">
     <select name="date" id="date">
@@ -544,37 +610,43 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
       <option value="february">february</option>
       <option value="march" selected>march</option>
     </select>
+    <selectmenu name="time" id="time" tabindex=0>
+      <option value="sunrise">sunrise</option>
+      <option value="noon" selected>noon</option>
+      <option value="sunset">sunset</option>
+    </selectmenu>
+    <selectmenu name="location" id="location" tabindex=1>
+      <option value="churchill">Churchill</option>
+      <option value="dawson">Dawson City</option>
+      <option value="whitehorse" selected>Whitehorse</option>
+    </selectmenu>
   )");
 
   FormCache form_cache(GetMainFrame());
   FormCache::UpdateFormCacheResult forms =
       form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
 
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
-  EXPECT_TRUE(forms.removed_forms.empty());
-  FormData values_to_fill = forms.updated_forms[0];
-  values_to_fill.fields[0].value = u"test";
-  values_to_fill.fields[0].is_autofilled = true;
-  values_to_fill.fields[1].value = u"first";
-  values_to_fill.fields[1].is_autofilled = true;
-  values_to_fill.fields[2].value = u"january";
-  values_to_fill.fields[2].is_autofilled = true;
-
   WebDocument doc = GetMainFrame()->GetDocument();
   auto text = GetFormControlElementById(doc, "text");
   auto select_date = GetFormControlElementById(doc, "date");
   auto select_month = GetFormControlElementById(doc, "month");
+  auto selectmenu_time = GetFormControlElementById(doc, "time");
+  auto selectmenu_location = GetFormControlElementById(doc, "location");
 
-  form_util::FillOrPreviewForm(values_to_fill, text,
-                               mojom::RendererFormDataAction::kFill);
-
-  EXPECT_EQ("test", text.Value().Ascii());
-  EXPECT_EQ("first", select_date.Value().Ascii());
-  EXPECT_EQ("january", select_month.Value().Ascii());
+  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
+  EXPECT_TRUE(forms.removed_forms.empty());
+  FillAndCheckState(forms.updated_forms[0], text,
+                    {{text, u"test"},
+                     {select_date, u"first"},
+                     {select_month, u"january"},
+                     {selectmenu_time, u"sunrise"},
+                     {selectmenu_location, u"churchill"}});
 
   // Expect that the 'user has edited field' state is set
   EXPECT_TRUE(select_date.UserHasEditedTheField());
   EXPECT_TRUE(select_month.UserHasEditedTheField());
+  EXPECT_TRUE(selectmenu_time.UserHasEditedTheField());
+  EXPECT_TRUE(selectmenu_location.UserHasEditedTheField());
 
   // Clear form
   form_cache.ClearSectionWithElement(text);
@@ -582,24 +654,23 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
   // Expect that the state is now cleared
   EXPECT_FALSE(select_date.UserHasEditedTheField());
   EXPECT_FALSE(select_month.UserHasEditedTheField());
+  EXPECT_FALSE(selectmenu_time.UserHasEditedTheField());
+  EXPECT_FALSE(selectmenu_location.UserHasEditedTheField());
 
   // Fill the form again, this time the select elements are being filled
   // with different values just for additional check.
-  values_to_fill.fields[1].value = u"third";
-  values_to_fill.fields[1].is_autofilled = true;
-  values_to_fill.fields[2].value = u"february";
-  values_to_fill.fields[2].is_autofilled = true;
-  form_util::FillOrPreviewForm(values_to_fill, text,
-                               mojom::RendererFormDataAction::kFill);
-
-  // Ensure the form is filled correctly, including the select elements.
-  EXPECT_EQ("test", text.Value().Ascii());
-  EXPECT_EQ("third", select_date.Value().Ascii());
-  EXPECT_EQ("february", select_month.Value().Ascii());
+  FillAndCheckState(forms.updated_forms[0], text,
+                    {{text, u"test"},
+                     {select_date, u"third"},
+                     {select_month, u"february"},
+                     {selectmenu_time, u"sunset"},
+                     {selectmenu_location, u"dawson"}});
 
   // Expect that the state is set again
   EXPECT_TRUE(select_date.UserHasEditedTheField());
   EXPECT_TRUE(select_month.UserHasEditedTheField());
+  EXPECT_TRUE(selectmenu_time.UserHasEditedTheField());
+  EXPECT_TRUE(selectmenu_location.UserHasEditedTheField());
 }
 
 TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
