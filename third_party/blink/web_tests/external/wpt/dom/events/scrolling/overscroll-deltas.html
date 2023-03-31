@@ -90,7 +90,7 @@
       assert_approx_equals(target_div.scrollTop, max_target_div_scroll_top, 1,
         "target_div should be fully scrolled down");
 
-      scrollend_promise = waitForScrollendEvent(t, document);
+      scrollend_promise = waitForScrollendEvent(t, document, 1000);
       target_div.addEventListener("scrollend", fail);
       // Scroll down on target div and wait for the doc to get scrollend event.
       await touchScrollInTarget(target_div.clientHeight + 300, target_div, "down");
@@ -131,7 +131,7 @@
       assert_approx_equals(target_div.scrollLeft, max_target_div_scroll_left, 1,
         "target_div should be fully scrolled right");
 
-      scrollend_promise = waitForScrollendEvent(t, document);
+      scrollend_promise = waitForScrollendEvent(t, document, 1000);
       target_div.addEventListener("scrollend", fail);
       // Scroll up on target div and wait for the doc to get scrollend event.
       await touchScrollInTarget(target_div.clientWidth + 300, target_div, "right");
