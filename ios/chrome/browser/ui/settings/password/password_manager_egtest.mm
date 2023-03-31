@@ -1743,7 +1743,8 @@ id<GREYMatcher> EditDoneButton() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-- (void)testManyPasswords {
+// TODO(crbug.com/1429627): Re-enable after fixing hard-coded issue.
+- (void)DISABLED_testManyPasswords {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/906551): Enable the test on iPad once the bug is fixed.
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
@@ -2310,7 +2311,8 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Tests that removing multiple passwords works fine.
-- (void)testRemovingMultiplePasswords {
+// TODO(crbug.com/1429627): Re-enable after fixing hard-coded issue.
+- (void)DISABLED_testRemovingMultiplePasswords {
   constexpr int kPasswordsCount = 4;
 
   // Send the passwords to the queue to be added to the PasswordStore.
