@@ -12,7 +12,9 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTime.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -276,7 +278,7 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
 
 sk_sp<SkData> SerializeOopTypeface(SkTypeface* typeface, void* ctx) {
   auto* context = reinterpret_cast<TypefaceSerializationContext*>(ctx);
-  SkFontID typeface_id = typeface->uniqueID();
+  SkTypefaceID typeface_id = typeface->uniqueID();
   bool data_included = context->insert(typeface_id).second;
 
   // Need the typeface ID to identify the desired typeface.  Include an
@@ -300,7 +302,7 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
     return nullptr;
   }
 
-  SkFontID id;
+  SkTypefaceID id;
   if (!stream->readU32(&id)) {
     return nullptr;
   }

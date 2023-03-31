@@ -16,11 +16,16 @@
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
+
+class SkCanvas;
+class SkPicture;
+class SkStreamAsset;
 
 namespace base {
 class UnguessableToken;
