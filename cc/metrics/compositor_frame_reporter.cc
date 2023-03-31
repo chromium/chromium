@@ -484,8 +484,7 @@ CompositorFrameReporter::CompositorFrameReporter(
       layer_tree_host_id_(layer_tree_host_id),
       global_trackers_(trackers) {
   DCHECK(global_trackers_.dropped_frame_counter);
-  global_trackers_.dropped_frame_counter->OnBeginFrame(
-      args, IsScrollActive(active_trackers_));
+  global_trackers_.dropped_frame_counter->OnBeginFrame(args);
   DCHECK(IsScrollActive(active_trackers_) ||
          scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kUnknown);
   if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kCompositor) {

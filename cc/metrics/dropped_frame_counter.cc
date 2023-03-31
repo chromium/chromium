@@ -234,23 +234,9 @@ void DroppedFrameCounter::EnableReporForUI() {
   sliding_window_interval_ = base::Seconds(1);
 }
 
-void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args,
-                                       bool is_scroll_active) {
-  // Remember when scrolling starts/ends. Do this even if fcp has not happened
-  // yet.
-  if (!is_scroll_active) {
-    scroll_start_.reset();
-  } else if (!scroll_start_.has_value()) {
-    ScrollStartInfo info = {args.frame_time, args.frame_id};
-    scroll_start_ = info;
-  }
-
+void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
   if (fcp_received_) {
     frame_sorter_.AddNewFrame(args);
-    if (is_scroll_active) {
-      DCHECK(scroll_start_.has_value());
-      scroll_start_per_frame_[args.frame_id] = *scroll_start_;
-    }
   }
 }
 
@@ -270,24 +256,6 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
       ReportFramesForUI();
     else
       ReportFrames();
-
-    auto iter = scroll_start_per_frame_.find(args.frame_id);
-    if (iter != scroll_start_per_frame_.end()) {
-      ScrollStartInfo& scroll_start = iter->second;
-      if (args.frame_id.source_id == scroll_start.frame_id.source_id) {
-        UMA_HISTOGRAM_CUSTOM_TIMES(
-            "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Time",
-            (args.frame_time - scroll_start.timestamp), base::Milliseconds(1),
-            base::Seconds(4), 50);
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2."
-            "Frames",
-            (args.frame_id.sequence_number -
-             scroll_start.frame_id.sequence_number),
-            1, 250, 50);
-      }
-      scroll_start_per_frame_.erase(iter);
-    }
   }
 
   if (fcp_received_)

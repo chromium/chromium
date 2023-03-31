@@ -1108,32 +1108,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Frames"
-    units="vsyncs" expires_after="2023-02-12">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Diagnostic metric to measure how long after scroll-start a frame is dropped.
-
-    For every frame dropped during a scroll, this metric reports how long after
-    scroll started the frame dropped (in number of vsyncs).
-  </summary>
-</histogram>
-
-<histogram
-    name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Time"
-    units="ms" expires_after="2023-02-12">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Diagnostic metric to measure how long after scroll-start a frame is dropped.
-
-    For every frame dropped during a scroll, this metric reports how long after
-    scroll started the frame dropped (in milliseconds).
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2023-09-24">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
