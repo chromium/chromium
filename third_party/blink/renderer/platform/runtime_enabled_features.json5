@@ -3409,18 +3409,6 @@
       base_feature: "ReduceUserAgent",
     },
     {
-      // When moving trees between documents, traverse the tree first to
-      // notify nodes that they `WillMoveToNewDocument()` before doing a
-      // second traversal to move them.  If not set, then these two steps are
-      // done during a single traversal at the cost of the ordering of
-      // `WillMoveToNewDocument()` sometimes being called after the node has
-      // already been moved.  `false` is the original behavior, while `true`
-      // is the new default.  Switch is present in case there is some
-      // interaction that causes a web-visible change that wasn't anticipated.
-      name: "UseSeparateTraversalForWillMove",
-      status: "stable",
-    },
-    {
       name: "V8IdleTasks",
       base_feature: "none",
       public: true,

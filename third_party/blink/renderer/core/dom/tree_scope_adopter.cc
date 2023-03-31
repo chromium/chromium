@@ -40,9 +40,7 @@
 namespace blink {
 
 void TreeScopeAdopter::Execute() const {
-  if (RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
-    WillMoveTreeToNewDocument(*to_adopt_);
-  }
+  WillMoveTreeToNewDocument(*to_adopt_);
   MoveTreeToNewScope(*to_adopt_);
   Document& old_document = OldScope().GetDocument();
   if (old_document == NewScope().GetDocument())
@@ -107,9 +105,7 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
     new_document.SetContainsShadowRoot();
   }
 
-  if (RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
-    shadow_root.SetDocument(new_document);
-  }
+  shadow_root.SetDocument(new_document);
 
   MoveTreeToNewDocument(shadow_root, old_document, new_document);
 }
@@ -185,12 +181,8 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
     Document& old_document,
     Document& new_document) const {
   DCHECK_NE(old_document, new_document);
-#if DCHECK_IS_ON()
-  if (RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
-    // TODO(crbug.com/1371962) `new_document` should no longer be needed.
-    DCHECK_EQ(new_document, node.GetDocument());
-  }
-#endif  // DCHECK_IS_ON()
+  // TODO(crbug.com/1371962) `new_document` should no longer be needed.
+  DCHECK_EQ(node.GetDocument(), new_document);
 
   if (node.HasRareData()) {
     NodeRareData* rare_data = node.RareData();
@@ -198,9 +190,6 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
       rare_data->NodeLists()->AdoptDocument(old_document, new_document);
   }
 
-  if (!RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
-    node.WillMoveToNewDocument(old_document, new_document);
-  }
   old_document.MoveNodeIteratorsToNewDocument(node, new_document);
   if (auto* element = DynamicTo<Element>(node)) {
     old_document.MoveElementExplicitlySetAttrElementsMapToNewDocument(
@@ -210,11 +199,6 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
   if (node.GetCustomElementState() == CustomElementState::kCustom) {
     CustomElement::EnqueueAdoptedCallback(To<Element>(node), old_document,
                                           new_document);
-  }
-
-  if (!RuntimeEnabledFeatures::UseSeparateTraversalForWillMoveEnabled()) {
-    if (auto* shadow_root = DynamicTo<ShadowRoot>(node))
-      shadow_root->SetDocument(new_document);
   }
 
 #if DCHECK_IS_ON()
