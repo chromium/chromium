@@ -192,8 +192,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
-  PhysicalOffset OffsetForInFlowPositionedInline(const LayoutBox& child) const;
-
   void AddOutlineRects(Vector<PhysicalRect>&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,

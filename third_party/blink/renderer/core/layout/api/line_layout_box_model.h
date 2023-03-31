@@ -95,8 +95,8 @@ class LineLayoutBoxModel : public LineLayoutItem {
 
   LayoutUnit BorderAfter() const { return ToBoxModel()->BorderAfter(); }
 
-  LayoutSize RelativePositionLogicalOffset() const {
-    return ToBoxModel()->RelativePositionLogicalOffset();
+  PhysicalOffset StickyPositionOffset() const {
+    return ToBoxModel()->StickyPositionOffset();
   }
 
   bool HasInlineDirectionBordersOrPadding() const {
@@ -113,10 +113,6 @@ class LineLayoutBoxModel : public LineLayoutItem {
 
   LayoutUnit BorderAndPaddingLogicalHeight() const {
     return ToBoxModel()->BorderAndPaddingLogicalHeight();
-  }
-
-  PhysicalOffset OffsetForInFlowPosition() const {
-    return ToBoxModel()->OffsetForInFlowPosition();
   }
 
  private:

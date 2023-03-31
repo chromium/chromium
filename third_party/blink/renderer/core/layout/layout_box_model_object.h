@@ -133,16 +133,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // This is the only way layers should ever be destroyed.
   void DestroyLayer();
 
-  PhysicalOffset RelativePositionOffset() const;
-  LayoutSize RelativePositionLogicalOffset() const {
-    NOT_DESTROYED();
-    // TODO(layout-dev): This seems incorrect in flipped blocks writing mode,
-    // but seems for legacy layout only.
-    auto offset = RelativePositionOffset().ToLayoutSize();
-    return StyleRef().IsHorizontalWritingMode() ? offset
-                                                : offset.TransposedSize();
-  }
-
   // If needed, populates StickyPositionConstraints, setting the sticky box
   // rect, containing block rect and updating the constraint offsets according
   // to the available space, and returns true. Otherwise returns false.
@@ -159,8 +149,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     GetMutableForPainting().FirstFragment().SetStickyConstraints(constraints);
   }
-
-  PhysicalOffset OffsetForInFlowPosition() const;
 
   // IE extensions. Used to calculate offsetWidth/Height. Overridden by inlines
   // (LayoutInline) to return the remaining width on a given line (and the

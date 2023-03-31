@@ -1337,8 +1337,9 @@ PositionWithAffinity LayoutBlock::PositionForPointRespectingEditingBoundaries(
     const PhysicalOffset& point_in_parent_coordinates) const {
   NOT_DESTROYED();
   PhysicalOffset child_location = child.PhysicalLocation();
-  if (child.IsInFlowPositioned())
-    child_location += child.OffsetForInFlowPosition();
+  if (child.IsStickyPositioned()) {
+    child_location += child.StickyPositionOffset();
+  }
 
   PhysicalOffset point_in_child_coordinates =
       point_in_parent_coordinates - child_location;

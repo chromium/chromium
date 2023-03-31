@@ -3264,8 +3264,7 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   // TODO(smcgruer): This is inefficient. Instead we should avoid including
   // offsetForInFlowPosition in offsetFromContainer when ignoring sticky.
   if (mode & kIgnoreStickyOffset && IsStickyPositioned()) {
-    container_offset -=
-        To<LayoutBoxModelObject>(this)->OffsetForInFlowPosition();
+    container_offset -= To<LayoutBoxModelObject>(this)->StickyPositionOffset();
   }
 
   if (IsLayoutFlowThread()) {

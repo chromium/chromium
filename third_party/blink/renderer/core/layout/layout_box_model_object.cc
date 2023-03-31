@@ -633,136 +633,6 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
   return false;
 }
 
-PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
-  NOT_DESTROYED();
-  DCHECK(IsRelPositioned());
-  LayoutBlock* containing_block = ContainingBlock();
-
-  // If this object was placed by LayoutNG it's offset already includes the
-  // relative adjustment.
-  if (IsLayoutNGContainingBlock(containing_block))
-    return PhysicalOffset();
-
-  PhysicalOffset offset;
-
-  // Objects that shrink to avoid floats normally use available line width when
-  // computing containing block width. However in the case of relative
-  // positioning using percentages, we can't do this. The offset should always
-  // be resolved using the available width of the containing block. Therefore we
-  // don't use containingBlockLogicalWidthForContent() here, but instead
-  // explicitly call availableWidth on our containing block.
-  // https://drafts.csswg.org/css-position-3/#rel-pos
-  // However for grid items the containing block is the grid area, so offsets
-  // should be resolved against that:
-  // https://drafts.csswg.org/css-grid/#grid-item-sizing
-  absl::optional<LayoutUnit> left;
-  absl::optional<LayoutUnit> right;
-  if (!StyleRef().Left().IsAuto() || !StyleRef().Right().IsAuto()) {
-    LayoutUnit available_width = HasOverrideContainingBlockContentWidth()
-                                     ? OverrideContainingBlockContentWidth()
-                                     : containing_block->AvailableWidth();
-    if (!StyleRef().Left().IsAuto())
-      left = ValueForLength(StyleRef().Left(), available_width);
-    if (!StyleRef().Right().IsAuto())
-      right = ValueForLength(StyleRef().Right(), available_width);
-  }
-  if (!left && !right) {
-    left = LayoutUnit();
-    right = LayoutUnit();
-  }
-  if (!left)
-    left = -right.value();
-  if (!right)
-    right = -left.value();
-  bool is_ltr = containing_block->StyleRef().IsLeftToRightDirection();
-  WritingMode writing_mode = containing_block->StyleRef().GetWritingMode();
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      if (is_ltr)
-        offset.left += left.value();
-      else
-        offset.left = -right.value();
-      break;
-    case WritingMode::kVerticalRl:
-      offset.left = -right.value();
-      break;
-    case WritingMode::kVerticalLr:
-      offset.left += left.value();
-      break;
-    // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-    default:
-      break;
-  }
-
-  // If the containing block of a relatively positioned element does not specify
-  // a height, a percentage top or bottom offset should be resolved as auto.
-  // An exception to this is if the containing block has the WinIE quirk where
-  // <html> and <body> assume the size of the viewport. In this case, calculate
-  // the percent offset based on this height.
-  // See <https://bugs.webkit.org/show_bug.cgi?id=26396>.
-  // Another exception is a grid item, as the containing block is the grid area:
-  // https://drafts.csswg.org/css-grid/#grid-item-sizing
-
-  absl::optional<LayoutUnit> top;
-  absl::optional<LayoutUnit> bottom;
-  bool has_override_containing_block_content_height =
-      HasOverrideContainingBlockContentHeight();
-  if (!StyleRef().Top().IsAuto() &&
-      (!containing_block->HasAutoHeightOrContainingBlockWithAutoHeight() ||
-       !StyleRef().Top().IsPercentOrCalc() ||
-       containing_block->StretchesToViewport() ||
-       has_override_containing_block_content_height)) {
-    // TODO(rego): The computation of the available height is repeated later for
-    // "bottom". We could refactor this and move it to some common code for both
-    // ifs, however moving it outside of the ifs is not possible as it'd cause
-    // performance regressions (see crbug.com/893884).
-    top = ValueForLength(StyleRef().Top(),
-                         has_override_containing_block_content_height
-                             ? OverrideContainingBlockContentHeight()
-                             : containing_block->AvailableHeight());
-  }
-  if (!StyleRef().Bottom().IsAuto() &&
-      (!containing_block->HasAutoHeightOrContainingBlockWithAutoHeight() ||
-       !StyleRef().Bottom().IsPercentOrCalc() ||
-       containing_block->StretchesToViewport() ||
-       has_override_containing_block_content_height)) {
-    // TODO(rego): Check comment above for "top", it applies here too.
-    bottom = ValueForLength(StyleRef().Bottom(),
-                            has_override_containing_block_content_height
-                                ? OverrideContainingBlockContentHeight()
-                                : containing_block->AvailableHeight());
-  }
-  if (!top && !bottom) {
-    top = LayoutUnit();
-    bottom = LayoutUnit();
-  }
-  if (!top)
-    top = -bottom.value();
-  if (!bottom)
-    bottom = -top.value();
-  switch (writing_mode) {
-    case WritingMode::kHorizontalTb:
-      offset.top += top.value();
-      break;
-    case WritingMode::kVerticalRl:
-      if (is_ltr)
-        offset.top += top.value();
-      else
-        offset.top = -bottom.value();
-      break;
-    case WritingMode::kVerticalLr:
-      if (is_ltr)
-        offset.top += top.value();
-      else
-        offset.top = -bottom.value();
-      break;
-    // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-    default:
-      break;
-  }
-  return offset;
-}
-
 LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
   return ContainingBlock();
 }
@@ -999,8 +869,9 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
   if (const LayoutBoxModelObject* offset_parent_object =
           offset_parent->GetLayoutBoxModelObject()) {
     if (!IsOutOfFlowPositioned()) {
-      if (IsInFlowPositioned())
-        reference_point += OffsetForInFlowPosition();
+      if (IsStickyPositioned()) {
+        reference_point += StickyPositionOffset();
+      }
 
       // Note that we may fail to find |offsetParent| while walking the
       // container chain, if |offsetParent| is an inline split into
@@ -1030,16 +901,6 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
 
     if (offset_parent_object->IsLayoutInline()) {
       const auto* inline_parent = To<LayoutInline>(offset_parent_object);
-
-      if (IsBox() && IsOutOfFlowPositioned() &&
-          inline_parent->CanContainOutOfFlowPositionedElement(
-              StyleRef().GetPosition())) {
-        // Offset for out of flow positioned elements with inline containers is
-        // a special case in the CSS spec
-        reference_point += inline_parent->OffsetForInFlowPositionedInline(
-            *To<LayoutBox>(this));
-      }
-
       reference_point -= inline_parent->FirstLineBoxTopLeft();
     }
 
@@ -1050,17 +911,6 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
   }
 
   return reference_point;
-}
-
-PhysicalOffset LayoutBoxModelObject::OffsetForInFlowPosition() const {
-  NOT_DESTROYED();
-  if (IsRelPositioned())
-    return RelativePositionOffset();
-
-  if (IsStickyPositioned())
-    return StickyPositionOffset();
-
-  return PhysicalOffset();
 }
 
 LayoutUnit LayoutBoxModelObject::OffsetLeft(const Element* parent) const {

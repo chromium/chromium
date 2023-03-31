@@ -1427,12 +1427,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return positioned_state_ == kIsOutOfFlowPositioned;
   }
-  // relative or sticky positioning
-  bool IsInFlowPositioned() const {
-    NOT_DESTROYED();
-    return positioned_state_ == kIsRelativelyPositioned ||
-           positioned_state_ == kIsStickyPositioned;
-  }
   bool IsRelPositioned() const {
     NOT_DESTROYED();
     return positioned_state_ == kIsRelativelyPositioned;

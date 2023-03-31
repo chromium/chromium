@@ -1227,14 +1227,8 @@ bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
       preserve3d ? TransformState::kAccumulateTransform
                  : TransformState::kFlattenTransform;
 
-  if (StyleRef().HasInFlowPosition() && Layer()) {
-    // Apply the in-flow position offset when invalidating a rectangle. The
-    // layer is translated, but the layout box isn't, so we need to do this to
-    // get the right dirty rect. Since this is called from LayoutObject::
-    // setStyle, the relative position flag on the LayoutObject has been
-    // cleared, so use the one on the style().
-    transform_state.Move(Layer()->GetLayoutObject().OffsetForInFlowPosition(),
-                         accumulation);
+  if (IsStickyPositioned()) {
+    transform_state.Move(StickyPositionOffset(), accumulation);
   }
 
   LayoutBox* container_box = DynamicTo<LayoutBox>(container);
@@ -1254,8 +1248,9 @@ PhysicalOffset LayoutInline::OffsetFromContainerInternal(
   DCHECK_EQ(container, Container());
 
   PhysicalOffset offset;
-  if (IsInFlowPositioned())
-    offset += OffsetForInFlowPosition();
+  if (IsStickyPositioned()) {
+    offset += StickyPositionOffset();
+  }
 
   if (container->IsScrollContainer())
     offset += OffsetFromScrollableContainer(container, ignore_scroll_offset);
@@ -1265,7 +1260,7 @@ PhysicalOffset LayoutInline::OffsetFromContainerInternal(
 
 PaintLayerType LayoutInline::LayerTypeRequired() const {
   NOT_DESTROYED();
-  return IsInFlowPositioned() || CreatesGroup() ||
+  return IsRelPositioned() || IsStickyPositioned() || CreatesGroup() ||
                  StyleRef().ShouldCompositeForCurrentAnimations() ||
                  ShouldApplyPaintContainment()
              ? kNormalPaintLayer
@@ -1388,54 +1383,6 @@ LayoutUnit LayoutInline::BaselinePosition(
                       font_metrics.Height()) /
                          2)
                         .ToInt());
-}
-
-PhysicalOffset LayoutInline::OffsetForInFlowPositionedInline(
-    const LayoutBox& child) const {
-  NOT_DESTROYED();
-  // TODO(layout-dev): This function isn't right with mixed writing modes,
-  // but LayoutNG has fixed the issue. This function seems to always return
-  // zero in LayoutNG. We should probably remove this function for LayoutNG.
-
-  DCHECK(IsInFlowPositioned() || StyleRef().HasNonInitialFilter() ||
-         StyleRef().HasNonInitialBackdropFilter());
-  if (!IsInFlowPositioned() && !StyleRef().HasNonInitialFilter() &&
-      !StyleRef().HasNonInitialBackdropFilter()) {
-    DCHECK(CreatesGroup())
-        << "Inlines with filters or backdrop-filters should create a group";
-    return PhysicalOffset();
-  }
-
-  // When we have an enclosing relpositioned inline, we need to add in the
-  // offset of the first line box from the rest of the content, but only in the
-  // cases where we know we're positioned relative to the inline itself.
-
-  LayoutSize logical_offset;
-  LayoutUnit inline_position;
-  LayoutUnit block_position;
-  if (FirstLineBox()) {
-    inline_position = FirstLineBox()->LogicalLeft();
-    block_position = FirstLineBox()->LogicalTop();
-  } else {
-    DCHECK(Layer());
-    inline_position = Layer()->StaticInlinePosition();
-    block_position = Layer()->StaticBlockPosition();
-  }
-
-  // Per http://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width an
-  // absolute positioned box with a static position should locate itself as
-  // though it is a normal flow box in relation to its containing block.
-  if (!child.StyleRef().HasStaticInlinePosition(
-          StyleRef().IsHorizontalWritingMode()))
-    logical_offset.SetWidth(inline_position);
-
-  if (!child.StyleRef().HasStaticBlockPosition(
-          StyleRef().IsHorizontalWritingMode()))
-    logical_offset.SetHeight(block_position);
-
-  return PhysicalOffset(StyleRef().IsHorizontalWritingMode()
-                            ? logical_offset
-                            : logical_offset.TransposedSize());
 }
 
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {

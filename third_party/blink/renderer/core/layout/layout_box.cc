@@ -3111,8 +3111,9 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForGetComputedStyle() const {
   auto* cb = To<LayoutBoxModelObject>(Container());
   LayoutUnit height = ContainingBlockLogicalHeightForPositioned(
       cb, /* check_for_perpendicular_writing_mode */ false);
-  if (IsInFlowPositioned())
+  if (IsRelPositioned() || IsStickyPositioned()) {
     height -= cb->PaddingLogicalHeight();
+  }
   return height;
 }
 
@@ -3186,18 +3187,14 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
   DCHECK_EQ(o, Container());
 
   PhysicalOffset offset;
-  if (IsInFlowPositioned())
-    offset += OffsetForInFlowPosition();
-
   offset += PhysicalLocation();
+
+  if (IsStickyPositioned()) {
+    offset += StickyPositionOffset();
+  }
 
   if (o->IsScrollContainer())
     offset += OffsetFromScrollableContainer(o, ignore_scroll_offset);
-
-  if (IsOutOfFlowPositioned() && o->IsLayoutInline() &&
-      o->CanContainOutOfFlowPositionedElement(StyleRef().GetPosition())) {
-    offset += To<LayoutInline>(o)->OffsetForInFlowPositionedInline(*this);
-  }
 
   if (HasAnchorScrollTranslation())
     offset += AnchorScrollTranslationOffset();
@@ -3849,19 +3846,8 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     container_offset += PhysicalLocation();
   }
 
-  const ComputedStyle& style_to_use = StyleRef();
-  EPosition position = style_to_use.GetPosition();
-  if (IsOutOfFlowPositioned() && container->IsLayoutInline() &&
-      container->CanContainOutOfFlowPositionedElement(position)) {
-    container_offset +=
-        To<LayoutInline>(container)->OffsetForInFlowPositionedInline(*this);
-  } else if (style_to_use.HasInFlowPosition() && Layer()) {
-    // Apply the relative position offset when invalidating a rectangle. The
-    // layer is translated, but the layout box isn't, so we need to do this to
-    // get the right dirty rect.  Since this is called from
-    // LayoutObject::setStyle, the relative position flag on the LayoutObject
-    // has been cleared, so use the one on the style().
-    container_offset += OffsetForInFlowPosition();
+  if (IsStickyPositioned()) {
+    container_offset += StickyPositionOffset();
   } else if (UNLIKELY(HasAnchorScrollTranslation())) {
     container_offset += AnchorScrollTranslationOffset();
   }
@@ -5522,22 +5508,9 @@ void LayoutBox::ComputeInlineStaticDistance(
              fragment_builder->GetLayoutObject() == curr->Parent())
                 ? fragment_builder->GetChildOffset(curr).inline_offset
                 : box->LogicalLeft();
-        if (box->IsInFlowPositioned())
-          static_position += box->OffsetForInFlowPosition().left;
         if (curr->IsInsideFlowThread()) {
           static_position += AccumulateStaticOffsetForFlowThread(
               *box, static_position, static_block_position);
-        }
-      } else if (curr->IsInline() && curr->IsInFlowPositioned()) {
-        if (!curr->IsInLayoutNGInlineFormattingContext()) {
-          if (!curr->StyleRef().LogicalLeft().IsAuto())
-            static_position +=
-                ValueForLength(curr->StyleRef().LogicalLeft(),
-                               curr->ContainingBlock()->AvailableWidth());
-          else
-            static_position -=
-                ValueForLength(curr->StyleRef().LogicalRight(),
-                               curr->ContainingBlock()->AvailableWidth());
         }
       }
     }
@@ -5561,24 +5534,10 @@ void LayoutBox::ComputeInlineStaticDistance(
                fragment_builder->GetLayoutObject() == curr->Parent())
                   ? fragment_builder->GetChildOffset(curr).inline_offset
                   : box->LogicalLeft();
-          if (box->IsInFlowPositioned()) {
-            static_position -= box->OffsetForInFlowPosition().left;
-          }
           if (curr->IsInsideFlowThread()) {
             static_position -= AccumulateStaticOffsetForFlowThread(
                 *box, static_position, static_block_position);
           }
-        }
-      } else if (curr->IsInline() && curr->IsInFlowPositioned()) {
-        if (!curr->IsInLayoutNGInlineFormattingContext()) {
-          if (!curr->StyleRef().LogicalLeft().IsAuto())
-            static_position -=
-                ValueForLength(curr->StyleRef().LogicalLeft(),
-                               curr->ContainingBlock()->AvailableWidth());
-          else
-            static_position +=
-                ValueForLength(curr->StyleRef().LogicalRight(),
-                               curr->ContainingBlock()->AvailableWidth());
         }
       }
       if (curr == container_block)
@@ -6026,8 +5985,6 @@ void LayoutBox::ComputeBlockStaticDistance(
          fragment_builder->GetLayoutObject() == box.Parent())
             ? fragment_builder->GetChildOffset(&box).block_offset
             : box.LogicalTop();
-    if (box.IsInFlowPositioned())
-      static_logical_top += box.OffsetForInFlowPosition().top;
     if (!box.IsLayoutFlowThread())
       continue;
     // We're walking out of a flowthread here. This flow thread is not in the
@@ -7461,16 +7418,13 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
   }
 
   bool has_transform = HasLayer() && Layer()->Transform();
-  if (IsInFlowPositioned() || has_transform) {
+  if (has_transform) {
     // If we are relatively positioned or if we have a transform, then we have
     // to convert this rectangle into physical coordinates, apply relative
     // positioning and transforms to it, and then convert it back.
     DeprecatedFlipForWritingMode(rect);
 
     PhysicalOffset container_offset;
-
-    if (IsRelPositioned())
-      container_offset = RelativePositionOffset();
 
     if (ShouldUseTransformFromContainer(container)) {
       gfx::Transform t;

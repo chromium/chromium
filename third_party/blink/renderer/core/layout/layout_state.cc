@@ -90,15 +90,6 @@ LayoutState::LayoutState(LayoutBox& layout_object,
       next_->pagination_offset_ + layout_object.LocationOffset();
   if (!layout_object.IsOutOfFlowPositioned())
     return;
-  if (LayoutObject* container = layout_object.Container()) {
-    if (container->StyleRef().HasInFlowPosition() &&
-        container->IsLayoutInline()) {
-      pagination_offset_ += To<LayoutInline>(container)
-                                ->OffsetForInFlowPositionedInline(layout_object)
-                                .ToLayoutSize();
-    }
-  }
-
   // FIXME: <http://bugs.webkit.org/show_bug.cgi?id=13443> Apply control clip if
   // present.
 }

@@ -230,8 +230,8 @@ class LineLayoutItem {
     return layout_object_->ResolveColor(style_to_use, color_property);
   }
 
-  bool IsInFlowPositioned() const {
-    return layout_object_->IsInFlowPositioned();
+  bool IsStickyPositioned() const {
+    return layout_object_->IsStickyPositioned();
   }
 
   bool IsRelPositioned() const { return layout_object_->IsRelPositioned(); }

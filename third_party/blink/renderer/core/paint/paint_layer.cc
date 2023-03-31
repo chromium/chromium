@@ -590,28 +590,6 @@ void PaintLayer::UpdateLayerPosition() {
     }
   }
 
-  if (PaintLayer* containing_layer = ContainingLayer()) {
-    auto& container = containing_layer->GetLayoutObject();
-    if (GetLayoutObject().IsOutOfFlowPositioned() &&
-        container.IsLayoutInline() &&
-        container.CanContainOutOfFlowPositionedElement(
-            GetLayoutObject().StyleRef().GetPosition())) {
-      // Adjust offset for absolute under in-flow positioned inline.
-      PhysicalOffset offset =
-          To<LayoutInline>(container).OffsetForInFlowPositionedInline(
-              To<LayoutBox>(GetLayoutObject()));
-      local_point += offset;
-    }
-  }
-
-  if (GetLayoutObject().IsInFlowPositioned() &&
-      GetLayoutObject().IsRelPositioned()) {
-    auto new_offset = GetLayoutObject().OffsetForInFlowPosition();
-    if (rare_data_ || !new_offset.IsZero())
-      EnsureRareData().offset_for_in_flow_rel_position = new_offset;
-  } else if (rare_data_) {
-    rare_data_->offset_for_in_flow_rel_position = PhysicalOffset();
-  }
   location_without_position_offset_ = local_point;
 
 #if DCHECK_IS_ON()
@@ -965,10 +943,8 @@ static inline const PaintLayer* AccumulateOffsetTowardsAncestor(
     return nullptr;
 
   location += layer->LocationWithoutPositionOffset();
-  if (layer->GetLayoutObject().IsRelPositioned()) {
-    location += layer->OffsetForInFlowRelPosition();
-  } else if (layer->GetLayoutObject().IsInFlowPositioned()) {
-    location += layer->GetLayoutObject().OffsetForInFlowPosition();
+  if (layer->GetLayoutObject().IsStickyPositioned()) {
+    location += layer->GetLayoutObject().StickyPositionOffset();
   } else if (layer->GetLayoutObject().IsBox() &&
              layer->GetLayoutBox()->HasAnchorScrollTranslation()) {
     location += layer->GetLayoutBox()->AnchorScrollTranslationOffset();

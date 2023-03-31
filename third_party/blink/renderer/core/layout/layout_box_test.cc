@@ -1335,27 +1335,21 @@ TEST_F(LayoutBoxTest, LocationOfRelativeChildWithContainerScrollbars) {
 
   EXPECT_EQ(LayoutPoint(178, 177), normal->Location());
   EXPECT_EQ(PhysicalOffset(178, 177), normal->PhysicalLocation());
-  EXPECT_EQ(PhysicalOffset(0, 0), normal->OffsetForInFlowPosition());
 
   EXPECT_EQ(LayoutPoint(278, 107), vlr->Location());
   EXPECT_EQ(PhysicalOffset(278, 107), vlr->PhysicalLocation());
-  EXPECT_EQ(PhysicalOffset(0, 0), vlr->OffsetForInFlowPosition());
 
   EXPECT_EQ(LayoutPoint(77, 107), vrl->Location());
   EXPECT_EQ(PhysicalOffset(313, 107), vrl->PhysicalLocation());
-  EXPECT_EQ(PhysicalOffset(0, 0), vrl->OffsetForInFlowPosition());
 
   EXPECT_EQ(LayoutPoint(428, 177), rtl->Location());
   EXPECT_EQ(PhysicalOffset(428, 177), rtl->PhysicalLocation());
-  EXPECT_EQ(PhysicalOffset(0, 0), rtl->OffsetForInFlowPosition());
 
   EXPECT_EQ(LayoutPoint(278, 211), rtl_vlr->Location());
   EXPECT_EQ(PhysicalOffset(278, 211), rtl_vlr->PhysicalLocation());
-  EXPECT_EQ(PhysicalOffset(0, 0), rtl_vlr->OffsetForInFlowPosition());
 
   EXPECT_EQ(LayoutPoint(77, 211), rtl_vrl->Location());
   EXPECT_EQ(PhysicalOffset(313, 211), rtl_vrl->PhysicalLocation());
-  EXPECT_EQ(PhysicalOffset(0, 0), rtl_vrl->OffsetForInFlowPosition());
 }
 
 TEST_F(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
