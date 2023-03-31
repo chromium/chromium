@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
@@ -32,6 +33,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
@@ -626,6 +628,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
              "name": "Get Contexts",
              "version": "0.1",
              "manifest_version": 3,
+             "permissions": ["offscreen"],
              "background": {
                "service_worker": "background.js"
              }
@@ -635,6 +638,8 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
                         "// Intentionally blank");
     test_dir_.WriteFile(FILE_PATH_LITERAL("page.html"),
                         "<html>Hello, world!</html>");
+    test_dir_.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
+                        "<html>Hello, offscreen world!</html>");
     extension_ = LoadExtension(test_dir_.UnpackedPath());
     ASSERT_TRUE(extension_);
   }
@@ -873,6 +878,63 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 
-// TODO(crbug/1426192): Add tests for offscreen documents, popups, etc.
+// Tests retrieving offscreen documents with `runtime.getContexts()`.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
+  // Open a new offscreen document.
+  static constexpr char kOpenOffscreenDocumentScript[] =
+      R"((async () => {
+           await chrome.offscreen.createDocument(
+               {
+                   url: 'offscreen.html',
+                   reasons: ['DOM_PARSER'],
+                   justification: 'testing'
+               });
+           chrome.test.sendScriptResult('done');
+         })();)";
+  base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension().id(), kOpenOffscreenDocumentScript,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_EQ("done", script_result);
+
+  OffscreenDocumentManager* offscreen_manager =
+      OffscreenDocumentManager::Get(profile());
+  const OffscreenDocumentHost* offscreen_document =
+      offscreen_manager->GetOffscreenDocumentForExtension(extension());
+  ASSERT_TRUE(offscreen_document);
+
+  content::RenderFrameHost* offscreen_frame_host =
+      offscreen_document->web_contents()->GetPrimaryMainFrame();
+  int expected_frame_id =
+      ExtensionApiFrameIdMap::GetFrameId(offscreen_frame_host);
+  std::string expected_document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(offscreen_frame_host).ToString();
+  std::string expected_frame_url =
+      extension().GetResourceURL("offscreen.html").spec();
+  std::string expected_origin = extension().origin().Serialize();
+
+  // Query for offscreen document contexts. There should only be one.
+  base::Value background_contexts =
+      GetContexts(R"({"contextTypes": ["OFFSCREEN_DOCUMENT"]})");
+
+  // Verify the properties of the returned context.
+  static constexpr char kExpectedTemplate[] =
+      R"([{
+            "contextType": "OFFSCREEN_DOCUMENT",
+            "contextId": "",
+            "tabId": -1,
+            "windowId": -1,
+            "frameId": %d,
+            "documentId": "%s",
+            "documentUrl": "%s",
+            "documentOrigin": "%s",
+            "incognito": false
+         }])";
+  std::string expected = base::StringPrintf(
+      kExpectedTemplate, expected_frame_id, expected_document_id.c_str(),
+      expected_frame_url.c_str(), expected_origin.c_str());
+  EXPECT_THAT(background_contexts, base::test::IsJson(expected));
+}
+
+// TODO(crbug/1426192): Add tests for popups, incognito, etc.
 
 }  // namespace extensions
