@@ -1346,6 +1346,9 @@ extern const char kOptimizationGuideInstallWideModelStoreDescription[];
 extern const char kOptimizationGuidePushNotificationName[];
 extern const char kOptimizationGuidePushNotificationDescription[];
 
+extern const char kOsFeedbackJellyName[];
+extern const char kOsFeedbackJellyDescription[];
+
 extern const char kOsSettingsAppNotificationsPageName[];
 extern const char kOsSettingsAppNotificationsPageDescription[];
 

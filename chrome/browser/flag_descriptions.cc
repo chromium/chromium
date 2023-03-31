@@ -5948,6 +5948,12 @@ const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
     "detection screen UI and related infrastructure.";
 
+const char kOsFeedbackJellyName[] =
+    "Enable jelly colors for the OS Feedback app";
+const char kOsFeedbackJellyDescription[] =
+    "Enable jelly colors for the OS Feedback app. Requires jelly-colors flag "
+    "to be enabled.";
+
 const char kOsSettingsAppBadgingToggleName[] =
     "ChromeOS Settings App Badging Toggle";
 const char kOsSettingsAppBadgingToggleDescription[] =
