@@ -156,13 +156,6 @@ class RootInlineBox : public InlineFlowBox {
       LayoutUnit,
       bool only_editable_leaves = false) const;
 
-  void AppendFloat(LayoutBox* floating_box);
-
-  HeapVector<Member<LayoutBox>>* FloatsPtr() {
-    DCHECK(!IsDirty());
-    return floats_;
-  }
-
   void ExtractLineBoxFromLayoutObject() final;
   void AttachLineBoxToLayoutObject() final;
   void RemoveLineBoxFromLayoutObject() final;
@@ -225,9 +218,6 @@ class RootInlineBox : public InlineFlowBox {
   // RootInlineBox cannot have LineLayoutBox itself because it consists of
   // WeakPersistent. Use LineBreakObj() to create LineLayoutBox.
   Member<LayoutObject> line_break_obj_;
-  // Floats hanging off the line are pushed into this vector during layout. It
-  // is only good for as long as the line has not been marked dirty.
-  Member<HeapVector<Member<LayoutBox>>> floats_;
 
   scoped_refptr<BidiContext> line_break_context_;
 

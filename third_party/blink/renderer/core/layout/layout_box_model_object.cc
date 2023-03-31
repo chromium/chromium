@@ -1038,19 +1038,6 @@ void LayoutBoxModelObject::MoveChildTo(
   DCHECK_EQ(this, child->Parent());
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
 
-  // If a child is moving from a block-flow to an inline-flow parent then any
-  // floats currently intruding into the child can no longer do so. This can
-  // happen if a block becomes floating or out-of-flow and is moved to an
-  // anonymous block. Remove all floats from their float-lists immediately as
-  // markAllDescendantsWithFloatsForLayout won't attempt to remove floats from
-  // parents that have inline-flow if we try later.
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-  if (child_block_flow && to_box_model_object->ChildrenInline() &&
-      !ChildrenInline()) {
-    child_block_flow->RemoveFloatingObjectsFromDescendants();
-    DCHECK(!child_block_flow->ContainsFloats());
-  }
-
   if (full_remove_insert && IsLayoutBlock() && child->IsBox())
     To<LayoutBox>(child)->RemoveFromPercentHeightContainer();
 
@@ -1082,9 +1069,6 @@ void LayoutBoxModelObject::MoveChildrenTo(
   if (full_remove_insert && block) {
     block->RemovePositionedObjects(nullptr);
     block->RemoveFromPercentHeightContainer();
-    auto* block_flow = DynamicTo<LayoutBlockFlow>(block);
-    if (block_flow)
-      block_flow->RemoveFloatingObjects();
   }
 
   DCHECK(!before_child || to_box_model_object == before_child->Parent());

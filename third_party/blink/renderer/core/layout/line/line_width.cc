@@ -150,8 +150,7 @@ void LineWidth::WrapNextToShapeOutside(bool is_first_line) {
       kPositionOfInteriorLineBoxes);
   LayoutUnit line_logical_top = block_.LogicalHeight();
   LayoutUnit new_line_top = line_logical_top;
-  LayoutUnit float_logical_bottom =
-      block_.NextFloatLogicalBottomBelow(line_logical_top);
+  LayoutUnit float_logical_bottom = line_logical_top;
 
   LayoutUnit new_line_width;
   LayoutUnit new_line_left = left_;
@@ -175,34 +174,12 @@ void LineWidth::WrapNextToShapeOutside(bool is_first_line) {
 void LineWidth::FitBelowFloats(bool is_first_line) {
   DCHECK(!committed_width_);
   DCHECK(!FitsOnLine());
-  block_.PlaceNewFloats(block_.LogicalHeight(), this);
 
-  LayoutUnit float_logical_bottom;
   LayoutUnit last_float_logical_bottom = block_.LogicalHeight();
   LayoutUnit new_line_width = available_width_;
   LayoutUnit new_line_left = left_;
   LayoutUnit new_line_right = right_;
 
-  FloatingObject* last_float_from_previous_line =
-      block_.LastFloatFromPreviousLine();
-  if (last_float_from_previous_line &&
-      last_float_from_previous_line->GetLayoutObject()->GetShapeOutsideInfo())
-    return WrapNextToShapeOutside(is_first_line);
-
-  while (true) {
-    float_logical_bottom =
-        block_.NextFloatLogicalBottomBelow(last_float_logical_bottom);
-    if (float_logical_bottom <= last_float_logical_bottom)
-      break;
-
-    new_line_width =
-        AvailableWidthAtOffset(block_, float_logical_bottom, IndentText(),
-                               new_line_left, new_line_right);
-    last_float_logical_bottom = float_logical_bottom;
-
-    if (new_line_width >= uncommitted_width_)
-      break;
-  }
   UpdateLineDimension(last_float_logical_bottom, LayoutUnit(new_line_width),
                       new_line_left, new_line_right);
 }

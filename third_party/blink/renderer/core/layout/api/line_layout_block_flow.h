@@ -14,7 +14,6 @@ namespace blink {
 
 class LayoutBlockFlow;
 class FloatingObject;
-class LineWidth;
 
 class LineLayoutBlockFlow : public LineLayoutBox {
  public:
@@ -113,38 +112,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
         *To<LayoutBox>(box.GetLayoutObject()), logical_top, indent_text);
   }
 
-  FloatingObject* InsertFloatingObject(LayoutBox& box) {
-    return ToBlockFlow()->InsertFloatingObject(box);
-  }
-
-  FloatingObject* InsertFloatingObject(LineLayoutBox box) {
-    return ToBlockFlow()->InsertFloatingObject(
-        *To<LayoutBox>(box.GetLayoutObject()));
-  }
-
-  FloatingObject* LastPlacedFloat(
-      FloatingObjectSetIterator* iterator = nullptr) const {
-    return ToBlockFlow()->LastPlacedFloat(iterator);
-  }
-
-  bool PlaceNewFloats(LayoutUnit logical_top_margin_edge, LineWidth* width) {
-    return ToBlockFlow()->PlaceNewFloats(logical_top_margin_edge, width);
-  }
-
-  void PositionAndLayoutFloat(FloatingObject& floating_object,
-                              LayoutUnit logical_top_margin_edge) {
-    ToBlockFlow()->PositionAndLayoutFloat(floating_object,
-                                          logical_top_margin_edge);
-  }
-
-  LayoutUnit NextFloatLogicalBottomBelow(LayoutUnit logical_height) const {
-    return ToBlockFlow()->NextFloatLogicalBottomBelow(logical_height);
-  }
-
-  FloatingObject* LastFloatFromPreviousLine() const {
-    return ToBlockFlow()->LastFloatFromPreviousLine();
-  }
-
   // TODO(dgrogan/eae): *ForFloat: add these methods to the FloatingObject
   // class. Be consistent with use of start/end/before/after instead of
   // logicalTop/Left etc.
@@ -192,8 +159,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
   LayoutUnit LogicalWidth() { return ToBlockFlow()->LogicalWidth(); }
 
   LineBoxList* LineBoxes() { return ToBlockFlow()->LineBoxes(); }
-
-  bool ContainsFloats() const { return ToBlockFlow()->ContainsFloats(); }
 
   InlineBox* CreateAndAppendRootInlineBox() {
     return ToBlockFlow()->CreateAndAppendRootInlineBox();

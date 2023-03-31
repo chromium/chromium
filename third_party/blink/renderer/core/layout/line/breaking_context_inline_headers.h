@@ -83,7 +83,6 @@ class BreakingContext {
         include_end_width_(true),
         auto_wrap_(false),
         auto_wrap_was_ever_true_on_line_(false),
-        floats_fit_on_line_(true),
         collapse_white_space_(false),
         starting_new_paragraph_(line_info_.PreviousLineBrokeCleanly()),
         at_end_(false),
@@ -101,7 +100,6 @@ class BreakingContext {
 
   void HandleBR(EClear&);
   void HandleOutOfFlowPositioned(Vector<LineLayoutBox>& positioned_objects);
-  void HandleFloat();
   void HandleEmptyInline();
   void HandleReplaced();
   bool HandleText(WordMeasurements&, bool& hyphenated);
@@ -214,7 +212,6 @@ class BreakingContext {
   bool include_end_width_;
   bool auto_wrap_;
   bool auto_wrap_was_ever_true_on_line_;
-  bool floats_fit_on_line_;
   bool collapse_white_space_;
   bool starting_new_paragraph_;
   bool at_end_;
@@ -350,7 +347,7 @@ inline void BreakingContext::SkipTrailingWhitespace(InlineIterator& iterator,
     if (item.IsOutOfFlowPositioned())
       SetStaticPositions(block_, LineLayoutBox(item), kDoNotIndentText);
     else if (item.IsFloating())
-      block_.InsertFloatingObject(LineLayoutBox(item));
+      NOTREACHED();
     iterator.Increment();
   }
 }
@@ -530,58 +527,6 @@ inline void BreakingContext::HandleOutOfFlowPositioned(
       InlineLogicalWidthFromAncestorsIfNeeded(box).ToFloat());
   // Reset prior line break context characters.
   layout_text_info_.line_break_iterator_.ResetPriorContext();
-}
-
-inline void BreakingContext::HandleFloat() {
-  LineLayoutBox float_box(current_.GetLineLayoutItem());
-  FloatingObject* floating_object = block_.InsertFloatingObject(float_box);
-
-  if (floats_fit_on_line_) {
-    // We need to calculate the logical width of the float before we can tell
-    // whether it's going to fit on the line. That means that we need to
-    // position and lay it out. Note that we have to avoid positioning floats
-    // that have been placed prematurely: Sometimes, floats are inserted too
-    // early by skipTrailingWhitespace(), and later on they all get placed by
-    // the first float here in handleFloat(). Their position may then be wrong,
-    // but it's too late to do anything about that now. See crbug.com/671577
-    if (!floating_object->IsPlaced()) {
-      LayoutUnit logical_top = block_.LogicalHeight();
-      if (const FloatingObject* last_placed_float = block_.LastPlacedFloat()) {
-        logical_top = std::max(logical_top,
-                               block_.LogicalTopForFloat(*last_placed_float));
-      }
-      block_.PositionAndLayoutFloat(*floating_object, logical_top);
-    }
-
-    // Check if it fits in the current line; if it does, place it now,
-    // otherwise, place it after moving to next line (in newLine() func).
-    // FIXME: Bug 110372: Properly position multiple stacked floats with
-    // non-rectangular shape outside.
-    // When fitting the float on the line we need to treat the width on the line
-    // so far as though end-border, -padding and -margin from
-    // inline ancestors has been applied to the end of the previous inline box.
-    float width_from_ancestors =
-        InlineLogicalWidthFromAncestorsIfNeeded(float_box, false, true,
-                                                kUseCollapsibleWhiteSpace)
-            .ToFloat();
-    width_.AddUncommittedWidth(width_from_ancestors);
-    if (width_.FitsOnLine(
-            block_.LogicalWidthForFloat(*floating_object).ToFloat(),
-            kExcludeWhitespace)) {
-      block_.PlaceNewFloats(block_.LogicalHeight(), &width_);
-      if (line_break_.GetLineLayoutItem() == current_.GetLineLayoutItem()) {
-        DCHECK(!line_break_.Offset());
-        line_break_.Increment();
-      }
-    } else {
-      floats_fit_on_line_ = false;
-    }
-    width_.AddUncommittedWidth(-width_from_ancestors);
-  }
-  // Update prior line break context characters, using U+FFFD (OBJECT
-  // REPLACEMENT CHARACTER) for floating element.
-  layout_text_info_.line_break_iterator_.UpdatePriorContext(
-      kReplacementCharacter);
 }
 
 // This is currently just used for list markers and inline flows that have line

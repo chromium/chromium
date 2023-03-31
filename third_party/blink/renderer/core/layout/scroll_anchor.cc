@@ -103,18 +103,11 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
     local_bounds = box->PhysicalBorderBoxRect();
     // If we clip overflow then we can use the `PhysicalBorderBoxRect()`
-    // as our bounds. If not, we expand the bounds by the layout overflow and
-    // lowest floating object.
+    // as our bounds. If not, we expand the bounds by the layout overflow.
     if (!layout_object->ShouldClipOverflowAlongEitherAxis()) {
       // BorderBoxRect doesn't include overflow content and floats.
       LayoutUnit max_y =
           std::max(local_bounds.Bottom(), box->LayoutOverflowRect().MaxY());
-      auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(layout_object);
-      if (layout_block_flow && layout_block_flow->ContainsFloats()) {
-        // Note that lowestFloatLogicalBottom doesn't include floating
-        // grandchildren.
-        max_y = std::max(max_y, layout_block_flow->LowestFloatLogicalBottom());
-      }
       local_bounds.ShiftBottomEdgeTo(max_y);
     }
   } else if (layout_object->IsText()) {

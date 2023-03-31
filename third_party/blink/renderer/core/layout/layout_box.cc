@@ -583,13 +583,13 @@ void LayoutBox::RemoveFloatingOrPositionedChildFromBlockLists() {
     for (LayoutObject* curr = Parent(); curr; curr = curr->Parent()) {
       auto* curr_block_flow = DynamicTo<LayoutBlockFlow>(curr);
       if (curr_block_flow) {
-        if (!parent_block_flow || curr_block_flow->ContainsFloat(this))
+        if (!parent_block_flow) {
           parent_block_flow = curr_block_flow;
+        }
       }
     }
 
     if (parent_block_flow) {
-      parent_block_flow->MarkSiblingsWithFloatsForLayout(this);
       parent_block_flow->MarkAllDescendantsWithFloatsForLayout(this, false);
     }
   }
@@ -4241,14 +4241,6 @@ LayoutUnit LayoutBox::ComputeLogicalWidthUsing(
   LayoutUnit logical_width_result =
       FillAvailableMeasure(available_logical_width, margin_start, margin_end);
 
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(cb);
-  if (ShrinkToAvoidFloats() && child_block_flow &&
-      child_block_flow->ContainsFloats()) {
-    logical_width_result = std::min(
-        logical_width_result, ShrinkLogicalWidthToAvoidFloats(
-                                  margin_start, margin_end, child_block_flow));
-  }
-
   if (width_type == kMainOrPreferredSize &&
       SizesLogicalWidthToFitContent(logical_width)) {
     // Reset width so that any percent margins on inline children do not
@@ -4433,15 +4425,6 @@ void LayoutBox::ComputeMarginsForDirection(MarginDirection flow_direction,
       MinimumValueForLength(margin_end_length, container_width);
 
   LayoutUnit available_width = container_width;
-  auto* containing_block_flow = DynamicTo<LayoutBlockFlow>(containing_block);
-  if (CreatesNewFormattingContext() && containing_block_flow &&
-      containing_block_flow->ContainsFloats()) {
-    available_width = ContainingBlockAvailableLineWidth();
-    if (ShrinkToAvoidFloats() && available_width < container_width) {
-      margin_start = std::max(LayoutUnit(), margin_start_width);
-      margin_end = std::max(LayoutUnit(), margin_end_width);
-    }
-  }
 
   // CSS 2.1 (10.3.3): "If 'width' is not 'auto' and 'border-left-width' +
   // 'padding-left' + 'width' + 'padding-right' + 'border-right-width' (plus any

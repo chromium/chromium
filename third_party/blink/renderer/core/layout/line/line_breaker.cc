@@ -44,8 +44,7 @@ void LineBreaker::SkipLeadingWhitespace(InlineBidiResolver& resolver,
         line_info.IncrementRunsFromLeadingWhitespace();
       }
     } else if (line_layout_item.IsFloating()) {
-      block_.InsertFloatingObject(LineLayoutBox(line_layout_item));
-      block_.PlaceNewFloats(block_.LogicalHeight(), &width);
+      NOTREACHED();
     }
     resolver.GetPosition().Increment(&resolver);
   }
@@ -88,7 +87,7 @@ InlineIterator LineBreaker::NextLineBreak(InlineBidiResolver& resolver,
     } else if (context.CurrentItem().IsOutOfFlowPositioned()) {
       context.HandleOutOfFlowPositioned(positioned_objects_);
     } else if (context.CurrentItem().IsFloating()) {
-      context.HandleFloat();
+      NOTREACHED();
     } else if (context.CurrentItem().IsLayoutInline()) {
       context.HandleEmptyInline();
     } else if (context.CurrentItem().IsAtomicInlineLevel()) {

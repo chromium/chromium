@@ -321,7 +321,6 @@ void LayoutMultiColumnFlowThread::Populate() {
   // multicol content now. At this point there's obviously nothing after the
   // flow thread, but layoutObjects (column sets and spanners) will be inserted
   // there as we insert elements into the flow thread.
-  multicol_container->RemoveFloatingObjectsFromDescendants();
   multicol_container->MoveChildrenTo(this, multicol_container->FirstChild(),
                                      this, true);
 }

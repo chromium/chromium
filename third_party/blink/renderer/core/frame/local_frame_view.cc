@@ -1432,26 +1432,6 @@ bool LocalFrameView::HasOrthogonalWritingModeRoots() const {
   return !orthogonal_writing_mode_root_list_.IsEmpty();
 }
 
-static inline void RemoveFloatingObjectsForSubtreeRoot(LayoutObject& root) {
-  // TODO(kojii): Under certain conditions, moveChildTo() defers
-  // removeFloatingObjects() until the containing block layouts. For
-  // instance, when descendants of the moving child is floating,
-  // removeChildNode() does not clear them. In such cases, at this
-  // point, FloatingObjects may contain old or even deleted objects.
-  // Dealing this in markAllDescendantsWithFloatsForLayout() could
-  // solve, but since that is likely to suffer the performance and
-  // since the containing block of orthogonal writing mode roots
-  // having floats is very rare, prefer to re-create
-  // FloatingObjects.
-  if (LayoutBlock* cb = root.ContainingBlock()) {
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(cb);
-    if ((cb->NormalChildNeedsLayout() || cb->SelfNeedsLayout()) &&
-        child_block_flow) {
-      child_block_flow->RemoveFloatingObjectsFromDescendants();
-    }
-  }
-}
-
 static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
   DCHECK(To<LayoutBox>(root).IsOrthogonalWritingModeRoot());
   if (!root.NeedsLayout() || root.IsOutOfFlowPositioned() ||
@@ -1478,7 +1458,6 @@ static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
     }
   }
 
-  RemoveFloatingObjectsForSubtreeRoot(root);
   return true;
 }
 

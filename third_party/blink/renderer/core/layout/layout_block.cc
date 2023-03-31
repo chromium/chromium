@@ -643,9 +643,7 @@ void LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
   if (relayout_children ||
       (has_relative_logical_height && !IsA<LayoutView>(this)) ||
       (height_available_to_children_changed_ &&
-       ChangeInAvailableLogicalHeightAffectsChild(this, child)) ||
-      (child.IsListMarker() && IsListItem() &&
-       To<LayoutBlockFlow>(this)->ContainsFloats())) {
+       ChangeInAvailableLogicalHeightAffectsChild(this, child))) {
     if (child.IsLayoutNGObject())
       child.SetSelfNeedsLayoutForAvailableSpace(true);
     else

@@ -876,14 +876,6 @@ void LayoutBlockFlow::ComputeBlockDirectionPositionsForLine(
   }
 }
 
-void LayoutBlockFlow::AppendFloatingObjectToLastLine(
-    FloatingObject& floating_object) {
-  NOT_DESTROYED();
-  DCHECK(!floating_object.OriginatingLine());
-  floating_object.SetOriginatingLine(LastRootBox());
-  LastRootBox()->AppendFloat(floating_object.GetLayoutObject());
-}
-
 // This function constructs line boxes for all of the text runs in the resolver
 // and computes their position.
 RootInlineBox* LayoutBlockFlow::CreateLineBoxesFromBidiRuns(
@@ -948,9 +940,6 @@ void LayoutBlockFlow::LayoutRunsAndFloats(LineLayoutState& layout_state) {
   InlineBidiResolver resolver;
   RootInlineBox* start_line = DetermineStartPosition(layout_state, resolver);
 
-  if (ContainsFloats())
-    layout_state.SetLastFloat(floating_objects_->Set().back().Get());
-
   // We also find the first clean line and extract these lines.  We will add
   // them back if we determine that we're able to synchronize after handling all
   // our dirty lines.
@@ -966,7 +955,6 @@ void LayoutBlockFlow::LayoutRunsAndFloats(LineLayoutState& layout_state) {
   LayoutRunsAndFloatsInRange(layout_state, resolver, clean_line_start,
                              clean_line_bidi_status);
   LinkToEndLineIfNeeded(layout_state);
-  MarkDirtyFloatsForPaintInvalidation(layout_state.Floats());
 }
 
 // Before restarting the layout loop with a new logicalHeight, remove all floats
@@ -978,59 +966,9 @@ inline const InlineIterator& LayoutBlockFlow::RestartLayoutRunsAndFloatsInRange(
     InlineBidiResolver& resolver,
     const InlineIterator& old_end) {
   NOT_DESTROYED();
-  RemoveFloatingObjectsBelow(last_float_from_previous_line, old_logical_height);
   SetLogicalHeight(new_logical_height);
   resolver.SetPositionIgnoringNestedIsolates(old_end);
   return old_end;
-}
-
-void LayoutBlockFlow::AppendFloatsToLastLine(
-    LineLayoutState& layout_state,
-    const InlineIterator& clean_line_start,
-    const InlineBidiResolver& resolver,
-    const BidiStatus& clean_line_bidi_status) {
-  NOT_DESTROYED();
-  const FloatingObjectSet& floating_object_set = floating_objects_->Set();
-  FloatingObjectSetIterator it = floating_object_set.begin();
-  FloatingObjectSetIterator end = floating_object_set.end();
-  if (layout_state.LastFloat()) {
-    FloatingObjectSetIterator last_float_iterator =
-        floating_object_set.find(layout_state.LastFloat());
-    DCHECK(last_float_iterator != end);
-    ++last_float_iterator;
-    it = last_float_iterator;
-  }
-  for (; it != end; ++it) {
-    FloatingObject& floating_object = *it->Get();
-    // If we've reached the start of clean lines any remaining floating children
-    // belong to them.
-    if (clean_line_start.GetLineLayoutItem().IsEqual(
-            floating_object.GetLayoutObject()) &&
-        layout_state.EndLine()) {
-      layout_state.SetEndLineMatched(layout_state.EndLineMatched() ||
-                                     MatchedEndLine(layout_state, resolver,
-                                                    clean_line_start,
-                                                    clean_line_bidi_status));
-      if (layout_state.EndLineMatched()) {
-        layout_state.SetLastFloat(&floating_object);
-        return;
-      }
-    }
-    AppendFloatingObjectToLastLine(floating_object);
-    DCHECK_EQ(floating_object.GetLayoutObject(),
-              layout_state.Floats()[layout_state.FloatIndex()].object);
-    // If a float's geometry has changed, give up on syncing with clean lines.
-    if (layout_state.Floats()[layout_state.FloatIndex()].rect !=
-        floating_object.FrameRect()) {
-      // Delete all the remaining lines.
-      DeleteLineRange(layout_state, layout_state.EndLine());
-      layout_state.SetEndLine(nullptr);
-    }
-    layout_state.SetFloatIndex(layout_state.FloatIndex() + 1);
-  }
-  layout_state.SetLastFloat(!floating_object_set.empty()
-                                ? floating_object_set.back().Get()
-                                : nullptr);
 }
 
 void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
@@ -1081,8 +1019,7 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
     const InlineIterator previous_endof_line = end_of_line;
     bool is_new_uba_paragraph =
         layout_state.GetLineInfo().PreviousLineBrokeCleanly();
-    FloatingObject* last_float_from_previous_line =
-        (ContainsFloats()) ? floating_objects_->Set().back().Get() : nullptr;
+    FloatingObject* last_float_from_previous_line = nullptr;
 
     WordMeasurements word_measurements;
     end_of_line =
@@ -1260,16 +1197,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
 
       if (!layout_state.GetLineInfo().IsEmpty())
         layout_state.GetLineInfo().SetFirstLine(false);
-      ClearFloats(line_breaker.Clear());
-
-      if (floating_objects_ && LastRootBox()) {
-        InlineBidiResolver end_of_line_resolver;
-        end_of_line_resolver.SetPosition(end_of_line,
-                                         NumberOfIsolateAncestors(end_of_line));
-        end_of_line_resolver.SetStatus(resolver.Status());
-        AppendFloatsToLastLine(layout_state, clean_line_start,
-                               end_of_line_resolver, clean_line_bidi_status);
-      }
     }
 
     line_midpoint_state.Reset();
@@ -1367,16 +1294,6 @@ void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
         }
         if (delta)
           line->MoveInBlockDirection(delta);
-        if (auto* clean_line_floats = line->FloatsPtr()) {
-          for (const auto& box : *clean_line_floats) {
-            FloatingObject* floating_object = InsertFloatingObject(*box);
-            DCHECK(!floating_object->OriginatingLine());
-            floating_object->SetOriginatingLine(line);
-            LayoutUnit logical_top =
-                LogicalTopForChild(*box) - MarginBeforeForChild(*box) + delta;
-            PlaceNewFloats(logical_top);
-          }
-        }
       }
       SetLogicalHeight(LastRootBox()->LineBottomWithLeading());
     } else {
@@ -1384,32 +1301,6 @@ void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
       DeleteLineRange(layout_state, layout_state.EndLine());
     }
   }
-
-  // In case we have a float on the last line, it might not be positioned up to
-  // now. This has to be done before adding in the bottom border/padding, or the
-  // float will
-  // include the padding incorrectly. -dwh
-  if (PlaceNewFloats(LogicalHeight()) && LastRootBox())
-    AppendFloatsToLastLine(layout_state, InlineIterator(), InlineBidiResolver(),
-                           BidiStatus());
-}
-
-void LayoutBlockFlow::MarkDirtyFloatsForPaintInvalidation(
-    HeapVector<FloatWithRect>& floats) {
-  NOT_DESTROYED();
-  wtf_size_t float_count = floats.size();
-  // Floats that did not have layout did not paint invalidations when we laid
-  // them out. They would have painted by now if they had moved, but if they
-  // stayed at (0, 0), they still need to be painted.
-  for (wtf_size_t i = 0; i < float_count; ++i) {
-    LayoutBox* f = floats[i].object;
-    if (!floats[i].ever_had_layout) {
-      if (!f->Location().X() && !f->Location().Y())
-        f->SetShouldDoFullPaintInvalidation();
-    }
-    InsertFloatingObject(*f);
-  }
-  PlaceNewFloats(LogicalHeight());
 }
 
 // InlineMinMaxIterator is a class that will iterate over all layout objects
@@ -1964,14 +1855,7 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
         if (o->IsOutOfFlowPositioned()) {
           o->ContainingBlock()->InsertPositionedObject(box);
         } else if (o->IsFloating()) {
-          layout_state.Floats().push_back(FloatWithRect(box));
-          if (box->NeedsLayout()) {
-            // Be sure to at least mark the first line affected by the float as
-            // dirty, so that the float gets relaid out. Otherwise we'll miss
-            // it. After float layout, if it turns out that it changed size,
-            // any lines after this line will be deleted and relaid out.
-            DirtyLinesFromChangedChild(box, kMarkOnlyThis);
-          }
+          NOTREACHED();
         } else if (is_full_layout || o->NeedsLayout()) {
           // Atomic inline.
           DCHECK(o->IsAtomicInlineLevel());
@@ -2077,12 +1961,6 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
         pagination_delta -= curr->PaginationStrut();
         AdjustLinePositionForPagination(*curr, pagination_delta);
         if (pagination_delta) {
-          if (ContainsFloats() || !layout_state.Floats().empty()) {
-            // FIXME: Do better eventually.  For now if we ever shift because of
-            // pagination and floats are present just go to a full layout.
-            layout_state.MarkForFullLayout();
-            break;
-          }
           curr->MoveInBlockDirection(pagination_delta);
         }
       }
@@ -2143,28 +2021,6 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
 #endif
   }
 
-  unsigned num_clean_floats = 0;
-  if (!layout_state.Floats().empty()) {
-    // Restore floats from clean lines.
-    RootInlineBox* line = FirstRootBox();
-    while (line != curr) {
-      if (auto* clean_line_floats = line->FloatsPtr()) {
-        for (const auto& box : *clean_line_floats) {
-          FloatingObject* floating_object = InsertFloatingObject(*box);
-          DCHECK(!floating_object->OriginatingLine());
-          floating_object->SetOriginatingLine(line);
-          LayoutUnit logical_top =
-              LogicalTopForChild(*box) - MarginBeforeForChild(*box);
-          PlaceNewFloats(logical_top);
-          DCHECK_EQ(layout_state.Floats()[num_clean_floats].object, box);
-          num_clean_floats++;
-        }
-      }
-      line = line->NextRootBox();
-    }
-  }
-  layout_state.SetFloatIndex(num_clean_floats);
-
   layout_state.GetLineInfo().SetFirstLine(!last);
   layout_state.GetLineInfo().SetPreviousLineBrokeCleanly(!last ||
                                                          last->EndsWithBreak());
@@ -2213,7 +2069,6 @@ void LayoutBlockFlow::DetermineEndPosition(LineLayoutState& layout_state,
   NOT_DESTROYED();
   DCHECK(!layout_state.EndLine());
   RootInlineBox* last = nullptr;
-  bool previous_was_clean = false;
   for (RootInlineBox* curr = start_line->NextRootBox(); curr;
        curr = curr->NextRootBox()) {
     if (!curr->IsDirty() && LineBoxHasBRWithClearance(curr))
@@ -2224,13 +2079,11 @@ void LayoutBlockFlow::DetermineEndPosition(LineLayoutState& layout_state,
     // layout engine has issues with handling floats at line boundaries,
     // potentially resulting in a float belonging to two different lines,
     // causing all kinds of misery.
-    if (curr->IsDirty() || (curr->FloatsPtr() && !previous_was_clean)) {
+    if (curr->IsDirty()) {
       last = nullptr;
-      previous_was_clean = false;
     } else {
       if (!last)
         last = curr;
-      previous_was_clean = true;
     }
   }
 
@@ -2257,8 +2110,9 @@ void LayoutBlockFlow::DetermineEndPosition(LineLayoutState& layout_state,
 bool LayoutBlockFlow::CheckPaginationAndFloatsAtEndLine(
     LineLayoutState& layout_state) {
   NOT_DESTROYED();
-  if (!floating_objects_ || !layout_state.EndLine())
+  if (!layout_state.EndLine()) {
     return true;
+  }
 
   LayoutUnit line_delta = LogicalHeight() - layout_state.EndLineLogicalTop();
 
@@ -2275,30 +2129,6 @@ bool LayoutBlockFlow::CheckPaginationAndFloatsAtEndLine(
       AdjustLinePositionForPagination(*line_box, line_delta);
       line_box->SetPaginationStrut(old_pagination_strut);
     }
-  }
-  if (!line_delta)
-    return true;
-
-  // See if any floats end in the range along which we want to shift the lines
-  // vertically.
-  LayoutUnit logical_top =
-      std::min(LogicalHeight(), layout_state.EndLineLogicalTop());
-
-  RootInlineBox* last_line = layout_state.EndLine();
-  while (RootInlineBox* next_line = last_line->NextRootBox())
-    last_line = next_line;
-
-  LayoutUnit logical_bottom =
-      last_line->LineBottomWithLeading() + AbsoluteValue(line_delta);
-
-  const FloatingObjectSet& floating_object_set = floating_objects_->Set();
-  FloatingObjectSetIterator end = floating_object_set.end();
-  for (FloatingObjectSetIterator it = floating_object_set.begin(); it != end;
-       ++it) {
-    const FloatingObject& floating_object = *it->Get();
-    if (LogicalBottomForFloat(floating_object) >= logical_top &&
-        LogicalBottomForFloat(floating_object) < logical_bottom)
-      return false;
   }
 
   return true;

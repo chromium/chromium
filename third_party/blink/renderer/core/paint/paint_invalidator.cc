@@ -43,11 +43,6 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
     context.painting_layer = object.PaintingLayer();
   }
 
-  auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(object);
-  if (layout_block_flow && !object.IsLayoutNGBlockFlow() &&
-      layout_block_flow->ContainsFloats())
-    context.painting_layer->SetNeedsPaintPhaseFloat();
-
   if (object.IsFloating() &&
       (object.IsInLayoutNGInlineFormattingContext() ||
        IsLayoutNGContainingBlock(object.ContainingBlock())))

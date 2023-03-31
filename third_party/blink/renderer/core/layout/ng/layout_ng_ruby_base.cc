@@ -117,7 +117,6 @@ void LayoutNGRubyBase::MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
     MoveAllChildrenIncludingFloatsTo(&to_base, full_remove_insert);
   } else {
     MoveChildrenTo(&to_base, FirstChild(), before_child);
-    RemoveFloatingObjectsFromDescendants();
   }
 }
 

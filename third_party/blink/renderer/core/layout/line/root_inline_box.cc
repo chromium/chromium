@@ -41,7 +41,6 @@ namespace blink {
 struct SameSizeAsRootInlineBox : public InlineFlowBox {
   unsigned unsigned_variable;
   Member<void*> member1;
-  Member<void*> member2;
   void* pointers[1];
   LayoutUnit layout_variables[6];
 };
@@ -463,16 +462,6 @@ InlineBox* RootInlineBox::ClosestLeafChildForLogicalLeftPosition(
   return closest_leaf ? closest_leaf : last_leaf;
 }
 
-void RootInlineBox::AppendFloat(LayoutBox* floating_box) {
-  DCHECK(!IsDirty());
-  if (floats_) {
-    floats_->push_back(floating_box);
-  } else {
-    floats_ =
-        MakeGarbageCollected<HeapVector<Member<LayoutBox>>>(1, floating_box);
-  }
-}
-
 BidiStatus RootInlineBox::LineBreakBidiStatus() const {
   return BidiStatus(
       static_cast<WTF::unicode::CharDirection>(line_break_bidi_status_eor_),
@@ -833,7 +822,6 @@ const char* RootInlineBox::BoxName() const {
 
 void RootInlineBox::Trace(Visitor* visitor) const {
   visitor->Trace(line_break_obj_);
-  visitor->Trace(floats_);
   InlineFlowBox::Trace(visitor);
 }
 

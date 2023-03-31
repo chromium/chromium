@@ -630,10 +630,6 @@ void LayoutMultiColumnSet::ComputeVisualOverflow(bool recompute_floats) {
   AddVisualOverflowFromChildren();
   AddVisualEffectOverflow();
 
-  if (recompute_floats || CreatesNewFormattingContext() ||
-      HasSelfPaintingLayer())
-    AddVisualOverflowFromFloats();
-
   if (VisualOverflowRect() != previous_visual_overflow_rect) {
     InvalidateIntersectionObserverCachedRects();
     SetShouldCheckForPaintInvalidation();

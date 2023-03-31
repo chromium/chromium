@@ -39,14 +39,12 @@ class LineLayoutState {
 
  public:
   LineLayoutState(bool full_layout)
-      : last_float_(nullptr),
-        end_line_(nullptr),
-        float_index_(0),
+      : end_line_(nullptr),
         end_line_matched_(false),
         has_inline_child_(false),
         is_full_layout_(full_layout),
         needs_pagination_strut_recalculation_(false) {}
-  ~LineLayoutState() { floats_.clear(); }
+  ~LineLayoutState() {}
 
   void MarkForFullLayout() { is_full_layout_ = true; }
   bool IsFullLayout() const { return is_full_layout_; }
@@ -79,14 +77,6 @@ class LineLayoutState {
   RootInlineBox* EndLine() const { return end_line_; }
   void SetEndLine(RootInlineBox* line) { end_line_ = line; }
 
-  FloatingObject* LastFloat() const { return last_float_; }
-  void SetLastFloat(FloatingObject* last_float) { last_float_ = last_float; }
-
-  HeapVector<LayoutBlockFlow::FloatWithRect>& Floats() { return floats_; }
-
-  unsigned FloatIndex() const { return float_index_; }
-  void SetFloatIndex(unsigned float_index) { float_index_ = float_index; }
-
   LayoutUnit AdjustedLogicalLineTop() const {
     return adjusted_logical_line_top_;
   }
@@ -95,11 +85,8 @@ class LineLayoutState {
   }
 
  private:
-  HeapVector<LayoutBlockFlow::FloatWithRect> floats_;
-  FloatingObject* last_float_;
   RootInlineBox* end_line_;
   LineInfo line_info_;
-  unsigned float_index_;
   LayoutUnit end_line_logical_top_;
   bool end_line_matched_;
   // Used as a performance optimization to avoid doing a full paint invalidation
