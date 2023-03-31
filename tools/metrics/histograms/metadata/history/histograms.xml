@@ -1886,17 +1886,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DeleteFTSIndexDatabases" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Count of &quot;History Index *&quot; databases deleted. These databases
-    stored the full-text-search data for history, which was removed at r213442,
-    this histogram tracks cleanup.
-  </summary>
-</histogram>
-
 <histogram name="History.DomainCount1Day_V2" units="domains"
     expires_after="2023-09-03">
   <owner>mpearson@chromium.org</owner>

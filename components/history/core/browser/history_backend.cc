@@ -2690,14 +2690,10 @@ void HistoryBackend::DeleteFTSIndexDatabases() {
   base::FilePath::StringType filepattern = FILE_PATH_LITERAL("History Index *");
   base::FileEnumerator enumerator(history_dir_, false,
                                   base::FileEnumerator::FILES, filepattern);
-  int num_databases_deleted = 0;
   base::FilePath current_file;
   while (!(current_file = enumerator.Next()).empty()) {
-    if (sql::Database::Delete(current_file))
-      num_databases_deleted++;
+    sql::Database::Delete(current_file);
   }
-  UMA_HISTOGRAM_COUNTS_1M("History.DeleteFTSIndexDatabases",
-                          num_databases_deleted);
 }
 
 std::vector<favicon_base::FaviconRawBitmapResult> HistoryBackend::GetFavicon(
