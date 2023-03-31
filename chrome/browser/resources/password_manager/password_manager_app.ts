@@ -19,6 +19,7 @@ import './toolbar.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util_ts.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
@@ -57,8 +58,8 @@ export interface PasswordManagerAppElement {
   };
 }
 
-const PasswordManagerAppElementBase =
-    I18nMixin(CrContainerShadowMixin(RouteObserverMixin(PolymerElement)));
+const PasswordManagerAppElementBase = FindShortcutMixin(
+    I18nMixin(CrContainerShadowMixin(RouteObserverMixin(PolymerElement))));
 
 export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   static get is() {
@@ -128,6 +129,20 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
         this.enableShadowBehavior(true);
       }
     }, 0);
+  }
+
+  // Override FindShortcutMixin methods.
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
+    if (modalContextOpen) {
+      return false;
+    }
+    this.$.toolbar.searchField.showAndFocus();
+    return true;
+  }
+
+  // Override FindShortcutMixin methods.
+  override searchInputHasFocus(): boolean {
+    return this.$.toolbar.searchField.isSearchFocused();
   }
 
   private onNarrowChanged_() {
