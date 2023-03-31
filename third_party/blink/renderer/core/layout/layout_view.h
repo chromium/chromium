@@ -22,8 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_VIEW_H_
 
-#include <memory>
-
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
