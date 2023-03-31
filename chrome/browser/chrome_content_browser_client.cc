@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -7590,18 +7591,24 @@ bool ChromeContentBrowserClient::OpenExternally(
   // situation. For now, continue as usual afterwards (i.e. don't handle the
   // request here).
   if (is_lacros_only) {
+    size_t id = 0;
     if (url.SchemeIs(content::kChromeDevToolsScheme)) {
-      crash_reporter::DumpWithoutCrashing();
+      id = 1;
     } else if (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-               !base::StartsWith(url.PathForRequestPiece(), "/terminal")) {
-      crash_reporter::DumpWithoutCrashing();
+               (!url.has_host() || url.host() != "terminal")) {
+      id = 2;
     } else if (url.SchemeIs(content::kChromeUIScheme)) {
-      crash_reporter::DumpWithoutCrashing();
+      id = 3;
     } else if (url.SchemeIs(extensions::kExtensionScheme)) {
-      crash_reporter::DumpWithoutCrashing();
+      id = 4;
     } else {
+      // We know that Terminal still needs to open Ash windows, no need to dump.
       DCHECK(url.SchemeIs(content::kChromeUIUntrustedScheme));
-      DCHECK(base::StartsWith(url.PathForRequestPiece(), "/terminal"));
+      DCHECK(url.host() == "terminal");
+    }
+    if (id > 0) {
+      base::debug::DumpWithoutCrashingWithUniqueId(id);
+      LOG(WARNING) << "Allowing Ash window creation for url " << url;
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
