@@ -349,7 +349,11 @@ DeviceInfoSyncBridge::DeviceInfoSyncBridge(
                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
-DeviceInfoSyncBridge::~DeviceInfoSyncBridge() = default;
+DeviceInfoSyncBridge::~DeviceInfoSyncBridge() {
+  for (auto& observer : observers_) {
+    observer.OnDeviceInfoShutdown();
+  }
+}
 
 LocalDeviceInfoProvider* DeviceInfoSyncBridge::GetLocalDeviceInfoProvider() {
   return local_device_info_provider_.get();
