@@ -45,12 +45,6 @@ KOTLINC_PATH = os.path.join(KOTLIN_HOME, 'bin', 'kotlinc')
 JAVA_11_HOME_DEPRECATED = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk11',
                                        'current')
 
-try:
-  string_types = basestring
-except NameError:
-  string_types = (str, bytes)
-
-
 def JavaCmd(xmx='1G'):
   ret = [os.path.join(JAVA_HOME, 'bin', 'java')]
   # Limit heap to avoid Java not GC'ing when it should, and causing
@@ -98,35 +92,6 @@ def FindInDirectory(directory, filename_filter='*'):
   return files
 
 
-def ParseGnList(value):
-  """Converts a "GN-list" command-line parameter into a list.
-
-  Conversions handled:
-    * None -> []
-    * '' -> []
-    * 'asdf' -> ['asdf']
-    * '["a", "b"]' -> ['a', 'b']
-    * ['["a", "b"]', 'c'] -> ['a', 'b', 'c']  (flattened list)
-
-  The common use for this behavior is in the Android build where things can
-  take lists of @FileArg references that are expanded via ExpandFileArgs.
-  """
-  # Convert None to [].
-  if not value:
-    return []
-  # Convert a list of GN lists to a flattened list.
-  if isinstance(value, list):
-    ret = []
-    for arg in value:
-      ret.extend(ParseGnList(arg))
-    return ret
-  # Convert normal GN list.
-  if value.startswith('['):
-    return gn_helpers.GNValueParser(value).ParseList()
-  # Convert a single string value to a list.
-  return [value]
-
-
 def CheckOptions(options, parser, required=None):
   if not required:
     return
@@ -149,24 +114,7 @@ def WriteJson(obj, path, only_if_changed=False):
 
 
 @contextlib.contextmanager
-def AtomicOutput(path, only_if_changed=True, mode='w+b'):
-  """Helper to prevent half-written outputs.
-
-  Args:
-    path: Path to the final output file, which will be written atomically.
-    only_if_changed: If True (the default), do not touch the filesystem
-      if the content has not changed.
-    mode: The mode to open the file in (str).
-  Returns:
-    A python context manager that yelds a NamedTemporaryFile instance
-    that must be used by clients to write the data to. On exit, the
-    manager will try to replace the final output file with the
-    temporary one if necessary. The temporary file is always destroyed
-    on exit.
-  Example:
-    with build_utils.AtomicOutput(output_path) as tmp_file:
-      subprocess.check_call(['prog', '--output', tmp_file.name])
-  """
+def _AtomicOutput(path, only_if_changed=True, mode='w+b'):
   # Create in same directory to ensure same filesystem when moving.
   dirname = os.path.dirname(path)
   if not os.path.exists(dirname):
@@ -498,7 +446,7 @@ def DoZip(inputs,
     base_dir = '.'
   input_tuples = []
   for tup in inputs:
-    if isinstance(tup, string_types):
+    if isinstance(tup, (str, bytes)):
       tup = (os.path.relpath(tup, base_dir), tup)
       if tup[0].startswith('..'):
         raise Exception('Invalid zip_path: ' + tup[0])
@@ -542,7 +490,7 @@ def ZipDir(output, base_dir, compress_fn=None, zip_prefix_path=None):
         compress_fn=compress_fn,
         zip_prefix_path=zip_prefix_path)
   else:
-    with AtomicOutput(output) as f:
+    with _AtomicOutput(output) as f:
       DoZip(
           inputs,
           f,
@@ -646,29 +594,6 @@ def InitLogging(enabling_env):
   atexit.register(log_exit)
 
 
-def AddDepfileOption(parser):
-  # TODO(agrieve): Get rid of this once we've moved to argparse.
-  if hasattr(parser, 'add_option'):
-    func = parser.add_option
-  else:
-    func = parser.add_argument
-  func('--depfile',
-       help='Path to depfile (refer to `gn help depfile`)')
-
-
-def WriteDepfile(depfile_path, first_gn_output, inputs=None):
-  assert depfile_path != first_gn_output  # http://crbug.com/646165
-  assert not isinstance(inputs, string_types)  # Easy mistake to make
-  inputs = inputs or []
-  MakeDirectory(os.path.dirname(depfile_path))
-  # Ninja does not support multiple outputs in depfiles.
-  with open(depfile_path, 'w') as depfile:
-    depfile.write(first_gn_output.replace(' ', '\\ '))
-    depfile.write(': \\\n ')
-    depfile.write(' \\\n '.join(i.replace(' ', '\\ ') for i in inputs))
-    depfile.write('\n')
-
-
 def ExpandFileArgs(args):
   """Replaces file-arg placeholders in args.
 
@@ -713,7 +638,7 @@ def ExpandFileArgs(args):
           raise Exception('Expected single item list but got %s' % expansion)
         expansion = expansion[0]
 
-    # This should match ParseGnList. The output is either a GN-formatted list
+    # This should match parse_gn_list. The output is either a GN-formatted list
     # or a literal (with no quotes).
     if isinstance(expansion, list):
       new_args[i] = (arg[:match.start()] + gn_helpers.ToGNString(expansion) +
