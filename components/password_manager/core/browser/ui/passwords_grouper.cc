@@ -267,9 +267,24 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   }
   // Sort affiliated groups.
   std::sort(affiliated_groups.begin(), affiliated_groups.end(),
-            [](const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
-              return base::ToLowerASCII(lhs.GetDisplayName()) <
-                     base::ToLowerASCII(rhs.GetDisplayName());
+            [](AffiliatedGroup& lhs, AffiliatedGroup& rhs) {
+              base::StringPiece lhs_name(lhs.GetDisplayName()),
+                  rhs_name(rhs.GetDisplayName());
+              size_t separator_length =
+                  base::StringPiece(url::kStandardSchemeSeparator).size();
+
+              size_t position = lhs_name.find(url::kStandardSchemeSeparator);
+              if (position != std::string::npos) {
+                lhs_name = lhs_name.substr(position + separator_length);
+              }
+
+              position = rhs_name.find(url::kStandardSchemeSeparator);
+              if (position != std::string::npos) {
+                rhs_name = rhs_name.substr(position + separator_length);
+              }
+
+              // Compare names omitting scheme.
+              return base::CompareCaseInsensitiveASCII(lhs_name, rhs_name) < 0;
             });
   return affiliated_groups;
 }

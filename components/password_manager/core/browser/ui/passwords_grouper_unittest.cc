@@ -438,4 +438,24 @@ TEST_F(PasswordsGrouperTest, IpAddressesGroupedTogether) {
           {credential1, credential2, credential3}, {"https://192.168.1.1"})));
 }
 
+TEST_F(PasswordsGrouperTest, SchemeOmittedDuringOrdering) {
+  PasswordForm form1 = CreateForm("https://a.com");
+  PasswordForm form2 = CreateForm("https://b.com");
+  PasswordForm ip_form = CreateForm("https://192.168.1.1/");
+
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(std::vector<GroupedFacets>{
+          GetSingleGroupForForm(form1), GetSingleGroupForForm(form2),
+          GetSingleGroupForForm(ip_form)}));
+  grouper().GroupPasswords({form1, form2, ip_form}, base::DoNothing());
+
+  CredentialUIEntry credential1(form1), credential2(form2),
+      credential3(ip_form);
+  EXPECT_THAT(
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
+      ElementsAre(AffiliatedGroup({credential3}, {"https://192.168.1.1"}),
+                  AffiliatedGroup({credential1}, {"a.com"}),
+                  AffiliatedGroup({credential2}, {"b.com"})));
+}
+
 }  // namespace password_manager
