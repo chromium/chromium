@@ -99,19 +99,12 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
   float GetUIScaleFactor() const;
 
-  Metrics GetMetrics() const;
+  const Metrics& GetMetrics() const;
+
+  // TODO(tuluk): Metrics getters below are rendundant and should be replaced
+  // with calls to GetMetrics().
   Id output_id() const { return output_id_; }
-  bool has_output(wl_output* output) const { return output_.get() == output; }
   float scale_factor() const;
-  int32_t panel_transform() const;
-  int32_t logical_transform() const;
-  gfx::Point origin() const;
-  gfx::Size logical_size() const;
-  gfx::Size physical_size() const;
-  gfx::Insets insets() const;
-  int64_t display_id() const;
-  const std::string& name() const;
-  const std::string& description() const;
   WaylandZcrColorManagementOutput* color_management_output() const {
     return color_management_output_.get();
   }
@@ -136,6 +129,10 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, ScaleFactorFallback);
 
   static constexpr int32_t kDefaultScaleFactor = 1;
+
+  // Called when the wl_output.done event is received and atomically updates
+  // `metrics_` based on the previously received output state events.
+  void UpdateMetrics();
 
   // Callback functions used for setting geometric properties of the output
   // and available modes.
@@ -172,18 +169,23 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // event.
   bool is_ready_ = false;
 
+  // Metrics represents the current state of the display represented by this
+  // output object. This state is updated atomically after the client has
+  // received the wl_output.done event.
+  Metrics metrics_;
+
   const Id output_id_ = 0;
   wl::Object<wl_output> output_;
   std::unique_ptr<XDGOutput> xdg_output_;
   std::unique_ptr<WaylandZAuraOutput> aura_output_;
   std::unique_ptr<WaylandZcrColorManagementOutput> color_management_output_;
+
   float scale_factor_ = kDefaultScaleFactor;
   int32_t panel_transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   // Origin of the output in DIP screen coordinate.
   gfx::Point origin_;
   // Size of the output in physical pixels.
   gfx::Size physical_size_;
-
   // Fallback name and description.
   // The XDG output specification suggests using it as the primary source of
   // the information about the output.  Two attributes below are used if

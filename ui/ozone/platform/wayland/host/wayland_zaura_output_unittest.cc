@@ -76,8 +76,8 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
-  EXPECT_EQ(wayland_output->physical_size(), gfx::Size(800, 600));
-  EXPECT_TRUE(wayland_output->insets().IsEmpty());
+  EXPECT_EQ(wayland_output->GetMetrics().physical_size, gfx::Size(800, 600));
+  EXPECT_TRUE(wayland_output->GetMetrics().insets.IsEmpty());
   EXPECT_TRUE(wayland_output->get_zaura_output());
 
   const gfx::Insets insets =
@@ -91,19 +91,20 @@ TEST_F(WaylandZAuraOutputTest, HandleInsets) {
     EXPECT_FALSE(insets.IsEmpty());
     zaura_output_send_insets(zaura_output, insets.top(), insets.left(),
                              insets.bottom(), insets.right());
+    wl_output_send_done(server->output()->resource());
   });
 
   // Verify that insets is updated.
   EXPECT_TRUE(wayland_output->IsReady());
-  EXPECT_EQ(wayland_output->physical_size(), gfx::Size(800, 600));
-  EXPECT_EQ(wayland_output->insets(), insets);
+  EXPECT_EQ(wayland_output->GetMetrics().physical_size, gfx::Size(800, 600));
+  EXPECT_EQ(wayland_output->GetMetrics().insets, insets);
 }
 
 TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
   WaylandOutput* wayland_output = output_manager_->GetPrimaryOutput();
   ASSERT_TRUE(wayland_output);
   EXPECT_TRUE(wayland_output->IsReady());
-  EXPECT_FALSE(wayland_output->logical_transform());
+  EXPECT_FALSE(wayland_output->GetMetrics().logical_transform);
   EXPECT_TRUE(wayland_output->get_zaura_output());
 
   // Simulate server sending updated transform offset to the client.
@@ -111,10 +112,12 @@ TEST_F(WaylandZAuraOutputTest, HandleLogicalTransform) {
     auto* const zaura_output = server->output()->GetAuraOutput()->resource();
 
     zaura_output_send_logical_transform(zaura_output, WL_OUTPUT_TRANSFORM_270);
+    wl_output_send_done(server->output()->resource());
   });
 
   EXPECT_TRUE(wayland_output->IsReady());
-  EXPECT_EQ(wayland_output->logical_transform(), WL_OUTPUT_TRANSFORM_270);
+  EXPECT_EQ(wayland_output->GetMetrics().logical_transform,
+            WL_OUTPUT_TRANSFORM_270);
 }
 
 // Test edge case display ids are converted correctly.
@@ -139,7 +142,7 @@ TEST_F(WaylandZAuraOutputTest, DisplayIdConversions) {
     WaylandZAuraOutput aura_output;
     WaylandZAuraOutput::OnDisplayId(&aura_output, nullptr, display_id.high,
                                     display_id.low);
-    EXPECT_EQ(id, aura_output.display_id().value());
+    EXPECT_EQ(id, aura_output.display_id_.value());
   }
 }
 

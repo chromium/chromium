@@ -38,6 +38,16 @@ void WaylandZAuraOutput::OnDone() {
   is_ready_ = display_id_.has_value();
 }
 
+void WaylandZAuraOutput::UpdateMetrics(WaylandOutput::Metrics& metrics) {
+  if (!IsReady()) {
+    return;
+  }
+
+  metrics.insets = insets_;
+  metrics.logical_transform = logical_transform_.value();
+  metrics.display_id = display_id_.value();
+}
+
 void WaylandZAuraOutput::OnScale(void* data,
                                  struct zaura_output* zaura_output,
                                  uint32_t flags,

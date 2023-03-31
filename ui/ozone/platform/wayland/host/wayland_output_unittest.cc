@@ -39,14 +39,16 @@ TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
   wl_output->xdg_output_->description_ = kXDGOutputDescription;
   wl_output->xdg_output_->is_ready_ = true;
   wl_output->is_ready_ = true;
+  wl_output->UpdateMetrics();
 
-  EXPECT_EQ(wl_output->name(), kXDGOutputName);
-  EXPECT_EQ(wl_output->description(), kXDGOutputDescription);
+  EXPECT_EQ(wl_output->GetMetrics().name, kXDGOutputName);
+  EXPECT_EQ(wl_output->GetMetrics().description, kXDGOutputDescription);
 
   wl_output->xdg_output_.reset();
+  wl_output->UpdateMetrics();
 
-  EXPECT_EQ(wl_output->name(), kWlOutputName);
-  EXPECT_EQ(wl_output->description(), kWlOutputDescription);
+  EXPECT_EQ(wl_output->GetMetrics().name, kWlOutputName);
+  EXPECT_EQ(wl_output->GetMetrics().description, kWlOutputDescription);
 }
 
 // Test that if using xdg output (and surface_submission_in_pixel_coordinates is
@@ -73,17 +75,20 @@ TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   // should fall back to the value sent in wl_output::scale.
   wl_output->is_ready_ = true;
   wl_output->xdg_output_->is_ready_ = false;
+  wl_output->UpdateMetrics();
   EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
 
   // If xdg_output is ready but surface_submission_in_pixel_coordinates is
   // false, scale_factor should fall back to the value sent in wl_output::scale.
   wl_output->xdg_output_->is_ready_ = true;
+  wl_output->UpdateMetrics();
   EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
 
   // When xdg_output is ready and surface_submission_in_pixel_coordinates is
   // true, scale_factor should be calculated as the ratio of physical to logical
   // size.
   connection_->set_surface_submission_in_pixel_coordinates(true);
+  wl_output->UpdateMetrics();
   EXPECT_EQ(2.5f, wl_output->scale_factor());
 }
 
