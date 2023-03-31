@@ -2192,11 +2192,19 @@ void HistoryBackend::ReplaceClusters(
   ScheduleCommit();
 }
 
-int64_t HistoryBackend::ReserveNextClusterId() {
-  TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterId");
-  return db_ ? db_->ReserveNextClusterId(/*originator_cache_guid=*/"",
-                                         /*originator_cluster_id=*/0)
-             : 0;
+int64_t HistoryBackend::ReserveNextClusterIdWithVisit(
+    const ClusterVisit& cluster_visit) {
+  TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterIdWithVisit");
+  int64_t cluster_id =
+      db_ ? db_->ReserveNextClusterId(/*originator_cache_guid=*/"",
+                                      /*originator_cluster_id=*/0)
+          : 0;
+  if (cluster_id == 0) {
+    // DB write was not successful, just return.
+    return 0;
+  }
+  AddVisitsToCluster(cluster_id, {cluster_visit});
+  return cluster_id;
 }
 
 void HistoryBackend::AddVisitsToCluster(

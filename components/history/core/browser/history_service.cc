@@ -301,14 +301,17 @@ base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId HistoryService::ReserveNextClusterId(
+base::CancelableTaskTracker::TaskId
+HistoryService::ReserveNextClusterIdWithVisit(
+    const ClusterVisit& cluster_visit,
     ClusterIdCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::ReserveNextClusterId, history_backend_),
+      base::BindOnce(&HistoryBackend::ReserveNextClusterIdWithVisit,
+                     history_backend_, cluster_visit),
       std::move(callback));
 }
 

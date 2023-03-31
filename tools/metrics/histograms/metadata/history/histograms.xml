@@ -1489,6 +1489,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
+    units="num unpersisted visits" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    When we decide a new visit belongs to a new cluster, we asyncly reserve a
+    new cluster ID and add the visit to the cluster. When subsequent visits
+    belong to the same cluster, we asyncly add those visits to the cluster. When
+    the latter occurs before the former completes, i.e. when there are multiple
+    visits done that belong in the same cluster before the cluster ID was
+    reserved, we queue those subsequent visits and only add them when the
+    cluster ID is reserved.
+
+    This histogram records the number of visits that were waiting to be
+    persisted while waiting for the persisted ID of the containg cluster to be
+    received. Recorded at most once per cluster that is generated via the
+    navigation graph.
+  </summary>
+</histogram>
+
+<histogram
     name="History.Clusters.ContextClusterer.VisitProcessingLatency.{Segment}"
     units="ms" expires_after="2023-10-01">
   <owner>sophiechang@chromium.org</owner>

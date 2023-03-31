@@ -279,19 +279,21 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
       return;
     }
 
-    // As `in_progress_cluster` does not have a persisted cluster ID yet, add
-    // the ClusterVisit to the vector of visits that needs to get persisted.
-    in_progress_cluster.unpersisted_visits.push_back(std::move(cluster_visit));
-
     if (is_new_cluster) {
       // Cluster creation is async. Reserve next cluster ID and wait to persist
       // items until it comes back in `OnPersistedClusterIdReceived()`.
-      history_service->ReserveNextClusterId(
+      history_service->ReserveNextClusterIdWithVisit(
+          std::move(cluster_visit),
           base::BindOnce(&ContextClustererHistoryServiceObserver::
                              OnPersistedClusterIdReceived,
                          weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                          *cluster_id),
           &task_tracker_);
+    } else {
+      // As `in_progress_cluster` does not have a persisted cluster ID yet, add
+      // the ClusterVisit to the vector of visits that needs to get persisted.
+      in_progress_cluster.unpersisted_visits.push_back(
+          std::move(cluster_visit));
     }
   }
 }
@@ -396,9 +398,9 @@ void ContextClustererHistoryServiceObserver::FinalizeCluster(
 
   // Only delete the cluster if the persisted cluster ID is not needed because
   // clusters are not being persisted or the persisted cluster ID has been
-  // received.
+  // received and there are unpersisted visits.
   if (!ShouldUseNavigationContextClustersFromPersistence() ||
-      cluster.persisted_cluster_id != 0) {
+      cluster.unpersisted_visits.empty()) {
     in_progress_clusters_.erase(cluster_id);
   } else {
     cluster.cleaned_up = true;
@@ -413,9 +415,10 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
                         start_time);
 
   auto cluster_it = in_progress_clusters_.find(cluster_id);
-  // This is expected to always emit false, but keeping this histogram here to
-  // ensure that there are no additional cases for why a cluster would be
-  // cleaned up before it is ready to be persisted.
+  // This is expected to emit an entry if a cluster was cleaned up  (i.e. erased
+  // from `in_progress_clusters_` instead of flagged as `cleaned_up = true`)
+  // when it had no unpersisted visits left and the first visit of a cluster was
+  // already sent for persistence AND persistence is taking a long time.
   base::UmaHistogramBoolean(
       "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
       cluster_it == in_progress_clusters_.end());
@@ -424,18 +427,26 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
   }
 
   cluster_it->second.persisted_cluster_id = persisted_cluster_id;
-  // Persist all visits we've seen so far.
-  history_service_->AddVisitsToCluster(
-      persisted_cluster_id, cluster_it->second.unpersisted_visits,
-      base::BindOnce(&LogDbLatencyHistogram,
-                     ContextClustererDbLatencyType::kAddVisitsToCluster,
-                     base::TimeTicks::Now()),
-      &task_tracker_);
 
-  // Clear these out since the visits have now been requested to be persisted.
-  // This is safe to clear here as the vector should have already been copied to
-  // the history DB thread in `AddVisitsToCluster()`.
-  cluster_it->second.unpersisted_visits.clear();
+  if (!cluster_it->second.unpersisted_visits.empty()) {
+    base::UmaHistogramCounts100(
+        "History.Clusters.ContextClusterer."
+        "NumUnpersistedVisitsBeforeClusterPersisted",
+        cluster_it->second.unpersisted_visits.size());
+
+    // Persist all visits we've seen so far.
+    history_service_->AddVisitsToCluster(
+        persisted_cluster_id, cluster_it->second.unpersisted_visits,
+        base::BindOnce(&LogDbLatencyHistogram,
+                       ContextClustererDbLatencyType::kAddVisitsToCluster,
+                       base::TimeTicks::Now()),
+        &task_tracker_);
+
+    // Clear these out since the visits have now been requested to be persisted.
+    // This is safe to clear here as the vector should have already been copied
+    // to the history DB thread in `AddVisitsToCluster()`.
+    cluster_it->second.unpersisted_visits.clear();
+  }
 
   if (cluster_it->second.cleaned_up) {
     FinalizeCluster(cluster_id);

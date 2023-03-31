@@ -4184,8 +4184,11 @@ TEST_F(HistoryBackendTest, AddClusters_GetCluster) {
   VerifyCluster(backend_->GetCluster(2, true), {0});
 }
 
-TEST_F(HistoryBackendTest, ReserveNextClusterId_GetCluster) {
-  int64_t cluster_id = backend_->ReserveNextClusterId();
+TEST_F(HistoryBackendTest, ReserveNextClusterIdWithVisit_GetCluster) {
+  AddAnnotatedVisit(1);
+  ClusterVisit visit_1;
+  visit_1.annotated_visit.visit_row.visit_id = 1;
+  int64_t cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
 
   // We call from the DB instead of from the backend since the DB does
   // additional checking around visit count.
@@ -4193,22 +4196,25 @@ TEST_F(HistoryBackendTest, ReserveNextClusterId_GetCluster) {
   EXPECT_EQ(cluster.cluster_id, cluster_id);
   EXPECT_FALSE(cluster.should_show_on_prominent_ui_surfaces);
   EXPECT_FALSE(cluster.triggerability_calculated);
+
+  VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {1}});
+
+  int64_t received_cluster_id = backend_->GetClusterIdContainingVisit(1);
+  EXPECT_EQ(received_cluster_id, cluster_id);
 }
 
 TEST_F(
     HistoryBackendTest,
     ReserveNextClusterId_AddVisitsToCluster_GetCluster_GetClusterIdContainingVisit) {
-  int64_t cluster_id = backend_->ReserveNextClusterId();
-
   AddAnnotatedVisit(1);
-  AddAnnotatedVisit(2);
   ClusterVisit visit_1;
   visit_1.annotated_visit.visit_row.visit_id = 1;
-  // Verify the cluster visits are being flushed out.
   visit_1.url_for_display = u"url_for_display";
+  int64_t cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
+  AddAnnotatedVisit(2);
   ClusterVisit visit_2;
   visit_2.annotated_visit.visit_row.visit_id = 2;
-  backend_->AddVisitsToCluster(cluster_id, {visit_1, visit_2});
+  backend_->AddVisitsToCluster(cluster_id, {visit_2});
 
   VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {2, 1}});
 
@@ -4219,17 +4225,16 @@ TEST_F(
 TEST_F(
     HistoryBackendTest,
     ReserveNextClusterId_AddVisitsToCluster_UpdateClusterTriggerability_GetCluster) {
-  int64_t cluster_id = backend_->ReserveNextClusterId();
-
   AddAnnotatedVisit(1);
-  AddAnnotatedVisit(2);
   ClusterVisit visit_1;
   visit_1.annotated_visit.visit_row.visit_id = 1;
   // Verify the cluster visits are being flushed out.
   visit_1.url_for_display = u"url_for_display";
+  int64_t cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
+  AddAnnotatedVisit(2);
   ClusterVisit visit_2;
   visit_2.annotated_visit.visit_row.visit_id = 2;
-  backend_->AddVisitsToCluster(cluster_id, {visit_1, visit_2});
+  backend_->AddVisitsToCluster(cluster_id, {visit_2});
   Cluster cluster;
   cluster.cluster_id = cluster_id;
   cluster.should_show_on_prominent_ui_surfaces = true;

@@ -591,14 +591,15 @@ class HistoryService : public KeyedService {
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
-  // Implemented and called by `ReserveNextClusterId()` below with the last
-  // cluster ID that was added to the database.
+  // Implemented and called by `ReserveNextClusterIdWithVisit()` below with the
+  // last cluster ID that was added to the database.
   using ClusterIdCallback = base::OnceCallback<void(int64_t)>;
 
-  // Adds a cluster with no visits and invokes `callback` with the ID of the
-  // new cluster. It is expected for this to only be called for local visits.
-  // Virtual for testing.
-  virtual base::CancelableTaskTracker::TaskId ReserveNextClusterId(
+  // Adds a cluster with `cluster_visit` and invokes `callback` with the ID of
+  // the new cluster. It is expected for this to only be called for local
+  // visits. Virtual for testing.
+  virtual base::CancelableTaskTracker::TaskId ReserveNextClusterIdWithVisit(
+      const ClusterVisit& cluster_visit,
       base::OnceCallback<void(int64_t)> callback,
       base::CancelableTaskTracker* tracker);
 
