@@ -49,9 +49,9 @@ class CursorView : public fast_ink::FastInkView,
   // viz::DelayBasedTimeSourceClient overrides:
   void OnTimerTick() override;
 
- protected:
-  // ash::FastInkView override.
-  ash::FastInkHost::PresentationCallback GetPresentationCallback() override;
+  // fast_ink::FastInkView override.
+  fast_ink::FastInkHost::PresentationCallback GetPresentationCallback()
+      override;
 
  private:
   CursorView(const gfx::Point& initial_location, bool is_motion_blur_enabled);
