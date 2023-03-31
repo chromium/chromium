@@ -209,6 +209,8 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
+    public static final String BACK_GESTURE_ACTIVITY_TAB_PROVIDER =
+            "BackGestureActivityTabProvider";
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
     public static final String BACK_GESTURE_REFACTOR_ACTIVITY =
             "BackGestureRefactorActivityAndroid";
@@ -542,6 +544,8 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final CachedFlag sAppMenuMobileSiteOption =
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
+    public static final CachedFlag sBackGestureActivityTabProvider =
+            new CachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
     public static final CachedFlag sBackGestureRefactorActivityAndroid =
             new CachedFlag(BACK_GESTURE_REFACTOR_ACTIVITY, false);
     public static final CachedFlag sBackGestureRefactorAndroid =

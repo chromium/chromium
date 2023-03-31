@@ -95,6 +95,13 @@ public class BackPressManager implements Destroyable {
     }
 
     /**
+     * @return True if ActivityTabProvider should replace ChromeTabActivity#getActivityTab
+     */
+    public static boolean shouldUseActivityTabProvider() {
+        return ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
+    }
+
+    /**
      * Record when the back press is consumed by a certain feature.
      * @param type The {@link Type} which consumes the back press event.
      */

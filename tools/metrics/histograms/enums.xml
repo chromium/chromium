@@ -62137,6 +62137,7 @@ from previous Chrome versions.
   <int value="204042068"
       label="AllowEapDefaultCasWithoutSubjectVerification:disabled"/>
   <int value="204560750" label="HomeButtonWithText:enabled"/>
+  <int value="205426997" label="BackGestureActivityTabProvider:enabled"/>
   <int value="207326879" label="NearbySharingReceiveWifiCredentials:enabled"/>
   <int value="207907053"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:enabled"/>
@@ -62561,6 +62562,7 @@ from previous Chrome versions.
   <int value="427807224" label="IPH_Snooze:disabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
   <int value="428554364" label="OffsetParentNewSpecBehavior:disabled"/>
+  <int value="428631746" label="BackGestureActivityTabProvider:disabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>

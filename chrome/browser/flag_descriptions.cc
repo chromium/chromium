@@ -3599,6 +3599,13 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
+const char kBackGestureActivityTabProviderName[] =
+    "Back Gesture Refactor (Activity Tab Provider)";
+const char kBackGestureActivityTabProviderDescription[] =
+    "When enabled, ChromeTabActivity will use getActivityTabProvider to "
+    "get current tab, rather than getActivityTab if predictive back gesture"
+    "is disabled.";
+
 const char kBackGestureRefactorActivityAndroidName[] =
     "Back Gesture Refactor (Secondary Activities)";
 const char kBackGestureRefactorActivityAndroidDescription[] =
