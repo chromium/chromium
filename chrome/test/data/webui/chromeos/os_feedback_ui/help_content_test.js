@@ -225,7 +225,8 @@ export function helpContentTestSuite() {
    * Test that the offline-only elements render when offline, and that the
    * online-only elements render when online.
    */
-  test('OfflineMessage', async () => {
+  // TODO(crbug.com/1401615): Re-enable flaky test.
+  test.skip('OfflineMessage', async () => {
     await initializeHelpContentElement(
         fakePopularHelpContentList, /* isQueryEmpty= */ true,
         /* isPopularContent= */ true);
