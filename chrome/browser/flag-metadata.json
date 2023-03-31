@@ -1429,6 +1429,13 @@
     "expiry_milestone": 118
   },
   {
+    "name": "diagnostics-app-jelly",
+    "owners": [
+      "//ash/webui/diagnostics_ui/OWNERS"
+    ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "disable-accelerated-2d-canvas",
     "owners": [ "fserb" ],
     "expiry_milestone": -1

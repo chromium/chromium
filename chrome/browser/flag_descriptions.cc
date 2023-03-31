@@ -5433,6 +5433,12 @@ const char kEnableInputInDiagnosticsAppName[] =
 const char kEnableInputInDiagnosticsAppDescription[] =
     "Enable input device cards in the Diagnostics App";
 
+const char kDiagnosticsAppJellyName[] =
+    "Enable jelly colors for the Diagnostics App";
+const char kDiagnosticsAppJellyDescription[] =
+    "Enable jelly colors for the Diagnostics App. Requires "
+    "jelly-colors flag to be enabled.";
+
 const char kEnableKeyboardBacklightToggleName[] =
     "Enable Keyboard Backlight Toggle.";
 const char kEnableKeyboardBacklightToggleDescription[] =

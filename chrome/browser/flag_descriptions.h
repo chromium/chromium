@@ -3110,6 +3110,9 @@ extern const char kEnableInputEventLoggingDescription[];
 extern const char kEnableInputInDiagnosticsAppName[];
 extern const char kEnableInputInDiagnosticsAppDescription[];
 
+extern const char kDiagnosticsAppJellyName[];
+extern const char kDiagnosticsAppJellyDescription[];
+
 extern const char kEnableKeyboardBacklightToggleName[];
 extern const char kEnableKeyboardBacklightToggleDescription[];
 

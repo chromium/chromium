@@ -64597,6 +64597,7 @@ from previous Chrome versions.
   <int value="1581002467" label="enable-explicit-dma-fences"/>
   <int value="1582004845" label="ChromeOSAmbientModeAnimation:enabled"/>
   <int value="1582400283" label="VideoTutorials:enabled"/>
+  <int value="1582771017" label="kDiagnosticsAppJelly:disabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
   <int value="1584112058" label="TrustSafetySentimentSurveyV2:enabled"/>
@@ -64631,6 +64632,7 @@ from previous Chrome versions.
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>
   <int value="1596717222" label="SyncPollImmediatelyOnEveryStartup:enabled"/>
+  <int value="1597516564" label="kDiagnosticsAppJelly:enabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
   <int value="1600850069" label="MobileIdentityConsistency:disabled"/>

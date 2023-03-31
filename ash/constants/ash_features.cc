@@ -648,6 +648,12 @@ BASE_FEATURE(kEnableInputInDiagnosticsApp,
              "EnableInputInDiagnosticsApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the jelly colors will be used in the diagnostics app. Requires
+// jelly-colors flag to also be enabled.
+BASE_FEATURE(kDiagnosticsAppJelly,
+             "kDiagnosticsAppJelly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables keyboard backlight toggle.
 BASE_FEATURE(kEnableKeyboardBacklightToggle,
              "EnableKeyboardBacklightToggle",
@@ -2814,6 +2820,11 @@ bool IsInternalServerSideSpeechRecognitionControlEnabled() {
 
 bool IsIppClientInfoEnabled() {
   return base::FeatureList::IsEnabled(kIppClientInfo);
+}
+
+bool IsJellyEnabledForDiagnosticsApp() {
+  return chromeos::features::IsJellyEnabled() &&
+         base::FeatureList::IsEnabled(kDiagnosticsAppJelly);
 }
 
 bool IsJellyEnabledForOsFeedback() {
