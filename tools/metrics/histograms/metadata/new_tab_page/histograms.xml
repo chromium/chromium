@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.FeedPositionSegmentationResult"
-    enum="FeedPositionSegmentationResult" expires_after="2023-04-30">
+    enum="FeedPositionSegmentationResult" expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1903,8 +1903,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.SearchResumptionModule.NotShown"
     enum="SearchResumptionModule.ModuleNotShownReason"
-    expires_after="2023-04-30">
+    expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
   <summary>
     Logs the reason why the search resumption module is enabled but not shown on
     the NTP. Recorded when NewTabPage is created and the search resumption
@@ -1915,6 +1916,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.SearchResumptionModule.Show"
     enum="SearchResumptionModule.ModuleShowStatus" expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
   <summary>
     Logs whether the search resumption module is expanded or collapsed when the
     module is shown on the NTP. Recorded when the NewTabPage is created and the
