@@ -1755,31 +1755,6 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
-TEST_F(DriveFsPinManagerTest, InvalidFileList) {
-  CompletionCallback completion_callback;
-  RunLoop run_loop;
-
-  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
-  EXPECT_CALL(drivefs_, OnGetNextPage(_)).WillOnce(Return(kFileOk));
-  EXPECT_CALL(completion_callback, Run(Stage::kCannotListFiles))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
-      .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
-
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
-  manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(completion_callback.Get());
-  manager.Start();
-  run_loop.Run();
-
-  const Progress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, Stage::kCannotListFiles);
-  EXPECT_EQ(progress.free_space, 1 << 30);
-  EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.pinned_bytes, 0);
-  EXPECT_EQ(progress.pinned_files, 0);
-}
-
 // Tests what happens when PinManager cannot get enough free space during
 // the initial setup.
 TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
@@ -1988,12 +1963,9 @@ TEST_F(DriveFsPinManagerTest, OnTransientError) {
   manager.progress_.stage = Stage::kListingFiles;
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
-  PinManager::Query query = manager.StartSearchQuery();
-  ASSERT_TRUE(query);
-
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(Return(FileError::FILE_ERROR_NO_CONNECTION));
-  manager.GetNextPage(std::move(query));
+  manager.ListItems(Id::kNone, Path("/root"));
   EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
 
   task_environment_.FastForwardBy(Seconds(4));

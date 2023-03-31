@@ -649,6 +649,12 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     d.Set("syncing_files", ToString(progress.syncing_files));
     d.Set("skipped_items", ToString(progress.skipped_items));
     d.Set("listed_items", ToString(progress.listed_items));
+    d.Set("listed_dirs", ToString(progress.listed_dirs));
+    d.Set("listed_files", ToString(progress.listed_files));
+    d.Set("listed_docs", ToString(progress.listed_docs));
+    d.Set("listed_shortcuts", ToString(progress.listed_shortcuts));
+    d.Set("active_queries", ToString(progress.active_queries));
+    d.Set("max_active_queries", ToString(progress.max_active_queries));
     MaybeCallJavascript("onBulkPinningProgress", base::Value(std::move(d)));
   }
 

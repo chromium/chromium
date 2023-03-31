@@ -580,6 +580,7 @@ void PinManager::Start() {
 
   VLOG(1) << "Starting";
   progress_ = {};
+  visited_dirs_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
   DCHECK_EQ(progress_.syncing_files, 0);
@@ -630,9 +631,10 @@ void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   progress_.stage = Stage::kListingFiles;
   NotifyProgress();
 
-  Query query = StartSearchQuery();
-  DCHECK(query);
-  GetNextPage(std::move(query));
+  DCHECK_EQ(progress_.total_queries, 0);
+  DCHECK_EQ(progress_.active_queries, 0);
+  DCHECK_EQ(progress_.max_active_queries, 0);
+  ListItems(Id::kNone, Path("/root"));
 }
 
 void PinManager::CheckFreeSpace() {
@@ -665,45 +667,69 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
       space_check_interval_);
 }
 
-PinManager::Query PinManager::StartSearchQuery() {
+void PinManager::ListItems(const Id dir_id, Path dir_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "Visiting " << dir_id << " " << Quote(dir_path);
+
   mojom::QueryParametersPtr params = mojom::QueryParameters::New();
   params->page_size = 1000;
+  params->my_drive_results_only = true;
+  params->parent_stable_id = static_cast<int64_t>(dir_id);
 
   Query query;
   drivefs_->StartSearchQuery(query.BindNewPipeAndPassReceiver(),
                              std::move(params));
-  return query;
+
+  progress_.total_queries++;
+  progress_.active_queries++;
+  VLOG(2) << "Active queries: " << progress_.active_queries;
+
+  if (progress_.max_active_queries < progress_.active_queries) {
+    progress_.max_active_queries = progress_.active_queries;
+  }
+
+  DCHECK_GE(progress_.total_queries, progress_.active_queries);
+
+  GetNextPage(dir_id, std::move(dir_path), std::move(query));
 }
 
-void PinManager::GetNextPage(Query query) {
+void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
   DCHECK(query);
-  VLOG(2) << "Getting next batch of items";
-  mojom::SearchQuery* const p = query.get();
-  DCHECK(p);
-  p->GetNextPage(base::BindOnce(
-      [](base::WeakPtr<PinManager> pin_manager, Query query,
-         const drive::FileError error,
-         absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+  // Get the underlying pointer because we going to move `query`.
+  mojom::SearchQuery* const q = query.get();
+  VLOG(2) << "Getting next batch of items from " << dir_id << " "
+          << Quote(dir_path);
+  DCHECK(q);
+  q->GetNextPage(base::BindOnce(
+      [](const base::WeakPtr<PinManager> pin_manager, Id dir_id, Path dir_path,
+         Query query, const drive::FileError error,
+         const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
         if (pin_manager) {
-          pin_manager->OnSearchResult(std::move(query), error,
-                                      std::move(items));
+          pin_manager->OnSearchResult(
+              dir_id, std::move(dir_path), std::move(query), error,
+              items ? *items
+                    : base::span<const drivefs::mojom::QueryItemPtr>{});
+        } else {
+          VLOG(1) << "Dropped query for " << dir_id << " " << Quote(dir_path);
         }
       },
-      GetWeakPtr(), std::move(query)));
+      GetWeakPtr(), dir_id, std::move(dir_path), std::move(query)));
 }
 
 void PinManager::OnSearchResult(
+    const Id dir_id,
+    Path dir_path,
     Query query,
     const drive::FileError error,
-    const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+    const base::span<const drivefs::mojom::QueryItemPtr> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
-  if (error != drive::FILE_ERROR_OK || !items) {
-    LOG(ERROR) << "Cannot list files: " << error;
+  if (error != drive::FILE_ERROR_OK) {
+    LOG(ERROR) << "Cannot visit " << dir_id << " " << Quote(dir_path) << ": "
+               << error;
     switch (error) {
       default:
         return Complete(Stage::kCannotListFiles);
@@ -714,33 +740,96 @@ void PinManager::OnSearchResult(
         LOG(ERROR) << "Will retry in " << Quote(delay);
         SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
-            base::BindOnce(&PinManager::GetNextPage, GetWeakPtr(),
-                           std::move(query)),
+            base::BindOnce(&PinManager::GetNextPage, GetWeakPtr(), dir_id,
+                           std::move(dir_path), std::move(query)),
             delay);
         return;
     }
   }
 
-  DCHECK(items);
-  if (items->empty()) {
-    VLOG(1) << "No more files to list";
-    query.reset();
+  if (items.empty()) {
+    VLOG(1) << "Visited " << dir_id << " " << Quote(dir_path);
+
+    DCHECK_LE(progress_.active_queries, progress_.max_active_queries);
+    DCHECK_GT(progress_.active_queries, 0);
+    if (--progress_.active_queries != 0) {
+      VLOG(2) << "Active queries: " << progress_.active_queries;
+      return;
+    }
+
+    VLOG(1) << "Finished listing files in " << Quote(timer_.Elapsed());
+    VLOG(1) << "Total queries: " << progress_.total_queries;
+    VLOG(1) << "Max active queries: " << progress_.max_active_queries;
+    VLOG(1) << "Found " << progress_.listed_items
+            << " items: " << progress_.listed_dirs << " dirs, "
+            << progress_.listed_files << " files, " << progress_.listed_docs
+            << " docs, " << progress_.listed_shortcuts << " shortcuts";
+    VLOG(1) << "Tracking " << files_to_track_.size() << " files";
+    visited_dirs_.clear();
     return StartPinning();
   }
 
-  VLOG(2) << "Iterating over " << items->size() << " items";
-  for (const mojom::QueryItemPtr& item : *items) {
+  VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
+          << Quote(dir_path);
+  const Path files_by_id_path("/.files-by-id");
+
+  for (const mojom::QueryItemPtr& item : items) {
     DCHECK(item);
     DCHECK(item->metadata);
-    Add(*item->metadata, item->path);
+    const FileMetadata& md = *item->metadata;
+    const Id id = Id(md.stable_id);
+
+    const Path& path = item->path;
+    if (files_by_id_path.IsParent(path) || !dir_path.IsParent(path)) {
+      LOG(ERROR) << "Unexpected path " << Quote(path) << " for " << Quote(md)
+                 << " when listing items in " << dir_id << " "
+                 << Quote(dir_path);
+    }
+
+    if (md.shortcut_details) {
+      progress_.skipped_items++;
+      progress_.listed_shortcuts++;
+      VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
+              << md.type << " " << Id(md.shortcut_details->target_stable_id);
+      continue;
+    }
+
+    using Type = FileMetadata::Type;
+
+    switch (md.type) {
+      case Type::kFile:
+        progress_.listed_files++;
+        Add(md, path);
+        continue;
+
+      case Type::kHosted:
+        progress_.listed_docs++;
+        Add(md, path);
+        continue;
+
+      case Type::kDirectory:
+        progress_.listed_dirs++;
+
+        if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path);
+            !ok) {
+          DCHECK_EQ(it->first, id);
+          progress_.skipped_items++;
+          VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
+                  << dir_id << " " << Quote(dir_path)
+                  << " was previously seen when listing " << Quote(it->second);
+          continue;
+        }
+
+        ListItems(id, path);
+    }
   }
 
-  progress_.listed_items += items->size();
+  progress_.listed_items += items.size();
   VLOG(1) << "Listed " << progress_.listed_items << " items in "
           << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
           << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
-  GetNextPage(std::move(query));
+  GetNextPage(dir_id, std::move(dir_path), std::move(query));
 }
 
 void PinManager::Complete(const Stage stage) {
@@ -766,9 +855,11 @@ void PinManager::Complete(const Stage stage) {
   }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
+  visited_dirs_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
   progress_.syncing_files = 0;
+  progress_.active_queries = 0;
   NotifyProgress();
 
   if (completion_callback_) {

@@ -116,6 +116,12 @@ function onBulkPinningProgress(progress) {
   $('bulk-pinning-syncing-files').innerText = progress.syncing_files;
   $('bulk-pinning-skipped-items').innerText = progress.skipped_items;
   $('bulk-pinning-listed-items').innerText = progress.listed_items;
+  $('bulk-pinning-listed-dirs').innerText = progress.listed_dirs;
+  $('bulk-pinning-listed-files').innerText = progress.listed_files;
+  $('bulk-pinning-listed-docs').innerText = progress.listed_docs;
+  $('bulk-pinning-listed-shortcuts').innerText = progress.listed_shortcuts;
+  $('bulk-pinning-active-queries').innerText = progress.active_queries;
+  $('bulk-pinning-max-active-queries').innerText = progress.max_active_queries;
 }
 
 function updateStartupArguments(args) {

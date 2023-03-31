@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -101,15 +102,29 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Number of skipped items (files, directories and shortcuts).
   int skipped_items = 0;
 
-  // Number of all listed items (files, directories and shortcuts) seen during
-  // the kListingFiles stage.
+  // Numbers of items, directories, files, hosted documents and shortcuts found
+  // by search queries during the kListingFiles stage.
   int listed_items = 0;
+  int listed_dirs = 0;
+  int listed_files = 0;
+  int listed_docs = 0;
+  int listed_shortcuts = 0;
 
   // Number of "useful" (ie non-duplicated) events received from DriveFS so far.
   int useful_events = 0;
 
   // Number of duplicated events received from DriveFS so far.
   int duplicated_events = 0;
+
+  // Total number of search queries that have been started.
+  int total_queries = 0;
+
+  // Number of currently active search queries (ie started but not finished
+  // yet).
+  int active_queries = 0;
+
+  // High watermark of the number of active queries.
+  int max_active_queries = 0;
 
   // Stage of the setup process.
   Stage stage = Stage::kStopped;
@@ -299,21 +314,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Invoked on retrieval of free space during the periodic check.
   void OnFreeSpaceRetrieved2(int64_t free_space);
 
-  // Creates the Search Query.
-  using Query = mojo::Remote<mojom::SearchQuery>;
-  Query StartSearchQuery();
+  // Starts listing the items located in the given directory.
+  void ListItems(Id dir_id, Path dir_path);
 
-  // Gets the next batch of items when listing files.
-  void GetNextPage(Query query);
+  // Gets the next batch of items when listing items.
+  using Query = mojo::Remote<mojom::SearchQuery>;
+  void GetNextPage(Id dir_id, Path dir_path, Query query);
 
   // Once the free disk space has been retrieved, this method will be invoked
   // after every batch of searches to Drive complete. This is required as the
   // user may already have files pinned (which the `GetQuotaUsage` will include
   // in it's calculation).
-  void OnSearchResult(
-      Query query,
-      drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+  void OnSearchResult(Id dir_id,
+                      Path dir_path,
+                      Query query,
+                      drive::FileError error,
+                      base::span<const drivefs::mojom::QueryItemPtr> items);
 
   // When the pinning has finished, this ensures appropriate cleanup happens on
   // the underlying search query mojo connection.
@@ -387,6 +403,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ElapsedTimer progress_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Stable IDs of directories that got their items listed. The mapped Path is
+  // the path of the parent directory when the given directory designated by Id
+  // was first encountered.
+  std::unordered_map<Id, Path> visited_dirs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
   std::unordered_set<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
