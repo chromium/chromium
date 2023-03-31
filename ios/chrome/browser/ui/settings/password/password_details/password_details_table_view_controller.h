@@ -46,6 +46,9 @@
 // Shows the password details in edit mode without requiring any authentication.
 - (void)showEditViewWithoutAuthentication;
 
+// Setup the cancel button on the navigation's left bar button.
+- (void)setupLeftCancelButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_H_

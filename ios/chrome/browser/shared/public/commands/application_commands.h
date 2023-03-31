@@ -19,6 +19,9 @@ enum class DefaultBrowserPromoSource;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
+namespace password_manager {
+struct CredentialUIEntry;
+}  // namespace password_manager
 
 // This protocol groups commands that are part of ApplicationCommands, but
 // may also be forwarded directly to a settings navigation controller.
@@ -58,6 +61,13 @@ enum class TrustedVaultUserActionTriggerForUMA;
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton
                                   startPasswordCheck:(BOOL)startPasswordCheck;
+
+// Shows the password details page for a credential.
+// `showCancelButton` indicates whether a cancel button should be added as the
+// left navigation item of the password details view.
+- (void)showPasswordDetailsForCredential:
+            (password_manager::CredentialUIEntry)credential
+                        showCancelButton:(BOOL)showCancelButton;
 
 // Shows the list of profiles (addresess) in the settings.
 - (void)showProfileSettingsFromViewController:

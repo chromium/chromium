@@ -17,6 +17,9 @@ class Browser;
 @protocol ImportDataControllerDelegate;
 @protocol SnackbarCommands;
 @class UserFeedbackData;
+namespace password_manager {
+struct CredentialUIEntry;
+}  // namespace password_manager
 
 // The accessibility identifier for the settings' "Done" button.
 extern NSString* const kSettingsDoneButtonId;
@@ -103,6 +106,19 @@ extern NSString* const kSettingsDoneButtonId;
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate
                      showCancelButton:(BOOL)showCancelButton;
+
+// Creates a new PasswordDetailsViewController and the chrome around it.
+// `browser` is the browser where the view is being displayed and should not be
+// nil. `delegate` button should be shown in the upper left corner if the
+// navigation stack is empty.
++ (instancetype)
+    passwordDetailsControllerForBrowser:(Browser*)browser
+                               delegate:
+                                   (id<SettingsNavigationControllerDelegate>)
+                                       delegate
+                             credential:
+                                 (password_manager::CredentialUIEntry)credential
+                       showCancelButton:(BOOL)showCancelButton;
 
 // Creates and displays a new UIViewController for user to report an issue.
 // `browser` is the browser where settings are being displayed and should not be

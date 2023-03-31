@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -2504,6 +2505,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       showSavedPasswordsSettingsFromViewController:self
                                   showCancelButton:YES
                                 startPasswordCheck:NO];
+}
+
+- (void)showPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential {
+  [self.applicationCommandsHandler showPasswordDetailsForCredential:credential
+                                                   showCancelButton:YES];
 }
 
 #pragma mark - WebStateContainerViewProvider
