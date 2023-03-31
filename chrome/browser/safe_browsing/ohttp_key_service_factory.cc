@@ -46,7 +46,8 @@ KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
           g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
               profile));
   return new OhttpKeyService(
-      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)));
+      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
+      profile->GetPrefs());
 }
 
 }  // namespace safe_browsing

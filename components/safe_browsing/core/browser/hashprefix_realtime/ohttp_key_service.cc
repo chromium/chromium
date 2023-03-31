@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -69,8 +71,15 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
 namespace safe_browsing {
 
 OhttpKeyService::OhttpKeyService(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService* pref_service)
+    : url_loader_factory_(url_loader_factory), pref_service_(pref_service) {
+  // |pref_service_| can be null in tests.
+  if (!pref_service_) {
+    return;
+  }
+  PopulateKeyFromPref();
+}
 
 OhttpKeyService::~OhttpKeyService() = default;
 
@@ -114,10 +123,30 @@ void OhttpKeyService::OnURLLoaderComplete(
   url_loader_.reset();
   if (is_key_fetch_successful) {
     ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
+    StoreKeyToPref();
   }
   pending_callbacks_.Notify(is_key_fetch_successful
                                 ? absl::optional<std::string>(*response_body)
                                 : absl::nullopt);
+}
+
+void OhttpKeyService::PopulateKeyFromPref() {
+  std::string key =
+      pref_service_->GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey);
+  base::Time expiration_time = pref_service_->GetTime(
+      prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime);
+  if (!key.empty() && expiration_time > base::Time::Now()) {
+    ohttp_key_ = {key, expiration_time};
+  }
+}
+
+void OhttpKeyService::StoreKeyToPref() {
+  if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
+    pref_service_->SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
+                             ohttp_key_->key);
+    pref_service_->SetTime(prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime,
+                           ohttp_key_->expiration);
+  }
 }
 
 void OhttpKeyService::Shutdown() {

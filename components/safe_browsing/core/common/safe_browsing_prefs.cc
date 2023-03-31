@@ -108,6 +108,10 @@ const char kAdvancedProtectionAllowed[] =
 const char kSafeBrowsingMetricsLastLogTime[] =
     "safebrowsing.metrics_last_log_time";
 const char kSafeBrowsingEventTimestamps[] = "safebrowsing.event_timestamps";
+const char kSafeBrowsingHashRealTimeOhttpExpirationTime[] =
+    "safebrowsing.hash_real_time_ohttp_expiration_time";
+const char kSafeBrowsingHashRealTimeOhttpKey[] =
+    "safebrowsing.hash_real_time_ohttp_key";
 const char kAccountTailoredSecurityUpdateTimestamp[] =
     "safebrowsing.aesb_update_time_windows_epoch_micros";
 const char kAccountTailoredSecurityShownNotification[] =
@@ -245,6 +249,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterInt64Pref(prefs::kSafeBrowsingMetricsLastLogTime, 0);
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingEventTimestamps);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime, base::Time());
+  registry->RegisterStringPref(prefs::kSafeBrowsingHashRealTimeOhttpKey, "");
   registry->RegisterTimePref(
       prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);

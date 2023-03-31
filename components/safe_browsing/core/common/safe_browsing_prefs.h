@@ -120,6 +120,13 @@ extern const char kSafeBrowsingMetricsLastLogTime[];
 // Used for logging metrics. Structure: go/sb-event-ts-pref-struct.
 extern const char kSafeBrowsingEventTimestamps[];
 
+// A timestamp indicating the expiration time of the Oblivious HTTP key used by
+// hash prefix real time URL check.
+extern const char kSafeBrowsingHashRealTimeOhttpExpirationTime[];
+
+// The Oblivious HTTP key used by hash prefix real time URL check.
+extern const char kSafeBrowsingHashRealTimeOhttpKey[];
+
 // A timestamp indicating the last time the account tailored security boolean
 // was updated.
 extern const char kAccountTailoredSecurityUpdateTimestamp[];

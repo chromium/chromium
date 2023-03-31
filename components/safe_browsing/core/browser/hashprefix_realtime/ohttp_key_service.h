@@ -12,6 +12,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
@@ -33,8 +35,9 @@ class OhttpKeyService : public KeyedService {
     base::Time expiration;
   };
 
-  explicit OhttpKeyService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  OhttpKeyService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* pref_service);
 
   OhttpKeyService(const OhttpKeyService&) = delete;
   OhttpKeyService& operator=(const OhttpKeyService&) = delete;
@@ -62,6 +65,14 @@ class OhttpKeyService : public KeyedService {
   // received.
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
 
+  // Pref functions:
+  // Gets the key and expiration time from pref. If there is an unexpired key,
+  // populate it into |ohttp_key_|.
+  void PopulateKeyFromPref();
+  // Sets the current |ohttp_key_| into pref. Skip if there is no valid
+  // |ohttp_key_|.
+  void StoreKeyToPref();
+
   // The URLLoaderFactory we use to issue a network request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // |url_loader_| is not null iff there is a network request in progress.
@@ -73,6 +84,10 @@ class OhttpKeyService : public KeyedService {
 
   // The key cached in memory.
   absl::optional<OhttpKeyAndExpiration> ohttp_key_;
+
+  // Unowned object used for synchronizing the OHTTP key between the prefs and
+  // the OHTTP key service.
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };
