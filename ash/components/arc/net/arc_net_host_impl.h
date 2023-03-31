@@ -172,14 +172,35 @@ class ArcNetHostImpl : public KeyedService,
       mojom::EapCredentialsPtr cred,
       base::OnceCallback<void(base::Value::Dict)> callback);
 
-  // Synchronously translate EAP credentials to base::Value::Dict with
-  // empty or imported certificate and slot ID. |callback| is then run with
-  // the translated values.
-  void TranslateEapCredentialsToDictWithCertID(
+  // Synchronously translate EAP credentials to shill constants mapped
+  // base::Value dictionary with with empty or imported certificate and slot
+  // ID. |callback| is then run with the translated values. Could be used to
+  // translate passpoint EAP credentials.
+  void TranslateEapCredentialsToShillDictWithCertID(
       mojom::EapCredentialsPtr cred,
       base::OnceCallback<void(base::Value::Dict)> callback,
       const absl::optional<std::string>& cert_id,
       const absl::optional<int>& slot_id);
+
+  // Synchronously translate EAP credentials to base::Value dictionary in ONC
+  // with empty or imported certificate and slot ID. |callback| is then run
+  // with the translated values. Could be used to translate WiFi EAP
+  // credentials.
+  void TranslateEapCredentialsToOncDictWithCertID(
+      const mojom::EapCredentialsPtr& eap,
+      base::OnceCallback<void(base::Value::Dict)> callback,
+      const absl::optional<std::string>& cert_id,
+      const absl::optional<int>& slot_id);
+
+  // Translate EAP credentials to base::Value dictionary. If it is
+  // necessary to import certificates this method will asynchronously
+  // import them and run |callback| afterwards.. |is_onc| flag is used
+  // to indicate whether EAP credentials will be translated directly to
+  // shill properties or to ONC properties.
+  void TranslateEapCredentialsToDict(
+      mojom::EapCredentialsPtr cred,
+      bool is_onc,
+      base::OnceCallback<void(base::Value::Dict)> callback);
 
   // Translate passpoint credentials to base::Value::Dict and run
   // |callback|. If it is necessary to import certificates this method will
@@ -222,6 +243,12 @@ class ArcNetHostImpl : public KeyedService,
 
   // PatchPanelClient::Observer implementation:
   void NetworkConfigurationChanged() override;
+
+  // Synchronously translate WiFi Configuration to shill configuration
+  // and create network in shill.
+  void CreateNetworkWithEapTranslated(mojom::WifiConfigurationPtr cfg,
+                                      CreateNetworkCallback callback,
+                                      base::Value::Dict eap_dict);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

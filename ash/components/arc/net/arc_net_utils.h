@@ -33,9 +33,17 @@ std::string TranslateEapMethod(arc::mojom::EapMethod method);
 // Translates a mojo EapPhase2Method into a shill EAP phase 2 auth type.
 std::string TranslateEapPhase2Method(arc::mojom::EapPhase2Method method);
 
+// Translates a mojo EapMethod into a ONC EAP method.
+std::string TranslateEapMethodToOnc(arc::mojom::EapMethod method);
+
+// Translates a mojo EapPhase2Method into a ONC EAP phase 2 auth type.
+std::string TranslateEapPhase2MethodToOnc(arc::mojom::EapPhase2Method method);
+
 // Translates a mojo KeyManagement into a shill kEapKeyMgmtProperty value.
 std::string TranslateKeyManagement(mojom::KeyManagement management);
 
+// Translates a mojo KeyManagement into a ONC value.
+std::string TranslateKeyManagementToOnc(mojom::KeyManagement management);
 // Translates a shill security class into a mojom SecurityType.
 arc::mojom::SecurityType TranslateWiFiSecurity(
     const std::string& security_class);
