@@ -16,7 +16,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "foo": "bar"
+              "foo": "bar",
+              "os": "Linux"
             }
           ],
           "foo": "bar"
@@ -36,7 +37,8 @@
           "dimension_sets": [
             {
               "foo": "bar",
-              "iama": "mixin"
+              "iama": "mixin",
+              "os": "Linux"
             }
           ],
           "foo": "bar"
@@ -57,7 +59,8 @@
           "dimension_sets": [
             {
               "foo": "bar",
-              "hello": "world"
+              "hello": "world",
+              "os": "Linux"
             }
           ],
           "foo": "bar"

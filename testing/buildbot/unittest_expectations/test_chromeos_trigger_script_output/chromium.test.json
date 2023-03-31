@@ -13,7 +13,8 @@
           "dimension_sets": [
             {
               "device_type": "foo_device",
-              "integrity": "high"
+              "integrity": "high",
+              "os": "Linux"
             }
           ],
           "expiration": 120

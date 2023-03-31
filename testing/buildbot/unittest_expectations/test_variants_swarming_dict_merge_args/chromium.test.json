@@ -14,7 +14,12 @@
         },
         "name": "args_test args",
         "swarming": {
-          "can_use_on_swarming_builders": true
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Linux"
+            }
+          ]
         },
         "test": "args_test",
         "variant_id": "args"
@@ -32,7 +37,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "iama": "mixin"
+              "iama": "mixin",
+              "os": "Linux"
             }
           ]
         },
@@ -53,7 +59,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "hello": "world"
+              "hello": "world",
+              "os": "Linux"
             }
           ]
         },

@@ -12,7 +12,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "integrity": "high"
+              "integrity": "high",
+              "os": "Linux"
             }
           ],
           "expiration": 120,
