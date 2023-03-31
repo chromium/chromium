@@ -152,7 +152,19 @@ class BASE_EXPORT HistogramSamples {
 
   void Subtract(const HistogramSamples& other);
 
+  // Adds the samples from |other| while also resetting |other|'s sample counts
+  // to 0.
+  void Extract(HistogramSamples& other);
+
+  // Returns an iterator to read the sample counts.
   virtual std::unique_ptr<SampleCountIterator> Iterator() const = 0;
+
+  // Returns a special kind of iterator that resets the underlying sample count
+  // to 0 when Get() is called. The returned iterator must be consumed
+  // completely before being destroyed, otherwise samples may be lost (this is
+  // enforced by a DCHECK in the destructor).
+  virtual std::unique_ptr<SampleCountIterator> ExtractingIterator() = 0;
+
   void Serialize(Pickle* pickle) const;
 
   // Returns ASCII representation of histograms data for histogram samples.
@@ -277,11 +289,9 @@ class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
  public:
   SingleSampleIterator(HistogramBase::Sample min,
                        int64_t max,
-                       HistogramBase::Count count);
-  SingleSampleIterator(HistogramBase::Sample min,
-                       int64_t max,
                        HistogramBase::Count count,
-                       size_t bucket_index);
+                       size_t bucket_index,
+                       bool value_was_extracted);
   ~SingleSampleIterator() override;
 
   // SampleCountIterator:
@@ -300,6 +310,10 @@ class BASE_EXPORT SingleSampleIterator : public SampleCountIterator {
   const int64_t max_;
   const size_t bucket_index_;
   HistogramBase::Count count_;
+
+  // Whether the value that this iterator holds was extracted from the
+  // underlying data (i.e., reset to 0).
+  const bool value_was_extracted_;
 };
 
 }  // namespace base

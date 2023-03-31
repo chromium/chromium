@@ -150,6 +150,7 @@ TEST_P(SparseHistogramTest, UnloggedSamplesTest) {
   EXPECT_EQ(1, samples->GetCount(1));
   EXPECT_EQ(2, samples->GetCount(2));
   EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(5, samples->sum());
 
   // Snapshot unlogged samples again, which would be the same as above.
   samples = histogram->SnapshotUnloggedSamples();
@@ -157,14 +158,19 @@ TEST_P(SparseHistogramTest, UnloggedSamplesTest) {
   EXPECT_EQ(1, samples->GetCount(1));
   EXPECT_EQ(2, samples->GetCount(2));
   EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(5, samples->sum());
 
   // Verify that marking the samples as logged works correctly, and that
   // SnapshotDelta() will not pick up the samples.
   histogram->MarkSamplesAsLogged(*samples);
   samples = histogram->SnapshotUnloggedSamples();
   EXPECT_EQ(0, samples->TotalCount());
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(0, samples->sum());
   samples = histogram->SnapshotDelta();
   EXPECT_EQ(0, samples->TotalCount());
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(0, samples->sum());
 
   // Similarly, verify that SnapshotDelta() marks the samples as logged.
   histogram->AddCount(1, 1);
@@ -174,8 +180,19 @@ TEST_P(SparseHistogramTest, UnloggedSamplesTest) {
   EXPECT_EQ(1, samples->GetCount(1));
   EXPECT_EQ(2, samples->GetCount(2));
   EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(5, samples->sum());
   samples = histogram->SnapshotUnloggedSamples();
   EXPECT_EQ(0, samples->TotalCount());
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(0, samples->sum());
+
+  // Verify that the logged samples contain everything emitted.
+  samples = histogram->SnapshotSamples();
+  EXPECT_EQ(6, samples->TotalCount());
+  EXPECT_EQ(samples->TotalCount(), samples->redundant_count());
+  EXPECT_EQ(2, samples->GetCount(1));
+  EXPECT_EQ(4, samples->GetCount(2));
+  EXPECT_EQ(10, samples->sum());
 }
 
 TEST_P(SparseHistogramTest, AddCount_LargeValuesDontOverflow) {

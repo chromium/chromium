@@ -554,6 +554,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.MetricsService.SnapshotDeltasTime" units="ms"
+    expires_after="2023-07-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The runtime of SnapshotStatisticsRecorderDeltas(). Emitted every time it is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="UMA.NegativeSamples.Histogram" enum="HistogramNameHash"
     expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>

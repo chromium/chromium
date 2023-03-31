@@ -868,6 +868,7 @@ MetricsService::MetricsLogHistogramWriter::~MetricsLogHistogramWriter() =
 
 void MetricsService::MetricsLogHistogramWriter::
     SnapshotStatisticsRecorderDeltas() {
+  SCOPED_UMA_HISTOGRAM_TIMER("UMA.MetricsService.SnapshotDeltasTime");
   snapshot_transaction_id_ = base::StatisticsRecorder::PrepareDeltas(
       /*include_persistent=*/true,
       /*flags_to_set=*/base::Histogram::kNoFlags, required_flags_,

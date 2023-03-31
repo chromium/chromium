@@ -83,6 +83,7 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
 
   // For constructor calling.
   friend class SparseHistogramTest;
+  friend class HistogramThreadsafeTest;
 
   // Protects access to |samples_|.
   mutable base::Lock lock_;

@@ -162,9 +162,12 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotDelta() {
   // Also make those functions final in order to avoid vtable lookups.
   std::unique_ptr<SampleMap> snapshot(new SampleMap(name_hash()));
   base::AutoLock auto_lock(lock_);
-  snapshot->Add(*unlogged_samples_);
-
-  unlogged_samples_->Subtract(*snapshot);
+  if (base::FeatureList::IsEnabled(internal::kHistogramNewSnapshotDelta)) {
+    snapshot->Extract(*unlogged_samples_);
+  } else {
+    snapshot->Add(*unlogged_samples_);
+    unlogged_samples_->Subtract(*snapshot);
+  }
   logged_samples_->Add(*snapshot);
   return std::move(snapshot);
 }

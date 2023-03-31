@@ -259,6 +259,40 @@ void HistogramSamples::Subtract(const HistogramSamples& other) {
   DCHECK(success);
 }
 
+void HistogramSamples::Extract(HistogramSamples& other) {
+  static_assert(sizeof(other.meta_->sum) == 8);
+
+#ifdef ARCH_CPU_64_BITS
+  // NoBarrier_AtomicExchange() is only defined for 64-bit types if
+  // the ARCH_CPU_64_BITS macro is set.
+  subtle::Atomic64 other_sum =
+      subtle::NoBarrier_AtomicExchange(&other.meta_->sum, 0);
+#else
+  // |sum| is only atomic on 64 bit archs. Make |other_sum| volatile so that
+  // the following code is not optimized or rearranged to be something like:
+  //     IncreaseSumAndCount(other.meta_->sum, ...);
+  //     other.meta_->sum = 0;
+  // Or:
+  //     int64_t other_sum = other.meta_->sum;
+  //     other.meta_->sum = 0;
+  //     IncreaseSumAndCount(other_sum, ...);
+  // Which do not guarantee eventual consistency anymore (other.meta_->sum may
+  // be modified concurrently at any time). However, despite this, eventual
+  // consistency is still not guaranteed here because performing 64-bit
+  // operations (loading, storing, adding, etc.) on a 32-bit machine cannot be
+  // done atomically, but this at least reduces the odds of inconsistencies, at
+  // the cost of a few extra instructions.
+  volatile int64_t other_sum = other.meta_->sum;
+  other.meta_->sum -= other_sum;
+#endif  // ARCH_CPU_64_BITS
+  HistogramBase::AtomicCount other_redundant_count =
+      subtle::NoBarrier_AtomicExchange(&other.meta_->redundant_count, 0);
+  IncreaseSumAndCount(other_sum, other_redundant_count);
+  std::unique_ptr<SampleCountIterator> it = other.ExtractingIterator();
+  bool success = AddSubtractImpl(it.get(), ADD);
+  DCHECK(success);
+}
+
 void HistogramSamples::Serialize(Pickle* pickle) const {
   pickle->WriteInt64(sum());
   pickle->WriteInt(redundant_count());
@@ -411,16 +445,22 @@ bool SampleCountIterator::GetBucketIndex(size_t* index) const {
 
 SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample min,
                                            int64_t max,
-                                           HistogramBase::Count count)
-    : SingleSampleIterator(min, max, count, kSizeMax) {}
-
-SingleSampleIterator::SingleSampleIterator(HistogramBase::Sample min,
-                                           int64_t max,
                                            HistogramBase::Count count,
-                                           size_t bucket_index)
-    : min_(min), max_(max), bucket_index_(bucket_index), count_(count) {}
+                                           size_t bucket_index,
+                                           bool value_was_extracted)
+    : min_(min),
+      max_(max),
+      bucket_index_(bucket_index),
+      count_(count),
+      value_was_extracted_(value_was_extracted) {}
 
-SingleSampleIterator::~SingleSampleIterator() = default;
+SingleSampleIterator::~SingleSampleIterator() {
+  // Because this object may have been instantiated in such a way that the
+  // samples it is holding were already extracted from the underlying data, we
+  // add a DCHECK to ensure that in those cases, users of this iterator read the
+  // samples, otherwise they may be lost.
+  DCHECK(!value_was_extracted_ || Done());
+}
 
 bool SingleSampleIterator::Done() const {
   return count_ == 0;

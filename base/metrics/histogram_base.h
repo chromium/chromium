@@ -15,11 +15,17 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 namespace base {
+namespace internal {
+// Determines whether to use the more efficient and thread-safe code path for
+// snapshotting histogram deltas.
+BASE_EXPORT BASE_DECLARE_FEATURE(kHistogramNewSnapshotDelta);
+}  // namespace internal
 
 class Value;
 class HistogramBase;

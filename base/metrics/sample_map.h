@@ -38,6 +38,7 @@ class BASE_EXPORT SampleMap : public HistogramSamples {
   HistogramBase::Count GetCount(HistogramBase::Sample value) const override;
   HistogramBase::Count TotalCount() const override;
   std::unique_ptr<SampleCountIterator> Iterator() const override;
+  std::unique_ptr<SampleCountIterator> ExtractingIterator() override;
 
  protected:
   // Performs arithemetic. |op| is ADD or SUBTRACT.

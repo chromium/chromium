@@ -15,19 +15,17 @@ typedef HistogramBase::Sample Sample;
 namespace {
 
 // An iterator for going through a SampleMap. The logic here is identical
-// to that of PersistentSampleMapIterator but with different data structures.
-// Changes here likely need to be duplicated there.
-class SampleMapIterator : public SampleCountIterator {
+// to that of the iterator for PersistentSampleMap but with different data
+// structures. Changes here likely need to be duplicated there.
+template <typename T, typename I>
+class IteratorTemplate : public SampleCountIterator {
  public:
-  typedef std::map<HistogramBase::Sample, HistogramBase::Count>
-      SampleToCountMap;
-
-  explicit SampleMapIterator(const SampleToCountMap& sample_counts)
+  explicit IteratorTemplate(T& sample_counts)
       : iter_(sample_counts.begin()), end_(sample_counts.end()) {
     SkipEmptyBuckets();
   }
 
-  ~SampleMapIterator() override = default;
+  ~IteratorTemplate() override;
 
   // SampleCountIterator:
   bool Done() const override { return iter_ == end_; }
@@ -38,12 +36,7 @@ class SampleMapIterator : public SampleCountIterator {
   }
   void Get(HistogramBase::Sample* min,
            int64_t* max,
-           HistogramBase::Count* count) override {
-    DCHECK(!Done());
-    *min = iter_->first;
-    *max = strict_cast<int64_t>(iter_->first) + 1;
-    *count = iter_->second;
-  }
+           HistogramBase::Count* count) override;
 
  private:
   void SkipEmptyBuckets() {
@@ -52,9 +45,56 @@ class SampleMapIterator : public SampleCountIterator {
     }
   }
 
-  SampleToCountMap::const_iterator iter_;
-  const SampleToCountMap::const_iterator end_;
+  I iter_;
+  const I end_;
 };
+
+typedef std::map<HistogramBase::Sample, HistogramBase::Count> SampleToCountMap;
+typedef IteratorTemplate<const SampleToCountMap,
+                         SampleToCountMap::const_iterator>
+    SampleMapIterator;
+
+template <>
+SampleMapIterator::~IteratorTemplate() = default;
+
+// Get() for an iterator of a SampleMap.
+template <>
+void SampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
+  DCHECK(!Done());
+  *min = iter_->first;
+  *max = strict_cast<int64_t>(iter_->first) + 1;
+  // We do not have to do the following atomically -- if the caller needs thread
+  // safety, they should use a lock. And since this is in local memory, if a
+  // lock is used, we know the value would not be concurrently modified by a
+  // different process (in contrast to PersistentSampleMap, where the value in
+  // shared memory may be modified concurrently by a subprocess).
+  *count = iter_->second;
+}
+
+typedef IteratorTemplate<SampleToCountMap, SampleToCountMap::iterator>
+    ExtractingSampleMapIterator;
+
+template <>
+ExtractingSampleMapIterator::~IteratorTemplate() {
+  // Ensure that the user has consumed all the samples in order to ensure no
+  // samples are lost.
+  DCHECK(Done());
+}
+
+// Get() for an extracting iterator of a SampleMap.
+template <>
+void ExtractingSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
+  DCHECK(!Done());
+  *min = iter_->first;
+  *max = strict_cast<int64_t>(iter_->first) + 1;
+  // We do not have to do the following atomically -- if the caller needs thread
+  // safety, they should use a lock. And since this is in local memory, if a
+  // lock is used, we know the value would not be concurrently modified by a
+  // different process (in contrast to PersistentSampleMap, where the value in
+  // shared memory may be modified concurrently by a subprocess).
+  *count = iter_->second;
+  iter_->second = 0;
+}
 
 }  // namespace
 
@@ -66,6 +106,11 @@ SampleMap::SampleMap(uint64_t id)
 SampleMap::~SampleMap() = default;
 
 void SampleMap::Accumulate(Sample value, Count count) {
+  // We do not have to do the following atomically -- if the caller needs
+  // thread safety, they should use a lock. And since this is in local memory,
+  // if a lock is used, we know the value would not be concurrently modified
+  // by a different process (in contrast to PersistentSampleMap, where the
+  // value in shared memory may be modified concurrently by a subprocess).
   sample_counts_[value] += count;
   IncreaseSumAndCount(strict_cast<int64_t>(count) * value, count);
 }
@@ -89,6 +134,10 @@ std::unique_ptr<SampleCountIterator> SampleMap::Iterator() const {
   return std::make_unique<SampleMapIterator>(sample_counts_);
 }
 
+std::unique_ptr<SampleCountIterator> SampleMap::ExtractingIterator() {
+  return std::make_unique<ExtractingSampleMapIterator>(sample_counts_);
+}
+
 bool SampleMap::AddSubtractImpl(SampleCountIterator* iter, Operator op) {
   Sample min;
   int64_t max;
@@ -98,6 +147,11 @@ bool SampleMap::AddSubtractImpl(SampleCountIterator* iter, Operator op) {
     if (strict_cast<int64_t>(min) + 1 != max)
       return false;  // SparseHistogram only supports bucket with size 1.
 
+    // We do not have to do the following atomically -- if the caller needs
+    // thread safety, they should use a lock. And since this is in local memory,
+    // if a lock is used, we know the value would not be concurrently modified
+    // by a different process (in contrast to PersistentSampleMap, where the
+    // value in shared memory may be modified concurrently by a subprocess).
     sample_counts_[min] += (op == HistogramSamples::ADD) ? count : -count;
   }
   return true;
