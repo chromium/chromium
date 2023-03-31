@@ -6463,21 +6463,6 @@
             ]
         }
     ],
-    "IOSMediaPermissionsControl": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaPermissionsControl"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNativeFindInPage": [
         {
             "platforms": [

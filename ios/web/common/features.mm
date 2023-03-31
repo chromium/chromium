@@ -55,7 +55,7 @@ BASE_FEATURE(kEnableFullscreenAPI,
 
 BASE_FEATURE(kMediaPermissionsControl,
              "MediaPermissionsControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
              "UseLoadSimulatedRequestForErrorPageNavigation",
