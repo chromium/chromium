@@ -173,8 +173,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
              MatrixID matrix,
              RangeID range,
              const skcms_Matrix3x3* custom_primary_matrix,
-             const skcms_TransferFunction* cunstom_transfer_fn,
-             bool is_hdr = false);
+             const skcms_TransferFunction* cunstom_transfer_fn);
 
   explicit ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr = false);
 
@@ -407,7 +406,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   static bool GetTransferFunction(TransferID, skcms_TransferFunction* fn);
   static size_t TransferParamCount(TransferID);
 
-  void SetCustomTransferFunction(const skcms_TransferFunction& fn, bool is_hdr);
+  void SetCustomTransferFunction(const skcms_TransferFunction& fn);
   void SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50);
 
   PrimaryID primaries_ = PrimaryID::INVALID;
