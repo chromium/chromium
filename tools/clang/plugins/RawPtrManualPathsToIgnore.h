@@ -32,6 +32,9 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     "base/synchronization/lock_impl.h",
     "base/check.h",
 
+    // win:pe_image target that uses this file does not depend on base/.
+    "base/no_destructor.h",
+
     // Exclude - deprecated and contains legacy C++ and pre-C++11 code.
     "ppapi/",
 
