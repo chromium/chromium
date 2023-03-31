@@ -43,23 +43,25 @@ namespace {
 using UserSiteAccess = PermissionsManager::UserSiteAccess;
 using UserSiteSetting = PermissionsManager::UserSiteSetting;
 
-const char kAllHostsScheme[] = "*://*/*";
-const char kExplicitHostsScheme[] = "http://127.0.0.1/*";
-const char kBackgroundScript[] =
-    "\"background\": {\"scripts\": [\"script.js\"]}";
-const char kBackgroundScriptSource[] =
-    "var listener = function(tabId) {\n"
-    "  chrome.tabs.onUpdated.removeListener(listener);\n"
-    "  chrome.tabs.executeScript(tabId, {\n"
-    "    code: \"chrome.test.sendMessage('inject succeeded');\"\n"
-    "  });"
-    "};\n"
-    "chrome.tabs.onUpdated.addListener(listener);\n"
-    "chrome.test.sendMessage('ready');";
-const char kContentScriptSource[] =
+constexpr char kAllHostsScheme[] = "*://*/*";
+constexpr char kExplicitHostsScheme[] = "http://127.0.0.1/*";
+constexpr char kBackgroundScript[] =
+    R"("background": {"scripts": ["script.js"]})";
+
+constexpr char kBackgroundScriptSource[] =
+    R"(var listener = function(tabId) {
+         chrome.tabs.onUpdated.removeListener(listener);
+         chrome.tabs.executeScript(tabId, {
+           code: "chrome.test.sendMessage('inject succeeded');"
+         });
+       };
+       chrome.tabs.onUpdated.addListener(listener);
+       chrome.test.sendMessage('ready');)";
+
+constexpr char kContentScriptSource[] =
     "chrome.test.sendMessage('inject succeeded');";
 
-const char kInjectSucceeded[] = "inject succeeded";
+constexpr char kInjectSucceeded[] = "inject succeeded";
 
 enum InjectionType { CONTENT_SCRIPT, EXECUTE_SCRIPT };
 
@@ -135,33 +137,31 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
   const char* const permission_scheme =
       host_type == ALL_HOSTS ? kAllHostsScheme : kExplicitHostsScheme;
 
-  std::string permissions = base::StringPrintf(
-      "\"permissions\": [\"tabs\", \"%s\"]", permission_scheme);
+  std::string permissions =
+      base::StringPrintf(R"("permissions": ["tabs", "%s"])", permission_scheme);
 
   std::string scripts;
   std::string script_source;
   if (injection_type == CONTENT_SCRIPT) {
     scripts = base::StringPrintf(
-        "\"content_scripts\": ["
-        " {"
-        "  \"matches\": [\"%s\"],"
-        "  \"js\": [\"script.js\"],"
-        "  \"run_at\": \"document_end\""
-        " }"
-        "]",
+        R"("content_scripts": [{
+              "matches": ["%s"],
+              "js": ["script.js"],
+              "run_at": "document_end"
+           }])",
         permission_scheme);
   } else {
     scripts = kBackgroundScript;
   }
 
   std::string manifest = base::StringPrintf(
-      "{"
-      " \"name\": \"%s\","
-      " \"version\": \"1.0\","
-      " \"manifest_version\": 2,"
-      " %s,"
-      " %s"
-      "}",
+      R"({
+           "name": "%s",
+           "version": "1.0",
+           "manifest_version": 2,
+           %s,
+           %s
+         })",
       name.c_str(), permissions.c_str(), scripts.c_str());
 
   std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir);
