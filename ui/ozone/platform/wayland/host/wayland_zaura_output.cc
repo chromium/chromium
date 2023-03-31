@@ -29,13 +29,7 @@ WaylandZAuraOutput::WaylandZAuraOutput() : obj_(nullptr) {}
 WaylandZAuraOutput::~WaylandZAuraOutput() = default;
 
 bool WaylandZAuraOutput::IsReady() const {
-  // Assume the output is ready regardless of whether the associated server
-  // events have arrived if the server is too old to support display_id.
-  // TODO(tluk): Determine if this is a correct assumption to make or if we need
-  // to update this for older servers.
-  return wl::get_version_of_object(obj_.get()) <
-             ZAURA_OUTPUT_DISPLAY_ID_SINCE_VERSION ||
-         is_ready_;
+  return is_ready_;
 }
 
 void WaylandZAuraOutput::OnDone() {
