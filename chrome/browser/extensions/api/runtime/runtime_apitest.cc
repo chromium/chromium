@@ -724,7 +724,15 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
 
 // Tests retrieving the background service worker context using
 // `chrome.runtime.getContexts()`.
-IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetServiceWorkerContext) {
+
+// TODO(https://crbug.com/1429463): failed on "chromium/ci/Mac12 Tests"
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GetServiceWorkerContext DISABLED_GetServiceWorkerContext
+#else
+#define MAYBE_GetServiceWorkerContext GetServiceWorkerContext
+#endif
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
+                       MAYBE_GetServiceWorkerContext) {
   // An empty dictionary filter should match all contexts (of which there is
   // only one).
   base::Value contexts = GetContexts("{}");
