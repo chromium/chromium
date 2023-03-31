@@ -8,7 +8,7 @@ import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {createCreditCardEntry, STUB_USER_ACCOUNT_INFO, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {createCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
 import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
 
 // clang-format on
@@ -65,7 +65,7 @@ suite('PaymentsSectionCardRows', function() {
           (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
               .lastCallback.setPersonalDataManagerListener!
               ([], [creditCard], [], {
-                ...STUB_USER_ACCOUNT_INFO,
+                email: 'stub-user@example.com',
                 isSyncEnabledForAutofillProfiles: true,
               });
           flush();

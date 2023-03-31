@@ -98,12 +98,6 @@ export interface MultiStoreExceptionEntryParams {
   deviceId?: number;
 }
 
-export const STUB_USER_ACCOUNT_INFO: chrome.autofillPrivate.AccountInfo = {
-  email: 'stub-user@example.com',
-  isSyncEnabledForAutofillProfiles: false,
-  isEligibleForAddressAccountStorage: false,
-};
-
 /**
  * Creates a new fake address entry for testing.
  */
@@ -454,7 +448,6 @@ export class TestAutofillManager extends TestBrowserProxy implements
       accountInfo: {
         email: 'stub-user@example.com',
         isSyncEnabledForAutofillProfiles: true,
-        isEligibleForAddressAccountStorage: false,
       },
     };
 

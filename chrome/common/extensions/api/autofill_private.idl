@@ -10,7 +10,6 @@ namespace autofillPrivate {
   dictionary AccountInfo {
     DOMString email;
     boolean isSyncEnabledForAutofillProfiles;
-    boolean isEligibleForAddressAccountStorage;
   };
 
   // Fields used as part of an address.

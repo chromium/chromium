@@ -14,7 +14,6 @@ declare global {
       export interface AccountInfo {
         email: string;
         isSyncEnabledForAutofillProfiles: boolean;
-        isEligibleForAddressAccountStorage: boolean;
       }
 
       export enum AddressField {
