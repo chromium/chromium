@@ -130,6 +130,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   securityHeader.text = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_SECURITY);
   securityHeader.detailText = self.pageInfoSecurityDescription.status;
   securityHeader.iconImage = self.pageInfoSecurityDescription.iconImage;
+  securityHeader.iconTintColor = UIColor.whiteColor;
   securityHeader.iconBackgroundColor =
       self.pageInfoSecurityDescription.iconBackgroundColor;
   securityHeader.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
