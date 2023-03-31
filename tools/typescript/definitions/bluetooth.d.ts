@@ -57,6 +57,7 @@ declare global {
         batteryPercentage?: number;
       }
 
+      export function getDevice(deviceAddress: string): Promise<Device>;
       export function getDevices(): Promise<Device[]>;
       export function startDiscovery(): Promise<void>;
       export function stopDiscovery(): Promise<void>;
