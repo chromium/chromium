@@ -1326,7 +1326,7 @@ void DriveIntegrationService::OnGetOfflineItemsPage(
       error != drive::FILE_ERROR_OK || results->empty() ||
       callback.IsCancelled()) {
     LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
-        << "Failed to get offline size: " << drive::FileErrorToString(error);
+        << "Cannot get offline size: " << error;
     std::move(callback).Run(total_size);
     return;
   }

@@ -74,6 +74,13 @@ class NumPunct : public std::numpunct<char> {
   std::string do_grouping() const override { return "\3"; }
 };
 
+// Returns a locale that prints numbers with thousands separators.
+std::locale NiceNumLocale() {
+  static const base::NoDestructor<std::locale> with_separators(
+      std::locale::classic(), new NumPunct);
+  return *with_separators;
+}
+
 template <typename T>
 struct Quoter {
   const T& value;
@@ -262,6 +269,11 @@ int64_t GetSize(const FileMetadata& metadata) {
 
 }  // namespace
 
+std::ostream& NiceNum(std::ostream& out) {
+  out.imbue(NiceNumLocale());
+  return out;
+}
+
 ostream& operator<<(ostream& out, const PinManager::Id id) {
   return out << "#" << static_cast<int64_t>(id);
 }
@@ -278,9 +290,7 @@ ostream& operator<<(ostream& out, HumanReadableSize size) {
   }
 
   {
-    static const base::NoDestructor<std::locale> with_separators(
-        std::locale::classic(), new NumPunct);
-    std::locale old_locale = out.imbue(*with_separators);
+    std::locale old_locale = out.imbue(NiceNumLocale());
     out << i << " bytes";
     out.imbue(std::move(old_locale));
   }
@@ -682,7 +692,7 @@ void PinManager::ListItems(const Id dir_id, Path dir_path) {
 
   progress_.total_queries++;
   progress_.active_queries++;
-  VLOG(2) << "Active queries: " << progress_.active_queries;
+  VLOG(2) << NiceNum << "Active queries: " << progress_.active_queries;
 
   if (progress_.max_active_queries < progress_.active_queries) {
     progress_.max_active_queries = progress_.active_queries;
@@ -753,18 +763,19 @@ void PinManager::OnSearchResult(
     DCHECK_LE(progress_.active_queries, progress_.max_active_queries);
     DCHECK_GT(progress_.active_queries, 0);
     if (--progress_.active_queries != 0) {
-      VLOG(2) << "Active queries: " << progress_.active_queries;
+      VLOG(2) << NiceNum << "Active queries: " << progress_.active_queries;
       return;
     }
 
     VLOG(1) << "Finished listing files in " << Quote(timer_.Elapsed());
-    VLOG(1) << "Total queries: " << progress_.total_queries;
-    VLOG(1) << "Max active queries: " << progress_.max_active_queries;
-    VLOG(1) << "Found " << progress_.listed_items
+    VLOG(1) << NiceNum << "Total queries: " << progress_.total_queries;
+    VLOG(1) << NiceNum
+            << "Max active queries: " << progress_.max_active_queries;
+    VLOG(1) << NiceNum << "Found " << progress_.listed_items
             << " items: " << progress_.listed_dirs << " dirs, "
             << progress_.listed_files << " files, " << progress_.listed_docs
             << " docs, " << progress_.listed_shortcuts << " shortcuts";
-    VLOG(1) << "Tracking " << files_to_track_.size() << " files";
+    VLOG(1) << NiceNum << "Tracking " << files_to_track_.size() << " files";
     visited_dirs_.clear();
     return StartPinning();
   }
@@ -825,7 +836,7 @@ void PinManager::OnSearchResult(
   }
 
   progress_.listed_items += items.size();
-  VLOG(1) << "Listed " << progress_.listed_items << " items in "
+  VLOG(1) << NiceNum << "Listed " << progress_.listed_items << " items in "
           << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
           << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
@@ -871,7 +882,7 @@ void PinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
-  VLOG(1) << "To pin: " << files_to_pin_.size() << " files, "
+  VLOG(1) << NiceNum << "To pin: " << files_to_pin_.size() << " files, "
           << HumanReadableSize(progress_.bytes_to_pin);
   VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
 
@@ -923,7 +934,7 @@ void PinManager::PinSomeFiles() {
   }
 
   if (progress_timer_.Elapsed() >= base::Seconds(1)) {
-    VLOG(1) << "Progress "
+    VLOG(1) << NiceNum << "Progress "
             << Percentage(progress_.pinned_bytes, progress_.bytes_to_pin)
             << "%: Synced " << HumanReadableSize(progress_.pinned_bytes)
             << " and " << progress_.pinned_files << " files, Syncing "
@@ -934,12 +945,12 @@ void PinManager::PinSomeFiles() {
   if (files_to_track_.empty() && !progress_.emptied_queue) {
     progress_.emptied_queue = true;
     LOG_IF(ERROR, progress_.failed_files > 0)
-        << "Failed to pin " << progress_.failed_files << " files";
-    VLOG(1) << "Pinned " << progress_.pinned_files << " files and "
+        << NiceNum << "Failed to pin " << progress_.failed_files << " files";
+    VLOG(1) << NiceNum << "Pinned " << progress_.pinned_files << " files and "
             << HumanReadableSize(progress_.pinned_bytes) << " in "
             << Quote(timer_.Elapsed());
-    VLOG(2) << "Useful events: " << progress_.useful_events;
-    VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
+    VLOG(2) << NiceNum << "Useful events: " << progress_.useful_events;
+    VLOG(2) << NiceNum << "Duplicated events: " << progress_.duplicated_events;
   }
 
   NotifyProgress();

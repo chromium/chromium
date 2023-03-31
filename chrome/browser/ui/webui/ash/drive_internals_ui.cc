@@ -101,9 +101,7 @@ size_t LogMarkToLogLevelNameIndex(char mark) {
 
 template <typename T>
 std::string ToString(const T x) {
-  std::ostringstream oss;
-  oss << x;
-  return std::move(oss).str();
+  return (std::ostringstream() << drivefs::pinning::NiceNum << x).str();
 }
 
 // Gets metadata of all files and directories in |root_path|

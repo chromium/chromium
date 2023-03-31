@@ -32,6 +32,11 @@
 
 namespace drivefs::pinning {
 
+// Imbue the output stream with a locale that prints numbers with thousands
+// separators.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+std::ostream& NiceNum(std::ostream& out);
+
 // Prints a size in bytes in a human-readable way.
 enum HumanReadableSize : int64_t;
 
