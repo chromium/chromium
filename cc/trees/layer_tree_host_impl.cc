@@ -1632,7 +1632,7 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   // This will cause NotifyTileStateChanged() to be called for any tiles that
   // completed, which will add damage for visible tiles to the frame for them so
   // they appear as part of the current frame being drawn.
-  tile_manager_.CheckForCompletedTasks();
+  tile_manager_.PrepareToDraw();
 
   frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
   frame->render_passes.clear();

@@ -596,11 +596,11 @@ bool TileManager::PrepareTiles(
   return true;
 }
 
-void TileManager::CheckForCompletedTasks() {
-  TRACE_EVENT0("cc", "TileManager::CheckForCompletedTasks");
+void TileManager::PrepareToDraw() {
+  TRACE_EVENT0("cc", "TileManager::PrepareToDraw");
 
   if (!tile_task_manager_) {
-    TRACE_EVENT_INSTANT0("cc", "TileManager::CheckForCompletedTasksAborted",
+    TRACE_EVENT_INSTANT0("cc", "TileManager::PrepareToDrawAborted",
                          TRACE_EVENT_SCOPE_THREAD);
     return;
   }
@@ -608,12 +608,16 @@ void TileManager::CheckForCompletedTasks() {
   tile_task_manager_->CheckForCompletedTasks();
   did_check_for_completed_tasks_since_last_schedule_tasks_ = true;
 
+  if (base::FeatureList::IsEnabled(features::kFlushGpuAtDraw)) {
+    // Flush the GPU before calling SetReadyToDrawCallback, which happens in
+    // CheckPendingGpuWorkAndIssueSignals.
+    raster_buffer_provider_->Flush();
+  }
   CheckPendingGpuWorkAndIssueSignals();
 
   TRACE_EVENT_INSTANT1(
-      "cc", "TileManager::CheckForCompletedTasksFinished",
-      TRACE_EVENT_SCOPE_THREAD, "stats",
-      RasterTaskCompletionStatsAsValue(raster_task_completion_stats_));
+      "cc", "TileManager::PrepareToDrawFinished", TRACE_EVENT_SCOPE_THREAD,
+      "stats", RasterTaskCompletionStatsAsValue(raster_task_completion_stats_));
   raster_task_completion_stats_ = RasterTaskCompletionStats();
 }
 
