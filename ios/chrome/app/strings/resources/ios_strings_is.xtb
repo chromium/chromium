@@ -155,6 +155,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2021670401941426298">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="202292859882676807">Aðgangur að hljóðnema leyfður</translation>
 <translation id="20485545164632846">nýtt atriði</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> reikningar nota sama aðgangsorð</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} vistaður greiðslumáti tiltækur ofan við lyklaborðið.}one{{count} vistaður greiðslumáti tiltækur ofan við lyklaborðið.}other{{count} vistaðir greiðslumátar tiltækir ofan við lyklaborðið.}}</translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="26915454213703967">Leita á mynd með Google</translation>
 <translation id="2691653761409724435">Ekki í boði án nettengingar</translation>
 <translation id="2695507686909505111">Síða þýdd</translation>
+<translation id="2696180352517415858">Þú verður ekki skráð(ur) út af Google-reikningnum þínum. <ph name="BEGIN_LINK" />Aðrar aðgerðir<ph name="END_LINK" /> kunna að vera vistaðar á Google-reikningnum þínum þegar þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.
+
+
+Þú notar leitarvélina <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="2697526135132990015">Skrá út og hreinsa gögn</translation>
 <translation id="2700241355396984822">Valkostir fyrir stillingu heimilda</translation>
 <translation id="2702801445560668637">Leslisti</translation>
@@ -250,6 +255,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2747003861858887689">Fyrri reitur</translation>
 <translation id="2749231692441336879">Fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">rétt í þessu</translation>
+<translation id="2772667768515195373">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang er vistað á Google-reikningnum þínum, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Leit í huliðsstillingu</translation>
 <translation id="277771892408211951">Velja tungumál</translation>
 <translation id="2780046210906776326">Engir tölvupóstreikningar</translation>

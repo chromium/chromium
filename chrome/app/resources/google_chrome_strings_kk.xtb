@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">Бұл компьютерге ең жаңа Google Chrome нұсқасы орнатылған. Бағдарламалық жасақтама жұмыс істемесе, Google Chrome браузерін жойып, әрекетті қайталап көріңіз.</translation>
 <translation id="139993653570221430">Таңдауыңызды кез келген уақытта Chrome параметрлерінде өзгертуге болады. Сынақ нұсқалары жарнама көрсетудің ағымдағы әдісімен жұмыс істейді. Сондықтан өзгерістер бірден көрінбейді.</translation>
 <translation id="1434626383986940139">Chrome Canary қолданбалары</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome браузері HID құрылғысына қосылған}=1{Google Chrome браузері HID құрылғысына қосылған}other{Google Chrome браузері HID құрылғыларына қосылған}}</translation>
 <translation id="1507198376417198979">Жаңа Chrome профиліңізді реттеңіз.</translation>
 <translation id="1516530951338665275">Жұптауды жалғастыру үшін Google Chrome-ға Bluetooth-ты пайдалану рұқсаты керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS жүйесі <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>

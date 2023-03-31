@@ -3036,7 +3036,6 @@
 <translation id="3627671146180677314">Време за обнову Netscape сертификата</translation>
 <translation id="3627879631695760395">Инсталирање апликације <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Искључите Bluetooth</translation>
-<translation id="3629631988386925734">Унесите лозинку да бисте омогућили Smart Lock. Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у Подешавањима.</translation>
 <translation id="3629664892718440872">Запамти овај избор</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Додајте овај сајт на полицу да бисте га користили у било ком тренутку</translation>
@@ -4692,7 +4691,6 @@
 <translation id="5111794652433847656">Не постоји ниједан приступни кôд за <ph name="APP_NAME" /> на овом уређају</translation>
 <translation id="5112577000029535889">&amp;Алатке за програмере</translation>
 <translation id="511313294362309725">Укључи Брзо упаривање</translation>
-<translation id="5113739826273394829">Ако кликнете на ову икону, ручно ћете закључати овај <ph name="DEVICE_TYPE" />. Следећи пут ћете морати да унесете лозинку да бисте приступили.</translation>
 <translation id="51143538739122961">Уметните безбедносни кључ и додирните га</translation>
 <translation id="5115309401544567011">Укључите <ph name="DEVICE_TYPE" /> у извор напајања.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5086,7 +5084,6 @@
 <translation id="5481941284378890518">Додај оближње штампаче</translation>
 <translation id="5483785310822538350">Опозови приступ датотекама и уређају</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> данас. <ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}one{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}few{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}other{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> је закључан из безбедносних разлога. Ручно унесите лозинку да бисте наставили.</translation>
 <translation id="5485102783864353244">Додај апликацију</translation>
 <translation id="5485754497697573575">Врати све картице</translation>
 <translation id="5486261815000869482">Потврдите лозинку</translation>
@@ -5293,7 +5290,6 @@
 <translation id="5656845498778518563">Пошаљите повратне информације Google-у</translation>
 <translation id="5657156137487675418">Дозволи све колачиће</translation>
 <translation id="5657667036353380798">Спољни додатак захтева да буде инсталиран Chrome <ph name="MINIMUM_CHROME_VERSION" /> или новија верзија.</translation>
-<translation id="5658415415603568799">Ради веће безбедности Smart Lock ће вам тражити да унесете лозинку после 20 сати.</translation>
 <translation id="5659593005791499971">Имејл</translation>
 <translation id="5662513737565158057">Промените начин на који Linux апликације раде.</translation>
 <translation id="5663459693447872156">Аутоматски пређи на пола ширине</translation>
@@ -6801,7 +6797,6 @@
 <translation id="7000347579424117903">Користите Ctrl, Alt или Search</translation>
 <translation id="7001036685275644873">Праве се резервне копије Linux апликација и датотека</translation>
 <translation id="7001066449188684145">Неопходна је идентификација за штампање на: <ph name="PRINTER_NAME" />. Обратите се администратору.</translation>
-<translation id="7002055706763150362">Да бисте подесили Smart Lock за Chromebook, Google мора да провери да ли сте то ви – унесите лозинку да бисте почели.</translation>
 <translation id="7003339318920871147">Веб базе података</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} фајл}one{{COUNT} фајл}few{{COUNT} фајла}other{{COUNT} фајлова}}</translation>
 <translation id="7003705861991657723">Алфа</translation>
@@ -9317,7 +9312,6 @@
 <translation id="934244546219308557">Дајте назив овој групи</translation>
 <translation id="934503638756687833">Уклониће се и ставке које нису овде наведене, ако је то потребно. Сазнајте више о &lt;a href="<ph name="URL" />"&gt;заштити од нежељеног софтвера&lt;/a&gt; у белој књизи о приватности у Chrome-у.</translation>
 <translation id="93480724622239549">Проблем или грешка</translation>
-<translation id="935854577147268200">Smart Lock телефон је промењен. Унесите лозинку да бисте ажурирали Smart Lock. Следећи пут ће телефон откључати <ph name="DEVICE_TYPE" />. Можете да искључите Smart Lock у подешавањима</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Системски дијагностички подаци</translation>
 <translation id="93766956588638423">Поправи додатак</translation>

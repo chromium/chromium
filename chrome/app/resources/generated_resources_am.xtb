@@ -3046,7 +3046,6 @@
 <translation id="3627671146180677314">የNetscape ሰርቲፊኬት የእድሳት ጊዜ</translation>
 <translation id="3627879631695760395"><ph name="APP" /> ይጫን...</translation>
 <translation id="3628275722731025472">ብሉቱዝ አጥፋ</translation>
-<translation id="3629631988386925734">Smart Lockን ለማንቃት የይለፍ ቃልዎን ያስገቡ። በሚቀጥለው ጊዜ ስልክዎ የእርስዎን <ph name="DEVICE_TYPE" /> ይከፍታል። በቅንብሮች ውስጥ Smart Lock ማጥፋት ይችላሉ።</translation>
 <translation id="3629664892718440872">ይህን ምርጫ አስታውስ</translation>
 <translation id="3630132874740063857">የእርስዎ ስልክ</translation>
 <translation id="3630995161997703415">ይህን ጣቢያ በማንኛውም ጊዜ ለመጠቀም ወደ መደርደሪያዎ ያክሉት</translation>
@@ -4700,7 +4699,6 @@
 <translation id="5111794652433847656">በዚህ መሣሪያ ላይ ለ<ph name="APP_NAME" /> ምንም የይለፍ ቁልፎች የሉም</translation>
 <translation id="5112577000029535889">&amp;የገንቢ መሳሪያዎች</translation>
 <translation id="511313294362309725">ፈጣን ጥምረትን ያብሩ</translation>
-<translation id="5113739826273394829">ይህን አዶ ጠቅ ካደረጉት ይህን <ph name="DEVICE_TYPE" /> እራስዎ ይቆልፉታል። በሚቀጥለው ጊዜ ለመግባት የይለፍ ቃልዎን መተየብ ይኖርብዎታል።</translation>
 <translation id="51143538739122961">የእርስዎን የደህንነት ቁልፍ ያስገቡ እና ይንኩት</translation>
 <translation id="5115309401544567011">እባክዎ የእርስዎን <ph name="DEVICE_TYPE" /> ወደ የኃይል ምንጭ ይሰኩት።</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5095,7 +5093,6 @@
 <translation id="5481941284378890518">አቅራቢያ ያሉ አታሚዎችን አክል</translation>
 <translation id="5483785310822538350">የፋይል እና መሣሪያ መዳረሻ ይሻሩ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና እና ይህን <ph name="DEVICE_TYPE" /> ዛሬ እንዲመልሱት ይፈልግብዎታል። <ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}one{<ph name="MANAGER" /> በ{NUM_DAYS} ቀኖች ውስጥ የውሂብዎን ምትኬ እንዲያስቀምጡ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል። <ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}other{<ph name="MANAGER" /> በ{NUM_DAYS} ቀኖች ውስጥ የውሂብዎን ምትኬ እንዲያስቀምጡ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል። <ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">የእርስዎ <ph name="DEVICE_TYPE" /> ለደህንነት ሲባል ተቆልፏል። መቀጠል እንዲችሉ የእርስዎን የይለፍ ቃል ራስዎ ያስገቡ።</translation>
 <translation id="5485102783864353244">መተግበሪያ አክል</translation>
 <translation id="5485754497697573575">ሁሉንም ትሮች አስመልስ</translation>
 <translation id="5486261815000869482">የይለፍ ቃል ያረጋግጡ</translation>
@@ -5301,7 +5298,6 @@
 <translation id="5656845498778518563">ግብረመልስ ወደ Google ይላኩ</translation>
 <translation id="5657156137487675418">ሁሉንም ኩኪዎች ፍቀድ</translation>
 <translation id="5657667036353380798">ውጫዊ ቅጥያው እንዲጫን የchrome ስሪት <ph name="MINIMUM_CHROME_VERSION" /> ወይም ከዚያ በላይ መጫን አለበት።</translation>
-<translation id="5658415415603568799">ለተጨማሪ ደህንነት ሲባል Smart Lock ከ20 ሰዓቶች በኋላ የእርስዎን የይለፍ ቃል እንዲያስገቡ ይጠይቀዎታል።</translation>
 <translation id="5659593005791499971">ኢሜይል</translation>
 <translation id="5662513737565158057">የLinux መተግበሪያዎች እንዴት እንደሚሰሩ ይቀይሩ።</translation>
 <translation id="5663459693447872156">በራስ-ሰር ወደ ግማሽ-ስፋት ቀይር</translation>
@@ -6807,7 +6803,6 @@
 <translation id="7000347579424117903">Ctrl፣ Alt፣ ወይም ፍለጋን ያካትቱ</translation>
 <translation id="7001036685275644873">የ Linux መተግበሪያዎችን እና ፋይሎችን በምትኬ ያስቀምጡ</translation>
 <translation id="7001066449188684145">ወደ <ph name="PRINTER_NAME" /> ለማተም መታወቂያ ያስፈልጋል። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
-<translation id="7002055706763150362">Smart Lock ለChromebook ለማዘጋጀት Google እርስዎ መሆንዎን እርግጠኛ መሆን ይፈልጋል—ለመጀመር የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="7003339318920871147">የድር ውሂብ ጎታዎች</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ፋይል}one{{COUNT} ፋይሎች}other{{COUNT} ፋይሎች}}</translation>
 <translation id="7003705861991657723">አልፋ</translation>
@@ -9327,7 +9322,6 @@ nil</translation>
 <translation id="934244546219308557">ይህን ቡድን ይሰይሙ</translation>
 <translation id="934503638756687833">ካስፈለገ እንዲሁም እዚህ ያልተዘረዘሩ ንጥሎች ሊወገዱ ይችላሉ። በChrome የግላዊነት ነጭ ወረቀት ላይ ስለ&lt;a href="<ph name="URL" />"&gt;የማይፈለግ ሶፍትዌር ጥበቃ&lt;/a&gt; የበለጠ ይረዱ።</translation>
 <translation id="93480724622239549">ሳንካ ወይም ስህተት</translation>
-<translation id="935854577147268200">Smart Lock ስልክ ተቀይሯል። Smart Lockን ለማዘመን የይለፍ ቃልዎን ያስገቡ። በሚቀጥለው ጊዜ ስልክዎ የእርስዎን <ph name="DEVICE_TYPE" /> ይከፍታል። በቅንብሮች ውስጥ Smart Lock ማጥፋት ይችላሉ</translation>
 <translation id="936646668635477464">ካሜራ እና ማይክራፎን</translation>
 <translation id="936801553271523408">የስርዓት ምርመራ ውሂብ</translation>
 <translation id="93766956588638423">ቅጥያ ይጠግኑ</translation>

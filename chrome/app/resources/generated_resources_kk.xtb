@@ -3034,7 +3034,6 @@
 <translation id="3627671146180677314">Netscape сертификаты жаңарту уақыты</translation>
 <translation id="3627879631695760395"><ph name="APP" /> орнату...</translation>
 <translation id="3628275722731025472">Bluetooth желісін өшіру</translation>
-<translation id="3629631988386925734">Құпия сөзді енгізіп, Smart Lock функциясын қосыңыз. Келесіде телефоныңыз <ph name="DEVICE_TYPE" /> құрылғысының құлпын ашады. Smart Lock функциясын "Параметрлер" бөлімінен өшіруге болады.</translation>
 <translation id="3629664892718440872">Таңдауды еске сақтау</translation>
 <translation id="3630132874740063857">Телефоныңыз</translation>
 <translation id="3630995161997703415">Бұл сайтты кез келген уақытта пайдалану үшін оны сөреңізге енгізіңіз</translation>
@@ -4690,7 +4689,6 @@
 <translation id="5111794652433847656">Бұл құрылғыда <ph name="APP_NAME" /> үшін ешқандай кіру кілті жоқ.</translation>
 <translation id="5112577000029535889">&amp;Әзірлеуші құралдары</translation>
 <translation id="511313294362309725">Fast Pair функциясын іске қосу</translation>
-<translation id="5113739826273394829">Бұл белгішені бассаңыз, <ph name="DEVICE_TYPE" /> құрылғысын қолмен құлыптайсыз. Келесіде кіру үшін құпия сөзіңізді теру қажет.</translation>
 <translation id="51143538739122961">Қауіпсіздік кілтін енгізіп, оны түртіңіз.</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> құрылғысын қуат көзіне қосыңыз.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5085,7 +5083,6 @@
 <translation id="5481941284378890518">Маңайдағы принтерлерді енгізу</translation>
 <translation id="5483785310822538350">Файл мен құрылғыға кіру құқығын қайтарып алу</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> деректердің сақтық көшірмесін жасап, <ph name="DEVICE_TYPE" /> құрылғысын бүгін қайтаруыңызды талап етеді. <ph name="LINK_BEGIN" />Мәліметтерді көру<ph name="LINK_END" />}other{<ph name="MANAGER" /> деректердің сақтық көшірмесін жасап, <ph name="DEVICE_TYPE" /> құрылғысын {NUM_DAYS} күн ішінде қайтаруыңызды талап етеді. <ph name="LINK_BEGIN" />Мәліметтерді көру<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> қауіпсіздік мақсатында құлыпталады. Жалғастыру үшін құпия сөзді қолмен енгізіңіз.</translation>
 <translation id="5485102783864353244">Қолданба қосу</translation>
 <translation id="5485754497697573575">Барлық қойындыларды қалпына келтіру</translation>
 <translation id="5486261815000869482">Құпия сөзді растау</translation>
@@ -5289,7 +5286,6 @@
 <translation id="5656845498778518563">Google-ға пікір жіберу</translation>
 <translation id="5657156137487675418">Cookie файлдарына рұқсат беру</translation>
 <translation id="5657667036353380798">Сыртқы кеңейтім <ph name="MINIMUM_CHROME_VERSION" /> немесе кейінгі Chrome нұсқасын орнатуды талап етеді.</translation>
-<translation id="5658415415603568799">Қауіпсіздікті күшейту үшін Smart Lock функциясы 20 сағаттан кейін құпия сөзді енгізуді сұрауы мүмкін.</translation>
 <translation id="5659593005791499971">Электрондық пошта</translation>
 <translation id="5662513737565158057">Linux қолданбаларының жұмыс істеу жолын өзгертіңіз.</translation>
 <translation id="5663459693447872156">Жарты ендік таңбаларға автоматты түрде ауысу</translation>
@@ -6379,6 +6375,7 @@
 <translation id="6647690760956378579">Табиғи дауыстың алғы нұсқасы</translation>
 <translation id="6648911618876616409">Маңызды жаңартылған нұсқа қолжетімді. Бастау үшін аккаунтқа кіріңіз.</translation>
 <translation id="6649018507441623493">Сәл күте тұрыңыз...</translation>
+<translation id="6650206238642452078">ChromeOS жүйесінің оқиғаларына жазылу</translation>
 <translation id="665061930738760572">&amp;Жаңа терезеде ашу</translation>
 <translation id="6651237644330755633">Вебсайттарды анықтауда осы сертификатқа сену</translation>
 <translation id="6651495917527016072">Wi-Fi желілерін телефонмен синхрондау. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -6791,7 +6788,6 @@
 <translation id="7000347579424117903">Ctrl, Alt немесе "Іздеу" пернесінен басталуы керек</translation>
 <translation id="7001036685275644873">Linux қолданбалары мен файлдарының сақтық көшірмесі жасалуда</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> принтеріне басып шығару үшін жеке басты анықтау қажет. Әкімшіге хабарласыңыз.</translation>
-<translation id="7002055706763150362">Smart Lock for Chromebook орнату үшін, Google сіз құрылғы иесі екеніңізді растауы қажет. Жұмысты бастау үшін құпия сөзді енгізіңіз.</translation>
 <translation id="7003339318920871147">Веб-дерекқорлар</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файл}}</translation>
 <translation id="7003705861991657723">Альфа нұсқасы</translation>
@@ -9093,6 +9089,7 @@
 <translation id="904224458472510106">Бұл әрекетті кері қайтару мүмкін емес.</translation>
 <translation id="9042827002460091668">Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="9042893549633094279">Құпиялық және қауіпсіздік</translation>
+<translation id="9043264199499366189">ChromeOS Flex жүйесінің оқиғаларына жазылу</translation>
 <translation id="9044646465488564462">Желіге қосылу сәтсіз аяқталды: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Оқу тізімі жаңа бүйірлік панельге жылжытылды. Осы жерден көріңіз.</translation>
 <translation id="9045430190527754450">Ашқалы жатқан беттің веб-мекенжайын Google компаниясына жібереді</translation>
@@ -9303,7 +9300,6 @@
 <translation id="934244546219308557">Топтың атауын енгізіңіз</translation>
 <translation id="934503638756687833">Қажет болса, бұл тізімде жоқ элементтер де өшіріледі. <ph name="URL" />Қажетсіз бағдарламалық құралдан қорғану&lt;/a&gt; туралы ақпаратты Chrome құпиялықты қорғау ақпараттық құжатынан таба аласыз.</translation>
 <translation id="93480724622239549">Қате</translation>
-<translation id="935854577147268200">Smart Lock телефоны өзгерді. Smart Lock функциясын жаңарту үшін құпия сөзіңізді енгізіңіз. Келесіде телефон <ph name="DEVICE_TYPE" /> құрылғысының құлпын аша алады. Smart Lock функциясын "Параметрлер" бөлімінен өшіруге болады.</translation>
 <translation id="936646668635477464">Камера және микрофон</translation>
 <translation id="936801553271523408">Жүйенің диагностикалық деректері</translation>
 <translation id="93766956588638423">Кеңейтімді жөндеу</translation>

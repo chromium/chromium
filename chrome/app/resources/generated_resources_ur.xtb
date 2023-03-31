@@ -3039,7 +3039,6 @@
 <translation id="3627671146180677314">‏Netscape سرٹیفکیٹ کی تجدید کا وقت</translation>
 <translation id="3627879631695760395"><ph name="APP" /> انسٹال کریں...</translation>
 <translation id="3628275722731025472">بلوٹوتھ آف کریں</translation>
-<translation id="3629631988386925734">‏Smart Lock کو فعال کرنے کے لیے اپنا پاس ورڈ درج کریں۔ اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں۔</translation>
 <translation id="3629664892718440872">یہ انتخاب یاد رکھیں</translation>
 <translation id="3630132874740063857">آپ کا فون</translation>
 <translation id="3630995161997703415">اس سائٹ کو کسی بھی وقت استعمال کرنے کیلئے، اسے اپنی شیلف میں شامل کریں</translation>
@@ -4695,7 +4694,6 @@
 <translation id="5111794652433847656">اس آلے پر <ph name="APP_NAME" /> کے لیے کوئی پاس کی نہیں ہے۔</translation>
 <translation id="5112577000029535889">&amp;ڈیولپر ٹولز</translation>
 <translation id="511313294362309725">فاسٹ پئیر آن کریں</translation>
-<translation id="5113739826273394829">اگر آپ اس آئیکن پر کلک کرتے ہیں تو آپ دستی طور پر اس <ph name="DEVICE_TYPE" /> کو مقفل کر دیں گے۔ اگلی بار، داخل ہونے کیلئے آپ کو اپنا پاس ورڈ ٹائپ کرنے کی ضرورت ہوگی۔</translation>
 <translation id="51143538739122961">اپنی سیکیورٹی کلید داخل کریں اور اسے ٹچ کریں</translation>
 <translation id="5115309401544567011">براہ کرم پاور کے ماخذ میں اپنا <ph name="DEVICE_TYPE" /> پلگ کریں۔</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5089,7 +5087,6 @@
 <translation id="5481941284378890518">قریبی پرنٹرز کو شامل کریں</translation>
 <translation id="5483785310822538350">فائل اور آلہ کی رسائی کو کالعدم کریں</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کرنے کا تقاضہ کرتا ہے۔ <ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}other{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو {NUM_DAYS} دن کے اندر واپس کرنے کا تقاضہ کرتا ہے۔<ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">آپ کا <ph name="DEVICE_TYPE" /> سیکیورٹی کے مد نظر مقفل ہے۔ جاری رکھنے کیلئے دستی طور پر اپنا پاس ورڈ درج کریں۔</translation>
 <translation id="5485102783864353244">ایپ شامل کریں</translation>
 <translation id="5485754497697573575">سبھی ٹیبز بحال کریں</translation>
 <translation id="5486261815000869482">پاس ورڈ کی توثیق کریں</translation>
@@ -5295,7 +5292,6 @@
 <translation id="5656845498778518563">‏Google کو تاثرات بھیجیں</translation>
 <translation id="5657156137487675418">سبھی کوکیز کی اجازت دیں</translation>
 <translation id="5657667036353380798">‏بیرونی ایکسٹینشن کیلئے chrome ورژن <ph name="MINIMUM_CHROME_VERSION" /> یا اس سے اعلی تر کو انسٹال کیے جانے کی ضرورت ہے۔</translation>
-<translation id="5658415415603568799">‏اضافی سیکیورٹی کیلئے Smart Lock آپ سے 20 گھنٹے بعد آپ کا پاس ورڈ درج کرنے کا تقاضہ کرے گا۔</translation>
 <translation id="5659593005791499971">ای میل</translation>
 <translation id="5662513737565158057">‏Linux ایپس کے کام کرنے کا طریقہ تبدیل کریں۔</translation>
 <translation id="5663459693447872156">خود بخود نصف چوڑائی پر سوئچ کریں</translation>
@@ -6799,7 +6795,6 @@
 <translation id="7000347579424117903">‏Ctrl, Alt یا Search شامل کریں</translation>
 <translation id="7001036685275644873">‏Linux کی ایپس اور فائلز کا بیک اپ لیا جا رہا ہے</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> پر پرنٹ کرنے کیلئے شناخت درکار ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
-<translation id="7002055706763150362">‏Chromebook کیلئے Smart Lock ترتیب دینے کیلئے، Google اس بات کو یقینی بنانا چاہتا ہے کہ یہ آپ ہی ہیں—شروع کرنے کیلئے اپنا پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="7003339318920871147">ویب ڈیٹا بیسز</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} فائل}other{{COUNT} فائلز}}</translation>
 <translation id="7003705861991657723">الفا</translation>
@@ -9312,7 +9307,6 @@
 <translation id="934244546219308557">اس گروپ کو نام دیں</translation>
 <translation id="934503638756687833">‏ضرورت پڑنے پر، یہاں غیر مندرج آئٹمز کو بھی ہٹا دیا جائے گا۔ Chrome رازداری کے وہائٹ پیپر میں &lt;a href‎="<ph name="URL" />"‎&gt;غیر مطلوبہ سافٹ وئیر کے تحفظ&lt;/a&gt; کے بارے میں مزید جانیں۔</translation>
 <translation id="93480724622239549">بگ یا خرابی</translation>
-<translation id="935854577147268200">‏Smart Lock کا فون تبدیل ہو گيا ہے۔ Smart Lock اپ ڈیٹ کرنے کے لیے اپنا پاس ورڈ درج کریں۔ اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں</translation>
 <translation id="936646668635477464">کیمرا اور مائیکروفون</translation>
 <translation id="936801553271523408">سسٹم ڈائیگناسٹک ڈیٹا</translation>
 <translation id="93766956588638423">ایکسٹینشن کو درست کریں</translation>

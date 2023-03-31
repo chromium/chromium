@@ -3040,7 +3040,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3627671146180677314">Vrijeme za obnavljanje Netscape certifikata</translation>
 <translation id="3627879631695760395">Instaliranje aplikacije <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Isključivanje Bluetootha</translation>
-<translation id="3629631988386925734">Unesite zaporku da biste omogućili Smart Lock. Sljedeći će put vaš telefon otključati vaš <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="3629664892718440872">Zapamti ovaj odabir</translation>
 <translation id="3630132874740063857">Vaš telefon</translation>
 <translation id="3630995161997703415">Dodajte tu web-lokaciju na svoju policu da biste je koristili kad želite</translation>
@@ -4698,7 +4697,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5111794652433847656">Na ovom uređaju nema nijednog pristupnog ključa za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="5112577000029535889">&amp;Alati za razvojne programere</translation>
 <translation id="511313294362309725">Isključi Brzo uparivanje</translation>
-<translation id="5113739826273394829">Ako kliknete tu ikonu, ručno ćete zaključati ovaj uređaj <ph name="DEVICE_TYPE" />. Sljedeći ćete put morati unijeti zaporku da biste mu pristupili.</translation>
 <translation id="51143538739122961">Umetnite sigurnosni ključ i dodirnite ga</translation>
 <translation id="5115309401544567011">Priključite uređaj <ph name="DEVICE_TYPE" /> u izvor napajanja.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5094,7 +5092,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5481941284378890518">Dodaj pisače u blizini</translation>
 <translation id="5483785310822538350">Opozovi pristup datotekama i uređaju</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> traži da stvorite sigurnosnu kopiju svojih podataka i danas vratite ovaj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pogledajte pojedinosti<ph name="LINK_END" />}one{<ph name="MANAGER" /> traži da stvorite sigurnosnu kopiju svojih podataka i vratite ovaj uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte pojedinosti<ph name="LINK_END" />}few{<ph name="MANAGER" /> traži da stvorite sigurnosnu kopiju svojih podataka i vratite ovaj uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte pojedinosti<ph name="LINK_END" />}other{<ph name="MANAGER" /> traži da stvorite sigurnosnu kopiju svojih podataka i vratite ovaj uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte pojedinosti<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Vaš je <ph name="DEVICE_TYPE" /> zaključan radi sigurnosti. Ručno unesite zaporku za nastavak.</translation>
 <translation id="5485102783864353244">Dodaj aplikaciju</translation>
 <translation id="5485754497697573575">Vrati sve kartice</translation>
 <translation id="5486261815000869482">Potvrdite zaporku</translation>
@@ -5298,7 +5295,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5656845498778518563">Pošaljite Googleu povratne informacije</translation>
 <translation id="5657156137487675418">Dopusti sve kolačiće</translation>
 <translation id="5657667036353380798">Vanjsko proširenje zahtijeva instaliranje verzije Chromea <ph name="MINIMUM_CHROME_VERSION" /> ili novije.</translation>
-<translation id="5658415415603568799">Za dodatnu sigurnost Smart Lock će tražiti da unesete zaporku nakon 20 sati.</translation>
 <translation id="5659593005791499971">e-pošta</translation>
 <translation id="5662513737565158057">Promijenite način rada Linux aplikacija.</translation>
 <translation id="5663459693447872156">Automatski prijelaz na poluširinu</translation>
@@ -6805,7 +6801,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7000347579424117903">Mora sadržavati Ctrl, Alt ili Search</translation>
 <translation id="7001036685275644873">Sigurnosno kopiranje Linux aplikacija i datoteka</translation>
 <translation id="7001066449188684145">Za ispis na pisaču <ph name="PRINTER_NAME" /> potrebna je identifikacija. Obratite se administratoru.</translation>
-<translation id="7002055706763150362">Za postavljanje Smart Locka za Chromebook Google treba provjeriti jeste li to zaista vi. Upišite zaporku da biste započeli.</translation>
 <translation id="7003339318920871147">Web-baze podataka</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} datoteku}one{{COUNT} datoteku}few{{COUNT} datoteke}other{{COUNT} datoteka}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9322,7 +9317,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="934244546219308557">Postavite naziv grupe</translation>
 <translation id="934503638756687833">Stavke koje nisu ovdje navedene također će se po potrebi ukloniti. Više o &lt;a href="<ph name="URL" />"&gt;zaštiti od neželjenog softvera&lt;/a&gt; potražite u Chromeovoj bijeloj knjizi o privatnosti.</translation>
 <translation id="93480724622239549">Programska ili neka druga pogreška</translation>
-<translation id="935854577147268200">Promijenjen je telefon Smart Locka. Unesite zaporku da biste ažurirali Smart Lock. Sljedeći će put vaš telefon otključati vaš uređaj <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="936646668635477464">Fotoaparat i mikrofon</translation>
 <translation id="936801553271523408">Podaci o dijagnozi sustava</translation>
 <translation id="93766956588638423">Popravi proširenje</translation>

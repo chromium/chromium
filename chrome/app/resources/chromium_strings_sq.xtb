@@ -24,6 +24,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 
 Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. "Llogaritë e tua të Google" mund t'i menaxhosh te <ph name="SETTINGS_LINK_BEGIN" />Cilësimet<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Po shkarkohet...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium nuk është lidhur me asnjë pajisje HID}=1{Chromium është lidhur me një pajisje HID}other{Chromium është lidhur me pajisje HID}}</translation>
 <translation id="1708666629004767631">Ofrohet një version i ri më i sigurt i Chromium.</translation>
 <translation id="17264556997921157">Mund të shikosh dhe të heqësh temat e interesit që përdorin sajtet për të të shfaqur reklama. Chromium i përllogarit interesat e tu bazuar në historikun tënd të shfletimit së fundi.</translation>
 <translation id="1733725117201708356">Chromium do t'i fshijë së shpejti të dhënat e shfletimit</translation>

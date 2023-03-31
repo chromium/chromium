@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="202292859882676807">Prístup k mikrofónu je povolený</translation>
 <translation id="20485545164632846">nová položka</translation>
+<translation id="2049727122989709386">Viaceré účty (<ph name="COUNT" />) používajú rovnaké heslo</translation>
 <translation id="2050196510205866090">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený spôsob platby.}few{Nad klávesnicou sú k dispozícii {count} uložené spôsoby platby.}many{{count} saved payment methods available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených spôsobov platby.}}</translation>
 <translation id="2073572773299281212">Aktívne pred <ph name="DAYS" /> dňami</translation>
 <translation id="2074131957428911366">Položky, ktoré chcete synchronizovať, môžete vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="26915454213703967">Hľadať na obrázku Googlom</translation>
 <translation id="2691653761409724435">Nie je k dispozícii offline</translation>
 <translation id="2695507686909505111">Preložená stránka</translation>
+<translation id="2696180352517415858">Vaše prihlásenie v účte Google bude naďalej aktívne. <ph name="BEGIN_LINK" />Iné formy aktivity<ph name="END_LINK" /> sa môžu ukladať do vášho účtu Google, keď sa doň prihlásite. Môžete ich kedykoľvek odstrániť.
+
+
+Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="2697526135132990015">Odhlásiť sa a vymazať údaje</translation>
 <translation id="2700241355396984822">Možnosti na nastavenie povolení</translation>
 <translation id="2702801445560668637">Čitateľský zoznam</translation>
@@ -250,6 +255,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2747003861858887689">Predchádzajúce pole</translation>
 <translation id="2749231692441336879">Sledujete <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">práve teraz</translation>
+<translation id="2772667768515195373">V službách Googlu môžete používať uložené adresy. Táto adresa je uložená vo vašom účte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonymné vyhľadávanie</translation>
 <translation id="277771892408211951">Výber jazyka</translation>
 <translation id="2780046210906776326">Žiadne e-mailové účty</translation>

@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">Овој компјутер веќе има најнова верзија на Google Chrome. Доколку софтверот не работи, деинсталирајте го Google Chrome и обидете се повторно.</translation>
 <translation id="139993653570221430">Ако се премислите може во секое време да извршите измена во поставките за Chrome. Пробните периоди се одвиваат заедно со тековниот начин на кој рекламите се прикажуваат и затоа нема да ги видите промените веднаш.</translation>
 <translation id="1434626383986940139">Апликации на Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome беше поврзан со HID-уред}=1{Google Chrome е поврзан со HID-уред}one{Google Chrome е поврзан со HID-уред}other{Google Chrome е поврзан со HID-уреди}}</translation>
 <translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

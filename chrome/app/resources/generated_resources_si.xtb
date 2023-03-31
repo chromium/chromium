@@ -3041,7 +3041,6 @@
 <translation id="3627671146180677314">Netscape සහතිකය අලුත් කිරීමේ කාලය</translation>
 <translation id="3627879631695760395"><ph name="APP" /> සථාපනය කරන්න...</translation>
 <translation id="3628275722731025472">බ්ලූටූත් අක්‍රිය කරන්න</translation>
-<translation id="3629631988386925734">Smart Lock සබල කිරීමට ඔබේ මුරපදය ඇතුළු කරන්න. ඊළඟ වතාවේ, ඔබේ දුරකථනය ඔබගේ <ph name="DEVICE_TYPE" /> අඟුලු අරියි. සැකසීම් තුළ Smart Lock අක්‍රිය කරන්න.</translation>
 <translation id="3629664892718440872">මෙම තේරීම මතක තබා ගන්න</translation>
 <translation id="3630132874740063857">ඔබේ දුරකථනය</translation>
 <translation id="3630995161997703415">මෙම අඩවිය ඕනෑම වේලාවක භාවිත කිරීමට එය ඔබේ රාක්කයට එක් කරන්න</translation>
@@ -4698,7 +4697,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5111794652433847656">මෙම උපාංගය මත <ph name="APP_NAME" /> සඳහා මුරයතුරු කිසිවක් නොමැත</translation>
 <translation id="5112577000029535889">නිර්මාණ උපකරණ</translation>
 <translation id="511313294362309725">Fast Pair ක්‍රියාත්මක කරන්න</translation>
-<translation id="5113739826273394829">ඔබ මෙම අයිකනය ක්ලික් කරයි නම්, ඔබ ශ්‍රමිකව මෙම <ph name="DEVICE_TYPE" /> අගුළු ලයි. ඊලඟ වර ඇතුළු වීමට ඔබට මුරපදය යෙදීමට සිදුවේ.</translation>
 <translation id="51143538739122961">ඔබේ ආරක්‍ෂක යතුර ඇතුළත් කර එය ස්පර්ශ කරන්න</translation>
 <translation id="5115309401544567011">කරුණාකර ඔබේ <ph name="DEVICE_TYPE" /> බල මූලාශ්‍රයකට පේනුගත කරන්න.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5093,7 +5091,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5481941284378890518">අවට මුද්‍රක එක් කරන්න</translation>
 <translation id="5483785310822538350">ගොනු හා උපාංග ප්‍රවේශය අවලංගු කරන්න</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> හට ඔබ ඔබගේ දත්ත උපස්ථ කර මෙම <ph name="DEVICE_TYPE" /> අද ආපසු දීමට අවශ්‍යයි. <ph name="LINK_BEGIN" />විස්තර බලන්න<ph name="LINK_END" />}one{<ph name="MANAGER" /> හට ඔබ ඔබගේ දත්ත උපස්ථ කර මෙම <ph name="DEVICE_TYPE" /> දින {NUM_DAYS} ක් ඇතුළත ආපසු දීමට අවශ්‍යයි.<ph name="LINK_BEGIN" />විස්තර බලන්න<ph name="LINK_END" />}other{<ph name="MANAGER" /> හට ඔබ ඔබගේ දත්ත උපස්ථ කර මෙම <ph name="DEVICE_TYPE" /> දින {NUM_DAYS} ක් ඇතුළත ආපසු දීමට අවශ්‍යයි.<ph name="LINK_BEGIN" />විස්තර බලන්න<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">ඔබගේ <ph name="DEVICE_TYPE" /> ආරක්ෂාව සඳහා අගුලු දමා ඇත. ඉදිරියට කරගෙන යාමට ඔබගේ මුරපදය හස්තීයව ඇතුළු කරන්න.</translation>
 <translation id="5485102783864353244">යෙදුම එක් කරන්න</translation>
 <translation id="5485754497697573575">සියලු ටැබ ප්‍රතිසාධනය කරන්න</translation>
 <translation id="5486261815000869482">රහස්වචනය තහවුරු කරන්න</translation>
@@ -5300,7 +5297,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5656845498778518563">Google වෙත ප්‍රතිපෝෂණය යවන්න</translation>
 <translation id="5657156137487675418">සියලුම කුකීවලට ඉඩ දෙන්න</translation>
 <translation id="5657667036353380798">බාහිර දිගුව ස්ථාපනයට chrome <ph name="MINIMUM_CHROME_VERSION" /> අනුවාදය හෝ ඉහළ අවශ්‍යයි.</translation>
-<translation id="5658415415603568799">අමතර ආරක්ෂාව සඳහා, Smart Lock පැය 20කට පසු ඔබේ මුරපදය ඇතුළු කිරීමට ඔබෙන් ඉල්ලනු ඇත.</translation>
 <translation id="5659593005791499971">ඊතැපෑල</translation>
 <translation id="5662513737565158057">ලිනක්ස් යෙදුම් ක්‍රියා කරන ආකාරය වෙනස් කරන්න.</translation>
 <translation id="5663459693447872156">අඩ පළල වෙත ස්වයංක්‍රියව මාරු වන්න</translation>
@@ -6391,6 +6387,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6647690760956378579">ස්වභාවික හඬ පෙරදසුන</translation>
 <translation id="6648911618876616409">තීරණාත්මක යාවත්කාලීනක් ස්ථාපනය කිරීමට සූදානම්ය. ආරම්භ කිරීම සඳහා පුරනය වන්න.</translation>
 <translation id="6649018507441623493">තත්පරයක් ඉන්න…</translation>
+<translation id="6650206238642452078">ChromeOS පද්ධති සිදුවීම් වෙත ග්‍රාහක වන්න</translation>
 <translation id="665061930738760572">&amp;නව කවුළුවකින් විවෘත කරන්න</translation>
 <translation id="6651237644330755633">වෙබ් අඩවි හඳුනා ගැනීම සඳහා මෙම සහතිකය විශ්වාස කරන්න</translation>
 <translation id="6651495917527016072">ඔබේ දුරකථනය සමග Wi-Fi ජාල සමුමුහුර්ත කරන්න <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
@@ -6803,7 +6800,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7000347579424117903">Ctrl, Alt, හෝ සෙවීම ඇතුළත් කරන්න</translation>
 <translation id="7001036685275644873">ලිනක්ස් යෙදුම් සහ ගොනු උපස්ථ කිරීම</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> හි මුද්‍රණය කිරීමට හඳුනා ගැනීම අවශ්‍යයි. කරුණාකර ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
-<translation id="7002055706763150362">Chromebook සඳහා Smart Lock පිහිටුවීමට, Google හට මේ ඔබම යැයි තහවුරු කර ගැනීමට අවශ්‍යයි—ආරම්භ කිරීමට ඔබගේ මුරපදය ටයිප් කරන්න.</translation>
 <translation id="7003339318920871147">ජාල දත්තමූල</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ගොනු {COUNT}}one{ගොනු {COUNT}}other{ගොනු {COUNT}}}</translation>
 <translation id="7003705861991657723">ඇල්ෆා</translation>
@@ -9105,6 +9101,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="904224458472510106">මෙම මෙහෙයුම අස් කළ නොහැක</translation>
 <translation id="9042827002460091668">ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සහ කරන්න</translation>
 <translation id="9042893549633094279">රහස්‍යතාව සහ ආරක්ෂාව</translation>
+<translation id="9043264199499366189">ChromeOS Flex පද්ධති සිදුවීම් වෙත ග්‍රාහක වන්න</translation>
 <translation id="9044646465488564462">ජාලයට සබඳ විය නොහැකි විය: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">ඔබගේ කියවීම් ලැයිස්තුව නව පැති පැනලය වෙත ගෙන ගොස් ඇත. එය මෙහි උත්සාහ කරන්න.</translation>
 <translation id="9045430190527754450">ඔබ Google වෙත ළඟා වීමට උත්සාහ කරන පිටුවේ වෙබ් ලිපිනය යවයි</translation>
@@ -9315,7 +9312,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="934244546219308557">මෙම සමූහය නම් කරන්න</translation>
 <translation id="934503638756687833">මෙහි ලැයිස්තුගත නොකළ අයිතම අවශ්‍ය නම්, ඉවත් කරනු ඇත. Chrome රහස්‍යතා ධවල පත්‍රිකාව තුළ &lt;a href="<ph name="URL" />"&gt;අනවශ්‍ය මෘදුකාංග ආරක්ෂණය&lt;/a&gt; ගැන තව දැන ගන්න.</translation>
 <translation id="93480724622239549">දොස හෝ දෝෂය</translation>
-<translation id="935854577147268200">Smart Lock දුරකථනය වෙනස් විය. Smart Lock යාවත්කාලීන කිරීමට ඔබේ මුරපදය ඇතුළත් කරන්න. ඊළඟ වතාවේ, ඔබේ දුරකථනය ඔබගේ <ph name="DEVICE_TYPE" /> අඟුලු අරියි. ඔබට සැකසීම් තුළ Smart Lock අක්‍රිය කළ හැක.</translation>
 <translation id="936646668635477464">කැමරාව හා මයික්‍රෆෝනය</translation>
 <translation id="936801553271523408">පද්ධති සොයා ගැනීමේ දත්ත</translation>
 <translation id="93766956588638423">දිගුව අලුත්වැඩියා කරන්න</translation>

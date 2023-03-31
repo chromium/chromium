@@ -1981,6 +1981,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cuando realices un pago, el importe se debitará de esta tarjeta, pero el sitio no tendrá acceso a su número real. Para reforzar la seguridad, se generará un CVC temporal.}other{Cuando realices un pago, el importe se debitará de la tarjeta que selecciones, pero el sitio no tendrá acceso a su número real. Para reforzar la seguridad, se generará un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
+<translation id="5829215001860862731">Guardar en la cuenta</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No debes ingresar información confidencial en este sitio (p. ej., contraseñas o tarjetas de crédito), ya que los atacantes podrían robarla.</translation>

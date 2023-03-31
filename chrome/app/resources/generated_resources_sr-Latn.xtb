@@ -3036,7 +3036,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3627671146180677314">Vreme za obnovu Netscape sertifikata</translation>
 <translation id="3627879631695760395">Instaliranje aplikacije <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Isključite Bluetooth</translation>
-<translation id="3629631988386925734">Unesite lozinku da biste omogućili Smart Lock. Sledeći put će telefon otključati <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u Podešavanjima.</translation>
 <translation id="3629664892718440872">Zapamti ovaj izbor</translation>
 <translation id="3630132874740063857">Telefon</translation>
 <translation id="3630995161997703415">Dodajte ovaj sajt na policu da biste ga koristili u bilo kom trenutku</translation>
@@ -4692,7 +4691,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5111794652433847656">Ne postoji nijedan pristupni kôd za <ph name="APP_NAME" /> na ovom uređaju</translation>
 <translation id="5112577000029535889">&amp;Alatke za programere</translation>
 <translation id="511313294362309725">Uključi Brzo uparivanje</translation>
-<translation id="5113739826273394829">Ako kliknete na ovu ikonu, ručno ćete zaključati ovaj <ph name="DEVICE_TYPE" />. Sledeći put ćete morati da unesete lozinku da biste pristupili.</translation>
 <translation id="51143538739122961">Umetnite bezbednosni ključ i dodirnite ga</translation>
 <translation id="5115309401544567011">Uključite <ph name="DEVICE_TYPE" /> u izvor napajanja.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5086,7 +5084,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5481941284378890518">Dodaj obližnje štampače</translation>
 <translation id="5483785310822538350">Opozovi pristup datotekama i uređaju</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> danas. <ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}one{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}few{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}other{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> je zaključan iz bezbednosnih razloga. Ručno unesite lozinku da biste nastavili.</translation>
 <translation id="5485102783864353244">Dodaj aplikaciju</translation>
 <translation id="5485754497697573575">Vrati sve kartice</translation>
 <translation id="5486261815000869482">Potvrdite lozinku</translation>
@@ -5293,7 +5290,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5656845498778518563">Pošaljite povratne informacije Google-u</translation>
 <translation id="5657156137487675418">Dozvoli sve kolačiće</translation>
 <translation id="5657667036353380798">Spoljni dodatak zahteva da bude instaliran Chrome <ph name="MINIMUM_CHROME_VERSION" /> ili novija verzija.</translation>
-<translation id="5658415415603568799">Radi veće bezbednosti Smart Lock će vam tražiti da unesete lozinku posle 20 sati.</translation>
 <translation id="5659593005791499971">Imejl</translation>
 <translation id="5662513737565158057">Promenite način na koji Linux aplikacije rade.</translation>
 <translation id="5663459693447872156">Automatski pređi na pola širine</translation>
@@ -6801,7 +6797,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7000347579424117903">Koristite Ctrl, Alt ili Search</translation>
 <translation id="7001036685275644873">Prave se rezervne kopije Linux aplikacija i datoteka</translation>
 <translation id="7001066449188684145">Neophodna je identifikacija za štampanje na: <ph name="PRINTER_NAME" />. Obratite se administratoru.</translation>
-<translation id="7002055706763150362">Da biste podesili Smart Lock za Chromebook, Google mora da proveri da li ste to vi – unesite lozinku da biste počeli.</translation>
 <translation id="7003339318920871147">Veb baze podataka</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fajl}one{{COUNT} fajl}few{{COUNT} fajla}other{{COUNT} fajlova}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9317,7 +9312,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="934244546219308557">Dajte naziv ovoj grupi</translation>
 <translation id="934503638756687833">Ukloniće se i stavke koje nisu ovde navedene, ako je to potrebno. Saznajte više o &lt;a href="<ph name="URL" />"&gt;zaštiti od neželjenog softvera&lt;/a&gt; u beloj knjizi o privatnosti u Chrome-u.</translation>
 <translation id="93480724622239549">Problem ili greška</translation>
-<translation id="935854577147268200">Smart Lock telefon je promenjen. Unesite lozinku da biste ažurirali Smart Lock. Sledeći put će telefon otključati <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u podešavanjima</translation>
 <translation id="936646668635477464">Kamera i mikrofon</translation>
 <translation id="936801553271523408">Sistemski dijagnostički podaci</translation>
 <translation id="93766956588638423">Popravi dodatak</translation>

@@ -61,7 +61,7 @@
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1246890715821376239">Չաջակցվող հավելվածներ</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
-<translation id="1247519845643687288">Վերջին օգտագործած հավելվածները</translation>
+<translation id="1247519845643687288">Վերջին հավելվածներ</translation>
 <translation id="1252999807265626933">Լիցքավորվում է <ph name="POWER_SOURCE" />-ից</translation>
 <translation id="1255033239764210633">Ի՞նչ եղանակ է հիմա։</translation>
 <translation id="1267032506238418139">Դյուրանցումի փոփոխություն</translation>
@@ -220,6 +220,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
+<translation id="1980808257969311265">Միանալ «<ph name="EVENT_SUMMARY" />» միջոցառմանը</translation>
 <translation id="1982717156487272186">Ցուցադրել նախորդ շաբաթը</translation>
 <translation id="1989113344093894667">Հնարավոր չէ տեսագրել բովանդակությունը</translation>
 <translation id="1990046457226896323">Ենթագրերի ֆայլերը ներբեռնվել են</translation>

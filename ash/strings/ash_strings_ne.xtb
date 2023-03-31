@@ -220,6 +220,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">नमस्कार, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">पाठ इनपुट</translation>
+<translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> मा सामेल हुनुहोस्</translation>
 <translation id="1982717156487272186">अघिल्लो हप्ताका कार्यक्रम देखाइयोस्</translation>
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
@@ -574,6 +575,7 @@
 <translation id="3659814201068740063">लगभग <ph name="TIME_LEFT" /> बाँकी (<ph name="PERCENTAGE" />%)।
 आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
+<translation id="3666266999138159418">फ्लोटिङ विन्डो लुकाउन स्वाइप गर्नुहोस्</translation>
 <translation id="367531336287639526">एड्रेस बारमा भएको बायाँतिरको पहिलो वस्तु चयन गर्नुहोस्</translation>
 <translation id="3679827876008292680">विन्डोमा रहेको अन्तिम ट्याबमा जानुहोस्</translation>
 <translation id="36813544980941320">तपाईंको फोन र <ph name="DEVICE_NAME" /> का बिचमा Wi-Fi नेटवर्कहरू सेयर गरिने छन्</translation>

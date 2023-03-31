@@ -3035,7 +3035,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3627671146180677314">Netscape Sertifikası Yenileme Zamanı</translation>
 <translation id="3627879631695760395"><ph name="APP" /> Uygulamasını Yükle...</translation>
 <translation id="3628275722731025472">Bluetooth'u kapat</translation>
-<translation id="3629631988386925734">Smart Lock'u açmak için şifrenizi girin. Böylece, bir dahaki sefere telefonunuzu kullanarak <ph name="DEVICE_TYPE" /> cihazınızın kilidini açabilirsiniz. Ayarlar'dan Smart Lock'u kapatabilirsiniz.</translation>
 <translation id="3629664892718440872">Bu tercihi hatırla</translation>
 <translation id="3630132874740063857">Telefonunuz</translation>
 <translation id="3630995161997703415">Bu siteyi istediğiniz zaman kullanmak için rafınıza ekleyin</translation>
@@ -4691,7 +4690,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5111794652433847656">Bu cihazda <ph name="APP_NAME" /> için şifre anahtarı yok</translation>
 <translation id="5112577000029535889">&amp;Geliştirici Araçları</translation>
 <translation id="511313294362309725">Hızlı Eşleme özelliğini aç</translation>
-<translation id="5113739826273394829">Bu simgeyi tıklarsanız bu <ph name="DEVICE_TYPE" /> cihazı manuel olarak kilitlersiniz. Bir dahaki sefere, giriş yapmak için şifrenizi girmeniz gerekir.</translation>
 <translation id="51143538739122961">Güvenlik anahtarınızı takın ve anahtara dokunun</translation>
 <translation id="5115309401544567011">Lütfen <ph name="DEVICE_TYPE" /> cihazınızı bir güç kaynağına takın.</translation>
 <translation id="5115338116365931134">TOA</translation>
@@ -5086,7 +5084,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5481941284378890518">Yakınlardaki Yazıcıları Ekle</translation>
 <translation id="5483785310822538350">Dosya ve cihaz erişimini iptal et</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />, verilerinizi yedeklemenizi ve bu <ph name="DEVICE_TYPE" /> cihazı bugün iade etmenizi zorunlu tutuyor. <ph name="LINK_BEGIN" />Ayrıntıları bakın<ph name="LINK_END" />}other{<ph name="MANAGER" />, verilerinizi yedeklemenizi ve bu <ph name="DEVICE_TYPE" /> cihazı {NUM_DAYS} gün içinde iade etmenizi zorunlu tutuyor. <ph name="LINK_BEGIN" />Ayrıntılara bakın<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Güvenlik amacıyla <ph name="DEVICE_TYPE" /> cihazınız kilitlendi. Devam etmek için şifrenizi manuel olarak girin.</translation>
 <translation id="5485102783864353244">Uygulama ekle</translation>
 <translation id="5485754497697573575">Tüm Sekmeleri Kurtar</translation>
 <translation id="5486261815000869482">Şifreyi onaylayın</translation>
@@ -5293,7 +5290,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5656845498778518563">Google'a Geri Bildirim gönder</translation>
 <translation id="5657156137487675418">Tüm çerezlere izin ver</translation>
 <translation id="5657667036353380798">Harici uzantının yüklenebilmesi için Chrome sürümü <ph name="MINIMUM_CHROME_VERSION" /> veya daha yenisi gerekir.</translation>
-<translation id="5658415415603568799">Daha fazla güvenlik için Smart Lock 20 saat sonra şifrenizi girmenizi isteyecektir.</translation>
 <translation id="5659593005791499971">E-posta</translation>
 <translation id="5662513737565158057">Linux uygulamalarının çalışma şeklini değiştirin.</translation>
 <translation id="5663459693447872156">Yarım genişliğe otomatik olarak geç</translation>
@@ -6384,6 +6380,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6647690760956378579">Doğal ses önizlemesi</translation>
 <translation id="6648911618876616409">Önemli bir güncelleme yüklenmeye hazır. Başlamak için oturum açın.</translation>
 <translation id="6649018507441623493">Bir saniye...</translation>
+<translation id="6650206238642452078">ChromeOS sistem etkinliklerine abone olma</translation>
 <translation id="665061930738760572">&amp;Yeni Pencerede Aç</translation>
 <translation id="6651237644330755633">Web sitelerini tanımlamak için bu sertifikaya güvenin</translation>
 <translation id="6651495917527016072">Kablosuz ağları telefonunuzla senkronize eder. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -6796,7 +6793,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7000347579424117903">Ctrl, Alt veya Arama tuşunu ekleyin</translation>
 <translation id="7001036685275644873">Linux uygulamaları ve dosyaları yedekleniyor</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> yazıcısında yazdırmak için kimlik gerekiyor. Lütfen yöneticinizle iletişime geçin.</translation>
-<translation id="7002055706763150362">Google'ın, Chromebook için Smart Lock özelliğini kurmak amacıyla, bunu talep eden kullanıcının siz olduğunuzdan emin olması gerekir. Başlamak için şifrenizi girin.</translation>
 <translation id="7003339318920871147">Web veritabanları</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} dosya}other{{COUNT} dosya}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9099,6 +9095,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="904224458472510106">Bu işlem geri alınamaz</translation>
 <translation id="9042827002460091668">İnternet bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
+<translation id="9043264199499366189">ChromeOS Flex sistem etkinliklerine abone olma</translation>
 <translation id="9044646465488564462">Şu ağa bağlanamadı: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Okuma listeniz yeni yan panele taşındı. Buradan deneyin.</translation>
 <translation id="9045430190527754450">Erişmeye çalıştığınız sayfanın web adresini Google'a gönderir</translation>
@@ -9309,7 +9306,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="934244546219308557">Bu gruba bir ad verin</translation>
 <translation id="934503638756687833">Gerekirse burada listelenmeyen öğeler de kaldırılabilir. &lt;a href="<ph name="URL" />"&gt;İstenmeyen yazılım koruması&lt;/a&gt; hakkında daha fazla bilgiyi Chrome gizliliği tanıtım yazısında bulabilirsiniz.</translation>
 <translation id="93480724622239549">Sorun veya Hata</translation>
-<translation id="935854577147268200">Smart Lock telefonu değişti. Smart Lock'u güncellemek için şifrenizi girin. Böylece, bir dahaki sefere telefonunuzu kullanarak <ph name="DEVICE_TYPE" /> cihazınızın kilidini açabilirsiniz. Ayarlar'dan Smart Lock'u kapatabilirsiniz.</translation>
 <translation id="936646668635477464">Kamera ve mikrofon</translation>
 <translation id="936801553271523408">Sistem teşhis verileri</translation>
 <translation id="93766956588638423">Uzantıyı onar</translation>

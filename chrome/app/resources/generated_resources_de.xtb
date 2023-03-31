@@ -3025,7 +3025,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3627671146180677314">Verlängerungszeit für Netscape-Zertifikate</translation>
 <translation id="3627879631695760395"><ph name="APP" /> installieren...</translation>
 <translation id="3628275722731025472">Bluetooth deaktivieren</translation>
-<translation id="3629631988386925734">Gib dein Passwort ein, um Smart Lock zu aktivieren. Beim nächsten Mal wird dein <ph name="DEVICE_TYPE" /> durch dein Smartphone entsperrt. Du kannst Smart Lock in den Einstellungen deaktivieren.</translation>
 <translation id="3629664892718440872">Auswahl speichern</translation>
 <translation id="3630132874740063857">Mein Smartphone</translation>
 <translation id="3630995161997703415">Füge diese Website deiner Ablage hinzu, um sie jederzeit zu verwenden</translation>
@@ -4678,7 +4677,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5111794652433847656">Für <ph name="APP_NAME" /> gibt es auf diesem Gerät keine Passkeys</translation>
 <translation id="5112577000029535889">E&amp;ntwicklertools</translation>
 <translation id="511313294362309725">Schnelles Pairing einschalten</translation>
-<translation id="5113739826273394829">Wenn du auf dieses Symbol klickst, wird dein <ph name="DEVICE_TYPE" /> manuell gesperrt. Beim nächsten Mal musst du dann dein Passwort eingeben, um das Gerät zu verwenden.</translation>
 <translation id="51143538739122961">Stecke deinen Sicherheitsschlüssel ein und tippe darauf</translation>
 <translation id="5115309401544567011">Bitte schließe dein <ph name="DEVICE_TYPE" /> an eine Stromquelle an.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5073,7 +5071,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5481941284378890518">Drucker in der Nähe hinzufügen</translation>
 <translation id="5483785310822538350">Datei- und Gerätezugriff aufheben</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, ein Daten-Backup zu erstellen und dieses <ph name="DEVICE_TYPE" /> heute zurückzugeben. <ph name="LINK_BEGIN" />Details anzeigen.<ph name="LINK_END" />}other{Gemäß <ph name="MANAGER" /> ist es notwendig, ein Daten-Backup zu erstellen und dieses <ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen zurückzugeben. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Dein <ph name="DEVICE_TYPE" /> wurde zur Sicherheit gesperrt. Gib dein Passwort manuell ein, um fortzufahren.</translation>
 <translation id="5485102783864353244">App hinzufügen</translation>
 <translation id="5485754497697573575">Alle Tabs wiederherstellen</translation>
 <translation id="5486261815000869482">Passwort bestätigen</translation>
@@ -5277,7 +5274,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5656845498778518563">Feedback an Google senden</translation>
 <translation id="5657156137487675418">Alle Cookies zulassen</translation>
 <translation id="5657667036353380798">Für die externe Erweiterung muss die Chrome-Version <ph name="MINIMUM_CHROME_VERSION" /> oder höher installiert sein.</translation>
-<translation id="5658415415603568799">Aus Sicherheitsgründen wirst du von Smart Lock gebeten, dein Passwort nach 20 Stunden noch einmal einzugeben.</translation>
 <translation id="5659593005791499971">E-Mail</translation>
 <translation id="5662513737565158057">Hier kannst du ändern, wie Linux-Apps ausgeführt werden.</translation>
 <translation id="5663459693447872156">Automatisch in halbbreites Format wechseln</translation>
@@ -6775,7 +6771,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7000347579424117903">Muss mit Strg, Alt oder Suchtaste beginnen</translation>
 <translation id="7001036685275644873">Linux-Apps und -Dateien werden gesichert</translation>
 <translation id="7001066449188684145">Zum Drucken über den Drucker „<ph name="PRINTER_NAME" />“ ist eine Bestätigung der Identität erforderlich. Bitte wende dich an deinen Administrator.</translation>
-<translation id="7002055706763150362">Zum Einrichten von Smart Lock für Chromebooks müssen wir dich authentifizieren. Gib bitte dein Passwort ein.</translation>
 <translation id="7003339318920871147">Web-Datenbanken</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} Datei}other{{COUNT} Dateien}}</translation>
 <translation id="7003705861991657723">Alpha</translation>
@@ -9288,7 +9283,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="934244546219308557">Gruppe benennen</translation>
 <translation id="934503638756687833">Elemente, die hier nicht aufgeführt sind, werden bei Bedarf ebenfalls entfernt. Weitere Informationen zum &lt;a href="<ph name="URL" />"&gt;Schutz vor unerwünschter Software&lt;/a&gt; findest du im Whitepaper zum Datenschutz in Chrome.</translation>
 <translation id="93480724622239549">Programmfehler oder sonstiger Fehler</translation>
-<translation id="935854577147268200">Das Smartphone für Smart Lock wurde geändert. Gib dein Passwort ein, um Smart Lock zu aktualisieren. Das nächste Mal wird dein <ph name="DEVICE_TYPE" /> von deinem Smartphone entsperrt. Du kannst Smart Lock in den Einstellungen deaktivieren.</translation>
 <translation id="936646668635477464">Kamera &amp; Mikrofon</translation>
 <translation id="936801553271523408">Fehlerberichte des Systems</translation>
 <translation id="93766956588638423">Erweiterung reparieren</translation>

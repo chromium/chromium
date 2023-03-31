@@ -1534,6 +1534,7 @@ Bu politika ayarlandığında kullanıcı, değeri geçersiz kılamaz.
 Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı bırakılır, ancak kullanıcı tarafından kontrol edilebilir.</translation>
 <translation id="2413899611035194909">Giriş ekranı sistem tepsisi menüsünde erişilebilirlik seçeneklerini göster</translation>
 <translation id="2415715982424988916">Keşfet (91 sürümünden itibaren desteklenir)</translation>
+<translation id="2420958105721932612">Bir uygulamanın nasıl yükleneceğini belirtir. AVAILABLE: Uygulama otomatik olarak yüklenmez, ancak kullanıcı tarafından yüklenebilir. Bu politika belirtilmezse varsayılan olarak bu ayar uygulanır. FORCE_INSTALLED: Uygulama otomatik olarak yüklenir ve kullanıcı tarafından kaldırılamaz. BLOCKED: Uygulama engellenir ve yüklenemez. Uygulama önceki politikalardan biri kapsamında yüklenmişse kaldırılır.</translation>
 <translation id="2421400544595297401">İlişkili olmayan kullanıcıların Android uygulamalarını kullanmasına izin verme</translation>
 <translation id="2421677964966613267">Bu politika, M88 sürümünde kullanımdan kaldırılmıştır. Flash artık Chrome tarafından desteklenmemektedir. Politikayı ayarlamak, <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
 
@@ -4542,11 +4543,6 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Politika, Etkin değerine ayarlanırsa cihaz etkinliği durumu sunucuya raporlanır ve böylece, kullanıcı ilişkili olduğu sürece cihazın çevrimdışı olup olmadığını algılamasını sağlar.</translation>
 <translation id="5238275681097851753">Belirli <ph name="FLASH_PLUGIN_NAME" /> içeriklerinin engellenmesine izin ver</translation>
 <translation id="5238976843489093540">Hızlı Eşleme'yi (hızlı Bluetooth eşleme) etkinleştirmeye zorla.</translation>
-<translation id="52393120393725840">Politika, Etkin değerine ayarlanırsa kullanıcılar, <ph name="PRODUCT_NAME" /> ürününün, şifreleri hatırlayıp bir sitede tekrar oturum açtıklarında şifreleri sunmasını sağlayabilirler.
-
-      Politika, Devre Dışı değerine ayarlanırsa kullanıcılar yeni şifreleri kaydedemez, ancak önceden kaydedilmiş şifreler çalışmaya devam eder.
-
-      Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde değiştiremezler. Politika ayarlanmadan bırakılırsa kullanıcı şifre kaydetmeyi devre dışı bırakabilir.</translation>
 <translation id="5239333626804545932">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa Chrome Temizleme Aracı belirli aralıklarla sistemdeki istenmeyen yazılımları tarar ve böyle bir yazılım bulursa kullanıcıya, bulduğu yazılımı kaldırmak isteyip istemediğini sorar. Chrome Temizleme Aracı'nın chrome://settings adresinden manuel olarak tetiklenmesine izin verilir.
 
       Politika Devre dışı değerine ayarlanırsa Chrome Temizleme Aracı düzenli tarama yapmaz ve manuel tetikleme devre dışı bırakılır.
@@ -4813,9 +4809,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 
       Politika değeri gün olarak belirtilmelidir.</translation>
 <translation id="5457065417344056871">Tarayıcıda misafir modunu etkinleştir</translation>
-<translation id="5457387982448145430">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıda kayıtlı şifreler ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırmada aktarılmaz.
-
-      Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve kayıtlı şifre onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>
 <translation id="5457924070961220141"><ph name="PRODUCT_FRAME_NAME" /> yüklendiğinde varsayılan HTML oluşturucusunu yapılandırabilmenizi sağlar.
           Bu politika ayarlanmadan bırakılırsa kullanılan varsayılan ayar, oluşturma işlemini ana makine tarayıcısının yapmasına izin vermektir, ancak isteğe bağlı olarak bu ayarı geçersiz kılabilir ve HTML sayfalarını oluşturma işleminin varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> tarafından yapılmasını sağlayabilirsiniz.</translation>
 <translation id="545817252640069915">Oturum açma müdahalesini etkinleştir</translation>

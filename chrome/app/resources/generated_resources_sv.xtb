@@ -3052,7 +3052,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3627671146180677314">Förnyelsetid för Netscape-certifikat</translation>
 <translation id="3627879631695760395">Installera <ph name="APP" /> …</translation>
 <translation id="3628275722731025472">Inaktivera Bluetooth</translation>
-<translation id="3629631988386925734">Aktivera Smart Lock genom att ange lösenordet. Nästa gång låser din mobil upp <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna.</translation>
 <translation id="3629664892718440872">Kom ihåg det här valet</translation>
 <translation id="3630132874740063857">Din mobil</translation>
 <translation id="3630995161997703415">Lägg till den här webbplatsen på hyllan och använd den när som helst</translation>
@@ -4709,7 +4708,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5111794652433847656">Det finns inga nycklar för <ph name="APP_NAME" /> på den här enheten</translation>
 <translation id="5112577000029535889">Verktyg för &amp;utvecklare</translation>
 <translation id="511313294362309725">Aktivera Snabb parkoppling</translation>
-<translation id="5113739826273394829">Om du klickar på ikonen låser du <ph name="DEVICE_TYPE" /> manuellt. Nästa gång måste du ange ditt lösenord för att öppna den.</translation>
 <translation id="51143538739122961">Sätt i säkerhetsnyckeln och tryck på den</translation>
 <translation id="5115309401544567011">Anslut <ph name="DEVICE_TYPE" /> till en strömkälla.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5104,7 +5102,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5481941284378890518">Lägg till skrivare i närheten</translation>
 <translation id="5483785310822538350">Återkalla åtkomst till enheten och filer</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" />}other{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> om {NUM_DAYS} dagar. <ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Din <ph name="DEVICE_TYPE" /> är låst. Du måste ange lösenordet manuellt innan du fortsätter.</translation>
 <translation id="5485102783864353244">Lägg till app</translation>
 <translation id="5485754497697573575">Återställ alla flikar</translation>
 <translation id="5486261815000869482">Bekräfta lösenord</translation>
@@ -5310,7 +5307,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5656845498778518563">Skicka feedback till Google</translation>
 <translation id="5657156137487675418">Tillåt alla cookies</translation>
 <translation id="5657667036353380798">Det externa tillägget kräver att version <ph name="MINIMUM_CHROME_VERSION" /> eller senare av Chrome är installerat.</translation>
-<translation id="5658415415603568799">Av säkerhetsskäl blir du ombedd att ange lösenordet efter 20 timmar med Smart Lock.</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5662513737565158057">Ändra hur Linux-appar fungerar.</translation>
 <translation id="5663459693447872156">Växla automatiskt till halv bredd</translation>
@@ -6814,7 +6810,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7000347579424117903">Ctrl-, alt- eller söktangenten måste finnas med</translation>
 <translation id="7001036685275644873">Säkerhetskopierar Linux-appar och Linux-filer</translation>
 <translation id="7001066449188684145">Identifiering krävs för att skriva ut på <ph name="PRINTER_NAME" />. Kontakta administratören.</translation>
-<translation id="7002055706763150362">Om du vill konfigurera Smart Lock för Chrome måste Google vara säker på att det är du som gör ändringen, så du måste först ange ditt lösenord.</translation>
 <translation id="7003339318920871147">Webbdatabaser</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="7003705861991657723">Alpha</translation>
@@ -9328,7 +9323,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="934244546219308557">Namnge den här gruppen</translation>
 <translation id="934503638756687833">Även objekt som inte står med här tas bort om det behövs. Läs mer om &lt;a href="<ph name="URL" />"&gt;skydd mot oönskad programvara&lt;/a&gt; i vitboken om integritet och Chrome.</translation>
 <translation id="93480724622239549">Problem eller fel</translation>
-<translation id="935854577147268200">Smart Lock används med en annan mobil än tidigare. Ange lösenordet och uppdatera Smart Lock. Nästa gång låser mobilen upp denna <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna</translation>
 <translation id="936646668635477464">Kamera och mikrofon</translation>
 <translation id="936801553271523408">Systemets diagnostikresultat</translation>
 <translation id="93766956588638423">Reparera tillägg</translation>

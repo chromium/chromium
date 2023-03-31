@@ -3053,7 +3053,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3627671146180677314">Endurnýjunartími Netscape-vottorðs</translation>
 <translation id="3627879631695760395">Setja upp <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Slökkva á Bluetooth</translation>
-<translation id="3629631988386925734">Færðu inn aðgangsorðið þitt til að kveikja á Smart Lock. Næst tekur síminn þinn <ph name="DEVICE_TYPE" /> úr lás. Þú getur slökkt á Smart Lock í stillingunum.</translation>
 <translation id="3629664892718440872">Muna þetta val</translation>
 <translation id="3630132874740063857">Síminn þinn</translation>
 <translation id="3630995161997703415">Bættu þessu vefsvæði við hilluna til að geta opnað það hvenær sem er</translation>
@@ -3268,6 +3267,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803345858388753269">Myndgæði</translation>
 <translation id="3803367742635802571">Vefsvæði sem þú skoðar gætu hætt að virka sem skyldi</translation>
+<translation id="3803583375545057606">Biðja foreldri þitt um að virkja þessa viðbót?</translation>
 <translation id="380408572480438692">Ef söfnun afkastagagna er gerð virk hjálpar það Google að bæta kerfið með tímanum. Engin gögn eru send nema þú sendir inn skýrslu með ábendingum þínum (Alt-Shift-I) og látir gögn um afköst fylgja með. Þú getur komið aftur hingað hvenær sem er til að slökkva á gagnasöfnuninni.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (auðkenni viðbótar „<ph name="EXTENSION_ID" />“) er ekki leyfð á innskráningarskjá.</translation>
 <translation id="3807747707162121253">Hætta við</translation>
@@ -3689,6 +3689,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4169535189173047238">Ekki leyfa</translation>
 <translation id="4170314459383239649">Hreinsa við lokun</translation>
 <translation id="417096670996204801">Veldu prófíl</translation>
+<translation id="41725145403849567">Biðja foreldri þitt um að bæta þessari viðbót við?</translation>
 <translation id="4175137578744761569">Ljósfjólublár og hvítur</translation>
 <translation id="4175737294868205930">Langtímageymsla</translation>
 <translation id="4176463684765177261">Óvirkt</translation>
@@ -4710,7 +4711,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5111794652433847656">Það eru engir aðgangslyklar fyrir <ph name="APP_NAME" /> í tækinu</translation>
 <translation id="5112577000029535889">Forritunartól</translation>
 <translation id="511313294362309725">Kveikja á hraðpörun</translation>
-<translation id="5113739826273394829">Ef þú smellir á þetta tákn læsirðu þessu <ph name="DEVICE_TYPE" /> tæki handvirkt. Næst þarftu að slá inn aðgangsorðið þitt til að komast inn.</translation>
 <translation id="51143538739122961">Stingdu öryggislykli í samband og snertu hann</translation>
 <translation id="5115309401544567011">Stingdu <ph name="DEVICE_TYPE" /> í samband við rafmagn.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5101,11 +5101,11 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-númer verður að vera minnst einn stafur}one{PIN-númer verður að vera að minnst # stafur}other{PIN-númer verður að vera að minnst # stafir}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> fer fram á að þú tengist Wi-Fi núna og sækir uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).</translation>
 <translation id="5476016146231427848">Endurræstu tækið til að nota Steam í Chromebook</translation>
+<translation id="5476897066181964657">Foreldri eða forsjáraðili verður að samþykkja að þú bætir þessari viðbót við</translation>
 <translation id="5481273127572794904">Mega ekki sækja margar skrár sjálfkrafa</translation>
 <translation id="5481941284378890518">Bæta nálægum prenturum við</translation>
 <translation id="5483785310822538350">Afturkalla skráa- og tækjaaðgang</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> í dag. <ph name="LINK_BEGIN" />Sjá upplýsingar<ph name="LINK_END" />}one{<ph name="MANAGER" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> innan {NUM_DAYS} dags. <ph name="LINK_BEGIN" />Sjá upplýsingar<ph name="LINK_END" />}other{<ph name="MANAGER" /> krefst þess að þú takir afrit af gögnunum þínum og skilir þessu <ph name="DEVICE_TYPE" /> innan {NUM_DAYS} daga.<ph name="LINK_BEGIN" />Sjá upplýsingar<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> er læst af öryggisástæðum. Færðu inn aðgangsorðið þitt handvirkt til að halda áfram.</translation>
 <translation id="5485102783864353244">Bæta forriti við</translation>
 <translation id="5485754497697573575">Endurheimta alla flipa</translation>
 <translation id="5486261815000869482">Staðfestu aðgangsorð</translation>
@@ -5311,7 +5311,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5656845498778518563">Senda ábendingar til Google</translation>
 <translation id="5657156137487675418">Leyfa öll fótspor</translation>
 <translation id="5657667036353380798">Ytri viðbótin krefst útgáfu <ph name="MINIMUM_CHROME_VERSION" /> eða nýrri af Chrome til að hægt sé að setja hana upp.</translation>
-<translation id="5658415415603568799">Smart Lock mun biðja þig um að færa inn aðgangsorðið þitt eftir 20 klukkustundir til að auka öryggið.</translation>
 <translation id="5659593005791499971">Netfang</translation>
 <translation id="5662513737565158057">Breytir því hvernig Linux-forrit virka.</translation>
 <translation id="5663459693447872156">Skipta sjálfkrafa yfir í hálfa breidd</translation>
@@ -6404,6 +6403,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6647690760956378579">Forskoðun á eðlilegri rödd</translation>
 <translation id="6648911618876616409">Áríðandi uppfærsla bíður uppsetningar. Skráðu þig inn til að hefjast handa.</translation>
 <translation id="6649018507441623493">Augnablik...</translation>
+<translation id="6650206238642452078">Gerast áskrifandi að ChromeOS-kerfisatvikum</translation>
 <translation id="665061930738760572">Opna í &amp;nýjum glugga</translation>
 <translation id="6651237644330755633">Treysta þessu vottorði til að auðkenna vefsvæði</translation>
 <translation id="6651495917527016072">Samstilltu Wi-Fi net við símann þinn. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -6816,7 +6816,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7000347579424117903">Hafðu Ctrl, Alt eða Search með</translation>
 <translation id="7001036685275644873">Afritar Linux-forrit og -skrár</translation>
 <translation id="7001066449188684145">Auðkenningar er krafist til að prenta út með <ph name="PRINTER_NAME" />. Hafðu samband við kerfisstjórann.</translation>
-<translation id="7002055706763150362">Til að setja upp Smart Lock fyrir Chromebook þarf Google að ganga úr skugga um að þetta sért þú. Sláðu inn aðgangsorðið þitt til að hefjast handa.</translation>
 <translation id="7003339318920871147">Vefgagnagrunnar</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} skrá}one{{COUNT} skrá}other{{COUNT} skrár}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -6853,6 +6852,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7025190659207909717">Stjórnun farsímagagnaþjónustu</translation>
 <translation id="7025895441903756761">Öryggi og persónuvernd</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Opna allt í &amp;huliðsglugga}=1{Opna í &amp;huliðsglugga}one{Opna allt ({COUNT}) í &amp;huliðsglugga}other{Opna allt ({COUNT}) í &amp;huliðsglugga}}</translation>
+<translation id="7028057921476386252">Foreldri eða forsjáraðili verður að samþykkja að þú notir þessa viðbót</translation>
 <translation id="7029307918966275733">Crostini er ekki sett upp. Settu upp Crostini til að skoða einingar.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7030304022046916278">Sendir vefslóðir til athugunar í öruggri vefskoðun</translation>
@@ -9119,6 +9119,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="904224458472510106">Ekki er hægt að afturkalla þessa aðgerð</translation>
 <translation id="9042827002460091668">Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
+<translation id="9043264199499366189">Gerast áskrifandi að ChromeOS Flex-kerfisatvikum</translation>
 <translation id="9044646465488564462">Mistókst að tengjast netinu: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leslistinn þinn var færður yfir í nýja hliðargluggann. Prófaðu hann hér.</translation>
 <translation id="9045430190527754450">Sendir veffang síðunnar sem þú reynir að opna til Google</translation>
@@ -9329,7 +9330,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="934244546219308557">Nefna hóp</translation>
 <translation id="934503638756687833">Atriði sem eru ekki talin upp hér verða einnig fjarlægð ef þörf krefur. Frekari upplýsingar um &lt;a href="<ph name="URL" />"&gt;vernd gegn óæskilegum hugbúnaði&lt;/a&gt; má finna í skýrslu um persónuvernd í Chrome.</translation>
 <translation id="93480724622239549">Villa</translation>
-<translation id="935854577147268200">Smart Lock síma var breytt. Færðu inn aðgangsorðið þitt til að uppfæra Smart Lock. Næst tekur síminn þinn <ph name="DEVICE_TYPE" /> úr lás. Þú getur slökkt á Smart Lock í stillingunum</translation>
 <translation id="936646668635477464">Myndavél og hljóðnemi</translation>
 <translation id="936801553271523408">Greiningargögn kerfis</translation>
 <translation id="93766956588638423">Gera við viðbót</translation>

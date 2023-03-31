@@ -4600,11 +4600,6 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
       Jika disetel ke Aktif, status aktivitas perangkat akan dilaporkan ke server yang memungkinkannya mendeteksi apakah perangkat sedang offline, selama pengguna tersebut adalah pengguna terafiliasi.</translation>
 <translation id="5238275681097851753">Izinkan konten <ph name="FLASH_PLUGIN_NAME" /> tertentu untuk diblokir</translation>
 <translation id="5238976843489093540">Paksa pengaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
-<translation id="52393120393725840">Menyetel kebijakan ke Aktif berarti pengguna dapat membuat <ph name="PRODUCT_NAME" /> mengingat sandi dan memberikannya saat mereka kembali login ke situs.
-
-      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menyimpan sandi baru, tetapi sandi yang disimpan sebelumnya masih berfungsi.
-
-      Jika kebijakan disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat menonaktifkan penyimpanan sandi.</translation>
 <translation id="5239333626804545932">Jika kebijakan disetel ke Aktif atau tidak disetel, Pembersih Chrome akan memindai sistem secara berkala untuk menemukan software yang tidak diinginkan, dan jika ditemukan, akan menanyakan kepada pengguna apakah ia ingin menghapusnya atau tidak. Pembersih Chrome dapat dipicu secara manual dari chrome://settings.
 
       Jika kebijakan disetel ke Nonaktif, Pembersih Chrome tidak akan memindai sistem secara berkala dan pemicu manual akan dinonaktifkan.
@@ -4873,9 +4868,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 
       Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="5457065417344056871">Mengaktifkan mode tamu dalam browser</translation>
-<translation id="5457387982448145430">Jika kebijakan disetel ke Aktif, sandi yang tersimpan akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada sandi tersimpan yang akan diimpor saat pertama kali dijalankan.
-
-      Pengguna dapat memicu dialog impor dan kotak centang sandi yang tersimpan akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
 <translation id="5457924070961220141">Memungkinkan Anda mengonfigurasi perender HTML default saat <ph name="PRODUCT_FRAME_NAME" /> dipasang. Setelan default yang digunakan ketika kebijakan ini tidak disetel adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat menimpanya secara opsional dan membiarkan <ph name="PRODUCT_FRAME_NAME" /> merender halaman HTML secara default.</translation>
 <translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>

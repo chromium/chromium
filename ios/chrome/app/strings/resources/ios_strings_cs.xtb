@@ -155,6 +155,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2021670401941426298">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="202292859882676807">Přístup k mikrofonu je povolen</translation>
 <translation id="20485545164632846">nová položka</translation>
+<translation id="2049727122989709386">V následujícím počtu účtů používáte stejné heslo <ph name="COUNT" /></translation>
 <translation id="2050196510205866090">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená platební metoda.}few{Nad klávesnicí jsou k dispozici {count} uložené platební metody.}many{Nad klávesnicí je k dispozici {count} uložené platební metody.}other{Nad klávesnicí je k dispozici {count} uložených platebních metod.}}</translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="26915454213703967">Vyhledat na obrázku pomocí Googlu</translation>
 <translation id="2691653761409724435">Není k dispozici offline</translation>
 <translation id="2695507686909505111">Stránka byla přeložena</translation>
+<translation id="2696180352517415858">Z účtu Google odhlášeni nebudete. <ph name="BEGIN_LINK" />Další typy aktivity<ph name="END_LINK" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.
+
+
+Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
 <translation id="2697526135132990015">Odhlásit se a vymazat data</translation>
 <translation id="2700241355396984822">Možnosti nastavení oprávnění</translation>
 <translation id="2702801445560668637">Seznam četby</translation>
@@ -250,6 +255,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2747003861858887689">Předchozí pole</translation>
 <translation id="2749231692441336879">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">právě teď</translation>
+<translation id="2772667768515195373">Uložené adresy můžete používat ve službách Google. Tato adresa je uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonymní vyhledávání</translation>
 <translation id="277771892408211951">Vyberte jazyk</translation>
 <translation id="2780046210906776326">Žádné e-mailové účty</translation>

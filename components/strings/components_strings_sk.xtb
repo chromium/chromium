@@ -1976,6 +1976,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5817918615728894473">Párovať</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Na túto kartu sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}few{Na kartu, ktorú vyberiete, sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}many{Na kartu, ktorú vyberiete, sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}other{Na kartu, ktorú vyberiete, sa pri platbe zaúčtuje poplatok, ale jej skutočné číslo sa nebude s týmto webom zdieľať. Na zaistenie dodatočného zabezpečenia bude vygenerovaný dočasný overovací kód karty.}}</translation>
 <translation id="5826507051599432481">Bežný názov (CN)</translation>
+<translation id="5829215001860862731">Uloženie do účtu</translation>
 <translation id="5830698870816298009">používanie a pohyb kamery</translation>
 <translation id="583281660410589416">Neznáme</translation>
 <translation id="5838278095973806738">Na tomto webe by ste nemali zadávať citlivé údaje, napríklad heslá alebo kreditné karty, pretože by ich mohli ukradnúť útočníci.</translation>

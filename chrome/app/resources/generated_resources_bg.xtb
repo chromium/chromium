@@ -3048,7 +3048,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3627671146180677314">Време на подновяване на сертификат на Netscape</translation>
 <translation id="3627879631695760395">Инсталиране на <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Изключване на Bluetooth</translation>
-<translation id="3629631988386925734">Въведете паролата си, за да активирате Smart Lock. Следващия път телефонът ви ще отключи устройството ви <ph name="DEVICE_TYPE" />. Можете да изключите Smart Lock от настройките.</translation>
 <translation id="3629664892718440872">Запомняне на този избор</translation>
 <translation id="3630132874740063857">Вашият телефон</translation>
 <translation id="3630995161997703415">Добавете този сайт към лавицата си, за да го използвате по всяко време</translation>
@@ -4708,7 +4707,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5111794652433847656">На това устройство няма кодове за достъп за <ph name="APP_NAME" /></translation>
 <translation id="5112577000029535889">&amp;Инструменти за програмисти</translation>
 <translation id="511313294362309725">Включване на бързото сдвояване</translation>
-<translation id="5113739826273394829">Ако кликнете върху тази икона, ще заключите ръчно този <ph name="DEVICE_TYPE" />. За да влезете след това, ще трябва да въведете паролата си.</translation>
 <translation id="51143538739122961">Поставете ключа си за сигурност и го докоснете</translation>
 <translation id="5115309401544567011">Моля, включете устройството си <ph name="DEVICE_TYPE" /> в източник на захранване.</translation>
 <translation id="5115338116365931134">Единичен вход за достъп</translation>
@@ -5104,7 +5102,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5481941284378890518">Добавяне на принтери в близост</translation>
 <translation id="5483785310822538350">Отмяна на достъпа до файловете и устройството</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> днес. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}other{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на {NUM_DAYS} дни. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Вашият <ph name="DEVICE_TYPE" /> е заключен от съображения за сигурност. Въведете паролата си, за да продължите.</translation>
 <translation id="5485102783864353244">Добавяне на приложението</translation>
 <translation id="5485754497697573575">Възстановяване на всички раздели</translation>
 <translation id="5486261815000869482">Потвърждаване на паролата</translation>
@@ -5311,7 +5308,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5656845498778518563">Изпращане на отзиви до Google</translation>
 <translation id="5657156137487675418">Разрешаване на всички „бисквитки“</translation>
 <translation id="5657667036353380798">За външното разширение се изисква да е инсталирана версия <ph name="MINIMUM_CHROME_VERSION" /> на Chrome или по-нова.</translation>
-<translation id="5658415415603568799">За допълнителна сигурност Smart Lock ще ви помоли да въведете паролата си след 20 часа.</translation>
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5662513737565158057">Променете начина на работа на приложенията за Linux.</translation>
 <translation id="5663459693447872156">Автоматично да се превключва към половин ширина</translation>
@@ -6815,7 +6811,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7000347579424117903">Използвайте Ctrl, Alt или клавиша „търсене“</translation>
 <translation id="7001036685275644873">Създава се резервно копие на приложенията и файловете за Linux</translation>
 <translation id="7001066449188684145">За отпечатване чрез <ph name="PRINTER_NAME" /> се изисква идентификация. Моля, обърнете се към администратора си.</translation>
-<translation id="7002055706763150362">Преди да настроите Smart Lock за Chromebook, Google трябва да се увери, че това сте вие. Въведете паролата си, за да започнете.</translation>
 <translation id="7003339318920871147">Уеб бази от данни</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файла}}</translation>
 <translation id="7003705861991657723">Алфа-версия</translation>
@@ -9330,7 +9325,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="934244546219308557">Наименувайте тази група</translation>
 <translation id="934503638756687833">При необходимост ще бъдат премахнати и елементи, които не са посочени тук. Научете повече за &lt;a href="<ph name="URL" />"&gt;защитата от нежелан софтуер&lt;/a&gt; в информационния бюлетин за поверителността на Chrome.</translation>
 <translation id="93480724622239549">Програмен дефект или грешка</translation>
-<translation id="935854577147268200">Телефонът за Smart Lock е променен. Въведете паролата си, за да актуализирате функцията. Следващия път телефонът ви ще отключи устройството ви <ph name="DEVICE_TYPE" />. Можете да изключите Smart Lock от настройките.</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Диагностични данни за системата</translation>
 <translation id="93766956588638423">Поправяне на разширението</translation>

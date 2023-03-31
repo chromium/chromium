@@ -24,6 +24,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 
 Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Účty Google môžete spravovať v <ph name="SETTINGS_LINK_BEGIN" />Nastaveniach<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Sťahuje sa…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Prehliadač Chromium bol pripojený k zariadeniu HID}=1{Prehliadač Chromium je pripojený k zariadeniu HID}few{Prehliadač Chromium je pripojený k zariadeniam HID}many{Prehliadač Chromium je pripojený k zariadeniam HID}other{Prehliadač Chromium je pripojený k zariadeniam HID}}</translation>
 <translation id="1708666629004767631">K dispozícii je nová bezpečnejšia verzia prehliadača Chromium.</translation>
 <translation id="17264556997921157">Môžete si prezrieť témy záujmu, pomocou ktorých vám weby zobrazujú reklamy, a odstrániť ich. Chromium odhaduje záujmy na základe nedávnej histórie prehliadania.</translation>
 <translation id="1733725117201708356">Chromium čoskoro odstráni dáta prehliadania</translation>

@@ -24,6 +24,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 
 Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti hii. Unaweza kudhibiti Akaunti zako za Google katika <ph name="SETTINGS_LINK_BEGIN" />Mipangilio<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Inapakua...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium iliunganishwa kwenye kifaa cha HID}=1{Chromium imeunganishwa kwenye kifaa cha HID}other{Chromium imeunganishwa kwenye vifaa vya HID}}</translation>
 <translation id="1708666629004767631">Kuna toleo jipya, na salama linalopatikana la Chromium.</translation>
 <translation id="17264556997921157">Unaweza kuona na kuondoa mada zinazokuvutia zinazotumiwa na tovuti kukuonyesha matangazo. Chromium hukadiria mambo yanayokuvutia kulingana na historia yako ya kuvinjari ya hivi karibuni.</translation>
 <translation id="1733725117201708356">Chromium itafuta data ya kuvinjari hivi karibuni</translation>

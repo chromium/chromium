@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">Google Chrome-ийн сүүлийн үеийн хувилбар аль хэдийн энэ компьютерт байна. Хэрэв программ хангамж ажиллахгүй байгаа бол Google Chrome-ийг устгаад, дахин оролдож үзнэ үү.</translation>
 <translation id="139993653570221430">Та Chrome-н тохиргоо хэсэгт хүссэн үедээ бодлоо өөрчлөх боломжтой. Туршилтын хугацаа нь зарыг хүргэдэг одоогийн аргын хамт үргэлжлэх бөгөөд ингэснээр та өөрчлөлтүүдийг тэр даруй харахгүй.</translation>
 <translation id="1434626383986940139">Chrome Canary програмууд</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome HID төхөөрөмжтэй холбогдсон байсан}=1{Google Chrome HID төхөөрөмжтэй холбогдсон байсан}other{Google Chrome HID төхөөрөмжүүдтэй холбогдсон байсан}}</translation>
 <translation id="1507198376417198979">Chrome-н шинэ профайлаа тохируулна уу</translation>
 <translation id="1516530951338665275">Үргэлжлүүлэн хослуулахын тулд Google Chrome-д Bluetooth-н 
 хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

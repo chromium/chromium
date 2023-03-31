@@ -622,7 +622,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1533948060140843887">Ik begrijp dat deze download schadelijk is voor mijn computer</translation>
 <translation id="1535228823998016251">Luid</translation>
 <translation id="1535597783576881392">Met deze gids krijg je meer inzicht in je keuzes, zodat Chrome werkt zoals jij dat wilt.</translation>
-<translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om uitgesproken te worden' onderaan het scherm en markeer daarna de tekst.</translation>
+<translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst.</translation>
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
 <translation id="1537254971476575106">Volledig scherm vergroten</translation>
 <translation id="15373452373711364">Grote muisaanwijzer</translation>
@@ -794,7 +794,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1662801900924515589"><ph name="APP" /> is geïnstalleerd</translation>
 <translation id="1665328953287874063">Gebruik een wachtwoord of pincode om je <ph name="DEVICE_TYPE" /> te ontgrendelen</translation>
 <translation id="1666232093776384142">Beveiliging voor gegevenstoegang voor randapparaten uitzetten</translation>
-<translation id="1667842670298352129">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om uitgesproken te worden' onderaan het scherm en markeer daarna de tekst. Je kunt ook een sneltoets gebruiken: markeer tekst en druk dan op Zoeken + S.</translation>
+<translation id="1667842670298352129">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst. Je kunt ook een sneltoets gebruiken: markeer tekst en druk dan op Zoeken + S.</translation>
 <translation id="1668435968811469751">Handmatig inschrijven</translation>
 <translation id="1668979692599483141">Meer informatie over suggesties</translation>
 <translation id="1670399744444387456">Basis</translation>
@@ -2396,7 +2396,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3021678814754966447">&amp;Framebron bekijken</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> wordt verwijderd van deze Chromebook en niet opgeslagen in <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Dat heb ik niet verstaan.</translation>
-<translation id="3023464535986383522">Selecteer om uitgesproken te worden</translation>
+<translation id="3023464535986383522">Selecteer om voor te lezen</translation>
 <translation id="3024374909719388945">24-uurs klok gebruiken</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{Geen opgeslagen wachtwoorden}=1{Wachtwoorden gecheckt voor {COUNT} site}other{Wachtwoorden gecheckt voor {COUNT} sites en apps}}</translation>
 <translation id="3027296729579831126">Dichtbij delen aanzetten</translation>
@@ -3037,7 +3037,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3627671146180677314">Vernieuwingsmoment voor Netscape-certificaat</translation>
 <translation id="3627879631695760395"><ph name="APP" /> installeren...</translation>
 <translation id="3628275722731025472">Bluetooth uitzetten</translation>
-<translation id="3629631988386925734">Voer je wachtwoord in om Smart Lock aan te zetten. De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="3629664892718440872">Deze keuze onthouden</translation>
 <translation id="3630132874740063857">Je telefoon</translation>
 <translation id="3630995161997703415">Voeg deze site aan je plank toe om hem altijd te kunnen gebruiken</translation>
@@ -3252,6 +3251,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videokwaliteit</translation>
 <translation id="3803367742635802571">Sites die je bezoekt, werken misschien niet meer zoals bedoeld</translation>
+<translation id="3803583375545057606">Je ouder vragen om deze extensie aan te zetten?</translation>
 <translation id="380408572480438692">Als je prestatiegegevens verzamelt, help je Google het systeem nog beter te maken. Er worden geen gegevens verstuurd totdat je een feedbackrapport (Alt-Shift-I) indient en prestatiegegevens toevoegt. Je kunt op elk moment teruggaan naar dit scherm om de verzameling uit te zetten.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extensie-ID <ph name="EXTENSION_ID" />) is niet toegestaan op een inlogscherm.</translation>
 <translation id="3807747707162121253">A&amp;nnuleren</translation>
@@ -3672,6 +3672,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4169535189173047238">Niet toestaan</translation>
 <translation id="4170314459383239649">Wissen bij het verlaten</translation>
 <translation id="417096670996204801">Profiel kiezen</translation>
+<translation id="41725145403849567">Je ouder vragen om deze extensie toe te voegen?</translation>
 <translation id="4175137578744761569">Lichtpaars/wit</translation>
 <translation id="4175737294868205930">Permanente opslag</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
@@ -3784,7 +3785,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4282196459431406533">Smart Lock staat aan</translation>
-<translation id="4284903252249997120">ChromeVox-schermlezer en Selecteer om uitgesproken te worden</translation>
+<translation id="4284903252249997120">ChromeVox-schermlezer en Selecteer om voor te lezen</translation>
 <translation id="4285418559658561636">Wachtwoord updaten</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428565720843367874">Tijdens het scannen van dit bestand met antivirussoftware is er een onverwachte fout opgetreden.</translation>
@@ -4691,7 +4692,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5111794652433847656">Er zijn geen toegangscodes voor <ph name="APP_NAME" /> op dit apparaat</translation>
 <translation id="5112577000029535889">&amp;Hulpprogramma's voor ontwikkelaars</translation>
 <translation id="511313294362309725">Snel koppelen aanzetten</translation>
-<translation id="5113739826273394829">Als je op dit icoon klikt, vergrendel je deze <ph name="DEVICE_TYPE" /> handmatig. De volgende keer moet je je wachtwoord typen om deze te ontgrendelen.</translation>
 <translation id="51143538739122961">Plaats je beveiligingssleutel en tik erop</translation>
 <translation id="5115309401544567011">Sluit je <ph name="DEVICE_TYPE" /> aan op een voedingsbron.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5082,11 +5082,11 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{De pincode moet ten minste 1 teken bevatten}other{De pincode moet ten minste # tekens bevatten}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).</translation>
 <translation id="5476016146231427848">Start je apparaat opnieuw op om Steam te gebruiken op je Chromebook</translation>
+<translation id="5476897066181964657">Een ouder of voogd moet aangeven dat je deze extensie mag toevoegen</translation>
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5483785310822538350">Toegang tot bestand en apparaat intrekken</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Je <ph name="DEVICE_TYPE" /> is vergrendeld uit beveiligingsoverwegingen. Geef je wachtwoord handmatig op om door te gaan.</translation>
 <translation id="5485102783864353244">App toevoegen</translation>
 <translation id="5485754497697573575">Herstel alle tabbladen</translation>
 <translation id="5486261815000869482">Wachtwoord bevestigen</translation>
@@ -5290,7 +5290,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5656845498778518563">Feedback sturen naar Google</translation>
 <translation id="5657156137487675418">Alle cookies toestaan</translation>
 <translation id="5657667036353380798">Voor de externe extensie moet Chrome-versie <ph name="MINIMUM_CHROME_VERSION" /> of hoger zijn geïnstalleerd.</translation>
-<translation id="5658415415603568799">Voor extra beveiliging vraagt Smart Lock je na 20 uur je wachtwoord op te geven.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662513737565158057">Wijzigen hoe Linux-apps werken.</translation>
 <translation id="5663459693447872156">Automatisch schakelen naar halve breedte</translation>
@@ -5623,7 +5622,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5955809630138889698">Dit apparaat is mogelijk alleen geschikt voor de online demomodus. Neem contact op met een medewerker van support voor meer informatie.</translation>
 <translation id="5956585768868398362">Is dit de zoekpagina die je had verwacht?</translation>
 <translation id="5957918771633727933">Geen beschikbare e-simkaartprofielen. Download een nieuw <ph name="BEGIN_LINK" />profiel.<ph name="END_LINK" /></translation>
-<translation id="5957987129450536192">Tik op het icoon 'Selecteer om uitgesproken te worden' in de buurt van je profielfoto en selecteer vervolgens wat je wilt horen.</translation>
+<translation id="5957987129450536192">Tik op het icoon 'Selecteer om voor te lezen' in de buurt van je profielfoto en selecteer vervolgens wat je wilt horen.</translation>
 <translation id="5959471481388474538">Netwerk niet beschikbaar</translation>
 <translation id="595959584676692139">Laad de pagina opnieuw om deze extensie te gebruiken</translation>
 <translation id="5963413905009737549">Sectie</translation>
@@ -5714,7 +5713,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6043994281159824495">Nu uitloggen</translation>
 <translation id="6045114302329202345">Primaire TrackPoint-knop</translation>
 <translation id="6047632800149092791">Synchronisatie werkt niet. Probeer uit en weer in te loggen.</translation>
-<translation id="6048747414605857443">Selecteer stemmen voor tekst-naar-spraak en pas ze aan voor ChromeVox en Selecteer om uitgesproken te worden.</translation>
+<translation id="6048747414605857443">Selecteer stemmen voor tekst-naar-spraak en pas ze aan voor ChromeVox en Selecteer om voor te lezen.</translation>
 <translation id="6049797270917061226">Aanvallers kunnen dit bestand gebruiken om je persoonlijke informatie te stelen.</translation>
 <translation id="6051354611314852653">Het systeem kan API-toegang voor dit apparaat niet verifiëren.</translation>
 <translation id="6051811090255711417">Je organisatie heeft dit bestand geblokkeerd omdat het niet voldoet aan een beveiligingsbeleid</translation>
@@ -6791,7 +6790,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7000347579424117903">Neem Ctrl, Alt of de zoektoets op</translation>
 <translation id="7001036685275644873">Back-up maken van Linux-apps en -bestanden</translation>
 <translation id="7001066449188684145">Identificatie vereist om af te drukken naar <ph name="PRINTER_NAME" />. Neem contact op met je beheerder.</translation>
-<translation id="7002055706763150362">Als je Smart Lock voor Chromebook wilt instellen, moet Google eerst controleren of je de juiste gebruiker bent. Typ je wachtwoord om aan de slag te gaan.</translation>
 <translation id="7003339318920871147">Webdatabases</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} bestand}other{{COUNT} bestanden}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -6828,6 +6826,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7025190659207909717">Beheer van mobiele netwerken</translation>
 <translation id="7025895441903756761">Beveiliging en privacy</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Alles openen in &amp;incognitovenster}=1{Openen in &amp;incognitovenster}other{Alles ({COUNT}) openen in &amp;incognitovenster}}</translation>
+<translation id="7028057921476386252">Een ouder of voogd moet aangeven dat je deze extensie mag aanzetten</translation>
 <translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030304022046916278">Stuurt URL's naar Safe Browsing om deze te checken</translation>
@@ -7641,7 +7640,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7768507955883790804">Sites volgen deze instelling automatisch als je ze bezoekt</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bekijken</translation>
 <translation id="7768770796815395237">Wijzigen</translation>
-<translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
+<translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769748505895274502">Recent gesloten tabbladen samenvouwen</translation>
 <translation id="7770072242481632881">Deelvensterkiezer</translation>
 <translation id="7770450735129978837">Klik met rechtermuisknop</translation>
@@ -8360,7 +8359,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8389492867173948260">Hiermee kan deze extensie al je gegevens lezen en wijzigen op de websites die je bezoekt:</translation>
 <translation id="8390449457866780408">Server niet beschikbaar.</translation>
 <translation id="8391218455464584335">Lp</translation>
-<translation id="8392726714909453725">Instellingen voor Selecteer om uitgesproken te worden</translation>
+<translation id="8392726714909453725">Instellingen voor Selecteer om voor te lezen</translation>
 <translation id="8393511274964623038">Plug-in stoppen</translation>
 <translation id="839363317075970734">Details bluetooth-apparaat</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
@@ -8930,7 +8929,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8899851313684471736">Link openen in nieu&amp;w venster</translation>
 <translation id="8900413463156971200">Mobiel netwerk aanzetten</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt.}other{<ph name="MANAGER" /> vereist dat je vóór de deadline een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt.}}</translation>
-<translation id="8902667442496790482">Instellingen voor 'Selecteer om uitgesproken te worden' openen</translation>
+<translation id="8902667442496790482">Instellingen voor 'Selecteer om voor te lezen' openen</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>
 <translation id="8907701755790961703">Selecteer een land</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is verwijderd</translation>
@@ -9304,7 +9303,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="934244546219308557">Deze groep een naam geven</translation>
 <translation id="934503638756687833">Items die hier niet worden vermeld, worden zo nodig ook verwijderd. Lees meer informatie over &lt;a href="<ph name="URL" />"&gt;bescherming tegen ongewenste software&lt;/a&gt; in de whitepaper over privacy in Chrome.</translation>
 <translation id="93480724622239549">Bug of fout</translation>
-<translation id="935854577147268200">Telefoon voor Smart Lock gewijzigd. Geef je wachtwoord op om Smart Lock te updaten. De volgende keer wordt je <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="936646668635477464">Camera en microfoon</translation>
 <translation id="936801553271523408">Diagnostische systeemgegevens</translation>
 <translation id="93766956588638423">Extensie repareren</translation>

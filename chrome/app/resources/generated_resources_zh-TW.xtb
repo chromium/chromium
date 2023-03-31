@@ -3037,7 +3037,6 @@
 <translation id="3627671146180677314">Netscape 憑證更新時間</translation>
 <translation id="3627879631695760395">安裝「<ph name="APP" />」...</translation>
 <translation id="3628275722731025472">關閉藍牙</translation>
-<translation id="3629631988386925734">輸入密碼即可啟用 Smart Lock，這樣下次手機就會為你的 <ph name="DEVICE_TYPE" />.解鎖。你可以在「設定」中停用 Smart Lock。</translation>
 <translation id="3629664892718440872">記住這個選擇</translation>
 <translation id="3630132874740063857">你的電話號碼</translation>
 <translation id="3630995161997703415">請將這個網站加入檔案櫃，以便隨時使用</translation>
@@ -4692,7 +4691,6 @@
 <translation id="5111794652433847656">這部裝置上沒有「<ph name="APP_NAME" />」的任何密碼金鑰</translation>
 <translation id="5112577000029535889">開發人員工具(&amp;D)</translation>
 <translation id="511313294362309725">開啟快速配對</translation>
-<translation id="5113739826273394829">點選這個圖示後，即會人工鎖定這台 <ph name="DEVICE_TYPE" />。這樣一來，下次必須輸入密碼才能解鎖。</translation>
 <translation id="51143538739122961">插入並輕觸安全金鑰</translation>
 <translation id="5115309401544567011">請將 <ph name="DEVICE_TYPE" /> 接上電源。</translation>
 <translation id="5115338116365931134">單一登入 (SSO)</translation>
@@ -5087,7 +5085,6 @@
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">你的 <ph name="DEVICE_TYPE" /> 因安全考量而進入鎖定狀態。如要繼續操作，請手動輸入你的密碼。</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485754497697573575">還原所有分頁</translation>
 <translation id="5486261815000869482">確認密碼</translation>
@@ -5291,7 +5288,6 @@
 <translation id="5656845498778518563">提供意見給 Google</translation>
 <translation id="5657156137487675418">允許所有 Cookie</translation>
 <translation id="5657667036353380798">這個外部擴充功能需要安裝 <ph name="MINIMUM_CHROME_VERSION" /> 版本以上的 Chrome 瀏覽器。</translation>
-<translation id="5658415415603568799">為了提升安全性，Smart Lock 會在經過 20 小時後要求您輸入密碼。</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
 <translation id="5663459693447872156">自動切換為半形</translation>
@@ -6794,7 +6790,6 @@
 <translation id="7000347579424117903">必須包含 Ctrl、Alt 鍵或搜尋鍵</translation>
 <translation id="7001036685275644873">正在備份 Linux 應用程式和檔案</translation>
 <translation id="7001066449188684145">必須驗證身分才能透過「<ph name="PRINTER_NAME" />」列印。請與管理員聯絡。</translation>
-<translation id="7002055706763150362">如要設定 Chromebook 專用 Smart Lock，請先輸入您的密碼，讓 Google 確認操作者是您本人。</translation>
 <translation id="7003339318920871147">網路資料庫</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 個檔案}other{{COUNT} 個檔案}}</translation>
 <translation id="7003705861991657723">Alpha 版</translation>
@@ -9308,7 +9303,6 @@
 <translation id="934244546219308557">為這個群組命名</translation>
 <translation id="934503638756687833">如有必要，這裡未列出的項目也會一併移除。如要進一步瞭解&lt;a href="<ph name="URL" />"&gt;垃圾軟體防護功能&lt;/a&gt;，請參閱 Chrome 隱私權白皮書。</translation>
 <translation id="93480724622239549">問題或錯誤</translation>
-<translation id="935854577147268200">Smart Lock 手機已變更，請輸入你的密碼以更新 Smart Lock，這樣下次手機就會為你的 <ph name="DEVICE_TYPE" /> 解鎖。你可以在「設定」中停用 Smart Lock</translation>
 <translation id="936646668635477464">攝影機和麥克風</translation>
 <translation id="936801553271523408">系統診斷資料</translation>
 <translation id="93766956588638423">修復擴充功能</translation>

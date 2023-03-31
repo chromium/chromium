@@ -3053,7 +3053,6 @@
 <translation id="3627671146180677314">Netscape সার্টিফিকেট পুনর্নবীকরণ সময়</translation>
 <translation id="3627879631695760395"><ph name="APP" /> ইনস্টল করুন...</translation>
 <translation id="3628275722731025472">ব্লুটুথ বন্ধ করুন</translation>
-<translation id="3629631988386925734">Smart Lock চালু করতে আপনার পাসওয়ার্ড লিখুন। পরের বার, আপনার ফোন <ph name="DEVICE_TYPE" /> আনলক করবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারবেন।</translation>
 <translation id="3629664892718440872">এই পছন্দ মনে রাখবেন</translation>
 <translation id="3630132874740063857">আপনার ফোন</translation>
 <translation id="3630995161997703415">যেকোনও সময় ব্যবহার করার জন্য এই সাইটটিকে আপনার শেল্ফে যোগ করুন</translation>
@@ -4711,7 +4710,6 @@
 <translation id="5111794652433847656">এই ডিভাইসে <ph name="APP_NAME" /> অ্যাপের জন্য কোনও 'পাসকী' নেই</translation>
 <translation id="5112577000029535889">&amp;ডেভেলপার টুল</translation>
 <translation id="511313294362309725">'দ্রুত পেয়ার' ফিচার চালু করুন</translation>
-<translation id="5113739826273394829">আপনি এই প্রতিকৃতিতে ক্লিক করুন, আপনি এই <ph name="DEVICE_TYPE" />টি ম্যানুয়ালি লক করবেন৷ পরবর্তী সময়ে, আপনাকে প্রবেশ করার জন্য আপনার পাসওয়ার্ড টাইপ করতে হবে৷</translation>
 <translation id="51143538739122961">আপনার নিরাপত্তা কী লিখে সেটিকে স্পর্শ করুন</translation>
 <translation id="5115309401544567011">অনুগ্রহ করে আপনার <ph name="DEVICE_TYPE" /> এ চার্জ দিন।</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5106,7 +5104,6 @@
 <translation id="5481941284378890518">আশেপাশের প্রিন্টারগুলি যোগ করুন</translation>
 <translation id="5483785310822538350">ফাইল এবং ডিভাইসের অ্যাক্সেস প্রত্যাহার করুন</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> আজই ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিবরণ দেখুন<ph name="LINK_END" />}one{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}other{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">আপনার <ph name="DEVICE_TYPE" /> নিরাপত্তার জন্য লক করা হয়েছে। চালিয়ে যেতে আপনার পাসওয়ার্ড লিখুন।</translation>
 <translation id="5485102783864353244">অ্যাপ্লিকেশান যোগ করুন</translation>
 <translation id="5485754497697573575">সকল ট্যাব পুনরুদ্ধার করুন</translation>
 <translation id="5486261815000869482">পাসওয়ার্ড নিশ্চিত করুন</translation>
@@ -5313,7 +5310,6 @@
 <translation id="5656845498778518563">Google-এ মতামত জানান</translation>
 <translation id="5657156137487675418">সকল কুকিজ মঞ্জুর করুন</translation>
 <translation id="5657667036353380798">বাহ্যিক এক্সটেনশনটির জন্য chrome এর <ph name="MINIMUM_CHROME_VERSION" /> ভার্সন বা তার পরবর্তী ভার্সন ইনস্টল থাকা প্রয়োজন৷</translation>
-<translation id="5658415415603568799">অতিরিক্ত নিরাপত্তার জন্য, ২০ ঘণ্টা পরে Smart Lock আপনাকে পাসওয়ার্ড দিতে বলবে।</translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
 <translation id="5662513737565158057">কীভাবে Linux অ্যাপ কাজ করবে তা পরিবর্তন করুন।</translation>
 <translation id="5663459693447872156">স্বয়ংক্রিয়ভাবে অর্ধপ্রস্থে স্যুইচ করুন</translation>
@@ -6820,7 +6816,6 @@
 <translation id="7000347579424117903">Ctrl, Alt অথবা Search বোতাম ব্যবহার করতে হবে</translation>
 <translation id="7001036685275644873">Linux অ্যাপ ও ফাইল ব্যাক-আপ নেওয়া হচ্ছে</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" />-এ প্রিন্ট করতে পরিচয় যাচাই করতে হবে। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
-<translation id="7002055706763150362">Chromebook এর জন্য Smart Lock সেট-আপ করার জন্য Google এর এটি নিশ্চিত হওয়া প্রয়োজন যে—শুরু করতে আপনিই আপনার পাসওয়ার্ড লিখেছেন।</translation>
 <translation id="7003339318920871147">ওয়েব ডেটাবেসসমূহ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT}টি ফাইল}one{{COUNT}টি ফাইল}other{{COUNT}টি ফাইল}}</translation>
 <translation id="7003705861991657723">আলফা</translation>
@@ -9334,7 +9329,6 @@
 <translation id="934244546219308557">এই গ্রুপের নাম দিন</translation>
 <translation id="934503638756687833">কোনও আইটেম এখানে উল্লেখ করা না থাকলেও সেটি প্রয়োজন অনুযায়ী সরিয়ে দেওয়া হবে। &lt;a href="<ph name="URL" />"&gt;অবাঞ্ছিত সফ্টওয়্যার থেকে সুরক্ষার&lt;/a&gt; বিষয়ে আরও জানতে Chrome-এর গোপনীয়তা বিষয়ক শ্বেতপত্র পড়ুন।</translation>
 <translation id="93480724622239549">ত্রুটি বা সমস্যা</translation>
-<translation id="935854577147268200">ফোনে Smart Lock ডেটা পরিবর্তিত হয়েছে। Smart Lock আপডেট করতে আপনার পাসওয়ার্ড লিখুন। পরের বার, আপনার ফোন <ph name="DEVICE_TYPE" /> আনলক করতে পারবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারেন।</translation>
 <translation id="936646668635477464">ক্যামেরা ও মাইক্রোফোন</translation>
 <translation id="936801553271523408">সিস্টেম ডায়াগনোস্টিক ডেটা</translation>
 <translation id="93766956588638423">এক্সটেনশন মেরামত করুন</translation>

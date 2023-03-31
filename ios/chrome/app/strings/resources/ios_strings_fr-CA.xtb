@@ -155,6 +155,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2021670401941426298">Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="202292859882676807">Accès au microphone autorisé</translation>
 <translation id="20485545164632846">nouvel élément</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisant le même mot de passe</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} mode de paiement enregistré proposé en haut du clavier.}one{{count} mode de paiement enregistré proposé en haut du clavier.}other{{count} modes de paiement enregistrés proposés en haut du clavier.}}</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="26915454213703967">Rechercher dans l'image avec Google</translation>
 <translation id="2691653761409724435">Indisponible hors ligne</translation>
 <translation id="2695507686909505111">Page traduite</translation>
+<translation id="2696180352517415858">Vous ne serez pas déconnecté de votre compte Google. <ph name="BEGIN_LINK" />D'autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
+
+
+Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les instructions de celui-ci pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="2697526135132990015">Se déconnecter et effacer les données</translation>
 <translation id="2700241355396984822">Options pour définir les autorisations</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
@@ -250,6 +255,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">à l'instant</translation>
+<translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Recherche en mode de navigation privée</translation>
 <translation id="277771892408211951">Sélectionner la langue</translation>
 <translation id="2780046210906776326">Courriel manquant</translation>

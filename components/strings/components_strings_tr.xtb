@@ -1980,6 +1980,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5817918615728894473">Eşle</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ödeme yaptığınızda ücret bu karttan alınır ancak kartın gerçek numarası bu site ile paylaşılmaz. Ek güvenlik için geçici bir CVC oluşturulur.}other{Ödeme yaptığınızda ücret, seçtiğiniz karttan alınır ancak kartın gerçek numarası bu site ile paylaşılmaz. Ek güvenlik için geçici bir CVC oluşturulur.}}</translation>
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
+<translation id="5829215001860862731">Hesaba Kaydet</translation>
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>

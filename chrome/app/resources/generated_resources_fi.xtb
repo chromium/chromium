@@ -3051,7 +3051,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3627671146180677314">Netscape-varmenteen uusimisaika</translation>
 <translation id="3627879631695760395">Asenna <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Poista Bluetooth käytöstä</translation>
-<translation id="3629631988386925734">Ota Smart Lock käyttöön kirjoittamalla salasanasi. Seuraavalla kerralla <ph name="DEVICE_TYPE" /> voidaan avata puhelimellasi. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="3629664892718440872">Muista valinta</translation>
 <translation id="3630132874740063857">Oma puhelin</translation>
 <translation id="3630995161997703415">Lisää tämä sivusto hyllyysi, niin voit käyttää sitä milloin tahansa.</translation>
@@ -4707,7 +4706,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5111794652433847656">Tällä laitteella ei ole <ph name="APP_NAME" />-avainkoodeja</translation>
 <translation id="5112577000029535889">&amp;Developer Tools</translation>
 <translation id="511313294362309725">Laita Pikapari päälle</translation>
-<translation id="5113739826273394829">Jos klikkaat tätä kuvaketta, <ph name="DEVICE_TYPE" /> lukitaan manuaalisesti. Seuraavan kerran sinun on kirjoitettava salasana, jotta voit käyttää laitetta.</translation>
 <translation id="51143538739122961">Aseta suojausavain ja kosketa sitä</translation>
 <translation id="5115309401544567011">Liitä <ph name="DEVICE_TYPE" /> virtalähteeseen.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5103,7 +5101,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5481941284378890518">Lisää lähellä olevia tulostimia</translation>
 <translation id="5483785310822538350">Peru tiedoston ja laitteen käyttöoikeudet</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> edellyttää, että varmuuskopioit datasi ja palautat laitteen (<ph name="DEVICE_TYPE" />) tänään. <ph name="LINK_BEGIN" />Näytä tiedot<ph name="LINK_END" />}other{<ph name="MANAGER" /> edellyttää, että varmuuskopioit datasi ja palautat laitteen (<ph name="DEVICE_TYPE" />) {NUM_DAYS} päivän sisällä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> on lukittu turvallisuussyistä. Jatka antamalla salasanasi manuaalisesti.</translation>
 <translation id="5485102783864353244">Lisää sovellus</translation>
 <translation id="5485754497697573575">Palauta kaikki välilehdet</translation>
 <translation id="5486261815000869482">Vahvista salasana</translation>
@@ -5309,7 +5306,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5656845498778518563">Lähetä palautetta Googlelle</translation>
 <translation id="5657156137487675418">Salli kaikki evästeet</translation>
 <translation id="5657667036353380798">Ulkoinen laajennus vaatii Chrome-version <ph name="MINIMUM_CHROME_VERSION" /> tai uudemman.</translation>
-<translation id="5658415415603568799">Turvallisuussyistä Smart Lock pyytää antamaan salasanan, kun 20 tuntia on kulunut.</translation>
 <translation id="5659593005791499971">Sähköposti</translation>
 <translation id="5662513737565158057">Muuta Linux-sovellusten toimintatapaa.</translation>
 <translation id="5663459693447872156">Vaihda automaattisesti puolileveä käyttöön</translation>
@@ -6813,7 +6809,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7000347579424117903">Lisää alkuun Ctrl, Alt tai hakupainike</translation>
 <translation id="7001036685275644873">Varmuuskopioidaan Linux-sovelluksia ja ‑tiedostoja</translation>
 <translation id="7001066449188684145">Tulostamiseen (<ph name="PRINTER_NAME" />) vaaditaan tunnistautumista. Ota yhteyttä järjestelmänvalvojaasi.</translation>
-<translation id="7002055706763150362">Jotta Smart Lock Chromebookille voidaan ottaa käyttöön, Googlen täytyy vahvistaa henkilöllisyytesi. Aloita antamalla salasanasi.</translation>
 <translation id="7003339318920871147">Verkkotietokannat</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} tiedosto}other{{COUNT} tiedostoa}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9327,7 +9322,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="934244546219308557">Anna ryhmälle nimi</translation>
 <translation id="934503638756687833">Myös tämän luettelon ulkopuolisia kohteita voidaan poistaa tarvittaessa. Lue lisää &lt;a href="<ph name="URL" />"&gt;ei-toivotuilta ohjelmilta suojautumisesta&lt;/a&gt; Chromen tietosuojailmoituksesta.</translation>
 <translation id="93480724622239549">Bugi tai virhe</translation>
-<translation id="935854577147268200">Smart Lock ‑puhelin on vaihtunut. Kirjoita salasana, jotta Smart Lock voidaan päivittää. Seuraavalla kerralla puhelimesi avaa laitteen <ph name="DEVICE_TYPE" /> lukituksen. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="936646668635477464">Kamera ja mikrofoni</translation>
 <translation id="936801553271523408">Järjestelmän diagnostiikkatiedot</translation>
 <translation id="93766956588638423">Korjaa laajennus</translation>

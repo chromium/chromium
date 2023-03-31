@@ -3038,7 +3038,6 @@
 <translation id="3627671146180677314">เวลาการต่ออายุใบรับรองของ Netscape</translation>
 <translation id="3627879631695760395">ติดตั้ง <ph name="APP" />...</translation>
 <translation id="3628275722731025472">ปิดบลูทูธ</translation>
-<translation id="3629631988386925734">ป้อนรหัสผ่านเพื่อเปิดใช้ Smart Lock โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="3629664892718440872">จำตัวเลือกนี้</translation>
 <translation id="3630132874740063857">โทรศัพท์ของคุณ</translation>
 <translation id="3630995161997703415">เพิ่มเว็บไซต์นี้ลงในชั้นวางเพื่อใช้งานได้ทุกเมื่อ</translation>
@@ -4697,7 +4696,6 @@
 <translation id="5111794652433847656">ไม่มีพาสคีย์สำหรับ <ph name="APP_NAME" /> บนอุปกรณ์นี้</translation>
 <translation id="5112577000029535889">&amp;เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="511313294362309725">เปิดฟีเจอร์จับคู่ด่วน</translation>
-<translation id="5113739826273394829">หากคุณคลิกไอคอนนี้ จะเป็นการล็อก <ph name="DEVICE_TYPE" /> นี้ด้วยตนเอง คุณจะต้องพิมพ์รหัสผ่านเพื่อเข้าใช้งานในครั้งถัดไป</translation>
 <translation id="51143538739122961">เสียบคีย์ความปลอดภัยแล้วแตะคีย์</translation>
 <translation id="5115309401544567011">โปรดเสียบ <ph name="DEVICE_TYPE" /> เข้ากับแหล่งจ่ายไฟ</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5093,7 +5091,6 @@
 <translation id="5481941284378890518">เพิ่มเครื่องพิมพ์ที่อยู่ใกล้เคียง</translation>
 <translation id="5483785310822538350">เพิกถอนสิทธิ์การเข้าถึงไฟล์และอุปกรณ์</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้วันนี้ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}other{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน {NUM_DAYS} วัน <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">ระบบทำการล็อก <ph name="DEVICE_TYPE" /> เพื่อความปลอดภัยแล้ว โปรดป้อนรหัสผ่านด้วยตนเองเพื่อดำเนินการต่อ</translation>
 <translation id="5485102783864353244">เพิ่มแอป</translation>
 <translation id="5485754497697573575">คืนค่าแท็บทั้งหมด</translation>
 <translation id="5486261815000869482">ยืนยันรหัสผ่าน</translation>
@@ -5297,7 +5294,6 @@
 <translation id="5656845498778518563">ส่งความคิดเห็นไปยัง Google</translation>
 <translation id="5657156137487675418">อนุญาตคุกกี้ทั้งหมด</translation>
 <translation id="5657667036353380798">ต้องมี Chrome เวอร์ชัน <ph name="MINIMUM_CHROME_VERSION" /> หรือสูงกว่าเพื่อติดตั้งส่วนขยายภายนอก</translation>
-<translation id="5658415415603568799">Smart Lock จะขอให้คุณป้อนรหัสผ่านเมื่อผ่านไปแล้ว 20 ชั่วโมงเพื่อเพิ่มความปลอดภัย</translation>
 <translation id="5659593005791499971">อีเมล</translation>
 <translation id="5662513737565158057">เปลี่ยนลักษณะที่แอป Linux จะทำงาน</translation>
 <translation id="5663459693447872156">สลับไปเป็นแบบครึ่งความกว้างโดยอัตโนมัติ</translation>
@@ -6800,7 +6796,6 @@
 <translation id="7000347579424117903">รวม Ctrl, Alt หรือแป้นค้นหา</translation>
 <translation id="7001036685275644873">กำลังสำรองข้อมูลแอปและไฟล์ Linux</translation>
 <translation id="7001066449188684145">ต้องมีการระบุตัวตนเพื่อสั่งพิมพ์ไปยัง <ph name="PRINTER_NAME" /> โปรดติดต่อผู้ดูแลระบบ</translation>
-<translation id="7002055706763150362">ในการตั้งค่า Smart Lock สำหรับ Chromebook นั้น Google จะต้องตรวจสอบว่าเป็นคุณจริงๆ โปรดพิมพ์รหัสผ่านเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="7003339318920871147">ฐานข้อมูลเว็บ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ไฟล์}other{{COUNT} ไฟล์}}</translation>
 <translation id="7003705861991657723">อัลฟ่า</translation>
@@ -9317,7 +9312,6 @@
 <translation id="934244546219308557">ตั้งชื่อกลุ่มนี้</translation>
 <translation id="934503638756687833">หากจำเป็น ระบบจะนำรายการที่ไม่ได้แสดงไว้ที่นี่ออกด้วย ดูข้อมูลเพิ่มเติมเกี่ยวกับ&lt;a href="<ph name="URL" />"&gt;การป้องกันซอฟต์แวร์ไม่พึงประสงค์&lt;/a&gt;ในสมุดปกขาวเกี่ยวกับความเป็นส่วนตัวของ Chrome</translation>
 <translation id="93480724622239549">ข้อบกพร่องหรือข้อผิดพลาด</translation>
-<translation id="935854577147268200">เปลี่ยนโทรศัพท์ที่เปิด Smart Lock แล้ว โปรดป้อนรหัสผ่านเพื่ออัปเดต Smart Lock โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="936646668635477464">กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="936801553271523408">ข้อมูลวินิจฉัยระบบ</translation>
 <translation id="93766956588638423">ซ่อมส่วนขยาย</translation>

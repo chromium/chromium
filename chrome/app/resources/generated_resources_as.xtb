@@ -3050,7 +3050,6 @@
 <translation id="3627671146180677314">Netscape প্ৰমাণপত্ৰ পুনঃনৱীকৰণৰ সময়</translation>
 <translation id="3627879631695760395"><ph name="APP" /> ইনষ্টল কৰক ...</translation>
 <translation id="3628275722731025472">ব্লুটুথ অফ কৰক</translation>
-<translation id="3629631988386925734">স্মাৰ্ট লক সক্ষম কৰিবলৈ নিজৰ পাছৱৰ্ড দিয়ক। আগলৈ আপোনাৰ ফ’নটোৱে আপোনাৰ <ph name="DEVICE_TYPE" /> আনলক কৰিব। আপুনি ছেটিংসমূহ-লৈ গৈ স্মাৰ্ট লক অফ কৰিব পাৰে।</translation>
 <translation id="3629664892718440872">এই বাছনিটো মনত ৰাখিব</translation>
 <translation id="3630132874740063857">আপোনাৰ ফ'ন</translation>
 <translation id="3630995161997703415">এই ছাইটটো যিকোনো সময়তে ব্যৱহাৰ কৰিবলৈ সেইটো আপোনাৰ শ্বেল্‌ফত যোগ কৰক</translation>
@@ -4706,7 +4705,6 @@
 <translation id="5111794652433847656"><ph name="APP_NAME" />ৰ বাবে এই ডিভাইচত কোনো পাছকী নাই</translation>
 <translation id="5112577000029535889">&amp;বিকাশকর্তাৰ সঁজুলি</translation>
 <translation id="511313294362309725">দ্ৰুতভাৱে পেয়াৰ কৰাৰ সুবিধা অন কৰক</translation>
-<translation id="5113739826273394829">আপুনি যদি এই আইকনটোত ক্লিক কৰে তেন্তে আপুনি এই <ph name="DEVICE_TYPE" />টোক মেনুৱেলী লক কৰিব। পৰৱর্তী সময়ত, আপুনি প্ৰৱেশ কৰিবলৈ নিজৰ পাছৱর্ড দিব লাগিব।</translation>
 <translation id="51143538739122961">আপোনাৰ সুৰক্ষা চাবিটো দিয়ক আৰু সেইটো স্পৰ্শ কৰক</translation>
 <translation id="5115309401544567011">অনুগ্ৰহ কৰি আপোনাৰ <ph name="DEVICE_TYPE" />টো কোনো পাৱাৰৰ উৎসত প্লাগইন কৰক।</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5101,7 +5099,6 @@
 <translation id="5481941284378890518">নিকটৱৰ্তী প্ৰিণ্টাৰ যোগ কৰক</translation>
 <translation id="5483785310822538350">ফাইল আৰু ডিভাইচৰ এক্সেছ প্ৰত্যাহাৰ কৰক</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই <ph name="DEVICE_TYPE" />টো আজি উভতাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}one{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}other{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">আপোনাৰ <ph name="DEVICE_TYPE" /> সুৰক্ষাৰ বাবে লক কৰা হৈছে। অব্যাহত ৰাখিবলৈ আপোনাৰ পাছৱৰ্ডটো মেনুৱেলী দিয়ক।</translation>
 <translation id="5485102783864353244">এপ্ যোগ কৰক</translation>
 <translation id="5485754497697573575">সকলো টেব পুনৰুদ্ধাৰ কৰক</translation>
 <translation id="5486261815000869482">পাছৱৰ্ড নিশ্চিত কৰক</translation>
@@ -5307,7 +5304,6 @@
 <translation id="5656845498778518563">Googleলৈ মতামত পঠিয়াওক</translation>
 <translation id="5657156137487675418">সকলো কুকিক অনুমতি দিয়ক</translation>
 <translation id="5657667036353380798">বাহ্যিক এক্সটেনশ্বনটোৰ বাবে chromeৰ সংস্কৰণ <ph name="MINIMUM_CHROME_VERSION" /> বা তাতোকৈ উন্নত সংস্কৰণ ইনষ্টল হৈ থকাৰ আৱশ্যক।</translation>
-<translation id="5658415415603568799">অতিৰিক্ত সুৰক্ষাৰ বাবে Smart Lockএ আপোনাক ২০ ঘণ্টাৰ পাছত পাছৱৰ্ড দিবলৈ ক’ব।</translation>
 <translation id="5659593005791499971">ইমেইল</translation>
 <translation id="5662513737565158057">Linux এপ্‌সমূহে কেনেদৰে কাম কৰিব সেয়া সলনি কৰক।</translation>
 <translation id="5663459693447872156">স্বয়ংক্ৰিয়ভাৱে halfwidthলৈ সলনি কৰক</translation>
@@ -6813,7 +6809,6 @@
 <translation id="7000347579424117903">Ctrl, Alt বা Search অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="7001036685275644873">Linux এপ্‌ আৰু ফাইলসমূহ বেক আপ কৰি থকা হৈছে</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" />ত প্ৰিণ্ট কৰিবলৈ চিনাক্তকৰণৰ আৱশ্যক। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
-<translation id="7002055706763150362">Chromebookৰ বাবে স্মাৰ্ট লক ছেট আপ কৰিবলৈ Googleএ আপোনাৰ পৰিচয় সত্যাপন কৰা প্ৰয়োজন—আৰম্ভ কৰিবলৈ আপোনাৰ পাছৱৰ্ড দিয়ক।</translation>
 <translation id="7003339318920871147">ৱেব ডেটাবেছ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} টা ফাইল}one{{COUNT} টা ফাইল}other{{COUNT} টা ফাইল}}</translation>
 <translation id="7003705861991657723">আলফা</translation>
@@ -9327,7 +9322,6 @@
 <translation id="934244546219308557">এই গোটটোৰ নাম দিয়ক</translation>
 <translation id="934503638756687833">এই সূচীত নথকা বস্তুবোৰো প্ৰয়োজন হ’লে আঁতৰোৱা হ’ব। &lt;a href="<ph name="URL" />"&gt;অনাকাংক্ষিত ছফ্‌টৱেৰ পৰা সুৰক্ষা&lt;/a&gt;ৰ বিষয়ে Chrome গোপনীয়তা শ্বেতপত্ৰৰ পৰা অধিক জানক।</translation>
 <translation id="93480724622239549">বাগ অথবা আসোঁৱাহ</translation>
-<translation id="935854577147268200">স্মাৰ্ট লকৰ বাবে ব্যৱহৃত ফ’ন সলনি কৰা হ’ল। স্মাৰ্ট লক আপডে’ট কৰিবলৈ নিজৰ পাছৱৰ্ড দিয়ক। আগলৈ আপোনাৰ ফ’নটোৱে আপোনাৰ <ph name="DEVICE_TYPE" /> আনলক কৰিব। আপুনি ছেটিংসমূহ-লৈ গৈ স্মাৰ্ট লক অফ কৰিব পাৰে</translation>
 <translation id="936646668635477464">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
 <translation id="936801553271523408">ছিষ্টেমৰ ডায়েগন’ষ্টিক ডেটা</translation>
 <translation id="93766956588638423">এক্সটেনশ্বন মেৰামতি কৰক</translation>

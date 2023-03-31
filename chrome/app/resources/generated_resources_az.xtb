@@ -3036,7 +3036,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3627671146180677314">Netscape Certificate Renewal Time</translation>
 <translation id="3627879631695760395"><ph name="APP" /> quraşdırılır...</translation>
 <translation id="3628275722731025472">Bluetooth'u deaktiv edin</translation>
-<translation id="3629631988386925734">Smart Lock'u aktiv etmək üçün parolunuzu yazın. Növbəti dəfə telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz</translation>
 <translation id="3629664892718440872">Bu seçimi yadda saxlayın</translation>
 <translation id="3630132874740063857">Telefonunuz</translation>
 <translation id="3630995161997703415">Hər hansı bir vaxt istifadə etmək üçün bu saytı rəfinizə əlavə edin</translation>
@@ -4690,7 +4689,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5111794652433847656">Bu cihazda <ph name="APP_NAME" /> üçün parol yoxdur</translation>
 <translation id="5112577000029535889">&amp;Developer Alətləri</translation>
 <translation id="511313294362309725">Sürətli Birləşdirməni aktiv edin</translation>
-<translation id="5113739826273394829">Bu ikonaya kliklədikdə, <ph name="DEVICE_TYPE" /> cihazınız kilidlənəcək. Növbəti dəfə daxil olmaq üçün, parolunuzu yazmalı olacaqsınız.</translation>
 <translation id="51143538739122961">Güvənlik açarını daxil edib toxunun</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> cihazını enerji mənbəyinə qoşun.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5085,7 +5083,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
 <translation id="5483785310822538350">Fayl və cihaz girişini geri alın</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> bugün datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}other{<ph name="MANAGER" /> {NUM_DAYS} gün ərzində datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> təhlükəsizlik üçün kilidləndi. Davam etmək üçün parolu əl ilə daxil edin.</translation>
 <translation id="5485102783864353244">Tətbiq əlavə edin</translation>
 <translation id="5485754497697573575">Bütün Panelləri Bərpa edin</translation>
 <translation id="5486261815000869482">Şifrəni tesdiq edin:</translation>
@@ -5291,7 +5288,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5656845498778518563">Google'a Rəy göndərin</translation>
 <translation id="5657156137487675418">Bütün kukilərə icazə verin</translation>
 <translation id="5657667036353380798">Xarici artırma quraşdırmaq üçün <ph name="MINIMUM_CHROME_VERSION" /> və ya daha sonrakı Chrome versiyası tələb edir.</translation>
-<translation id="5658415415603568799">Əlavə təhlükəsizlik üçün Ağıllı Kilid 20 saatdan sonra parol tələb edəcək.</translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5662513737565158057">Linux tətbiqlərinin necə işləyəcəyini dəyişin.</translation>
 <translation id="5663459693447872156">Avtomatik olaraq yarımenə keçirin</translation>
@@ -6793,7 +6789,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7000347579424117903">Ctrl, Alt və ya Search daxil edin</translation>
 <translation id="7001036685275644873">Linux tətbiq və faylları yedəklənir</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> ilə çap etmək üçün identifikasiya tələb olunur. Administratorunuz ilə əlaqə saxlayın.</translation>
-<translation id="7002055706763150362">Chromebook Smart Lock'u quraşdırmaq üçün, Google bunun Siz olduğunuza əmin olmalıdır—başlamaq üçün parolunuzu daxil edin.</translation>
 <translation id="7003339318920871147">Veb verilənlər bazası</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fayl}other{{COUNT} fayl}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9304,7 +9299,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="934244546219308557">Bu qrupu adlandırın</translation>
 <translation id="934503638756687833">Burada göstərilməyən elementlər lazım gələrsə silinə bilər. Chrome məxfilik səhifəsində &lt;a href="<ph name="URL" />"&gt;lazımsız proqram qoruması&lt;/a&gt; haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="93480724622239549">Baq və ya Xəta</translation>
-<translation id="935854577147268200">Smart Lock telefonu dəyişdirildi. Smart Lock'u yeniləmək üçün parolu daxil edin. Növbəti dəfə telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz</translation>
 <translation id="936646668635477464">Kamera və mikrofon</translation>
 <translation id="936801553271523408">Sistem diaqnostika datası</translation>
 <translation id="93766956588638423">Artırmanı bərpa edin</translation>

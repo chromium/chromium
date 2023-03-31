@@ -1979,6 +1979,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5817918615728894473">Savienot pārī</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kad veiksiet maksājumus, no šīs kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}zero{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}one{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}other{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}}</translation>
 <translation id="5826507051599432481">Kopējais nosaukums (CN)</translation>
+<translation id="5829215001860862731">Saglabājiet kontā</translation>
 <translation id="5830698870816298009">Kameras lietojums un kustība</translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5838278095973806738">Neievadiet šajā vietnē sensitīvu informāciju (piemēram, paroles vai kredītkartes), jo to var nozagt uzbrucēji.</translation>

@@ -3037,7 +3037,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3627671146180677314">Netscape ziurtagiria berritzeko ordua</translation>
 <translation id="3627879631695760395">Instalatu <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Desaktibatu Bluetootha</translation>
-<translation id="3629631988386925734">Smart Lock gaitzeko, idatzi pasahitza. Hurrengoan, telefonoak desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="3629664892718440872">Gogoratu aukera hau</translation>
 <translation id="3630132874740063857">Zure telefonoa</translation>
 <translation id="3630995161997703415">Gehitu webgunea apalean edonoiz erabili ahal izateko</translation>
@@ -4693,7 +4692,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5111794652433847656">Gailu honetan ez dago <ph name="APP_NAME" /> webgunearen sarbide-gakorik</translation>
 <translation id="5112577000029535889">&amp;Garatzaileen tresnak</translation>
 <translation id="511313294362309725">Aktibatu Parekatze bizkorra</translation>
-<translation id="5113739826273394829">Ikono hau sakatzen baduzu, eskuz blokeatuko duzu <ph name="DEVICE_TYPE" />. Hurrengoan, pasahitza idatzi beharko duzu sartzeko.</translation>
 <translation id="51143538739122961">Sartu segurtasun-giltza eta saka ezazu</translation>
 <translation id="5115309401544567011">Konektatu <ph name="DEVICE_TYPE" /> gailua energia-iturri batera.</translation>
 <translation id="5115338116365931134">Saio-hasiera bakarra</translation>
@@ -5088,7 +5086,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5481941284378890518">Gehitu inguruko inprimagailuak</translation>
 <translation id="5483785310822538350">Kendu fitxategietarako eta gailurako sarbidea</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Gaur datuen babeskopiak egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}other{{NUM_DAYS} eguneko epean datuen babeskopia egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Segurtasuna bermatzeko, blokeatuta dago <ph name="DEVICE_TYPE" /> gailua. Aurrera egiteko, idatzi pasahitza eskuz.</translation>
 <translation id="5485102783864353244">Gehitu aplikazioa</translation>
 <translation id="5485754497697573575">Leheneratu fitxa guztiak</translation>
 <translation id="5486261815000869482">Berretsi pasahitza</translation>
@@ -5292,7 +5289,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5656845498778518563">Bidali oharrak Google-ri</translation>
 <translation id="5657156137487675418">Baimendu cookie guztiak</translation>
 <translation id="5657667036353380798">Kanpoko luzapena instalatzeko, Chrome <ph name="MINIMUM_CHROME_VERSION" /> bertsioa edo berriago behar duzu.</translation>
-<translation id="5658415415603568799">Segurtasun handiagoa izateko, pasahitza idazteko eskatuko dizu Smart Lock zerbitzuak 20 ordu igarotakoan.</translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
 <translation id="5662513737565158057">Aldatu Linux-eko aplikazioen funtzionamendua.</translation>
 <translation id="5663459693447872156">Aldatu automatikoki zabalera erdira</translation>
@@ -6795,7 +6791,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7000347579424117903">Erabili Ktrl, Alt edo bilaketa-tekla</translation>
 <translation id="7001036685275644873">Linux aplikazioen eta fitxategien babeskopia egiten</translation>
 <translation id="7001066449188684145">Identitatea egiaztatu behar duzu <ph name="PRINTER_NAME" /> inprimagailuaren bidez inprimatzeko. Jarri administratzailearekin harremanetan.</translation>
-<translation id="7002055706763150362">Chromebook-erako Smart Lock konfiguratzeko, zeu zarela ziurtatu behar du Google-k. Eginbidea erabiltzen hasteko, idatzi pasahitza.</translation>
 <translation id="7003339318920871147">Webguneetako datu-baseak</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fitxategi}other{{COUNT} fitxategi}}</translation>
 <translation id="7003705861991657723">Alfa-bertsioa</translation>
@@ -9308,7 +9303,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="934244546219308557">Eman izena taldeari</translation>
 <translation id="934503638756687833">Hemen agertzen ez diren zenbait elementu ere kenduko dira, hala behar izanez gero. Lortu informazio gehiago &lt;a href="<ph name="URL" />"&gt;nahi ez den softwarearekiko babesari&lt;/a&gt; buruz Chrome-ren pribatutasunaren liburu zurian.</translation>
 <translation id="93480724622239549">Akatsa edo errorea</translation>
-<translation id="935854577147268200">Aldatu da Smart Lock telefonoa. Smart Lock eguneratzeko, idatzi pasahitza. Hurrengoan, telefonoak desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="936646668635477464">Kamera eta mikrofonoa</translation>
 <translation id="936801553271523408">Sistemaren diagnostikoaren datuak</translation>
 <translation id="93766956588638423">Konpondu luzapena</translation>

@@ -22,6 +22,7 @@
 
 Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un lietotnēm. Varat pārvaldīt savus Google kontus sadaļā <ph name="SETTINGS_LINK_BEGIN" />Iestatījumi<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Pārlūkā Chromium nav izveidots savienojums ne ar vienu HID ierīci}=1{Pārlūkā Chromium ir izveidots savienojums ar HID ierīci}zero{Pārlūkā Chromium ir izveidots savienojums ar HID ierīcēm}one{Pārlūkā Chromium ir izveidots savienojums ar HID ierīcēm}other{Pārlūkā Chromium ir izveidots savienojums ar HID ierīcēm}}</translation>
 <translation id="1708666629004767631">Ir pieejama jauna un drošāka Chromium versija.</translation>
 <translation id="17264556997921157">Varat skatīt un noņemt interešu tēmas, kas vietnēs tiek izmantotas reklāmu rādīšanai. Pārlūkā Chromium tiek aptuveni noteiktas jūsu intereses, ņemot vērā neseno pārlūkošanas vēsturi.</translation>
 <translation id="1733725117201708356">Pārlūkā Chromium drīz tiks dzēsti pārlūkošanas dati</translation>

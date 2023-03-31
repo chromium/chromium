@@ -1980,6 +1980,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5817918615728894473">Para</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Skuldfært verður á þetta kort við greiðslu en kortanúmerinu verður ekki deilt með vefsvæðinu. Til að auka enn á öryggið myndast tímabundið CVC-númer.}one{Skuldfært verður á kortið sem þú velur við greiðslu en kortanúmerinu verður ekki deilt með vefsvæðinu. Til að auka enn á öryggið myndast tímabundið CVC-númer.}other{Skuldfært verður á kortið sem þú velur við greiðslu en kortanúmerinu verður ekki deilt með vefsvæðinu. Til að auka enn á öryggið myndast tímabundið CVC-númer.}}</translation>
 <translation id="5826507051599432481">Almennt heiti (CN)</translation>
+<translation id="5829215001860862731">Vista á reikningi</translation>
 <translation id="5830698870816298009">notkun og hreyfing myndavélar</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5838278095973806738">Þú ættir ekki að færa inn neinar viðkvæmar upplýsingar á þessu vefsvæði (t.d. aðgangsorð eða kreditkortanúmer) því að tölvuþrjótar gætu stolið þeim.</translation>

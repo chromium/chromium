@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="202292859882676807">Дозволен е пристап до „Микрофонот“</translation>
 <translation id="20485545164632846">нова ставка</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> сметки ја користат истата лозинка</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} зачуван начин на плаќање достапен над тастатурата.}one{{count} зачуван начин на плаќање достапни над тастатурата.}other{{count} зачувани начини на плаќање достапни над тастатурата.}}</translation>
 <translation id="2073572773299281212">Активен пред <ph name="DAYS" /> дена</translation>
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@
 <translation id="26915454213703967">Пребарајте во слика со Google</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
+<translation id="2696180352517415858">Нема да се одјавите од сметката на Google. Кога сте најавени, може да се зачувуваат <ph name="BEGIN_LINK" />други форми на активност<ph name="END_LINK" /> во вашата сметка на Google. Може да ги избришете во секое време.
+
+
+Вашиот пребарувач е <ph name="DSE_NAME" />. По потреба, погледнете ги неговите упатства за бришење на историјата на пребарување.</translation>
 <translation id="2697526135132990015">Одјави ми и избриши ги сите податоци</translation>
 <translation id="2700241355396984822">Опции за „Поставување дозволи“</translation>
 <translation id="2702801445560668637">Список за читање</translation>
@@ -250,6 +255,7 @@
 <translation id="2747003861858887689">Претходно поле</translation>
 <translation id="2749231692441336879">Се следи <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">пред малку</translation>
+<translation id="2772667768515195373">Може да ги користите зачуваните адреси на производите на Google. Адресава ќе се зачува во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Пребарување во режимот „Инкогнито“</translation>
 <translation id="277771892408211951">Изберете јазик</translation>
 <translation id="2780046210906776326">Нема сметки за е-пошта</translation>

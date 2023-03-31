@@ -4506,11 +4506,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
       Ist die Richtlinie aktiviert, wird der Status der Geräteaktivität an den Server gesendet. Falls der Nutzer verknüpft ist, kann so festgestellt werden, ob das Gerät offline ist.</translation>
 <translation id="5238275681097851753">Sperren bestimmter <ph name="FLASH_PLUGIN_NAME" />-Inhalte zulassen</translation>
 <translation id="5238976843489093540">Aktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
-<translation id="52393120393725840">Wenn die Richtlinie aktiviert ist, können Nutzer einstellen, dass <ph name="PRODUCT_NAME" /> Passwörter speichert und sie bei der nächsten Anmeldung auf einer Website bereitstellt.
-
-      Ist die Richtlinie deaktiviert, können Nutzer keine neuen Passwörter speichern lassen. Zuvor gespeicherte Passwörter funktionieren aber weiterhin.
-
-      Ist die Richtlinie festgelegt, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Speichern von Passwörtern deaktivieren.</translation>
 <translation id="5239333626804545932">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, scannt das Chrome Cleanup Tool das System regelmäßig nach unerwünschter Software und fragt gegebenenfalls den Nutzer, ob diese entfernt werden soll. Das Chrome Cleanup Tool kann auch manuell über chrome://settings gestartet werden.
 
       Ist die Richtlinie deaktiviert, werden keine regelmäßigen Scans durchgeführt und auch die Option zum manuellen Starten ist deaktiviert.
@@ -4772,9 +4767,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 
       Der Wert der Richtlinie ist in Tagen anzugeben.</translation>
 <translation id="5457065417344056871">Gastmodus im Browser aktivieren</translation>
-<translation id="5457387982448145430">Wenn die Richtlinie aktiviert ist, werden gespeicherte Passwörter bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine gespeicherten Passwörter importiert.
-
-      Nutzer können einen Importdialog öffnen. Das Kästchen für die gespeicherten Passwörter wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
 <translation id="5457924070961220141">Ermöglicht dir die Konfiguration des Standard-HTML-Renderers, wenn <ph name="PRODUCT_FRAME_NAME" /> installiert ist. Wenn diese Richtlinie nicht konfiguriert ist, kommt die Standardeinstellung zum Einsatz, wobei der Hostbrowser das Rendering übernimmt. Du kannst dies aber ändern und <ph name="PRODUCT_FRAME_NAME" /> das Rendering der HTML-Seite übernehmen lassen.</translation>
 <translation id="545817252640069915">Anmeldungsabfangen aktivieren</translation>
 <translation id="5460797984317417682">Vollbild-Warnungen aktivieren</translation>

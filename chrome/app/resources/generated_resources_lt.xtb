@@ -3055,7 +3055,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3627671146180677314">„Netscape“ sertifikato atnaujinimo laikas</translation>
 <translation id="3627879631695760395">Įdiegti „<ph name="APP" />“...</translation>
 <translation id="3628275722731025472">„Bluetooth“ išjungimas</translation>
-<translation id="3629631988386925734">Įveskite slaptažodį, kad įgalintumėte „Smart Lock“. Kitą kartą telefonu galėsite atrakinti „<ph name="DEVICE_TYPE" />“. Funkciją „Smart Lock“ galite išjungti „Nustatymų“ skiltyje.</translation>
 <translation id="3629664892718440872">Atsiminti šį pasirinkimą</translation>
 <translation id="3630132874740063857">Jūsų telefonas</translation>
 <translation id="3630995161997703415">Pridėkite šią svetainę prie lentynos, kad galėtumėte ją bet kada naudoti</translation>
@@ -4712,7 +4711,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5111794652433847656">Šiame įrenginyje nėra jokių slaptažodžių, skirtų „<ph name="APP_NAME" />“</translation>
 <translation id="5112577000029535889">&amp;Kūrėjo įrankiai</translation>
 <translation id="511313294362309725">Įjungti spartųjį susiejimą</translation>
-<translation id="5113739826273394829">Spustelėję šią piktogramą, neautomatiškai užrakinsite šį „<ph name="DEVICE_TYPE" />“. Kitą kartą norėdami įeiti turėsite įvesti slaptažodį.</translation>
 <translation id="51143538739122961">Įdėkite saugos raktą ir jį palieskite</translation>
 <translation id="5115309401544567011">Prijunkite „<ph name="DEVICE_TYPE" />“ prie maitinimo šaltinio.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5107,7 +5105,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5481941284378890518">Pridėti netoliese esančius spausdintuvus</translation>
 <translation id="5483785310822538350">Anuliuoti galimybę pasiekti failą ir įrenginį</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį šiandien. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}one{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dieną. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}few{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienas. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}many{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienos. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}other{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienų. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">„<ph name="DEVICE_TYPE" />“ užrakintas saugumo sumetimais. Jei norite tęsti, neautomatiškai įveskite slaptažodį.</translation>
 <translation id="5485102783864353244">Pridėti programą</translation>
 <translation id="5485754497697573575">Atkurti visus skirtukus</translation>
 <translation id="5486261815000869482">Patvirtinti slaptažodį</translation>
@@ -5314,7 +5311,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5656845498778518563">Atsiliepimų siuntimas sistemai „Google“</translation>
 <translation id="5657156137487675418">Leisti visus slapukus</translation>
 <translation id="5657667036353380798">Norint naudoti išorinį plėtinį reikalinga <ph name="MINIMUM_CHROME_VERSION" /> arba naujesnės versijos „Chrome“.</translation>
-<translation id="5658415415603568799">Kad dar labiau apsaugotumėte įrenginį, „Smart Lock“ prašys įvesti slaptažodį po 20 valandų.</translation>
 <translation id="5659593005791499971">El. paštas</translation>
 <translation id="5662513737565158057">Keiskite „Linux“ programų veikimą.</translation>
 <translation id="5663459693447872156">Automatiškai įjungti pusės pločio režimą</translation>
@@ -6824,7 +6820,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7000347579424117903">Naudokite „Ctrl“, „Alt“ arba „Search“</translation>
 <translation id="7001036685275644873">Kuriama atsarginė „Linux“ programų ir failų kopija</translation>
 <translation id="7001066449188684145">Norint spausdinti „<ph name="PRINTER_NAME" />“ būtina identifikacija. Susisiekite su administratoriumi.</translation>
-<translation id="7002055706763150362">Kad būtų galima nustatyti „Smart Lock“, skirtą „Chromebook“, „Google“ turi įsitikinti, jog tai jūs. Įveskite slaptažodį, kad pradėtumėte.</translation>
 <translation id="7003339318920871147">Žiniatinklio duomenys</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} failas}one{{COUNT} failas}few{{COUNT} failai}many{{COUNT} failo}other{{COUNT} failų}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9341,7 +9336,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="934244546219308557">Suteikite šiai grupei pavadinimą</translation>
 <translation id="934503638756687833">Jei reikės, bus pašalinti ir elementai, kurie čia nenurodyti. Sužinokite daugiau apie &lt;a href="<ph name="URL" />"&gt;apsaugą nuo nepageidaujamos programinės įrangos&lt;/a&gt; „Chrome“ privatumo baltojoje knygoje.</translation>
 <translation id="93480724622239549">Riktas arba klaida</translation>
-<translation id="935854577147268200">„Smart Lock“ telefonas pakeistas. Įveskite slaptažodį, kad atnaujintumėte „Smart Lock“. Kitą kartą telefonu bus galima atrakinti „<ph name="DEVICE_TYPE" />“. Funkciją „Smart Lock“ galite išjungti „Nustatymų“ skiltyje.</translation>
 <translation id="936646668635477464">Fotoaparatas ir mikrofonas</translation>
 <translation id="936801553271523408">Sistemos diagnostikos duomenys</translation>
 <translation id="93766956588638423">Pataisyti plėtinį</translation>

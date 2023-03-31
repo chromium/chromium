@@ -3053,7 +3053,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3627671146180677314">Isikhathi sokuvuselelwa kwesitifiketi se-Netscape</translation>
 <translation id="3627879631695760395">Faka i-<ph name="APP" />...</translation>
 <translation id="3628275722731025472">Vala i-Bluetooth</translation>
-<translation id="3629631988386925734">Faka iphasiwedi yakho ukuze unike amandla i-Smart Lock. Ngesikhathi esilandelayo, ifoni yakho izovula i-<ph name="DEVICE_TYPE" />yakho. ungavala i-Smart Lock kuzilungiselelo.</translation>
 <translation id="3629664892718440872">Khumbula lokhu kukhetha</translation>
 <translation id="3630132874740063857">Ifoni yakho</translation>
 <translation id="3630995161997703415">Engeza leli sayithi kushelufu lakho ukuze ulisebenzise noma kunini</translation>
@@ -4711,7 +4710,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5111794652433847656">Abekho okhiye bokudlula baka-<ph name="APP_NAME" /> kule divayisi</translation>
 <translation id="5112577000029535889">Amathuluzi onjiniyela</translation>
 <translation id="511313294362309725">Vula Ukuhlanganisa okusheshayo</translation>
-<translation id="5113739826273394829">Uma uchofoza isithonjana, uzovala ngokwenza le <ph name="DEVICE_TYPE" />. Ngesikhathi esilandelayo, uzodinga ukuthayipha iphasiwedi yakho ukuze ungene.</translation>
 <translation id="51143538739122961">Faka ukhiye wakho wokuqinisekisa ubunikazi bese uwuthinte</translation>
 <translation id="5115309401544567011">Sicela uxhume i-<ph name="DEVICE_TYPE" /> yakho kumthombo wamandla.</translation>
 <translation id="5115338116365931134">I-SSO</translation>
@@ -5109,7 +5107,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="5481941284378890518">Engza amaphrinta seduze</translation>
 <translation id="5483785310822538350">Buyisa ifayela nokufinyelela kwedivayisi</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{I-<ph name="MANAGER" /> idinga ukuba wenze ikhophi yasenqolobaneni yedatha yakho bese ubuyisa le-<ph name="DEVICE_TYPE" /> namuhla. <ph name="LINK_BEGIN" />Bona Imininingwane<ph name="LINK_END" />}one{I-<ph name="MANAGER" /> idinga ukuba wenze ikhophi yasenqolobaneni ngedatha yakho bese ubuyisele le <ph name="DEVICE_TYPE" /> phakathi nezinsuku ezingu-{NUM_DAYS}. <ph name="LINK_BEGIN" />Bona imininingwane<ph name="LINK_END" />}other{I-<ph name="MANAGER" /> idinga ukuba wenze ikhophi yasenqolobaneni ngedatha yakho bese ubuyisele le <ph name="DEVICE_TYPE" /> phakathi nezinsuku ezingu-{NUM_DAYS}. <ph name="LINK_BEGIN" />Bona imininingwane<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">I-<ph name="DEVICE_TYPE" /> yakho ikhiyiwe ngokuphepha. Faka ngokwenza iphasiwedi yakho ukuze uqhubeke.</translation>
 <translation id="5485102783864353244">Engeza uhlelo lokusbenza</translation>
 <translation id="5485754497697573575">Buyisela wonke amathebhu</translation>
 <translation id="5486261815000869482">Qinisekisa iphasiwedi</translation>
@@ -5316,7 +5313,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5656845498778518563">Thumela impendulo ku-Google</translation>
 <translation id="5657156137487675418">Vumela wonke amakhukhi</translation>
 <translation id="5657667036353380798">Isandiso sangaphandle sidinga inguqulo ye-chrome engu-<ph name="MINIMUM_CHROME_VERSION" /> noma ngaphezulu ukuze ifakwe.</translation>
-<translation id="5658415415603568799">Ngokuphepha, i-Smart Lock izokucela ukuthi ufake iphasiwedi yakho ngemuva kwamahora angu-20.</translation>
 <translation id="5659593005791499971">I-imeyili</translation>
 <translation id="5662513737565158057">Shintsha indlela izinhlelo zokusebenza ze-Linux ezisebenza ngayo.</translation>
 <translation id="5663459693447872156">Shintshela ngokuzenzakalela ku-halfwidth</translation>
@@ -6822,7 +6818,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7000347579424117903">Faka phakathi u-Ctrl, Alt, noma usesho</translation>
 <translation id="7001036685275644873">Ukwenza isipele izinhlelo zokusebenza namafayela e-Linux</translation>
 <translation id="7001066449188684145">Kudingeka umazisi ukuze uphrintele ku-<ph name="PRINTER_NAME" />. Sicela uxhumane nomlawuli wakho.</translation>
-<translation id="7002055706763150362">Ukuze usethe i-Smart Lock ye-Chromebook, i-Google idinga ukuqiniseka ukuthi nguwe—thayipha iphasiwedi yakho ukuze uqalise.</translation>
 <translation id="7003339318920871147">Imininingo egciniwe yewebhu</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ifayela {COUNT}}one{amafayela {COUNT}}other{amafayela {COUNT}}}</translation>
 <translation id="7003705861991657723">Alpha</translation>
@@ -9336,7 +9331,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="934244546219308557">Qamba leli qembu</translation>
 <translation id="934503638756687833">Izinto ezingafakiwe lapha nazo zizosuswa, uma kudingeka. Funda kabanzi mayelana &lt;a href="<ph name="URL" />"&gt;ukuvikelwa kwesofthiwe okungafuneki&lt;/a&gt; kuphepha elimhlophe lobumfihlo le-Chrome.</translation>
 <translation id="93480724622239549">Isiphazamisi noma iphutha</translation>
-<translation id="935854577147268200">Ifoni ye-Smart Lock ishintshiwe. Faka iphasiwedi yakho ukuze ubuyekeze i-Smart Lock. Ngesikhathi esilandelayo, ifoni yakho izovula i-<ph name="DEVICE_TYPE" /> yakho. Ungavala i-Smart Lock kuzilungiselelo</translation>
 <translation id="936646668635477464">Ikhamera nemakrofoni</translation>
 <translation id="936801553271523408">Idatha yokuxilonga yesistimu</translation>
 <translation id="93766956588638423">Lungisa isandiso</translation>

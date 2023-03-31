@@ -1523,6 +1523,7 @@ Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
 <translation id="2413899611035194909">Afficher les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2415715982424988916">Explorer (disponible depuis la version 91)</translation>
+<translation id="2420958105721932612">Cette règle permet de configurer l'installation d'une appli. AVAILABLE : l'appli n'est pas installée automatiquement, mais l'utilisateur peut l'installer. Il s'agit du paramètre par défaut si cette règle n'est pas configurée. FORCE_INSTALLED : l'appli est installée automatiquement, et l'utilisateur ne peut pas la désinstaller. BLOCKED : l'appli est bloquée et ne peut pas être installée. Si elle a été installée d'après une règle précédente, elle sera désinstallée.</translation>
 <translation id="2421400544595297401">Ne pas autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
 <translation id="2421677964966613267">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Elle permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter le plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
@@ -4515,11 +4516,6 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si la règle est activée, l'état est transmis au serveur, ce qui lui permet de détecter si l'appareil est hors connexion, tant que l'utilisateur est affilié.</translation>
 <translation id="5238275681097851753">Autoriser le blocage de certains contenus <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forcer l'activation de l'Association express (association Bluetooth rapide).</translation>
-<translation id="52393120393725840">Si cette règle est activée, les utilisateurs doivent demander à <ph name="PRODUCT_NAME" /> de mémoriser les mots de passe et les saisir la prochaine fois qu'ils se connectent à un site.
-
-      Si elle est désactivée, les utilisateurs ne peuvent pas enregistrer de nouveaux mots de passe. Cependant, ceux qui ont été enregistrés précédemment continueront de fonctionner.
-
-      Si cette règle est définie, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas définie, les utilisateurs peuvent désactiver l'enregistrement des mots de passe.</translation>
 <translation id="5239333626804545932">Si cette règle est activée ou qu'elle n'est pas configurée, Chrome Cleanup analyse régulièrement le système pour détecter les éventuels logiciels indésirables. Si Chrome Cleanup en trouve un, l'utilisateur doit confirmer qu'il souhaite le supprimer. Notez également que le déclenchement manuel de Chrome Cleanup depuis la page chrome://settings est autorisé.
 
       Si cette règle est désactivée, Chrome Cleanup ne procède pas à une analyse régulière du système, et le déclenchement manuel est désactivé.
@@ -4782,9 +4778,6 @@ Si vous la désactivez ou que vous ne la configurez pas, les paramètres de rest
 
       La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="5457065417344056871">Activer le mode Invité dans le navigateur</translation>
-<translation id="5457387982448145430">Si cette règle est activée, les mots de passe enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les mots de passe enregistrés ne sont pas importés lors de la première exécution.
-
-      Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant aux mots de passe enregistrés sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
 <translation id="5457924070961220141">Permet de configurer le moteur de rendu HTML par défaut lorsque <ph name="PRODUCT_FRAME_NAME" /> est installé. 
 
 Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé consiste à permettre au navigateur d'accueil d'effectuer le rendu. Mais vous avez la possibilité de remplacer ce paramètre et de demander que les pages HTML soient affichées par <ph name="PRODUCT_FRAME_NAME" /> par défaut.</translation>

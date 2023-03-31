@@ -3052,7 +3052,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3627671146180677314">Netscape тастыктамасын жаңылоо убакыты</translation>
 <translation id="3627879631695760395"><ph name="APP" /> колдонмосун орнотуу...</translation>
 <translation id="3628275722731025472">Bluetooth'ду өчүрүү</translation>
-<translation id="3629631988386925734">Smart Lock'ту күйгүзүү үчүн сырсөзүңүздү киргизиңиз. Эми <ph name="DEVICE_TYPE" /> түзмөгүнүн кулпусун телефонуңуз менен ача аласыз. Жөндөөлөргө өтүп, Smart Lock'ту өчүрүп коюңуз.</translation>
 <translation id="3629664892718440872">Бул тандоону эстеп калуу</translation>
 <translation id="3630132874740063857">Телефонуңуз</translation>
 <translation id="3630995161997703415">Каалаган убакта колдонуу үчүн бул сайтты текчеңизге кошуңуз</translation>
@@ -4709,7 +4708,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5111794652433847656">Бул түзмөктө <ph name="APP_NAME" /> үчүн киргизүүчү ачкычтар жок</translation>
 <translation id="5112577000029535889">&amp;Иштеп чыгуучунун куралдары</translation>
 <translation id="511313294362309725">Ыкчам туташууну күйгүзүү</translation>
-<translation id="5113739826273394829">Эгер бул сүрөтчөнү чыкылдатсаңыз, бул <ph name="DEVICE_TYPE" /> кол менен кулпуланат. Кийинки жолу кирүү үчүн сырсөзүңүздү теришиңиз керек болот.</translation>
 <translation id="51143538739122961">Коопсуздук ачкычыңызды салып, аны басып коюңуз</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> түзмөгүңүздү кубат булагына туташтырыңыз.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5104,7 +5102,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5481941284378890518">Жакын жердеги принтерлерди кошуу</translation>
 <translation id="5483785310822538350">Файлды жана түзмөктү колдонуу мүмкүнчүлүгүн жоюу</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> дайын-даректериңиздин камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> түзмөгүн бүгүн кайтарууну талап кылууда. <ph name="LINK_BEGIN" />Чоо-жайын көрүү<ph name="LINK_END" />}other{<ph name="MANAGER" /> маалыматтын камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> түзмөгүн {NUM_DAYS} күндүн ичинде кайтарууну талап кылууда.<ph name="LINK_BEGIN" />Чоо-жайын көрүү<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> түзмөгүңүз коопсуздук максатында кулпуланды. Улантуу үчүн сырсөзүңүздү кол менен киргизиңиз.</translation>
 <translation id="5485102783864353244">Колдонмо кошуу</translation>
 <translation id="5485754497697573575">Бардык өтмөктөрдү калыбына келтирүү</translation>
 <translation id="5486261815000869482">Сырсөздү ырастаңыз</translation>
@@ -5310,7 +5307,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5656845498778518563">Google'га пикир билдирүү</translation>
 <translation id="5657156137487675418">Бардык cookie файлдарына уруксат берүү</translation>
 <translation id="5657667036353380798">Тышкы кеңейтүү chrome'дун <ph name="MINIMUM_CHROME_VERSION" /> же андан жогору версиясынын орнотулушун талап кылат.</translation>
-<translation id="5658415415603568799">Кошумча коопсуздук максатында, Smart Lock 20 сааттан кийин сырсөзүңүздү киргизүүнү талап кылат.</translation>
 <translation id="5659593005791499971">Электрондук почта</translation>
 <translation id="5662513737565158057">Linux колдонмолору кантип иштерин өзгөртүңүз.</translation>
 <translation id="5663459693447872156">Автоматтык түрдө жарым-жазылыкка которулуу</translation>
@@ -6814,7 +6810,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7000347579424117903">Ctrl, Alt, же Издөө камтылсын</translation>
 <translation id="7001036685275644873">Linux колдонмолору менен файлдарынын камдык көчүрмөлөрү сакталууда</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> принтеринен басып чыгаруу үчүн өздөгүңүздү тастыкташыңыз керек. Администраторуңузга кайрылыңыз.</translation>
-<translation id="7002055706763150362">Chromebook үчүн Smart Lock'ту орнотуу үчүн, Google сиздин аныктыгыңызды текшериши керек – баштоо үчүн сырсөзүңүздү териңиз.</translation>
 <translation id="7003339318920871147">Желенин дайындар базалары</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файл}}</translation>
 <translation id="7003705861991657723">Альфа</translation>
@@ -9327,7 +9322,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="934244546219308557">Бул топко ат коюңуз</translation>
 <translation id="934503638756687833">Эгер зарыл болсо, бул тизмеде жок нерселерди да алып салууга болот. &lt;a href="<ph name="URL" />"&gt;Зыяндуу программалардан коргоо&lt;/a&gt; тууралуу кененирээк маалымат алуу үчүн Chrome'дун Купуялык саясатынын артыкчылыктарын карап чыгыңыз.</translation>
 <translation id="93480724622239549">Мүчүлүштүк же ката</translation>
-<translation id="935854577147268200">Smart Lock үчүн телефон өзгөрдү. Smart Lock'ту жаңыртуу үчүн, сырсөзүңүздү киргизиңиз. Эми <ph name="DEVICE_TYPE" /> түзмөгүңүздүн кулпусун телефонуңуз менен ачсаңыз болот. Жөндөөлөргө өтүп, Smart Lock'ту өчүрүп койсоңуз болот.</translation>
 <translation id="936646668635477464">Камера жана микрофон</translation>
 <translation id="936801553271523408">Системанын диагностика дайындары</translation>
 <translation id="93766956588638423">Кеңейтүүнү оңдоо</translation>

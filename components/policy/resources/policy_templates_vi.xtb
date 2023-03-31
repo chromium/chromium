@@ -4565,11 +4565,6 @@ Nếu bạn không đặt chính sách này hoặc danh sách không chứa tệ
       Nếu chế độ này đang Bật, trạng thái hoạt động của thiết bị sẽ được báo cáo cho máy chủ, cho phép máy chủ phát hiện xem thiết bị có kết nối mạng hay không, miễn là người dùng vẫn liên kết.</translation>
 <translation id="5238275681097851753">Cho phép chặn một số nội dung <ph name="FLASH_PLUGIN_NAME" /> nhất định</translation>
 <translation id="5238976843489093540">Buộc bật tính năng Ghép nối nhanh (ghép nối Bluetooth nhanh).</translation>
-<translation id="52393120393725840">Nếu bạn đặt chính sách này thành Bật, người dùng có thể yêu cầu <ph name="PRODUCT_NAME" /> nhớ mật khẩu và cung cấp cho họ ở lần tiếp theo họ đăng nhập vào một trang web.
-
-      Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể lưu các mật khẩu mới. Tuy nhiên, những mật khẩu đã lưu trước đây sẽ vẫn có tác dụng.
-
-      Nếu bạn đặt chính sách này, người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, người dùng có thể tắt tính năng lưu mật khẩu.</translation>
 <translation id="5239333626804545932">Khi bạn đặt thành Bật hoặc không đặt chính sách này, tính năng Làm sạch Chrome sẽ định kỳ quét hệ thống để tìm ra phần mềm không mong muốn. Khi tìm thấy phần mềm không mong muốn, tính năng này sẽ hỏi người dùng xem họ có muốn xóa phần mềm đó hay không. Tính năng Làm sạch Chrome có thể được kích hoạt theo cách thủ công trên trang chrome://settings.
 
       Khi bạn đặt chính sách này thành Tắt, tính năng Làm sạch Chrome sẽ không quét định kỳ và tùy chọn kích hoạt thủ công sẽ bị tắt.
@@ -4838,9 +4833,6 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
 
       Bạn phải chỉ định giá trị của chính sách bằng ngày.</translation>
 <translation id="5457065417344056871">Bật chế độ khách trong trình duyệt</translation>
-<translation id="5457387982448145430">Nếu bạn đặt chính sách này thành Bật, thì các mật khẩu đã lưu trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì các mật khẩu đã lưu sẽ không được nhập trong lần chạy đầu tiên.
-
-      Người dùng có thể kích hoạt hộp thoại nhập. Ngoài ra, hộp đánh dấu mật khẩu đã lưu sẽ được đánh dấu/bỏ đánh dấu tương ứng với giá trị của chính sách này.</translation>
 <translation id="5457924070961220141">Cho phép bạn định cấu hình trình kết xuất HTML mặc định khi  <ph name="PRODUCT_FRAME_NAME" /> được cài đặt.
           Cài đặt mặc định, được sử dụng khi không thiết lập chính sách này, cho phép trình duyệt chính thực hiện chức năng hiển thị nhưng bạn có thể tùy chọn ghi đè cài đặt này và yêu cầu  <ph name="PRODUCT_FRAME_NAME" /> hiển thị các trang HTML theo mặc định.</translation>
 <translation id="545817252640069915">Bật tùy chọn chặn đăng nhập</translation>

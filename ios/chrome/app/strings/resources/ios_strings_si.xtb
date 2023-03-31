@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න.</translation>
 <translation id="202292859882676807">මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
 <translation id="20485545164632846">නව අයිතමය</translation>
+<translation id="2049727122989709386">එකම මුරපදය භාවිතා කරන ගිණුම් <ph name="COUNT" />ක්</translation>
 <translation id="2050196510205866090">{count,plural, =1{ඔබේ යතුරු පුවරුවට ඉහළින් {count} සුරැකි ගෙවීමේ ක්‍රමයක් ඇත.}one{ඔබේ යතුරු පුවරුවට ඉහළින් සුරැකි ගෙවීමේ ක්‍රම {count}ක් ඇත.}other{ඔබේ යතුරු පුවරුවට ඉහළින් සුරැකි ගෙවීමේ ක්‍රම {count}ක් ඇත.}}</translation>
 <translation id="2073572773299281212">දින <ph name="DAYS" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
@@ -238,6 +239,10 @@
 <translation id="26915454213703967">Google සමග රූපය ඇතුළත සොයන්න</translation>
 <translation id="2691653761409724435">නොබැඳිව ලද නොහැකිය</translation>
 <translation id="2695507686909505111">පිටුව පරිවර්තන කළා</translation>
+<translation id="2696180352517415858">ඔබව ඔබේ Google ගිණුමෙන් නොවරනු ඇත. <ph name="BEGIN_LINK" />ක්‍රියාකාරකම්වල වෙනත් ආකාර<ph name="END_LINK" /> ඔබ පුරන විට ඔබේ Google ගිණුමේ සුරැකිය හැක. ඔබට ඕනෑම වේලාවක ඒවා මැකිය හැක.
+
+
+ඔබේ සෙවීම් යන්ත්‍රය වන්නේ <ph name="DSE_NAME" />. අදාළ වන්නේ නම්, ඔබේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔවුන්ගේ උපදෙස් බලන්න.</translation>
 <translation id="2697526135132990015">වරන්න සහ දත්ත හිස් කරන්න</translation>
 <translation id="2700241355396984822">අවසර සැකසීමට විකල්ප</translation>
 <translation id="2702801445560668637">කියවීම් ලැයිස්තුව</translation>
@@ -250,6 +255,7 @@
 <translation id="2747003861858887689">පෙර ක්ෂේත්‍රය</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> අනුගමනය කරමින්</translation>
 <translation id="2764831210418622012">මේ දැන්</translation>
+<translation id="2772667768515195373">ඔබට Google නිෂ්පාදන හරහා සුරැකි ලිපින භාවිතා කළ හැක. මෙම ලිපිනය ඔබේ Google ගිණුමේ, <ph name="USER_EMAIL" /> සුරකිනු ලැබේ.</translation>
 <translation id="2773292004659987824">අප්‍රසිද්ධ සෙවීම</translation>
 <translation id="277771892408211951">භාෂාව තෝරන්න</translation>
 <translation id="2780046210906776326">ඊමේල් ගිනුම් නොමැත</translation>

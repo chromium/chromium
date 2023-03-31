@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">คอมพิวเตอร์เครื่องนี้มี Google Chrome รุ่นใหม่กว่าแล้ว หากซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Google Chrome แล้วลองใหม่อีกครั้ง</translation>
 <translation id="139993653570221430">คุณเปลี่ยนใจได้ทุกเมื่อในการตั้งค่า Chrome การทดลองใช้จะทำงานพร้อมกับวิธีแสดงโฆษณาปัจจุบัน คุณจึงจะไม่เห็นการเปลี่ยนแปลงโดยทันที</translation>
 <translation id="1434626383986940139">แอป Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome ไม่ได้เชื่อมต่อกับอุปกรณ์ HID ในขณะนี้}=1{Google Chrome เชื่อมต่อกับอุปกรณ์ HID}other{Google Chrome เชื่อมต่อกับอุปกรณ์ HID}}</translation>
 <translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1516530951338665275">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>

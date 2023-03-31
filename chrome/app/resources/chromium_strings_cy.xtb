@@ -24,6 +24,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 
 Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn berthnasol i'r cyfrif hwn. Gallwch reoli'ch Cyfrifon Google yn y <ph name="SETTINGS_LINK_BEGIN" />Gosodiadau<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Wrthi'n lawrlwytho...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Roedd Chromium wedi'i gysylltu â dyfais HID}=1{Mae Chromium wedi'i gysylltu â dyfais HID}two{Mae Chromium wedi'i gysylltu â dyfeisiau HID}few{Mae Chromium wedi'i gysylltu â dyfeisiau HID}many{Mae Chromium wedi'i gysylltu â dyfeisiau HID}other{Mae Chromium wedi'i gysylltu â dyfeisiau HID}}</translation>
 <translation id="1708666629004767631">Mae fersiwn newydd, fwy diogel o Chromium ar gael.</translation>
 <translation id="17264556997921157">Gallwch weld a dileu pynciau o ddiddordeb y mae gwefannau'n eu defnyddio i ddangos hysbysebion i chi. Mae Chromium yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
 <translation id="1733725117201708356">Bydd Chromium yn dileu data pori yn fuan</translation>

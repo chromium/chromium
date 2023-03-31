@@ -3055,7 +3055,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3627671146180677314">Amser Adnewyddu Tystysgrif Netscape</translation>
 <translation id="3627879631695760395">Gosod <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Diffodd Bluetooth</translation>
-<translation id="3629631988386925734">Rhowch eich cyfrinair i alluogi Smart Lock Y tro nesaf, bydd eich ffôn yn datgloi eich <ph name="DEVICE_TYPE" />. Gallwch ddiffodd Smart Lock yn y gosodiadau.</translation>
 <translation id="3629664892718440872">Cofiwch y dewis hwn</translation>
 <translation id="3630132874740063857">Eich ffôn</translation>
 <translation id="3630995161997703415">Ychwanegwch y wefan hon at eich silff i'w defnyddio ar unrhyw adeg</translation>
@@ -4712,7 +4711,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5111794652433847656">Does dim codau pas ar gyfer <ph name="APP_NAME" /> ar y ddyfais hon</translation>
 <translation id="5112577000029535889">&amp;Offer Datblygwyr</translation>
 <translation id="511313294362309725">Troi Paru Cyflym ymlaen?</translation>
-<translation id="5113739826273394829">Os cliciwch yr eicon hwn, byddwch yn cloi'r <ph name="DEVICE_TYPE" /> hwn. Y tro nesaf, bydd angen i chi deipio'ch cyfrinair i fewngofnodi.</translation>
 <translation id="51143538739122961">Rhowch eich allwedd ddiogelwch i mewn a'i chyffwrdd</translation>
 <translation id="5115309401544567011">Rhowch eich <ph name="DEVICE_TYPE" /> i mewn i gyflenwad pŵer.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5107,7 +5105,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5481941284378890518">Ychwanegu Argraffwyr Gerllaw</translation>
 <translation id="5483785310822538350">Dirymu mynediad ffeil a dyfais</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn heddiw. <ph name="LINK_BEGIN" />Gweld y manylion<ph name="LINK_END" />}zero{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn o fewn {NUM_DAYS} diwrnod. <ph name="LINK_BEGIN" />Gweld y manylion<ph name="LINK_END" />}two{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn o fewn {NUM_DAYS} ddiwrnod. <ph name="LINK_BEGIN" />Gweld y manylion<ph name="LINK_END" />}few{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn o fewn {NUM_DAYS} diwrnod. <ph name="LINK_BEGIN" />Gweld y manylion<ph name="LINK_END" />}many{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn o fewn {NUM_DAYS} diwrnod. <ph name="LINK_BEGIN" />Gweld y manylion<ph name="LINK_END" />}other{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn o fewn {NUM_DAYS} diwrnod. <ph name="LINK_BEGIN" />Gweld y manylion<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Mae eich <ph name="DEVICE_TYPE" /> wedi'i gloi er diogelwch. Rhowch eich cyfrinair yn bwrpasol i barhau.</translation>
 <translation id="5485102783864353244">Ychwanegu ap</translation>
 <translation id="5485754497697573575">Adfer Pob Tab</translation>
 <translation id="5486261815000869482">Cadarnhewch eich cyfrinair</translation>
@@ -5313,7 +5310,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5656845498778518563">Anfon adborth at Google</translation>
 <translation id="5657156137487675418">Caniatáu'r holl gwcis</translation>
 <translation id="5657667036353380798">Mae'r estyniad allanol yn gofyn am fersiwn <ph name="MINIMUM_CHROME_VERSION" /> o Chrome neu uwch i fod wedi'i gosod.</translation>
-<translation id="5658415415603568799">I fod yn fwy diogel, bydd Smart Lock yn gofyn i chi roi eich cyfrinair ar ôl 20 awr.</translation>
 <translation id="5659593005791499971">E-bost</translation>
 <translation id="5662513737565158057">Newid sut y bydd apiau Linux yn gweithio.</translation>
 <translation id="5663459693447872156">Newid yn awtomatig i hanner lled</translation>
@@ -6825,7 +6821,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7000347579424117903">Cynnwys Ctrl, Alt, neu Search</translation>
 <translation id="7001036685275644873">Wrthi'n gwneud copïau wrth gefn o apiau a ffeiliau Linux</translation>
 <translation id="7001066449188684145">Mae angen adnabod i argraffu i <ph name="PRINTER_NAME" />. Cysylltwch â'ch gweinyddwr.</translation>
-<translation id="7002055706763150362">Er mwyn gosod Smart Lock ar gyfer Chromebook, mae Google angen gwneud yn siŵr mai chi sydd yno - teipiwch eich cyfrinair i roi cychwyn arni.</translation>
 <translation id="7003339318920871147">Cronfeydd data gwe</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ffeil}zero{{COUNT} ffeil}two{{COUNT} ffeil}few{{COUNT} ffeil}many{{COUNT} ffeil}other{{COUNT} ffeil}}</translation>
 <translation id="7003705861991657723">Alpha</translation>
@@ -9342,7 +9337,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="934244546219308557">Enwi'r grŵp hwn</translation>
 <translation id="934503638756687833">Bydd eitemau nad ydynt wedi'u rhestru yma hefyd yn cael eu tynnu, os oes angen. Dysgu rhagor am &lt;a href="<ph name="URL" />"&gt;amddiffyn rhag meddalwedd digroeso/a&gt; ym mhapur gwyn preifatrwydd Chrome.</translation>
 <translation id="93480724622239549">Byg neu Wall</translation>
-<translation id="935854577147268200">Cafodd y ffôn Smart Lock ei newid. Rhowch eich cyfrinair i ddiweddaru Smart Lock. Y tro nesaf, bydd eich ffôn yn datgloi'ch <ph name="DEVICE_TYPE" />. Gallwch ddiffodd Smart Lock yn y gosodiadau</translation>
 <translation id="936646668635477464">Camera a meicroffon</translation>
 <translation id="936801553271523408">Data diagnosteg system</translation>
 <translation id="93766956588638423">Trwsio'r estyniad</translation>

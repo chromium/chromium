@@ -3037,7 +3037,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3627671146180677314">Data i hora de renovació de certificat de Netscape</translation>
 <translation id="3627879631695760395">Instal·la <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Desactiva el Bluetooth</translation>
-<translation id="3629631988386925734">Introdueix la contrasenya per activar Smart Lock. La propera vegada, <ph name="DEVICE_TYPE" /> es desbloquejarà amb el telèfon. Pots desactivar Smart Lock des de Configuració.</translation>
 <translation id="3629664892718440872">Recorda aquesta selecció</translation>
 <translation id="3630132874740063857">El teu telèfon</translation>
 <translation id="3630995161997703415">Afegeix aquest lloc web al teu prestatge per utilitzar-lo en qualsevol moment</translation>
@@ -4692,7 +4691,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5111794652433847656">No hi ha cap clau d'accés per a <ph name="APP_NAME" /> en aquest dispositiu</translation>
 <translation id="5112577000029535889">&amp;Eines per a desenvolupadors</translation>
 <translation id="511313294362309725">Activa Vinculació ràpida</translation>
-<translation id="5113739826273394829">Si fes clic en aquesta icona, bloquejaràs manualment aquest <ph name="DEVICE_TYPE" />. La propera vegada, hauràs d'escriure la contrasenya per accedir-hi.</translation>
 <translation id="51143538739122961">Insereix la clau de seguretat i toca-la</translation>
 <translation id="5115309401544567011">Endolla el dispositiu <ph name="DEVICE_TYPE" /> a una font d'alimentació.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5088,7 +5086,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5481941284378890518">Afegeix impressores properes</translation>
 <translation id="5483785310822538350">Revoca l'accés al dispositiu i al fitxer</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> avui. <ph name="LINK_BEGIN" />Mostra els detalls<ph name="LINK_END" />}other{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_DAYS} dies. <ph name="LINK_BEGIN" />Mostra els detalls<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> està bloquejat per seguretat. Introdueix la contrasenya manualment per continuar.</translation>
 <translation id="5485102783864353244">Afegeix l'aplicació</translation>
 <translation id="5485754497697573575">Restaura totes les pestanyes</translation>
 <translation id="5486261815000869482">Confirma la contrasenya</translation>
@@ -5293,7 +5290,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5656845498778518563">Envia suggeriments a Google</translation>
 <translation id="5657156137487675418">Permet totes les galetes</translation>
 <translation id="5657667036353380798">L'extensió externa requereix que tingueu instal·lada la versió de Chrome <ph name="MINIMUM_CHROME_VERSION" /> o una de posterior.</translation>
-<translation id="5658415415603568799">Per a més seguretat, Smart Lock et demanarà que introdueixis la contrasenya al cap de 20 hores.</translation>
 <translation id="5659593005791499971">Adreça electrònica</translation>
 <translation id="5662513737565158057">Canvia com funcionaran les aplicacions de Linux.</translation>
 <translation id="5663459693447872156">Canvia automàticament a mitja amplada</translation>
@@ -6383,6 +6379,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6647690760956378579">Escolta la veu natural</translation>
 <translation id="6648911618876616409">Hi ha una actualització molt important a punt per instal·lar-se. Inicia la sessió per començar.</translation>
 <translation id="6649018507441623493">Un moment…</translation>
+<translation id="6650206238642452078">Subscriure's a esdeveniments del sistema ChromeOS</translation>
 <translation id="665061930738760572">Obre en una &amp;finestra nova</translation>
 <translation id="6651237644330755633">Confia en aquest certificat per identificar llocs web</translation>
 <translation id="6651495917527016072">Sincronitza les xarxes Wi‑Fi amb el teu telèfon. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -6795,7 +6792,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7000347579424117903">Inclou la tecla Ctrl, Alt o Cerca</translation>
 <translation id="7001036685275644873">S'està creant la còpia de seguretat dels fitxers i de les aplicacions de Linux</translation>
 <translation id="7001066449188684145">Cal tenir una identificació per imprimir a <ph name="PRINTER_NAME" />. Contacta amb l'administrador.</translation>
-<translation id="7002055706763150362">Per configurar Smart Lock per a Chromebook, Google ha de comprovar la vostra identitat. Escriviu la contrasenya per començar.</translation>
 <translation id="7003339318920871147">Bases de dades web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fitxer}other{{COUNT} fitxers}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9099,6 +9095,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="904224458472510106">Aquesta operació no es pot desfer</translation>
 <translation id="9042827002460091668">Comprova la connexió a Internet i torna-ho a provar</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
+<translation id="9043264199499366189">Subscriure's a esdeveniments del sistema ChromeOS Flex</translation>
 <translation id="9044646465488564462">S'ha produït un error en connectar amb la xarxa: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">La teva llista de lectura s'ha mogut al nou tauler lateral. Prova-ho aquí.</translation>
 <translation id="9045430190527754450">Envia a Google l'adreça web de la pàgina que estàs provant de visitar</translation>
@@ -9309,7 +9306,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="934244546219308557">Posa nom a aquest grup</translation>
 <translation id="934503638756687833">Si cal, també se suprimiran elements no inclosos en aquesta llista. Obtén més informació sobre la &lt;a href="<ph name="URL" />"&gt;protecció contra programari no desitjat&lt;/a&gt; al llibre blanc de privadesa de Chrome.</translation>
 <translation id="93480724622239549">Error</translation>
-<translation id="935854577147268200">El telèfon Smart Lock ha canviat. Introdueix la contrasenya per actualitzar Smart Lock. La propera vegada, <ph name="DEVICE_TYPE" /> es desbloquejarà amb el telèfon. Pots desactivar Smart Lock a Configuració.</translation>
 <translation id="936646668635477464">Càmera i micròfon</translation>
 <translation id="936801553271523408">Dades de diagnòstic del sistema</translation>
 <translation id="93766956588638423">Repara l'extensió</translation>

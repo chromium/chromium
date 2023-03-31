@@ -3053,7 +3053,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3627671146180677314">Tidspunkt for fornyelse af Netscape-certifikat</translation>
 <translation id="3627879631695760395">Installer <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Deaktiver Bluetooth</translation>
-<translation id="3629631988386925734">Angiv din adgangskode for at aktivere Smart Lock. Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="3629664892718440872">Husk dette valg</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Føj dette website til din hylde for at bruge det når som helst</translation>
@@ -4710,7 +4709,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5111794652433847656">Der er ingen adgangskoder for <ph name="APP_NAME" /> på denne enhed</translation>
 <translation id="5112577000029535889">&amp;Udviklerværktøjer</translation>
 <translation id="511313294362309725">Slå Hurtig parring til</translation>
-<translation id="5113739826273394829">Hvis du klikker på dette ikon, låses denne <ph name="DEVICE_TYPE" /> manuelt. Næste gang skal du indtaster adgangskoden for at få adgang.</translation>
 <translation id="51143538739122961">Indsæt din sikkerhedsnøgle, og tryk på den</translation>
 <translation id="5115309401544567011">Slut din <ph name="DEVICE_TYPE" /> til en strømkilde.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5105,7 +5103,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5483785310822538350">Tilbagekald adgang til fil og enhed</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}one{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}other{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Din <ph name="DEVICE_TYPE" /> er låst af sikkerhedshensyn. Angiv din adgangskode manuelt for at fortsætte.</translation>
 <translation id="5485102783864353244">Tilføj app</translation>
 <translation id="5485754497697573575">Gendan alle faner</translation>
 <translation id="5486261815000869482">Bekræft adgangskode</translation>
@@ -5311,7 +5308,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5656845498778518563">Send feedback til Google</translation>
 <translation id="5657156137487675418">Tillad alle cookies</translation>
 <translation id="5657667036353380798">Den eksterne udvidelse kræver Chrome-versionen <ph name="MINIMUM_CHROME_VERSION" /> eller nyere for at blive installeret.</translation>
-<translation id="5658415415603568799">Af sikkerhedshensyn beder Smart Lock dig om at angive din adgangskode efter 20 timer.</translation>
 <translation id="5659593005791499971">Mail</translation>
 <translation id="5662513737565158057">Skift indstillingerne for, hvordan Linux-apps fungerer.</translation>
 <translation id="5663459693447872156">Skift automatisk til halv bredde</translation>
@@ -6817,7 +6813,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7000347579424117903">Skal indeholde Ctrl, Alt eller søgetasten</translation>
 <translation id="7001036685275644873">Sikkerhedskopierer Linux-apps og -filer</translation>
 <translation id="7001066449188684145">Der kræves id for at udskrive på <ph name="PRINTER_NAME" />. Kontakt din administrator.</translation>
-<translation id="7002055706763150362">For at konfigurere Smart Lock til Chromebook skal Google først kontrollere, at du er den, du udgiver dig for at være. Angiv din adgangskode for at komme i gang.</translation>
 <translation id="7003339318920871147">Webdatabaser</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fil}one{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9332,7 +9327,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="934244546219308557">Navngiv denne gruppe</translation>
 <translation id="934503638756687833">Elementer, der ikke er angivet her, fjernes også om nødvendigt. Få flere oplysninger om &lt;a href="<ph name="URL" />"&gt;beskyttelse mod uønsket software&lt;/a&gt; i rapporten om beskyttelse af personlige oplysninger i Chrome.</translation>
 <translation id="93480724622239549">Fejl</translation>
-<translation id="935854577147268200">Smart Lock-telefonen er blevet ændret. Angiv din adgangskode for at opdatere Smart Lock. Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger</translation>
 <translation id="936646668635477464">Kamera og mikrofon</translation>
 <translation id="936801553271523408">Data til systemdiagnosticering</translation>
 <translation id="93766956588638423">Reparer udvidelsen</translation>

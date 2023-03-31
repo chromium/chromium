@@ -3053,7 +3053,6 @@
 <translation id="3627671146180677314">Време за обновување сертификат на Netscape</translation>
 <translation id="3627879631695760395">Инсталирај ја <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Исклучи Bluetooth</translation>
-<translation id="3629631988386925734">Внесете ја вашата лозинка за да овозможите Smart Lock. Следниот пат, телефонот ќе го отклучи вашиот <ph name="DEVICE_TYPE" />. Smart Lock може да се исклучи во „Поставки“.</translation>
 <translation id="3629664892718440872">Запомни го изборов</translation>
 <translation id="3630132874740063857">Вашиот телефон</translation>
 <translation id="3630995161997703415">За да го користите во секое време, додајте го сајтов на полицата</translation>
@@ -3268,6 +3267,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803345858388753269">Квалитет на видеото</translation>
 <translation id="3803367742635802571">Сајтовите што ги посетувате може да прекинат со функционирање како што се дизајнирани</translation>
+<translation id="3803583375545057606">Дали ќе побараш одобрување од родителот за да ја овозможиш екстензијава?</translation>
 <translation id="380408572480438692">Со овозможување собирање податоци за учинок, му се помага на Google со време да го подобри системот. Не се испраќаат податоци додека не поднесете извештај со повратни информации (Alt-Shift-I) и не ги опфатите податоците за учинок. Во секое време може да се вратите на екранов за да оневозможите собирање податоци.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ИД на екстензија „<ph name="EXTENSION_ID" />“) не е дозволена на екранот за најавување.</translation>
 <translation id="3807747707162121253">&amp;Откажи</translation>
@@ -3689,6 +3689,7 @@
 <translation id="4169535189173047238">Не дозволувај</translation>
 <translation id="4170314459383239649">Исчисти на излез</translation>
 <translation id="417096670996204801">Изберете профил</translation>
+<translation id="41725145403849567">Дали ќе побараш одобрување од родителот за да ја додадеш екстензијава?</translation>
 <translation id="4175137578744761569">Светловиолеотова и бела</translation>
 <translation id="4175737294868205930">Постојана меморија</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
@@ -4710,7 +4711,6 @@
 <translation id="5111794652433847656">Нема криптографски клучеви за <ph name="APP_NAME" /> на уредов</translation>
 <translation id="5112577000029535889">&amp;Програмерски алатки</translation>
 <translation id="511313294362309725">Вклучи „Брзо спарување“</translation>
-<translation id="5113739826273394829">Доколку кликнете на иконата, рачно ќе го заклучите <ph name="DEVICE_TYPE" />. Следниот пат ќе треба да ја напишете лозинката за да влезете.</translation>
 <translation id="51143538739122961">Вметнете го безбедносниот клуч и допрете го</translation>
 <translation id="5115309401544567011">Приклучете го вашиот <ph name="DEVICE_TYPE" /> на полнење.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5101,11 +5101,11 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-кодот мора да содржи најмалку еден знак}one{PIN-кодот мора да содржи најмалку # знак}other{PIN-кодот мора да содржи најмалку # знака}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="5476016146231427848">Рестартирајте го уредот за да ја користите Steam на Chromebook</translation>
+<translation id="5476897066181964657">Родител или старател мора да одобри за да ја додадеш екстензијава</translation>
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
 <translation id="5481941284378890518">Додај печатачи во близина</translation>
 <translation id="5483785310822538350">Отповикај го пристапот до датотеката и уредот</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> денес. <ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}one{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}other{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Вашиот <ph name="DEVICE_TYPE" /> е заклучен за безбедност. Рачно внесете ја лозинката за да продолжите.</translation>
 <translation id="5485102783864353244">Додај апликација</translation>
 <translation id="5485754497697573575">Обнови ги сите картички</translation>
 <translation id="5486261815000869482">Потврди лозинка</translation>
@@ -5311,7 +5311,6 @@
 <translation id="5656845498778518563">Испратете повратни информации до Google</translation>
 <translation id="5657156137487675418">Дозволувај ги сите колачиња</translation>
 <translation id="5657667036353380798">Надворешната наставка бара верзија на Chrome <ph name="MINIMUM_CHROME_VERSION" /> или поголема за да се инсталира.</translation>
-<translation id="5658415415603568799">За дополнителна безбедност, Smart Lock ќе побара да ја внесете вашата лозинка по 20 часа.</translation>
 <translation id="5659593005791499971">Е-пошта</translation>
 <translation id="5662513737565158057">Променете го начинот на работа на апликациите на Linux.</translation>
 <translation id="5663459693447872156">Автоматски префрли на половина ширина</translation>
@@ -6404,6 +6403,7 @@
 <translation id="6647690760956378579">Преглед на природен глас</translation>
 <translation id="6648911618876616409">Важно ажурирање е подготвено да се инсталира. Најавете се за да започнете.</translation>
 <translation id="6649018507441623493">Само момент…</translation>
+<translation id="6650206238642452078">Претплатете се на системските настани на ChromeOS</translation>
 <translation id="665061930738760572">Отвори во &amp;нов прозорец</translation>
 <translation id="6651237644330755633">Имајте доверба во сертификатов за идентификување на веб-сајтовите</translation>
 <translation id="6651495917527016072">Синхронизирајте ги Wi-Fi мрежите со телефонот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -6816,7 +6816,6 @@
 <translation id="7000347579424117903">Опфатете Ctrl, Alt или Search</translation>
 <translation id="7001036685275644873">Се прави копија на апликациите и датотеките на Linux</translation>
 <translation id="7001066449188684145">Потребна е идентификација за да печатите на <ph name="PRINTER_NAME" />. Контактирајте со администраторот.</translation>
-<translation id="7002055706763150362">За да се постави Smart Lock за Chromebook, Google треба да провери дали сте тоа вие. Внесете ја лозинката за да започнете.</translation>
 <translation id="7003339318920871147">Веб бази на податоци</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} датотека}one{{COUNT} датотека}other{{COUNT} датотеки}}</translation>
 <translation id="7003705861991657723">Алфа</translation>
@@ -6853,6 +6852,7 @@
 <translation id="7025190659207909717">Управување со услуги за мобилен интернет</translation>
 <translation id="7025895441903756761">Безбедност и приватност</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Отвори ги сите во &amp;прозорец „Инкогнито“}=1{Отвори во &amp;прозорец „Инкогнито“}one{Отвори ги сите ({COUNT}) во &amp;прозорец „Инкогнито“}other{Отвори ги сите ({COUNT}) во &amp;прозорец „Инкогнито“}}</translation>
+<translation id="7028057921476386252">Родител или старател мора да одобри за да ја овозможиш екстензијава</translation>
 <translation id="7029307918966275733">Нема инсталирано Crostini. Инсталирајте Crostini за да ги прегледате благодарностите.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7030304022046916278">Испраќа URL-адреси во „Безбедно прелистување“ за да се проверат</translation>
@@ -9122,6 +9122,7 @@
 <translation id="904224458472510106">Операцијава не може да се врати</translation>
 <translation id="9042827002460091668">Проверете ја интернет-врската и обидете се повторно</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
+<translation id="9043264199499366189">Претплатете се на системските настани на ChromeOS Flex</translation>
 <translation id="9044646465488564462">Не успеа да се поврзе на мрежа: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Списокот за читање е преместен во новата странична табла. Испробајте тука.</translation>
 <translation id="9045430190527754450">Ја испраќа интернет-адресата на страницата до којашто се обидувате да стигнете до Google</translation>
@@ -9332,7 +9333,6 @@
 <translation id="934244546219308557">Именувајте ја групава</translation>
 <translation id="934503638756687833">Ставките што не се наведени тука исто така ќе се отстранат ако е потребно. Дознајте повеќе за &lt;a href="<ph name="URL" />"&gt;заштита од несакан софтвер&lt;/a&gt; во белата книга за приватност на Chrome.</translation>
 <translation id="93480724622239549">Мала или голема грешка</translation>
-<translation id="935854577147268200">Телефонот за Smart Lock е сменет. Внесете ја вашата лозинка за да се ажурира Smart Lock. Следниот пат, телефонот ќе го отклучи вашиот <ph name="DEVICE_TYPE" />. Smart Lock може да се исклучи во „Поставки“.</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Дијагностички податоци на системот</translation>
 <translation id="93766956588638423">Поправи ја екстензијата</translation>

@@ -3048,7 +3048,6 @@
 <translation id="3627671146180677314">Netscape сертификатыг сунгах цаг</translation>
 <translation id="3627879631695760395"><ph name="APP" />-г суулгах...</translation>
 <translation id="3628275722731025472">Bluetooth-г унтраах</translation>
-<translation id="3629631988386925734">Smart Lock-г идэвхжүүлэхийн тулд нууц үгээ оруулна уу. Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
 <translation id="3629664892718440872">Энэ сонголтыг санах</translation>
 <translation id="3630132874740063857">Таны утас</translation>
 <translation id="3630995161997703415">Энэ сайтыг хүссэн үедээ ашиглахын тулд тавиуртаа нэмнэ үү</translation>
@@ -4704,7 +4703,6 @@
 <translation id="5111794652433847656">Энэ төхөөрөмжид <ph name="APP_NAME" />-д зориулсан passkey байхгүй байна</translation>
 <translation id="5112577000029535889">&amp; Хөгжүүлэгч хэрэгслүүд</translation>
 <translation id="511313294362309725">Хурдан холбохыг асаах</translation>
-<translation id="5113739826273394829">Хэрэв та энэхүү дүрсэн тэмдэгт дээр дарсан тохиолдолд та энэхүү <ph name="DEVICE_TYPE" /> төхөөрөмжийг гараар түгжих болно. Дараагийн удаа нэвтрэхийн тулд та өөрийн нууц үгийг оруулах шаардлагатай.</translation>
 <translation id="51143538739122961">Аюулгүй байдлын түлхүүрээ залгаад дээр нь хүрнэ үү</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" />-г цахилгаан залгуурт залгана уу.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5099,7 +5097,6 @@
 <translation id="5481941284378890518">Ойролцоох хэвлэгчийг нэмэх</translation>
 <translation id="5483785310822538350">Файл болон төхөөрөмжид хандах хандалтыг цуцлах</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> танаас өнөөдөр өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}other{<ph name="MANAGER" /> танаас {NUM_DAYS} хоногийн дотор өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Таны <ph name="DEVICE_TYPE" />-г аюулгүй байдлын үүднээс түгжсэн болно. Үргэлжлүүлэхийн тулд нууц үгээ гараар оруулна уу.</translation>
 <translation id="5485102783864353244">Апп нэмэх</translation>
 <translation id="5485754497697573575">Бүх Tab-г дахин сэргээх</translation>
 <translation id="5486261815000869482">Нууц үгийг баталгаажуул</translation>
@@ -5306,7 +5303,6 @@
 <translation id="5656845498778518563">Google-д санал хүсэлт илгээх</translation>
 <translation id="5657156137487675418">Бүх күүкиг зөвшөөрөх</translation>
 <translation id="5657667036353380798">Энэ өргөтгөлийг татахын тулд Chrome-н <ph name="MINIMUM_CHROME_VERSION" /> хувилбар болон дараагийн хувилбаруудыг суулгасан байх шаардлагтай.</translation>
-<translation id="5658415415603568799">Таны аюулгүй байдлыг сайжруулахын тулд Smart Lock 20 цагийн дараа таныг нууц үгээ оруулахыг шаардах болно.</translation>
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
 <translation id="5662513737565158057">Linux аппууд хэрхэн ажиллахыг өөрчилнө үү.</translation>
 <translation id="5663459693447872156">Хагас өргөнд автоматаар шилжиж</translation>
@@ -6809,7 +6805,6 @@
 <translation id="7000347579424117903">Ctrl, Alt эсвэл Хайлтыг оруулах</translation>
 <translation id="7001036685275644873">Linux аппууд болон файлуудыг нөөцөлж байна</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" />-р хэвлэхийн тулд таниулбар шаардлагатай. Админтайгаа холбогдоно уу.</translation>
-<translation id="7002055706763150362">Chromebook-д зориулсан Smart Lock-ийг тохируулахын тулд Google та мөн гэдгийг батлах хэрэгтэй. Эхлэхийн тулд нууц үгээ бичнэ үү.</translation>
 <translation id="7003339318920871147">Веб өгөгдлийн сан</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файл}}</translation>
 <translation id="7003705861991657723">Альфа</translation>
@@ -9318,7 +9313,6 @@
 <translation id="934244546219308557">Энэ бүлгийг нэрлэнэ үү</translation>
 <translation id="934503638756687833">Энд жагсаагаагүй зүйлсийг шаардлагатай бол устгаж болно. Chrome-н нууцлалын цагаан хуудаснаас &lt;a href="<ph name="URL" />"&gt;хүсээгүй программ хангамжийн хамгаалалтын&lt;/a&gt; талаар дэлгэрэнгүй үзнэ үү.</translation>
 <translation id="93480724622239549">Алдаа эсвэл гэмтэл</translation>
-<translation id="935854577147268200">Smart Lock-н утсыг өөрчилсөн байна. Smart Lock-г шинэчлэхийн тулд нууц үгээ оруулна уу. Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно</translation>
 <translation id="936646668635477464">Камер болон микрофон</translation>
 <translation id="936801553271523408">Системийн оношлогоотой холбоотой өгөгдөл</translation>
 <translation id="93766956588638423">Өргөтгөлийг засах</translation>

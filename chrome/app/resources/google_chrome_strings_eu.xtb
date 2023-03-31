@@ -24,6 +24,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1399397803214730675">Ordenagailuak Google Chrome arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Google Chrome eta saiatu berriro.</translation>
 <translation id="139993653570221430">Iritziz aldatzen bazara, joan Chrome-ren ezarpenetara. Iragarkiak eskaintzeko darabilgun modua aplikatu bitartean egiten dira probak; beraz, aldaketak ez dituzu berehala ikusiko.</translation>
 <translation id="1434626383986940139">Chrome Canary aplikazioak</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome HID gailu batera konektatuta zegoen}=1{Google Chrome HID gailu batera konektatuta dago}other{Google Chrome HID gailuetara konektatuta dago}}</translation>
 <translation id="1507198376417198979">Pertsonalizatu Chrome-ko profil berria</translation>
 <translation id="1516530951338665275">Google Chrome-k Bluetootha erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS.</translation>

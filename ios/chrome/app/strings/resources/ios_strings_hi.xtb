@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">अपना खोज इतिहास मिटाने के लिए, सर्च इंजन के निर्देश देखें.</translation>
 <translation id="202292859882676807">माइक्रोफ़ोन का ऐक्सेस दिया गया</translation>
 <translation id="20485545164632846">नया आइटम</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> खातों में ऐसे पासवर्ड का इस्तेमाल हो रहा है जो किसी दूसरे खाते के पासवर्ड से मेल खाता है</translation>
 <translation id="2050196510205866090">{count,plural, =1{सेव किया गया पैसे चुकाने का {count} तरीका, आपके कीबोर्ड के ऊपर उपलब्ध है.}one{सेव किया गया पैसे चुकाने का {count} तरीका, आपके कीबोर्ड के ऊपर उपलब्ध है.}other{सेव किए गए पैसे चुकाने के {count} तरीके, आपके कीबोर्ड के ऊपर उपलब्ध हैं.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिन पहले चालू था</translation>
 <translation id="2074131957428911366">आपके पास <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर अपने हिसाब से चीज़ें सिंक करने का विकल्प है.</translation>
@@ -238,6 +239,10 @@
 <translation id="26915454213703967">Google की मदद से इमेज के बारे में खोजें</translation>
 <translation id="2691653761409724435">ऑफ़लाइन उपलब्ध नहीं</translation>
 <translation id="2695507686909505111">पेज का अनुवाद हो गया</translation>
+<translation id="2696180352517415858">आपको अपने Google खाते से साइन आउट नहीं किया जाएगा. आपके साइन इन रहने के दौरान, हो सकता है कि <ph name="BEGIN_LINK" />अन्य तरह की गतिविधियां<ph name="END_LINK" /> आपके Google खाते में सेव हो जाएं. किसी भी समय उन्हें मिटाया जा सकता है.
+
+
+आपका सर्च इंजन <ph name="DSE_NAME" /> है. अगर लागू हो, तो अपना खोज इतिहास मिटाने के लिए, अपने सर्च इंजन के निर्देश देखें.</translation>
 <translation id="2697526135132990015">साइन आउट करें और डेटा मिटाएं</translation>
 <translation id="2700241355396984822">अनुमतियां सेट करने के विकल्प</translation>
 <translation id="2702801445560668637">रीडिंग लिस्ट</translation>
@@ -250,6 +255,7 @@
 <translation id="2747003861858887689">पिछला फ़ील्‍ड</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> को फ़ॉलो किया जा रहा है</translation>
 <translation id="2764831210418622012">अभी-अभी</translation>
+<translation id="2772667768515195373">सेव किए गए पतों का इस्तेमाल, Google के सभी प्रॉडक्ट के लिए किया जा सकता है. यह पता आपके Google खाते <ph name="USER_EMAIL" /> में सेव किया गया है.</translation>
 <translation id="2773292004659987824">गुप्त मोड में खोज</translation>
 <translation id="277771892408211951">भाषा चुनें</translation>
 <translation id="2780046210906776326">कोई ईमेल खाता नहीं</translation>

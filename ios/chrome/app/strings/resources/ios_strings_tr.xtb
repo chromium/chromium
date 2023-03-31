@@ -155,6 +155,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2021670401941426298">Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatlarını (varsa) inceleyin.</translation>
 <translation id="202292859882676807">Mikrofon Erişimine İzin Veriliyor</translation>
 <translation id="20485545164632846">yeni öğe</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> hesapta aynı şifre kullanılıyor</translation>
 <translation id="2050196510205866090">{count,plural, =1{Klavyenizin üzerinde {count} tane kayıtlı ödeme yöntemi mevcut.}other{Klavyenizin üzerinde {count} tane kayıtlı ödeme yöntemi mevcut.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Önce Etkindi</translation>
 <translation id="2074131957428911366">Neyin senkronize edileceğini istediğiniz zaman <ph name="BEGIN_LINK" />ayarlardan<ph name="END_LINK" /> seçebilirsiniz.</translation>
@@ -185,7 +186,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2286505070150039482">Vurgulanan Metin</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu adres bu cihazdan silinecek.}other{Bu adresler bu cihazdan silinecek.}}</translation>
 <translation id="2299218006564889602">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir.</translation>
-<translation id="2302742851632557585">Web sitesindeki şifreyi değiştirme</translation>
+<translation id="2302742851632557585">Şifreyi web sitesinde değiştirin</translation>
 <translation id="2316709634732130529">Önerilen Şifreyi Kullan</translation>
 <translation id="2320166752086256636">Klavyeyi gizle</translation>
 <translation id="2351097562818989364">Çeviri ayarlarınız sıfırlandı.</translation>
@@ -238,6 +239,10 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="26915454213703967">Resmin içinde Google'la ara</translation>
 <translation id="2691653761409724435">Çevrimdışı kullanılamaz</translation>
 <translation id="2695507686909505111">Sayfa Çevrildi</translation>
+<translation id="2696180352517415858">Google Hesaplarınızdaki oturumlarınız kapatılmaz. <ph name="BEGIN_LINK" />Diğer etkinlik biçimleri<ph name="END_LINK" />, oturum açtığınızda Google Hesabınıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.
+
+
+Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama motorunuzun talimatlarını (varsa) inceleyin.</translation>
 <translation id="2697526135132990015">Oturumu Kapat ve Verileri Temizle</translation>
 <translation id="2700241355396984822">İzin Verme Seçenekleri</translation>
 <translation id="2702801445560668637">Okuma Listesi</translation>
@@ -250,6 +255,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2747003861858887689">Önceki alan</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> takip ediliyor</translation>
 <translation id="2764831210418622012">az önce</translation>
+<translation id="2772667768515195373">Kayıtlı adresleri tüm Google ürünlerinde kullanabilirsiniz. Bu adres Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedilir.</translation>
 <translation id="2773292004659987824">Gizli Arama</translation>
 <translation id="277771892408211951">Dil Seçin</translation>
 <translation id="2780046210906776326">E-posta Hesabı Yok</translation>
@@ -561,11 +567,11 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4834499902900503484">Chrome'da oturum açtığınızda, kaydettiğiniz şifreler Google Hesabınızda saklanır. Bu özelliği devre dışı bırakmak için <ph name="BEGIN_LINK" />ayarlara gidin<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız artık Google Hesabınız ile senkronize edilmeyecek.</translation>
 <translation id="4844899002472726590">İlgilendiğiniz konuları görüp düzenleyin</translation>
-<translation id="4848999860252535517"><ph name="WEBSITE" /> kullanıcısının şifresi silinsin mi?</translation>
+<translation id="4848999860252535517"><ph name="WEBSITE" /> için şifre silinsin mi?</translation>
 <translation id="4854345657858711387">Şifre Kodu Ayarlayın</translation>
 <translation id="4858786880085262208">Mümkün olduğunda HTTPS'ye yükseltin. Güvenli siteler, güvenli olmayan içerikler yerleştirebilir.</translation>
 <translation id="4860895144060829044">Telefon et</translation>
-<translation id="4872323082491632254">Şifreleri Kontrol Et</translation>
+<translation id="4872323082491632254">Şifreleri Kontrol Edin</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4894963374040315706">Bu şekilde, sesinizi kullanarak arama yapabilirsiniz</translation>
 <translation id="4901778704868714008">Kaydet...</translation>

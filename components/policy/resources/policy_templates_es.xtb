@@ -1522,6 +1522,7 @@ Si se asigna un valor a esta política, el usuario no podrá anularlo.
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
 <translation id="2413899611035194909">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
 <translation id="2415715982424988916">Explorar (compatible desde la versión 91)</translation>
+<translation id="2420958105721932612">Especifica cómo se instala una aplicación. AVAILABLE: la aplicación no se instalará automáticamente, pero el usuario podrá instalarla. Si no se asigna ningún valor a esta política, este será el predeterminado. FORCE_INSTALLED: la aplicación se instalará automáticamente y el usuario no podrá desinstalarla. BLOCKED: la aplicación estará bloqueada y no se podrá instalar. Si la aplicación se instaló cuando estaba vigente una política anterior, se desinstalará.</translation>
 <translation id="2421400544595297401">No permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2421677964966613267">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si le asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
 
@@ -4529,11 +4530,6 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si se habilita, se enviarán informes sobre el estado de actividad de los dispositivos al servidor, por lo que podrá detectar si el dispositivo está sin conexión siempre y cuando el usuario esté afiliado.</translation>
 <translation id="5238275681097851753">Permitir que se bloquee un contenido concreto de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forzar que se habilite Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth).</translation>
-<translation id="52393120393725840">Si se habilita esta política, los usuarios deberán hacer que <ph name="PRODUCT_NAME" /> recuerde las contraseñas y se las proporcione la próxima vez que inicien sesión en un sitio web.
-
-      Si se inhabilita, los usuarios no podrán guardar las nuevas contraseñas, pero las contraseñas guardadas anteriormente seguirán funcionando.
-
-      Si se asigna un valor a esta política, los usuarios no podrán modificarlo en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, el usuario podrá desactivar el guardado de contraseñas.</translation>
 <translation id="5239333626804545932">Si la política se habilita o no se define, Limpiador de Chrome analizará el sistema periódicamente para detectar software no deseado y, si encuentra alguno, preguntará al usuario si quiere eliminarlo. La opción para activar manualmente esta función desde chrome://settings/cleanup está permitida.
 
       Si se inhabilita la política, Limpiador de Chrome no llevará a cabo un análisis periódico, y la activación manual estará inhabilitada.
@@ -4795,9 +4791,6 @@ Si se inhabilita la política o no se establece, la configuración de restauraci
 
       El valor de esta política debe especificarse en número de días.</translation>
 <translation id="5457065417344056871">Habilitar el modo Invitado en el navegador</translation>
-<translation id="5457387982448145430">Si se asigna el valor "Habilitada" a esta política, se importarán las contraseñas guardadas del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ninguna contraseña al ejecutarse por primera vez.
-
-      Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de contraseñas guardadas aparecerá marcada o desmarcada en función del valor de esta política.</translation>
 <translation id="5457924070961220141">Permite configurar el procesador de HTML predeterminado si se ha instalado <ph name="PRODUCT_FRAME_NAME" />.
           Si no se establece esta política, se permitirá que el navegador del host muestre las páginas HTML de forma predeterminada, pero puedes anular esta opción para que <ph name="PRODUCT_FRAME_NAME" /> muestre las páginas HTML de forma predeterminada.</translation>
 <translation id="545817252640069915">Habilitar interceptación de inicio de sesión</translation>

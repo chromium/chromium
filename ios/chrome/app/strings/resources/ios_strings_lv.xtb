@@ -155,6 +155,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2021670401941426298">Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="202292859882676807">Piekļuve mikrofonam ir atļauta</translation>
 <translation id="20485545164632846">jauns vienums</translation>
+<translation id="2049727122989709386">Vēl <ph name="COUNT" /> kontos tiek izmantota tā pati parole.</translation>
 <translation id="2050196510205866090">{count,plural, =1{Virs tastatūras ir pieejams {count} saglabāts maksājuma veids.}zero{Virs tastatūras ir pieejami {count} saglabāti maksājuma veidi.}one{Virs tastatūras ir pieejams {count} saglabāts maksājuma veids.}other{Virs tastatūras ir pieejami {count} saglabāti maksājuma veidi.}}</translation>
 <translation id="2073572773299281212">Aktīvs pirms <ph name="DAYS" /> dienām</translation>
 <translation id="2074131957428911366">Jūs jebkurā laikā <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" /> varat izvēlēties, ko sinhronizēt.</translation>
@@ -238,6 +239,10 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="26915454213703967">Meklēt attēlā ar Google</translation>
 <translation id="2691653761409724435">Nav pieejami bezsaistē</translation>
 <translation id="2695507686909505111">Lapa iztulkota</translation>
+<translation id="2696180352517415858">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Varat jebkurā laikā tās dzēst.
+
+
+Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="2697526135132990015">Izrakstīties un notīrīt datus</translation>
 <translation id="2700241355396984822">Atļauju iestatīšanas opcijas</translation>
 <translation id="2702801445560668637">Atvērt sarakstu</translation>
@@ -250,6 +255,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2747003861858887689">Iepriekšējais lauks</translation>
 <translation id="2749231692441336879">Jūs sekojat kanālam <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2764831210418622012">tikko</translation>
+<translation id="2772667768515195373">Saglabātās adreses varat izmantot dažādos Google produktos. Šī adrese ir saglabāta jūsu Google kontā (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Meklēt inkognito režīmā</translation>
 <translation id="277771892408211951">Atlasiet valodu</translation>
 <translation id="2780046210906776326">Nav e-pasta kontu</translation>

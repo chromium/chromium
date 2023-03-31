@@ -155,6 +155,7 @@
 <translation id="2021670401941426298">જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ.</translation>
 <translation id="202292859882676807">માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="20485545164632846">નવી આઇટમ</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="2050196510205866090">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલી ચુકવણી પદ્ધતિ ઉપલબ્ધ છે.}}</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="2074131957428911366">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં પસંદ કરી શકો છો.</translation>
@@ -238,6 +239,10 @@
 <translation id="26915454213703967">Google વડે છબીમાં શોધો</translation>
 <translation id="2691653761409724435">ઑફલાઇન ઉપલબ્ધ નથી</translation>
 <translation id="2695507686909505111">પેજનો અનુવાદ કર્યો</translation>
+<translation id="2696180352517415858">તમને તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.
+
+
+તમારું શોધ એન્જિન <ph name="DSE_NAME" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
 <translation id="2697526135132990015">સાઇન આઉટ કરો અને ડેટા સાફ કરો</translation>
 <translation id="2700241355396984822">પરવાનગીઓ સેટ કરવાનો વિકલ્પ</translation>
 <translation id="2702801445560668637">વાંચન સૂચિ</translation>
@@ -250,6 +255,7 @@
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="2764831210418622012">હમણાં જ</translation>
+<translation id="2772667768515195373">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામાને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">છૂપી શોધ</translation>
 <translation id="277771892408211951">ભાષા પસંદ કરો</translation>
 <translation id="2780046210906776326">ઇમેઇલ એકાઉન્ટ્સ નથી</translation>

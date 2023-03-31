@@ -3043,7 +3043,6 @@
 <translation id="3627671146180677314">‏وقت تجديد شهادة Netscape</translation>
 <translation id="3627879631695760395">تثبيت تطبيق <ph name="APP" />...</translation>
 <translation id="3628275722731025472">إيقاف البلوتوث</translation>
-<translation id="3629631988386925734">‏يُرجى إدخال كلمة المرور لتفعيل Smart Lock. وفي المرة القادمة، سيفتح هاتفك قفل جهاز <ph name="DEVICE_TYPE" />. يمكنك إيقاف Smart Lock في "الإعدادات".</translation>
 <translation id="3629664892718440872">تذكُّر هذا الاختيار</translation>
 <translation id="3630132874740063857">هاتفك</translation>
 <translation id="3630995161997703415">أضف الموقع الإلكتروني هذا إلى الرف لاستخدامه في أي وقت.</translation>
@@ -4699,7 +4698,6 @@
 <translation id="5111794652433847656">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="APP_NAME" />".</translation>
 <translation id="5112577000029535889">&amp;أدوات المطورين</translation>
 <translation id="511313294362309725">تفعيل ميزة "الإقران السريع"</translation>
-<translation id="5113739826273394829">إذا نقرت على هذا الرمز، فستقوم بقفل جهاز <ph name="DEVICE_TYPE" /> هذا يدويًا. في المرة القادمة، ستحتاج إلى كتابة كلمة مرورك للدخول.</translation>
 <translation id="51143538739122961">أدخِل مفتاح الأمان والمسه</translation>
 <translation id="5115309401544567011">يُرجى توصيل جهاز <ph name="DEVICE_TYPE" /> بمصدر طاقة.</translation>
 <translation id="5115338116365931134">‏الدخول المُوحَّد (SSO)</translation>
@@ -5095,7 +5093,6 @@
 <translation id="5481941284378890518">إضافة طابعات مجاورة</translation>
 <translation id="5483785310822538350">إبطال الوصول للملف والجهاز</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> اليوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}zero{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}two{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS}). <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}few{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}many{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}other{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم. <ph name="LINK_BEGIN" />عرض التفاصيل<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">يتم قفل جهاز <ph name="DEVICE_TYPE" /> للأمان. أدخل كلمة مرورك يدويًا للمتابعة.</translation>
 <translation id="5485102783864353244">إضافة تطبيق</translation>
 <translation id="5485754497697573575">استعادة جميع علامات التبويب</translation>
 <translation id="5486261815000869482">تأكيد كلمة المرور</translation>
@@ -5301,7 +5298,6 @@
 <translation id="5656845498778518563">‏إرسال تعليقات إلى Google</translation>
 <translation id="5657156137487675418">السماح بملفّات تعريف الارتباط كلّها</translation>
 <translation id="5657667036353380798">‏تتطلب الإضافة الخارجية تثبيت chrome الإصدار <ph name="MINIMUM_CHROME_VERSION" /> أو أعلى.</translation>
-<translation id="5658415415603568799">‏لمزيد من الأمان، سيطلب منك Smart Lock إدخال كلمة مرورك بعد مرور 20 ساعة.</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
 <translation id="5662513737565158057">‏تغيير طريقة عمل تطبيقات نظام التشغيل Linux</translation>
 <translation id="5663459693447872156">الانتقال تلقائيًا إلى منتصف العرض</translation>
@@ -6813,7 +6809,6 @@
 <translation id="7000347579424117903">‏تضمين مفتاحي Ctrl، أو Alt، أو مفتاح البحث</translation>
 <translation id="7001036685275644873">‏الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux</translation>
 <translation id="7001066449188684145">تحديد الهوية مطلوب لاستخدام الطابعة <ph name="PRINTER_NAME" />. يُرجى التواصل مع المشرف.</translation>
-<translation id="7002055706763150362">‏لإعداد Smart Lock في Chromebook، يحتاج Google للتأكد من هويتك، اكتب كلمة المرور للبدء.</translation>
 <translation id="7003339318920871147">قواعد بيانات الويب</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ملف واحد ({COUNT})}zero{{COUNT} ملف}two{ملفان ({COUNT})}few{{COUNT} ملفات}many{{COUNT} ملفًا}other{{COUNT} ملف}}</translation>
 <translation id="7003705861991657723">إصدار أولي</translation>
@@ -9334,7 +9329,6 @@
 <translation id="934244546219308557">تسمية هذه المجموعة</translation>
 <translation id="934503638756687833">‏ستتم أيضًا إزالة العناصر غير المدرجة هنا إذا لزم الأمر. يمكنك الاطلاع على مزيد من المعلومات عن &lt;a href="<ph name="URL" />"&gt;الحماية من البرامج غير المرغوب فيها&lt;/a&gt; في المستند التقني لخصوصية Chrome.</translation>
 <translation id="93480724622239549">خلل أو خطأ</translation>
-<translation id="935854577147268200">‏تم تعديل إعدادات Smart Lock على هاتفك. يمكنك إدخال كلمة مرورك لتحديث هذه الإعدادات. وفي المرة القادمة، سيفتح هاتفك قفل جهاز <ph name="DEVICE_TYPE" />. ويمكنك إيقاف Smart Lock في "الإعدادات".</translation>
 <translation id="936646668635477464">الكاميرا والميكروفون</translation>
 <translation id="936801553271523408">بيانات تشخيص النظام</translation>
 <translation id="93766956588638423">إصلاح الإضافة</translation>

@@ -3038,7 +3038,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3627671146180677314">Date de renouvellement du certificat Netscape</translation>
 <translation id="3627879631695760395">Installer <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Désactiver le Bluetooth</translation>
-<translation id="3629631988386925734">Saisissez votre mot de passe pour activer Smart Lock. La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans les paramètres.</translation>
 <translation id="3629664892718440872">Mémoriser ce choix</translation>
 <translation id="3630132874740063857">Votre téléphone</translation>
 <translation id="3630995161997703415">Ajoutez ce site à votre étagère pour l'utiliser à tout moment</translation>
@@ -4694,7 +4693,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5111794652433847656">Aucune clé d'accès pour <ph name="APP_NAME" /> sur cet appareil</translation>
 <translation id="5112577000029535889">Outils de &amp;développement</translation>
 <translation id="511313294362309725">Activer l'Association express</translation>
-<translation id="5113739826273394829">Si vous cliquez sur cette icône, ce <ph name="DEVICE_TYPE" /> sera verrouillé manuellement. La prochaine fois, l'accès à l'appareil sera soumis à la saisie de votre mot de passe.</translation>
 <translation id="51143538739122961">Insérez votre clé de sécurité et appuyez dessus</translation>
 <translation id="5115309401544567011">Veuillez brancher votre appareil <ph name="DEVICE_TYPE" /> à une source d'alimentation.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5089,7 +5087,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5483785310822538350">Retirer les droits d'accès aux fichiers et aux appareils</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Votre <ph name="DEVICE_TYPE" /> est verrouillé pour des raisons de sécurité. Saisissez votre mot de passe manuellement pour continuer.</translation>
 <translation id="5485102783864353244">Ajouter l'application</translation>
 <translation id="5485754497697573575">Restaurer tous les onglets</translation>
 <translation id="5486261815000869482">Confirmer le mot de passe</translation>
@@ -5296,7 +5293,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5656845498778518563">Envoyer des commentaires à Google</translation>
 <translation id="5657156137487675418">Autoriser tous les cookies</translation>
 <translation id="5657667036353380798">L'extension externe nécessite que la version <ph name="MINIMUM_CHROME_VERSION" /> ou une version ultérieure de Chrome soit installée.</translation>
-<translation id="5658415415603568799">Pour plus de sécurité, Smart Lock vous invitera à saisir votre mot de passe 20 heures après.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662513737565158057">Modifier le fonctionnement des applications Linux.</translation>
 <translation id="5663459693447872156">Passer automatiquement en demi-chasse</translation>
@@ -6802,7 +6798,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7000347579424117903">Vous devez inclure la touche Ctrl, la touche Alt ou la touche de recherche</translation>
 <translation id="7001036685275644873">Sauvegarde des applications et fichiers Linux</translation>
 <translation id="7001066449188684145">Identification requise pour imprimer sur <ph name="PRINTER_NAME" />. Veuillez contacter votre administrateur.</translation>
-<translation id="7002055706763150362">Pour configurer Smart Lock pour Chromebook, nous devons vérifier qu'il s'agit bien de vous. Pour commencer, saisissez votre mot de passe.</translation>
 <translation id="7003339318920871147">Bases de données Web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
 <translation id="7003705861991657723">Alpha</translation>
@@ -9317,7 +9312,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="934244546219308557">Attribuer un nom à ce groupe</translation>
 <translation id="934503638756687833">Au besoin, les éléments non indiqués ici seront également supprimés. Pour en savoir plus sur la &lt;a href="<ph name="URL" />"&gt;protection contre les logiciels malveillants&lt;/a&gt;, consultez le livre blanc sur les règles de confidentialité de Chrome.</translation>
 <translation id="93480724622239549">Bug ou erreur</translation>
-<translation id="935854577147268200">Le téléphone Smart Lock a changé. Saisissez votre mot de passe pour activer Smart Lock. La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans les paramètres.</translation>
 <translation id="936646668635477464">Caméra et micro</translation>
 <translation id="936801553271523408">Données de diagnostic système</translation>
 <translation id="93766956588638423">Réparer l'extension</translation>

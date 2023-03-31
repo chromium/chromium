@@ -155,6 +155,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2021670401941426298">Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="202292859882676807">Se acordă acces la microfon</translation>
 <translation id="20485545164632846">articol nou</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> conturi folosesc aceeași parolă</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} metodă de plată salvată disponibilă deasupra tastaturii.}few{{count} metode de plată salvate disponibile deasupra tastaturii.}other{{count} de metode de plată salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="26915454213703967">Caută în imagine cu Google</translation>
 <translation id="2691653761409724435">Indisponibil offline</translation>
 <translation id="2695507686909505111">S-a tradus pagina</translation>
+<translation id="2696180352517415858">Nu te vei deconecta de la Contul Google. <ph name="BEGIN_LINK" />Alte tipuri de activități<ph name="END_LINK" /> se pot salva în Contul Google dacă te-ai conectat. Le poți șterge oricând.
+
+
+Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentru ștergerea istoricului căutărilor, dacă este cazul.</translation>
 <translation id="2697526135132990015">Deconectează-te și șterge datele</translation>
 <translation id="2700241355396984822">Opțiuni pentru setarea permisiunilor</translation>
 <translation id="2702801445560668637">Listă de lecturi</translation>
@@ -250,6 +255,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2747003861858887689">Câmpul anterior</translation>
 <translation id="2749231692441336879">Urmărești <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">adineauri</translation>
+<translation id="2772667768515195373">Poți folosi adresele salvate în toate produsele Google. Această adresă se salvează în Contul tău Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Căutare incognito</translation>
 <translation id="277771892408211951">Selectează limba</translation>
 <translation id="2780046210906776326">Niciun cont e-mail</translation>

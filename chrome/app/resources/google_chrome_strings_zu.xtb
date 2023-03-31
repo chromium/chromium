@@ -24,6 +24,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1399397803214730675">Le khompyutha isivele inenguqulo yakamuva ye-Google Chrome. Uma isofthiwe ingasebenzi, sicela ukhiphe i-Google Chrome uphinde uzame futhi.</translation>
 <translation id="139993653570221430">Ungashintsha umqondo wakho noma kunini kumasethingi we-Chrome. Izivivinyo zisebenza eduze kwendlela yamanje yokulethwa kwezikhangiso, ngakho ngeke ubone izinguquko ngokushesha.</translation>
 <translation id="1434626383986940139">Izinhlelo zokusebenza ze-Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{I-Google Chrome ixhumeke kudivayisi ye-HID}=1{I-Google Chrome ixhumeke kudivayisi ye-HID}one{I-Google Chrome ixhunywe kumadivayisi we-HID}other{I-Google Chrome ixhunywe kumadivayisi we-HID}}</translation>
 <translation id="1507198376417198979">Yenza ngendlela oyifisayo iphrofayela yakho entsha ye-Chrome</translation>
 <translation id="1516530951338665275">I-Google Chrome idinga ukufinyelela kwe-Bluetooth ukuze iqhubeke 
  nokumatanisa. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

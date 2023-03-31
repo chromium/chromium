@@ -24,6 +24,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1399397803214730675">V tem računalniku je že nameščena novejša različica Google Chroma. Če programska oprema ne deluje, odstranite Google Chrome in poskusite znova.</translation>
 <translation id="139993653570221430">Kadar koli si lahko premislite v nastavitvah za Chrome. Preizkusi potekajo skupaj s trenutnim načinom prikazovanja oglasov, zato spremembe ne bodo takoj vidne.</translation>
 <translation id="1434626383986940139">Delovne različice aplikacij za Chrome</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome je bil povezan z napravo HID}=1{Google Chrome je povezan z napravo HID}one{Google Chrome je povezan z napravami HID}two{Google Chrome je povezan z napravami HID}few{Google Chrome je povezan z napravami HID}other{Google Chrome je povezan z napravami HID}}</translation>
 <translation id="1507198376417198979">Prilagajanje novega profila v Chromu</translation>
 <translation id="1516530951338665275">Google Chrome potrebuje dostop do Bluetootha za nadaljevanje 
  seznanjanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

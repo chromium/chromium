@@ -24,6 +24,7 @@
 
 Թույլտվությունները, որոնք տրամադրել եք կայքերին և հավելվածներին, կարող են կիրառվել այս հաշվի նկատմամբ։ Ձեր Google հաշիվները կարող եք կառավարել <ph name="SETTINGS_LINK_BEGIN" />Կարգավորումներում<ph name="SETTINGS_LINK_END" />։</translation>
 <translation id="1640672724030957280">Ներբեռնում…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium-ը միացված էր HID սարքի}=1{Chromium-ը միացված է HID սարքի}one{Chromium-ը միացված է HID սարքի}other{Chromium-ը միացված է HID սարքերի}}</translation>
 <translation id="1708666629004767631">Մատչելի է Chromium-ի նոր, ավելի ապահով տարբերակ:</translation>
 <translation id="17264556997921157">Դուք կարող եք տեսնել և հեռացնել հետաքրքրությունները, որոնք կայքերն օգտագործում են՝ ձեզ գովազդ ցուցադրելու համար։ Chromium-ը որոշում է ձեր հետաքրքրությունները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
 <translation id="1733725117201708356">Chromium-ը շուտով կջնջի դիտարկման տվյալները</translation>

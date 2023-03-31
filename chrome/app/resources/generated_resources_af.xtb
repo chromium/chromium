@@ -3052,7 +3052,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3627671146180677314">Netscape-sertifikaathernuwingtyd</translation>
 <translation id="3627879631695760395">Installeer <ph name="APP" /> …</translation>
 <translation id="3628275722731025472">Skakel Bluetooth af</translation>
-<translation id="3629631988386925734">Voer jou wagwoord in om Smart Lock te aktiveer. Jou foon sal volgende keer jou <ph name="DEVICE_TYPE" /> ontsluit. Jy kan Smart Lock in Instellings afskakel.</translation>
 <translation id="3629664892718440872">Onthou hierdie keuse</translation>
 <translation id="3630132874740063857">Jou foon</translation>
 <translation id="3630995161997703415">Voeg hierdie werf by jou rak om dit enige tyd te gebruik</translation>
@@ -4711,7 +4710,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5111794652433847656">Daar is geen wagwoordsleutels vir <ph name="APP_NAME" /> op hierdie toestel nie</translation>
 <translation id="5112577000029535889">Ontwikkelaarnutsgoed</translation>
 <translation id="511313294362309725">Skakel Kitsbind aan</translation>
-<translation id="5113739826273394829">As jy hierdie ikoon klik, sal jy hierdie <ph name="DEVICE_TYPE" /> met die hand sluit. Volgende keer sal jy jou wagwoord moet invoer om in te gaan.</translation>
 <translation id="51143538739122961">Sit jou sekuriteitsleutel in en raak daaraan</translation>
 <translation id="5115309401544567011">Prop jou <ph name="DEVICE_TYPE" /> by 'n kragbron in.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5107,7 +5105,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5481941284378890518">Voeg nabygeleë drukkers by</translation>
 <translation id="5483785310822538350">Herroep lêer- en toesteltoegang</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> vandag terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> binne {NUM_DAYS} dae terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Jou <ph name="DEVICE_TYPE" /> is vir sekuriteit gesluit. Voer jou wagwoord handmatig in om voort te gaan.</translation>
 <translation id="5485102783864353244">Voeg program by</translation>
 <translation id="5485754497697573575">Stel alle oortjies terug</translation>
 <translation id="5486261815000869482">Bevestig wagwoord</translation>
@@ -5314,7 +5311,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5656845498778518563">Stuur terugvoer na Google</translation>
 <translation id="5657156137487675418">Laat alle webkoekies toe</translation>
 <translation id="5657667036353380798">Die eksterne uitbreiding vereis dat Chrome-weergawe <ph name="MINIMUM_CHROME_VERSION" /> of hoër om geïnstalleer te word.</translation>
-<translation id="5658415415603568799">Vir bykomende sekuriteit sal Smart Lock jou ná 20 uur vra om jou wagwoord in te voer.</translation>
 <translation id="5659593005791499971">E-pos</translation>
 <translation id="5662513737565158057">Verander hoe Linux-programme sal werk.</translation>
 <translation id="5663459693447872156">Skakel outomaties oor na halfwydte</translation>
@@ -6818,7 +6814,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7000347579424117903">Sluit Ctrl, Alt of Soek in</translation>
 <translation id="7001036685275644873">Rugsteun tans Linux-programme en -lêers</translation>
 <translation id="7001066449188684145">Identifikasie word benodig om drukwerk na <ph name="PRINTER_NAME" /> toe te stuur. Kontak jou administrateur.</translation>
-<translation id="7002055706763150362">Om Smart Lock vir Chromebook op te stel, moet Google seker maak dat dit jy is – voer jou wagwoord in om te begin.</translation>
 <translation id="7003339318920871147">Webdatabasisse</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} lêer}other{{COUNT} lêers}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9332,7 +9327,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="934244546219308557">Gee hierdie groep 'n naam</translation>
 <translation id="934503638756687833">Items wat nie hier gelys word nie, sal indien nodig ook verwyder word. Kom meer te wete oor &lt;a href="<ph name="URL" />"&gt;ongewenste sagtewarebeskerming&lt;/a&gt; in die witskrif oor Chrome-privaatheid.</translation>
 <translation id="93480724622239549">Fout</translation>
-<translation id="935854577147268200">Smart Lock-foon het verander. Voer jou wagwoord in om Smart Lock op te dateer. Jou foon sal volgende keer jou <ph name="DEVICE_TYPE" /> ontsluit. Jy kan Smart Lock in Instellings afskakel</translation>
 <translation id="936646668635477464">Kamera en mikrofoon</translation>
 <translation id="936801553271523408">Stelsel se diagnostiese data</translation>
 <translation id="93766956588638423">Herstel uitbreiding</translation>

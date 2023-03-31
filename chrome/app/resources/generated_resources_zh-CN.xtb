@@ -3029,7 +3029,6 @@
 <translation id="3627671146180677314">Netscape 证书续订时间</translation>
 <translation id="3627879631695760395">安装“<ph name="APP" />”…</translation>
 <translation id="3628275722731025472">关闭蓝牙</translation>
-<translation id="3629631988386925734">请输入您的密码，以启用 Smart Lock。下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="3629664892718440872">记住此选择</translation>
 <translation id="3630132874740063857">您的手机</translation>
 <translation id="3630995161997703415">请将此网站添加到您的任务栏中，以便随时使用</translation>
@@ -3244,6 +3243,7 @@
 <translation id="380329542618494757">名称</translation>
 <translation id="3803345858388753269">视频画质</translation>
 <translation id="3803367742635802571">您访问的网站可能会停止按预期运行</translation>
+<translation id="3803583375545057606">让你的家长启用此扩展程序？</translation>
 <translation id="380408572480438692">启用性能数据收集功能有助于 Google 逐步改进系统。除非您提交反馈报告 (Alt-Shift-I) 并在其中包含性能数据，否则，系统不会发送任何数据。您随时可以返回此页停用性能数据收集功能。</translation>
 <translation id="3807249107536149332">登录屏幕中不允许使用“<ph name="EXTENSION_NAME" />”（扩展程序 ID 为“<ph name="EXTENSION_ID" />”）。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
@@ -3664,6 +3664,7 @@
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4170314459383239649">退出时清除</translation>
 <translation id="417096670996204801">选择一份个人资料</translation>
+<translation id="41725145403849567">让你的家长添加此扩展程序？</translation>
 <translation id="4175137578744761569">浅紫色和白色</translation>
 <translation id="4175737294868205930">永久存储</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -4682,7 +4683,6 @@
 <translation id="5111794652433847656">在此设备上未发现<ph name="APP_NAME" />的任何通行密钥</translation>
 <translation id="5112577000029535889">开发者工具(&amp;D)</translation>
 <translation id="511313294362309725">开启快速配对</translation>
-<translation id="5113739826273394829">如果您点击此图标，将手动锁定此 <ph name="DEVICE_TYPE" />（下次您需要输入密码才能进入）。</translation>
 <translation id="51143538739122961">请插入您的安全密钥并轻触它</translation>
 <translation id="5115309401544567011">请为您的 <ph name="DEVICE_TYPE" /> 接通电源。</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5073,11 +5073,11 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="5476016146231427848">若要使用 Chromebook 版 Steam，请重启您的设备</translation>
+<translation id="5476897066181964657">你必须先征得家长或监护人的同意，然后才能添加此扩展程序</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5483785310822538350">撤消对文件和设备的访问权限</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您备份自己的数据并在 {NUM_DAYS} 天内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">为了提升安全性，您的 <ph name="DEVICE_TYPE" /> 已被锁定。请手动输入您的密码以继续操作。</translation>
 <translation id="5485102783864353244">添加应用</translation>
 <translation id="5485754497697573575">还原所有标签页</translation>
 <translation id="5486261815000869482">确认密码</translation>
@@ -5281,7 +5281,6 @@
 <translation id="5656845498778518563">向 Google 发送反馈</translation>
 <translation id="5657156137487675418">允许所有 Cookie</translation>
 <translation id="5657667036353380798">该外部扩展程序需要安装 <ph name="MINIMUM_CHROME_VERSION" /> 或更高版本的 Chrome。</translation>
-<translation id="5658415415603568799">为了提升安全性，Smart Lock 会在 20 小时后要求您输入您的密码。</translation>
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5662513737565158057">更改 Linux 应用的运行方式。</translation>
 <translation id="5663459693447872156">自动切换至半角</translation>
@@ -6784,7 +6783,6 @@
 <translation id="7000347579424117903">必须以 Ctrl 键、Alt 键或搜索键开头</translation>
 <translation id="7001036685275644873">正在备份 Linux 应用和文件</translation>
 <translation id="7001066449188684145">必须验证身份，才能使用“<ph name="PRINTER_NAME" />”进行打印。请与您的管理员联系。</translation>
-<translation id="7002055706763150362">要设置 Smart Lock（Chromebook 版），您需要先输入密码，因为 Google 需要确认是您本人在操作。</translation>
 <translation id="7003339318920871147">网络数据库</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 个文件}other{{COUNT} 个文件}}</translation>
 <translation id="7003705861991657723">Alpha 版</translation>
@@ -6821,6 +6819,7 @@
 <translation id="7025190659207909717">移动数据服务管理</translation>
 <translation id="7025895441903756761">安全和隐私设置</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
+<translation id="7028057921476386252">你必须先征得家长或监护人的同意，然后才能启用此扩展程序</translation>
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030304022046916278">会将网址发送给“安全浏览”功能进行检查</translation>
@@ -9298,7 +9297,6 @@
 <translation id="934244546219308557">为此组命名</translation>
 <translation id="934503638756687833">如有必要，此处未列出的内容也会被移除。请参阅 Chrome 隐私权政策白皮书，详细了解&lt;a href="<ph name="URL" />"&gt;垃圾软件防护&lt;/a&gt;。</translation>
 <translation id="93480724622239549">问题或错误</translation>
-<translation id="935854577147268200">Smart Lock 所用的配对手机已更改。请输入您的密码以更新 Smart Lock。下次，您就能使用新的配对手机解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="936646668635477464">摄像头和麦克风</translation>
 <translation id="936801553271523408">系统诊断数据</translation>
 <translation id="93766956588638423">修复扩展程序</translation>

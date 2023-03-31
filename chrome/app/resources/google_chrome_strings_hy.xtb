@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">Այս համակարգչում արդեն տեղադրված է Google Chrome-ի ավելի նոր տարբերակը: Եթե ծրագիրը չի աշխատում, ապատեղադրեք Google Chrome-ը և նորից փորձեք:</translation>
 <translation id="139993653570221430">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը։ Փորձարկումներն ընթանում են գովազդի ցուցադրման ընթացիկ ռեժիմին զուգահեռ, ինչի արդյունքում փոփոխություններն անմիջապես տեսանելի չեն լինի ձեզ։</translation>
 <translation id="1434626383986940139">Chrome Canary հավելվածներ</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome-ը միացված էր HID սարքի}=1{Google Chrome-ը միացված է HID սարքի}one{Google Chrome-ը միացված է HID սարքի}other{Google Chrome-ը միացված է HID սարքերի}}</translation>
 <translation id="1507198376417198979">Կարգավորեք Chrome-ի նոր պրոֆիլը</translation>
 <translation id="1516530951338665275">Զուգակցումը շարունակելու համար Google Chrome-ին հասանելի դարձրեք Bluetooth-ը։ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>

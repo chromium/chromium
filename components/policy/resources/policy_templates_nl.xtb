@@ -4500,11 +4500,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
       Als je het beleid toepast, wordt de apparaatactiviteitsstatus gerapporteerd aan de server zodat deze kan waarnemen of het apparaat offline is, op voorwaarde dat de gebruiker aangesloten is.</translation>
 <translation id="5238275681097851753">Toestaan dat bepaalde <ph name="FLASH_PLUGIN_NAME" />-content wordt geblokkeerd</translation>
 <translation id="5238976843489093540">Snel koppelen (snelle bluetooth-koppeling) geforceerd aanzetten.</translation>
-<translation id="52393120393725840">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> wachtwoorden opslaan en gebruiken als ze opnieuw inloggen op een site.
-
-      Als je het beleid niet toepast, kunnen gebruikers geen nieuwe wachtwoorden opslaan, maar kunnen ze nog wel gebruikmaken van eerder opgeslagen wachtwoorden.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je dit beleid niet instelt, kunnen gebruikers de functie voor opslag van wachtwoorden uitzetten.</translation>
 <translation id="5239333626804545932">Als je het beleid toepast of niet instelt, scant Chrome Cleanup het systeem periodiek op ongewenste software. Als er ongewenste software wordt aangetroffen, wordt de gebruiker gevraagd of deze software moet worden verwijderd. Het is in dit geval mogelijk Chrome Cleanup handmatig te starten via chrome://settings.
 
       Als je het beleid niet toepast, scant Chrome Cleanup niet periodiek en wordt handmatige activering uitgezet.
@@ -4766,9 +4761,6 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 
       De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="5457065417344056871">Gastmodus in browser gebruiken</translation>
-<translation id="5457387982448145430">Als je het beleid toepast, worden opgeslagen wachtwoorden van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden er geen opgeslagen wachtwoorden geïmporteerd bij de eerste uitvoering.
-
-      Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor opgeslagen wachtwoorden aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
 <translation id="5457924070961220141">Hiermee kun je de standaard HTML-renderer configureren wanneer <ph name="PRODUCT_FRAME_NAME" /> is geïnstalleerd.
           De standaardinstelling die wordt gebruikt wanneer dit beleid niet wordt ingesteld, wordt gebruikt om de hostbrowser de rendering te laten regelen, maar je kunt dit naar wens aanpassen en <ph name="PRODUCT_FRAME_NAME" /> HTML-pagina's standaard laten renderen.</translation>
 <translation id="545817252640069915">Onderschepping bij inloggen aanzetten</translation>

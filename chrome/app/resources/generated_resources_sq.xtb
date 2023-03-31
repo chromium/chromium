@@ -3035,7 +3035,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3627671146180677314">Koha e rinovimit të certifikatës së Netscape</translation>
 <translation id="3627879631695760395">Instalo <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Çaktivizo Bluetooth-in</translation>
-<translation id="3629631988386925734">Fut fjalëkalimin tënd për të aktivizuar Smart Lock. Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund të çaktivizosh Smart Lock te "Cilësimet".</translation>
 <translation id="3629664892718440872">Kujtoje këtë zgjedhje</translation>
 <translation id="3630132874740063857">Telefoni yt</translation>
 <translation id="3630995161997703415">Shtoje këtë sajt te rafti yt për ta përdorur në çdo kohë</translation>
@@ -4691,7 +4690,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5111794652433847656">Nuk ka asnjë çelës kalimi për <ph name="APP_NAME" /> në këtë pajisje</translation>
 <translation id="5112577000029535889">&amp;Mjetet e zhvilluesit</translation>
 <translation id="511313294362309725">Aktivizo "Çiftimin e shpejtë"</translation>
-<translation id="5113739826273394829">Nëse klikon këtë ikonë, do ta kyçësh manualisht këtë <ph name="DEVICE_TYPE" />. Herën tjetër, do të nevojitet të shkruash fjalëkalimin për të hyrë.</translation>
 <translation id="51143538739122961">Fut kodin e sigurisë dhe preke</translation>
 <translation id="5115309401544567011">Lidhe pajisjen tënde <ph name="DEVICE_TYPE" /> me një burim energjie.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5086,7 +5084,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5481941284378890518">Shto printerët në afërsi</translation>
 <translation id="5483785310822538350">Revoko qasjen te skedari dhe pajisja</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që të rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> sot. <ph name="LINK_BEGIN" />Shiko detajet<ph name="LINK_END" />}other{<ph name="MANAGER" /> kërkon që t'i rezervosh të dhënat e tua dhe ta kthesh këtë pajisje <ph name="DEVICE_TYPE" /> brenda {NUM_DAYS} ditëve. <ph name="LINK_BEGIN" />Shiko detajet<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Pajisja jote <ph name="DEVICE_TYPE" /> është kyçur për siguri. Fut manualisht fjalëkalimin për të vazhduar.</translation>
 <translation id="5485102783864353244">Shto një aplikacion</translation>
 <translation id="5485754497697573575">Restauro të gjitha skedat</translation>
 <translation id="5486261815000869482">Konfirmo fjalëkalimin</translation>
@@ -5292,7 +5289,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5656845498778518563">Dërgo komentet te Google</translation>
 <translation id="5657156137487675418">Lejo të gjitha kukit</translation>
 <translation id="5657667036353380798">Për t'u instaluar shtesa e jashtme kërkon versionin <ph name="MINIMUM_CHROME_VERSION" /> të Chrome ose më të ri.</translation>
-<translation id="5658415415603568799">Për siguri të shtuar, Smart Lock do të të kërkojë të fusësh fjalëkalimin pas 20 orësh.</translation>
 <translation id="5659593005791499971">Mail-i</translation>
 <translation id="5662513737565158057">Ndrysho se si do të funksionojnë aplikacionet e Linux.</translation>
 <translation id="5663459693447872156">Kalo automatikisht në gjysmë-largësi</translation>
@@ -6796,7 +6792,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7000347579424117903">Përfshi tastin Ctrl, Alt ose "Kërko"</translation>
 <translation id="7001036685275644873">Po rezervon aplikacionet dhe skedarët Linux</translation>
 <translation id="7001066449188684145">Për të printuar te <ph name="PRINTER_NAME" /> kërkohet identifikimi. Kontakto me administratorin tënd.</translation>
-<translation id="7002055706763150362">Për të konfiguruar Smart Lock-un për Chromebook, Google duhet të sigurohet që je ti. Shkruaj fjalëkalimin për të filluar.</translation>
 <translation id="7003339318920871147">Bazat e të dhënave në ueb</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} skedar}other{{COUNT} skedarë}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9308,7 +9303,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="934244546219308557">Emërtoje këtë grup</translation>
 <translation id="934503638756687833">Do të hiqen edhe artikuj që nuk janë listuar këtu, nëse është e nevojshme. Mëso më shumë për &lt;a href="<ph name="URL" />"&gt;mbrojtjen ndaj softuerëve të padëshiruar&lt;/a&gt; në dokumentin informues të privatësisë së Chrome.</translation>
 <translation id="93480724622239549">Defekt në kod ose gabim</translation>
-<translation id="935854577147268200">Telefoni i Smart Lock ndryshoi. Fut fjalëkalimin për të përditësuar Smart Lock. Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund të çaktivizosh Smart Lock te "Cilësimet"</translation>
 <translation id="936646668635477464">Kamera dhe mikrofoni</translation>
 <translation id="936801553271523408">Të dhënat diagnostikuese të sistemit</translation>
 <translation id="93766956588638423">Riparo shtesën</translation>

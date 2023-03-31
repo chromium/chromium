@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">Šim datoram jau ir instalēta jaunākā Google Chrome versija. Ja programmatūra nedarbojas, atinstalējiet Google Chrome un mēģiniet vēlreiz.</translation>
 <translation id="139993653570221430">Ja pārdomāsiet, jebkurā laikā varēsiet atbilstoši mainīt Chrome iestatījumus. Izmēģinājuma laikā reklāmu rādīšanai tiek izmantotas arī pašreizējās metodes, tāpēc izmaiņas nebūs pamanāmas uzreiz.</translation>
 <translation id="1434626383986940139">Chrome Canary lietotnes</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Pārlūkā Google Chrome nav izveidots savienojums ne ar vienu HID ierīci}=1{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīci}zero{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}one{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}other{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}}</translation>
 <translation id="1507198376417198979">Pielāgojiet savu jauno Chrome profilu.</translation>
 <translation id="1516530951338665275">Pārlūkam Google Chrome ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>

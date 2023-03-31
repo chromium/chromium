@@ -3038,7 +3038,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3627671146180677314">Interval de reînnoire a certificatului Netscape</translation>
 <translation id="3627879631695760395">Instalează <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Dezactivează Bluetooth</translation>
-<translation id="3629631988386925734">Introdu parola pentru a activa Smart Lock. Data viitoare, telefonul tău va debloca dispozitivul <ph name="DEVICE_TYPE" />. Poți dezactiva Smart Lock din Setări.</translation>
 <translation id="3629664892718440872">Reține această alegere</translation>
 <translation id="3630132874740063857">Telefonul</translation>
 <translation id="3630995161997703415">Adaugă acest site pe raft pentru a-l folosi oricând</translation>
@@ -4696,7 +4695,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5111794652433847656">Nu există chei de acces pentru <ph name="APP_NAME" /> pe acest dispozitiv</translation>
 <translation id="5112577000029535889">&amp;Instrumente pentru dezvoltatori</translation>
 <translation id="511313294362309725">Activează Fast Pair</translation>
-<translation id="5113739826273394829">Dacă dai clic pe această pictogramă, vei bloca manual acest <ph name="DEVICE_TYPE" />. Pentru acces, data viitoare va trebui să introduci parola.</translation>
 <translation id="51143538739122961">Introdu cheia de securitate și atinge-o</translation>
 <translation id="5115309401544567011">Conectează dispozitivul <ph name="DEVICE_TYPE" /> la o sursă de alimentare.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5092,7 +5090,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5481941284378890518">Adaugă imprimantele din apropiere</translation>
 <translation id="5483785310822538350">Revocă accesul la fișiere și la dispozitive</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi azi acest <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}few{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> în {NUM_DAYS} zile. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}other{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> în {NUM_DAYS} de zile. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Dispozitivul <ph name="DEVICE_TYPE" /> este blocat pentru securitate. Introdu manual parola pentru a continua.</translation>
 <translation id="5485102783864353244">Adaugă o aplicație</translation>
 <translation id="5485754497697573575">Restabilește toate filele</translation>
 <translation id="5486261815000869482">Confirmați parola</translation>
@@ -5298,7 +5295,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5656845498778518563">Trimite feedback la Google</translation>
 <translation id="5657156137487675418">Permiteți toate cookie-urile</translation>
 <translation id="5657667036353380798">Extensia externă necesită instalarea versiunii Chrome <ph name="MINIMUM_CHROME_VERSION" /> sau a unei versiuni superioare.</translation>
-<translation id="5658415415603568799">Pentru mai multă siguranță, Smart Lock îți solicită să introduci parola după 20 de ore.</translation>
 <translation id="5659593005791499971">Adresă de e-mail</translation>
 <translation id="5662513737565158057">Schimbă modul în care vor funcționa aplicațiile din Linux.</translation>
 <translation id="5663459693447872156">Comută automat la lățimea pe jumătate</translation>
@@ -6391,6 +6387,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6647690760956378579">Previzualizare vocală naturală</translation>
 <translation id="6648911618876616409">O actualizare esențială este gata de instalare. Conectează-te pentru a începe.</translation>
 <translation id="6649018507441623493">O secundă…</translation>
+<translation id="6650206238642452078">Abonează-te la evenimentele de sistem ChromeOS</translation>
 <translation id="665061930738760572">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="6651237644330755633">Ai încredere în acest certificat pentru a identifica site-urile</translation>
 <translation id="6651495917527016072">Sincronizează rețele Wi-Fi cu telefonul tău. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -6803,7 +6800,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7000347579424117903">Include Ctrl, Alt sau Căutare</translation>
 <translation id="7001036685275644873">Se face backup pentru aplicațiile și fișierele Linux</translation>
 <translation id="7001066449188684145">Pentru a printa la <ph name="PRINTER_NAME" /> este necesară identificarea. Contactează administratorul.</translation>
-<translation id="7002055706763150362">Pentru a configura Smart Lock pentru Chromebook, Google trebuie să se asigure că ești tu: introdu parola pentru a începe.</translation>
 <translation id="7003339318920871147">Baze de date web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fișier}few{{COUNT} fișiere}other{{COUNT} de fișiere}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9108,6 +9104,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="904224458472510106">Această operație nu poate fi anulată</translation>
 <translation id="9042827002460091668">Verifică-ți conexiunea la internet și încearcă din nou</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
+<translation id="9043264199499366189">Abonează-te la evenimentele de sistem ChromeOS Flex</translation>
 <translation id="9044646465488564462">Conectarea la rețea nu s-a realizat: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista de lecturi s-a mutat într-un panou lateral nou. Încearcă-l aici.</translation>
 <translation id="9045430190527754450">Trimite la Google adresa web a paginii pe care încerci să o accesezi</translation>
@@ -9318,7 +9315,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="934244546219308557">Denumește acest grup</translation>
 <translation id="934503638756687833">Vor fi șterse și articole care nu sunt afișate aici, dacă este necesar. Află mai multe despre &lt;a href="<ph name="URL" />"&gt;protecția împotriva software-ului nedorit&lt;/a&gt; din cartea albă privind confidențialitatea Chrome.</translation>
 <translation id="93480724622239549">Eroare</translation>
-<translation id="935854577147268200">Telefonul Smart Lock s-a schimbat. Introdu parola pentru a actualiza Smart Lock. Data viitoare, telefonul tău va debloca dispozitivul <ph name="DEVICE_TYPE" />. Poți dezactiva Smart Lock din Setări.</translation>
 <translation id="936646668635477464">Camera și microfonul</translation>
 <translation id="936801553271523408">Date de diagnosticare a sistemului</translation>
 <translation id="93766956588638423">Repară extensia</translation>

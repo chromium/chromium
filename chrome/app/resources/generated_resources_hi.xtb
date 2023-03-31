@@ -3041,7 +3041,6 @@
 <translation id="3627671146180677314">Netscape प्रमाणपत्र नवीकरण समय</translation>
 <translation id="3627879631695760395"><ph name="APP" /> इंस्टॉल करें...</translation>
 <translation id="3628275722731025472">ब्लूटूथ बंद करें</translation>
-<translation id="3629631988386925734">Smart Lock चालू करने के लिए अपना पासवर्ड डालें. अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं.</translation>
 <translation id="3629664892718440872">इस विकल्प को याद रखें</translation>
 <translation id="3630132874740063857">आपका फ़ोन</translation>
 <translation id="3630995161997703415">इस साइट को अपनी अलमारी में जोड़ें ताकि आप किसी भी समय इसका उपयोग कर सकें</translation>
@@ -4693,7 +4692,6 @@
 <translation id="5111794652433847656"><ph name="APP_NAME" /> के लिए, इस डिवाइस पर कोई पासकी नहीं है</translation>
 <translation id="5112577000029535889">&amp;डेवलपर टूल</translation>
 <translation id="511313294362309725">फ़ास्ट पेयर की सुविधा चालू करें</translation>
-<translation id="5113739826273394829">अगर आप इस आइकॉन पर क्‍लिक करते हैं तो, आप इस <ph name="DEVICE_TYPE" /> को मैन्‍युअल रूप से लॉक कर लेंगे. अगली बार, अनलॉक करने के लिए आपको अपना पासवर्ड डालना होगा.</translation>
 <translation id="51143538739122961">अपनी सुरक्षा कुंजी लगाएं और उसे छुएं</translation>
 <translation id="5115309401544567011">कृपया अपने <ph name="DEVICE_TYPE" /> को पावर स्रोत में प्लग करें.</translation>
 <translation id="5115338116365931134">एसएसओ (SSO)</translation>
@@ -5087,7 +5085,6 @@
 <translation id="5481941284378890518">आस-पास के प्रिंटर जोड़ें</translation>
 <translation id="5483785310822538350">फ़ाइल और डिवाइस के एक्सेस रद्द करें</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को आज ही लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}one{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}other{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">आपके <ph name="DEVICE_TYPE" /> को सुरक्षा के लिए लॉक किया गया है. जारी रखने के लिए मैन्युअल रूप से अपना पासवर्ड डालें.</translation>
 <translation id="5485102783864353244">ऐप्लिकेशन जोड़ें</translation>
 <translation id="5485754497697573575">सभी टैब पुनर्स्थापित करें</translation>
 <translation id="5486261815000869482">पासवर्ड की पुष्टि करें</translation>
@@ -5290,7 +5287,6 @@
 <translation id="5656845498778518563">Google को सुझाव भेजें</translation>
 <translation id="5657156137487675418">सभी कुकी को अनुमति दें</translation>
 <translation id="5657667036353380798">बाहरी एक्‍सटेंशन को इंस्टॉल होने के लिए chrome के <ph name="MINIMUM_CHROME_VERSION" /> या उच्चतर वर्शन की आवश्‍यकता होती है.</translation>
-<translation id="5658415415603568799">अतिरिक्त सुरक्षा के लिए, Smart Lock आपसे 20 घंटों के बाद अपना पासवर्ड डालने के लिए कहेगा.</translation>
 <translation id="5659593005791499971">ईमेल</translation>
 <translation id="5662513737565158057">Linux ऐप्लिकेशन के काम करने का तरीका बदलें.</translation>
 <translation id="5663459693447872156">अपने आप आधी-चौड़ाई में स्विच करें</translation>
@@ -6380,6 +6376,7 @@
 <translation id="6647690760956378579">नैचुरल वॉइस की झलक</translation>
 <translation id="6648911618876616409">एक ज़रूरी अपडेट इंस्टॉल होने के लिए तैयार है. शुरू करने के लिए साइन इन करें.</translation>
 <translation id="6649018507441623493">बस एक सेकंड...</translation>
+<translation id="6650206238642452078">ChromeOS सिस्टम इवेंट की सदस्यता लें</translation>
 <translation id="665061930738760572">&amp;नई विंडो में खोलें</translation>
 <translation id="6651237644330755633">वेबसाइटों की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
 <translation id="6651495917527016072">वाई-फ़ाई नेटवर्क को अपने फ़ोन के साथ सिंक करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -6792,7 +6789,6 @@
 <translation id="7000347579424117903">Ctrl, Alt या Search को शामिल करें</translation>
 <translation id="7001036685275644873">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप लिया जा रहा है</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> प्रिंट करने के लिए, पहचान की पुष्टि ज़रूरी है कृपया अपने एडमिन से संपर्क करें.</translation>
-<translation id="7002055706763150362">Chromebook के लिए Smart Lock सेट करने के लिए, Google यह पक्का करना चाहता है कि यह आप ही हैं—शुरू करने के लिए अपना पासवर्ड टाइप करें.</translation>
 <translation id="7003339318920871147">वेब डेटाबेस</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} फ़ाइल}one{{COUNT} फ़ाइल}other{{COUNT} फ़ाइलें}}</translation>
 <translation id="7003705861991657723">ऐल्फ़ा</translation>
@@ -9085,6 +9081,7 @@
 <translation id="904224458472510106">इस बदलाव को पहले जैसा नहीं किया जा सकता</translation>
 <translation id="9042827002460091668">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
+<translation id="9043264199499366189">ChromeOS Flex सिस्टम इवेंट की सदस्यता लें</translation>
 <translation id="9044646465488564462">नेटवर्क से कनेक्ट करने में विफल रहा: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">आपकी रीडिंग लिस्ट अब नए साइड पैनल पर है. इसे यहां देखें.</translation>
 <translation id="9045430190527754450">आप जिस पेज पर जाने की कोशिश कर रहे हैं उसका वेब पता Google को भेजती है</translation>
@@ -9294,7 +9291,6 @@
 <translation id="934244546219308557">इस ग्रुप को नाम दें</translation>
 <translation id="934503638756687833">ऐसे आइटम जिनके नाम यहां शामिल नहीं हैं, ज़रूरत पड़ने पर उन्हें भी हटाया जा सकता है. Chrome निजता श्वेत पत्र में &lt;a href="<ph name="URL" />"&gt;अनचाहे सॉफ़्टवेयर से सुरक्षा&lt;/a&gt; के बारे में ज़्यादा जानें.</translation>
 <translation id="93480724622239549">बग या गड़बड़ी</translation>
-<translation id="935854577147268200">Smart Lock वाला फ़ोन बदल गया है. Smart Lock अपडेट करने के लिए अपना पासवर्ड डालें. अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
 <translation id="936646668635477464">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="936801553271523408">सिस्टम का गड़बड़ी संबंधी डेटा</translation>
 <translation id="93766956588638423">एक्‍सटेंशन को ठीक करें</translation>

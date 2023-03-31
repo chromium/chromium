@@ -3049,7 +3049,6 @@
 <translation id="3627671146180677314">‏زمان تجدید گواهی Netscape</translation>
 <translation id="3627879631695760395">نصب <ph name="APP" />…</translation>
 <translation id="3628275722731025472">خاموش کردن بلوتوث</translation>
-<translation id="3629631988386925734">‏برای فعال کردن Smart Lock، گذرواژه‌تان را وارد کنید. دفعه بعد، تلفنتان قفل <ph name="DEVICE_TYPE" /> شما را باز خواهد کرد. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="3629664892718440872">این گزینه به‌خاطر سپرده شود</translation>
 <translation id="3630132874740063857">تلفن شما</translation>
 <translation id="3630995161997703415">این سایت را به قفسه‌تان اضافه کنید تا هر زمان که بخواهید از آن استفاده کنید</translation>
@@ -4706,7 +4705,6 @@
 <translation id="5111794652433847656">هیچ گذرکلیدی برای <ph name="APP_NAME" /> در این دستگاه وجود ندارد</translation>
 <translation id="5112577000029535889">ابزارهای &amp;برنامه نویس</translation>
 <translation id="511313294362309725">روشن کردن «مرتبط‌سازی سریع»</translation>
-<translation id="5113739826273394829">اگر روی این نماد کلیک کنید، به صورت دستی این <ph name="DEVICE_TYPE" /> را قفل خواهید کرد. بار بعد، باید برای وارد شدن، گذرواژه را تایپ کنید.</translation>
 <translation id="51143538739122961">کلید امنیتی را وارد و لمس کنید</translation>
 <translation id="5115309401544567011">لطفاً <ph name="DEVICE_TYPE" /> خود را به منبع نیرو وصل کنید.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5101,7 +5099,6 @@
 <translation id="5481941284378890518">افزودن چاپگرهای اطراف</translation>
 <translation id="5483785310822538350">لغو دسترسی به فایل و دستگاه</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را امروز برگردانید. <ph name="LINK_BEGIN" />دیدن جزئیات<ph name="LINK_END" />}one{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}other{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> برای حفظ امنیت قفل شده است. برای ادامه، گذرواژه‌تان را به‌طور دستی وارد کنید.</translation>
 <translation id="5485102783864353244">افزودن برنامه</translation>
 <translation id="5485754497697573575">بازیابی همه برگه‌ها</translation>
 <translation id="5486261815000869482">تأیید گذرواژه</translation>
@@ -5307,7 +5304,6 @@
 <translation id="5656845498778518563">‏ارسال بازخورد به Google</translation>
 <translation id="5657156137487675418">مجازبودن همه کوکی‌ها</translation>
 <translation id="5657667036353380798">‏برنامه افزودنی خارجی برای نصب شدن به Chrome نسخه <ph name="MINIMUM_CHROME_VERSION" /> یا بالاتر نیاز دارد.</translation>
-<translation id="5658415415603568799">‏برای امنیت بیشتر، Smart Lock درخواست می‌کند گذرواژه‌تان را بعد از ۲۰ ساعت وارد کنید.</translation>
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5662513737565158057">‏نحوه کارکرد برنامه‌های Linux را تغییر دهید.</translation>
 <translation id="5663459693447872156">تغییر خودکار به نیم پهنا</translation>
@@ -6813,7 +6809,6 @@
 <translation id="7000347579424117903">‏باید شامل Ctrl،‏ Alt یا Search‌ باشد</translation>
 <translation id="7001036685275644873">‏پشتیبان‌گیری از برنامه‌ها و فایل‌های Linux</translation>
 <translation id="7001066449188684145">برای چاپ با <ph name="PRINTER_NAME" />، تأیید هویت لازم است. لطفاً با سرپرست تماس بگیرید.</translation>
-<translation id="7002055706763150362">‏برای تنظیم «Smart Lock برای Chromebook»، ‏Google باید مطمئن شود این شما هستید—برای شروع به کار، گذرواژه‌تان را وارد کنید.</translation>
 <translation id="7003339318920871147">پایگاه‌های داده وب</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} فایل}one{{COUNT} فایل}other{{COUNT} فایل}}</translation>
 <translation id="7003705861991657723">آلفا</translation>
@@ -9327,7 +9322,6 @@
 <translation id="934244546219308557">نامی برای گروه وارد کنید</translation>
 <translation id="934503638756687833">‏درصورت لزوم، موارد فهرست‌نشده نیز حذف خواهند شد. در گزارش جامع و دقیق حریم‌ خصوصی Chrome، درباره &lt;a href="<ph name="URL" />"&gt;حفاظت دربرابر نرم‌افزار ناخواسته&lt;/a&gt; اطلاعات بیشتری کسب کنید.</translation>
 <translation id="93480724622239549">اشکال یا خطا</translation>
-<translation id="935854577147268200">‏تلفن Smart Lock تغییر کرد. برای به‌روزرسانی Smart Lock، گذرواژه‌تان را وارد کنید. دفعه بعد، تلفنتان قفل <ph name="DEVICE_TYPE" /> را باز می‌کند. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="936646668635477464">دوربین و میکروفون</translation>
 <translation id="936801553271523408">داده‌های تشخیص خطای سیستم</translation>
 <translation id="93766956588638423">تعمیر افزونه</translation>

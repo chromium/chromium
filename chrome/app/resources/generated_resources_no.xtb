@@ -3049,7 +3049,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3627671146180677314">Tid for fornying av Netscape-sertifikat</translation>
 <translation id="3627879631695760395">Installer <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Slå av Bluetooth</translation>
-<translation id="3629631988386925734">Skriv inn passordet ditt for å slå på Smart Lock. Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene.</translation>
 <translation id="3629664892718440872">Husk dette valget</translation>
 <translation id="3630132874740063857">Telefonen din</translation>
 <translation id="3630995161997703415">Legg til dette nettstedet på hyllen din, slik at det kan brukes når som helst</translation>
@@ -3264,6 +3263,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
 <translation id="3803367742635802571">Nettsteder du besøker, kan slutte å fungere som de skal</translation>
+<translation id="3803583375545057606">Vil du be forelderen din om å slå på denne utvidelsen?</translation>
 <translation id="380408572480438692">Aktivering av innsamling av ytelsesdata hjelper Google med å bekrefte systemet over tid, Data sendes ikke inn før du fyller ut en tilbakemeldingsrapport (Alt-Shift-I) og legger ved ytelsesdata. Du kan deaktivere innsamlingen når som helst via denne skjermen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») tillates ikke på påloggingsskjermer.</translation>
 <translation id="3807747707162121253">&amp;Avbryt</translation>
@@ -3684,6 +3684,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4170314459383239649">Slett ved avslutning</translation>
 <translation id="417096670996204801">Velg en profil</translation>
+<translation id="41725145403849567">Vil du be forelderen din om å legge til denne utvidelsen?</translation>
 <translation id="4175137578744761569">Lys lilla og hvit</translation>
 <translation id="4175737294868205930">Permanent lagring</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
@@ -4705,7 +4706,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5111794652433847656">Det finnes ingen tilgangsnøkler for <ph name="APP_NAME" /> på denne enheten</translation>
 <translation id="5112577000029535889">&amp;Utviklerverktøy</translation>
 <translation id="511313294362309725">Slå på rask sammenkobling</translation>
-<translation id="5113739826273394829">Hvis du klikker på dette ikonet, låser du <ph name="DEVICE_TYPE" />-enheten manuelt. Neste gang må du skrive inn passordet ditt for å komme inn.</translation>
 <translation id="51143538739122961">Sett inn sikkerhetsnøkkelen og berør den</translation>
 <translation id="5115309401544567011">Koble <ph name="DEVICE_TYPE" />-enheten til en strømkilde.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5096,11 +5096,11 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-koden må bestå av minst ett tegn}other{PIN-koden må bestå av minst # tegn}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> krever at du kobler til wifi nå og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).</translation>
 <translation id="5476016146231427848">Start enheten på nytt for å bruke Steam på Chromebook</translation>
+<translation id="5476897066181964657">Du må få lov av en forelder eller foresatt til å legge til denne utvidelsen</translation>
 <translation id="5481273127572794904">Nettsteder som ikke har lov til å laste ned flere filer automatisk</translation>
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
 <translation id="5483785310822538350">Opphev fil- og enhetstilgangen</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" />-enheten er låst av sikkerhetshensyn. Skriv inn passordet ditt manuelt for å fortsette.</translation>
 <translation id="5485102783864353244">Legg til appen</translation>
 <translation id="5485754497697573575">Gjenopprett alle faner</translation>
 <translation id="5486261815000869482">Bekreft passordet</translation>
@@ -5307,7 +5307,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5656845498778518563">Send tilbakemelding til Google</translation>
 <translation id="5657156137487675418">Tillat alle informasjonskapsler</translation>
 <translation id="5657667036353380798">Den eksterne utvidelsen krever at Chrome versjon <ph name="MINIMUM_CHROME_VERSION" /> eller nyere er installert.</translation>
-<translation id="5658415415603568799">For å beskytte deg bedre ber Smart Lock deg om å skrive inn passordet ditt etter 20 timer.</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5662513737565158057">Endre måten Linux-apper fungerer på.</translation>
 <translation id="5663459693447872156">Bytt automatisk til halv bredde</translation>
@@ -6812,7 +6811,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7000347579424117903">Inkluder Ctrl, Alt eller søketasten</translation>
 <translation id="7001036685275644873">Sikkerhetskopierer Linux-apper og -filer</translation>
 <translation id="7001066449188684145">Du trenger identifikasjon for å skrive ut på <ph name="PRINTER_NAME" />. Kontakt administratoren din.</translation>
-<translation id="7002055706763150362">For å konfigurere Smart Lock for Chromebook, må Google være sikker på at det er deg. Skriv inn passordet for å begynne.</translation>
 <translation id="7003339318920871147">Nettdatabaser</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -6849,6 +6847,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7025190659207909717">Administrering av tjenester for mobildata</translation>
 <translation id="7025895441903756761">Sikkerhet og personvern</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Åpne alle i &amp;inkognitovindu}=1{Åpne i &amp;inkognitovindu}other{Åpne alle ({COUNT}) i &amp;inkognitovindu}}</translation>
+<translation id="7028057921476386252">Du må få lov av forelder eller foresatt til å slå på denne utvidelsen</translation>
 <translation id="7029307918966275733">Crostini er ikke installert. Installer Crostini for å se anerkjennelser.</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7030304022046916278">Sender nettadresser til Safe Browsing for å sjekke dem</translation>
@@ -9329,7 +9328,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="934244546219308557">Gi denne gruppen navn</translation>
 <translation id="934503638756687833">Elementer som ikke er oppført her, blir også fjernet ved behov. Du kan finne ut mer om &lt;a href="<ph name="URL" />"&gt;beskyttelse mot uønsket programvare&lt;/a&gt; i det tekniske dokumentet om personvern i Chrome.</translation>
 <translation id="93480724622239549">Feil</translation>
-<translation id="935854577147268200">Smart Lock-telefonen er endret. Skriv inn passordet ditt for å oppdatere Smart Lock. Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene</translation>
 <translation id="936646668635477464">Kamera og mikrofon</translation>
 <translation id="936801553271523408">Systemdiagnostikkdata</translation>
 <translation id="93766956588638423">Reparer utvidelsen</translation>

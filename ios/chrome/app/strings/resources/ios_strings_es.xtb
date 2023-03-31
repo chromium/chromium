@@ -155,6 +155,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2021670401941426298">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="202292859882676807">Acceso a micrófono permitido</translation>
 <translation id="20485545164632846">nuevo elemento</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> cuentas usan la misma contraseña</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} método de pago guardado disponible encima del teclado.}other{{count} métodos de pago guardados disponibles encima del teclado.}}</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
@@ -238,6 +239,10 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="26915454213703967">Buscar dentro de la imagen con Google</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
 <translation id="2695507686909505111">Página traducida</translation>
+<translation id="2696180352517415858">No se cerrará la sesión de tu cuenta de Google. Es posible que <ph name="BEGIN_LINK" />otros tipos de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.
+
+
+Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="2697526135132990015">Cerrar sesión y borrar datos</translation>
 <translation id="2700241355396984822">Opciones para configurar permisos</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
@@ -250,6 +255,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Ahora sigues a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2764831210418622012">justo ahora</translation>
+<translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Búsqueda en modo Incógnito</translation>
 <translation id="277771892408211951">Seleccionar idioma</translation>
 <translation id="2780046210906776326">No hay cuentas de correo</translation>

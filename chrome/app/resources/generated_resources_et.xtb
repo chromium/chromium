@@ -3043,7 +3043,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3627671146180677314">Netscape'i sertifikaadi uuendusaeg</translation>
 <translation id="3627879631695760395">Rakenduse <ph name="APP" /> installimine …</translation>
 <translation id="3628275722731025472">Lülitage Bluetooth välja</translation>
-<translation id="3629631988386925734">Sisestage oma parool, et Smart Lock sisse lülitada. Järgmisel korral avab seadme <ph name="DEVICE_TYPE" /> teie telefon. Funktsiooni Smart Lock saab välja lülitada menüüs Seaded.</translation>
 <translation id="3629664892718440872">Jäta valik meelde</translation>
 <translation id="3630132874740063857">Teie telefon</translation>
 <translation id="3630995161997703415">Lisage sait riiulisse, et see oleks alati käepärast</translation>
@@ -4699,7 +4698,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5111794652433847656">Selles seadmes pole saidi <ph name="APP_NAME" /> jaoks ühtegi pääsuvõtit</translation>
 <translation id="5112577000029535889">Arenda&amp;ja tööriistad</translation>
 <translation id="511313294362309725">Lülita kiirsidumine sisse</translation>
-<translation id="5113739826273394829">Kui klõpsate ikoonil, siis lukustate seadme <ph name="DEVICE_TYPE" /> käsitsi. Jätmine kord peate sellisel juhul sisestama avamiseks parooli.</translation>
 <translation id="51143538739122961">Sisestage oma turvavõti ja puudutage seda</translation>
 <translation id="5115309401544567011">Ühendage seade <ph name="DEVICE_TYPE" /> toiteallikaga.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5094,7 +5092,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5481941284378890518">Läheduses olevate printerite lubamine</translation>
 <translation id="5483785310822538350">Tühista juurdepääs failile ja seadmele</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite seadme <ph name="DEVICE_TYPE" /> täna. <ph name="LINK_BEGIN" />Kuva üksikasjad<ph name="LINK_END" />}other{<ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite seadme <ph name="DEVICE_TYPE" /> {NUM_DAYS} päeva jooksul. <ph name="LINK_BEGIN" />Kuva üksikasjad<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Seade <ph name="DEVICE_TYPE" /> on turvalisuse tagamiseks suletud. Jätkamiseks sisestage parool käsitsi.</translation>
 <translation id="5485102783864353244">Lisa rakendus</translation>
 <translation id="5485754497697573575">Taasta kõik vahekaardid</translation>
 <translation id="5486261815000869482">Kinnitage parool</translation>
@@ -5300,7 +5297,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5656845498778518563">Google’ile tagasiside saatmine</translation>
 <translation id="5657156137487675418">Luba kõik küpsised</translation>
 <translation id="5657667036353380798">Väline laiend nõuab, et installitud oleks Chrome <ph name="MINIMUM_CHROME_VERSION" /> või uuem versioon.</translation>
-<translation id="5658415415603568799">Turvalisuse suurendamiseks palub Smart Lock teil 20 tunni möödudes sisestada parooli.</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5662513737565158057">Muutke seda, kuidas Linuxi rakendused töötavad.</translation>
 <translation id="5663459693447872156">Lülitu automaatselt poolele laiusele</translation>
@@ -6804,7 +6800,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7000347579424117903">Kaasake Ctrl, Alt või otsinguklahv</translation>
 <translation id="7001036685275644873">Linuxi rakenduste ja failide varundamine</translation>
 <translation id="7001066449188684145">Printeriga <ph name="PRINTER_NAME" /> printimiseks on vaja kasutaja kinnitada. Võtke ühendust administraatoriga.</translation>
-<translation id="7002055706763150362">Funktsiooni Smart Lock Chromebookile seadistamiseks vajab Google kinnitust, et see olete teie. Alustamiseks sisestage oma parool.</translation>
 <translation id="7003339318920871147">Veebiandmebaasid</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} faili}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9318,7 +9313,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="934244546219308557">Määrake sellele grupile nimi</translation>
 <translation id="934503638756687833">Siinsest loendist puuduvad üksused võib vajaduse korral ka eemaldada. Vaadake lisateavet &lt;a href="<ph name="URL" />"&gt;soovimatu tarkvara vastase kaitse&lt;/a&gt; kohta Chrome'i privaatsusjuhendist.</translation>
 <translation id="93480724622239549">Tõrge või viga</translation>
-<translation id="935854577147268200">Smart Locki telefoni muudeti. Funktsiooni Smart Lock värskendamiseks sisestage oma parool. Järgmisel korral avab seadme <ph name="DEVICE_TYPE" /> teie telefon. Funktsiooni Smart Lock saab välja lülitada menüüs Seaded.</translation>
 <translation id="936646668635477464">Kaamera ja mikrofon</translation>
 <translation id="936801553271523408">Süsteemidiagnostika andmed</translation>
 <translation id="93766956588638423">Laiendi parandamine</translation>

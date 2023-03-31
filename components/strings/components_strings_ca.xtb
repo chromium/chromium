@@ -1980,6 +1980,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5817918615728894473">Vincula</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Es farà un càrrec a aquesta targeta quan paguis, però el número real de la targeta no es compartirà amb aquest lloc web. Per a més seguretat, es generarà un CVC temporal.}other{Es farà un càrrec a la targeta que hagis seleccionat quan paguis, però el número real de la targeta no es compartirà amb aquest lloc web. Per a més seguretat, es generarà un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nom comú (CN)</translation>
+<translation id="5829215001860862731">Desa al compte</translation>
 <translation id="5830698870816298009">ús i moviment de la càmera</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5838278095973806738">És recomanable que no introdueixis informació sensible en aquest lloc web (com ara contrasenyes o targetes de crèdit), ja que alguns atacants podrien robar-la.</translation>

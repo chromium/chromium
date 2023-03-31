@@ -3036,7 +3036,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3627671146180677314">Hora de renovación do certificado de Netscape</translation>
 <translation id="3627879631695760395">Instalar <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Desactivar Bluetooth</translation>
-<translation id="3629631988386925734">Introduce o teu contrasinal para activar Smart Lock. A próxima vez, o teléfono desbloqueará o dispositivo <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración.</translation>
 <translation id="3629664892718440872">Lembrar esta opción</translation>
 <translation id="3630132874740063857">O teu teléfono</translation>
 <translation id="3630995161997703415">Engade este sitio ao estante para usalo en calquera momento</translation>
@@ -4692,7 +4691,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5111794652433847656">Non hai claves de acceso para <ph name="APP_NAME" /> neste dispositivo</translation>
 <translation id="5112577000029535889">&amp;Ferramentas para programadores</translation>
 <translation id="511313294362309725">Activar Vinculación rápida</translation>
-<translation id="5113739826273394829">Se fas clic nesta icona, bloquearás manualmente <ph name="DEVICE_TYPE" />. A próxima vez, terás que escribir o teu contrasinal para acceder.</translation>
 <translation id="51143538739122961">Introduce a túa chave de seguranza e tócaa</translation>
 <translation id="5115309401544567011">Enchufa o dispositivo <ph name="DEVICE_TYPE" /> a unha fonte de alimentación.</translation>
 <translation id="5115338116365931134">Inicio de sesión único</translation>
@@ -5087,7 +5085,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
 <translation id="5483785310822538350">Revogar acceso a ficheiros e dispositivos</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) hoxe. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">O <ph name="DEVICE_TYPE" /> está bloqueado por cuestións de seguranza. Para continuar, introduce manualmente o teu contrasinal.</translation>
 <translation id="5485102783864353244">Engadir aplicación</translation>
 <translation id="5485754497697573575">Restaurar todas as pestanas</translation>
 <translation id="5486261815000869482">Confirmar contrasinal</translation>
@@ -5291,7 +5288,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5656845498778518563">Enviar a túa opinión a Google</translation>
 <translation id="5657156137487675418">Permitir todas as cookies</translation>
 <translation id="5657667036353380798">A extensión externa require a instalación da versión de Chrome <ph name="MINIMUM_CHROME_VERSION" /> ou unha superior.</translation>
-<translation id="5658415415603568799">Para obter unha maior seguranza, Smart Lock pedirache que introduzas o contrasinal despois de 20 horas.</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5662513737565158057">Cambia o funcionamento das aplicacións de Linux.</translation>
 <translation id="5663459693447872156">Cambiar automaticamente a largura media</translation>
@@ -6794,7 +6790,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7000347579424117903">Utiliza Ctrl, Alt ou a tecla de busca</translation>
 <translation id="7001036685275644873">Creando copia de seguranza das aplicacións e dos ficheiros de Linux</translation>
 <translation id="7001066449188684145">É necesario identificarse para enviar documentos á impresora <ph name="PRINTER_NAME" />. Ponte en contacto co teu administrador.</translation>
-<translation id="7002055706763150362">Para configurar Smart Lock para Chromebook, Google ten que comprobar a túa identidade. Escribe o contrasinal para comezar.</translation>
 <translation id="7003339318920871147">Bases de datos web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ficheiro}other{{COUNT} ficheiros}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9307,7 +9302,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="934244546219308557">Ponlle un nome a este grupo</translation>
 <translation id="934503638756687833">Se é necesario, tamén se quitarán elementos que non se indican aquí. Consulta máis información acerca da &lt;a href="<ph name="URL" />"&gt;protección contra software non desexado&lt;/a&gt; no libro branco de privacidade de Chrome.</translation>
 <translation id="93480724622239549">Erro</translation>
-<translation id="935854577147268200">Modificouse o teléfono que ten activada a función Smart Lock. Introduce o teu contrasinal para actualizar a función. A próxima vez, o teléfono desbloqueará o dispositivo <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración</translation>
 <translation id="936646668635477464">Cámara e micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>

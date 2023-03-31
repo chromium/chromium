@@ -309,7 +309,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 
 Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="3080525922482950719">Você pode salvar páginas para ler depois ou off-line</translation>
-<translation id="3081338492074632642">A senha que você está salvando precisa corresponder à usada em <ph name="WEBSITE" /></translation>
+<translation id="3081338492074632642">A senha que você está salvando precisa ser a mesma usada em <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Histórico e mais</translation>
@@ -887,6 +887,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>
+<translation id="6852222216891664518">Fechar guia fixada</translation>
 <translation id="6858855187367714033">Lido</translation>
 <translation id="6859944681507688231">Para ler um código QR ou cartão de crédito, ative a câmera nas configurações.</translation>
 <translation id="6867369562105931222">senha</translation>
@@ -1064,7 +1065,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8080028325999236607">Fechar todas as guias</translation>
 <translation id="8084285576995584326">Controlar os dados da sua Conta do Google</translation>
 <translation id="809543534949702122">Histórico de pesquisa</translation>
-<translation id="8101409298456377967">Crie, salve e gerencie suas senhas para que possa fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">Crie, salve e gerencie suas senhas para fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Desativar</translation>
 <translation id="8114753159095730575">O download de arquivo está disponível. Opções disponíveis perto da parte inferior da tela.</translation>
@@ -1178,6 +1179,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="891658175948553296">Destacar texto em um site</translation>
 <translation id="8917490105272468696">Sim</translation>
 <translation id="8928133177108699615">Computador</translation>
+<translation id="8934982071228289624">Para salvar essa senha na sua conta, primeiro defina uma para o dispositivo.</translation>
 <translation id="894191600409472540">Crie senhas fortes</translation>
 <translation id="8952559610785099500">Adicionar senha</translation>
 <translation id="8953046091948372197">Suas senhas vão aparecer aqui</translation>

@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">මෙම පරිගණකය සතුව දැනටමත් Google Chrome නවතම සංස්කරණය පවතී. මෘදුකාංගය ක්‍රියා නොකරයි නම්, කරුණාකර Google Chrome ඉවත් කර නැවත උත්සහ කරන්න.</translation>
 <translation id="139993653570221430">ඔබට Chrome සැකසීම් තුළ ඕනෑම වේලාවක ඔබගේ අදහස වෙනස් කළ හැකිය. අත්හදා බැලීම් වත්මන් වෙළඳ දැන්වීම් සපයන ආකාරය සමඟ ක්‍රියාත්මක වේ, එබැවින් ඔබ වෙනස් කිරීම් වහාම නොදකිනු ඇත.</translation>
 <translation id="1434626383986940139">Chrome Canary යෙදුම්</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome HID උපාංගයකට සම්බන්ධ විය}=1{Google Chrome HID උපාංගයකට සම්බන්ධ කර ඇත}one{Google Chrome HID උපාංග වෙත සම්බන්ධ කර ඇත}other{Google Chrome HID උපාංග වෙත සම්බන්ධ කර ඇත}}</translation>
 <translation id="1507198376417198979">ඔබගේ නව Chrome පැතිකඩ අභිරුචිකරණය කරන්න</translation>
 <translation id="1516530951338665275">යුගල කිරීම දිගටම කර ගෙන යාමට Google Chrome හට බ්ලූටූත් ප්‍රවේශය අවශ්‍යයි. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_CROS_OSS" /> මගින් ChromeOS සඳහා හැකියාව ලබා දී ඇත.</translation>

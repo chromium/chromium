@@ -3054,7 +3054,6 @@
 <translation id="3627671146180677314">Netscape Certificate Renewal Time</translation>
 <translation id="3627879631695760395"><ph name="APP" /> 설치...</translation>
 <translation id="3628275722731025472">블루투스 사용 중지</translation>
-<translation id="3629631988386925734">비밀번호를 입력하여 Smart Lock을 사용 설정하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="3629664892718440872">이 선택사항 저장</translation>
 <translation id="3630132874740063857">휴대전화</translation>
 <translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 실행기에 추가합니다</translation>
@@ -4709,7 +4708,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5111794652433847656">이 기기에 <ph name="APP_NAME" />의 패스키가 없습니다.</translation>
 <translation id="5112577000029535889">개발자 도구(&amp;D)</translation>
 <translation id="511313294362309725">빠른 페어링 사용 설정</translation>
-<translation id="5113739826273394829">이 아이콘을 클릭하면 이 <ph name="DEVICE_TYPE" />이(가) 수동으로 잠깁니다. 다음 번에 기기를 잠금 해제하려면 비밀번호를 입력해야 합니다.</translation>
 <translation id="51143538739122961">보안 키를 삽입하고 터치하세요.</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" />을(를) 전원에 연결하세요.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5104,7 +5102,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5481941284378890518">주변 프린터 추가</translation>
 <translation id="5483785310822538350">파일 및 기기 액세스 취소</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 데이터를 백업하고 오늘 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}other{<ph name="MANAGER" />에서 데이터를 백업하고 {NUM_DAYS}일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">보안을 위해 <ph name="DEVICE_TYPE" />이(가) 잠겨 있습니다. 계속하려면 비밀번호를 수동으로 입력하세요.</translation>
 <translation id="5485102783864353244">앱 추가</translation>
 <translation id="5485754497697573575">모든 탭 복원</translation>
 <translation id="5486261815000869482">비밀번호 확인</translation>
@@ -5310,7 +5307,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5656845498778518563">Google에 의견 보내기</translation>
 <translation id="5657156137487675418">모든 쿠키 허용</translation>
 <translation id="5657667036353380798">외부 확장 프로그램을 사용하려면 Chrome 버전 <ph name="MINIMUM_CHROME_VERSION" /> 이상이 설치되어 있어야 합니다.</translation>
-<translation id="5658415415603568799">보안을 강화하기 위해 Smart Lock에서 20시간 후에 비밀번호를 입력하라는 메시지를 표시합니다.</translation>
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5662513737565158057">Linux 앱의 작동방식을 변경합니다.</translation>
 <translation id="5663459693447872156">반각으로 자동 전환</translation>
@@ -6814,7 +6810,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7000347579424117903">Ctrl, Alt, 검색 키가 포함되어야 합니다</translation>
 <translation id="7001036685275644873">Linux 앱 및 파일 백업 중</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> 프린터로 인쇄하려면 신원 확인이 필요합니다. 관리자에게 문의해 주세요.</translation>
-<translation id="7002055706763150362">Chromebook용 Smart Lock을 설정하려면 본인 확인이 필요합니다. 시작하려면 비밀번호를 입력하세요.</translation>
 <translation id="7003339318920871147">웹 데이터베이스</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{파일 {COUNT}개}other{파일 {COUNT}개}}</translation>
 <translation id="7003705861991657723">알파</translation>
@@ -9329,7 +9324,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="934244546219308557">그룹 이름 지정</translation>
 <translation id="934503638756687833">필요한 경우 여기에 표시되지 않은 항목도 삭제됩니다. Chrome 개인 정보 보호 백서에서 &lt;a href="<ph name="URL" />"&gt;원치 않는 소프트웨어 보호&lt;/a&gt;에 관해 자세히 알아보세요.</translation>
 <translation id="93480724622239549">버그 또는 오류</translation>
-<translation id="935854577147268200">Smart Lock 휴대전화가 변경되었습니다. Smart Lock을 업데이트하려면 비밀번호를 입력하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="936646668635477464">카메라 및 마이크</translation>
 <translation id="936801553271523408">시스템 진단 데이터</translation>
 <translation id="93766956588638423">확장 프로그램 복구</translation>

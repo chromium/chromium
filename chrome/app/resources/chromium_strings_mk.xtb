@@ -24,6 +24,7 @@
 
 Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Можете да управувате со сметките на Google во <ph name="SETTINGS_LINK_BEGIN" />Поставки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Се презема…</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium беше поврзан со HID-уред}=1{Chromium е поврзан со HID-уред}one{Chromium е поврзан со HID-уред}other{Chromium е поврзан со HID-уреди}}</translation>
 <translation id="1708666629004767631">Достапна е нова, побезбедна верзија на Chromium.</translation>
 <translation id="17264556997921157">Може да ги гледате и отстранувате темите од интерес што сајтовите ги користат за да ви прикажуваат реклами. Chromium ги проценува вашите интереси според вашата неодамнешна историја на прелистувањето.</translation>
 <translation id="1733725117201708356">Chromium ќе ги избрише податоците од прелистување наскоро</translation>

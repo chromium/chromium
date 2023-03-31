@@ -3052,7 +3052,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3627671146180677314">Netscape Certificate Renewal Time</translation>
 <translation id="3627879631695760395">Menginstal <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Nonaktifkan Bluetooth</translation>
-<translation id="3629631988386925734">Masukkan sandi Anda untuk mengaktifkan Smart Lock. Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="3629664892718440872">Ingat pilihan ini</translation>
 <translation id="3630132874740063857">Ponsel Anda</translation>
 <translation id="3630995161997703415">Tambahkan situs ini ke rak Anda agar dapat digunakan setiap saat</translation>
@@ -4709,7 +4708,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5111794652433847656">Tidak ada kunci sandi untuk <ph name="APP_NAME" /> di perangkat ini</translation>
 <translation id="5112577000029535889">Alat &amp;Pengembang</translation>
 <translation id="511313294362309725">Nyalakan Sambungan Cepat</translation>
-<translation id="5113739826273394829">Jika mengklik ikon ini, <ph name="DEVICE_TYPE" /> akan dikunci secara manual. Selanjutnya, Anda perlu mengetikkan sandi untuk masuk.</translation>
 <translation id="51143538739122961">Masukkan kunci keamanan Anda, lalu sentuh</translation>
 <translation id="5115309401544567011">Harap colokkan perangkat <ph name="DEVICE_TYPE" /> ke sumber listrik.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5104,7 +5102,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5481941284378890518">Tambahkan Printer di Sekitar</translation>
 <translation id="5483785310822538350">Cabut akses perangkat dan file</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini hari ini. <ph name="LINK_BEGIN" />Lihat detailnya<ph name="LINK_END" />}other{<ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini dalam {NUM_DAYS} hari. <ph name="LINK_BEGIN" />Lihat detailnya<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835"><ph name="DEVICE_TYPE" /> Anda dikunci untuk alasan keamanan. Masukkan sandi secara manual untuk melanjutkan.</translation>
 <translation id="5485102783864353244">Tambahkan aplikasi</translation>
 <translation id="5485754497697573575">Pulihkan Semua Tab</translation>
 <translation id="5486261815000869482">Konfirmasi sandi</translation>
@@ -5310,7 +5307,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5656845498778518563">Kirim Masukan ke Google</translation>
 <translation id="5657156137487675418">Izinkan semua cookie</translation>
 <translation id="5657667036353380798">Ekstensi eksternal memerlukan versi chrome <ph name="MINIMUM_CHROME_VERSION" /> atau lebih tinggi untuk dipasang.</translation>
-<translation id="5658415415603568799">Untuk tambahan keamanan, Smart Lock akan meminta Anda memasukkan sandi setelah 20 jam.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5662513737565158057">Mengubah cara kerja aplikasi Linux.</translation>
 <translation id="5663459693447872156">Alihkan ke lebar paruh secara otomatis</translation>
@@ -6814,7 +6810,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7000347579424117903">Sertakan Ctrl, Alt, atau Search</translation>
 <translation id="7001036685275644873">Mencadangkan file &amp; aplikasi Linux</translation>
 <translation id="7001066449188684145">Perlu autentikasi identitas untuk mencetak ke <ph name="PRINTER_NAME" />. Harap hubungi administrator Anda.</translation>
-<translation id="7002055706763150362">Untuk menyiapkan Smart Lock untuk Chromebook, Google perlu memastikan bahwa memang Andalah yang mengaksesnya. Ketik sandi untuk memulai.</translation>
 <translation id="7003339318920871147">Basis data web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} file}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9328,7 +9323,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="934244546219308557">Beri nama grup ini</translation>
 <translation id="934503638756687833">Item yang tidak tercantum di sini juga akan dihapus, jika perlu. Pelajari lebih lanjut tentang &lt;a href="<ph name="URL" />"&gt;perlindungan terhadap software yang tidak diinginkan&lt;/a&gt; di panduan layanan privasi Chrome.</translation>
 <translation id="93480724622239549">Bug atau Error</translation>
-<translation id="935854577147268200">Ponsel Smart Lock diubah. Masukkan sandi Anda untuk memperbarui Smart Lock. Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan</translation>
 <translation id="936646668635477464">Kamera &amp; mikrofon</translation>
 <translation id="936801553271523408">Data diagnosis sistem</translation>
 <translation id="93766956588638423">Perbaiki ekstensi</translation>

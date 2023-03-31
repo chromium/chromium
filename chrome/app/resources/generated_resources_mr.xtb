@@ -1273,6 +1273,7 @@
 <translation id="2077129598763517140">उपलब्ध असेल तेव्हा हार्डवेअर ऍक्सीलरेशन वापरा</translation>
 <translation id="2078019350989722914">(<ph name="KEY_EQUIVALENT" />) मधून बाहेर येण्यापूर्वी चेतावणी द्या</translation>
 <translation id="2079053412993822885">तुम्ही आपल्या मालकीच्या प्रमाणपत्रांपैकी एखादे हटविल्यास, तुम्ही यापुढे आपल्या स्वतःच्या ओळखीसाठी ते वापरू शकणार नाही.</translation>
+<translation id="2079495302726689071">नवीन <ph name="APP" /> टॅबमध्ये लिंक उघडा</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2081816110395725788">बॅटरीवर असताना पॉवर निष्क्रिय करा</translation>
@@ -1407,6 +1408,7 @@
 <translation id="2175384018164129879">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="217576141146192373">प्रिंटर जोडू शकत नाही. कृपया तुमच्या प्रिंटरचे कॉंफिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2175927920773552910">QR कोड</translation>
+<translation id="2177306523871626993">मजकूर रेकग्निशन फाइल डाउनलोड करत आहे… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">गुप्त टॅब: <ph name="TAB_NAME" /></translation>
 <translation id="2178585470774851578">तुम्ही ChromeOS Flex ची डीबगिंग वैशिष्‍ट्ये सुरू करत आहात, ज्यामुळे SSH daemon सेट केले जाईल आणि USB ड्राइव्‍हमधून बूट करणे सुरू केले जाईल.</translation>
 <translation id="2178614541317717477">CA तडजोड</translation>
@@ -1926,6 +1928,7 @@
 <translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> वर कोणत्याही एक्स्टेंशनना अनुमती देऊ नका</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> संपादित करता येईल</translation>
+<translation id="2616008379779647117">कॅप्‍शनची भाषा</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2618797463720777311">Nearby सह शेअरिंग सेट करा</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही.</translation>
@@ -3048,7 +3051,6 @@
 <translation id="3627671146180677314">Netscape सर्टिफिकेट रिन्यूअल वेळ</translation>
 <translation id="3627879631695760395"><ph name="APP" /> इंस्टॉल करा...</translation>
 <translation id="3628275722731025472">ब्लूटूथ बंद करा</translation>
-<translation id="3629631988386925734">Smart Lock सुरू करण्यासाठी तुमचा पासवर्ड एंटर करा. पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमध्ये Smart Lock बंद करू शकता.</translation>
 <translation id="3629664892718440872">ही निवड लक्षात ठेवा</translation>
 <translation id="3630132874740063857">तुमचा फोन</translation>
 <translation id="3630995161997703415">कधीही वापरण्‍यासाठी ही साइट तुमच्या शेल्‍फवर जोडा</translation>
@@ -3122,6 +3124,7 @@
 <translation id="3694590407685276748">मजकूर कर्सर हायलाइट करा</translation>
 <translation id="369489984217678710">पासवर्ड आणि इतर साइन इन डेटा</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{सुरक्षा तपासण्या पूर्ण झाल्या. तुमचा डेटा अपलोड केला जाईल.}=1{सुरक्षा तपासण्या पूर्ण झाल्या. तुमची फाइल अपलोड केली जाईल.}other{सुरक्षा तपासण्या पूर्ण झाल्या. तुमच्या फाइल अपलोड केल्या जातील.}}</translation>
+<translation id="3696817060563289264">मजकूर रेकग्निशनच्‍या फाइल डाउनलोड केल्‍या</translation>
 <translation id="3698471669415859717">पुनरावलोकन पूर्ण झाले</translation>
 <translation id="3698825735945432002">फिल्टर प्रकार</translation>
 <translation id="3699624789011381381">ईमेल ॲड्रेस</translation>
@@ -3140,6 +3143,7 @@
 <translation id="370649949373421643">Wi-fi सक्षम करा</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3707163604290651814">सध्या <ph name="NAME" /> म्हणून साइन इन केले</translation>
+<translation id="3707348585109246684">नवीन <ph name="APP" /> टॅबमध्ये लिंक उघडा</translation>
 <translation id="3708295717182051206">सबटायटल</translation>
 <translation id="3708684582558000260">बंद केलेल्या साइटना डेटा पाठवण्याची किंवा मिळवण्याची प्रक्रिया पूर्ण करण्याची अनुमती देऊ नका</translation>
 <translation id="3709244229496787112">डाउनलोड पूर्ण होण्यापूर्वी ब्राउझर बंद करण्यात आला.</translation>
@@ -3530,6 +3534,7 @@
 <translation id="4027958407426528157">तुमच्या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेल्या अ‍ॅप्समध्ये वेबसाइट उघडा</translation>
 <translation id="4028467762035011525">इनपुट पद्धती जोडा</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> पेजवरून मागे जा</translation>
+<translation id="403088439874411464">मजकूर रेकग्निशन फाइल डाउनलोड करत आहे</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4031527940632463547">सेन्सर ब्लॉक केले गेले आहेत</translation>
 <translation id="4033471457476425443">नवीन फोल्डर जोडा</translation>
@@ -4700,7 +4705,6 @@
 <translation id="5111794652433847656">या डिव्हाइसवर <ph name="APP_NAME" /> साठी कोणत्याही पासकी नाहीत</translation>
 <translation id="5112577000029535889">&amp;विकसक साधने</translation>
 <translation id="511313294362309725">जलद पेअरिंग सुरू करा</translation>
-<translation id="5113739826273394829">तुम्ही हे आयकन क्लिक केल्‍यास, तुम्ही हे <ph name="DEVICE_TYPE" /> मॅन्युअली लॉक कराल. पुढील वेळी, एंटर करण्‍यासाठी तुम्हाला तुमचा पासवर्ड टाइप करण्‍याची आवश्यकता असेल.</translation>
 <translation id="51143538739122961">तुमची सिक्युरिटी की घाला आणि तिला स्पर्श करा</translation>
 <translation id="5115309401544567011">कृपया तुमचा <ph name="DEVICE_TYPE" /> उर्जा स्रोताशी जोडा.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5095,7 +5099,6 @@
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
 <translation id="5483785310822538350">फाइल आणि डिव्हाइस ॲक्सेस रद्द करा</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आज परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> {NUM_DAYS} दिवसांच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">तुमचे <ph name="DEVICE_TYPE" /> सुरक्षेच्या कारणास्तव लॉक करण्यात आलेले आहे. पुढे जाण्यासाठी तुम्ही तुमचा पासवर्ड स्वतः टाका.</translation>
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5485754497697573575">सर्व टॅब पुनर्संचयित करा</translation>
 <translation id="5486261815000869482">पासवर्ड कन्फर्म करा</translation>
@@ -5301,7 +5304,6 @@
 <translation id="5656845498778518563">Google ला फीडबॅक पाठवा</translation>
 <translation id="5657156137487675418">सर्व कुकीजना परवानगी द्या</translation>
 <translation id="5657667036353380798">बाह्य एक्स्टेंशनला chrome <ph name="MINIMUM_CHROME_VERSION" /> किंवा मोठी आवृत्ती इंस्टॉल केली जाण्‍याची आवश्‍यकता आहे.</translation>
-<translation id="5658415415603568799">अतिरिक्त सुरक्षिततेसाठी Smart Lock तुम्हाला २० तासांनंतर पासवर्ड एंटर करण्यास सांगेल.</translation>
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5662513737565158057">Linux ॲप्स कशी काम करतील ते बदला.</translation>
 <translation id="5663459693447872156">अर्ध्यारूंदीकडे स्वयंचलितपणे स्विच करा</translation>
@@ -6806,7 +6808,6 @@
 <translation id="7000347579424117903">Ctrl, Alt किंवा शोधचा समावेश करा</translation>
 <translation id="7001036685275644873">Linux अ‍ॅप्स आणि फायलींचा बॅकअप घेत आहे</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> वर प्रिंट करण्यासाठी ओळखीची पडताळणी करणे आवश्यक आहे. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
-<translation id="7002055706763150362">Chromebook साठी Smart Lock सेट करण्यासाठी, Google ला हे तुम्हीच असल्याचे निश्चित करण्याची आवश्यकता असते—सुरुवात करण्यासाठी तुमचा पासवर्ड टाइप करा.</translation>
 <translation id="7003339318920871147">वेब डेटाबेस</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} फाइल}other{{COUNT} फाइल}}</translation>
 <translation id="7003705861991657723">अल्फा</translation>
@@ -7521,6 +7522,7 @@
 <translation id="7660146600670077843">टॅबवर राइट-क्लिक करा आणि "नवीन गट यामध्ये टॅब जोडा" निवडा</translation>
 <translation id="7661259717474717992">कुकी डेटा सेव्ह करण्यास आणि वाचण्यास साइटना अनुमती द्या</translation>
 <translation id="7661451191293163002">नोंदणी सर्टिफिकेट प्राप्त करणे शक्य झाले नाही.</translation>
+<translation id="7662164944369232556">मजकूर फाइल डाउनलोड करता आल्या नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
 <translation id="7663719505383602579">प्राप्तकर्ता: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">कीबोर्ड शॉर्टकट उपलब्ध आहे</translation>
@@ -8149,6 +8151,7 @@
 <translation id="8195027750202970175">डिस्क वरील आकार</translation>
 <translation id="8195191503358432289">पासवर्ड जोडा</translation>
 <translation id="8195265224453131880">तीव्रता</translation>
+<translation id="8195737548602430447">कॅप्शन आपोआप लक्ष्यित भाषेमध्ये भाषांतरित करा.</translation>
 <translation id="8197673340773315084">कार्य किंवा वैयक्तिक सारखे नाव किंवा लेबल जोडा</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) आणि डिव्हाइसचे गुणधर्म</translation>
@@ -8266,6 +8269,7 @@
 <translation id="8291415872436043161">Chrome डाउनलोड करा</translation>
 <translation id="8293206222192510085">बुकमार्क जोडा</translation>
 <translation id="8294431847097064396">स्रोत</translation>
+<translation id="8295449579927246485">लाइव्ह भाषांतर</translation>
 <translation id="8298429963694909221">तुम्ही आता तुमच्या फोनमधील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर मिळवू शकता. तुमच्या <ph name="DEVICE_TYPE" /> वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील. तुमचा फोन जवळपास असल्याची आणि त्यात ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="8299319456683969623">तुम्ही सध्या ऑफलाइन आहात.</translation>
 <translation id="8300011035382349091">या टॅबचे बुकमार्क संपादित करा</translation>
@@ -8333,6 +8337,7 @@
 <translation id="835951711479681002">तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="8360140320636871023">तुमची डिस्प्ले थीम पर्सनलाइझ करा</translation>
 <translation id="8360267485906769442">फीडबॅक पाठवा बटण</translation>
+<translation id="8362914115861174987">यामध्ये भाषांतर करा</translation>
 <translation id="8363095875018065315">स्थिर</translation>
 <translation id="8363142353806532503">मायक्रोफोन ब्लॉक केला आहे</translation>
 <translation id="8366396658833131068">तुमची नेटवर्क कनेक्टिव्हिटी पुनर्संचयित झाली आहे. कृपया एक भिन्न नेटवर्क निवडा किंवा तुमचा कियोस्क ॲप लाँच करण्यासाठी खालील 'सुरू ठेवा' बटण प्रेस करा.</translation>
@@ -9315,7 +9320,6 @@
 <translation id="934244546219308557">या गटाला नाव द्या</translation>
 <translation id="934503638756687833">आवश्‍यक असल्‍यास, येथे सूचीत नसलेले आयटम देखील काढून टाकले जातील. Chrome गोपनीयता व्‍हाइट पेपरमध्‍ये &lt;a href="<ph name="URL" />"&gt; नको असलेल्या सॉफ्टवेअर संरक्षण&lt;/a&gt; बद्दल अधिक जाणून घ्‍या.</translation>
 <translation id="93480724622239549">बग किंवा एरर</translation>
-<translation id="935854577147268200">Smart Lock फोन बदलला आहे. Smart Lock अपडेट करण्यासाठी तुमचा पासवर्ड एंटर करा. पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता</translation>
 <translation id="936646668635477464">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="936801553271523408">सिस्टम निदान डेटा</translation>
 <translation id="93766956588638423">एक्स्टेंशन दुरुस्त करा</translation>

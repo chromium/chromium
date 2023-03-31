@@ -24,6 +24,7 @@
 <translation id="1399397803214730675">এই কম্পিউটাৰটোৰ এটা অধিক শেহতীয়া Google Chrome সংস্কৰণ আছে। যদি ছফ্টৱেৰটোৱে কাম নকৰে তেন্তে Google Chrome আনইনষ্টল কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="139993653570221430">আপুনি যিকোনো সময়তে Chromeৰ ছেটিঙত নিজৰ সিদ্ধান্ত সলনি কৰিব পাৰে। ট্ৰায়েলসমূহ বৰ্তমান বিজ্ঞাপনবোৰ দেখুওৱাৰ সমান্তৰালকৈ চলে, সেয়েহে আপুনি লগে লগে সালসলনিসমূহ দেখা নাপাব।</translation>
 <translation id="1434626383986940139">Chrome Canary এপ্</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chromeক এটা HID ডিভাইচৰ সৈতে সংযোগ কৰা হৈছিল}=1{Google Chromeক এটা HID ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে}one{Google Chrome HID ডিভাইচসমূহৰ সৈতে সংযোগ কৰা হৈছে}other{Google Chrome HID ডিভাইচসমূহৰ সৈতে সংযোগ কৰা হৈছে}}</translation>
 <translation id="1507198376417198979">আপোনাৰ Chromeৰ নতুন প্ৰ’ফাইলটো কাষ্টমাইজ কৰক</translation>
 <translation id="1516530951338665275">পেয়াৰ কৰাটো অব্যাহত ৰাখিবলৈ Google Chromeক ব্লুটুথ সুবিধাৰ এক্সেছৰ 
 আৱশ্যক। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

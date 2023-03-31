@@ -22,6 +22,7 @@
 
 Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olabilir. Google Hesaplarınızı <ph name="SETTINGS_LINK_BEGIN" />Ayarlar<ph name="SETTINGS_LINK_END" /> bölümünden yönetebilirsiniz.</translation>
 <translation id="1640672724030957280">İndiriliyor...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium hiçbir HID cihazına bağlı değil}=1{Chromium bir HID cihazına bağlı}other{Chromium, HID cihazlarına bağlı}}</translation>
 <translation id="1708666629004767631">Chromium'un kullanabileceğiniz yeni, daha güvenli bir sürümü var.</translation>
 <translation id="17264556997921157">Sitelerin size reklam göstermek için kullandığı ilgi alanlarını görebilir ve kaldırabilirsiniz. Chromium, ilgi alanlarınızı tahmin ederken son tarama geçmişinizi kullanır.</translation>
 <translation id="1733725117201708356">Chromium yakında tarama verilerini silecek</translation>

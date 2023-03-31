@@ -3055,7 +3055,6 @@
 <translation id="3627671146180677314">Час відновлення сертифіката Netscape</translation>
 <translation id="3627879631695760395">Установити додаток <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Вимкнути Bluetooth</translation>
-<translation id="3629631988386925734">Щоб увімкнути Smart Lock, введіть пароль. Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
 <translation id="3629664892718440872">Запам’ятати цей вибір</translation>
 <translation id="3630132874740063857">Ваш номер телефону</translation>
 <translation id="3630995161997703415">Додайте цей сайт на полицю, щоб завжди мати його під рукою</translation>
@@ -4712,7 +4711,6 @@
 <translation id="5111794652433847656">На цьому пристрої немає ключів доступу для додатка <ph name="APP_NAME" /></translation>
 <translation id="5112577000029535889">&amp;Інструменти розробника</translation>
 <translation id="511313294362309725">Увімкнути функцію "Швидка пара"</translation>
-<translation id="5113739826273394829">Натиснувши цей значок, ви вручну заблокуєте цей пристрій <ph name="DEVICE_TYPE" />. Під час наступного входу потрібно буде ввести пароль.</translation>
 <translation id="51143538739122961">Вставте ключ безпеки й торкніться його</translation>
 <translation id="5115309401544567011">Підключіть пристрій <ph name="DEVICE_TYPE" /> до джерела живлення.</translation>
 <translation id="5115338116365931134">Система єдиного входу (SSO)</translation>
@@ -5107,7 +5105,6 @@
 <translation id="5481941284378890518">Додати принтери поруч</translation>
 <translation id="5483785310822538350">Скасувати доступ до файлу та пристрою</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> сьогодні. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}one{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}few{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}many{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}other{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">З міркувань безпеки пристрій <ph name="DEVICE_TYPE" /> заблоковано. Щоб продовжити, введіть пароль вручну.</translation>
 <translation id="5485102783864353244">Установити додаток</translation>
 <translation id="5485754497697573575">Відновити всі вкладки</translation>
 <translation id="5486261815000869482">Підтвердьте пароль</translation>
@@ -5311,7 +5308,6 @@
 <translation id="5656845498778518563">Надіслати відгук у Google</translation>
 <translation id="5657156137487675418">Дозволити всі файли cookie</translation>
 <translation id="5657667036353380798">Для зовнішнього розширення потрібна версія Chrome <ph name="MINIMUM_CHROME_VERSION" /> або новіша.</translation>
-<translation id="5658415415603568799">З міркувань безпеки Smart Lock запропонує ввести пароль через 20 годин.</translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5662513737565158057">Налаштуйте роботу додатків Linux.</translation>
 <translation id="5663459693447872156">Автоматично переключитися на половинну ширину</translation>
@@ -6407,6 +6403,7 @@
 <translation id="6647690760956378579">Попереднє прослуховування природного голосу</translation>
 <translation id="6648911618876616409">Доступне важливе оновлення. Увійдіть, щоб установити його.</translation>
 <translation id="6649018507441623493">Зачекайте…</translation>
+<translation id="6650206238642452078">Підписуватися на події системи ChromeOS</translation>
 <translation id="665061930738760572">Відкрити в &amp;новому вікні</translation>
 <translation id="6651237644330755633">Довіряти цьому сертифікату для ідентифікації веб-сайтів</translation>
 <translation id="6651495917527016072">Синхронізувати мережі Wi-Fi із вашим телефоном. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -6819,7 +6816,6 @@
 <translation id="7000347579424117903">Натискайте Ctrl, Alt або клавішу пошуку</translation>
 <translation id="7001036685275644873">Створення резервної копії додатків і файлів Linux</translation>
 <translation id="7001066449188684145">Щоб друкувати через принтер "<ph name="PRINTER_NAME" />", потрібно надати облікові дані. Зв’яжіться з адміністратором.</translation>
-<translation id="7002055706763150362">Перш ніж налаштувати Smart Lock для Chromebook, введіть пароль – Google має переконатися, що це ви.</translation>
 <translation id="7003339318920871147">Онлайнові бази даних</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файли}many{{COUNT} файлів}other{{COUNT} файлу}}</translation>
 <translation id="7003705861991657723">Альфа-версія</translation>
@@ -9125,6 +9121,7 @@
 <translation id="904224458472510106">Цю операцію не можна відмінити</translation>
 <translation id="9042827002460091668">Перевірте інтернет-з’єднання й повторіть спробу</translation>
 <translation id="9042893549633094279">Конфіденційність і безпека</translation>
+<translation id="9043264199499366189">Підписуватися на події системи ChromeOS Flex</translation>
 <translation id="9044646465488564462">Помилка під’єднання до мережі: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Список читання переміщено на нову бічну панель. Перегляньте його там.</translation>
 <translation id="9045430190527754450">Надсилає в Google веб-адресу сторінки, яку ви намагаєтеся відкрити</translation>
@@ -9335,7 +9332,6 @@
 <translation id="934244546219308557">Введіть назву групи</translation>
 <translation id="934503638756687833">Якщо потрібно, можна також видалити елементи, не перелічені тут. Докладніше про &lt;a href="<ph name="URL" />"&gt;захист від небажаних програм&lt;/a&gt; читайте в інформаційному документі про конфіденційність Chrome.</translation>
 <translation id="93480724622239549">Помилка</translation>
-<translation id="935854577147268200">Телефон для Smart Lock змінено. Щоб оновити Smart Lock, введіть пароль. Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях</translation>
 <translation id="936646668635477464">Камера та мікрофон</translation>
 <translation id="936801553271523408">Дані діагностики системи</translation>
 <translation id="93766956588638423">Полагодити розширення</translation>

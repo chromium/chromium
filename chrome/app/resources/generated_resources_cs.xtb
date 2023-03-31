@@ -3039,7 +3039,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3627671146180677314">Čas obnovení certifikátu Netscape</translation>
 <translation id="3627879631695760395">Nainstalovat aplikaci <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Vypnout Bluetooth</translation>
-<translation id="3629631988386925734">Chcete-li zapnout funkci Smart Lock, zadejte heslo. Příště váš telefon zařízení <ph name="DEVICE_TYPE" /> odemkne. Funkci Smart Lock můžete vypnout v Nastavení.</translation>
 <translation id="3629664892718440872">Zapamatovat tuto volbu</translation>
 <translation id="3630132874740063857">Váš telefon</translation>
 <translation id="3630995161997703415">Pokud si tento web přidáte na poličku, budete jej moci kdykoliv použít</translation>
@@ -4694,7 +4693,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5111794652433847656">V tomto zařízení nejsou pro web <ph name="APP_NAME" /> žádné přístupové klíče</translation>
 <translation id="5112577000029535889">&amp;Nástroje pro vývojáře</translation>
 <translation id="511313294362309725">Zapnout Rychlé párování</translation>
-<translation id="5113739826273394829">Pokud kliknete na tuto ikonu, ručně toto zařízení <ph name="DEVICE_TYPE" /> zamknete. Při příštím přístupu budete muset zadat heslo.</translation>
 <translation id="51143538739122961">Vložte bezpečnostní klíč a dotkněte se jej</translation>
 <translation id="5115309401544567011">Zapojte <ph name="DEVICE_TYPE" /> do zdroje napájení.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5089,7 +5087,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5481941284378890518">Přidat tiskárny v okolí</translation>
 <translation id="5483785310822538350">Zrušit přístup k souborům a zařízení</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a ještě dnes toto zařízení <ph name="DEVICE_TYPE" /> vrátili. <ph name="LINK_BEGIN" />Zobrazit podrobnosti<ph name="LINK_END" />}few{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do {NUM_DAYS} dní toto zařízení <ph name="DEVICE_TYPE" /> vrátili. <ph name="LINK_BEGIN" />Zobrazit podrobnosti<ph name="LINK_END" />}many{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do {NUM_DAYS} dne toto zařízení <ph name="DEVICE_TYPE" /> vrátili. <ph name="LINK_BEGIN" />Zobrazit podrobnosti<ph name="LINK_END" />}other{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do {NUM_DAYS} dní toto zařízení <ph name="DEVICE_TYPE" /> vrátili. <ph name="LINK_BEGIN" />Zobrazit podrobnosti<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Zařízení <ph name="DEVICE_TYPE" /> je z bezpečnostních důvodů uzamčeno. Chcete-li pokračovat, ručně zadejte heslo.</translation>
 <translation id="5485102783864353244">Přidat aplikaci</translation>
 <translation id="5485754497697573575">Obnovit všechny karty</translation>
 <translation id="5486261815000869482">Potvrďte heslo</translation>
@@ -5293,7 +5290,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5656845498778518563">Odeslat Googlu zpětnou vazbu</translation>
 <translation id="5657156137487675418">Povolit všechny soubory cookie</translation>
 <translation id="5657667036353380798">k instalaci tohoto externího rozšíření je vyžadován Chrome verze <ph name="MINIMUM_CHROME_VERSION" /> nebo vyšší.</translation>
-<translation id="5658415415603568799">Z důvodu lepšího zabezpečení vás Smart Lock po 20 hodinách požádá o opětovné zadání hesla.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662513737565158057">Změna fungování linuxových aplikací.</translation>
 <translation id="5663459693447872156">Automaticky přepnout na poloviční šířku</translation>
@@ -6387,6 +6383,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6647690760956378579">Náhled přirozeného hlasu</translation>
 <translation id="6648911618876616409">K instalaci je připravena kritická aktualizace. Začněte tím, že se přihlásíte.</translation>
 <translation id="6649018507441623493">Chviličku…</translation>
+<translation id="6650206238642452078">Odebírat události systému ChromeOS</translation>
 <translation id="665061930738760572">Otevřít v &amp;novém okně</translation>
 <translation id="6651237644330755633">Důvěřovat tomuto certifikátu k identifikaci webových stránek</translation>
 <translation id="6651495917527016072">Synchronizace sítí Wi-Fi s vaším telefonem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -6799,7 +6796,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7000347579424117903">Zahrňte klávesu Ctrl, Alt, nebo Hledat</translation>
 <translation id="7001036685275644873">Zálohování aplikací a souborů systému Linux</translation>
 <translation id="7001066449188684145">K tisku na tiskárně <ph name="PRINTER_NAME" /> je vyžadována identifikace. Obraťte se na administrátora.</translation>
-<translation id="7002055706763150362">Aby bylo možné funkci Smart Lock pro Chromebook nastavit, Google musí zkontrolovat, zda jste to opravdu vy. Chcete-li začít, zadejte heslo.</translation>
 <translation id="7003339318920871147">Webové databáze</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} soubor}few{{COUNT} soubory}many{{COUNT} souboru}other{{COUNT} souborů}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9104,6 +9100,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="904224458472510106">Tuto akci nelze vrátit zpět</translation>
 <translation id="9042827002460091668">Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
+<translation id="9043264199499366189">Odebírat události systému ChromeOS Flex</translation>
 <translation id="9044646465488564462">Připojení k síti se nezdařilo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Seznam četby byl přesunut na nový postranní panel. Vyzkoušejte si to zde.</translation>
 <translation id="9045430190527754450">Odesílá do Googlu webovou adresu stránky, na kterou se pokoušíte přejít</translation>
@@ -9314,7 +9311,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="934244546219308557">Pojmenujte tuto skupinu</translation>
 <translation id="934503638756687833">V případě potřeby budou odstraněny i položky, které zde nejsou uvedeny. Další informace o &lt;a href="<ph name="URL" />"&gt;ochraně před nežádoucím softwarem&lt;/a&gt; najdete v informační brožuře o ochraně soukromí v Chromu.</translation>
 <translation id="93480724622239549">Chyba</translation>
-<translation id="935854577147268200">Telefon pro Smart Lock se změnil. Chcete-li funkci Smart Lock aktualizovat, zadejte heslo. Příště váš telefon zařízení <ph name="DEVICE_TYPE" /> odemkne. Funkci Smart Lock můžete vypnout v Nastavení.</translation>
 <translation id="936646668635477464">Kamera a mikrofon</translation>
 <translation id="936801553271523408">Diagnostická data o systému</translation>
 <translation id="93766956588638423">Opravit rozšíření</translation>

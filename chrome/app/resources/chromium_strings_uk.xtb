@@ -22,6 +22,7 @@
 
 Дозволи, надані веб-сайтам і додаткам, можуть діяти для цього облікового запису. Ви можете керувати своїми обліковими записами Google у <ph name="SETTINGS_LINK_BEGIN" />Налаштуваннях<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Завантаження...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium не підключено до пристрою HID}=1{Chromium підключено до пристрою HID}one{Chromium підключено до пристроїв HID}few{Chromium підключено до пристроїв HID}many{Chromium підключено до пристроїв HID}other{Chromium підключено до пристроїв HID}}</translation>
 <translation id="1708666629004767631">Доступна нова, надійніша версія Chromium.</translation>
 <translation id="17264556997921157">Ви можете переглядати й вилучати цікаві теми, на основі яких сайти показують вам оголошення. Chromium оцінює, які теми вас цікавлять, за вашою нещодавньою історією веб-перегляду.</translation>
 <translation id="1733725117201708356">Незабаром Chromium видалить дані веб-перегляду</translation>

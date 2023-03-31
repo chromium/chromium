@@ -24,6 +24,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 
 Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akhawunti. Ungakwazi nokuphatha ama-Google Account wakho kokuthi <ph name="SETTINGS_LINK_BEGIN" />Amasethingi<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">Iyadawuniloda...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{I-Chromium ixhumeke kudivayisi ye-HID}=1{I-Chromium ixhumeke kudivayisi ye-HID}one{I-Chromium ixhumeke kumadivayisi we-HID}other{I-Chromium ixhumeke kumadivayisi we-HID}}</translation>
 <translation id="1708666629004767631">Kukhona inguqulo entsha, ephephile ye-Chromium etholakalayo.</translation>
 <translation id="17264556997921157">Ungabona futhi ususe izihloko zesayithi ongaba nentshisekelo kuzo ezisetshenziswa ukukubonisa izikhangiso. I-Chromium izolinganisa ongaba nentshisekelo kukho ngokusekelwe kumlando wakho wakamuva wokubhrawuza.</translation>
 <translation id="1733725117201708356">I-Chromium izosula idatha yokubhrawuza maduze</translation>

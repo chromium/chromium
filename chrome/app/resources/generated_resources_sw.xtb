@@ -3049,7 +3049,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3627671146180677314">Muda wa Ku</translation>
 <translation id="3627879631695760395">Sakinisha <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Zima Bluetooth</translation>
-<translation id="3629631988386925734">Weka nenosiri lako ili uwashe Smart Lock. Wakati ujao, simu yako itafungua <ph name="DEVICE_TYPE" /> yako. Unaweza kuzima Smart Lock katika Mipangilio.</translation>
 <translation id="3629664892718440872">Kumbuka chaguo hili</translation>
 <translation id="3630132874740063857">Simu yako</translation>
 <translation id="3630995161997703415">Ongeza tovuti hii kwenye rafu yako ili uitumie wakati wowote</translation>
@@ -4704,7 +4703,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5111794652433847656">Hakuna manenosiri yoyote ya <ph name="APP_NAME" /> kwenye kifaa hiki</translation>
 <translation id="5112577000029535889">Zana za &amp;Wasanidi Programu</translation>
 <translation id="511313294362309725">Washa kipengele cha Kuoanisha Haraka</translation>
-<translation id="5113739826273394829">Ukibonyeza aikoni hii, utafunga <ph name="DEVICE_TYPE" /> hii kwa njia ya kawaida. Wakati ujao, utahitaji kucharaza nenosiri lako ili kuingia.</translation>
 <translation id="51143538739122961">Weka ufunguo wako wa usalama kisha uuguse</translation>
 <translation id="5115309401544567011">Tafadhali weka kifaa chako cha <ph name="DEVICE_TYPE" /> kwenye chaji.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5099,7 +5097,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5481941284378890518">Ongeza Printa za Uhamishaji wa Karibu</translation>
 <translation id="5483785310822538350">Batilisha idhini ya kufikia faili na kifaa</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii leo. <ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}other{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii ndani ya siku {NUM_DAYS}.<ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Kifaa chako cha <ph name="DEVICE_TYPE" /> kimefungwa kwa sababu ya usalama. Andika nenosiri lako mwenyewe ili uendelee.</translation>
 <translation id="5485102783864353244">Ongeza programu</translation>
 <translation id="5485754497697573575">Hifadhi Upya Vichupo Vyote</translation>
 <translation id="5486261815000869482">Thibitisha nenosiri</translation>
@@ -5305,7 +5302,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5656845498778518563">Tuma Maoni kwa Google</translation>
 <translation id="5657156137487675418">Ruhusu vidakuzi vyote</translation>
 <translation id="5657667036353380798">Kiendelezi cha nje kinahitaji toleo la chrome la <ph name="MINIMUM_CHROME_VERSION" /> au zaidi ili kisakinishwe.</translation>
-<translation id="5658415415603568799">Kwa usalama wa ziada, Smart Lock itakuomba uweke nenosiri lako baada ya saa 20.</translation>
 <translation id="5659593005791499971">Barua pepe</translation>
 <translation id="5662513737565158057">Badilisha jinsi programu za Linux zitafanya kazi.</translation>
 <translation id="5663459693447872156">Badili kiotomatiki kuwa upananusu</translation>
@@ -6809,7 +6805,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7000347579424117903">Jumuisha kitufe cha Ctrl, Alt, au Utafutaji</translation>
 <translation id="7001036685275644873">Inaweka nakala za programu na faili za Linux</translation>
 <translation id="7001066449188684145">Unahitaji kitambulisho ili uweze kuchapisha kwenye <ph name="PRINTER_NAME" />. Tafadhali wasiliana na msimamizi wako.</translation>
-<translation id="7002055706763150362">Ili kusanidi Smart Lock ya Chromebook, Google inahitaji kuhakikisha kuwa ni wewe—charaza nenosiri lako ili uanze.</translation>
 <translation id="7003339318920871147">Hifadhidata za wavuti</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{Faili {COUNT}}other{Faili {COUNT}}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9324,7 +9319,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="934244546219308557">Kipe kikundi hiki jina</translation>
 <translation id="934503638756687833">Vipengee ambavyo havijaorodheshwa hapa pia vitaondolewa, panapohitajika. Pata maelezo zaidi kuhusu &lt;a href="<ph name="URL" />"&gt;ulinzi dhidi ya programu zisizohitajika&lt;/a&gt; katika ripoti rasmi na ya faragha ya Chrome.</translation>
 <translation id="93480724622239549">Hitilafu</translation>
-<translation id="935854577147268200">Umebadilisha simu inayotumia Smart Lock. Weka nenosiri lako ili usasishe Smart Lock. Wakati ujao, simu yako itafungua <ph name="DEVICE_TYPE" /> yako. Unaweza kuzima Smart Lock katika Mipangilio</translation>
 <translation id="936646668635477464">Kamera na maikrofoni</translation>
 <translation id="936801553271523408">Data ya uchungzi wa mfumo</translation>
 <translation id="93766956588638423">Karabati kiendelezi</translation>

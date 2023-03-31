@@ -3039,7 +3039,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3627671146180677314">Netscape sertifikatini yangilash vaqti</translation>
 <translation id="3627879631695760395"><ph name="APP" /> ilovasini o‘rnatish...</translation>
 <translation id="3628275722731025472">Bluetoothni oʻchirish</translation>
-<translation id="3629631988386925734">Smart Lock funksiyasini yoqish uchun parolni kiriting. Keyingi safar telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
 <translation id="3629664892718440872">Shu tanlov eslab qolinsin</translation>
 <translation id="3630132874740063857">Telefoningiz</translation>
 <translation id="3630995161997703415">Bu saytdan xohlagan vaqtda foydalanish uchun javoningizga qo‘shing</translation>
@@ -4698,7 +4697,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5111794652433847656">Bu qurilmada <ph name="APP_NAME" /> uchun hech qanday kod mavjud emas</translation>
 <translation id="5112577000029535889">&amp;Dasturchi vositalari</translation>
 <translation id="511313294362309725">Tezkor ulanish funksiyasini yoqish</translation>
-<translation id="5113739826273394829">Bu ikonkani bossangiz, <ph name="DEVICE_TYPE" /> qurilmasi qo‘lbola qulflanadi. Keyin uni qulfdan ochish uchun parolni kiritishingiz kerak bo‘ladi.</translation>
 <translation id="51143538739122961">Elektron kalitni qayta suqing va undagi tugmani bosing</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> qurilmangizni elektr quvvatiga ulang.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5094,7 +5092,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5481941284378890518">Yaqin-atrofdagi printerlarni qo‘shish</translation>
 <translation id="5483785310822538350">Fayl va qurilmadan ruxsatni olib qo‘yish</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini bugunoq qaytarishingizni talab qilmoqda. <ph name="LINK_BEGIN" />Tafsilotlar<ph name="LINK_END" />}other{<ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini {NUM_DAYS} kun ichida qaytarishingizni talab qilmoqda. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Xavfsizlik uchun <ph name="DEVICE_TYPE" /> qulflandi. Davom etish uchun parolingizni qo‘lda kiriting.</translation>
 <translation id="5485102783864353244">Ilovani o‘rnatish</translation>
 <translation id="5485754497697573575">Barcha ichki oynalarni qayta tiklash</translation>
 <translation id="5486261815000869482">Parolni tasdiqlang</translation>
@@ -5300,7 +5297,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5656845498778518563">Googlega fikr-mulohaza yuborish</translation>
 <translation id="5657156137487675418">Barcha cookie fayllariga ruxsat berish</translation>
 <translation id="5657667036353380798">Tashqi kengaytma o‘rnatilishi uchun Chrome‘ning <ph name="MINIMUM_CHROME_VERSION" /> yoki undan yuqori versiyasi o‘rnatilgan bo‘lishi kerak.</translation>
-<translation id="5658415415603568799">Xavfsizlikni oshirish uchun Smart Lock 20 soatdan keyin parolingizni kiritishni talab qiladi.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5662513737565158057">Linux ilovalari qanday ishlashini sozlash.</translation>
 <translation id="5663459693447872156">Avtomatik ravishda halfwidth usuliga o'tish</translation>
@@ -6804,7 +6800,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7000347579424117903">Tugmalar birikmasi Ctrl, Alt yoki Search tugmasi bilan boshlanishi lozim</translation>
 <translation id="7001036685275644873">Linux ilova va fayllari zaxiralanmoqda</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> printerida chop etish uchun shaxsingizni tasdiqlang. Administratorga murojaat qiling.</translation>
-<translation id="7002055706763150362">Chromebook uchun Smart Lock funksiyasini sozlash uchun parolni kiriting. Shu usulda biz bu aynan siz ekanligingizni tekshirishimiz mumkin.</translation>
 <translation id="7003339318920871147">Internetdagi ma’lumot omborlari</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ta fayl}other{{COUNT} ta fayl}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9317,7 +9312,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="934244546219308557">Bu guruhni nomlang</translation>
 <translation id="934503638756687833">Ro‘yxatda keltirilmagan fayllar olib tashlangan bo‘lishi mumkin. &lt;a href="<ph name="URL" />"&gt;Keraksiz dasturlardan himoyalanish&lt;/a&gt; haqida batafsil axborot oling.</translation>
 <translation id="93480724622239549">Nosozlik yoki xatolik</translation>
-<translation id="935854577147268200">Smart Lock funksiyasi yoqilgan telefon oʻzgardi. Smart Lock funksiyasini yangilash uchun parolni kiriting. Keyingi safar telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
 <translation id="936646668635477464">Kamera va mikrofon</translation>
 <translation id="936801553271523408">Tizim diagnostik ma’lumotlari</translation>
 <translation id="93766956588638423">Kengaytmani ta’mirlash</translation>

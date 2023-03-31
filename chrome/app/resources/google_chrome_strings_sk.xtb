@@ -24,6 +24,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1399397803214730675">Tento počítač už obsahuje novšiu verziu prehliadača Google Chrome. Ak softvér nefunguje, odinštalujte prehliadač Google Chrome a skúste to znova.</translation>
 <translation id="139993653570221430">Svoje rozhodnutie môžete kedykoľvek zmeniť v nastaveniach Chromu. Skúšobné obdobia prebiehajú popri aktuálnemu spôsobu zobrazovania reklám, takže zmeny hneď neuvidíte.</translation>
 <translation id="1434626383986940139">Aplikácie Chrome Canary</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome bol pripojený k zariadeniu HID}=1{Google Chrome je pripojený k zariadeniu HID}few{Google Chrome je pripojený k zariadeniam HID}many{Google Chrome je pripojený k zariadeniam HID}other{Google Chrome je pripojený k zariadeniam HID}}</translation>
 <translation id="1507198376417198979">Prispôsobte svoj nový profil Chromu</translation>
 <translation id="1516530951338665275">Prehliadač Google Chrome potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">Bu bilgisayarda Google Chrome'un daha yeni bir sürümü zaten var. Yazılım çalışmıyorsa, lütfen Google Chrome'un yüklemesini kaldırın ve tekrar deneyin.</translation>
 <translation id="139993653570221430">Fikrinizi değiştirirseniz istediğiniz zaman Chrome ayarlarından değişiklik yapabilirsiniz. Denemeler mevcut reklam sunma yöntemiyle benzer şekilde yürütüldüğü için farklılıkları ilk etapta görmezsiniz.</translation>
 <translation id="1434626383986940139">Chrome Canary Uygulamaları</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome hiçbir HID cihazına bağlı değil}=1{Google Chrome bir HID cihazına bağlı}other{Google Chrome, HID cihazlarına bağlı}}</translation>
 <translation id="1507198376417198979">Yeni Chrome profilinizi özelleştirin</translation>
 <translation id="1516530951338665275">Google Chrome'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>

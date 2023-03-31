@@ -571,6 +571,11 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se esta for desativada ou deixada sem definição, as políticas de nuvem no nível do usuário não poderão ser mescladas com políticas de outras origens.</translation>
 <translation id="152657506688053119">Lista de URLs alternativos para o provedor de pesquisa padrão</translation>
+<translation id="152740744678799092">Se a política for ativada, uma pesquisa padrão será feita quando o usuário digitar um texto na barra de endereço que não seja um URL. Para especificar o provedor de pesquisa padrão, configure o restante das políticas de pesquisa padrão. Se essas políticas forem deixadas em branco, o usuário poderá escolher o provedor padrão. Se a política for desativada, nenhuma pesquisa será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL. O valor "Desativado" não pode ser usado no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Se você definir a política, ela não poderá ser mudada pelos usuários no <ph name="PRODUCT_NAME" />. Se ela não for definida, o provedor de pesquisa padrão ficará ativado e o usuário poderá definir a lista de provedores de pesquisa.
+
+      No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no Gerenciamento de nuvem do navegador Chrome. No <ph name="MAC_OS_NAME" />, ela está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
 <translation id="1547424904796464052">Hash SHA-256 codificado em hexadecimal da imagem do firmware.</translation>
@@ -4587,11 +4592,6 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se a política for ativada e o usuário for afiliado, o estado será informado ao servidor, permitindo que ele detecte se o dispositivo está off-line.</translation>
 <translation id="5238275681097851753">Permitir que determinados conteúdos do <ph name="FLASH_PLUGIN_NAME" /> sejam bloqueados</translation>
 <translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
-<translation id="52393120393725840">Se a política for definida como "Ativada", os usuários poderão fazer com que o <ph name="PRODUCT_NAME" /> se lembre de senhas e as forneça na próxima vez em que eles fizerem login em um site.
-
-      Se a política for definida como "Desativada", os usuários não poderão salvar senhas novas, mas as senhas salvas anteriormente ainda poderão ser usadas.
-
-      Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela não for definida, os usuários poderão desativar o salvamento de senhas.</translation>
 <translation id="5239333626804545932">Se a política for definida como "Ativada" ou não for definida, o Varredura do Chrome verificará o sistema periodicamente em busca de softwares indesejados e, caso algum seja encontrado, perguntará aos usuários se eles querem removê-los. O acionamento manual do Varredura do Chrome em chrome://settings será permitido.
 
       Se a política for definida como "Desativada" o Varredura do Chrome não fará verificações periódicas e o acionamento manual será desativado.
@@ -4860,9 +4860,6 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 
       O valor da política precisa ser especificado em dias.</translation>
 <translation id="5457065417344056871">Ativar o modo visitante no navegador</translation>
-<translation id="5457387982448145430">Se a política for definida como ativada, as senhas salvas serão importadas do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhuma senha será importada durante a primeira execução.
-
-      O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção de senhas salvas estará marcada ou desmarcada de acordo com o valor da política.</translation>
 <translation id="5457924070961220141">Permite configurar o processador HTML padrão quando <ph name="PRODUCT_FRAME_NAME" /> estiver instalado. A configuração padrão utilizada quando esta política é deixada sem definição é permitir que o navegador host faça o processamento, mas você pode, opcionalmente, substituí-la para que <ph name="PRODUCT_FRAME_NAME" /> processe as páginas HTML por padrão.</translation>
 <translation id="545817252640069915">Ativar interceptação de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>

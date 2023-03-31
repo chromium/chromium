@@ -4523,11 +4523,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se il criterio viene impostato su Enabled, lo stato dell'attività del dispositivo verrà segnalato al server, che potrà rilevare se il dispositivo è offline, purché l'utente sia affiliato.</translation>
 <translation id="5238275681097851753">Consenti il blocco di determinati contenuti in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forza l'attivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
-<translation id="52393120393725840">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> ricorda le password degli utenti e le suggerisce all'accesso successivo a un sito.
-
-      Se viene impostato su Disattivato, gli utenti non possono salvare le nuove password, ma quelle salvate in precedenza restano attive.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, gli utenti possono disattivare il salvataggio delle password.</translation>
 <translation id="5239333626804545932">Se il criterio viene impostato su Attivato o se non viene configurato, Chrome Software Cleaner analizza periodicamente il sistema per individuare eventuale software indesiderato e, qualora fosse presente, chiede all'utente se vuole rimuoverlo. L'attivazione manuale di Chrome Software Cleaner da chrome://settings è consentita.
 
       Se il criterio viene impostato su Disattivato, Chrome Software Cleaner non esegue alcuna scansione periodica e l'attivazione manuale è disattivata.
@@ -4789,9 +4784,6 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 
       Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="5457065417344056871">Attiva modalità ospite nel browser</translation>
-<translation id="5457387982448145430">Se il criterio viene impostato su Attivato, le password salvate nel precedente browser predefinito verranno importate alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, nessuna password salvata errà importata alla prima esecuzione.
-
-      Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo delle password salvate verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
 <translation id="5457924070961220141">Consente di configurare il renderer HTML predefinito se <ph name="PRODUCT_FRAME_NAME" /> è installato. Se questa norma non viene impostata, per impostazione predefinita il rendering viene eseguito dal browser host; tuttavia, in alternativa, puoi sostituire tale impostazione e consentire che l'esecuzione del rendering delle pagine HTML venga eseguita, per impostazione predefinita, da <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="545817252640069915">Attiva l'intercettazione dell'accesso</translation>
 <translation id="5460797984317417682">Attiva avviso schermo intero</translation>

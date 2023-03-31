@@ -155,6 +155,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="2021670401941426298">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau.</translation>
 <translation id="202292859882676807">S'ha permès l'accés al micròfon</translation>
 <translation id="20485545164632846">element nou</translation>
+<translation id="2049727122989709386"><ph name="COUNT" /> comptes utilitzen la mateixa contrasenya</translation>
 <translation id="2050196510205866090">{count,plural, =1{Hi ha {count} forma de pagament desada disponible a sobre del teclat.}other{Hi ha {count} formes de pagament desades disponibles a sobre del teclat.}}</translation>
 <translation id="2073572773299281212">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
@@ -238,6 +239,10 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="26915454213703967">Cerca a la imatge amb Google</translation>
 <translation id="2691653761409724435">No disponible sense connexió</translation>
 <translation id="2695507686909505111">S'ha traduït la pàgina</translation>
+<translation id="2696180352517415858">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
+
+
+El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="2697526135132990015">Tanca la sessió i esborra les dades</translation>
 <translation id="2700241355396984822">Opcions per definir els permisos</translation>
 <translation id="2702801445560668637">Llista de lectura</translation>
@@ -250,6 +255,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2747003861858887689">Camp anterior</translation>
 <translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">ara mateix</translation>
+<translation id="2772667768515195373">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça s'ha desat al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Cerca d'incògnit</translation>
 <translation id="277771892408211951">Selecciona l'idioma</translation>
 <translation id="2780046210906776326">Cap compte de correu</translation>

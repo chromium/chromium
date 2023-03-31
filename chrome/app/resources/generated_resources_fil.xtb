@@ -3053,7 +3053,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3627671146180677314">Oras ng Pag-renew ng Netscape Certificate</translation>
 <translation id="3627879631695760395">I-install ang <ph name="APP" />...</translation>
 <translation id="3628275722731025472">I-off ang Bluetooth</translation>
-<translation id="3629631988386925734">Ilagay ang iyong password para i-enable ang Smart Lock. Sa susunod, ia-unlock ng iyong telepono ang <ph name="DEVICE_TYPE" /> mo. Puwede mong i-off ang Smart Lock sa Mga Setting.</translation>
 <translation id="3629664892718440872">Tandaan ang pagpipiliang ito</translation>
 <translation id="3630132874740063857">Iyong telepono</translation>
 <translation id="3630995161997703415">Idagdag ang site na ito sa iyong shelf upang magamit ito anumang oras</translation>
@@ -4712,7 +4711,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5111794652433847656">Walang anumang passkey para kay <ph name="APP_NAME" /> sa device na ito</translation>
 <translation id="5112577000029535889">&amp;Mga Tool ng Nag-develop</translation>
 <translation id="511313294362309725">I-on ang Mabilis na Pagpares</translation>
-<translation id="5113739826273394829">Kung iki-click mo ang icon na ito, manu-mano mong ila-lock ang <ph name="DEVICE_TYPE" /> na ito. Sa susunod, kakailanganin mong i-type ang iyong password upang makapasok.</translation>
 <translation id="51143538739122961">Ipasok ang iyong security key at pindutin ito</translation>
 <translation id="5115309401544567011">Isaksak ang iyong <ph name="DEVICE_TYPE" /> sa isang pinagmumulan ng kuryente.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5108,7 +5106,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5481941284378890518">Magdagdag ng Mga Printer na Nasa Malapit</translation>
 <translation id="5483785310822538350">Bawiin ang access sa file at device</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na i-back up ang data mo at ibalik ang <ph name="DEVICE_TYPE" /> na ito ngayong araw. <ph name="LINK_BEGIN" />Tingnan ang mga detalye<ph name="LINK_END" />}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na i-back up ang data mo at ibalik ang <ph name="DEVICE_TYPE" /> na ito sa loob ng {NUM_DAYS} araw. <ph name="LINK_BEGIN" />Tingnan ang mga detalye<ph name="LINK_END" />}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na i-back up ang data mo at ibalik ang <ph name="DEVICE_TYPE" /> na ito sa loob ng {NUM_DAYS} na araw. <ph name="LINK_BEGIN" />Tingnan ang mga detalye<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Naka-lock ang iyong <ph name="DEVICE_TYPE" /> para sa seguridad. Manual na ilagay ang password mo upang magpatuloy.</translation>
 <translation id="5485102783864353244">Magdagdag ng app</translation>
 <translation id="5485754497697573575">Ibalik ang Lahat ng Mga Tab</translation>
 <translation id="5486261815000869482">Kumpirmahin ang password</translation>
@@ -5314,7 +5311,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5656845498778518563">Magpadala ng Feedback sa Google</translation>
 <translation id="5657156137487675418">Pahintulutan ang lahat ng cookies</translation>
 <translation id="5657667036353380798">Kinakailangan ng external na extension ang bersyon ng Chrome na <ph name="MINIMUM_CHROME_VERSION" /> o mas mataas upang ma-install.</translation>
-<translation id="5658415415603568799">Para sa karagdagang seguridad, hihilingin sa iyo ng Smart Lock na ilagay ang iyong password pagkatapos ng 20 oras.</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5662513737565158057">Baguhin kung paano gagana ang mga Linux app.</translation>
 <translation id="5663459693447872156">Awtomatikong lumipat sa kalahating lapad</translation>
@@ -6820,7 +6816,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7000347579424117903">Isama ang Ctrl, Alt, o Search</translation>
 <translation id="7001036685275644873">Bina-back up ang mga app at file ng Linux</translation>
 <translation id="7001066449188684145">Kinakailangan ang pagkakakilanlan para mag-print sa <ph name="PRINTER_NAME" />. Makipag-ugnayan sa iyong administrator.</translation>
-<translation id="7002055706763150362">Upang i-set up ang Smart Lock para sa Chromebook, kailangang matiyak ng Google na ikaw ito—i-type ang iyong password upang makapagsimula.</translation>
 <translation id="7003339318920871147">Mga database ng web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}one{{COUNT} file}other{{COUNT} na file}}</translation>
 <translation id="7003705861991657723">Alpha</translation>
@@ -9338,7 +9333,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="934244546219308557">Pangalanan ang grupong ito</translation>
 <translation id="934503638756687833">Aalisin din ang mga item na hindi nakalista rito kung kinakailangan. Matuto pa tungkol sa &lt;a href="<ph name="URL" />"&gt;proteksyon laban sa hindi gustong software&lt;/a&gt; sa puting papel ukol sa privacy ng Chrome.</translation>
 <translation id="93480724622239549">Bug o Error</translation>
-<translation id="935854577147268200">Pinalitan ang telepono ng Smart Lock. Ilagay ang iyong password para i-update ang Smart Lock. Sa susunod, ia-unlock ng iyong telepono ang <ph name="DEVICE_TYPE" /> mo. Puwede mong i-off ang Smart Lock sa Mga Setting</translation>
 <translation id="936646668635477464">Camera at mikropono</translation>
 <translation id="936801553271523408">Diagnostic data ng system</translation>
 <translation id="93766956588638423">Ayusin ang extension</translation>

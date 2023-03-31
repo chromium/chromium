@@ -3032,7 +3032,6 @@
 <translation id="3627671146180677314">નેટસ્કેપ પ્રમાણપત્ર નવીકરણ સમય</translation>
 <translation id="3627879631695760395"><ph name="APP" /> ઇન્સ્ટૉલ કરો...</translation>
 <translation id="3628275722731025472">બ્લૂટૂથ બંધ કરો</translation>
-<translation id="3629631988386925734">Smart Lock ચાલુ કરવા માટે તમારો પાસવર્ડ દાખલ કરો. આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
 <translation id="3629664892718440872">આ પસંદ યાદ રાખો</translation>
 <translation id="3630132874740063857">તમારો ફોન</translation>
 <translation id="3630995161997703415">આ સાઇટને ગમે ત્યારે ઉપયોગમાં લેવા માટે તેને તમારા શેલ્ફમાં ઉમેરો</translation>
@@ -4687,7 +4686,6 @@
 <translation id="5111794652433847656"><ph name="APP_NAME" /> માટે આ ડિવાઇસ પર કોઈપણ પાસકી ઉપલબ્ધ નથી</translation>
 <translation id="5112577000029535889">&amp;વિકાસકર્તા સાધનો</translation>
 <translation id="511313294362309725">ઝડપી જોડાણ ચાલુ કરો</translation>
-<translation id="5113739826273394829">જો તમે આ આયકન ક્લિક કરો, તો તમે મેન્યુઅલી આ <ph name="DEVICE_TYPE" /> લૉક કરશો. આગલી વખતે, દાખલ થવા માટે તમારે તમારો પાસવર્ડ ટાઇપ કરવાની જરૂર પડશે.</translation>
 <translation id="51143538739122961">તમારો સુરક્ષા કોડ શામેલ કરો અને તેને સ્પર્શ કરો</translation>
 <translation id="5115309401544567011">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" />નો પ્લગ કોઈ પાવર સ્રોતમાં જોડો.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5082,7 +5080,6 @@
 <translation id="5481941284378890518">નજીકના પ્રિન્ટર્સ ઉમેરો</translation>
 <translation id="5483785310822538350">ફાઇલ અને ઉપકરણ ઍક્સેસને રદબાતલ કરો</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે આજે તમારા ડેટાનું બૅકઅપ લો અને આ <ph name="DEVICE_TYPE" /> પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસમાં પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસમાં પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">તમારું <ph name="DEVICE_TYPE" /> સુરક્ષા માટે લૉક કરેલ છે. ચાલુ રાખવા માટે તમારો પાસવર્ડ જાતે દાખલ કરો.</translation>
 <translation id="5485102783864353244">ઍપ્લિકેશન ઉમેરો</translation>
 <translation id="5485754497697573575">તમામ ટૅબ્સ પુનર્સ્થાપિત કરો</translation>
 <translation id="5486261815000869482">પાસવર્ડની પુષ્ટિ કરો</translation>
@@ -5289,7 +5286,6 @@
 <translation id="5656845498778518563">Googleને પ્રતિસાદ મોકલો</translation>
 <translation id="5657156137487675418">બધી કૂકીઝને મંજૂરી આપો</translation>
 <translation id="5657667036353380798">બાહ્ય એક્સ્ટેંશન માટે chrome વર્ઝન <ph name="MINIMUM_CHROME_VERSION" /> અથવા તેનાથી મોટું વર્ઝન ઇન્સ્ટૉલ કરેલ હોવું જરૂરી છે.</translation>
-<translation id="5658415415603568799">વધારાની સુરક્ષા માટે, Smart Lock તમને 20 કલાક પછી તમારો પાસવર્ડ દાખલ કરવાનું કહેશે.</translation>
 <translation id="5659593005791499971">ઇમેઇલ</translation>
 <translation id="5662513737565158057">Linux ઍપની કાર્ય કરવાની રીત બદલો.</translation>
 <translation id="5663459693447872156">અર્ધપહોળાઈ પર આપમેળે સ્વિચ કરો</translation>
@@ -6382,6 +6378,7 @@ USB ડિવાઇસ</translation>
 <translation id="6647690760956378579">સાહજિક વૉઇસનો પ્રીવ્યૂ</translation>
 <translation id="6648911618876616409">મહત્ત્વપૂર્ણ અપડેટ ઇન્સ્ટૉલ થવા માટે તૈયાર છે. શરૂ કરવા માટે, સાઇન ઇન કરો.</translation>
 <translation id="6649018507441623493">માત્ર એક જ સેકંડ…</translation>
+<translation id="6650206238642452078">ChromeOSની સિસ્ટમ ઇવેન્ટ સબ્સ્ક્રાઇબ કરો</translation>
 <translation id="665061930738760572">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="6651237644330755633">વેબસાઇટ્સ ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
 <translation id="6651495917527016072">તમારા ફોન સાથે વાઇ-ફાઇ નેટવર્ક સિંક કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -6794,7 +6791,6 @@ USB ડિવાઇસ</translation>
 <translation id="7000347579424117903">Ctrl, Alt અથવા Search શામેલ કરો</translation>
 <translation id="7001036685275644873">Linux ઍપ અને ફાઇલોનો બૅકઅપ લેવાઈ રહ્યો છે</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવા માટે લૉગ ઇન વિગત વડે ઓળખ કરવી જરૂરી છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
-<translation id="7002055706763150362">Chromebook માટે Smart Lock સેટ કરવા માટે, Google ને તે તમે છો તેની ખાતરી કરવાની જરૂર છે—પ્રારંભ કરવા માટે તમારો પાસવર્ડ લખો.</translation>
 <translation id="7003339318920871147">વેબ ડેટાબેસેસ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ફાઇલ}one{{COUNT} ફાઇલ}other{{COUNT} ફાઇલ}}</translation>
 <translation id="7003705861991657723">આલ્ફા</translation>
@@ -9091,6 +9087,7 @@ USB ડિવાઇસ</translation>
 <translation id="904224458472510106">આ ઑપરેશનનો છેલ્લો ફેરફાર રદ કરી શકાતો નથી</translation>
 <translation id="9042827002460091668">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="9042893549633094279">પ્રાઇવસી અને સુરક્ષા</translation>
+<translation id="9043264199499366189">ChromeOS Flex ની સિસ્ટમ ઇવેન્ટ સબ્સ્ક્રાઇબ કરો</translation>
 <translation id="9044646465488564462">નેટવર્કથી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">તમારી વાંચન સૂચિ બાજુની નવી પૅનલ પર ખસેડવામાં આવી છે. તેને અહીં અજમાવી જુઓ.</translation>
 <translation id="9045430190527754450">તમે જે Google સુધી પહોંચવાનો પ્રયાસ કરી રહ્યાં છો તે પેજનું વેબ ઍડ્રેસ મોકલે છે</translation>
@@ -9300,7 +9297,6 @@ USB ડિવાઇસ</translation>
 <translation id="934244546219308557">આ ગ્રૂપને નામ આપો</translation>
 <translation id="934503638756687833">જો જરૂર જણાય તો, જે આઇટમ અહીંની સૂચિમાં નથી તે પણ કાઢી નાખવામાં આવશે. Chrome ગોપનીયતા વ્હાઇટ પેપરમાં &lt;a href="<ph name="URL" />"&gt;ન જોઈતા સૉફ્ટવેર સામે રક્ષણ મેળવવા&lt;/a&gt; વિશે વધુ જાણો.</translation>
 <translation id="93480724622239549">ખામી અથવા ભૂલ</translation>
-<translation id="935854577147268200">Smart Lock ફોન બદલાયો. Smart Lock અપડેટ કરવા માટે તમારો પાસવર્ડ દાખલ કરો. આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો</translation>
 <translation id="936646668635477464">કૅમેરા અને માઇક્રોફોન</translation>
 <translation id="936801553271523408">સિસ્ટમ ડાયગ્નોસ્ટિક ડેટા</translation>
 <translation id="93766956588638423">એક્સ્ટેન્શન સુધારો</translation>

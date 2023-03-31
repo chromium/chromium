@@ -1980,6 +1980,7 @@
 <translation id="5817918615728894473">Asociază</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cardul va fi debitat când plătești, dar numărul său real nu va fi trimis acestui site. Pentru un plus de securitate, va fi generat un cod CVC temporar.}few{Cardul pe care îl selectezi va fi debitat când plătești, dar numărul său real nu va fi trimis acestui site. Pentru un plus de securitate, va fi generat un cod CVC temporar.}other{Cardul pe care îl selectezi va fi debitat când plătești, dar numărul său real nu va fi trimis acestui site. Pentru un plus de securitate, va fi generat un cod CVC temporar.}}</translation>
 <translation id="5826507051599432481">Nume comun (CN)</translation>
+<translation id="5829215001860862731">Salvează în cont</translation>
 <translation id="5830698870816298009">folosirea și mișcarea camerei</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5838278095973806738">Nu ar trebui să introduci informații sensibile pe acest site (de exemplu, parole sau carduri de credit), deoarece ar putea fi furate de atacatori.</translation>

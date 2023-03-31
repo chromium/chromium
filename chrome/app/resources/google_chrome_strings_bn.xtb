@@ -22,6 +22,7 @@
 <translation id="1399397803214730675">এই কম্পিউটারটিতে ইতিমধ্যে Google Chrome-এর অতি সাম্প্রতিক ভার্সন রয়েছে৷ যদি সফ্টওয়্যারটি কাজ না করে তবে দয়া করে Google Chrome আনইনস্টল করুন এবং এটি আবার ডাউনলোড করুন৷</translation>
 <translation id="139993653570221430">আপনি Chrome সেটিংস থেকে যেকোনও সময় আপনার সিদ্ধান্ত পরিবর্তন করতে পারেন। বিজ্ঞাপনগুলি বর্তমানে যেখাবে দেখানো হয় সেইভাবে ট্রায়াল কাজ করে তাই সেই মুহূর্তে আপনি পরিবর্তনগুলি দেখতে পাবেন না।</translation>
 <translation id="1434626383986940139">Chrome Canary অ্যাপ্লিকেশানগুলি</translation>
+<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome একটি HID ডিভাইসে কানেক্ট করা ছিল}=1{Google Chrome একটি HID ডিভাইসে কানেক্ট করা আছে}one{Google Chrome একটি HID ডিভাইসে কানেক্ট করা আছে}other{Google Chrome কিছু HID ডিভাইসে কানেক্ট করা আছে}}</translation>
 <translation id="1507198376417198979">আপনার নতুন Chrome প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="1516530951338665275">অন্য ডিভাইসের সাথে কানেক্ট করার জন্য Google Chrome-কে ব্লুটুথের অ্যাক্সেস দিতে 
 হবে। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>

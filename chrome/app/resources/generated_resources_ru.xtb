@@ -3039,7 +3039,6 @@
 <translation id="3627671146180677314">Время обновления сертификата Netscape</translation>
 <translation id="3627879631695760395">Установка приложения "<ph name="APP" />"...</translation>
 <translation id="3628275722731025472">Отключить Bluetooth</translation>
-<translation id="3629631988386925734">Чтобы включить Smart Lock, введите пароль. После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
 <translation id="3629664892718440872">Запомнить выбор</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Добавьте этот сайт на панель запуска, чтобы он всегда был у вас под рукой.</translation>
@@ -4695,7 +4694,6 @@
 <translation id="5111794652433847656">На этом устройстве нет ключей доступа для приложения "<ph name="APP_NAME" />".</translation>
 <translation id="5112577000029535889">Инструменты разработчика</translation>
 <translation id="511313294362309725">Активировать Быстрое подключение</translation>
-<translation id="5113739826273394829">Нажав на этот значок, вы можете заблокировать устройство <ph name="DEVICE_TYPE" />. Чтобы разблокировать его, вам придется ввести пароль.</translation>
 <translation id="51143538739122961">Вставьте электронный ключ и нажмите кнопку на нем.</translation>
 <translation id="5115309401544567011">Подключите <ph name="DEVICE_TYPE" /> к источнику питания.</translation>
 <translation id="5115338116365931134">Система единого входа</translation>
@@ -5090,7 +5088,6 @@
 <translation id="5481941284378890518">Добавить ближайшие принтеры</translation>
 <translation id="5483785310822538350">Запретить доступ к файлам и устройствам</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}one{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}few{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}many{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}other{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">В целях безопасности устройство <ph name="DEVICE_TYPE" /> было заблокировано. Чтобы продолжить, введите пароль вручную.</translation>
 <translation id="5485102783864353244">Установить приложение</translation>
 <translation id="5485754497697573575">Восстановить все вкладки</translation>
 <translation id="5486261815000869482">Подтвердите пароль</translation>
@@ -5296,7 +5293,6 @@
 <translation id="5656845498778518563">Отправка отзыва в Google</translation>
 <translation id="5657156137487675418">Разрешить все файлы сookie</translation>
 <translation id="5657667036353380798">Для установки внешнего расширения требуется версия Chrome <ph name="MINIMUM_CHROME_VERSION" /> или выше.</translation>
-<translation id="5658415415603568799">В целях безопасности через 20 часов вам потребуется ввести пароль.</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5662513737565158057">Измените параметры работы приложений для Linux.</translation>
 <translation id="5663459693447872156">Автоматически переключиться на половинную ширину</translation>
@@ -6806,7 +6802,6 @@
 <translation id="7000347579424117903">Сочетание должно начинаться с клавиши Ctrl, Alt или Search</translation>
 <translation id="7001036685275644873">Резервное копирование приложений и файлов Linux…</translation>
 <translation id="7001066449188684145">Для печати на принтере "<ph name="PRINTER_NAME" />" требуется идентификация. Обратитесь к администратору.</translation>
-<translation id="7002055706763150362">Чтобы начать настройку Smart Lock для Chromebook, введите пароль. Так мы определим, что функцию пытаетесь включить именно вы.</translation>
 <translation id="7003339318920871147">Базы данных в Интернете</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файла}many{{COUNT} файлов}other{{COUNT} файла}}</translation>
 <translation id="7003705861991657723">Альфа-версия</translation>
@@ -9323,7 +9318,6 @@
 <translation id="934244546219308557">Введите название группы вкладок</translation>
 <translation id="934503638756687833">Объекты, не перечисленные здесь, также будут удалены при необходимости. Подробнее &lt;a href="<ph name="URL" />"&gt;о защите от нежелательного ПО&lt;/a&gt;…</translation>
 <translation id="93480724622239549">Ошибка</translation>
-<translation id="935854577147268200">Телефон для снятия блокировки был изменен. Чтобы обновить параметры Smart Lock, введите пароль. После этого вы сможете снимать блокировку устройства <ph name="DEVICE_TYPE" /> с помощью телефона. Чтобы выключить Smart Lock, перейдите в настройки.</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Диагностические данные системы</translation>
 <translation id="93766956588638423">Восстановить расширение</translation>

@@ -145,6 +145,7 @@
 <translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
+<translation id="1980417445547898121">{count,plural, =1{तुमच्या इतर डिव्हाइसवरून या iPhone वर तुमचा अलीकडे अ‍ॅक्टिव्ह असलेला {count} टॅब मिळवा}other{तुमच्या इतर डिव्हाइसवरून या iPhone वर तुमचा अलीकडे अ‍ॅक्टिव्ह असलेले {count} टॅब मिळवा}}</translation>
 <translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="1990820278544963435">शोधा</translation>
@@ -370,6 +371,7 @@
 <translation id="3494788280727468875">ब्राउझिंग डेटा साफ करता याची पुष्टी करा</translation>
 <translation id="35083190962747987">${url} उघडा</translation>
 <translation id="3519193562722059437">वेब ब्राउझ करण्‍यासाठी एक टॅब उघडा.</translation>
+<translation id="3519905498307021260">{count,plural, =1{टॅब उघडा}other{{count} टॅब उघडा}}</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3529024052484145543">सुरक्षित नाही</translation>
 <translation id="3530206579861815432">तुमच्या सिंक केलेल्या सर्व डिव्हाइसवर उघडे आणि अलीकडे बंद केलेले टॅब झटपट शोधा.</translation>
@@ -417,6 +419,7 @@
 <translation id="3863769054730344136">तुमच्या डिव्हाइस वर पाठवा</translation>
 <translation id="387280738075653372">Chrome येथे डाउनलोड करा.</translation>
 <translation id="3888863481921783344">हे तुम्हाला तुमच्या इव्हेंटसाठी संभाव्य निमंत्रितांना दाखवण्यासाठी वापरले जाईल.</translation>
+<translation id="3891414008432200754">किंमत</translation>
 <translation id="3892144330757387737">तुमचा इतिहास तुम्हाला येथे सापडेल</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3904829425754749514">तुमच्या संस्थेने सिंक करणे बंद केले आहे. तुम्ही तरीही या डिव्हाइसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज पाहू शकता. तुम्ही बदल केल्यास, ते तुमच्या खात्याशी सिंक केले जाणार नाहीत.</translation>
@@ -464,6 +467,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डीफॉल्ट ब्राउझर अ‍ॅप<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
+<translation id="4250432749243022864">{count,plural, =0{Open {count} tab}=1{{count} टॅब उघडा}other{{count} टॅब उघडा}}</translation>
 <translation id="4253168017788158739">टीप</translation>
 <translation id="4263576668337963058">उपलब्ध असलेल्या पेज क्रिया दाखवा</translation>
 <translation id="4267586310863245665">{COUNT,plural, =1{तुम्ही {COUNT} चेतावणी डिसमिस केली आहे}other{तुम्ही {COUNT} चेतावण्या डिसमिस केल्या आहेत}}</translation>
@@ -506,6 +510,7 @@
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4536418791685807335">पुन्हा साइन इन करण्याचा प्रयत्न करा.</translation>
 <translation id="4540780316273593836">काहीतरी चूक झाली</translation>
+<translation id="457292989631956153">{COUNT,plural, =1{{COUNT} इनॅक्टिव्ह टॅब बंद करायचा का?}other{{COUNT} इनॅक्टिव्ह टॅब बंद करायचे का?}}</translation>
 <translation id="457386861538956877">अधिक...</translation>
 <translation id="4587235830039045480">तुमच्या Google खाते मध्ये पासवर्ड सेव्ह करा</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -535,6 +540,7 @@
 <translation id="470966556546083668">सिंक करा हे सुरू करू नका</translation>
 <translation id="4737560986434232178">अलीकडील टॅबमध्ये शोधा</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
+<translation id="4746926359847517643">तुम्ही कधीही इतिहासामधून पुन्हा मिळवू शकता.</translation>
 <translation id="4747097190499141774">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो. फक्त तुमचा पासफ्रेज असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेज Google कडे पाठवला किंवा त्याद्वारे स्टोअर केला जात नाही. तुम्ही तुमचा पासफ्रेज विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला सिंक रीसेट करण्याची आवश्यकता असेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, फक्त या डिव्हाइसवर, <ph name="URL" /></translation>
 <translation id="4751645464639803239">नवीन गुप्त टॅब</translation>
@@ -604,6 +610,7 @@
 <translation id="5168414296986405587">iPadOS साठी बिल्ड केले आहे</translation>
 <translation id="5173088371991956744">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
 <translation id="5176312250994681348">अलीकडील पासवर्ड ठेवा</translation>
+<translation id="51802232683641391">{count,plural, =1{तुम्ही Android वर सोडलेला टॅब निवडायचा का?}other{तुम्ही Android वर सोडलेले टॅब निवडायचे का?}}</translation>
 <translation id="5181140330217080051">डाउनलोड करीत आहे</translation>
 <translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5186185447130319458">खाजगी</translation>
@@ -716,6 +723,7 @@
 <translation id="5963939892571022323">हायलाइट करण्यासाठीची लिंक तयार करू शकत नाही.</translation>
 <translation id="5965679971710331625">तुम्ही साइन इन केले आहे</translation>
 <translation id="5979837087407522202">पासवर्ड शोधा</translation>
+<translation id="5981230843984570095">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
 <translation id="5982717868370722439">विद्यमान डेटा <ph name="USER_EMAIL" /> मध्ये जोडा.</translation>
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
 <translation id="5988097621740394599">तुमच्या टॅबवर कमी झालेली किंमत पहा.</translation>
@@ -765,6 +773,7 @@
 <translation id="6232329973559504466">गुप्त शोध</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6254066287920239840">ब्राउझर ऐवजी ॲपमध्ये लिंक उघडा.</translation>
+<translation id="625491139841322297">{count,plural, =1{टॅबचे पुनरावलोकन करा}other{सर्व टॅबचे पुनरावलोकन करा}}</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड संपादित करा</translation>
 <translation id="6277426346321820595">संरक्षण नाही</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
@@ -977,6 +986,7 @@
 <translation id="7607521702806708809">पासवर्ड हटवा</translation>
 <translation id="7611459119367035420">तुम्ही तुमचे पिन केलेले टॅब येथे पाहू शकता.</translation>
 <translation id="7638584964844754484">अयोग्य सांकेतिक पासफ्रेझ</translation>
+<translation id="7640669552036055091">Android वरील टॅब</translation>
 <translation id="7646263789464975852">मेनू → सेटिंग्ज → सुरक्षितता तपासणी</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
 <translation id="764827086632467055">डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा</translation>
@@ -1143,6 +1153,7 @@
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> ला अनफॉलो करा</translation>
 <translation id="8766790350274092814"><ph name="WEBSITE" /> आणि <ph name="SECOND_WEBSITE" /> चे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
 <translation id="8775144690796719618">चुकीची URL</translation>
+<translation id="8780076847684176174">{count,plural, =1{टॅबचे पुनरावलोकन करा...}other{सर्व टॅबचे पुनरावलोकन करा...}}</translation>
 <translation id="8787968206789828143">वेबवर शोधा</translation>
 <translation id="8792626944327216835">मायक्रोफोन</translation>
 <translation id="8803639129939845298">सुरक्षित</translation>
@@ -1207,6 +1218,7 @@
 <translation id="9162432979321511934">ऑटोफिल पासवर्ड सुरू करा</translation>
 <translation id="9165320910061267720">किमती कमी होण्यासंबंधित इशाऱ्यांच्या सूचना मिळवण्यासाठी, तुम्ही तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करणे आवश्यक आहे.</translation>
 <translation id="9177438225260810839">उघड्या असलेल्या टॅबमध्ये शोधा</translation>
+<translation id="9187853111759024059">९९ हून अधिक इनॅक्टिव्ह टॅब बंद करायचे का?</translation>
 <translation id="9188680907066685419">व्यवस्थापित केलेल्या खात्यामधून साइन आउट करा</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिवसांपूर्वी</translation>
 <translation id="9203116392574189331">Handoff</translation>

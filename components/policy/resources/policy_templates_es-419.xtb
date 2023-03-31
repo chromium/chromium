@@ -1545,6 +1545,7 @@ Si estableces esta política, el usuario no podrá anular el valor.
 Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pero el usuario podrá controlarla.</translation>
 <translation id="2413899611035194909">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
 <translation id="2415715982424988916">Explorar (compatible a partir de la versión 91)</translation>
+<translation id="2420958105721932612">Especifica cómo se instala una app. AVAILABLE: La app no se instalará de manera automática, pero el usuario puede instalarla. Esta es la configuración predeterminada si no se especifica esta política. FORCE_INSTALLED: La app se instalará de manera automática y el usuario no podrá desinstalarla. BLOCKED: La app estará bloqueada y no se podrá instalar. Si la app se instaló conforme a una política previa, se desinstalará.</translation>
 <translation id="2421400544595297401">No permitir que los usuarios no afiliados utilicen apps para Android</translation>
 <translation id="2421677964966613267">Esta política dejó de estar disponible en M88; Chrome ya no admite Flash. Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
 
@@ -4591,11 +4592,6 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si la habilitas, el estado de la actividad del dispositivo se informa al servidor, lo que le permite detectar si el dispositivo está sin conexión, siempre que el usuario esté afiliado.</translation>
 <translation id="5238275681097851753">Permitir el bloqueo de cierto contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Habilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
-<translation id="52393120393725840">Si habilitas la política, <ph name="PRODUCT_NAME" /> recordará las contraseñas y las proporcionará a los usuarios la siguiente vez que accedan a su cuenta en un sitio.
-
-      Si inhabilitas la política, los usuarios no podrán guardar nuevas contraseñas, pero seguirán funcionando las que se hayan guardado antes.
-
-      Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, el usuario podrá desactivar la configuración de guardado de contraseñas.</translation>
 <translation id="5239333626804545932">Si habilitas la política o no la estableces, Limpiar Chrome analizará el sistema periódicamente para detectar software no deseado y, si encuentra alguno, le preguntará al usuario si quiere quitarlo. La opción de activar manualmente Limpiar Chrome desde chrome://settings estará habilitada.
 
       Si inhabilitas la política, Limpiar Chrome no analizará el sistema periódicamente y estará inhabilitada la activación manual.
@@ -4868,9 +4864,6 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 
       El valor de la política deberá especificarse en días.</translation>
 <translation id="5457065417344056871">Habilitar modo de invitado en el navegador</translation>
-<translation id="5457387982448145430">Si habilitas la política, se importarán las contraseñas guardadas del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importarán las contraseñas guardadas en la primera ejecución.
-
-      Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente a las contraseñas guardadas estará marcada o desmarcada en función del valor de esta política.</translation>
 <translation id="5457924070961220141">Te permite configurar el procesador HTML predeterminado cuando se instala <ph name="PRODUCT_FRAME_NAME" />. La configuración predeterminada que se usa cuando esta política no se configura es permitir que el navegador del host realice la representación, pero puedes anular esta opción y hacer que <ph name="PRODUCT_FRAME_NAME" /> muestre páginas HTML de forma predeterminada.</translation>
 <translation id="545817252640069915">Habilita la intercepción de acceso</translation>
 <translation id="5460797984317417682">Habilita la alerta de pantalla completa</translation>

@@ -24,6 +24,7 @@
 
 ඔබ දැනටමත් වෙබ් අඩවි සහ යෙදුම් සඳහා ලබා දී ඇති අවසර මෙම ගිණුමට අදාළ විය හැකිය. ඔබට ඔබගේ Google ගිණුම් <ph name="SETTINGS_LINK_BEGIN" />සැකසීම්<ph name="SETTINGS_LINK_END" /> තුළ කළමනාකරණය කිරීමට හැකිය.</translation>
 <translation id="1640672724030957280">බාගනිමින්...</translation>
+<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{Chromium HID උපාංගයකට සම්බන්ධ විය}=1{Chromium HID උපාංගයකට සම්බන්ධ කර ඇත}one{Chromium HID උපාංග වෙත සම්බන්ධ කර ඇත}other{Chromium HID උපාංග වෙත සම්බන්ධ කර ඇත}}</translation>
 <translation id="1708666629004767631">Google Chromium හි නව, වඩා ආරක්ෂිත සංස්කරණයක් පවතී.</translation>
 <translation id="17264556997921157">ඔබට වෙළඳ දැන්වීම් පෙන්වීමට උනන්දුවක් දක්වන අඩවි භාවිතා කරන මාතෘකා බැලීමට සහ ඉවත් කිරීමට හැක. Chromium ඔබේ මෑත බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව ඔබේ ලැදිකම් අනුමාන කරයි.</translation>
 <translation id="1733725117201708356">Chromium ඉක්මනින් බ්‍රවුස් කිරීමේ දත්ත මකනු ඇත</translation>

@@ -3040,7 +3040,6 @@
 <translation id="3627671146180677314">Netscape சான்றிதழ் புதுப்பிப்பு நேரம்</translation>
 <translation id="3627879631695760395"><ph name="APP" />ஐ நிறுவு...</translation>
 <translation id="3628275722731025472">புளூடூத்தை முடக்குதல்</translation>
-<translation id="3629631988386925734">Smart Lockகை இயக்க, கடவுச்சொல்லை உள்ளிடவும். அடுத்த முறை <ph name="DEVICE_TYPE" />ஐ உங்கள் மொபைல் அன்லாக் ஆகும். அமைப்புகளில் Smart Lockகை முடக்கலாம்.</translation>
 <translation id="3629664892718440872">இந்த விருப்பத்தை நினைவில்கொள்</translation>
 <translation id="3630132874740063857">உங்கள் ஃபோன்</translation>
 <translation id="3630995161997703415">இந்தத் தளத்தை எந்த நேரத்திலும் பயன்படுத்த அதனை உங்கள் ஷெல்ஃபில் சேர்க்கவும்</translation>
@@ -4695,7 +4694,6 @@
 <translation id="5111794652433847656">இந்தச் சாதனத்தில் <ph name="APP_NAME" /> தளத்திற்கான கடவுக்குறியீடுகள் எதுவுமில்லை</translation>
 <translation id="5112577000029535889">&amp;டெவலப்பர் கருவிகள்</translation>
 <translation id="511313294362309725">துரித இணைப்பு அம்சத்தை இயக்கு</translation>
-<translation id="5113739826273394829">இந்த ஐகானைக் கிளிக் செய்தால், இந்த <ph name="DEVICE_TYPE" />ஐக் கைமுறையாகப் பூட்ட வேண்டும். அடுத்த முறை, திறப்பதற்கு உங்கள் கடவுச்சொல்லை உள்ளிட வேண்டும்.</translation>
 <translation id="51143538739122961">பாதுகாப்பு விசையைச் செருகி அதைத் தட்டவும்</translation>
 <translation id="5115309401544567011"><ph name="DEVICE_TYPE" /> சாதனத்தைச் சார்ஜ் செய்யவும்.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5090,7 +5088,6 @@
 <translation id="5481941284378890518">அருகிலுள்ள பிரிண்டர்களைச் சேர்</translation>
 <translation id="5483785310822538350">ஃபைல் மற்றும் சாதன அணுகலை ரத்துசெய்</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}other{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை {NUM_DAYS} நாட்களுக்குள் திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">பாதுகாப்பிற்காக, <ph name="DEVICE_TYPE" /> பூட்டப்பட்டது. திறப்பதற்கு நீங்களே கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="5485102783864353244">பயன்பாட்டைச் சேர்</translation>
 <translation id="5485754497697573575">அனைத்து தாவல்களையும் மீட்டமை</translation>
 <translation id="5486261815000869482">கடவுச்சொல்லை உறுதிசெய்க</translation>
@@ -5294,7 +5291,6 @@
 <translation id="5656845498778518563">உங்கள் கருத்தை Googleளுக்கு அனுப்புங்கள்</translation>
 <translation id="5657156137487675418">அனைத்து குக்கீகளையும் அனுமதி</translation>
 <translation id="5657667036353380798">வெளிப்புற நீட்டிப்பிற்கு chrome பதிப்பு <ph name="MINIMUM_CHROME_VERSION" /> அல்லது அதற்கு பிந்தையதை நிறுவியிருக்க வேண்டும்.</translation>
-<translation id="5658415415603568799">கூடுதல் பாதுகாப்பிற்கு, 20 மணிநேரம் கழித்து கடவுச்சொல்லை உள்ளிடும்படி Smart Lock உங்களைக் கேட்கும்.</translation>
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5662513737565158057">Linux ஆப்ஸ் வேலை செய்யும் விதத்தை மாற்றுங்கள்.</translation>
 <translation id="5663459693447872156">அரைஅகலத்திற்கு தானாகவே மாற்று</translation>
@@ -6795,7 +6791,6 @@
 <translation id="7000347579424117903">Ctrl, Alt அல்லது தேடல் விசையைப் பயன்படுத்தித் தொடங்கவும்</translation>
 <translation id="7001036685275644873">Linux ஆப்ஸ் &amp; ஃபைல்கள்  காப்புப் பிரதி எடுக்கப்படுகின்றன.</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" /> இல் பிரிண்ட் செய்ய, அடையாளத்தைச் சரிபார்க்க வேண்டும். உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
-<translation id="7002055706763150362">Chromebookக்கான Smart Lockஐ அமைக்க, இது நீங்கள் தான் என்பதை Google உறுதிப்படுத்த வேண்டும்—தொடங்க, கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="7003339318920871147">வலை தரவுத்தளங்கள்</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ஃபைல்}other{{COUNT} ஃபைல்கள் }}</translation>
 <translation id="7003705861991657723">ஆல்ஃபா</translation>
@@ -9299,7 +9294,6 @@
 <translation id="934244546219308557">இந்தக் குழுவிற்குப் பெயரிடவும்</translation>
 <translation id="934503638756687833">தேவைப்பட்டால், இங்கே பட்டியலிடப்படாத உருப்படிகளும் அகற்றப்படும். Chrome தனியுரிமைத் தகவல் கையேட்டில் &lt;a href="<ph name="URL" />"&gt;தேவையற்ற மென்பொருளிலிருந்து பாதுகாப்பு&lt;/a&gt; பற்றி மேலும் அறிக.</translation>
 <translation id="93480724622239549">சிக்கல் அல்லது பிழை</translation>
-<translation id="935854577147268200">Smart Lock மொபைல் மாற்றப்பட்டது. Smart Lockகைப் புதுப்பிக்க, கடவுச்சொல்லை உள்ளிடவும். அடுத்த முறை, உங்கள் மொபைலானது <ph name="DEVICE_TYPE" /> சாதனத்தை அன்லாக் செய்யும். அமைப்புகளுக்குச் சென்று, Smart Lockகை முடக்கலாம்</translation>
 <translation id="936646668635477464">கேமரா &amp; மைக்ரோஃபோன்</translation>
 <translation id="936801553271523408">முறைமை பகுப்பாய்வு தரவு</translation>
 <translation id="93766956588638423">நீட்டிப்பைப் பழுதுநீக்கு</translation>

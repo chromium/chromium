@@ -3034,7 +3034,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3627671146180677314">Tiempo de renovación del certificado Netscape</translation>
 <translation id="3627879631695760395">Instalar <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Desactivar Bluetooth</translation>
-<translation id="3629631988386925734">Ingresa tu contraseña para habilitar Smart Lock. La próxima vez, tu teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="3629664892718440872">Recordar esta opción</translation>
 <translation id="3630132874740063857">Tu teléfono</translation>
 <translation id="3630995161997703415">Agrega el sitio a tu biblioteca para usarlo en cualquier momento</translation>
@@ -4690,7 +4689,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5111794652433847656">No hay ninguna llave de acceso para <ph name="APP_NAME" /> en este dispositivo</translation>
 <translation id="5112577000029535889">Herramientas del &amp;desarrollador</translation>
 <translation id="511313294362309725">Activar Vinculación rápida</translation>
-<translation id="5113739826273394829">Si haces clic en este ícono, bloquearás manualmente el dispositivo <ph name="DEVICE_TYPE" />. La próxima vez, deberás escribir la contraseña para ingresar.</translation>
 <translation id="51143538739122961">Inserta tu llave de seguridad y presiónala</translation>
 <translation id="5115309401544567011">Conecta el dispositivo <ph name="DEVICE_TYPE" /> a una fuente de alimentación.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -5085,7 +5083,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5481941284378890518">Agregar impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> hoy mismo. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
-<translation id="5485080380723335835">Por razones de seguridad, se bloqueó tu <ph name="DEVICE_TYPE" />. Ingresa tu contraseña manualmente para continuar.</translation>
 <translation id="5485102783864353244">Agregar app</translation>
 <translation id="5485754497697573575">Restablecer todas las pestañas</translation>
 <translation id="5486261815000869482">Confirmar contraseña</translation>
@@ -5291,7 +5288,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5656845498778518563">Enviar comentarios a Google</translation>
 <translation id="5657156137487675418">Permitir todas las cookies</translation>
 <translation id="5657667036353380798">La extensión externa requiere que esté instalada la versión <ph name="MINIMUM_CHROME_VERSION" /> o una versión posterior de Chrome.</translation>
-<translation id="5658415415603568799">Para mejorar la seguridad, Smart Lock te pedirá que ingreses tu contraseña después de 20 horas.</translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5662513737565158057">Cambia la manera en la que funcionan las apps de Linux.</translation>
 <translation id="5663459693447872156">Cambiar automáticamente a ancho medio</translation>
@@ -6382,6 +6378,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6647690760956378579">Vista previa de la voz natural</translation>
 <translation id="6648911618876616409">Hay una actualización fundamental lista para instalarse. Accede a tu cuenta para comenzar.</translation>
 <translation id="6649018507441623493">Un segundo…</translation>
+<translation id="6650206238642452078">Suscribirse a eventos del sistema de ChromeOS</translation>
 <translation id="665061930738760572">Abrir en una &amp;nueva ventana</translation>
 <translation id="6651237644330755633">Confía en este certificado para identificar sitios web</translation>
 <translation id="6651495917527016072">Sincroniza las redes Wi-Fi con tu teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6794,7 +6791,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7000347579424117903">Incluir Ctrl, Alt o el botón de búsqueda</translation>
 <translation id="7001036685275644873">Creando la copia de seguridad de los archivos y las apps de Linux</translation>
 <translation id="7001066449188684145">Se requiere identificación para imprimir este contenido en <ph name="PRINTER_NAME" />. Comunícate con tu administrador.</translation>
-<translation id="7002055706763150362">Google debe estar seguro de que se trata de ti si deseas configurar Smart Lock para Chromebook: escribe tu contraseña para comenzar.</translation>
 <translation id="7003339318920871147">Bases de datos web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} archivo}other{{COUNT} archivos}}</translation>
 <translation id="7003705861991657723">Alfa</translation>
@@ -9097,6 +9093,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="904224458472510106">Esta acción no se puede deshacer</translation>
 <translation id="9042827002460091668">Revisa la conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
+<translation id="9043264199499366189">Suscribirse a eventos del sistema de ChromeOS Flex</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Se movió tu lista de lectura al nuevo panel lateral. Pruébalo aquí.</translation>
 <translation id="9045430190527754450">Envía a Google la dirección web de la página a la que intentas acceder</translation>
@@ -9307,7 +9304,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="934244546219308557">Escribe un nombre para este grupo</translation>
 <translation id="934503638756687833">Los elementos que no se muestran aquí también se quitarán si es necesario. Obtén más información sobre &lt;a href="<ph name="URL" />"&gt;la protección contra software no deseado&lt;/a&gt; en el informe de privacidad de Chrome.</translation>
 <translation id="93480724622239549">Fallo o error</translation>
-<translation id="935854577147268200">Se cambió el número de Smart Lock. Ingresa tu contraseña para actualizar Smart Lock. La próxima vez, tu teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración</translation>
 <translation id="936646668635477464">Cámara y micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico del sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>
