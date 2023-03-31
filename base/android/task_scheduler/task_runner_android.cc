@@ -13,6 +13,7 @@
 #include "base/base_jni_headers/TaskRunnerImpl_jni.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
