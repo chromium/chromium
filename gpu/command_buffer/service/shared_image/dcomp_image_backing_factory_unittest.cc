@@ -558,6 +558,14 @@ class DCompImageBackingFactoryVisualTreeTest
                bool has_alpha,
                SkColor clear_color,
                SkColor expected_window_color) {
+    // Bake the SDR white level into the color space so SharedImage backings can
+    // know about it.
+    if (color_space.IsAffectedBySDRWhiteLevel()) {
+      auto sk_color_space =
+          color_space.ToSkColorSpace(gfx::ColorSpace::kDefaultSDRWhiteLevel);
+      color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
+    }
+
     DVLOG(2) << "usage = " << CreateLabelForSharedImageUsage(usage)
              << ", format = " << format.ToString()
              << ", color_space = " << color_space.ToString()

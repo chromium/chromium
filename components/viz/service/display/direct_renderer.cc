@@ -349,7 +349,6 @@ void DirectRenderer::DrawFrame(
   reshape_params.size = surface_resource_size;
   reshape_params.device_scale_factor = device_scale_factor;
   reshape_params.color_space = frame_color_space;
-  reshape_params.sdr_white_level = CurrentFrameSDRWhiteLevel();
   reshape_params.format = frame_buffer_format;
   reshape_params.alpha_type =
       frame_has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
@@ -1091,9 +1090,18 @@ bool DirectRenderer::ShouldApplyGradientMask(const DrawQuad* quad) const {
 }
 
 gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {
-  return current_frame()->display_color_spaces.GetOutputColorSpace(
-      current_frame()->root_render_pass->content_color_usage,
-      current_frame()->root_render_pass->has_transparent_background);
+  auto root_color_space =
+      current_frame()->display_color_spaces.GetOutputColorSpace(
+          current_frame()->root_render_pass->content_color_usage,
+          current_frame()->root_render_pass->has_transparent_background);
+
+  if (root_color_space.IsAffectedBySDRWhiteLevel()) {
+    auto sk_color_space =
+        root_color_space.ToSkColorSpace(CurrentFrameSDRWhiteLevel());
+    root_color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
+  }
+
+  return root_color_space;
 }
 
 gfx::ColorSpace DirectRenderer::RenderPassColorSpace(

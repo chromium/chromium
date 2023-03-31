@@ -350,8 +350,7 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   DCHECK(color_type != kUnknown_SkColorType)
       << "SkColorType is invalid for buffer format_index: " << format_index;
 
-  auto sk_color_space =
-      params.color_space.ToSkColorSpace(params.sdr_white_level);
+  auto sk_color_space = params.color_space.ToSkColorSpace();
   characterization_ = CreateSkSurfaceCharacterizationCurrentFrame(
       params.size, color_type, params.alpha_type, /*mipmap=*/false,
       std::move(sk_color_space));
