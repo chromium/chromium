@@ -943,6 +943,13 @@ def main():
 
   add_common_args(gtest_parser, tast_test_parser, host_cmd_parser)
   args, unknown_args = parser.parse_known_args()
+  # Re-add N-1 -v/--verbose flags to the args we'll pass to whatever we are
+  # running. The assumption is that only one verbosity incrase would be meant
+  # for this script since it's a boolean value instead of increasing verbosity
+  # with more instances.
+  verbose_flags = [a for a in sys.argv if a in ('-v', '--verbose')]
+  if verbose_flags:
+    unknown_args += verbose_flags[1:]
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
 
