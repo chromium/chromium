@@ -535,6 +535,7 @@ component("views") {
     "//ui/color",
     "//ui/color:mixers",
     "//ui/display",
+    "//ui/gfx:native_widget_types",
     "//ui/latency",
     "//ui/lottie",
     "//ui/native_theme",

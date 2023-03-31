@@ -24,11 +24,12 @@ namespace {
 
 bool GetNativeWindow(const Browser* browser, gfx::NativeWindow* native_window) {
   BrowserWindow* window = browser->window();
-  if (!window)
+  if (!window) {
     return false;
+  }
 
   *native_window = window->GetNativeWindow();
-  return *native_window;
+  return !!(*native_window);
 }
 
 }  // namespace

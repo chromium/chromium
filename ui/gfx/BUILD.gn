@@ -500,6 +500,12 @@ source_set("native_widget_types") {
     "//base",
   ]
 
+  if (is_mac) {
+    sources = [ "native_widget_types.mm" ]
+
+    frameworks = [ "AppKit.framework" ]
+  }
+
   deps = [ "//build:chromeos_buildflags" ]
 }
 

@@ -13,8 +13,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_IOS)
 #include <objc/objc.h>
+#elif BUILDFLAG(IS_MAC)
+#include <objc/objc.h>
+#include <string>
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
@@ -36,7 +39,7 @@
 //     unless you're in the IPC layer, which will be translating between
 //     NativeViewIds from the renderer and NativeViews.
 //
-// The name 'View' here meshes with OS X where the UI elements are called
+// The name 'View' here meshes with macOS where the UI elements are called
 // 'views' and with our Chrome UI code where the elements are also called
 // 'views'.
 
@@ -89,7 +92,7 @@ class NSCursor;
 class NSEvent;
 class NSFont;
 class NSImage;
-struct NSView;
+class NSView;
 class NSWindow;
 class NSTextField;
 #endif  // __OBJC__
@@ -133,21 +136,24 @@ constexpr NativeWindow kNullNativeWindow = nullptr;
 typedef NSCursor* NativeCursor;
 typedef NSEvent* NativeEvent;
 // NativeViews and NativeWindows on macOS are not necessarily in the same
-// process as the NSViews and NSWindows that they represent. Require an
-// explicit function call (GetNativeNSView or GetNativeNSWindow) to retrieve
-// the underlying NSView or NSWindow.
-// https://crbug.com/893719
+// process as the NSViews and NSWindows that they represent. Require an explicit
+// function call (GetNativeNSView or GetNativeNSWindow) to retrieve the
+// underlying NSView or NSWindow <https://crbug.com/893719>. These are wrapper
+// classes only and do not maintain any ownership, thus the __unsafe_unretained.
+// (__unsafe_unretained is defined in <objc/objc.h> for non-Obj-C so it's OK to
+// use in C++ code.)
 class GFX_EXPORT NativeView {
  public:
-  constexpr NativeView() {}
+  constexpr NativeView() = default;
   // TODO(ccameron): Make this constructor explicit.
-  constexpr NativeView(NSView* ns_view) : ns_view_(ns_view) {}
+  constexpr NativeView(__unsafe_unretained NSView* ns_view)
+      : ns_view_(ns_view) {}
 
   // This function name is verbose (that is, not just GetNSView) so that it
   // is easily grep-able.
   NSView* GetNativeNSView() const { return ns_view_; }
 
-  operator bool() const { return ns_view_ != 0; }
+  explicit operator bool() const { return ns_view_ != nil; }
   bool operator==(const NativeView& other) const {
     return ns_view_ == other.ns_view_;
   }
@@ -157,21 +163,23 @@ class GFX_EXPORT NativeView {
   bool operator<(const NativeView& other) const {
     return ns_view_ < other.ns_view_;
   }
+  std::string ToString() const;
 
  private:
-  NSView* ns_view_ = nullptr;
+  __unsafe_unretained NSView* ns_view_ = nil;
 };
 class GFX_EXPORT NativeWindow {
  public:
-  constexpr NativeWindow() {}
+  constexpr NativeWindow() = default;
   // TODO(ccameron): Make this constructor explicit.
-  constexpr NativeWindow(NSWindow* ns_window) : ns_window_(ns_window) {}
+  constexpr NativeWindow(__unsafe_unretained NSWindow* ns_window)
+      : ns_window_(ns_window) {}
 
   // This function name is verbose (that is, not just GetNSWindow) so that it
   // is easily grep-able.
   NSWindow* GetNativeNSWindow() const { return ns_window_; }
 
-  operator bool() const { return ns_window_ != 0; }
+  explicit operator bool() const { return ns_window_ != nil; }
   bool operator==(const NativeWindow& other) const {
     return ns_window_ == other.ns_window_;
   }
@@ -181,9 +189,10 @@ class GFX_EXPORT NativeWindow {
   bool operator<(const NativeWindow& other) const {
     return ns_window_ < other.ns_window_;
   }
+  std::string ToString() const;
 
  private:
-  NSWindow* ns_window_ = nullptr;
+  __unsafe_unretained NSWindow* ns_window_ = nil;
 };
 constexpr NativeView kNullNativeView = NativeView(nullptr);
 constexpr NativeWindow kNullNativeWindow = NativeWindow(nullptr);
