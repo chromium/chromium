@@ -6713,10 +6713,6 @@ crbug.com/626703 [ Mac12 ] virtual/view-transition/external/wpt/css/css-view-tra
 # Re-enable test after adding support for component ads in frame contexts
 crbug.com/1427455 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html [ Failure Pass Timeout ]
 
-# Temporarily disable while updating icon names in DevTools
-# https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/4370249
-crbug.com/1427397 http/tests/devtools/persistence/persistence-navigator-unique-names.js [ Failure Pass ]
-
 # Sheriff 2023-03-27
 crbug.com/1427936 external/wpt/js-self-profiling/function-expression-names.https.html [ Failure Pass ]
 
