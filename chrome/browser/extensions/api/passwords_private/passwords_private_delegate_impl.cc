@@ -763,7 +763,7 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   DCHECK(browser);
   web_app::CreateWebAppFromCurrentWebContents(
-      browser, web_app::WebAppInstallFlow::kCreateShortcut);
+      browser, web_app::WebAppInstallFlow::kInstallSite);
 }
 
 void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
