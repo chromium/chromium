@@ -2348,6 +2348,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.{DeviceType}.SetSettingsSucceeded"
+    enum="Boolean" expires_after="2024-03-29">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records if the {DeviceType} settings are set successfully. Set settings will
+    fail if the id or the settings object is invalid.
+  </summary>
+  <token key="DeviceType">
+    <variant name="Keyboard"/>
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+    <variant name="Touchpad"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
     expires_after="2023-08-19">
   <owner>dominickn@chromium.org</owner>

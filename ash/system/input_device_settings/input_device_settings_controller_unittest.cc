@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/prefs/pref_service.h"
@@ -42,6 +43,12 @@ const ui::InputDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb"};
 const ui::InputDevice kSampleKeyboardUsb2 = {20, ui::INPUT_DEVICE_USB,
                                              "kSampleKeyboardUsb2"};
+const ui::InputDevice kSampleTouchpadInternal = {1, ui::INPUT_DEVICE_INTERNAL,
+                                                 "kSampleTouchpadInternal"};
+const ui::InputDevice kSamplePointingStickInternal = {
+    2, ui::INPUT_DEVICE_INTERNAL, "kSamplePointingStickInternal"};
+const ui::InputDevice kSampleMouseInternal = {3, ui::INPUT_DEVICE_INTERNAL,
+                                              "kSampleMouseInternal"};
 
 constexpr char kInitialUserEmail[] = "example2@abc.com";
 constexpr char kUserEmail1[] = "example1@abc.com";
@@ -293,6 +300,79 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       RecordSetKeyboardSetttingsValidMetric) {
+  base::HistogramTester histogram_tester;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   mojom::KeyboardSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", true,
+      /*expected_count=*/1u);
+
+  // Set keyboard with invalid settings.
+  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  settings->suppress_meta_fkey_rewrites = !kDefaultSuppressMetaFKeyRewrites;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings.Clone());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", false,
+      /*expected_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       RecordSetTouchpadSetttingsValidMetric) {
+  base::HistogramTester histogram_tester;
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadInternal});
+  controller_->SetTouchpadSettings((DeviceId)kSampleTouchpadInternal.id,
+                                   mojom::TouchpadSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", true,
+      /*expected_count=*/1u);
+
+  // Set touchpad with invalid id.
+  controller_->SetTouchpadSettings(/*id=*/4, mojom::TouchpadSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Touchpad.SetSettingsSucceeded", false,
+      /*expected_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       RecordSetPointingStickSetttingsValidMetric) {
+  base::HistogramTester histogram_tester;
+  ui::DeviceDataManagerTestApi().SetPointingStickDevices(
+      {kSamplePointingStickInternal});
+  controller_->SetPointingStickSettings(
+      (DeviceId)kSamplePointingStickInternal.id,
+      mojom::PointingStickSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.PointingStick.SetSettingsSucceeded", true,
+      /*expected_count=*/1u);
+
+  // Set pointing stick with invalid id.
+  controller_->SetPointingStickSettings(/*id=*/4,
+                                        mojom::PointingStickSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.PointingStick.SetSettingsSucceeded", false,
+      /*expected_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSetttingsValidMetric) {
+  base::HistogramTester histogram_tester;
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseInternal});
+  controller_->SetMouseSettings((DeviceId)kSampleMouseInternal.id,
+                                mojom::MouseSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", true,
+      /*expected_count=*/1u);
+
+  // Set mouse with invalid id.
+  controller_->SetMouseSettings(/*id=*/4, mojom::MouseSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", false,
+      /*expected_count=*/1u);
 }
 
 // Tests that given an invalid id, keyboard settings are not updated and
