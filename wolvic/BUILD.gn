@@ -82,6 +82,7 @@ static_library("content_native_lib") {
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
     "//components/embedder_support:browser_util",
+    "//components/embedder_support/android:web_contents_delegate",
     "//components/keyed_service/content",
     "//components/metrics",
     "//components/metrics:net",
@@ -169,6 +170,7 @@ android_library("jni_java") {
   deps = [
     "//base:jni_java",
     "//build/android:build_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
     "//content/public/android:content_full_java",
   ]
 }
@@ -182,6 +184,7 @@ dist_aar("content_aar") {
     "//base",
     "//base:base_java",
     "//base:jni_java",
+    "//components/browser_ui/media/android:java",
     "//components/embedder_support/android:view_java",
     "//components/metrics:metrics_java",
     "//components/viz/service:service_java",
@@ -206,6 +209,8 @@ dist_aar("content_aar") {
     "org/chromium/base/*.class",
     "org/chromium/blink/mojom/*.class",
     "org/chromium/build/*.class",
+    "org/chromium/components/browser_ui/media/*.class",
+    "org/chromium/components/embedder_support/delegate/*.class",
     "org/chromium/components/embedder_support/view/*.class",
     "org/chromium/components/metrics/*.class",
     "org/chromium/components/variations/*.class",
@@ -214,6 +219,7 @@ dist_aar("content_aar") {
     "org/chromium/content/*.class",
     "org/chromium/device/*",
     "org/chromium/media/*.class",
+    "org/chromium/media_session/mojom/*.class",
     "org/chromium/mojo_base/mojom/*.class",
     "org/chromium/mojo/bindings/*.class",
     "org/chromium/mojo/system/*.class",

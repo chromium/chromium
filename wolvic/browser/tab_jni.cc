@@ -4,6 +4,7 @@
 
 #include "wolvic/jni_headers/Tab_jni.h"
 
+#include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -11,10 +12,13 @@
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 
+using base::android::JavaParamRef;
+using base::android::ScopedJavaLocalRef;
+using web_contents_delegate_android::WebContentsDelegateAndroid;
+
 namespace content {
 
-base::android::ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
-    JNIEnv* env) {
+ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(JNIEnv* env) {
   // TODO(wolvic-chromium#6): Consider handling browser profiles.
   auto* delegate = content::WolvicContentMainDelegate::Get();
   CHECK(delegate->browser_context() != nullptr);
@@ -31,6 +35,20 @@ base::android::ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
   web_contents->GetController().LoadURLWithParams(params);
 
   return web_contents.release()->GetJavaWebContents();
+}
+
+void JNI_Tab_SetWebContentsDelegate(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jweb_contents_delegate) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  static std::unique_ptr<WebContentsDelegateAndroid> web_contents_delegate;
+
+  DCHECK(web_contents);
+
+  web_contents_delegate =
+      std::make_unique<WebContentsDelegateAndroid>(env, jweb_contents_delegate);
+  web_contents->SetDelegate(web_contents_delegate.get());
 }
 
 }  // namespace content
