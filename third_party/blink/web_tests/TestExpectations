@@ -2907,6 +2907,9 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win ] external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-masking/clip-path/clip-path-round-zero-size.html [ Failure ]
+crbug.com/626703 [ Win ] virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
 crbug.com/626703 external/wpt/css/mediaqueries/scripting-print-noscript.html [ Failure ]
 crbug.com/626703 external/wpt/css/mediaqueries/scripting-print-script.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
