@@ -1920,11 +1920,6 @@ TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
 // Tests that dragging and dropping window to new desk while desks bar view is
 // at zero state.
 TEST_P(DesksTest, DragWindowAtZeroState) {
-  // TODO(b/274136178): Remove this early return when Jellyroll is enabled.
-  if (GetParam().enable_jellyroll) {
-    return;
-  }
-
   auto* controller = DesksController::Get();
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
 
