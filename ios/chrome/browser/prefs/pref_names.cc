@@ -219,6 +219,11 @@ const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 // in the Tab Switching UI is enabled.
 const char kTrackPricesOnTabsEnabled[] = "track_prices_on_tabs.enabled";
 
+// Boolean indicating if Lens camera assited searches are allowed by enterprise
+// policy.
+const char kLensCameraAssistedSearchPolicyAllowed[] =
+    "ios.lens_camera_assited_search_policy.allowed";
+
 // An integer set to one of the NetworkPredictionSetting enum values indicating
 // network prediction settings.
 const char kNetworkPredictionSetting[] =

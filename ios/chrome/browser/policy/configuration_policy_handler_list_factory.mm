@@ -125,6 +125,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kMixedContentAutoupgradeEnabled,
     prefs::kMixedContentAutoupgradeEnabled,
     base::Value::Type::BOOLEAN},
+  { policy::key::kLensCameraAssistedSearchEnabled,
+    prefs::kLensCameraAssistedSearchPolicyAllowed,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

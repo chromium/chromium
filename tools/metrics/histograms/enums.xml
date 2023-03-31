@@ -53477,6 +53477,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Device was a tablet"/>
   <int value="3" label="Entry Point disabled by flag"/>
   <int value="4" label="Lens Provider does not support the entry point"/>
+  <int value="5" label="Disabled by enterprise policy"/>
 </enum>
 
 <enum name="IOSLensWebUploadStatus">

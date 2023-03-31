@@ -67,8 +67,9 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
     [cameraButton addTarget:delegate
                      action:@selector(keyboardAccessoryLensTapped)
            forControlEvents:UIControlEventTouchUpInside];
-    SetA11yLabelAndUiAutomationName(
-        cameraButton, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS, @"QR code Search");
+    SetA11yLabelAndUiAutomationName(cameraButton,
+                                    IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS,
+                                    @"Search With Lens");
   } else {
     // Set up the camera button for the QR scanner.
     SetUpButtonWithIcon(cameraButton, @"keyboard_accessory_qr_scanner");

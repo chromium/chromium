@@ -241,6 +241,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 static_cast<int>(BrowserSigninMode::kEnabled));
   registry->RegisterBooleanPref(prefs::kAppStoreRatingPolicyEnabled, true);
 
+  registry->RegisterBooleanPref(prefs::kLensCameraAssistedSearchPolicyAllowed,
+                                true);
+
   registry->RegisterIntegerPref(kTrialGroupPrefName, 0);
 
   registry->RegisterIntegerPref(kSigninBottomSheetShownCount, 0);
