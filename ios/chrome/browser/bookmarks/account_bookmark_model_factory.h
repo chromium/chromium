@@ -23,6 +23,8 @@ class AccountBookmarkModelFactory : public BrowserStateKeyedServiceFactory {
   static bookmarks::BookmarkModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
   static AccountBookmarkModelFactory* GetInstance();
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
 
   AccountBookmarkModelFactory(const AccountBookmarkModelFactory&) = delete;
   AccountBookmarkModelFactory& operator=(const AccountBookmarkModelFactory&) =

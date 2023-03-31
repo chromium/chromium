@@ -64,6 +64,12 @@ AccountBookmarkModelFactory* AccountBookmarkModelFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+AccountBookmarkModelFactory::TestingFactory
+AccountBookmarkModelFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildBookmarkModel);
+}
+
 AccountBookmarkModelFactory::AccountBookmarkModelFactory()
     : BrowserStateKeyedServiceFactory(
           "AccountBookmarkModel",
