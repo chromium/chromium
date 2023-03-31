@@ -28,13 +28,12 @@
 #error "This file requires ARC support."
 #endif
 
-using translate_infobar_overlays::TranslateModalRequestConfig;
 using translate_infobar_modal_responses::RevertTranslation;
 using translate_infobar_modal_responses::ToggleAlwaysTranslate;
-using translate_infobar_modal_responses::ToggleNeverTranslateSourceLanguage;
 using translate_infobar_modal_responses::ToggleNeverPromptSite;
+using translate_infobar_modal_responses::ToggleNeverTranslateSourceLanguage;
 using translate_infobar_modal_responses::UpdateLanguageInfo;
-using translate_infobar_modal_responses::UpdateLanguageInfo;
+using translate_infobar_overlays::TranslateModalRequestConfig;
 
 // Base test fixture for TranslateInfobarModalOverlayMediator. The state of the
 // mediator's consumer is expected to vary based on the current TranslateStep.
