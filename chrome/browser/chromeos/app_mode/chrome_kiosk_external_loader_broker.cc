@@ -36,34 +36,38 @@ void ChromeKioskExternalLoaderBroker::RegisterPrimaryAppInstallDataObserver(
     InstallDataChangeCallback callback) {
   primary_app_changed_handler_ = std::move(callback);
 
-  if (primary_app_install_data_) {
-    TriggerPrimaryAppInstall(primary_app_install_data_.value());
-  }
+  CallPrimaryAppObserver();
 }
 
 void ChromeKioskExternalLoaderBroker::RegisterSecondaryAppInstallDataObserver(
     InstallDataChangeCallback callback) {
   secondary_apps_changed_handler_ = std::move(callback);
 
-  if (secondary_app_ids_) {
-    TriggerSecondaryAppInstall(secondary_app_ids_.value());
-  }
+  CallSecondaryAppObserver();
 }
 
 void ChromeKioskExternalLoaderBroker::TriggerPrimaryAppInstall(
     const crosapi::mojom::AppInstallParams& install_data) {
   primary_app_install_data_ = install_data;
 
-  if (primary_app_changed_handler_) {
-    primary_app_changed_handler_.Run(CreatePrimaryAppLoaderPrefs());
-  }
+  CallPrimaryAppObserver();
 }
 
 void ChromeKioskExternalLoaderBroker::TriggerSecondaryAppInstall(
     std::vector<std::string> ids) {
   secondary_app_ids_ = ids;
 
-  if (secondary_apps_changed_handler_) {
+  CallSecondaryAppObserver();
+}
+
+void ChromeKioskExternalLoaderBroker::CallPrimaryAppObserver() {
+  if (primary_app_changed_handler_ && primary_app_install_data_) {
+    primary_app_changed_handler_.Run(CreatePrimaryAppLoaderPrefs());
+  }
+}
+
+void ChromeKioskExternalLoaderBroker::CallSecondaryAppObserver() {
+  if (secondary_apps_changed_handler_ && secondary_app_ids_) {
     secondary_apps_changed_handler_.Run(CreateSecondaryAppLoaderPrefs());
   }
 }

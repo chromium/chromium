@@ -429,6 +429,7 @@ source_set("unit_tests") {
 
   sources = [
     "app_mode/app_session_policies_unittest.cc",
+    "app_mode/chrome_kiosk_external_loader_broker_unittest.cc",
     "arc/arc_external_protocol_dialog_unittest.cc",
     "arc/open_with_menu_unittest.cc",
     "extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",

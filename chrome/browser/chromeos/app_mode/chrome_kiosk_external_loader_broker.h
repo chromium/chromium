@@ -49,6 +49,9 @@ class ChromeKioskExternalLoaderBroker {
   base::Value::Dict CreatePrimaryAppLoaderPrefs() const;
   base::Value::Dict CreateSecondaryAppLoaderPrefs() const;
 
+  void CallPrimaryAppObserver();
+  void CallSecondaryAppObserver();
+
   absl::optional<crosapi::mojom::AppInstallParams> primary_app_install_data_;
   absl::optional<std::vector<std::string>> secondary_app_ids_;
 
