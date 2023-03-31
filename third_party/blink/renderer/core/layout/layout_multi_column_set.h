@@ -204,8 +204,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     return MultiColumnFlowThread()->ColumnCount();
   }
 
-  bool HeightIsAuto() const;
-
   // Find the column that contains the given block offset, and return the
   // translation needed to get from flow thread coordinates to visual
   // coordinates.
@@ -215,12 +213,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   LayoutPoint VisualPointToFlowThreadPoint(
       const LayoutPoint& visual_point) const;
-
-  // (Re-)calculate the column height if it's auto. This is first and foremost
-  // needed by sets that are to balance the column height, but even when it
-  // isn't to be balanced, this is necessary if the multicol container's height
-  // is constrained.
-  bool RecalculateColumnHeight();
 
   // Reset previously calculated column height. Will mark for layout if needed.
   void ResetColumnHeight();
@@ -333,8 +325,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   LayoutUnit old_logical_top_;
 
   bool initial_height_calculated_;
-
-  unsigned last_actual_column_count_;
 };
 
 template <>

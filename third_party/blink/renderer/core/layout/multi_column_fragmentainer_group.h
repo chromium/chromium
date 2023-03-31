@@ -103,7 +103,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   LayoutUnit LogicalHeightInFlowThreadAt(unsigned column_index) const;
 
   void ResetColumnHeight();
-  bool RecalculateColumnHeight(LayoutMultiColumnSet&);
 
   LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,
                                            LayoutBox::PageBoundaryRule,
@@ -169,10 +168,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
  private:
   LayoutUnit HeightAdjustedForRowOffset(LayoutUnit height) const;
-  LayoutUnit CalculateMaxColumnHeight() const;
-  void SetAndConstrainColumnHeight(LayoutUnit);
-
-  LayoutUnit RebalanceColumnHeightIfNeeded() const;
 
   LayoutRect ColumnRectAt(unsigned column_index) const;
   LayoutUnit LogicalTopInFlowThreadAt(unsigned column_index) const {

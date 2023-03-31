@@ -150,8 +150,7 @@ LayoutMultiColumnSet::LayoutMultiColumnSet(LayoutFlowThread* flow_thread)
     : LayoutBlockFlow(nullptr),
       fragmentainer_groups_(*this),
       flow_thread_(flow_thread),
-      initial_height_calculated_(false),
-      last_actual_column_count_(0) {}
+      initial_height_calculated_(false) {}
 
 LayoutMultiColumnSet* LayoutMultiColumnSet::CreateAnonymous(
     LayoutFlowThread& flow_thread,
@@ -469,28 +468,6 @@ LayoutUnit LayoutMultiColumnSet::LogicalBottomInFlowThread() const {
   return LastFragmentainerGroup().LogicalBottomInFlowThread();
 }
 
-bool LayoutMultiColumnSet::HeightIsAuto() const {
-  NOT_DESTROYED();
-  LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread();
-  // If support for the column-fill property isn't enabled, we want to behave
-  // as if column-fill were auto, so that multicol containers with specified
-  // height don't get their columns balanced (auto-height multicol containers
-  // will still get their columns balanced, even if column-fill isn't 'balance'
-  // - in accordance with the spec).
-  // Pretending that column-fill is auto also matches the old multicol
-  // implementation, which has no support for this property.
-  if (MultiColumnBlockFlow()->StyleRef().GetColumnFill() ==
-      EColumnFill::kBalance)
-    return true;
-  if (LayoutBox* next = NextSiblingBox()) {
-    if (next->IsLayoutMultiColumnSpannerPlaceholder()) {
-      // If we're followed by a spanner, we need to balance.
-      return true;
-    }
-  }
-  return !flow_thread->ColumnHeightAvailable();
-}
-
 LayoutSize LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
     LayoutUnit block_offset,
     PageBoundaryRule rule,
@@ -514,24 +491,6 @@ LayoutUnit LayoutMultiColumnSet::PageLogicalTopForOffset(
   NOT_DESTROYED();
   return FragmentainerGroupAtFlowThreadOffset(offset, kAssociateWithLatterPage)
       .ColumnLogicalTopForOffset(offset);
-}
-
-bool LayoutMultiColumnSet::RecalculateColumnHeight() {
-  NOT_DESTROYED();
-  if (old_logical_top_ != LogicalTop() &&
-      MultiColumnFlowThread()->EnclosingFragmentationContext()) {
-    // Preceding spanners or column sets have been moved or resized. This means
-    // that the fragmentainer groups that we have inserted need to be
-    // re-inserted. Restart column balancing.
-    ResetColumnHeight();
-    return true;
-  }
-
-  bool changed = false;
-  for (auto& group : fragmentainer_groups_)
-    changed = group.RecalculateColumnHeight(*this) || changed;
-  initial_height_calculated_ = true;
-  return changed;
 }
 
 void LayoutMultiColumnSet::ResetColumnHeight() {
@@ -582,19 +541,6 @@ void LayoutMultiColumnSet::StyleDidChange(StyleDifference diff,
 
 void LayoutMultiColumnSet::UpdateLayout() {
   NOT_DESTROYED();
-  if (RecalculateColumnHeight())
-    MultiColumnFlowThread()->SetColumnHeightsChanged();
-  LayoutBlockFlow::UpdateLayout();
-
-  auto actual_column_count = ActualColumnCount();
-  if (actual_column_count != last_actual_column_count_) {
-    // At least we need to paint column rules differently when actual column
-    // count changes.
-    SetShouldDoFullPaintInvalidation();
-    last_actual_column_count_ = actual_column_count;
-  }
-
-  // TODO(1229581): Remove this logic.
   NOTREACHED_NORETURN();
 }
 

@@ -52,8 +52,6 @@ blink_core_sources_layout = [
   "box_layout_extra_input.h",
   "collapsed_border_value.cc",
   "collapsed_border_value.h",
-  "column_balancer.cc",
-  "column_balancer.h",
   "content_change_type.h",
   "counter_node.cc",
   "counter_node.h",
