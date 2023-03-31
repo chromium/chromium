@@ -224,6 +224,10 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kEnableBookmarksAccountStorageName[];
 extern const char kEnableBookmarksAccountStorageDescription[];
 
+// Title and description for the flag to enable browser lockdown mode.
+extern const char kEnableBrowserLockdownModeName[];
+extern const char kEnableBrowserLockdownModeDescription[];
+
 // Title and description for the flag to enable checking feed visibility on
 // attention log start.
 extern const char kEnableCheckVisibilityOnAttentionLogStartName[];

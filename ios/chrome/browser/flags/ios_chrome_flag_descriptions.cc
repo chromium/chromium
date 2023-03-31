@@ -294,6 +294,10 @@ const char kEnableBookmarksAccountStorageName[] =
 const char kEnableBookmarksAccountStorageDescription[] =
     "Enable bookmarks account storage and related UI features.";
 
+const char kEnableBrowserLockdownModeName[] = "Enable Browser Lockdown Mode";
+const char kEnableBrowserLockdownModeDescription[] =
+    "Enable browser lockdown mode.";
+
 const char kEnableCBDSignOutName[] = "Enable Clear Browsing Data Sign-out";
 const char kEnableCBDSignOutDescription[] =
     "Offer signed-in user to sign-out from Clear Browsing Data settings.";

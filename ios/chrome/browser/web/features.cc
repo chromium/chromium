@@ -6,6 +6,14 @@
 
 namespace web {
 
+BASE_FEATURE(kEnableBrowserLockdownMode,
+             "EnableBrowserLockdownMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBrowserLockdownModeEnabled() {
+  return base::FeatureList::IsEnabled(kEnableBrowserLockdownMode);
+}
+
 BASE_FEATURE(kWebPageDefaultZoomFromDynamicType,
              "WebPageDefaultZoomFromDynamicType",
              base::FEATURE_DISABLED_BY_DEFAULT);
