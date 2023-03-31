@@ -653,7 +653,7 @@ class QuickUnlockPrivateUnitTest
         api_test_utils::RunFunctionWithDelegateAndReturnSingleResult(
             std::move(func), std::move(params),
             std::make_unique<ExtensionFunctionDispatcher>(profile()),
-            api_test_utils::NONE);
+            api_test_utils::FunctionMode::kNone);
     base::RunLoop().RunUntilIdle();
     return result;
   }
@@ -664,7 +664,8 @@ class QuickUnlockPrivateUnitTest
     base::RunLoop().RunUntilIdle();
     auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
     api_test_utils::RunFunction(func.get(), std::move(params),
-                                std::move(dispatcher), api_test_utils::NONE);
+                                std::move(dispatcher),
+                                api_test_utils::FunctionMode::kNone);
     EXPECT_TRUE(func->GetResultListForTest()->empty());
     base::RunLoop().RunUntilIdle();
     return func->GetError();
