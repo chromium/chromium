@@ -265,7 +265,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     def __init__(self, options=None):
         super(AbstractParallelRebaselineCommand,
               self).__init__(options=options)
-        self._baselines_to_copy = []
         self.baseline_cache_stats = BaselineCacheStatistics()
 
     def _release_builders(self):
@@ -345,7 +344,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 | set(build_steps_to_fallback_paths[False]))
 
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
-        self._baselines_to_copy.clear()
         with self._message_pool(self._worker_factory) as pool:
             pool.run([('copy_baselines', test, suffix, group)
                       for test, group in groups.items()
@@ -473,10 +471,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         This allows this class to conform to the `message_pool.MessageHandler`
         interface.
         """
-        if name == 'find_baselines_to_copy':
-            (baselines_to_copy, ) = args
-            self._baselines_to_copy.extend(baselines_to_copy)
-        elif name == 'report_baseline_cache_stats':
+        if name == 'report_baseline_cache_stats':
             (stats, ) = args
             self.baseline_cache_stats += stats
 

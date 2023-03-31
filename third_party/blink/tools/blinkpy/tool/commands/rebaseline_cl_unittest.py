@@ -575,8 +575,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 step_name='not_site_per_process_blink_web_tests (with patch)'))
 
         exit_code = self.command.execute(
-            self.command_options(builders=['MOCK Try Linux Multiple Steps'],
-                                 resultDB=False),
+            self.command_options(builders=['MOCK Try Linux Multiple Steps']),
             ['one/text-fail.html', 'one/does-not-exist.html'], self.tool)
         self.assertEqual(exit_code, 0)
         baseline_set = TestBaselineSet(self.tool.builders)
