@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
@@ -644,6 +645,10 @@ void OmniboxViewIOS::EndEditing() {
   if (model() && model()->has_focus()) {
     CloseOmniboxPopup();
 
+    RecordSuggestionsListScrolled(model()->GetPageClassification(),
+                                  suggestions_list_scrolled_);
+    suggestions_list_scrolled_ = false;
+
     model()->OnWillKillFocus();
     model()->OnKillFocus();
     if ([field_ isPreEditing])
@@ -685,6 +690,7 @@ void OmniboxViewIOS::OnPopupDidScroll() {
       base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad)) {
     this->HideKeyboard();
   }
+  suggestions_list_scrolled_ = true;
 }
 
 void OmniboxViewIOS::OnSelectedMatchForAppending(const std::u16string& str) {

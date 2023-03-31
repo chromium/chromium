@@ -192,6 +192,9 @@ class OmniboxViewIOS : public OmniboxView,
   // popup, and then remove this hack.  b/5877366.
   BOOL ignore_popup_updates_;
 
+  // Whether the popup was scrolled during this omnibox interaction.
+  bool suggestions_list_scrolled_ = false;
+
   OmniboxPopupProvider* popup_provider_;  // weak
 
   // Used to cancel clipboard callbacks if this is deallocated;

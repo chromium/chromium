@@ -1480,6 +1480,25 @@ chromium-metrics-reviews@google.com.
   <summary>Histogram of the number of lines of search suggestions.</summary>
 </histogram>
 
+<histogram name="IOS.Omnibox.SuggestionsListScrolled.{PageClass}"
+    enum="Boolean" expires_after="2024-01-31">
+  <owner>christianxu@chromium.org</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    For every interaction with the Omnibox, this metric records whether the user
+    scrolled the omnibox while exploring suggestions on {PageClass}.
+
+    This is recorded once per Omnibox interaction, regardless of whether the
+    User chooses to navigate somewhere or abandons the interaction.
+  </summary>
+  <token key="PageClass">
+    <variant name="NTP" summary="the New Tab Page"/>
+    <variant name="Other" summary="a website"/>
+    <variant name="SRP" summary="the Search Results Page"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
     expires_after="2023-09-17">
   <owner>ewannpv@chromium.org</owner>
