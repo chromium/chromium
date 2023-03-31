@@ -458,6 +458,7 @@ chrome_java_resources = [
   "java/res/layout/autofill_card_unmask_prompt_new.xml",
   "java/res/layout/autofill_cc_details.xml",
   "java/res/layout/autofill_expiration_date_fix_flow.xml",
+  "java/res/layout/autofill_local_profile_icon.xml",
   "java/res/layout/autofill_name_fixflow.xml",
   "java/res/layout/autofill_save_address_profile_prompt.xml",
   "java/res/layout/autofill_save_card_base_layout.xml",

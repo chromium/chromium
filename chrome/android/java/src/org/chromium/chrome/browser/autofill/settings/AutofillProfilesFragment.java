@@ -26,6 +26,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -33,9 +34,11 @@ import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.sync.ModelType;
 
 /**
  * Autofill profiles fragment, which allows the user to edit autofill profiles.
@@ -124,6 +127,7 @@ public class AutofillProfilesFragment
         });
         getPreferenceScreen().addPreference(autofillSwitch);
 
+        final boolean addressSyncEnabled = isAddressSyncEnabled();
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
             assert profile.getIsLocal();
             // Add a preference for the profile.
@@ -131,6 +135,11 @@ public class AutofillProfilesFragment
             pref.setTitle(profile.getFullName());
             pref.setSummary(profile.getLabel());
             pref.setKey(pref.getTitle().toString()); // For testing.
+            if (!addressSyncEnabled && profile.getSource() != Source.ACCOUNT) {
+                // Conditionally set local profile icon for address profiles that are neither
+                // synced, nor saved in the account.
+                pref.setWidgetLayoutResource(R.layout.autofill_local_profile_icon);
+            }
             Bundle args = pref.getExtras();
             args.putString(AutofillEditorBase.AUTOFILL_GUID, profile.getGUID());
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -236,6 +245,12 @@ public class AutofillProfilesFragment
                 sObserverForTest.onEditorReadyToEdit();
             }
         });
+    }
+
+    private boolean isAddressSyncEnabled() {
+        SyncService syncService = SyncService.get();
+        return syncService != null && syncService.isSyncFeatureEnabled()
+                && syncService.getSelectedTypes().contains(ModelType.AUTOFILL_PROFILE);
     }
 
     private Context getStyledContext() {

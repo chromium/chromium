@@ -50,6 +50,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -67,6 +68,15 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AutofillProfilesFragmentTest {
+    private static final AutofillProfile sLocalOrSyncProfile =
+            new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                    "Seb Doe", "Google", "111 First St", "CA", "Los Angeles", "", "90291", "", "US",
+                    "650-253-0000", "first@gmail.com", "en-US");
+    private static final AutofillProfile sAccountProfile = new AutofillProfile("",
+            "https://example.com", true, Source.ACCOUNT, "" /* honorific prefix */, "Artik Doe",
+            "Google", "999 Fourth St", "California", "Los Angeles", "", "90291", "", "US",
+            "650-253-0000", "artik@gmail.com", "en-US");
+
     @Rule
     public final AutofillTestRule rule = new AutofillTestRule();
     @ClassRule
@@ -94,9 +104,7 @@ public class AutofillProfilesFragmentTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "" /* honorific prefix */, "Seb Doe", "Google", "111 First St", "CA", "Los Angeles",
-                "", "90291", "", "US", "650-253-0000", "first@gmail.com", "en-US"));
+        mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
                 "" /* honorific prefix */, "John Doe", "Google", "111 Second St", "CA",
                 "Los Angeles", "", "90291", "", "US", "650-253-0000", "second@gmail.com", "en-US"));
@@ -267,9 +275,7 @@ public class AutofillProfilesFragmentTest {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
 
-        mHelper.setProfile(new AutofillProfile("", "https://example.com", true, Source.ACCOUNT,
-                "" /* honorific prefix */, "Artik Doe", "Google", "999 Fourth St", "California",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "artik@gmail.com", "en-US"));
+        mHelper.setProfile(sAccountProfile);
 
         // Check the preferences on the initial screen.
         Assert.assertEquals(7 /* One toggle + one add button + five profiles. */,
@@ -516,6 +522,57 @@ public class AutofillProfilesFragmentTest {
 
         // Close the dialog.
         rule.clickInEditorAndWait(R.id.payments_edit_cancel_button);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testLocalProfiles_NoSync() throws Exception {
+        setUpMockSyncService(false, new HashSet());
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+        Assert.assertEquals(0,
+                autofillProfileFragment.findPreference(sAccountProfile.getFullName())
+                        .getWidgetLayoutResource());
+        Assert.assertEquals(R.layout.autofill_local_profile_icon,
+                autofillProfileFragment.findPreference(sLocalOrSyncProfile.getFullName())
+                        .getWidgetLayoutResource());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testLocalProfiles_AddressesNotSynced() throws Exception {
+        setUpMockSyncService(true, new HashSet());
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+        Assert.assertEquals(0,
+                autofillProfileFragment.findPreference(sAccountProfile.getFullName())
+                        .getWidgetLayoutResource());
+        Assert.assertEquals(R.layout.autofill_local_profile_icon,
+                autofillProfileFragment.findPreference(sLocalOrSyncProfile.getFullName())
+                        .getWidgetLayoutResource());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testLocalProfiles_AddressesSynced() throws Exception {
+        setUpMockSyncService(true, Collections.singleton(ModelType.AUTOFILL_PROFILE));
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+        Assert.assertEquals(0,
+                autofillProfileFragment.findPreference(sAccountProfile.getFullName())
+                        .getWidgetLayoutResource());
+        Assert.assertEquals(0,
+                autofillProfileFragment.findPreference(sLocalOrSyncProfile.getFullName())
+                        .getWidgetLayoutResource());
     }
 
     private void waitForKeyboardStatus(
