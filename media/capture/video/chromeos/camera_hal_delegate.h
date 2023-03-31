@@ -105,6 +105,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
  private:
   class PowerManagerClientProxy;
+  class VideoCaptureDeviceDelegateMap;
 
   friend class base::RefCountedThreadSafe<CameraHalDelegate>;
 
@@ -232,8 +233,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   std::unique_ptr<VendorTagOpsDelegate> vendor_tag_ops_delegate_;
 
   // A map from camera id to corresponding delegate instance.
-  base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>
-      vcd_delegate_map_;
+  std::unique_ptr<VideoCaptureDeviceDelegateMap> vcd_delegate_map_;
 
   std::vector<std::unique_ptr<CameraClientObserver>> local_client_observers_;
 
@@ -241,6 +241,11 @@ class CAPTURE_EXPORT CameraHalDelegate final
   std::unique_ptr<PowerManagerClientProxy> power_manager_client_proxy_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
+  // The sequence used to communicate with VCD factory.
+  // Now it is used to handle the life of VCD delegates after CameraHalDelegate
+  // is destroyed.
+  scoped_refptr<base::SequencedTaskRunner> vcd_task_runner_;
 };
 
 }  // namespace media

@@ -21,6 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/system_monitor.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -190,6 +191,41 @@ class CameraHalDelegate::PowerManagerClientProxy
       weak_ptr_factory_{this};
 };
 
+class CameraHalDelegate::VideoCaptureDeviceDelegateMap {
+ public:
+  VideoCaptureDeviceDelegateMap() = default;
+  VideoCaptureDeviceDelegateMap(const VideoCaptureDeviceDelegateMap&) = delete;
+  VideoCaptureDeviceDelegateMap& operator=(
+      const VideoCaptureDeviceDelegateMap&) = delete;
+  ~VideoCaptureDeviceDelegateMap() = default;
+
+  bool HasVCDDelegate(int camera_id) {
+    return vcd_delegates_.find(camera_id) != vcd_delegates_.end();
+  }
+
+  void Insert(const int camera_id,
+              std::unique_ptr<VideoCaptureDeviceChromeOSDelegate> delegate) {
+    vcd_delegates_[camera_id] = std::move(delegate);
+  }
+
+  void Erase(const int camera_id) { vcd_delegates_.erase(camera_id); }
+
+  VideoCaptureDeviceChromeOSDelegate* Get(const int camera_id) {
+    DCHECK(HasVCDDelegate(camera_id));
+    return vcd_delegates_[camera_id].get();
+  }
+
+  base::WeakPtr<CameraHalDelegate::VideoCaptureDeviceDelegateMap> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>
+      vcd_delegates_;
+  base::WeakPtrFactory<CameraHalDelegate::VideoCaptureDeviceDelegateMap>
+      weak_ptr_factory_{this};
+};
+
 CameraHalDelegate::CameraHalDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : authenticated_(false),
@@ -208,6 +244,7 @@ CameraHalDelegate::CameraHalDelegate(
       camera_buffer_factory_(new CameraBufferFactory()),
       camera_hal_ipc_thread_("CamerHalIpcThread"),
       camera_module_callbacks_(this),
+      vcd_delegate_map_(new VideoCaptureDeviceDelegateMap()),
       power_manager_client_proxy_(new PowerManagerClientProxy()),
       ui_task_runner_(std::move(ui_task_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -230,6 +267,10 @@ CameraHalDelegate::~CameraHalDelegate() {
   power_manager_client_proxy_->Shutdown();
   ui_task_runner_->DeleteSoon(FROM_HERE,
                               std::move(power_manager_client_proxy_));
+
+  if (vcd_task_runner_) {
+    vcd_task_runner_->DeleteSoon(FROM_HERE, std::move(vcd_delegate_map_));
+  }
 }
 
 bool CameraHalDelegate::RegisterCameraClient() {
@@ -615,22 +656,21 @@ int CameraHalDelegate::GetCameraIdFromDeviceId(const std::string& device_id) {
 VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer,
     const VideoCaptureDeviceDescriptor& device_descriptor) {
+  if (!vcd_task_runner_) {
+    vcd_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
   auto camera_id = GetCameraIdFromDeviceId(device_descriptor.device_id);
-  auto it = vcd_delegate_map_.find(camera_id);
-  if (it == vcd_delegate_map_.end() || it->second->HasDeviceClient() == 0) {
-    auto cleanup_callback = base::BindOnce(
-        [](int camera_id,
-           base::flat_map<int,
-                          std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>*
-               vcd_delegate_map) { vcd_delegate_map->erase(camera_id); },
-        camera_id, &vcd_delegate_map_);
+  if (!vcd_delegate_map_->HasVCDDelegate(camera_id) ||
+      vcd_delegate_map_->Get(camera_id)->HasDeviceClient() == 0) {
+    auto cleanup_callback = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&VideoCaptureDeviceDelegateMap::Erase,
+                       vcd_delegate_map_->GetWeakPtr(), camera_id));
     auto delegate = std::make_unique<VideoCaptureDeviceChromeOSDelegate>(
         std::move(task_runner_for_screen_observer), device_descriptor, this,
         std::move(cleanup_callback));
-    vcd_delegate_map_[camera_id] = std::move(delegate);
-    return vcd_delegate_map_[camera_id].get();
+    vcd_delegate_map_->Insert(camera_id, std::move(delegate));
   }
-  return it->second.get();
+  return vcd_delegate_map_->Get(camera_id);
 }
 
 void CameraHalDelegate::SetCameraModuleOnIpcThread(
