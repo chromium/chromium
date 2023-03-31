@@ -7,7 +7,9 @@
 #import <memory>
 
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
@@ -29,6 +31,8 @@
 
 @property(nonatomic) PasswordIssue* presentedPassword;
 
+@property(nonatomic, assign) BOOL dismissedWarningsPresented;
+
 @end
 
 @implementation FakePasswordIssuesPresenter
@@ -43,6 +47,10 @@
 - (void)dismissAndOpenURL:(CrURL*)URL {
   // TODO(crbug.com/1419986): Add unit test checking the right url was passed
   // after tapping the header's link.
+}
+
+- (void)presentDismissedCompromisedCredentials {
+  _dismissedWarningsPresented = YES;
 }
 
 @end
@@ -64,7 +72,7 @@ class PasswordIssuesTableViewControllerTest
   }
 
   // Adds password issue to the view controller.
-  void AddPasswordIssue() {
+  void AddPasswordIssue(NSString* dismissed_warnings_button_text = nil) {
     auto form = password_manager::PasswordForm();
     form.url = GURL("http://www.example.com/accounts/LoginAuth");
     form.action = GURL("http://www.example.com/accounts/Login");
@@ -84,7 +92,8 @@ class PasswordIssuesTableViewControllerTest
 
     PasswordIssuesTableViewController* passwords_controller =
         static_cast<PasswordIssuesTableViewController*>(controller());
-    [passwords_controller setPasswordIssues:@[ issue_group ]];
+    [passwords_controller setPasswordIssues:@[ issue_group ]
+                dismissedWarningsButtonText:dismissed_warnings_button_text];
   }
 
   FakePasswordIssuesPresenter* presenter() { return presenter_; }
@@ -127,4 +136,21 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssueSelection) {
   EXPECT_TRUE(presenter().presentedPassword);
   EXPECT_NSEQ(@"example.com", presenter().presentedPassword.website);
   EXPECT_NSEQ(@"test@egmail.com", presenter().presentedPassword.username);
+}
+
+// Test verifies tapping dismiss warnings button triggers function in presenter.
+TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  CreateController();
+  AddPasswordIssue(@"Dismiss Warnings (1)");
+
+  PasswordIssuesTableViewController* passwords_controller =
+      static_cast<PasswordIssuesTableViewController*>(controller());
+
+  EXPECT_FALSE(presenter().dismissedWarningsPresented);
+  [passwords_controller tableView:passwords_controller.tableView
+          didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
+  EXPECT_TRUE(presenter().dismissedWarningsPresented);
 }

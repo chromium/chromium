@@ -12,7 +12,8 @@
 @protocol PasswordIssuesConsumer <NSObject>
 
 // Pass password issues to the consumer.
-- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups;
+- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups
+    dismissedWarningsButtonText:(NSString*)buttonText;
 
 // Sets the navigation bar title.
 - (void)setNavigationBarTitle:(NSString*)title;

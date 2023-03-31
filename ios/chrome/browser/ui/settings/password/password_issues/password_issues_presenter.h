@@ -21,6 +21,10 @@
 // Called when Password Details screen should be shown.
 - (void)presentPasswordIssueDetails:(PasswordIssue*)password;
 
+// Called when password issues should be shown for dismissed compromised
+// credentials.
+- (void)presentDismissedCompromisedCredentials;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_ISSUES_PASSWORD_ISSUES_PRESENTER_H_

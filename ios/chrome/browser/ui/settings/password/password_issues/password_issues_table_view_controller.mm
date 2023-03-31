@@ -32,6 +32,7 @@ constexpr CGFloat kVerticalSpacingBetweenItems = 8;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierHeader = kSectionIdentifierEnumZero,
   SectionIdentifierContent,
+  SectionIdentifierDismissedCredentialsButton,
   // Identifier of the section containing the first password issue when Password
   // Checkup is enabled. Subsequent password issues use incremental section
   // identifiers, as each issue goes in a separate section. To avoid section
@@ -47,6 +48,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePassword,        // This is a repeated item type.
   ItemTypePasswordHeader,  // This is a repeated item type.
   ItemTypeChangePassword,  // This is a repeated item type.
+  ItemTypeDismissedCredentialsButton,
 };
 
 }  // namespace
@@ -61,6 +63,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // with a text header on top of the first password issue in the group. All
   // other types of issues are displayed in the same group without header.
   NSArray<PasswordIssueGroup*>* _passwordGroups;
+  // Text displayed in the button for presenting dismissed compromised
+  // credential warnings. When nil, no button is displayed.
+  NSString* _dismissedWarningsButtonText;
 }
 
 @end
@@ -132,6 +137,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
           nextPasswordIssueSectionIdentifier++;
         }];
   }
+
+  TableViewTextItem* dismissedWarningsItem = [self dismissedWarningsItem];
+  if (dismissedWarningsItem) {
+    [model
+        addSectionWithIdentifier:SectionIdentifierDismissedCredentialsButton];
+    [model addItem:dismissedWarningsItem
+        toSectionWithIdentifier:SectionIdentifierDismissedCredentialsButton];
+  }
 }
 
 // Legacy loadModel logic used when Password Checkup Feature is not enabled.
@@ -201,6 +214,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return item;
 }
 
+// Creates the item acting as a buton for presenting dismissed compromised
+// credential warnings. Returns nil when `_dismissedWarningsButtonText` is nil.
+- (TableViewTextItem*)dismissedWarningsItem {
+  // The button is not visible either because there aren't dismissed compromised
+  // credentials or because the view controller is not showing compromised
+  // credentials.
+  if (!_dismissedWarningsButtonText) {
+    return nil;
+  }
+
+  TableViewTextItem* dismissedWarningsItem = [[TableViewTextItem alloc]
+      initWithType:ItemTypeDismissedCredentialsButton];
+  dismissedWarningsItem.text = _dismissedWarningsButtonText;
+  dismissedWarningsItem.accessibilityTraits = UIAccessibilityTraitButton;
+  dismissedWarningsItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  return dismissedWarningsItem;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -222,6 +254,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.presenter presentPasswordIssueDetails:passwordIssue.password];
       break;
     }
+    case ItemTypeDismissedCredentialsButton:
+      [self.presenter presentDismissedCompromisedCredentials];
+      break;
+
     case ItemTypeChangePassword:
       // TODO(crbug.com/1406540): Handle change password taps.
       break;
@@ -285,6 +321,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       // layout.
       return kVerticalSpacingBetweenItems;
 
+    case SectionIdentifierDismissedCredentialsButton:
+      // Spacing between dismiss button and the bottom of the scrollable area.
+      return kVerticalSpacingBetweenItems;
+
     default:
       // Handle password issue sections.
       // All other sections should be handled by now.
@@ -325,6 +365,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       // Keep legacy spacing when no header.
       return [super tableView:tableView heightForHeaderInSection:section];
 
+    case SectionIdentifierDismissedCredentialsButton:
+      // Spacing to last password issue.
+      return 3 * kVerticalSpacingBetweenItems;
+
     default:
       // Handle password issue sections.
       // All other sections should be handled by now.
@@ -361,8 +405,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - PasswordIssuesConsumer
 
-- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups {
+- (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordGroups
+    dismissedWarningsButtonText:(NSString*)buttonText {
   _passwordGroups = passwordGroups;
+  _dismissedWarningsButtonText = buttonText;
   [self reloadData];
 }
 
