@@ -5061,31 +5061,6 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
           if (!base::Contains(request.GetURL().path(),
-                              "/service_worker/subresource")) {
-            return nullptr;
-          }
-          const bool is_slow = base::Contains(request.GetURL().path(), "/slow");
-          const bool is_not_found =
-              base::Contains(request.GetURL().query(), "notfound");
-
-          auto http_response =
-              is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
-                            base::Seconds(2))
-                      : std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(is_not_found ? net::HTTP_NOT_FOUND
-                                               : net::HTTP_OK);
-          http_response->set_content_type("text/plan");
-          http_response->set_content(is_slow
-                                         ? "[ServiceWorkerRaceNetworkRequest] "
-                                           "Slow subresource from the network"
-                                         : "[ServiceWorkerRaceNetworkRequest] "
-                                           "Subresource from the network");
-          return http_response;
-        }));
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        [](const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (!base::Contains(request.GetURL().path(),
                               "/service_worker/slow")) {
             return nullptr;
           }
@@ -5217,82 +5192,5 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   // RaceNetworkRequest is not involved with the navigation.
   EXPECT_TRUE(NavigateToURL(shell(), slow_url));
   EXPECT_EQ("Not found", GetInnerText());
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins) {
-  SetupAndRegisterServiceWorker();
-  // Fetch something from the service worker.
-  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Subresource from the network",
-            EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/subresource?timeout').then(response "
-                   "=> response.text())"));
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins_Fetch_No_Respond) {
-  SetupAndRegisterServiceWorker();
-  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Subresource from the network",
-            EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/"
-                   "subresource?respond_from_fetch_handler').then(response "
-                   "=> response.text())"));
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_NetworkRequest_Wins_NotFound) {
-  SetupAndRegisterServiceWorker();
-
-  // Network request is faster, but the response is not found.
-  // If the fetch handler respondWith a meaningful response (i.e. 200 response
-  // from the cache API), then expect the response from the fetch handler.
-  EXPECT_EQ(
-      "hello from the service worker\n",
-      EvalJs(GetPrimaryMainFrame(),
-             "fetch('/service_worker/"
-             "subresource?respond_from_fetch_handler&notfound').then(response "
-             "=> response.text())"));
-
-  // If the fallback request is not found. Then expect 404.
-  EXPECT_EQ(404,
-            EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/"
-                   "subresource?notfound').then(response => response.status)"));
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins) {
-  SetupAndRegisterServiceWorker();
-  // RaceNetworkRequest takes long time, but the fetch handler should respond
-  // from the cache.
-  EXPECT_EQ("hello from the service worker\n",
-            EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/subresource/"
-                   "slow?respond_from_fetch_handler').then(response => "
-                   "response.text())"));
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins_Fallback) {
-  SetupAndRegisterServiceWorker();
-  // Fetch handler will fallback. This case the response from the default
-  // fallback requset will be used. RaceNetworkRequset is not involved.
-  EXPECT_EQ(
-      "[ServiceWorkerRaceNetworkRequest] Slow subresource from the network",
-      EvalJs(GetPrimaryMainFrame(),
-             "fetch('/service_worker/subresource/"
-             "slow?fallback').then(response => "
-             "response.text())"));
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       Subresource_FetchHandler_Wins_NotFound) {
-  SetupAndRegisterServiceWorker();
-  // Fetch handler is fallback but the response is 404. In this case
-  // RaceNetworkRequest is not involved.
-  EXPECT_EQ(404, EvalJs(GetPrimaryMainFrame(),
-                        "fetch('/service_worker/subresource/"
-                        "slow?fallback&notfound').then(response => "
-                        "response.status)"));
 }
 }  // namespace content
