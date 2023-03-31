@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal_util.h"
-
-#include <sstream>
 
 namespace safe_browsing {
 
@@ -24,9 +23,7 @@ ExtensionSignalType CookiesGetSignal::GetType() const {
 }
 
 std::string CookiesGetSignal::getUniqueArgSetId() const {
-  std::stringstream ss;
-  ss << name_ << store_id_ << url_;
-  return ss.str();
+  return base::JoinString({name_, store_id_, url_}, ",");
 }
 
 }  // namespace safe_browsing

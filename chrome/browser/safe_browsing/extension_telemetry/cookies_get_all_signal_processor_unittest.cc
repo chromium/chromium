@@ -226,6 +226,25 @@ TEST_F(CookiesGetAllSignalProcessorTest, MaxExceededArgSetsCountIncremented) {
             static_cast<size_t>(1));
 }
 
+TEST_F(CookiesGetAllSignalProcessorTest,
+       ReportsSignalInfoCorrectlyWithEmptyBooleans) {
+  auto signal =
+      CookiesGetAllSignal(kExtensionId[0], domains[0], names[0], paths[0],
+                          absl::nullopt, store_ids[0], urls[0], absl::nullopt);
+  processor_.ProcessSignal(signal);
+
+  // Retrieve signal info.
+  std::unique_ptr<SignalInfo> extension_signal_info =
+      processor_.GetSignalInfoForReport(kExtensionId[0]);
+  const CookiesGetAllInfo& cookies_get_all_info =
+      extension_signal_info->cookies_get_all_info();
+  const GetAllArgsInfo& get_all_args_info =
+      cookies_get_all_info.get_all_args_info(0);
+
+  EXPECT_FALSE(get_all_args_info.has_secure());
+  EXPECT_FALSE(get_all_args_info.has_is_session());
+}
+
 }  // namespace
 
 }  // namespace safe_browsing

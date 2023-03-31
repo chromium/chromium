@@ -57,14 +57,17 @@ void CookiesGetAllSignalProcessor::ProcessSignal(
     get_all_args_info.set_domain(cga_signal.domain());
     get_all_args_info.set_name(cga_signal.name());
     get_all_args_info.set_path(cga_signal.path());
-    get_all_args_info.set_secure(cga_signal.secure());
     get_all_args_info.set_store_id(cga_signal.store_id());
     get_all_args_info.set_url(cga_signal.url());
     get_all_args_info.set_count(1);
-    get_all_args_info.set_is_session(cga_signal.is_session());
+    if (cga_signal.secure().has_value()) {
+      get_all_args_info.set_secure(cga_signal.secure().value());
+    }
+    if (cga_signal.is_session().has_value()) {
+      get_all_args_info.set_is_session(cga_signal.is_session().value());
+    }
 
     get_all_args_infos.emplace(arg_set_id, get_all_args_info);
-
   } else {
     // Otherwise, increment max exceeded argument sets count.
     store_entry.max_exceeded_arg_sets_count++;
