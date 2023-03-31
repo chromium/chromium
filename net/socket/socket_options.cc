@@ -11,6 +11,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
+#include <ws2tcpip.h>
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -83,6 +84,17 @@ int SetSocketSendBufferSize(SocketDescriptor fd, int32_t size) {
     DLOG(ERROR) << "Could not set socket send buffer size: " << net_error;
   }
   return net_error;
+}
+
+int SetIPv6Only(SocketDescriptor fd, bool ipv6_only) {
+#if BUILDFLAG(IS_WIN)
+  DWORD on = ipv6_only ? 1 : 0;
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  int on = ipv6_only ? 1 : 0;
+#endif
+  int rv = setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY,
+                      reinterpret_cast<const char*>(&on), sizeof(on));
+  return rv == -1 ? MapSystemError(errno) : OK;
 }
 
 }  // namespace net

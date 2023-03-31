@@ -50,7 +50,7 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool g_always_open_firewall_hole_for_testing = false;
+absl::optional<bool> g_always_open_firewall_hole_for_testing;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
@@ -136,8 +136,8 @@ bool ValidateAddressAndPort(RenderFrameHost& rfh,
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool ShouldOpenFirewallHole(const net::IPAddress& address) {
-  if (g_always_open_firewall_hole_for_testing) {
-    return true;
+  if (g_always_open_firewall_hole_for_testing.has_value()) {
+    return *g_always_open_firewall_hole_for_testing;
   }
   return !address.IsLoopback();
 }
@@ -398,6 +398,7 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
     // Truncate the provided value if it is larger than allowed by the platform.
     server_options->backlog = std::min<uint32_t>(options->backlog, SOMAXCONN);
   }
+  server_options->ipv6_only = options->ipv6_only;
 
 #if BUILDFLAG(IS_CHROMEOS)
   mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
@@ -430,7 +431,8 @@ void DirectSocketsServiceImpl::SetNetworkContextForTesting(
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
-void DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(bool value) {
+void DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(
+    absl::optional<bool> value) {
   g_always_open_firewall_hole_for_testing = value;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

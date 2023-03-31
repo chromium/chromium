@@ -38,7 +38,9 @@ class FuzzedServerSocket : public ServerSocket {
 
   ~FuzzedServerSocket() override;
 
-  int Listen(const IPEndPoint& address, int backlog) override;
+  int Listen(const IPEndPoint& address,
+             int backlog,
+             absl::optional<bool> ipv6_only) override;
   int GetLocalAddress(IPEndPoint* address) const override;
 
   int Accept(std::unique_ptr<StreamSocket>* socket,

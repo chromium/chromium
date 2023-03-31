@@ -622,12 +622,17 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
 class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DirectSocketsTcpServerBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PermissionBrokerClient::InitializeFake();
     DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(true);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // `FirewallHoleService` is not available in standalone Lacros browsertests.
+    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(false);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ~DirectSocketsTcpServerBrowserTest() override {
     chromeos::PermissionBrokerClient::Shutdown();
   }
@@ -749,6 +754,25 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ErrorOnRemoteReset) {
   mock_network_context.ResetSocketReceiver();
 
   ASSERT_EQ("ok", future->Get());
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, Ipv6Only) {
+  // Should be able to connect as mapped IPv4 with |ipv6Only| = false.
+  EXPECT_EQ(
+      true,
+      EvalJs(shell(),
+             "connectToServerWithIPv6Only(/*ipv6Only=*/false, '127.0.0.1')"));
+
+  // Connection to IPv4 loopback is rejected with |ipv6Only| = true.
+  EXPECT_EQ(
+      false,
+      EvalJs(shell(),
+             "connectToServerWithIPv6Only(/*ipv6Only=*/true, '127.0.0.1')"));
+
+  // Connection to IPv6 loopback succeeds.
+  EXPECT_EQ(
+      true,
+      EvalJs(shell(), "connectToServerWithIPv6Only(/*ipv6Only=*/true, '::1')"));
 }
 
 }  // namespace content

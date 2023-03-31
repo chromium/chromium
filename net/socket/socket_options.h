@@ -57,6 +57,10 @@ int SetSocketReceiveBufferSize(SocketDescriptor fd, int32_t size);
 // returns a net error code, on success returns OK.
 int SetSocketSendBufferSize(SocketDescriptor fd, int32_t size);
 
+// SetIPv6Only() sets the IPV6_V6ONLY socket option. On error
+// returns a net error code, on success returns OK.
+int SetIPv6Only(SocketDescriptor fd, bool ipv6_only);
+
 }  // namespace net
 
 #endif  // NET_SOCKET_SOCKET_OPTIONS_H_

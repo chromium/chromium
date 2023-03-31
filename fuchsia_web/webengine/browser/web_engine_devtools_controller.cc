@@ -44,7 +44,8 @@ class DevToolsSocketFactory : public content::DevToolsSocketFactory {
     const int kTcpListenBackLog = 5;
     auto socket =
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
-    int error = socket->Listen(ip_end_point_, kTcpListenBackLog);
+    int error = socket->Listen(ip_end_point_, kTcpListenBackLog,
+                               /*ipv6_only=*/absl::nullopt);
     if (error != net::OK) {
       LOG(WARNING) << "Failed to start the HTTP debugger service. "
                    << net::ErrorToString(error);

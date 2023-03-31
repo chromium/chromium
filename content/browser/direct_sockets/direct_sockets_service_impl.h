@@ -60,7 +60,9 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  static void SetAlwaysOpenFirewallHoleForTesting(bool value);
+  // |true| always forces firewall hole routine, |false| always blocks it.
+  // Leaving the value unset results in default behavior.
+  static void SetAlwaysOpenFirewallHoleForTesting(absl::optional<bool> value);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:

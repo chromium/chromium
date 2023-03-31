@@ -81,7 +81,9 @@ void TransportClientSocketTest::SetUp() {
   // Open a server socket on an ephemeral port.
   listen_sock_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
   IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
-  ASSERT_THAT(listen_sock_->Listen(local_address, 1), IsOk());
+  ASSERT_THAT(
+      listen_sock_->Listen(local_address, 1, /*ipv6_only=*/absl::nullopt),
+      IsOk());
   // Get the server's address (including the actual port number).
   ASSERT_THAT(listen_sock_->GetLocalAddress(&local_address), IsOk());
   listen_port_ = local_address.port();

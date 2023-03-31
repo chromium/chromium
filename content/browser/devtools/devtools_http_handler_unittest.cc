@@ -59,10 +59,10 @@ const base::FilePath::CharType kDevToolsActivePortFileName[] =
 
 class DummyServerSocket : public net::ServerSocket {
  public:
-  DummyServerSocket() {}
-
   // net::ServerSocket "implementation"
-  int Listen(const net::IPEndPoint& address, int backlog) override {
+  int Listen(const net::IPEndPoint& address,
+             int backlog,
+             absl::optional<bool> ipv6_only) override {
     return net::OK;
   }
 

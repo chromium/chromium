@@ -265,7 +265,7 @@ SimpleHttpServer::SimpleHttpServer(const ParserFactory& factory,
                                    net::IPEndPoint endpoint)
     : factory_(factory),
       socket_(new net::TCPServerSocket(nullptr, net::NetLogSource())) {
-  socket_->Listen(endpoint, 5);
+  socket_->Listen(endpoint, 5, /*ipv6_only=*/absl::nullopt);
   OnConnect();
 }
 

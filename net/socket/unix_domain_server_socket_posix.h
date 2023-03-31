@@ -58,7 +58,9 @@ class NET_EXPORT UnixDomainServerSocket : public ServerSocket {
                                  Credentials* credentials);
 
   // ServerSocket implementation.
-  int Listen(const IPEndPoint& address, int backlog) override;
+  int Listen(const IPEndPoint& address,
+             int backlog,
+             absl::optional<bool> ipv6_only) override;
   int ListenWithAddressAndPort(const std::string& address_string,
                                uint16_t port,
                                int backlog) override;

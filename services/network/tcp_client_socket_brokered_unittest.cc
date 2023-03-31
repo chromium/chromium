@@ -51,7 +51,9 @@ class TCPClientSocketBrokeredTest : public testing::Test,
     listen_socket =
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
     net::IPEndPoint local_address(net::IPAddress::IPv4Localhost(), 0);
-    ASSERT_THAT(listen_socket->Listen(local_address, 1), IsOk());
+    ASSERT_THAT(
+        listen_socket->Listen(local_address, 1, /*ipv6_only=*/absl::nullopt),
+        IsOk());
     // Get the server's address (including the actual port number).
     ASSERT_THAT(listen_socket->GetLocalAddress(&local_address), IsOk());
     listen_socket->Accept(&server_socket_, server_callback_.callback());

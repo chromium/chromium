@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
@@ -64,9 +65,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPServerSocket
 
   ~TCPServerSocket() override;
 
-  int Listen(const net::IPEndPoint& local_addr,
-             int backlog,
-             net::IPEndPoint* local_addr_out);
+  base::expected<net::IPEndPoint, int32_t> Listen(
+      const net::IPEndPoint& local_addr,
+      int backlog,
+      absl::optional<bool> ipv6_only);
 
   // TCPServerSocket implementation.
   void Accept(mojo::PendingRemote<mojom::SocketObserver> observer,

@@ -281,3 +281,11 @@ async function exchangeSingleTcpPacketBetweenClientAndServer() {
     return "exchangeSingleTcpPacketBetweenClientAndServer failed: " + error;
   }
 }
+
+async function connectToServerWithIPv6Only(ipv6Only, connectionAddress) {
+  const serverSocket = new TCPServerSocket('::', { ipv6Only });
+  const { localPort } = await serverSocket.opened;
+
+  const clientSocket = new TCPSocket(connectionAddress, localPort);
+  return await clientSocket.opened.then(() => true, () => false);
+}

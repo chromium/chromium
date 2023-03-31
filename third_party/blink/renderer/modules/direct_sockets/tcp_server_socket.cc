@@ -57,7 +57,9 @@ mojom::blink::DirectTCPServerSocketOptionsPtr CreateTCPServerSocketOptions(
           "equivalent.");
       return {};
     }
-    // TODO(crbug.com/1413161): Implement ipv6_only support.
+    socket_options->ipv6_only =
+        options->ipv6Only() ? network::mojom::blink::OptionalBool::kTrue
+                            : network::mojom::blink::OptionalBool::kFalse;
   }
 
   socket_options->local_addr = std::move(local_addr);

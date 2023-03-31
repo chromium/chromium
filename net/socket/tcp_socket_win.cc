@@ -683,6 +683,10 @@ bool TCPSocketWin::SetNoDelay(bool no_delay) {
   return SetTCPNoDelay(socket_, no_delay) == OK;
 }
 
+int TCPSocketWin::SetIPv6Only(bool ipv6_only) {
+  return ::net::SetIPv6Only(socket_, ipv6_only);
+}
+
 void TCPSocketWin::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

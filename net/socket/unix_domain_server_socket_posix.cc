@@ -50,7 +50,9 @@ bool UnixDomainServerSocket::GetPeerCredentials(SocketDescriptor socket,
 #endif
 }
 
-int UnixDomainServerSocket::Listen(const IPEndPoint& address, int backlog) {
+int UnixDomainServerSocket::Listen(const IPEndPoint& address,
+                                   int backlog,
+                                   absl::optional<bool> ipv6_only) {
   NOTIMPLEMENTED();
   return ERR_NOT_IMPLEMENTED;
 }

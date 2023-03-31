@@ -19,7 +19,9 @@ FuzzedServerSocket::FuzzedServerSocket(FuzzedDataProvider* data_provider,
 
 FuzzedServerSocket::~FuzzedServerSocket() = default;
 
-int FuzzedServerSocket::Listen(const IPEndPoint& address, int backlog) {
+int FuzzedServerSocket::Listen(const IPEndPoint& address,
+                               int backlog,
+                               absl::optional<bool> ipv6_only) {
   DCHECK(!listen_called_);
   listening_on_ = address;
   listen_called_ = true;

@@ -50,7 +50,8 @@ AudioSocketService::AudioSocketService(const std::string& endpoint,
   listen_socket_ = std::make_unique<net::TCPServerSocket>(nullptr /* net_log */,
                                                           net::NetLogSource());
   int result = listen_socket_->Listen(
-      net::IPEndPoint(net::IPAddress::IPv4Localhost(), port), kListenBacklog);
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), port), kListenBacklog,
+      /*ipv6_only=*/absl::nullopt);
 
   if (result != net::OK) {
     LOG(ERROR) << "Listen failed: " << net::ErrorToString(result);

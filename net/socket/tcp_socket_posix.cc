@@ -461,6 +461,11 @@ bool TCPSocketPosix::SetNoDelay(bool no_delay) {
   return SetTCPNoDelay(socket_->socket_fd(), no_delay) == OK;
 }
 
+int TCPSocketPosix::SetIPv6Only(bool ipv6_only) {
+  CHECK(socket_);
+  return ::net::SetIPv6Only(socket_->socket_fd(), ipv6_only);
+}
+
 void TCPSocketPosix::Close() {
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   // A MacOS bug can cause sockets to 0.0.0.0 to take 1 second to close. Log a

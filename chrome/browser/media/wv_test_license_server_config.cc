@@ -147,7 +147,7 @@ bool WVTestLicenseServerConfig::SelectServerPort() {
     net::NetLogSource source;
     net::TCPServerSocket sock(nullptr, source);
     if (sock.Listen(net::IPEndPoint(net::IPAddress::IPv4Localhost(), try_port),
-                    1) == net::OK) {
+                    1, /*ipv6_only=*/absl::nullopt) == net::OK) {
       port_ = try_port;
       return true;
     }

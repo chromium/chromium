@@ -22,7 +22,8 @@ int ServerSocket::ListenWithAddressAndPort(const std::string& address_string,
     return ERR_ADDRESS_INVALID;
   }
 
-  return Listen(IPEndPoint(ip_address, port), backlog);
+  return Listen(IPEndPoint(ip_address, port), backlog,
+                /*ipv6_only=*/absl::nullopt);
 }
 
 int ServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
