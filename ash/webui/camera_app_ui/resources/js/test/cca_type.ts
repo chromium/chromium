@@ -25,7 +25,7 @@ export const SELECTOR_MAP = {
   documentBackButton: '#back-to-review-document',
   documentCancelButton:
       '.document-preview-mode button[i18n-text=cancel_review_button]',
-  documentCornerOverlay: '#preview-document-corner-overlay',
+  documentCorner: '#preview-document-corner-overlay .corner',
   documentDoneFixButton: `.document-fix-mode ` +
       `button[i18n-text=label_crop_done]`,
   documentFixButton:
@@ -56,6 +56,7 @@ export const SELECTOR_MAP = {
   gifRecordingOption: 'input[type=radio][data-state=record-type-gif]',
   gifReviewRetakeButton: '#review-retake',
   gifReviewSaveButton: '#view-review button[i18n-text=label_save]',
+  gridOptionGoldenRatio: 'span[i18n-aria=label_grid_golden]',
   helpButton: '#settings-help',
   lowStorageDialog: '#view-low-storage-dialog',
   lowStorageDialogManageButton:
@@ -63,12 +64,13 @@ export const SELECTOR_MAP = {
   lowStorageDialogOKButton:
       '#view-low-storage-dialog button.dialog-positive-button',
   lowStorageWarning: '#nudge',
+  mirrorOptionOff: 'span[i18n-aria=aria_mirror_off]',
+  mirrorOptionOn: 'span[i18n-aria=aria_mirror_on]',
   modeSelector: '#modes-group',
   openGridPanelButton: '#open-grid-panel',
   openMirrorPanelButton: '#open-mirror-panel',
   openPTZPanelButton: '#open-ptz-panel',
   openTimerPanelButton: '#open-timer-panel',
-  optionsContainer: '#options-container',
   panLeftButton: '#pan-left',
   panRightButton: '#pan-right',
   photoAspectRatioSettingButton: '#settings-photo-aspect-ratio',
@@ -81,12 +83,16 @@ export const SELECTOR_MAP = {
   scanDocumentModeOption: '#scan-document',
   settingsButton: '#open-settings',
   settingsButtonContainer: 'div:has(> #open-settings)',
+  settingsHeader: '#settings-header',
   shutter: '.shutter',
   switchDeviceButton: '#switch-device',
   tiltDownButton: '#tilt-down',
   tiltUpButton: '#tilt-up',
   timeLapseRecordingOption:
       'input[type=radio][data-state=record-type-time-lapse]',
+  timerOption10Seconds: 'span[i18n-aria=aria_timer_10s]',
+  timerOption3Seconds: 'span[i18n-aria=aria_timer_3s]',
+  timerOptionOff: 'span[i18n-aria=aria_timer_off]',
   videoPauseResumeButton: '#pause-recordvideo',
   videoProfileSelect: '#video-profile',
   videoResolutionSettingButton: '#settings-video-resolution',
