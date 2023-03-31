@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/dev_mode_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/load_error_reporter.h"

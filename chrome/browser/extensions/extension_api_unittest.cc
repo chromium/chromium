@@ -87,7 +87,7 @@ std::string ExtensionApiUnittest::RunFunctionAndReturnError(
 
 void ExtensionApiUnittest::RunFunction(ExtensionFunction* function,
                                        const std::string& args) {
-  RunFunctionAndReturnValue(function, args);
+  RunFunctionAndReturnSingleValue(function, args);
 }
 
 }  // namespace extensions

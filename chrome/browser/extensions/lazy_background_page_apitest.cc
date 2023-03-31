@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -46,6 +45,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -171,13 +171,14 @@ class LazyBackgroundPageApiTest : public ExtensionApiTest {
       scoped_refptr<const Extension> extension) {
     auto dev_tools_function =
         base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
-    extension_function_test_utils::RunFunction(dev_tools_function.get(),
-                                               base::StringPrintf(
-                                                   R"([{"renderViewId": -1,
+    api_test_utils::RunFunction(dev_tools_function.get(),
+                                base::StringPrintf(
+                                    R"([{"renderViewId": -1,
                                                         "renderProcessId": -1,
                                                         "extensionId": "%s"}])",
-                                                   extension->id().c_str()),
-                                               browser(), api_test_utils::NONE);
+                                    extension->id().c_str()),
+                                browser()->profile(),
+                                api_test_utils::FunctionMode::kNone);
   }
 };
 

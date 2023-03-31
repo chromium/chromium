@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -55,6 +54,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
@@ -2180,9 +2180,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string args = base::StringPrintf(kArgsTemplate, tab_id);
     auto function = base::MakeRefCounted<TabsExecuteScriptFunction>();
     function->set_extension(extension());
-    std::string actual_error =
-        extension_function_test_utils::RunFunctionAndReturnError(
-            function.get(), args, browser());
+    std::string actual_error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), args, browser()->profile());
     std::string expected_error =
         "Cannot access contents of url \"chrome://settings/\". "
         "Extension manifest must request permission to access this host.";
