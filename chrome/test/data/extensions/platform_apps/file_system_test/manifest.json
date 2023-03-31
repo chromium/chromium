@@ -1,0 +1,13 @@
+{
+  "name": "File System Test Extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "An extension for testing the file system API for chrome apps.",
+  "app": {
+    "background": {
+      "scripts": [
+        "background.js"
+      ]
+    }
+  }
+}

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/test_file_util.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +21,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_utils.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -198,4 +201,30 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(permission_context.performed_after_write_checks());
 
   ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+class FileSystemChromeAppTest : public extensions::PlatformAppBrowserTest {};
+
+// TODO(b/276433834): Implement an end-to-end test for getDirectoryPicker in
+// Chrome apps.
+IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
+                       FileSystemAccessPermissionRequestManagerExists) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener launched_listener("Launched");
+
+  // Install Platform App
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
+  const extensions::Extension* extension =
+      InstallPlatformApp("file_system_test");
+  ASSERT_TRUE(extension);
+
+  // Launch Platform App
+  LaunchPlatformApp(extension);
+  app_loaded_observer.Wait();
+  ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
+
+  content::WebContents* web_contents = GetFirstAppWindowWebContents();
+  EXPECT_TRUE(web_contents);
+  EXPECT_NE(nullptr, FileSystemAccessPermissionRequestManager::FromWebContents(
+                         web_contents));
 }
