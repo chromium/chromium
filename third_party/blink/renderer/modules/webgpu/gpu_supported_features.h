@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SUPPORTED_FEATURES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SUPPORTED_FEATURES_H_
 
+#include <bitset>
+
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.h"
