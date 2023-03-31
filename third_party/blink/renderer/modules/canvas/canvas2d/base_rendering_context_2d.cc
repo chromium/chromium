@@ -479,9 +479,7 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
 
   switch (v8_style.type) {
     case V8CanvasStyleType::kCSSColorValue:
-      // TODO (crbug.com/1399566): v8_style should probably store another format
-      // for color.
-      GetState().SetStrokeColor(Color::FromSkColor(v8_style.css_color_value));
+      GetState().SetStrokeColor(v8_style.css_color_value);
       break;
     case V8CanvasStyleType::kGradient:
       GetState().SetStrokeGradient(v8_style.gradient);
@@ -541,9 +539,7 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
 
   switch (v8_style.type) {
     case V8CanvasStyleType::kCSSColorValue:
-      // TODO (crbug.com/1399566): v8_style should probably store another format
-      // for color.
-      GetState().SetFillColor(Color::FromSkColor(v8_style.css_color_value));
+      GetState().SetFillColor(v8_style.css_color_value);
       break;
     case V8CanvasStyleType::kGradient:
       GetState().SetFillGradient(v8_style.gradient);
