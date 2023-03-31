@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -3870,6 +3871,74 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // Ensure that bar.com didn't reuse the foo.com error page process.
   EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+}
+
+// Check that a renderer-initiated navigation from an error page to about:blank
+// honors the initiator origin when selecting the SiteInstance and process for
+// about:blank.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       NavigateToAboutBlankFromErrorPage) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(url, net::ERR_DNS_TIMED_OUT);
+
+  // Start off with navigation to a.com, which results in an error page.
+  WebContents* web_contents = shell()->web_contents();
+  {
+    TestNavigationObserver observer(web_contents);
+    ASSERT_FALSE(NavigateToURL(shell(), url));
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+    if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
+      EXPECT_EQ(
+          GURL(kUnreachableWebDataURL),
+          web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+    }
+  }
+
+  // Now, do a renderer-initiated navigation to about:blank out of the error
+  // page. We don't expect error pages to normally do this, but this might
+  // still be possible via DevTools or automation.
+  GURL about_blank(url::kAboutBlankURL);
+  {
+    TestNavigationObserver observer(web_contents);
+    EXPECT_TRUE(ExecuteScript(web_contents, "location = 'about:blank';"));
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(about_blank, observer.last_navigation_url());
+  }
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
+  EXPECT_NE(GURL(kUnreachableWebDataURL), rfh->GetSiteInstance()->GetSiteURL());
+
+  // Note that the error page's origin was opaque with a.com as the precursor.
+  // This becomes the initiator origin for the about:blank navigation, and it
+  // should end up as the final origin for the blank document.  See
+  // https://crbug.com/585649.
+  EXPECT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(
+      "a.com",
+      rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque().host());
+
+  // Because about:blank's origin is opaque with a.com as the precursor, its
+  // SiteInstance and process should also correspond to a.com, rather than be
+  // left unassigned/unused.
+  //
+  // This covers an interesting and rare corner case, where an about:blank
+  // navigation can't use the source SiteInstance, which would normally keep it
+  // in the initiator's process and SiteInstance.  This is because the
+  // navigation originates from an error page process, which is incompatible
+  // with a non-error navigation to about:blank.  In this case, a new
+  // SiteInstance and process will be created, and they should still reflect
+  // about:blank's committed origin, rather than end up in an unlocked process
+  // and an unassigned SiteInstance. See https://crbug.com/1426928.
+  EXPECT_FALSE(rfh->GetProcess()->IsUnused());
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ("http://a.com/", rfh->GetSiteInstance()->GetSiteURL());
+    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().is_locked_to_site());
+    EXPECT_EQ("http://a.com/", rfh->GetProcess()->GetProcessLock().site_url());
+  } else {
+    EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().allows_any_site());
+  }
 }
 
 using CSPEmbeddedEnforcementBrowserTest = NavigationRequestBrowserTest;

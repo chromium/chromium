@@ -77,9 +77,11 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(
   // Some URLs should leave the SiteInstance's site unassigned, though if
   // `instance` is for a guest, we should always set the site to ensure that it
   // carries guest information contained within SiteInfo.
-  if (SiteInstance::ShouldAssignSiteForURL(url_info.url) ||
-      isolation_context_.is_guest())
+  if (SiteInstanceImpl::ShouldAssignSiteForUrlInfo(url_info) ||
+      isolation_context_.is_guest()) {
     instance->SetSite(url_info);
+  }
+
   return instance;
 }
 

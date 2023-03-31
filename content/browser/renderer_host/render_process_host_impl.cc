@@ -825,18 +825,27 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   // from being reused if it has pending navigations to such URLs.
   bool ContainsNonReusableSiteForHost(RenderProcessHost* host) {
     for (auto iter : map_) {
-      // If SiteInstance doesn't assign a site URL for the current entry (and it
-      // isn't about:blank, which is allowed anywhere), check whether |host| is
-      // on the list of processes the entry is associated with.
+      // If SiteInstance doesn't assign a site URL for the current entry, check
+      // whether |host| is on the list of processes the entry is associated
+      // with.  Skip entries for about:blank, which is allowed anywhere.  Note
+      // that about:blank could have an initiator origin, and a process with
+      // such a pending navigation wouldn't be safe to reuse, but in that case
+      // the site URL would reflect the initiator origin and wouldn't match
+      // about:blank.
       //
       // TODO(alexmos): ShouldAssignSiteForURL() expects a full URL, whereas we
       // only have a site URL here.  For now, this mismatch is ok since
       // ShouldAssignSiteForURL() only cares about schemes in practice, but
       // this should be cleaned up.
-      if (!SiteInstanceImpl::ShouldAssignSiteForURL(iter.first.site_url()) &&
+      //
+      // TODO(alexmos): Additionally, site URLs will never match the full
+      // "about:blank" URL which has no host; a site URL could only be
+      // "about:" in that case.  This looks like a bug that needs to be fixed!
+      if (!SiteInstance::ShouldAssignSiteForURL(iter.first.site_url()) &&
           !iter.first.site_url().IsAboutBlank() &&
-          base::Contains(iter.second, host->GetID()))
+          base::Contains(iter.second, host->GetID())) {
         return true;
+      }
     }
     return false;
   }
@@ -4385,7 +4394,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // URLs, since in that case the latter navigation could lock this process
   // before the commit for the siteless URL arrives, resulting in a renderer
   // kill. See https://crbug.com/970046.
-  if (SiteInstanceImpl::ShouldAssignSiteForURL(site_info.site_url()) &&
+  if (SiteInstance::ShouldAssignSiteForURL(site_info.site_url()) &&
       site_info.RequiresDedicatedProcess(isolation_context)) {
     SiteProcessCountTracker* pending_tracker =
         static_cast<SiteProcessCountTracker*>(

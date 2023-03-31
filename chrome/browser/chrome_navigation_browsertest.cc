@@ -708,6 +708,27 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
         GURL(content::kUnreachableWebDataURL),
         web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
   }
+
+  // In the above setup, the reload was carried out with the error page being
+  // the initiator of the navigation.  The error page's origin is opaque with
+  // a.com as the precursor, so this becomes the initiator origin for the
+  // reload to about:blank.  This means that about:blank ought to load in a
+  // SiteInstance and process corresponding to a.com.
+  //
+  // This covers an interesting and rare corner case, where an about:blank
+  // navigation can't use the source SiteInstance, which would normally keep
+  // it in the initiator's process and SiteInstance.  This is because the
+  // reload originates from an error page process, which is incompatible with a
+  // non-error navigation to about:blank.  In this case, the final SiteInstance
+  // and process selection should still honor the initiator, rather than end up
+  // in an unlocked process and an unassigned SiteInstance.  See
+  // https://crbug.com/1426928.
+  EXPECT_EQ(
+      "http://a.com/",
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()
+                  ->GetProcess()
+                  ->IsProcessLockedToSiteForTesting());
 }
 
 // This test covers a navigation that:
