@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certificat d'authentification rejeté localement.</translation>
 <translation id="1775381402323441512">Renseignements sur le fichier vidéo</translation>
 <translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Une extension portant l'identifiant}one{Une extension portant les identifiants}other{Les extensions portant les identifiants}}</translation>
 <translation id="1807938677607439181">Tous les fichiers</translation>
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">Copie de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="7375951387215729722">Liste de fichiers triée par <ph name="COLUMN_NAME" /> en ordre décroissant.</translation>
 <translation id="7377161162143020057">La politique de l'administrateur bloque la copie de ce fichier</translation>
-<translation id="7392500733467492920">est introuvable. Communiquez avec votre administrateur.</translation>
 <translation id="7402503521691663770">Appareils Chrome OS Flex</translation>
 <translation id="7408870451288633753">Tchèque</translation>
 <translation id="7417453074306512035">Clavier éthiopien</translation>

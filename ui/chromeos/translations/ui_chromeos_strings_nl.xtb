@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Verificatiecertificaat lokaal geweigerd</translation>
 <translation id="1775381402323441512">Videogegevens</translation>
 <translation id="180035236176489073">Je moet online zijn om deze bestanden te openen.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Een extensie met de ID}other{Een extensie met de ID's}}</translation>
 <translation id="1807938677607439181">Alle bestanden</translation>
 <translation id="1810764548349082891">Geen voorbeeld beschikbaar</translation>
 <translation id="1812302367230252929">Amhaars (transliteratie)</translation>
@@ -802,7 +801,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> items kopiëren...</translation>
 <translation id="7375951387215729722">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in aflopende volgorde.</translation>
 <translation id="7377161162143020057">Dit bestand kopiëren is geblokkeerd door het beheerdersbeleid</translation>
-<translation id="7392500733467492920">kan niet worden gevonden. Neem contact op met je beheerder.</translation>
 <translation id="7402503521691663770">Chrome OS Flex-apparaten</translation>
 <translation id="7408870451288633753">Tsjechië</translation>
 <translation id="7417453074306512035">Ethiopisch toetsenbord</translation>

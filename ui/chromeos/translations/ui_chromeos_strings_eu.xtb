@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Autentifikazio-ziurtagiria lokalki baztertu da</translation>
 <translation id="1775381402323441512">Bideoari buruzko informazioa</translation>
 <translation id="180035236176489073">Konektatuta egon behar zara fitxategiak atzitzeko.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Identifikatzaile hau daukan luzapena:}other{Identifikatzaile hauek dauzkaten luzapenak:}}</translation>
 <translation id="1807938677607439181">Fitxategi guztiak</translation>
 <translation id="1810764548349082891">Ez dago aurrebistarik</translation>
 <translation id="1812302367230252929">Amhareraren transliterazioa</translation>
@@ -799,7 +798,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatzen…</translation>
 <translation id="7375951387215729722">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, beherantz ordenatuta.</translation>
 <translation id="7377161162143020057">Administratzailearen gidalerroek ez dute uzten fitxategia kopiatzen</translation>
-<translation id="7392500733467492920">aurkitzea ezinezkoa da. Jarri administratzailearekin harremanetan.</translation>
 <translation id="7402503521691663770">ChromeOS Flex-eko gailuak</translation>
 <translation id="7408870451288633753">Txekiarra</translation>
 <translation id="7417453074306512035">Teklatu etiopiarra</translation>

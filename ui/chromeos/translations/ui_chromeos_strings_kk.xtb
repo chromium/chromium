@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Аутентификация сертификаты жергілікті негізде қабылданбады</translation>
 <translation id="1775381402323441512">Бейне ақпараты</translation>
 <translation id="180035236176489073">Бұл файлдарға кіру үшін желіде болуыңыз керек.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Идентификаторы бар кеңейтім}other{Идентификаторлары бар кеңейтімдер}}</translation>
 <translation id="1807938677607439181">Барлық файлдар</translation>
 <translation id="1810764548349082891">Алдын ала қаралмайды</translation>
 <translation id="1812302367230252929">Амхар (транслитерация)</translation>
@@ -799,7 +798,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілуде…</translation>
 <translation id="7375951387215729722">Файлдар тізімі <ph name="COLUMN_NAME" /> бойынша кему ретімен сұрыпталды.</translation>
 <translation id="7377161162143020057">Әкімші саясаты бұл файлды көшіруге тыйым салған.</translation>
-<translation id="7392500733467492920">табу мүмкін емес. Әкімшіңізге хабарласыңыз.</translation>
 <translation id="7402503521691663770">ChromeOS Flex құрылғылары</translation>
 <translation id="7408870451288633753">Чех</translation>
 <translation id="7417453074306512035">Эфиоп пернетақтасы</translation>

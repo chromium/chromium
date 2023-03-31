@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">அடையாளச் சான்றிதழ் பயனரின் கம்ப்யூட்டரில் நிராகரிக்கப்பட்டது</translation>
 <translation id="1775381402323441512">வீடியோ தகவல்</translation>
 <translation id="180035236176489073">இந்த ஃபைல்களை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{ஐடியைக் கொண்ட நீட்டிப்பு}other{ஐடிகளைக் கொண்ட நீட்டிப்புகள்}}</translation>
 <translation id="1807938677607439181">எல்லா கோப்புகளும்</translation>
 <translation id="1810764548349082891">மாதிரிக்காட்சி இல்லை</translation>
 <translation id="1812302367230252929">அம்ஹரிக் ஒலிபெயர்ப்பு</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நகலெடுக்கிறது...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> அடிப்படையில் ஃபைல் பட்டியல் இறங்கு வரிசையில் காட்டப்பட்டுள்ளது.</translation>
 <translation id="7377161162143020057">இந்த ஃபைலை நகலெடுப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
-<translation id="7392500733467492920">கண்டறிய முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7402503521691663770">ChromeOS Flex சாதனங்கள்</translation>
 <translation id="7408870451288633753">செக்</translation>
 <translation id="7417453074306512035">எத்தியோபிக் கீபோர்டு</translation>

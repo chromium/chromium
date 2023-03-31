@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အတွင်းမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="1775381402323441512">ဗီဒီယိုအချက်အလက်</translation>
 <translation id="180035236176489073">ဤဖိုင်များကို အသုံးပြုရန် သင် online ဖြစ်ရန် လိုသည်။</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{ID ပါသော နောက်ဆက်တွဲတစ်ခု}other{ID များပါသော နောက်ဆက်တွဲများ}}</translation>
 <translation id="1807938677607439181">ဖိုင်များ အားလုံး</translation>
 <translation id="1810764548349082891">အစမ်းကြည့်၍မရနိုင်ပါ</translation>
 <translation id="1812302367230252929">အမ်ဟာရစ်ခ် အက္ခရာဖလှယ်ခြင်း</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးနေသည်…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> အရ ကြီးစဉ်ငယ်လိုက် စီထားသော ဖိုင်စာရင်း။</translation>
 <translation id="7377161162143020057">ဤဖိုင်မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
-<translation id="7392500733467492920">ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။</translation>
 <translation id="7402503521691663770">ChromeOS Flex စက်များ</translation>
 <translation id="7408870451288633753">ချက်</translation>
 <translation id="7417453074306512035">အီသီယိုးပီးယား ကီးဘုတ်</translation>

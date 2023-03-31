@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Kimlik doğrulama sertifikası yerel olarak reddedildi</translation>
 <translation id="1775381402323441512">Video bilgileri</translation>
 <translation id="180035236176489073">Bu dosyalara erişebilmek için çevrimiçi olmalısınız.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Aşağıdaki kimliğe sahip uzantı:}other{Aşağıdaki kimliklere sahip uzantılar:}}</translation>
 <translation id="1807938677607439181">Tüm dosyalar</translation>
 <translation id="1810764548349082891">Önizleme yok</translation>
 <translation id="1812302367230252929">Amharca Harf Çevirisi</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> öğe kopyalanıyor.</translation>
 <translation id="7375951387215729722">Dosya <ph name="COLUMN_NAME" /> sütununa göre azalan düzende sıralandı.</translation>
 <translation id="7377161162143020057">Bu dosyanın kopyalanması yönetici politikası tarafından engellendi</translation>
-<translation id="7392500733467492920">bulanamadı. Yöneticinizle iletişime geçin.</translation>
 <translation id="7402503521691663770">ChromeOS Flex cihazlar</translation>
 <translation id="7408870451288633753">Çekçe</translation>
 <translation id="7417453074306512035">Etiyopya dili klavye</translation>

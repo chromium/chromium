@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Autentimissertifikaat lükati kohalikult tagasi</translation>
 <translation id="1775381402323441512">Video teave</translation>
 <translation id="180035236176489073">Failide juurde pääsemiseks on vaja võrguühendust.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Laiendus ID-ga}other{Laiendused ID-ga}}</translation>
 <translation id="1807938677607439181">Kõik failid</translation>
 <translation id="1810764548349082891">Eelvaade pole saadaval</translation>
 <translation id="1812302367230252929">amhara, transliteratsioon</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase'id</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="485316830061041779">saksa keel</translation>
+<translation id="4862885579661885411">Rakenduse Failid seaded</translation>
 <translation id="4867079195717347957">Klõpsake, et veerg kahanevas järjestuses sortida.</translation>
 <translation id="4867297348137739678">Eelmine nädal</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> baiti</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> üksuse kopeerimine …</translation>
 <translation id="7375951387215729722">Failide loend on sorditud veeru <ph name="COLUMN_NAME" /> alusel kahanevas järjestuses.</translation>
 <translation id="7377161162143020057">Selle faili kopeerimine on administraatori reegliga blokeeritud</translation>
-<translation id="7392500733467492920">ei leita. Võtke ühendust administraatoriga.</translation>
 <translation id="7402503521691663770">Chrome OS Flexi seadmed</translation>
 <translation id="7408870451288633753">tšehhi</translation>
 <translation id="7417453074306512035">Etioopia klaviatuur</translation>

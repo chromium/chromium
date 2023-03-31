@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Сертификат за потврду аутентичности је одбијен локално</translation>
 <translation id="1775381402323441512">Информације о видео датотеци</translation>
 <translation id="180035236176489073">Морате да будете на мрежи да бисте приступили овим датотекама.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Додатак са ИД-ом}one{Додаци са ИД-овима}few{Додаци са ИД-овима}other{Додаци са ИД-овима}}</translation>
 <translation id="1807938677607439181">Све датотеке</translation>
 <translation id="1810764548349082891">Преглед није доступан</translation>
 <translation id="1812302367230252929">транслитерација амхарског</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase-ови</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">немачки</translation>
+<translation id="4862885579661885411">Подешавања Фајлова</translation>
 <translation id="4867079195717347957">Кликните да бисте сортирали ставке у колони по опадајућем редоследу.</translation>
 <translation id="4867297348137739678">Последња недеља</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> бајт(ов)а</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">Копирају се ставке (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Листа датотека је сортирана по опадајућем редоследу по критеријуму <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Смернице администратора блокирају копирање овог фајла</translation>
-<translation id="7392500733467492920">нисмо успели да пронађемо. Обратите се администратору.</translation>
 <translation id="7402503521691663770">Chrome OS Flex уређаји</translation>
 <translation id="7408870451288633753">чешки</translation>
 <translation id="7417453074306512035">Етиопљанска тастатура</translation>

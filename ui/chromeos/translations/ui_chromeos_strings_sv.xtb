@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Autentiseringscertifikatet godkändes inte lokalt</translation>
 <translation id="1775381402323441512">Videoinformation</translation>
 <translation id="180035236176489073">Du måste vara online för att kunna öppna filerna.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Ett tillägg med id:t}other{Tillägg med id:na}}</translation>
 <translation id="1807938677607439181">Alla filer</translation>
 <translation id="1810764548349082891">Ingen förhandsgranskning</translation>
 <translation id="1812302367230252929">amhariska, translitterering</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase-modeller</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="485316830061041779">tyska</translation>
+<translation id="4862885579661885411">Inställningar för Filer</translation>
 <translation id="4867079195717347957">Klicka här om kolumnen ska sorteras i fallande ordning.</translation>
 <translation id="4867297348137739678">Förra veckan</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> objekt kopieras ...</translation>
 <translation id="7375951387215729722">Fillistan har sorterats efter <ph name="COLUMN_NAME" /> i fallande ordning.</translation>
 <translation id="7377161162143020057">Möjligheten att kopiera den här filen blockeras av administratörspolicyn</translation>
-<translation id="7392500733467492920">kan inte hittas. Kontakta administratören.</translation>
 <translation id="7402503521691663770">ChromeOS Flex-enheter</translation>
 <translation id="7408870451288633753">tjeckiska</translation>
 <translation id="7417453074306512035">Tangentbord för etiopiska</translation>

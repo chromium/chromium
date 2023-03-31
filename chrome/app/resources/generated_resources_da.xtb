@@ -3267,6 +3267,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
 <translation id="3803367742635802571">Websites, du besøger, holder muligvis op med at fungere som forventet</translation>
+<translation id="3803583375545057606">Vil du bede din forælder om lov til at aktivere denne udvidelse?</translation>
 <translation id="380408572480438692">Aktiverer registrering af ydelsesdata, der hjælper Google med at forbedre systemet med tiden. Der sendes ingen data, før du indgiver en feedbackrapport (Alt-Shift-I) og medtager ydelsesdata. Du kan altid vende tilbage til dette skærmbillede for at deaktivere registreringen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (udvidelses-id "<ph name="EXTENSION_ID" />") er ikke tilladt på en loginskærm.</translation>
 <translation id="3807747707162121253">&amp;Annuller</translation>
@@ -3688,6 +3689,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4170314459383239649">Ryd ved lukning</translation>
 <translation id="417096670996204801">Vælg en profil</translation>
+<translation id="41725145403849567">Vil du bede din forælder om lov til at tilføje denne udvidelse?</translation>
 <translation id="4175137578744761569">Lyslilla og hvid</translation>
 <translation id="4175737294868205930">Vedvarende lagring</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
@@ -5099,6 +5101,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden skal være på mindst ét tegn}one{Pinkoden skal være på mindst # tegn}other{Pinkoden skal være på mindst # tegn}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).</translation>
 <translation id="5476016146231427848">Genstart enheden for at bruge Steam på Chromebook</translation>
+<translation id="5476897066181964657">En forælder eller værge skal give dig lov til at tilføje denne udvidelse</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5483785310822538350">Tilbagekald adgang til fil og enhed</translation>
@@ -6849,6 +6852,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7025190659207909717">Administration af mobildatatjeneste</translation>
 <translation id="7025895441903756761">Sikkerhed og privatliv</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Åbn alle i &amp;inkognitovindue}=1{Åbn i &amp;inkognitovindue}one{Åbn ({COUNT}) i &amp;inkognitovindue}other{Åbn alle ({COUNT}) i &amp;inkognitovindue}}</translation>
+<translation id="7028057921476386252">En forælder eller værge skal give dig lov til at aktivere denne udvidelse</translation>
 <translation id="7029307918966275733">Crostini er ikke installeret. Installer Crostini for at se krediteringer.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7030304022046916278">Webadresser sendes til tjek i Beskyttet browsing</translation>
@@ -8892,7 +8896,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8850251000316748990">Se flere...</translation>
 <translation id="885246833287407341">Argumenter for API-funktion</translation>
 <translation id="8853586775156634952">Dette kort bliver kun gemt på denne enhed</translation>
-<translation id="8853731677580212469">Google Adgangskodeadministrator på nettet</translation>
 <translation id="8854745870658584490">Genvej til valgmuligheder</translation>
 <translation id="8855977033756560989">Denne Chrome Enterprise-enhed følger med Chrome Enterprise-opgraderingen. Tilmeld denne enhed med en Google-administratorkonto for at få adgang til virksomhedsfunktioner.</translation>
 <translation id="8856028055086294840">Gendan apps og sider</translation>

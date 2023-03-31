@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Sertifikat za potvrdu autentičnosti je odbijen lokalno</translation>
 <translation id="1775381402323441512">Informacije o video datoteci</translation>
 <translation id="180035236176489073">Morate da budete na mreži da biste pristupili ovim datotekama.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Dodatak sa ID-om}one{Dodaci sa ID-ovima}few{Dodaci sa ID-ovima}other{Dodaci sa ID-ovima}}</translation>
 <translation id="1807938677607439181">Sve datoteke</translation>
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija amharskog</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase-ovi</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">nemački</translation>
+<translation id="4862885579661885411">Podešavanja Fajlova</translation>
 <translation id="4867079195717347957">Kliknite da biste sortirali stavke u koloni po opadajućem redosledu.</translation>
 <translation id="4867297348137739678">Poslednja nedelja</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bajt(ov)a</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">Kopiraju se stavke (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista datoteka je sortirana po opadajućem redosledu po kriterijumu <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Smernice administratora blokiraju kopiranje ovog fajla</translation>
-<translation id="7392500733467492920">nismo uspeli da pronađemo. Obratite se administratoru.</translation>
 <translation id="7402503521691663770">Chrome OS Flex uređaji</translation>
 <translation id="7408870451288633753">češki</translation>
 <translation id="7417453074306512035">Etiopljanska tastatura</translation>

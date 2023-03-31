@@ -2233,6 +2233,7 @@
 <translation id="2886119409731773154">這項作業最多可能需要 30 分鐘才能完成</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部裝置</translation>
+<translation id="2889043468805635730">未發現問題</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結...</translation>
 <translation id="2891566119238851894">開啟側邊面板中的搜尋工具列。側邊面板中的搜尋工具列未開啟。</translation>
 <translation id="2891922230654533301">要從這部裝置登入「<ph name="APP_NAME" />」嗎？</translation>
@@ -3251,6 +3252,7 @@
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">視訊品質</translation>
 <translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
+<translation id="3803583375545057606">要詢問家長是否允許啟用這個擴充功能嗎？</translation>
 <translation id="380408572480438692">啟用成效資料收集功能可協助 Google 持續改善系統。除非你提交意見回饋報告 (Alt-Shift-I) 並在其中包含成效資料，否則 Google 不會收到任何相關資料。你可以隨時回到這個畫面停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充功能 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
@@ -3329,6 +3331,7 @@
 <translation id="3861977424605124250">啟動時顯示</translation>
 <translation id="386239283124269513">還原群組 (&amp;R)</translation>
 <translation id="3865414814144988605">解析度</translation>
+<translation id="3866142613641074814">你的密碼有安全風險</translation>
 <translation id="3866249974567520381">說明</translation>
 <translation id="3867134342671430205">透過拖曳方式或方向鍵移動螢幕</translation>
 <translation id="3867944738977021751">憑證欄位</translation>
@@ -3671,6 +3674,7 @@
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="417096670996204801">選擇設定檔</translation>
+<translation id="41725145403849567">要詢問家長是否允許新增這個擴充功能嗎？</translation>
 <translation id="4175137578744761569">淺紫色與白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -5081,6 +5085,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
 <translation id="5476016146231427848">如要使用 Steam Chrome 版，請重新啟動裝置</translation>
+<translation id="5476897066181964657">你必須取得家長或監護人許可，才能新增這個擴充功能</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
@@ -6826,6 +6831,7 @@
 <translation id="7025190659207909717">行動數據服務管理</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有網址(&amp;I)}=1{在無痕式視窗中開啟(&amp;I)}other{在無痕式視窗中開啟所有 ({COUNT} 個) 網址(&amp;I)}}</translation>
+<translation id="7028057921476386252">你必須取得家長或監護人許可，才能啟用這個擴充功能</translation>
 <translation id="7029307918966275733">未安裝 Crostini。請安裝 Crostini 以查看開發人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">系統會將網址傳送給安全瀏覽功能進行檢查</translation>
@@ -8652,6 +8658,7 @@
 <translation id="866611985033792019">信任這個用於識別電子郵件使用者的憑證</translation>
 <translation id="8666321716757704924">已重新授權給 <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">關於以瀏覽器為主的廣告個人化</translation>
+<translation id="8667261224612332309">你有密碼修改建議</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
 <translation id="8667760277771450375">我們正在開發限制跨網站追蹤的方法，同時讓網站能夠防範廣告垃圾內容和欺詐行為。</translation>
 <translation id="8668378421690365723">裝置可能無法再正常運作，而且可能會有安全性和效能問題。</translation>
@@ -8868,7 +8875,6 @@
 <translation id="8850251000316748990">顯示更多...</translation>
 <translation id="885246833287407341">API 函式引數</translation>
 <translation id="8853586775156634952">這張卡片只會儲存在這部裝置上</translation>
-<translation id="8853731677580212469">Google 密碼管理工具網頁版</translation>
 <translation id="8854745870658584490">選項快速鍵</translation>
 <translation id="8855977033756560989">這台 Chromebook Enterprise 裝置隨附 Chrome Enterprise 升級版。為充分發揮企業版功能的優勢，請使用 Google 管理員帳戶註冊這台裝置。</translation>
 <translation id="8856028055086294840">還原應用程式和網頁</translation>
@@ -8982,6 +8988,7 @@
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">啟動中...</translation>
 <translation id="8957757410289731985">自訂檔案</translation>
+<translation id="8959144235813727886">網站和應用程式</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
 <translation id="8960208913905765425">快速解答功能的單位轉換結果</translation>
 <translation id="8960638196855923532">你現在可以查看手機的通知和應用程式</translation>

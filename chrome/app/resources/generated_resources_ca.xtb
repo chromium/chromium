@@ -1561,7 +1561,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
       <ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: el sistema es reiniciarà durant el procés.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha sol·licitat permisos addicionals.</translation>
 <translation id="2307462900900812319">Configura la xarxa</translation>
-<translation id="2307553512430195144">Si ho acceptes, l'Assistent de Google es quedarà en mode d'espera per detectar "Hey Google" i pot reconèixer la veu de <ph name="SUPERVISED_USER_NAME" /> amb Voice Match.
+<translation id="2307553512430195144">Si ho acceptes, l'Assistent de Google es posarà en mode d'espera fins que detecti "Hey Google" i pot reconèixer la veu de <ph name="SUPERVISED_USER_NAME" /> amb Voice Match.
     <ph name="BR" />
     Voice Match ajuda l'Assistent de Google a identificar la veu de <ph name="SUPERVISED_USER_NAME" /> al teu <ph name="DEVICE_TYPE" /> i a distingir-la d'altres veus.
     <ph name="BR" />
@@ -3251,6 +3251,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualitat de vídeo</translation>
 <translation id="3803367742635802571">És possible que els llocs web que visites deixin de funcionar de la manera prevista</translation>
+<translation id="3803583375545057606">Vols demanar al teu pare o mare que activi aquesta extensió?</translation>
 <translation id="380408572480438692">L'activació de la recollida de dades de rendiment ajudarà Google a millorar el sistema amb el temps. No s'enviarà cap dada fins que no empleneu un informe de suggeriments (Alt-Maj-I) i les dades de rendiment. Podeu tornar a aquesta pantalla per desactivar la recopilació en qualsevol moment.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (amb identificador d'extensió "<ph name="EXTENSION_ID" />") no es permet a les pantalles d'inici de sessió.</translation>
 <translation id="3807747707162121253">&amp;Cancel·la</translation>
@@ -3671,6 +3672,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4169535189173047238">No permetis</translation>
 <translation id="4170314459383239649">Esborra en sortir</translation>
 <translation id="417096670996204801">Selecciona un perfil</translation>
+<translation id="41725145403849567">Vols demanar al teu pare o mare que afegeixi aquesta extensió?</translation>
 <translation id="4175137578744761569">Porpra clar i blanc</translation>
 <translation id="4175737294868205930">Emmagatzematge permanent</translation>
 <translation id="4176463684765177261">Desactivat</translation>
@@ -5082,6 +5084,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN ha de tenir almenys 1 caràcter}other{El PIN ha de tenir almenys # caràcters}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.</translation>
 <translation id="5476016146231427848">Reinicia el dispositiu per utilitzar Steam a Chromebook</translation>
+<translation id="5476897066181964657">El teu pare, mare o tutor ha de dir si pots afegir aquesta extensió</translation>
 <translation id="5481273127572794904">Sense permís per baixar automàticament diversos fitxers</translation>
 <translation id="5481941284378890518">Afegeix impressores properes</translation>
 <translation id="5483785310822538350">Revoca l'accés al dispositiu i al fitxer</translation>
@@ -6556,7 +6559,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6808166974213191158">Escriptor d'imatges del sistema ChromeOS Flex</translation>
 <translation id="6808193438228982088">Guineu</translation>
 <translation id="6809470175540814047">Obre en una finestra d'incògnit</translation>
-<translation id="6809656734323672573">Si ho acceptes, l'Assistent de Google es quedarà en mode d'espera per detectar "Hey Google" i pot reconèixer la teva veu amb Voice Match.
+<translation id="6809656734323672573">Si ho acceptes, l'Assistent de Google es posarà en mode d'espera fins que detecti "Hey Google" i pot reconèixer la teva veu amb Voice Match.
     <ph name="BR" />
     Voice Match permet a l'Assistent identificar-te i distingir-te d'altres persones. L'Assistent utilitza clips de la teva veu per crear un model de veu únic, que només s'emmagatzema al teu dispositiu. És possible que el teu model de veu s'enviï a Google temporalment per poder identificar millor la teva veu.
     <ph name="BR" />
@@ -6828,6 +6831,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7025895441903756761">Seguretat i privadesa</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Obre-les totes en una finestra d'&amp;incògnit}=1{Obre en una finestra d'&amp;incògnit}other{Obre-les totes ({COUNT}) en una finestra d'&amp;incògnit}}</translation>
+<translation id="7028057921476386252">El teu pare, mare o tutor ha de dir si pots activar aquesta extensió</translation>
 <translation id="7029307918966275733">Crostini no està instal·lat. Instal·la'l per veure els crèdits.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7030304022046916278">Envia els URL a Navegació segura perquè els comprovi</translation>
@@ -8871,7 +8875,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8850251000316748990">Mostra'n més...</translation>
 <translation id="885246833287407341">Arguments de les funcions de l'API</translation>
 <translation id="8853586775156634952">Aquesta targeta només es desarà en aquest dispositiu</translation>
-<translation id="8853731677580212469">El gestor de contrasenyes de Google al web</translation>
 <translation id="8854745870658584490">Drecera de selecció</translation>
 <translation id="8855977033756560989">Aquest dispositiu Chromebook Enterprise inclou una Llicència de Chrome Enterprise. Per treure partit de les capacitats per a empreses, inscriu el dispositiu amb un compte d'administrador de Google.</translation>
 <translation id="8856028055086294840">Restaura les aplicacions i les pàgines</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">تمّ رفض شهادة المصادقة محليًا</translation>
 <translation id="1775381402323441512">معلومات الفيديو</translation>
 <translation id="180035236176489073">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذه الملفات.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{إضافة تتضمّن المعرّف}zero{إضافات تتضمّن المعرّفات}two{إضافتان تتضمّنان المعرّفيَن}few{إضافات تتضمّن المعرّفات}many{إضافات تتضمّن المعرّفات}other{إضافات تتضمّن المعرّفات}}</translation>
 <translation id="1807938677607439181">كل الملفات</translation>
 <translation id="1810764548349082891">لا تتوفر معاينة</translation>
 <translation id="1812302367230252929">تحويل صوتي إلى اللغة الأمهرية</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">جارٍ نسخ <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="7375951387215729722">تم ترتيب قائمة الملف تنازليًا حسب <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">تحظر سياسة المشرف إمكانية نسخ هذا الملف.</translation>
-<translation id="7392500733467492920">لا يمكن العثور على الإضافات. يُرجى التواصل مع المشرف.</translation>
 <translation id="7402503521691663770">‏أجهزة ChromeOS Flex</translation>
 <translation id="7408870451288633753">التشيكية</translation>
 <translation id="7417453074306512035">لوحة المفاتيح الإثيوبية</translation>

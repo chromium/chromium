@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Haqiqiylikni tekshirish sertifikati mahalliy tarzda rad etildi</translation>
 <translation id="1775381402323441512">Video haqida</translation>
 <translation id="180035236176489073">Ushbu fayllarni ochish uchun internetga ulangan bo‘lish kerak.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Identifikatorli kengaytma}other{Identifikatorli kengaytmalar}}</translation>
 <translation id="1807938677607439181">Barcha fayllar</translation>
 <translation id="1810764548349082891">Oldindan ko‘rib bo‘lmaydi</translation>
 <translation id="1812302367230252929">Amxara (transliteratsiya)</translation>
@@ -800,7 +799,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ta fayl nusxalanmoqda...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ustunidagi fayllar roʻyxati kamayishi boʻyicha tartiblangan.</translation>
 <translation id="7377161162143020057">Bu fayllarni nusxalash administrator tomonidan bloklandi</translation>
-<translation id="7392500733467492920">topilmadi. Administratorga murojaat qiling.</translation>
 <translation id="7402503521691663770">ChromeOS Flex qurilmalari</translation>
 <translation id="7408870451288633753">Chex</translation>
 <translation id="7417453074306512035">Efiop klaviaturasi</translation>

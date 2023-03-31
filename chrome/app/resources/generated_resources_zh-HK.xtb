@@ -2248,6 +2248,7 @@
 <translation id="2886119409731773154">此操作大概需時 30 分鐘</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部裝置</translation>
+<translation id="2889043468805635730">未發現問題</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
 <translation id="2891566119238851894">開側面板入面嘅搜尋工具列。側面板入面嘅搜尋工具列冇開。</translation>
 <translation id="2891922230654533301">要使用裝置登入 <ph name="APP_NAME" /> 嗎？</translation>
@@ -3345,6 +3346,7 @@
 <translation id="3861977424605124250">啟動時顯示</translation>
 <translation id="386239283124269513">還原群組</translation>
 <translation id="3865414814144988605">解像度</translation>
+<translation id="3866142613641074814">你的密碼有安全風險</translation>
 <translation id="3866249974567520381">描述</translation>
 <translation id="3867134342671430205">透過拖曳方式或方向鍵移動螢幕</translation>
 <translation id="3867944738977021751">憑證欄位</translation>
@@ -8674,6 +8676,7 @@
 <translation id="866611985033792019">信任這個用於識別電郵使用者的憑證</translation>
 <translation id="8666321716757704924">已再次向 <ph name="WEBSITE" /> 授予權限</translation>
 <translation id="8666759526542103597">關於基於瀏覽器的廣告個人化</translation>
+<translation id="8667261224612332309">你有密碼修改建議</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
 <translation id="8667760277771450375">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>
 <translation id="8668378421690365723">裝置可能無法再正常運作，並可能會遇到安全性和效能問題。</translation>
@@ -8890,7 +8893,6 @@
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函數引數</translation>
 <translation id="8853586775156634952">此卡只會儲存在此裝置上</translation>
-<translation id="8853731677580212469">「Google 密碼管理工具」網頁版</translation>
 <translation id="8854745870658584490">候選快速鍵</translation>
 <translation id="8855977033756560989">此 Chromebook Enterprise 裝置附隨 Chrome Enterprise Upgrade。如要善用企業功能，請使用 Google 管理員帳戶註冊此裝置。</translation>
 <translation id="8856028055086294840">還原應用程式及網頁</translation>
@@ -9004,6 +9006,7 @@
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">即將開始下載…</translation>
 <translation id="8957757410289731985">自訂個人檔案</translation>
+<translation id="8959144235813727886">網站和應用程式</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
 <translation id="8960208913905765425">「快速解答」的單位轉換</translation>
 <translation id="8960638196855923532">您現可查看手機的通知和應用程式</translation>

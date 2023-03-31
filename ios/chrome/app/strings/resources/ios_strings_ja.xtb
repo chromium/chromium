@@ -234,7 +234,7 @@
 <translation id="2648803196158606475">既読を削除</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2664621323652615289">停止</translation>
-<translation id="2671426118752779020">他のアプリや iPhone で Google パスワード マネージャに保存したパスワードを使用できます。</translation>
+<translation id="2671426118752779020">iPhone の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
 <translation id="2690858294534178585">カメラが使用中です</translation>
 <translation id="26915454213703967">Google で画像内を検索</translation>
 <translation id="2691653761409724435">オフラインで使用不可</translation>
@@ -601,7 +601,7 @@
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5118764316110575523">オフ</translation>
-<translation id="5119391094379141756">[Chrome] を選択する</translation>
+<translation id="5119391094379141756">[Chrome] を選択します</translation>
 <translation id="5121618895923301719">この商品はすでにトラッキングしています。このページは<ph name="BEGIN_LINK" />モバイルのブックマーク<ph name="END_LINK" />に保存されます。</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>

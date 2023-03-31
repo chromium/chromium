@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Auðkenningarvottorði var hafnað staðbundið</translation>
 <translation id="1775381402323441512">Upplýsingar um myndskeið</translation>
 <translation id="180035236176489073">Þú verður að vera á netinu til að geta opnað þessar skrár.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Viðbót með auðkennið}one{Viðbætur með auðkennin}other{Viðbætur með auðkennin}}</translation>
 <translation id="1807938677607439181">Allar skrár</translation>
 <translation id="1810764548349082891">Forskoðun ekki tiltæk</translation>
 <translation id="1812302367230252929">Amharíska umritun</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð...</translation>
 <translation id="7375951387215729722">Skráalista raðað eftir <ph name="COLUMN_NAME" /> í lækkandi röð.</translation>
 <translation id="7377161162143020057">Regla stjórnanda kemur í veg fyrir að hægt sé að afrita þessa skrá</translation>
-<translation id="7392500733467492920">fannst ekki. Hafðu samband við stjórnandann þinn.</translation>
 <translation id="7402503521691663770">ChromeOS Flex tæki</translation>
 <translation id="7408870451288633753">Tékkneska</translation>
 <translation id="7417453074306512035">Eþíópískt lyklaborð</translation>

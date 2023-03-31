@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Аныктыгын текшерүү тастыктамасы жергиликтүү деңгээлде четке кагылды</translation>
 <translation id="1775381402323441512">Видео тууралуу маалымат</translation>
 <translation id="180035236176489073">Бул файлдар онлайн режиминде гана колдонулат.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Идентификатору бар кеңейтүү}other{Идентификаторлору бар кеңейтүүлөр}}</translation>
 <translation id="1807938677607439181">Бардык файлдар</translation>
 <translation id="1810764548349082891">Алдын ала көрүү мүмкүнчүлүгү жок</translation>
 <translation id="1812302367230252929">Амхарча (транслитерация)</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase түзмөктөрү</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
 <translation id="485316830061041779">Немисче</translation>
+<translation id="4862885579661885411">Файлдардын параметрлери</translation>
 <translation id="4867079195717347957">Тилкени кичирейген ыраатта иреттөө үчүн чыкылдатыңыз.</translation>
 <translation id="4867297348137739678">Өткөн апта</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
@@ -799,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> файл көчүрүлүүдө…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> тилкесиндеги файлдардын тизмеси кичирейген ыраатта иреттелди.</translation>
 <translation id="7377161162143020057">Бул файлды көчүрүү аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
-<translation id="7392500733467492920">табылбай жатат. Администраторуңуз менен байланышыңыз.</translation>
 <translation id="7402503521691663770">ChromeOS Flex түзмөктөрү</translation>
 <translation id="7408870451288633753">Чехче</translation>
 <translation id="7417453074306512035">Эфиопчо баскычтоп</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">ದೃಢೀಕರಣ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸ್ಥಳೀಯವಾಗಿ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="1775381402323441512">ವೀಡಿಯೊ ಮಾಹಿತಿ</translation>
 <translation id="180035236176489073">ಈ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರಬೇಕು.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{ಈ ಕೆಳಗಿನ ID ಇರುವ ವಿಸ್ತರಣೆ}one{ಈ ಕೆಳಗಿನ ID ಗಳಿರುವ ವಿಸ್ತರಣೆ}other{ಈ ಕೆಳಗಿನ ID ಗಳಿರುವ ವಿಸ್ತರಣೆ}}</translation>
 <translation id="1807938677607439181">ಎಲ್ಲ ಫೈಲ್‌ಗಳು</translation>
 <translation id="1810764548349082891">ಯಾವುದೇ ಪೂರ್ವವೀಕ್ಷಣೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1812302367230252929">ಅಂಹರಿಕ್ ಲಿಪ್ಯಂತರಣ</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7375951387215729722">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು <ph name="COLUMN_NAME" /> ಪ್ರಕಾರವಾಗಿ ಮೇಲಿನಿಂದ ಕೆಳಗೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="7377161162143020057">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಈ ಫೈಲ್ ಅನ್ನು ನಕಲಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="7392500733467492920">ಪತ್ತೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="7402503521691663770">ChromeOS Flex ಸಾಧನಗಳು</translation>
 <translation id="7408870451288633753">ಝೆಕ್</translation>
 <translation id="7417453074306512035">ಇಥಿಯೋಪಿಕ್ ಕೀಬೋರ್ಡ್</translation>

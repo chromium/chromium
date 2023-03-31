@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">પ્રમાણીકરણ પ્રમાણપત્રને સ્થાનિક રૂપે નકારવામાં આવ્યું છે</translation>
 <translation id="1775381402323441512">વીડિયોની માહિતી</translation>
 <translation id="180035236176489073">આ ફાઇલો ઍક્સેસ કરવા માટે તમારું ઑનલાઇન હોવું જરૂરી છે.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{IDવાળું એક્સ્ટેન્શન}one{IDવાળું એક્સ્ટેન્શન}other{IDsવાળા એક્સ્ટેન્શન}}</translation>
 <translation id="1807938677607439181">બધી ફાઇલો</translation>
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
 <translation id="1812302367230252929">એમ્હારિક લિપ્યંતર</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="485316830061041779">જર્મન</translation>
+<translation id="4862885579661885411">ફાઇલોના સેટિંગ</translation>
 <translation id="4867079195717347957">કૉલમને: ઉતરતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="4867297348137739678">છેલ્લું અઠવાડિયું</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> બાઇટ</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કૉપિ કરી રહ્યું છે...</translation>
 <translation id="7375951387215729722">ફાઇલ સૂચિને <ph name="COLUMN_NAME" /> દ્વારા ઉતરતા ક્રમમાં સૉર્ટ કરેલી છે.</translation>
 <translation id="7377161162143020057">ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર આ ફાઇલ કૉપિ કરવાનું બ્લૉક કરેલું છે</translation>
-<translation id="7392500733467492920">એકસ્ટેન્શન શોધી શકાતું નથી. તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="7402503521691663770">ChromeOS Flex ડિવાઇસ</translation>
 <translation id="7408870451288633753">ચેક</translation>
 <translation id="7417453074306512035">ઇથિઓપિક કીબોર્ડ</translation>

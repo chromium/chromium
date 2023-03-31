@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">گواهینامه راستی‌آزمایی به صورت محلی رد شد</translation>
 <translation id="1775381402323441512">اطلاعات ویدیو</translation>
 <translation id="180035236176489073">باید آنلاین باشید تا به این فایل‌ها دسترسی داشته باشید.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{افزونه با شناسه}one{افزونه با شناسه}other{افزونه‌ها با شناسه‌ها}}</translation>
 <translation id="1807938677607439181">همه فایل‌ها</translation>
 <translation id="1810764548349082891">پیش‌نمایشی وجود ندارد</translation>
 <translation id="1812302367230252929">نویسه‌گردانی آمهاریک</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">در حال کپی کردن <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="7375951387215729722">فهرست فایل براساس <ph name="COLUMN_NAME" /> به‌ترتیب نزولی مرتب شد.</translation>
 <translation id="7377161162143020057">خط‌مشی سرپرست کپی کردن این فایل را مسدود کرده است</translation>
-<translation id="7392500733467492920">پیدا نشد. با سرپرست تماس بگیرید.</translation>
 <translation id="7402503521691663770">‏دستگاه‌های ChromeOS Flex</translation>
 <translation id="7408870451288633753">چکی</translation>
 <translation id="7417453074306512035">صفحه‌کلید اتیوپیایی</translation>

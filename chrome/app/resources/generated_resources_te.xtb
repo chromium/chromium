@@ -2247,6 +2247,7 @@
 <translation id="2886119409731773154">దీనికి 30 నిమిషాల వరకు సమయం పట్టవచ్చు</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" />, ఇంకా మరో <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2889043468805635730">సమస్యలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="2889064240420137087">దీనితో లింక్ తెరువు...</translation>
 <translation id="2891566119238851894">సైడ్ ప్యానెల్‌లో సెర్చ్‌ను తెరవండి. సైడ్ ప్యానెల్‌లో సెర్చ్ తెరిచి లేదు.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" />కు సైన్ ఇన్ చేయడానికి మీ పరికరాన్ని ఉపయోగించాలా?</translation>
@@ -3344,6 +3345,7 @@
 <translation id="3861977424605124250">ప్రారంభంలో చూపించు</translation>
 <translation id="386239283124269513">&amp;గ్రూప్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
+<translation id="3866142613641074814">రిస్క్‌లో ఉన్న పాస్‌వర్డ్‌లను మీరు కలిగి ఉన్నాయి</translation>
 <translation id="3866249974567520381">వివరణ</translation>
 <translation id="3867134342671430205">డిస్‌ప్లేను జరపడానికి దాన్ని లాగండి లేదా బాణం కీలను ఉపయోగించండి</translation>
 <translation id="3867944738977021751">సర్టిఫికెట్ ఫీల్డ్‌లు</translation>
@@ -8676,6 +8678,7 @@
 <translation id="866611985033792019">ఈమెయిల్‌ వినియోగదారులను గుర్తించడానికి ఈ ప్రమాణపత్రాన్ని విశ్వసిస్తుంది</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" />‌కు అనుమతులు మళ్లీ మంజూరు చేయబడ్డాయి</translation>
 <translation id="8666759526542103597">బ్రౌజర్ ఆధారిత యాడ్ వ్యక్తిగతీకరణ గురించి</translation>
+<translation id="8667261224612332309">మెరుగుపరచగల పాస్‌వర్డ్‌లను మీరు కలిగి ఉన్నారు</translation>
 <translation id="8667328578593601900">ఇప్పుడు <ph name="FULLSCREEN_ORIGIN" /> ఫుల్-స్క్రీన్‌లో ఉంది, అది మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
 <translation id="8667760277771450375">యాడ్ స్పామ్, మోసాన్ని ఆపివేసేలా సైట్‌లను ఎనేబుల్ చేస్తూ, క్రాస్-సైట్ ట్రాకింగ్‌ను పరిమితం చేసే మార్గాలను మేము అన్వేషిస్తున్నాము.</translation>
 <translation id="8668378421690365723">మీ పరికరం ఇకపై సరిగ్గా పని చేయకపోవచ్చు, సెక్యూరిటీ, అలాగే పనితీరుకు సంబంధించిన సమస్యలను ఎదుర్కోవచ్చు.</translation>
@@ -8892,7 +8895,6 @@
 <translation id="8850251000316748990">మరిన్ని చూడండి...</translation>
 <translation id="885246833287407341">API ఫంక్షన్ తర్కాలు</translation>
 <translation id="8853586775156634952">ఈ పరికరంలో మాత్రమే ఈ కార్డ్ సేవ్ అవుతుంది</translation>
-<translation id="8853731677580212469">వెబ్‌లో Google Password Manger</translation>
 <translation id="8854745870658584490">ఎంపిక షార్ట్‌కట్</translation>
 <translation id="8855977033756560989">ఈ Chromebook ఎంటర్‌ప్రైజ్ పరికరం అనేది Chrome ఎంటర్‌ప్రైజ్ అప్‌గ్రేడ్‌తో బండిల్ చేయబడింది. ఎంటర్‌ప్రైజ్ సామర్థ్యాల నుంచి ప్రయోజనం పొందడానికి, ఈ పరికరాన్ని Google అడ్మిన్ ఖాతాతో నమోదు చేయండి.</translation>
 <translation id="8856028055086294840">యాప్‌లు, పేజీలను రీస్టోర్ చేయండి</translation>
@@ -9006,6 +9008,7 @@
 <translation id="8953476467359856141">ఛార్జింగ్‌లో ఉన్నప్పుడు</translation>
 <translation id="895347679606913382">ప్రారంభిస్తోంది...</translation>
 <translation id="8957757410289731985">ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>
+<translation id="8959144235813727886">సైట్‌లు, యాప్‌లు</translation>
 <translation id="895944840846194039">JavaScript మెమరీ</translation>
 <translation id="8960208913905765425">త్వరిత సమాధానాల యూనిట్ మార్పిడి</translation>
 <translation id="8960638196855923532">మీరు ఇప్పుడు మీ ఫోన్ నోటిఫికేషన్‌లు, యాప్‌లను చూడవచ్చు</translation>

@@ -3245,6 +3245,7 @@
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803345858388753269">વીડિયોની ક્વૉલિટી</translation>
 <translation id="3803367742635802571">તમે મુલાકાત લો છો તે સાઇટ જે હેતુ માટે તૈયાર કરવામાં આવી છે તે મુજબ કામ કરવાનું બંધ કરી શકે છે</translation>
+<translation id="3803583375545057606">શું તમારા માતાપિતાને આ એક્સ્ટેન્શન ચાલુ કરવાનું પૂછવું છે?</translation>
 <translation id="380408572480438692">પ્રદર્શન ડેટાના સંગ્રહને ચાલુ કરવું Googleને સમય જતા સિસ્ટમને બહેતર બનાવવામાં મદદ કરશે. જ્યાં સુધી તમે પ્રતિસાદ રિપોર્ટ (Alt-Shift-I) ફાઇલ નહીંં કરો અને પ્રદર્શન ડેટાને સામેલ નહીંં કરો ત્યાં સુધી કોઈ ડેટા મોકલવામાં આવશે નહીંં. તમે કોઈપણ સમયે સંગ્રહને બંધ કરવા માટે આ સ્ક્રીન પર પાછા આવી શકો છો.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (એક્સ્ટેન્શન ID "<ph name="EXTENSION_ID" />") ને લોગિન સ્ક્રીન પર મંજૂરી નથી.</translation>
 <translation id="3807747707162121253">&amp;કેન્સલ કરો</translation>
@@ -3666,6 +3667,7 @@
 <translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4170314459383239649">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="417096670996204801">કોઈ પ્રોફાઇલ પસંદ કરો</translation>
+<translation id="41725145403849567">શું તમારા માતાપિતાને આ એક્સ્ટેન્શન ઉમેરવાનું પૂછવું છે?</translation>
 <translation id="4175137578744761569">આછો જાંબલી અને સફેદ</translation>
 <translation id="4175737294868205930">સતત સ્ટોરેજ</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
@@ -5076,6 +5078,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{પિન ઓછામાં ઓછો એક અક્ષરનો હોવો આવશ્યક છે}one{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}other{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે હમણાં વાઇ-ફાઇથી કનેક્ટ થાઓ અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).</translation>
 <translation id="5476016146231427848">Chromebook પર Steamનો ઉપયોગ કરવા માટે, કૃપા કરીને તમારું ડિવાઇસ ફરી શરૂ કરો</translation>
+<translation id="5476897066181964657">માતાપિતા અથવા વાલીએ જણાવવું આવશ્યક છે કે તમે આ એક્સ્ટેન્શન ઉમેરશો તો કોઈ વાંધો નહીં</translation>
 <translation id="5481273127572794904">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી નથી</translation>
 <translation id="5481941284378890518">નજીકના પ્રિન્ટર્સ ઉમેરો</translation>
 <translation id="5483785310822538350">ફાઇલ અને ઉપકરણ ઍક્સેસને રદબાતલ કરો</translation>
@@ -6827,6 +6830,7 @@ USB ડિવાઇસ</translation>
 <translation id="7025190659207909717">મોબાઇલ ડેટા સેવા મેનેજમેન્ટ</translation>
 <translation id="7025895441903756761">સુરક્ષા અને પ્રાઇવસી</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{તમામ URLને &amp;છૂપી વિન્ડોમાં ખોલો}=1{&amp;છૂપી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}}</translation>
+<translation id="7028057921476386252">માતાપિતા અથવા વાલીએ જણાવવું આવશ્યક છે કે તમે આ એક્સ્ટેન્શન ચાલુ કરશો તો કોઈ વાંધો નહીં</translation>
 <translation id="7029307918966275733">Crostini ઇન્સ્ટૉલ કરેલી નથી. કૃપા કરીને ક્રેડિટ જોવા માટે Crostini ઇન્સ્ટૉલ કરો.</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7030304022046916278">URLs ચેક કરવા માટે તેમને Safe Browsing પર મોકલે છે</translation>
@@ -8863,7 +8867,6 @@ USB ડિવાઇસ</translation>
 <translation id="8850251000316748990">વધુ જુઓ...</translation>
 <translation id="885246833287407341">API કાર્યના તર્ક</translation>
 <translation id="8853586775156634952">આ કાર્ડ માત્ર આ ડિવાઇસમાં સચવાશે</translation>
-<translation id="8853731677580212469">વેબ પર Google Password Manager</translation>
 <translation id="8854745870658584490">શૉર્ટકટ માટે પસંદગી</translation>
 <translation id="8855977033756560989">આ Chromebook Enterprise ડિવાઇસ Chrome Enterprise અપગ્રેડ સાથેના બંડલમાં આવે છે. એન્ટરપ્રાઇઝની ક્ષમતાઓનો લાભ લેવા માટે, આ ડિવાઇસની Google વ્યવસ્થાપક એકાઉન્ટ સાથે નોંધણી કરાવો.</translation>
 <translation id="8856028055086294840">ઍપ અને પેજ રિસ્ટોર કરો</translation>

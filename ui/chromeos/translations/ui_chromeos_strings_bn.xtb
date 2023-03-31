@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">স্থানীয়ভাবে যাচাইকরণ সার্টিফিকেট বাতিল করা হয়েছে</translation>
 <translation id="1775381402323441512">ভিডিওর তথ্য</translation>
 <translation id="180035236176489073">এই ফাইলগুলিতে অ্যাক্সেস পেতে আপনাকে অনলাইন হতে হবে৷</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{আইডি সহ একটি এক্সটেনশন}one{আইডি সহ একটি এক্সটেনশন}other{আইডি সহ একটি এক্সটেনশন}}</translation>
 <translation id="1807938677607439181">সবকটি ফাইল</translation>
 <translation id="1810764548349082891">কোনো প্রিভিউ উপলভ্য নেই</translation>
 <translation id="1812302367230252929">আমহারিক লিপ্যন্তর</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="485316830061041779">জার্মান</translation>
+<translation id="4862885579661885411">Files সেটিংস</translation>
 <translation id="4867079195717347957">কলামের মানগুলি বড় থেকে ছোট ক্রমানুযায়ী সাজাতে ক্লিক করুন।</translation>
 <translation id="4867297348137739678">গত সপ্তাহ</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> বাইট</translation>
@@ -799,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হচ্ছে…</translation>
 <translation id="7375951387215729722">ফাইলের তালিকা <ph name="COLUMN_NAME" />-এর মানের উপর নির্ভর করে বড় থেকে ছোট ক্রমানুযায়ী সাজানো আছে।</translation>
 <translation id="7377161162143020057">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল কপি করার সুবিধা ব্লক করা হয়েছে</translation>
-<translation id="7392500733467492920">অবস্থিত করা যাবে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="7402503521691663770">ChromeOS Flex ডিভাইস</translation>
 <translation id="7408870451288633753">চেক ভাষা</translation>
 <translation id="7417453074306512035">ইথিওপিক কীবোর্ড</translation>

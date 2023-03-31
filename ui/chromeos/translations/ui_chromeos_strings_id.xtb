@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Sertifikat autentikasi ditolak secara lokal</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Anda harus online untuk mengakses file ini.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Ekstensi dengan ID}other{Ekstensi dengan ID}}</translation>
 <translation id="1807938677607439181">Semua file</translation>
 <translation id="1810764548349082891">Tidak ada pratinjau yang tersedia</translation>
 <translation id="1812302367230252929">Transliterasi Amhar</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Jerman</translation>
+<translation id="4862885579661885411">Setelan File</translation>
 <translation id="4867079195717347957">Klik untuk mengurutkan kolom dari atas ke bawah.</translation>
 <translation id="4867297348137739678">Minggu lalu</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Daftar file diurutkan berdasarkan <ph name="COLUMN_NAME" /> dari bawah ke atas.</translation>
 <translation id="7377161162143020057">Penyalinan file ini diblokir oleh kebijakan administrator</translation>
-<translation id="7392500733467492920">tidak dapat ditemukan. Hubungi administrator Anda.</translation>
 <translation id="7402503521691663770">Perangkat ChromeOS Flex</translation>
 <translation id="7408870451288633753">Ceko</translation>
 <translation id="7417453074306512035">Keyboard Ethiopia</translation>

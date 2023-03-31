@@ -2247,6 +2247,7 @@
 <translation id="2886119409731773154">यासाठी कमाल ३० मिनिटे लागू शकतात</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> आणि इतर <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2889043468805635730">कोणत्‍याही समस्‍या आढळल्‍या नाहीत</translation>
 <translation id="2889064240420137087">यासह लिंक उघडा...</translation>
 <translation id="2891566119238851894">साइड पॅनलमध्ये शोध उघडा. साइड पॅनलमध्ये शोध उघडलेला नाही.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> वर साइन इन करण्यासाठी तुमचे डिव्हाइस वापरायचे आहे का?</translation>
@@ -3343,6 +3344,7 @@
 <translation id="3861977424605124250">स्टार्टअपच्‍या वेळी दाखवा</translation>
 <translation id="386239283124269513">&amp;गट रिस्टोअर करा</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
+<translation id="3866142613641074814">तुमच्याकडे धोक्यात असलेले पासवर्ड आहेत</translation>
 <translation id="3866249974567520381">वर्णन</translation>
 <translation id="3867134342671430205">डिस्प्ले हलवण्यासाठी अ‍ॅरो की ड्रॅग करा किंवा वापरा</translation>
 <translation id="3867944738977021751">सर्टिफिकेट फील्ड</translation>
@@ -8668,6 +8670,7 @@
 <translation id="866611985033792019">ईमेल वापरकर्त्यांना ओळखण्यासाठी या सर्टिफिकेटवर विश्वास ठेवा</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> साठी पुन्हा परवानग्यांना अनुमती दिला आहे</translation>
 <translation id="8666759526542103597">ब्राउझरवर आधारित जाहिरात पर्सनलायझेशनविषयी</translation>
+<translation id="8667261224612332309">तुमच्याकडे सुधारणा करता येतील असे पासवर्ड आहेत</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> आता फुल स्क्रीन असून तुमचा माउस कर्सर बंद केला आहे.</translation>
 <translation id="8667760277771450375">जाहिरात स्पॅम आणि घोटाळा थांबवण्यासाठी साइट सुरू करताना आम्ही क्रॉस-साइट ट्रॅकिंग प्रतिबंधित करण्याचे मार्ग एक्सप्लोर करत आहोत.</translation>
 <translation id="8668378421690365723">तुमचे डिव्हाइस यापुढे कदाचित योग्यरीत्या काम करणार नाही आणि सुरक्षा व परफॉर्मन्सशी संबंधित समस्या येऊ शकतात.</translation>
@@ -8885,7 +8888,6 @@
 <translation id="8850251000316748990">आणखी पहा...</translation>
 <translation id="885246833287407341">API फंक्शन arguments</translation>
 <translation id="8853586775156634952">हे कार्ड फक्त या डिव्हाइसवर सेव्ह केले जाईल</translation>
-<translation id="8853731677580212469">वेबवरील Google Password Manager</translation>
 <translation id="8854745870658584490">निवडीशी संबंधित शॉर्टकट</translation>
 <translation id="8855977033756560989">हे Chromebook एंटरप्राइझ डिव्हाइस Chromebook एंटरप्राइझ अपग्रेडसोबत बंडल केलेले येते. एंटरप्राइझ क्षमतांचा फायदा घेण्यासाठी, या डिव्हाइसची Google अ‍ॅडमिन खात्यावर नोंदणी करा.</translation>
 <translation id="8856028055086294840">अ‍ॅप्स आणि पेज रिस्टोअर करा</translation>
@@ -8999,6 +9001,7 @@
 <translation id="8953476467359856141">चार्ज होत असताना</translation>
 <translation id="895347679606913382">सुरू करीत आहे...</translation>
 <translation id="8957757410289731985">प्रोफाइल कस्टमाइझ करा</translation>
+<translation id="8959144235813727886">साइट आणि अ‍ॅप्स</translation>
 <translation id="895944840846194039">JavaScript मेमरी</translation>
 <translation id="8960208913905765425">क्विक आन्सर्स युनिट कन्व्हर्जन</translation>
 <translation id="8960638196855923532">तुम्ही आता तुमच्या फोनमधील सूचना आणि ॲप्स पाहू शकता</translation>

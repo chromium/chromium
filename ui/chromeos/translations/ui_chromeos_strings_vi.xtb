@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Chứng chỉ xác thực bị từ chối cục bộ</translation>
 <translation id="1775381402323441512">Thông tin về tệp video</translation>
 <translation id="180035236176489073">Bạn phải trực tuyến để truy cập các tệp này.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Không tìm thấy tiện ích có mã nhận dạng}other{Không tìm thấy các tiện ích có mã nhận dạng}}</translation>
 <translation id="1807938677607439181">Tất cả các tệp</translation>
 <translation id="1810764548349082891">Không có bản xem trước</translation>
 <translation id="1812302367230252929">Tiếng Amhara (chuyển tự)</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">Đang sao chép <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="7375951387215729722">Danh sách tệp được sắp xếp giảm dần theo <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Chính sách của quản trị viên không cho phép sao chép tệp này</translation>
-<translation id="7392500733467492920">Hãy liên hệ với quản trị viên của bạn.</translation>
 <translation id="7402503521691663770">Thiết bị ChromeOS Flex</translation>
 <translation id="7408870451288633753">Tiếng Séc</translation>
 <translation id="7417453074306512035">Bàn phím tiếng Ethiopic</translation>

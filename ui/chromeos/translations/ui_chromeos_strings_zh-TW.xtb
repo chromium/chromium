@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資訊</translation>
 <translation id="180035236176489073">你必須連上網路才能存取這些檔案。</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{系統找不到下列 ID 的擴充功能：}other{系統找不到下列 ID 的擴充功能：}}</translation>
 <translation id="1807938677607439181">所有檔案</translation>
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
+<translation id="4862885579661885411">檔案設定</translation>
 <translation id="4867079195717347957">按一下即可依遞減順序排列資料欄。</translation>
 <translation id="4867297348137739678">一週內</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> 位元組</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">正在複製 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="7375951387215729722">檔案清單已依<ph name="COLUMN_NAME" />遞減排序。</translation>
 <translation id="7377161162143020057">根據系統管理員政策，你無法複製這個檔案</translation>
-<translation id="7392500733467492920">請與管理員聯絡。</translation>
 <translation id="7402503521691663770">ChromeOS Flex 裝置</translation>
 <translation id="7408870451288633753">捷克文</translation>
 <translation id="7417453074306512035">衣索比亞文鍵盤</translation>

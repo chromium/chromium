@@ -795,6 +795,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="16620462294541761">Maaf, kata laluan anda tidak dapat disahkan. Sila cuba semula.</translation>
 <translation id="166278006618318542">Algoritma Kekunci Awam Subjek</translation>
 <translation id="1662801900924515589"><ph name="APP" /> dipasang</translation>
+<translation id="1663698992894057019">Tingkatkan kepada Chromebook baharu untuk mendapatkan kemaskinian keselamatan dan perisian terkini</translation>
 <translation id="1665328953287874063">Gunakan kata laluan atau PIN untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1666232093776384142">Lumpuhkan perlindungan akses data untuk peranti persisian</translation>
 <translation id="1667842670298352129">Dengar teks tertentu dibaca dengan suara lantang. Mula-mula, pilih ikon Pilih untuk bercakap di bahagian bawah skrin anda, kemudian serlahkan teks. Anda juga boleh menggunakan pintasan papan kekunci: Serlahkan teks, kemudian tekan Cari + S.</translation>
@@ -2248,6 +2249,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2886119409731773154">Proses ini mungkin mengambil masa sehingga 30 minit</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> yang lain</translation>
+<translation id="2889043468805635730">Tiada masalah ditemukan</translation>
 <translation id="2889064240420137087">Buka pautan dengan...</translation>
 <translation id="2891566119238851894">Buka carian pada panel sisi. Carian tidak dibuka pada panel sisi.</translation>
 <translation id="2891922230654533301">Gunakan peranti anda untuk log masuk ke <ph name="APP_NAME" />?</translation>
@@ -3345,6 +3347,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3861977424605124250">Tunjukkan pada permulaan</translation>
 <translation id="386239283124269513">&amp;Pulihkan Kumpulan</translation>
 <translation id="3865414814144988605">Peleraian</translation>
+<translation id="3866142613641074814">Beberapa kata laluan anda berisiko</translation>
 <translation id="3866249974567520381">Huraian</translation>
 <translation id="3867134342671430205">Seret atau gunakan kekunci anak panah untuk mengalihkan paparan</translation>
 <translation id="3867944738977021751">Medan Sijil</translation>
@@ -3743,6 +3746,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4231141543165771749">Tutup kawalan permainan</translation>
 <translation id="4231542173270219144">Semasa percubaan sedang berlangsung, pengurangan spam &amp; penipuan bergantung pada token keadaan sulit untuk membantu laman memerangi penipuan dan membezakan bot daripada orang.</translation>
 <translation id="4232375817808480934">Konfigurasikan Kerberos</translation>
+<translation id="4233739489690259993">Chromebook anda tidak menerima kemaskinian keselamatan dan perisian lagi. Tingkatkan peranti anda untuk mendapatkan kemaskinian keselamatan terkini dan ciri baharu. Syarat tawaran dikenakan.</translation>
 <translation id="4235965441080806197">Batalkan log masuk</translation>
 <translation id="4236163961381003811">Temukan lebih banyak sambungan</translation>
 <translation id="4237282663517880406">Tunjukkan cadangan Google Drive</translation>
@@ -4829,6 +4833,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5228579091201413441">Dayakan penyegerakan</translation>
 <translation id="5229337741799419985">Tetapan ini berfungsi tanpa mengenal pasti identiti anda atau membenarkan laman melihat sejarah penyemakan imbas anda</translation>
 <translation id="5230516054153933099">Tingkap</translation>
+<translation id="5231427103154766313">Gunakan alat kawalan jauh untuk menghentikan penghantaran.</translation>
 <translation id="5233019165164992427">Port nyahpepijat NaCl</translation>
 <translation id="5233231016133573565">ID Proses</translation>
 <translation id="5233638681132016545">Tab baharu</translation>
@@ -5250,6 +5255,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Tidak dibenarkan untuk menyambung kepada peranti MIDI</translation>
 <translation id="5601833336918638013">Jangan benarkan laman mencari peranti Bluetooth</translation>
+<translation id="5602586420788540146">Buka dalam kumpulan tab baharu</translation>
 <translation id="5602765853043467355">Kosongkan penanda halaman, sejarah, kata laluan dan pelbagai lagi daripada peranti ini</translation>
 <translation id="5605758115928394442">Pemberitahuan telah dihantar ke telefon anda untuk mengesahkan orang itu ialah anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Sambungan ini disekat}other{Sambungan ini disekat}}</translation>
@@ -6315,6 +6321,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="657229725818377235">Dapatkan lebih perlindungan daripada laman web dan muat turun berbahaya</translation>
 <translation id="6573096386450695060">Sentiasa benarkan</translation>
 <translation id="6573497332121198392">Tidak dapat mengalih keluar pintasan</translation>
+<translation id="6573915150656780875">Chromebook anda tidak menerima kemaskinian keselamatan dan perisian lagi. Dapatkan Chromebook baharu untuk pengalaman terbaik.</translation>
 <translation id="657402800789773160">&amp;Muatkan Semula Halaman Ini</translation>
 <translation id="6577284282025554716">Muat turun dibatalkan: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Gambar Kesihatan Rangkaian</translation>
@@ -7747,6 +7754,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7844992432319478437">Mengemaskini beza</translation>
 <translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7847212883280406910">Tekan Ctrl + Alt + S untuk beralih kepada <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="7848244988854036372">Buka semua (<ph name="URL_COUNT" />) dalam kumpulan tab baharu</translation>
 <translation id="7849264908733290972">Buka &amp;Imej dalam Tab Baharu</translation>
 <translation id="784934925303690534">Julat masa</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Tindakan membenarkan peranti ChromeOS anda menghantar laporan automatik dapat membantu kami memberikan keutamaan terhadap perkara yang perlu dibetulkan dan diperbaik pada ChromeOS. Laporan ini boleh merangkumi perkara seperti waktu ranap sistem ChromeOS, ciri yang anda gunakan, jumlah memori yang biasa anda gunakan serta data diagnostik dan penggunaan apl Android. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android.<ph name="END_PARAGRAPH1" />
@@ -8677,6 +8685,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="866611985033792019">Percayakan sijil ini untuk mengenal pasti pengguna e-mel</translation>
 <translation id="8666321716757704924">Kebenaran dibenarkan sekali lagi untuk <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">Perihal pemeribadian iklan berasaskan penyemak imbas</translation>
+<translation id="8667261224612332309">Beberapa kata laluan anda boleh ditingkatkan</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> kini dipaparkan dalam skrin penuh dan telah melumpuhkan kursor tetikus.</translation>
 <translation id="8667760277771450375">Kami sedang meneroka cara untuk menyekat penjejakan rentas laman sambil membolehkan laman menghentikan spam dan penipuan iklan.</translation>
 <translation id="8668378421690365723">Peranti anda mungkin tidak lagi berfungsi dengan betul dan mungkin mengalami masalah keselamatan dan prestasi.</translation>
@@ -8893,7 +8902,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8850251000316748990">Lihat lagi...</translation>
 <translation id="885246833287407341">Argumen fungsi API</translation>
 <translation id="8853586775156634952">Kad ini akan disimpan ke peranti ini sahaja</translation>
-<translation id="8853731677580212469">Google Password Manager pada web</translation>
 <translation id="8854745870658584490">Pintasan Pilihan</translation>
 <translation id="8855977033756560989">Peranti Chromebook Enterprise ini disertakan sekali dengan Peningkatan Chrome Enterprise. Untuk memanfaatkan keupayaan perusahaan, daftarkan peranti ini dengan akaun pentadbir Google.</translation>
 <translation id="8856028055086294840">Pulihkan apl dan halaman</translation>
@@ -9007,6 +9015,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8953476467359856141">Semasa mengecas</translation>
 <translation id="895347679606913382">Memulakan...</translation>
 <translation id="8957757410289731985">Sesuaikan profil</translation>
+<translation id="8959144235813727886">Laman dan apl</translation>
 <translation id="895944840846194039">Memori JavaScript</translation>
 <translation id="8960208913905765425">Jawapan Segera penukaran unit</translation>
 <translation id="8960638196855923532">Kini anda dapat melihat pemberitahuan dan apl telefon anda</translation>

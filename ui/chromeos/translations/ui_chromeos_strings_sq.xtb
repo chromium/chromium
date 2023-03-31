@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
 <translation id="180035236176489073">Duhet të jesh në linjë për t'u qasur te këta skedarë.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Një shtesë me ID-në}other{Shtesat me ID-të}}</translation>
 <translation id="1807938677607439181">Të gjithë skedarët</translation>
 <translation id="1810764548349082891">Nuk ka asnjë pamje paraprake</translation>
 <translation id="1812302367230252929">Amarikisht me transliterim</translation>
@@ -799,7 +798,6 @@
 <translation id="7359359531237882347">Po kopjon <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="7375951387215729722">Lista e skedarëve është renditur sipas kolonës "<ph name="COLUMN_NAME" />" në rend zbritës.</translation>
 <translation id="7377161162143020057">Kopjimi i këtij skedari është bllokuar nga politika e administratorit</translation>
-<translation id="7392500733467492920">Nuk mund të lokalizohet. Kontakto me administratorin tënd.</translation>
 <translation id="7402503521691663770">Pajisjet Chrome OS Flex</translation>
 <translation id="7408870451288633753">Çekisht</translation>
 <translation id="7417453074306512035">Tastiera në etiopisht</translation>

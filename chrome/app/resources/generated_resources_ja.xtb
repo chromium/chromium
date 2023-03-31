@@ -3244,6 +3244,7 @@
 <translation id="380329542618494757">名前</translation>
 <translation id="3803345858388753269">画質</translation>
 <translation id="3803367742635802571">アクセスするサイトが想定どおりに機能しなくなる可能性があります</translation>
+<translation id="3803583375545057606">この拡張機能を有効にするよう、保護者にリクエストしますか？</translation>
 <translation id="380408572480438692">パフォーマンス データの収集を有効にすると、Google によるシステムの改善に役立てることができます。フィードバック レポートを作成（Alt-Shift-I）してパフォーマンス データを追加するまでは、データは送信されません。いつでもこの画面に戻って、データの収集を無効にできます。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" />（拡張機能 ID「<ph name="EXTENSION_ID" />」）はログイン画面ではインストールできません。</translation>
 <translation id="3807747707162121253">キャンセル(&amp;C)</translation>
@@ -3665,6 +3666,7 @@
 <translation id="4169535189173047238">許可しない</translation>
 <translation id="4170314459383239649">終了時に削除</translation>
 <translation id="417096670996204801">プロフィールを選択してください</translation>
+<translation id="41725145403849567">この拡張機能を追加するよう、保護者にリクエストしますか？</translation>
 <translation id="4175137578744761569">明るい紫と白</translation>
 <translation id="4175737294868205930">永続的ストレージ</translation>
 <translation id="4176463684765177261">停止中</translation>
@@ -5072,6 +5074,7 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN は 1 文字以上で入力してください}other{PIN は # 文字以上で入力してください}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> が、アップデートを今すぐダウンロードするよう求めています。Wi-Fi に接続するか、現在の従量制接続でのダウンロードを許可してください（通信料が発生することがあります）。</translation>
 <translation id="5476016146231427848">Steam on Chromebook を使用するには、デバイスを再起動してください</translation>
+<translation id="5476897066181964657">この拡張機能を追加することを保護者に承諾してもらう必要があります</translation>
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
 <translation id="5483785310822538350">ファイルとデバイスのアクセスを取り消す</translation>
@@ -6818,6 +6821,7 @@
 <translation id="7025190659207909717">モバイル データ サービスの管理</translation>
 <translation id="7025895441903756761">セキュリティとプライバシー</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
+<translation id="7028057921476386252">この拡張機能を有効にすることを保護者に承諾してもらう必要があります</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
@@ -8858,7 +8862,6 @@
 <translation id="8850251000316748990">もっと見る...</translation>
 <translation id="885246833287407341">API 関数の引数</translation>
 <translation id="8853586775156634952">このカードはこのデバイスにのみ保存されます</translation>
-<translation id="8853731677580212469">ウェブの Google パスワード マネージャー</translation>
 <translation id="8854745870658584490">候補選択ショートカット</translation>
 <translation id="8855977033756560989">この Chromebook Enterprise デバイスには Chrome Enterprise Upgrade が付属しています。エンタープライズ向け機能を活用するには、Google 管理コンソール アカウントを使用してこのデバイスを登録してください。</translation>
 <translation id="8856028055086294840">アプリとページの復元</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certificatul de autentificare a fost respins local</translation>
 <translation id="1775381402323441512">Informații despre fișierul video</translation>
 <translation id="180035236176489073">Trebuie să fiți online pentru a accesa aceste fișiere.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Extensia cu codul}few{Extensiile cu codurile}other{Extensiile cu codurile}}</translation>
 <translation id="1807938677607439181">Toate fișierele</translation>
 <translation id="1810764548349082891">Nicio previzualizare disponibilă</translation>
 <translation id="1812302367230252929">Amharică, transliterație</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">Se copiază <ph name="NUMBER_OF_ITEMS" /> elemente.</translation>
 <translation id="7375951387215729722">Lista de fișiere este sortată după coloana <ph name="COLUMN_NAME" /> în ordine descrescătoare.</translation>
 <translation id="7377161162143020057">Copierea acestui fișier este blocată de politica implementată de administrator</translation>
-<translation id="7392500733467492920">nu poate fi găsită. Contactează administratorul.</translation>
 <translation id="7402503521691663770">Dispozitive cu sistemul de operare Chrome Flex</translation>
 <translation id="7408870451288633753">Cehă</translation>
 <translation id="7417453074306512035">Tastatură etiopiană</translation>

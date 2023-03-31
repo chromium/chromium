@@ -485,6 +485,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4342946437867096381">Du hast bereits ein Passwort für diese Website in deinem Google-Konto gespeichert. Google kann für dich das neueste Passwort auswählen.</translation>
 <translation id="4343046787186034850">Kamera- und Mikrofonzugriff gewährt</translation>
 <translation id="4359125752503270327">Diese Seite wird in einer anderen Anwendung geöffnet.</translation>
+<translation id="4371526908359194219">E‑Mail-Benachrichtigungen</translation>
 <translation id="4375040482473363939">QR-Code-Suche</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
@@ -588,6 +589,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4986678885919050584">Von diesem Gerät entfernen</translation>
 <translation id="498985224078955265">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chrome an.</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
+<translation id="5016420433031926653">An <ph name="USER_EMAIL" /> senden</translation>
 <translation id="5017828934289857214">Später erinnern</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
 <translation id="5039804452771397117">Zulassen</translation>

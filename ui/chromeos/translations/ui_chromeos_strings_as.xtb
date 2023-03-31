@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ স্থানীয়ভাৱে অগ্ৰাহ্য কৰা হৈছে</translation>
 <translation id="1775381402323441512">ভিডিঅ’ সম্পৰ্কীয় তথ্য</translation>
 <translation id="180035236176489073">আপুনি এই ফাইলখিনি এক্সেছ কৰিবলৈ অনলাইন হ’ব লাগিব।</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{আইডিটোৰ সৈতে এটা এক্সটেনশ্বন}one{আইডিসমূহৰ সৈতে এক্সটেনশ্বনসমূহ}other{আইডিসমূহৰ সৈতে এক্সটেনশ্বনসমূহ}}</translation>
 <translation id="1807938677607439181">সকলো ফাইল</translation>
 <translation id="1810764548349082891">কোনো পূৰ্বদৰ্শন নাই</translation>
 <translation id="1812302367230252929">আমহেৰিক লিপ্যন্তৰণ</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="485316830061041779">জাৰ্মান</translation>
+<translation id="4862885579661885411">ফাইলৰ ছেটিং</translation>
 <translation id="4867079195717347957">স্তম্ভটো অধোগামী ভাৱে সজাবলৈ ক্লিক কৰক।</translation>
 <translation id="4867297348137739678">যোৱা সপ্তাহত</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> বাইট</translation>
@@ -799,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টা বস্তু প্ৰতিলিপি কৰি থকা হৈছে...</translation>
 <translation id="7375951387215729722">ফাইলৰ সূচী <ph name="COLUMN_NAME" /> অনুসৰি অধোগামীভাৱে সজোৱা হৈছে।</translation>
 <translation id="7377161162143020057">এই ফাইলটোৰ প্ৰতিলিপি কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
-<translation id="7392500733467492920">অৱস্থান নিৰ্ধাৰণ কৰিব পৰা নাই। আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="7402503521691663770">ChromeOS Flex ডিভাইচ</translation>
 <translation id="7408870451288633753">ছেক</translation>
 <translation id="7417453074306512035">ইথিঅ’পিক কীব’র্ড</translation>

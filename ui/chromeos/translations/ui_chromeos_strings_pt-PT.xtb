@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certificado de autenticação rejeitado localmente</translation>
 <translation id="1775381402323441512">Informações do vídeo</translation>
 <translation id="180035236176489073">Tem de estar online para aceder a estes ficheiros.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Uma extensão com o ID}other{As extensões com os IDs}}</translation>
 <translation id="1807938677607439181">Todos os ficheiros</translation>
 <translation id="1810764548349082891">Pré-visualização não disponível</translation>
 <translation id="1812302367230252929">Transliteração de amárico</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">A copiar <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="7375951387215729722">Lista de ficheiros ordenada por <ph name="COLUMN_NAME" /> por ordem descendente.</translation>
 <translation id="7377161162143020057">A ação de copiar este ficheiro foi bloqueada pela política da pessoa que administra</translation>
-<translation id="7392500733467492920">não estão presentes. Contacte o seu administrador.</translation>
 <translation id="7402503521691663770">Dispositivos com ChromeOS Flex</translation>
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>

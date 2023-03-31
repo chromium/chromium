@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certyfikat uwierzytelniania został odrzucony lokalnie</translation>
 <translation id="1775381402323441512">Informacje o pliku wideo</translation>
 <translation id="180035236176489073">Musisz być w trybie online, by uzyskać dostęp do tych plików.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Rozszerzenia z identyfikatorem}few{Rozszerzeń z identyfikatorami}many{Rozszerzeń z identyfikatorami}other{Rozszerzeń z identyfikatorami}}</translation>
 <translation id="1807938677607439181">Wszystkie pliki</translation>
 <translation id="1810764548349082891">Podgląd niedostępny</translation>
 <translation id="1812302367230252929">Amharski – transliteracja</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">Kopiuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista plików posortowana według kolumny <ph name="COLUMN_NAME" /> w kolejności malejącej.</translation>
 <translation id="7377161162143020057">Kopiowanie tego pliku jest zablokowane przez zasady administratora</translation>
-<translation id="7392500733467492920">nie można znaleźć. Skontaktuj się z administratorem.</translation>
 <translation id="7402503521691663770">Urządzenia z ChromeOS Flex</translation>
 <translation id="7408870451288633753">Czeski</translation>
 <translation id="7417453074306512035">klawiatura etiopska</translation>

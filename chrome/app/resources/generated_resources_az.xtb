@@ -3250,6 +3250,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803345858388753269">Video Keyfiyyəti</translation>
 <translation id="3803367742635802571">Ziyarət etdiyiniz saytlar nəzərdə tutulduğu kimi fəaliyyətini dayandıra bilər</translation>
+<translation id="3803583375545057606">Artırmanı aktivləşdirmək üçün valideynə müraciət edilsin?</translation>
 <translation id="380408572480438692">Performans datasının toplanmasına icazə vermək Google'a sistemi gəlişdirmək imkanı verir. Geri əlaqə raportu hazırlayana (Alt-Shift-I) və performans datası təqdim edənə qədər heç bir data göndərilmir. Toplamaya qadağa qoymaq üçün buraya istədiyiniz vaxt qayıda bilərsiniz.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (artırma ID'si "<ph name="EXTENSION_ID" />") giriş ekranında icazə verilmir.</translation>
 <translation id="3807747707162121253">Ləğv edin</translation>
@@ -3669,6 +3670,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4169535189173047238">İcazə verməyin</translation>
 <translation id="4170314459383239649">Çıxarkən silin</translation>
 <translation id="417096670996204801">Profil seçin</translation>
+<translation id="41725145403849567">Artırmanı əlavə etmək üçün valideynə müraciət edilsin?</translation>
 <translation id="4175137578744761569">Açıq-bənövşəyi və ağ</translation>
 <translation id="4175737294868205930">Davamlı saxlama yeri</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
@@ -5079,6 +5081,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN minimum bir simvoldan ibarət olmalıdır}other{PIN minimum # simvoldan ibarət olmalıdır}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> sizdən indi Wi-Fi'a qoşulmağınızı və güncəlləməni endirməyinizi tələb edir. Ya da limitli bağlantı vasitəsilə endirin (ödəmə tutula bilər).</translation>
 <translation id="5476016146231427848">Chromebook'da Steam tətbiqindən istifadə etmək üçün cihazı yenidən başladın</translation>
+<translation id="5476897066181964657">Valideyn və ya qəyyum artırmanı əlavə etməyi təsdiqləməlidir</translation>
 <translation id="5481273127572794904">Çoxsaylı faylların avtomatik endirilməsinə icazə verilmədi</translation>
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
 <translation id="5483785310822538350">Fayl və cihaz girişini geri alın</translation>
@@ -6825,6 +6828,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7025190659207909717">Mobil data xidmətini idarə edin</translation>
 <translation id="7025895441903756761">Güvənlik və Məxfilik</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Hamısını &amp;Anonim Pəncərədə Açın}=1{&amp;Anonim Pəncərədə Açın}other{Hamısını ({COUNT}) &amp;Anonim Pəncərədə Açın}}</translation>
+<translation id="7028057921476386252">Valideyn və ya qəyyum artırmanı aktivləşdirməyi təsdiqləməlidir</translation>
 <translation id="7029307918966275733">Crostini quraşdırılmayıb. Kreditlərə baxmaq üçün Crostini'ni quraşdırın.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030304022046916278">URL'ləri yoxlamaq üçün onları Təhlükəsiz Baxışa göndərir</translation>
@@ -8864,7 +8868,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8850251000316748990">Daha çoxuna baxın...</translation>
 <translation id="885246833287407341">API funksiya arqumentləri</translation>
 <translation id="8853586775156634952">Bu kart yalnız bu cihazda yadda saxlanılacaq</translation>
-<translation id="8853731677580212469">Vebdə Google Parol Meneceri</translation>
 <translation id="8854745870658584490">Seçim Qısayolu</translation>
 <translation id="8855977033756560989">Bu Chromebook Enterprise cihazı Chrome Enterprise Upgrade ilə bir paket şəklində təqdim edilir. Müəssisə imkanlarından yararlanmaq üçün bu cihazı Google admin hesabı ilə qeydiyyatdan keçirin.</translation>
 <translation id="8856028055086294840">Tətbiq və səhifələri bərpa edin</translation>

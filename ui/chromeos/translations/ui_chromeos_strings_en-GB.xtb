@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Authentication certificate rejected locally</translation>
 <translation id="1775381402323441512">Video info</translation>
 <translation id="180035236176489073">You must be online to access these files.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{An extension with the ID}other{Extensions with the IDs}}</translation>
 <translation id="1807938677607439181">All files</translation>
 <translation id="1810764548349082891">No preview available</translation>
 <translation id="1812302367230252929">Amharic transliteration</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">Copying <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="7375951387215729722">File list sorted by <ph name="COLUMN_NAME" /> in descending order.</translation>
 <translation id="7377161162143020057">Copying this file is blocked by administrator policy</translation>
-<translation id="7392500733467492920">can’t be located. Contact your administrator.</translation>
 <translation id="7402503521691663770">Chrome OS Flex devices</translation>
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Ethiopic keyboard</translation>

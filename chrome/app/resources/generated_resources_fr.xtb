@@ -2557,7 +2557,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3183944777708523606">Mode d'affichage du moniteur</translation>
 <translation id="3184536091884214176">Configurer ou gérer des imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette appli est bloquée}one{Cette appli est bloquée}other{Certaines applis sont bloquées}}</translation>
-<translation id="3187472288455401631">Mesure des performances des annonces</translation>
+<translation id="3187472288455401631">Performances des annonces</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne glissante</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
@@ -8877,7 +8877,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8850251000316748990">Voir plus…</translation>
 <translation id="885246833287407341">Arguments de fonction API</translation>
 <translation id="8853586775156634952">Cette carte sera enregistrée sur cet appareil uniquement</translation>
-<translation id="8853731677580212469">Gestionnaire de mots de passe de Google sur le Web</translation>
 <translation id="8854745870658584490">Raccourci de sélection</translation>
 <translation id="8855977033756560989">Cet appareil Chromebook Enterprise est fourni avec Chrome Enterprise Upgrade. Pour profiter des fonctionnalités d'entreprise, enregistrez votre appareil avec un compte administrateur Google.</translation>
 <translation id="8856028055086294840">Restaurer les applications et les pages</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">인증서가 로컬로 거부됨</translation>
 <translation id="1775381402323441512">동영상 정보</translation>
 <translation id="180035236176489073">이 파일에 액세스하려면 온라인 상태여야 합니다.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{다음 ID의 확장 프로그램을 찾을 수 없습니다.}other{다음 ID의 확장 프로그램을 찾을 수 없습니다.}}</translation>
 <translation id="1807938677607439181">모든 파일</translation>
 <translation id="1810764548349082891">미리보기 없음</translation>
 <translation id="1812302367230252929">암하라어(음역)</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485316830061041779">독일어</translation>
+<translation id="4862885579661885411">파일 설정</translation>
 <translation id="4867079195717347957">열을 내림차순으로 정렬하려면 클릭하세요.</translation>
 <translation id="4867297348137739678">지난주</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" />바이트</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">항목 <ph name="NUMBER_OF_ITEMS" />개 복사 중...</translation>
 <translation id="7375951387215729722">파일 목록이 <ph name="COLUMN_NAME" /> 기준 내림차순으로 정렬되어 있습니다.</translation>
 <translation id="7377161162143020057">관리자 정책에 의해 이 파일의 복사가 차단되었습니다.</translation>
-<translation id="7392500733467492920">관리자에게 문의하세요.</translation>
 <translation id="7402503521691663770">ChromeOS Flex 기기</translation>
 <translation id="7408870451288633753">체코어</translation>
 <translation id="7417453074306512035">에티오피아어 키보드</translation>

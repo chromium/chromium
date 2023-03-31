@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">प्रमाणीकरण प्रमाणपत्र को स्थानीय रूप से अस्वीकार कर दिया गया</translation>
 <translation id="1775381402323441512">वीडियो की जानकारी</translation>
 <translation id="180035236176489073">इन फ़ाइलों को एक्सेस करने के लिए आपका ऑनलाइन होना ज़रूरी है.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{आईडी वाला एक्सटेंशन}one{आईडी वाला एक्सटेंशन}other{आईडी वाले एक्सटेंशन}}</translation>
 <translation id="1807938677607439181">सभी फ़ाइलें</translation>
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
+<translation id="4862885579661885411">फ़ाइलों की सेटिंग</translation>
 <translation id="4867079195717347957">कॉलम को घटते क्रम में लगाने के लिए क्लिक करें.</translation>
 <translation id="4867297348137739678">पिछले सप्ताह</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> आइटम कॉपी किए जा रहे हैं...</translation>
 <translation id="7375951387215729722">फ़ाइल की सूची <ph name="COLUMN_NAME" /> के हिसाब से घटते क्रम में लगाई गई है.</translation>
 <translation id="7377161162143020057">एडमिन नीति के तहत, इस फ़ाइल को कॉपी करने की अनुमति नहीं है</translation>
-<translation id="7392500733467492920">नहीं मिला. अपने एडमिन से संपर्क करें.</translation>
 <translation id="7402503521691663770">ChromeOS Flex वाले डिवाइस</translation>
 <translation id="7408870451288633753">चेक</translation>
 <translation id="7417453074306512035">इथिओपियाई कीबोर्ड</translation>

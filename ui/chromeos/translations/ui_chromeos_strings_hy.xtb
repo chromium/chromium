@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Իսկորոշման վկայագիրը մերժվեց տեղում</translation>
 <translation id="1775381402323441512">Տեղեկություններ տեսանյութի մասին</translation>
 <translation id="180035236176489073">Այս ֆայլերն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Հետևյալ ID-ով ընդլայնում}one{Հետևյալ ID-ով ընդլայնում}other{Հետևյալ ID-ներով ընդլայնումներ}}</translation>
 <translation id="1807938677607439181">Բոլոր ֆայլերը</translation>
 <translation id="1810764548349082891">Նախադիտումը հասանելի չէ</translation>
 <translation id="1812302367230252929">ամհարերեն (տառադարձություն)</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">Պատճենվում է <ph name="NUMBER_OF_ITEMS" /> տարր...</translation>
 <translation id="7375951387215729722">Ֆայլերի ցանկը տեսակավորված է ըստ «<ph name="COLUMN_NAME" />» ցուցանիշի՝ նվազման կարգով։</translation>
 <translation id="7377161162143020057">Ադմինիստրատորն արգելել է պատճենել այս ֆայլը</translation>
-<translation id="7392500733467492920">չհաջողվեց գտնել։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="7402503521691663770">ChromeOS Flex սարքեր</translation>
 <translation id="7408870451288633753">չեխերեն</translation>
 <translation id="7417453074306512035">Եթովպերենի ստեղնաշար</translation>

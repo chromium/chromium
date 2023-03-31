@@ -3252,6 +3252,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803345858388753269">Calidad de vídeo</translation>
 <translation id="3803367742635802571">Es posible que los sitios que visites dejen de funcionar como deben</translation>
+<translation id="3803583375545057606">¿Pedirle a tu padre o madre que habilite esta extensión?</translation>
 <translation id="380408572480438692">Habilitar la recogida de datos de rendimiento ayudará a Google a mejorar el sistema en el futuro. No se enviará ningún dato hasta que no envíes un informe de comentarios (Alt-Mayús-I) e incluyas datos de rendimiento. Puedes volver a esta pantalla para inhabilitar la recogida de datos en cualquier momento.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede utilizar en una pantalla de inicio de sesión.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3672,6 +3673,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
 <translation id="417096670996204801">Elige un perfil</translation>
+<translation id="41725145403849567">¿Pedirle a tu padre o madre que añada esta extensión?</translation>
 <translation id="4175137578744761569">Morado claro y blanco</translation>
 <translation id="4175737294868205930">Almacenamiento permanente</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
@@ -5082,6 +5084,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).</translation>
 <translation id="5476016146231427848">Reinicia tu dispositivo para usar Steam en Chromebook</translation>
+<translation id="5476897066181964657">Tu padre, madre o tutor/a debe darte permiso para que añadas esta extensión</translation>
 <translation id="5481273127572794904">No puede descargar varios archivos automáticamente</translation>
 <translation id="5481941284378890518">Añadir impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
@@ -6830,6 +6833,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7025190659207909717">Administración de servicio de datos para móviles</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todas en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todas ({COUNT}) en una ventana de &amp;incógnito}}</translation>
+<translation id="7028057921476386252">Tu padre, madre o tutor/a debe darte permiso para que habilites esta extensión</translation>
 <translation id="7029307918966275733">Crostini no está instalado. Para ver los créditos, instala Crostini.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030304022046916278">Envía URLs a Navegación segura para comprobarlas.</translation>
@@ -8872,7 +8876,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8850251000316748990">Ver más...</translation>
 <translation id="885246833287407341">Argumentos de función de API</translation>
 <translation id="8853586775156634952">Esta tarjeta solo se guardará en este dispositivo</translation>
-<translation id="8853731677580212469">Gestor de contraseñas de Google en la Web</translation>
 <translation id="8854745870658584490">Combinación de teclas de selección</translation>
 <translation id="8855977033756560989">Este dispositivo Chromebook Enterprise incluye Chrome Enterprise Upgrade. Para aprovechar las funciones empresariales, registra este dispositivo con una cuenta de administrador de Google.</translation>
 <translation id="8856028055086294840">Restaurar aplicaciones y páginas</translation>

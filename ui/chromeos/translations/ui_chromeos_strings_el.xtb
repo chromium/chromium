@@ -98,7 +98,6 @@
 <translation id="1773212559869067373">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε τοπικά</translation>
 <translation id="1775381402323441512">Πληροφορίες βίντεο</translation>
 <translation id="180035236176489073">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Η επέκταση με το αναγνωριστικό}other{Οι επεκτάσεις με τα αναγνωριστικά}}</translation>
 <translation id="1807938677607439181">Όλα τα αρχεία</translation>
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
@@ -484,6 +483,7 @@
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
 </translation>
+<translation id="4862885579661885411">Ρυθμίσεις αρχείων</translation>
 <translation id="4867079195717347957">Κάντε κλικ για ταξινόμηση της στήλης σε φθίνουσα σειρά.</translation>
 <translation id="4867297348137739678">Τελευταία εβδομάδα</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
@@ -814,7 +814,6 @@
 <translation id="7359359531237882347">Αντιγραφή <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="7375951387215729722">Η λίστα αρχείων ταξινομήθηκε κατά <ph name="COLUMN_NAME" /> σε φθίνουσα σειρά.</translation>
 <translation id="7377161162143020057">Η αντιγραφή αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
-<translation id="7392500733467492920">δεν βρέθηκε(αν). Επικοινωνήστε με τον διαχειριστή σας.</translation>
 <translation id="7402503521691663770">Συσκευές ChromeOS Flex</translation>
 <translation id="7408870451288633753">Τσεχικά</translation>
 <translation id="7417453074306512035">Πληκτρολόγιο Αιθιοπικών</translation>

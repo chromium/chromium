@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Autentifikācijas sertifikāts tika lokāli noraidīts.</translation>
 <translation id="1775381402323441512">Video informācija</translation>
 <translation id="180035236176489073">Lai piekļūtu šiem failiem, jums ir jābūt tiešsaistē.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Nevar atrast paplašinājumu ar šādu ID:}zero{Nevar atrast paplašinājumus ar šādiem ID:}one{Nevar atrast paplašinājumus ar šādiem ID:}other{Nevar atrast paplašinājumus ar šādiem ID:}}</translation>
 <translation id="1807938677607439181">Visi faili</translation>
 <translation id="1810764548349082891">Priekšskatījums nav pieejams</translation>
 <translation id="1812302367230252929">Amharu, transliterācija</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu kopēšana...</translation>
 <translation id="7375951387215729722">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” dilstošā secībā.</translation>
 <translation id="7377161162143020057">Administratora politika bloķē šī faila kopēšanu</translation>
-<translation id="7392500733467492920">Sazinieties ar administratoru.</translation>
 <translation id="7402503521691663770">Chrome OS Flex ierīces</translation>
 <translation id="7408870451288633753">Čehu</translation>
 <translation id="7417453074306512035">Gēzu rakstības tastatūra</translation>

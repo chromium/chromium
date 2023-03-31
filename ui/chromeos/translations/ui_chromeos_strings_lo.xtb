@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງກັບທີ່ແລ້ວ</translation>
 <translation id="1775381402323441512">ຂໍ້ມູນວິດີໂອ</translation>
 <translation id="180035236176489073">ທ່ານ​ຈະ​ຕ້ອງ​ອອນ​ລາຍ​ນ​໌​ເພື່ອເຂົ້າຫາໄຟລ​໌​ເຫຼົ່ານີ້​.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{ສ່ວນຂະຫຍາຍທີ່ມີ ID}other{ສ່ວນຂະຫຍາຍທີ່ມີ ID}}</translation>
 <translation id="1807938677607439181">ທຸກໄຟລ​໌​</translation>
 <translation id="1810764548349082891">ບໍ່ມີຕົວຢ່າງສະແດງ</translation>
 <translation id="1812302367230252929">ການແປທັບສັບພາສາອາມຮາຣິກ</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">ກຳລັງສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="7375951387215729722">ລາຍການໄຟລ໌ທີ່ຮຽງລຳດັບຕາມ <ph name="COLUMN_NAME" /> ແຕ່ໃຫຍ່ຫານ້ອຍ.</translation>
 <translation id="7377161162143020057">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບລັອກການສຳເນົາໄຟລ໌ນີ້</translation>
-<translation id="7392500733467492920">ບໍ່ສາມາດຊອກຫາສະຖານທີ່ໄດ້. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="7402503521691663770">ອຸປະກອນ ChromeOS Flex</translation>
 <translation id="7408870451288633753">ພາສາເຊັກ</translation>
 <translation id="7417453074306512035">ຄີບອດພາສາເອທິໂອເປຍ</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Одбиена локална автентикација на сертификат</translation>
 <translation id="1775381402323441512">Информации за видеото</translation>
 <translation id="180035236176489073">Мора да сте поврзани на интернет за да пристапите до датотеките.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Екстензија со ID-бројот}one{Екстензии со ID-броевите}other{Екстензии со ID-броевите}}</translation>
 <translation id="1807938677607439181">Сите датотеки</translation>
 <translation id="1810764548349082891">Не е достапен преглед</translation>
 <translation id="1812302367230252929">транслитерација на амхарски</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347">Се копираат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="7375951387215729722">Списокот со датотеки е подреден според <ph name="COLUMN_NAME" /> по опаѓачки редослед.</translation>
 <translation id="7377161162143020057">Администраторското правило го блокира копирањето на датотекава</translation>
-<translation id="7392500733467492920">Не може да се лоцира(ат). Контактирајте со администраторот.</translation>
 <translation id="7402503521691663770">Уреди со ChromeOS Flex</translation>
 <translation id="7408870451288633753">чешки</translation>
 <translation id="7417453074306512035">етиопска тастатура</translation>

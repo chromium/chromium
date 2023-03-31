@@ -30,6 +30,7 @@
 <translation id="1022669824195822609">Dein Gerät wird von <ph name="DOMAIN" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="1026655690966755180">Port hinzufügen</translation>
 <translation id="1026822031284433028">Bild laden</translation>
+<translation id="1026959648338730078">Windows Hello oder externer Sicherheitsschlüssel</translation>
 <translation id="1028604629594230522">Chrome lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen.</translation>
 <translation id="1028700151766901954">Grund: Die Unterstützung älterer Browser bleibt standardmäßig in <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Zoomen</translation>
@@ -617,6 +618,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ich verstehe, dass dieser Download schädlich für meinen Computer ist</translation>
 <translation id="1535228823998016251">Laut</translation>
+<translation id="1535597783576881392">In dieser Anleitung erfährst du mehr über deine Möglichkeiten, damit Chrome so funktioniert, wie du es möchtest</translation>
 <translation id="1535753739390684432">Du kannst dir Text vorlesen lassen. Wähle zuerst unten auf dem Bildschirm das Symbol „Vorlesen“ aus und markiere dann den entsprechenden Text.</translation>
 <translation id="1536754031901697553">Verbindung wird getrennt…</translation>
 <translation id="1537254971476575106">Vollbildlupe</translation>
@@ -934,6 +936,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="1800502858278951817">Keine Erweiterungen haben angefragt, Daten auf <ph name="SITE_NAME" /> abzurufen und zu ändern</translation>
 <translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
+<translation id="1802457294427928325">Verhalten von F-Tasten zu ChromeOS-Aktionen der obersten Reihe umwandeln</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
 <translation id="1803531841600994172">Sprache, in die übersetzt wird</translation>
@@ -1266,6 +1269,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="208634871997892083">Durchgehend aktives VPN</translation>
 <translation id="2087822576218954668">Drucken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Die Anmeldung wird erst nach der Installation von <ph name="DEVICE_OS" /> unterstützt.</translation>
+<translation id="2088564884469682888">Eingebauter TrackPoint</translation>
 <translation id="2089090684895656482">Weniger</translation>
 <translation id="208928984520943006">Du kannst jederzeit von unten nach oben wischen, um den Startbildschirm aufzurufen.</translation>
 <translation id="2089566709556890888">Sicher surfen mit Google Chrome</translation>
@@ -1377,6 +1381,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2162705204091149050">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software und den Dateien abrufen</translation>
 <translation id="2162926944953615670">Keine verfügbaren eSIM-Profile</translation>
 <translation id="2163470535490402084">Stelle eine Internetverbindung her, um dich auf deinem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
+<translation id="2163996651553460171">Chrome optimal nutzen</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und ein weiterer Schalter</translation>
 <translation id="2165102982098084499">Du hast einen QR-Code gescannt, um diese Geräte zu verknüpfen.</translation>
 <translation id="2165177462441582039">Du kannst festlegen, wie lange ein Element markiert bleiben soll</translation>
@@ -1460,6 +1465,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2238379619048995541">Daten für aktiven Zustand</translation>
 <translation id="2241053333139545397">Eigene Daten auf verschiedenen Websites lesen und ändern</translation>
+<translation id="2241242047787527912">Wähle für alle unten aufgeführten Tasten die Aktion aus, die ausgeführt werden soll</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2242687258748107519">Dateiinformationen</translation>
 <translation id="2245603955208828424">Mit den Pfeiltasten den Cursor von einem Buchstaben zum nächsten bewegen</translation>
@@ -1498,12 +1504,14 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2271986192355138465">Informationen zum Installieren von Web-Apps</translation>
 <translation id="2272430695183451567">0 Schalter zugewiesen</translation>
 <translation id="2272570998639520080">Martiniglas</translation>
+<translation id="2272830751703114341">System-/Launcher-Taste aktivieren, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
 <translation id="2273119997271134996">Problem mit Dock und Videoport</translation>
 <translation id="2274840746523584236">Chromebook laden</translation>
 <translation id="2276503375879033601">Weitere Apps hinzufügen</translation>
 <translation id="2276910256003242519">Daten werden gelöscht…</translation>
 <translation id="2278562042389100163">Browserfenster öffnen</translation>
 <translation id="2278668501808246459">Container-Manager wird gestartet</translation>
+<translation id="2279051792571591988">Standardeinstellungen wiederherstellen</translation>
 <translation id="2280486287150724112">Rechter Rand</translation>
 <translation id="2281863813036651454">Mit der linken Maustaste klicken</translation>
 <translation id="2282146716419988068">GPU-Verarbeitung</translation>
@@ -2816,6 +2824,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3441663102605358937">Melde dich noch einmal bei <ph name="ACCOUNT" /> an, um dieses Konto zu bestätigen</translation>
 <translation id="3442674350323953953">Du kannst Google erlauben, deine Hardwaredaten zu verwenden, um <ph name="DEVICE_OS" /> zu verbessern. Wenn du dies ablehnst, werden deine Daten trotzdem an Google gesendet, um zu prüfen, welche Updates installiert werden sollten – sie werden jedoch nicht gespeichert oder anderweitig verwendet.</translation>
 <translation id="3443744348829035122">Zeitüberschreitung für <ph name="BRAND" /></translation>
+<translation id="3443754338602062261">Du hast bereits Passwörter für diese Konten im <ph name="BRAND" />. Wenn du eines der Passwörter unten importierst, wird das vorhandene ersetzt.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> kann <ph name="FILENAME" /> aufrufen</translation>
 <translation id="3445047461171030979">Schnelle Antworten bei Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -3061,6 +3070,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3659550105763988702">Passkey für <ph name="APP_NAME" /> verwenden</translation>
 <translation id="3659929705630080526">Du hast zu oft einen falschen Zugriffscode eingegeben. Versuche es später noch einmal.</translation>
 <translation id="3660234220361471169">Nicht vertrauenswürdig</translation>
+<translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 vorhandenes Passwort gefunden}other{{NUM_PASSWORDS} vorhandene Passwörter gefunden}}</translation>
 <translation id="3664511988987167893">Erweiterungssymbol</translation>
 <translation id="3665589677786828986">Chrome hat festgestellt, dass einige deiner Einstellungen von einem anderen Programm manipuliert wurden, und hat sie auf die ursprünglichen Standardwerte zurückgesetzt.</translation>
 <translation id="3665919494326051362">Die aktuelle Version ist <ph name="CURRENT_VERSION" /></translation>
@@ -3076,6 +3086,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3677959414150797585">Das kann u. a. Apps und Webseiten einschließen. Statistiken zur Verbesserung von Vorschlägen werden nur gesendet, wenn du der Freigabe von Nutzungsdaten zugestimmt hast.</translation>
 <translation id="3678156199662914018">Erweiterung: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">In diesem Fenster aufgerufene Seiten erscheinen nicht im Browserverlauf und hinterlassen auch keine anderweitigen Spuren wie Cookies auf dem Computer, nachdem du dich abgemeldet hast. Deine Lesezeichen und deine heruntergeladenen Dateien bleiben nicht erhalten.</translation>
+<translation id="3679126865530709868">Eingebautes Touchpad</translation>
 <translation id="368019053277764111">Suche in der Seitenleiste öffnen</translation>
 <translation id="3680683624079082902">Stimme der Sprachausgabe</translation>
 <translation id="3681311097828166361">Vielen Dank für dein Feedback. Du bist jetzt offline und dein Bericht wird später versendet.</translation>
@@ -4258,6 +4269,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="47158868804223727">Klicke auf den Namen der Gruppe, um sie zu maximieren oder zu minimieren</translation>
 <translation id="4716483597559580346">Powerwash für mehr Sicherheit</translation>
 <translation id="471759229191973607">Design ändern</translation>
+<translation id="4718564115458102525">Keine Tastatur erkannt</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat deinen Bildschirm freigegeben.</translation>
 <translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung von Drittanbietern anzeigen</translation>
@@ -5468,6 +5480,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5841270259333717135">Ethernet konfigurieren</translation>
 <translation id="5842497610951477805">Bluetooth aktivieren</translation>
 <translation id="5844574845205796324">Inhaltsvorschläge erhalten</translation>
+<translation id="5845424750482472447">{COUNT,plural, =1{1 neu zugeordnete Taste}other{{COUNT} neu zugeordnete Tasten}}</translation>
 <translation id="5846200638699387931">Bezugs-Syntaxfehler: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Kein Schatten</translation>
 <translation id="5846504156837627898">Websiteberechtigungen verwalten</translation>
@@ -5593,6 +5606,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google Safe Browsing senden?</translation>
 <translation id="5945363896952315544">Auf deinem Sicherheitsschlüssel können keine weiteren Fingerabdrücke gespeichert werden. Wenn du einen neuen Fingerabdruck speichern möchtest, lösche einen vorhandenen.</translation>
 <translation id="5946591249682680882">Bericht-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5948476936444935795">Import abbrechen</translation>
 <translation id="5948536763493709626">Verbinde eine Tastatur oder Maus oder fahre über den Touchscreen mit der Einrichtung fort. Achte bei Verwendung eines Bluetooth-Geräts darauf, ob es bereit zur Kopplung ist.</translation>
 <translation id="5949544233750246342">Datei kann nicht geparst werden</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> möchte lokale Schriftarten verwenden</translation>
@@ -5847,6 +5861,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6177412385419165772">Wird entfernt…</translation>
 <translation id="6178664161104547336">Zertifikat auswählen</translation>
 <translation id="6178682841350631965">Deine Anmeldedaten wurden aktualisiert</translation>
+<translation id="6179893151569852357">F-Tasten in ChromeOS-Tasten der obersten Reihe umwandeln</translation>
 <translation id="6180510783007738939">Linientool</translation>
 <translation id="6180550893222597997">Welchen Passkey möchtest du für <ph name="APP_NAME" /> verwenden?</translation>
 <translation id="6181431612547969857">Download blockiert</translation>
@@ -6047,6 +6062,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6370021412472292592">Manifest konnte nicht geladen werden.</translation>
 <translation id="637135143619858508">Hoch</translation>
+<translation id="6372856076511744743">Tasten neu zuordnen</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6374635887697228982">Rabatte erhalten?</translation>
@@ -6490,6 +6506,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="677646486571529447">Notiz hinzufügen</translation>
 <translation id="6776589734354015877">Du erhältst zusätzliche Funktionen</translation>
 <translation id="6776729248872343918">Schnelles Pairing aktivieren</translation>
+<translation id="677778081766640955">Taste gedrückt halten, um zwischen F-Tasten und ChromeOS-Aktionen zu wechseln</translation>
 <translation id="6777817260680419853">Weiterleitung blockiert</translation>
 <translation id="6779092717724412415">Wenn du Text hervorheben möchtest, wähle ihn einfach aus und klicke mit der rechten Maustaste.</translation>
 <translation id="6779447100905857289">deine Einkaufswagen</translation>
@@ -7664,6 +7681,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="780301667611848630">Kein Interesse</translation>
 <translation id="7804072833593604762">Tab geschlossen</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7805906048382884326">Infofeld schließen</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> hat Google Assistant schon auf einem anderen Gerät eingerichtet. <ph name="SUPERVISED_USER_NAME" /> kann Assistant noch besser nutzen, wenn auf diesem Gerät „Bildschirmkontext“ aktiviert ist.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf deine Kamera gestatten</translation>
@@ -8848,7 +8866,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8850251000316748990">Mehr…</translation>
 <translation id="885246833287407341">API-Funktionsargumente</translation>
 <translation id="8853586775156634952">Diese Karte wird nur auf diesem Gerät gespeichert</translation>
-<translation id="8853731677580212469">Google Passwortmanager im Web</translation>
 <translation id="8854745870658584490">Auswahltastaturkürzel</translation>
 <translation id="8855977033756560989">Dieses Chromebook Enterprise-Gerät wird zusammen mit dem Chrome Enterprise-Upgrade angeboten. Damit du die Enterprise-Funktionen nutzen kannst, musst du das Gerät mit einem Google Admin-Konto anmelden.</translation>
 <translation id="8856028055086294840">Apps und Seiten wiederherstellen</translation>

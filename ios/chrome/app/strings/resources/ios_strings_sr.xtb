@@ -887,6 +887,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6842136130964845393">Да бисте били сигурни да увек можете да приступате сачуваним лозинкама, потврдите да сте то ви</translation>
 <translation id="6851516051005285358">Захтевај сајт за рачунар</translation>
+<translation id="6852222216891664518">Затвори закачену картицу</translation>
 <translation id="6858855187367714033">Скенирано</translation>
 <translation id="6859944681507688231">Да бисте скенирали QR кôд или кредитну картицу, омогућите камеру у подешавањима.</translation>
 <translation id="6867369562105931222">лозинка</translation>
@@ -1178,6 +1179,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="891658175948553296">Истакните текст на сајту</translation>
 <translation id="8917490105272468696">Да, омогући</translation>
 <translation id="8928133177108699615">Рачунар</translation>
+<translation id="8934982071228289624">Да бисте сачували ову лозинку на налогу, морате прво да подесите шифру на уређају.</translation>
 <translation id="894191600409472540">Направите јаке лозинке</translation>
 <translation id="8952559610785099500">Додајте лозинку</translation>
 <translation id="8953046091948372197">Овде ћете пронаћи лозинке</translation>

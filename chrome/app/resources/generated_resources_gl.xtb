@@ -3250,6 +3250,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Calidade do vídeo</translation>
 <translation id="3803367742635802571">É posible que os sitios que visites deixen de funcionar segundo o previsto</translation>
+<translation id="3803583375545057606">Queres pedirlle ao teu pai ou nai permiso para activar esta extensión?</translation>
 <translation id="380408572480438692">Activar a recompilación de datos de rendemento axudará a Google a mellorar o sistema co tempo. Non se enviarán datos ata que presentes un informe de comentarios (Alt-Maiús-I) e inclúas datos sobre o rendemento. Podes volver a esta pantalla para desactivar a recompilación cando queiras.</translation>
 <translation id="3807249107536149332">Non se permite o uso de <ph name="EXTENSION_NAME" /> (ID da extensión "<ph name="EXTENSION_ID" />") nunha pantalla de inicio de sesión.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3671,6 +3672,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4170314459383239649">Borrar as cookies ao saír</translation>
 <translation id="417096670996204801">Seleccionar un perfil</translation>
+<translation id="41725145403849567">Queres pedirlle ao teu pai ou nai permiso para engadir esta extensión?</translation>
 <translation id="4175137578744761569">Púrpura claro e branco</translation>
 <translation id="4175737294868205930">Almacenamento persistente</translation>
 <translation id="4176463684765177261">Desactivado</translation>
@@ -5081,6 +5083,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN debe ter como mínimo 1 carácter}other{O PIN debe ter como mínimo # caracteres}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).</translation>
 <translation id="5476016146231427848">Reinicia o dispositivo para usar Steam no Chromebook</translation>
+<translation id="5476897066181964657">Para poderes engadir esta extensión, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="5481273127572794904">Sitios que non poden descargar automaticamente varios ficheiros</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
 <translation id="5483785310822538350">Revogar acceso a ficheiros e dispositivos</translation>
@@ -6826,6 +6829,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7025190659207909717">Xestión de servizos de datos móbiles</translation>
 <translation id="7025895441903756761">Seguranza e privacidade</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todos nunha ventá de &amp;incógnito}=1{Abrir nunha ventá de &amp;incógnito}other{Abrir todos ({COUNT}) nunha ventá de &amp;incógnito}}</translation>
+<translation id="7028057921476386252">Para poderes activar esta extensión, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="7029307918966275733">Crostini non está instalado. Instálao para ver os créditos.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7030304022046916278">Envía enderezos URL á función Navegación segura para comprobalos</translation>
@@ -8867,7 +8871,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8850251000316748990">Máis información…</translation>
 <translation id="885246833287407341">Argumentos das funcións da API</translation>
 <translation id="8853586775156634952">Esta tarxeta só se gardará neste dispositivo</translation>
-<translation id="8853731677580212469">Xestor de contrasinais de Google na Web</translation>
 <translation id="8854745870658584490">Atallo de selección</translation>
 <translation id="8855977033756560989">Este dispositivo Chromebook Enterprise inclúe a actualización de Chrome Enterprise. Para aproveitar as funcionalidades de Enterprise, inscribe este dispositivo cunha conta de administrador de Google.</translation>
 <translation id="8856028055086294840">Restaurar aplicacións e páxinas</translation>

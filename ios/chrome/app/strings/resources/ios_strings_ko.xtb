@@ -809,7 +809,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <ph name="TIME" />에 동기화 암호로 데이터가 암호화되었습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="6418346271604475326">PDF 준비 중</translation>
 <translation id="6421095165635308">{count,plural, =1{계정({email})의 {title}에 북마크가 저장됨}other{계정({email})의 {title}에 북마크가 저장됨}}</translation>
-<translation id="6429213933892582367">비밀번호 옵션 열기</translation>
+<translation id="6429213933892582367">비밀번호 옵션을 엽니다.</translation>
 <translation id="6434591244308415567">오류가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="6435236283694032571">읽기 목록에 추가</translation>
 <translation id="6439338047467462846">모두 허용</translation>
@@ -1180,7 +1180,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8928133177108699615">데스크톱</translation>
 <translation id="894191600409472540">안전한 비밀번호를 만드세요.</translation>
 <translation id="8952559610785099500">비밀번호 추가</translation>
-<translation id="8953046091948372197">여기에서 비밀번호를 확인할 수 있습니다.</translation>
+<translation id="8953046091948372197">여기에서 비밀번호 확인</translation>
 <translation id="895541991026785598">문제 신고</translation>
 <translation id="8971545611707025079">다시 확인</translation>
 <translation id="8974714402877957201">1. iPad 설정을 엽니다.</translation>

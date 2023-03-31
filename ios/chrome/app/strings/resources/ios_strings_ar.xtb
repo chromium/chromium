@@ -603,7 +603,7 @@
 <translation id="5094827893301452931">‏اكتملت مشاركة Tweet.</translation>
 <translation id="5118713593561876160">الاهتمامات</translation>
 <translation id="5118764316110575523">غير مفعَّل</translation>
-<translation id="5119391094379141756">‏اختيار Chrome</translation>
+<translation id="5119391094379141756">‏اختَر Chrome.</translation>
 <translation id="5121618895923301719">يتم تتبُّع هذا المنتج حاليًا. تم حفظ هذه الصفحة في قائمة <ph name="BEGIN_LINK" />الإشارات المرجعية على الجوّال<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">مزامنة كلمات المرور والسجلّ والمزيد على جميع الأجهزة</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{كلمة مرور واحدة ضعيفة ({COUNT})}zero{‫{COUNT} كلمة مرور ضعيفة}two{كلِمتا مرور ضعيفتان ({COUNT})}few{‫{COUNT} كلمات مرور ضعيفة}many{‫{COUNT} كلمة مرور ضعيفة}other{‫{COUNT} كلمة مرور ضعيفة}}</translation>
@@ -1182,7 +1182,7 @@
 <translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="894191600409472540">إنشاء كلمات مرور قوية</translation>
 <translation id="8952559610785099500">إضافة كلمة مرور</translation>
-<translation id="8953046091948372197">ستظهر كلمات المرور هنا.</translation>
+<translation id="8953046091948372197">ستظهر كلمات المرور هنا</translation>
 <translation id="895541991026785598">الإبلاغ عن مشكلة</translation>
 <translation id="8971545611707025079">التحقّق مرة أخرى</translation>
 <translation id="8974714402877957201">‏1- فتح iPad Settings (إعدادات iPad)</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
 <translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{ID-тай өргөтгөл}other{ID-тай өргөтгөлүүд}}</translation>
 <translation id="1807938677607439181">Бүх файлууд</translation>
 <translation id="1810764548349082891">Урьдчилан харах боломжгүй</translation>
 <translation id="1812302367230252929">Амхар галиг</translation>
@@ -797,7 +796,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулж байна...</translation>
 <translation id="7375951387215729722">Файлын жагсаалтыг <ph name="COLUMN_NAME" />-н дагуу буурах дарааллаар эрэмбэлсэн.</translation>
 <translation id="7377161162143020057">Энэ файлыг хуулахыг администраторын бодлогоор блоклосон</translation>
-<translation id="7392500733467492920">байршил тогтоох боломжгүй. Администратортайгаа холбогдоно уу.</translation>
 <translation id="7402503521691663770">ChromeOS Flex төхөөрөмжүүд</translation>
 <translation id="7408870451288633753">Чех</translation>
 <translation id="7417453074306512035">Этиоп хэлний гар</translation>

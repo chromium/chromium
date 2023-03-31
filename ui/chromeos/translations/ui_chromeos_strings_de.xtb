@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Lokale Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="1775381402323441512">Videoinformationen</translation>
 <translation id="180035236176489073">Du musst online sein, um auf diese Dateien zugreifen zu können.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Eine Erweiterung mit der ID}other{Erweiterungen mit den IDs}}</translation>
 <translation id="1807938677607439181">Alle Dateien</translation>
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
 <translation id="1812302367230252929">Amharisch (Transliteration)</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> Elemente werden kopiert...</translation>
 <translation id="7375951387215729722">Die Dateiliste wurde in absteigender Reihenfolge nach "<ph name="COLUMN_NAME" />" sortiert.</translation>
 <translation id="7377161162143020057">Die Administratorrichtlinie blockiert das Kopieren dieser Datei</translation>
-<translation id="7392500733467492920">konnte(n) nicht gefunden werden. Wende dich an deinen Administrator.</translation>
 <translation id="7402503521691663770">Chrome OS Flex-Geräte</translation>
 <translation id="7408870451288633753">Tschechisch</translation>
 <translation id="7417453074306512035">Äthiopische Tastatur</translation>

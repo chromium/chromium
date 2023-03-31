@@ -3266,6 +3266,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="380329542618494757">Namn</translation>
 <translation id="3803345858388753269">Bildkvalitet</translation>
 <translation id="3803367742635802571">Webbplatser du besöker kan sluta fungera som avsett</translation>
+<translation id="3803583375545057606">Vill du be din förälder att aktivera tillägget?</translation>
 <translation id="380408572480438692">Aktivering av insamling av resultatdata hjälper Google att förbättra systemet med tiden. Inga data skickas förrän du skickar en feedbackrapport (Alt-Skift-I) och inkluderar resultatdata. Du kan när som helst återgå till den här skärmen för att inaktivera insamlingen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (tilläggs-id <ph name="EXTENSION_ID" />) får inte användas på en inloggningsskärm.</translation>
 <translation id="3807747707162121253">&amp;Avbryt</translation>
@@ -3687,6 +3688,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4170314459383239649">Rensa vid avslut</translation>
 <translation id="417096670996204801">Välj en profil</translation>
+<translation id="41725145403849567">Vill du be din förälder att lägga till tillägget?</translation>
 <translation id="4175137578744761569">Ljuslila och vit</translation>
 <translation id="4175737294868205930">Beständig lagring</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
@@ -5098,6 +5100,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden måste innehålla minst ett tecken}other{Pinkoden måste innehålla minst # tecken}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).</translation>
 <translation id="5476016146231427848">Starta om enheten om du vill använda Steam på Chromebook</translation>
+<translation id="5476897066181964657">En förälder eller vårdnadshavare måste godkänna att du lägger till det här tillägget</translation>
 <translation id="5481273127572794904">Får inte ladda ned flera filer automatiskt</translation>
 <translation id="5481941284378890518">Lägg till skrivare i närheten</translation>
 <translation id="5483785310822538350">Återkalla åtkomst till enheten och filer</translation>
@@ -6846,6 +6849,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7025190659207909717">Hantering av mobil datatjänst</translation>
 <translation id="7025895441903756761">Säkerhet och integritet</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Öppna alla i ett &amp;inkognitofönster}=1{Öppna i &amp;inkognitofönster}other{Öppna alla ({COUNT}) i ett &amp;inkognitofönster}}</translation>
+<translation id="7028057921476386252">En förälder eller vårdnadshavare måste godkänna att du aktiverar det här tillägget</translation>
 <translation id="7029307918966275733">Crostini har inte installerats. Installera Crostini för att visa upphovspersoner.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7030304022046916278">Webbadresser skickas till Säker webbsökning för kontroll</translation>
@@ -8888,7 +8892,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8850251000316748990">Visa fler …</translation>
 <translation id="885246833287407341">API-funktionens argument</translation>
 <translation id="8853586775156634952">Det här kortet sparas enbart på den här enheten</translation>
-<translation id="8853731677580212469">Google Lösenordshantering på webben</translation>
 <translation id="8854745870658584490">Genväg till val</translation>
 <translation id="8855977033756560989">Denna Chromebook Enterprise-enhet levereras med Chrome Enterprise Upgrade. Registrera enheten med ett konto i Google Administratörskonsol om du vill dra nytta av företagsfunktionerna.</translation>
 <translation id="8856028055086294840">Återställa appar och sidor</translation>

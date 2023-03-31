@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">प्रमाणीकरण प्रमाणपत्र स्थायी रूपमा अस्विकार गरियो</translation>
 <translation id="1775381402323441512">भिडियोको जानकारी</translation>
 <translation id="180035236176489073">यी फाइलहरू पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{निम्न ID भएको एक्स्टेन्सन:}other{निम्न ID भएका एक्स्टेन्सनहरू:}}</translation>
 <translation id="1807938677607439181">सबै फाइलहरू</translation>
 <translation id="1810764548349082891">कुनै पूर्वावलोकन उपलब्ध छैन</translation>
 <translation id="1812302367230252929">अम्हारिक लिपि रूपान्तरण</translation>
@@ -800,7 +799,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू प्रतिलिपि गर्दै...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> का आधारमा घट्दो क्रममा क्रमबद्ध गरिएको फाइलको सूची।</translation>
 <translation id="7377161162143020057">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल कपी गर्न पाइँदैन</translation>
-<translation id="7392500733467492920">भेटिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7402503521691663770">ChromeOS Flex चल्ने डिभाइसहरू</translation>
 <translation id="7408870451288633753">चेक</translation>
 <translation id="7417453074306512035">इथियोपिक किबोर्ड</translation>

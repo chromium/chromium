@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് പ്രാദേശികമായി നിരസിച്ചു</translation>
 <translation id="1775381402323441512">വീഡിയോ വിവരം</translation>
 <translation id="180035236176489073">ഈ ഫയലുകൾ ആക്‌സസ്സുചെയ്യുന്നതിന് നിങ്ങൾ ഓൺലൈനിലായിരിക്കണം.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{ഐഡിക്ക് ഒപ്പമുള്ള വിപുലീകരണം}other{ഐഡികൾക്ക് ഒപ്പമുള്ള വിപുലീകരണങ്ങൾ}}</translation>
 <translation id="1807938677607439181">എല്ലാ ഫയലുകളും</translation>
 <translation id="1810764548349082891">പ്രിവ്യൂ ലഭ്യമല്ല</translation>
 <translation id="1812302367230252929">അമാറിക് ലിപ്യന്തരണം</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തുന്നു...</translation>
 <translation id="7375951387215729722">അവരോഹണ ക്രമത്തിൽ <ph name="COLUMN_NAME" /> അടുക്കിയ ഫയൽ ലിസ്‌റ്റ്.</translation>
 <translation id="7377161162143020057">ഈ ഫയൽ പകർത്തുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
-<translation id="7392500733467492920">കണ്ടെത്താനാകുന്നില്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="7402503521691663770">ChromeOS Flex ഉപകരണങ്ങൾ</translation>
 <translation id="7408870451288633753">ചെക്ക്</translation>
 <translation id="7417453074306512035">എത്യോപിക് കീബോർഡ്</translation>

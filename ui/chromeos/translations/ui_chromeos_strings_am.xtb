@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">የማረጋገጫ ምስክር ወረቀት በአካባቢው ተቀባይነት አላገኘም</translation>
 <translation id="1775381402323441512">የቪዲዮ መረጃ</translation>
 <translation id="180035236176489073">እነዚህን ፋይሎች ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{መታወቂያ ያለው ቅጥያ}one{መታወቂያ ያለው ቅጥያ}other{መታወቂያዎች ያላቸው ቅጥያዎች}}</translation>
 <translation id="1807938677607439181">ሁሉም ፋይሎች</translation>
 <translation id="1810764548349082891">ምንም ቅድመ-እይታ አይገኝም</translation>
 <translation id="1812302367230252929">በአማርኛ ቋንቋ ፊደል መጻፍ</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="485316830061041779">ጀርመን</translation>
+<translation id="4862885579661885411">የፋይሎች ቅንብሮች</translation>
 <translation id="4867079195717347957">በወራጅ ቅደም ተከተል ዓምዱን ለመደርደር ጠቅ ያድርጉ።</translation>
 <translation id="4867297348137739678">በአለፈው ሳምንት</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ባይት</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በመቅዳት ላይ...</translation>
 <translation id="7375951387215729722">የፋይል ዝርዝር በ<ph name="COLUMN_NAME" /> በቁልቁለት ተደርድሯል።</translation>
 <translation id="7377161162143020057">ይህን ፋይል ማባዛት በአስተዳዳሪ መመሪያ ታግዷል</translation>
-<translation id="7392500733467492920">ሊገኝ አልቻለም። የእርስዎን አስተዳዳሪ ያነጋግሩ።</translation>
 <translation id="7402503521691663770">የChromeOS Flex መሣሪያዎች</translation>
 <translation id="7408870451288633753">ቼክ</translation>
 <translation id="7417453074306512035">የግዕዝ ቁልፍ ሰሌዳ</translation>

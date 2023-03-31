@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Ověřovací certifikát byl místně odmítnut</translation>
 <translation id="1775381402323441512">Informace o videu</translation>
 <translation id="180035236176489073">Pro přístup k souborům musíte být online.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Rozšíření s ID}few{Rozšíření s ID}many{Rozšíření s ID}other{Rozšíření s ID}}</translation>
 <translation id="1807938677607439181">Všechny soubory</translation>
 <translation id="1810764548349082891">Náhled není k dispozici</translation>
 <translation id="1812302367230252929">amharština (přepis)</translation>
@@ -799,7 +798,6 @@
 <translation id="7359359531237882347">Kopírování <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="7375951387215729722">Seznam souborů seřazený sestupně podle sloupce <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Zkopírováni tohoto souboru je blokováno zásadami administrátora</translation>
-<translation id="7392500733467492920">se nepodařilo najít. Kontaktujte svého administrátora.</translation>
 <translation id="7402503521691663770">Zařízení se systémem ChromeOS Flex</translation>
 <translation id="7408870451288633753">čeština</translation>
 <translation id="7417453074306512035">Etiopská klávesnice</translation>

@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certifikat za autentifikaciju odbijen je lokalno</translation>
 <translation id="1775381402323441512">Informacije o videozapisima</translation>
 <translation id="180035236176489073">Morate biti na mreži da biste pristupili tim datotekama.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Proširenje s ID-jem}one{Proširenja s ID-jevima}few{Proširenja s ID-jevima}other{Proširenja s ID-jevima}}</translation>
 <translation id="1807938677607439181">Sve datoteke</translation>
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija za amharski</translation>
@@ -801,7 +800,6 @@
 <translation id="7359359531237882347">Kopiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Popis datoteka razvrstan prema "<ph name="COLUMN_NAME" />", silaznim redoslijedom.</translation>
 <translation id="7377161162143020057">Administratorska pravila blokiraju lijepljenje te datoteke</translation>
-<translation id="7392500733467492920">nije moguće pronaći. Obratite se administratoru.</translation>
 <translation id="7402503521691663770">Uređaji s ChromeOS Flexom</translation>
 <translation id="7408870451288633753">češki</translation>
 <translation id="7417453074306512035">etiopska tipkovnica</translation>

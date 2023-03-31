@@ -2244,6 +2244,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2886119409731773154">Това може да отнеме до 30 минути</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> и още <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2889043468805635730">Няма открити проблеми</translation>
 <translation id="2889064240420137087">Отваряне на връзката със...</translation>
 <translation id="2891566119238851894">Отваряне на лентата за търсене в страничния панел. Тя не е отворена.</translation>
 <translation id="2891922230654533301">Искате ли устройството ви да се използва за влизане в профила ви в(ъв) <ph name="APP_NAME" />?</translation>
@@ -3342,6 +3343,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3861977424605124250">Показване при стартиране</translation>
 <translation id="386239283124269513">&amp;Възстановяване на групата</translation>
 <translation id="3865414814144988605">Разделителна способност</translation>
+<translation id="3866142613641074814">Имате пароли, които са изложени на риск</translation>
 <translation id="3866249974567520381">Описание</translation>
 <translation id="3867134342671430205">Преместете екран с плъзгане или посредством клавишите със стрелки</translation>
 <translation id="3867944738977021751">Полета на сертификата</translation>
@@ -8674,6 +8676,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="866611985033792019">Да се има доверие на този сертификат за идентифициране на потребители на имейл</translation>
 <translation id="8666321716757704924">Разрешенията за <ph name="WEBSITE" /> са предоставени отново</translation>
 <translation id="8666759526542103597">Всичко за персонализирането на рекламите въз основа на браузъра</translation>
+<translation id="8667261224612332309">Имате пароли, които могат да бъдат подобрени</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> сега е на цял екран и курсорът на мишката ви е деактивиран.</translation>
 <translation id="8667760277771450375">Проучваме начини да ограничим проследяването в различни сайтове, като същевременно даваме възможност на сайтовете да спират нежеланите реклами и измамите.</translation>
 <translation id="8668378421690365723">Възможно е устройството ви вече да не работи правилно и да има проблеми със сигурността и производителността.</translation>
@@ -8890,7 +8893,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8850251000316748990">Вижте още...</translation>
 <translation id="885246833287407341">Аргументи за функция за API</translation>
 <translation id="8853586775156634952">Картата ще бъде запазена само на това устройство</translation>
-<translation id="8853731677580212469">Google Мениджър на пароли в мрежата</translation>
 <translation id="8854745870658584490">Пряк път за избиране</translation>
 <translation id="8855977033756560989">Това устройство Chromebook Enterprise се предлага в пакет с Chrome Enterprise Upgrade. За да се възползвате от корпоративните възможности, регистрирайте това устройство с администраторски профил в Google.</translation>
 <translation id="8856028055086294840">Възстановяване на приложенията и страниците</translation>
@@ -9004,6 +9006,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8953476467359856141">При зареждане</translation>
 <translation id="895347679606913382">Стартира...</translation>
 <translation id="8957757410289731985">Персонализиране на потребителския профил</translation>
+<translation id="8959144235813727886">Сайтове и приложения</translation>
 <translation id="895944840846194039">Памет за JavaScript</translation>
 <translation id="8960208913905765425">Преобразуване на мерни единици посредством функцията „Бързи отговори“</translation>
 <translation id="8960638196855923532">Вече можете да преглеждате известията и приложенията, които имате на телефона си</translation>

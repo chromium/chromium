@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Certificado de autenticación rechazado de forma local</translation>
 <translation id="1775381402323441512">Información del vídeo</translation>
 <translation id="180035236176489073">Tienes que conectarte a Internet para acceder a estos archivos.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{No se ha encontrado ninguna extensión con este ID:}other{No se han encontrado extensiones con estos IDs:}}</translation>
 <translation id="1807938677607439181">Todos los archivos</translation>
 <translation id="1810764548349082891">No hay vistas previas disponibles</translation>
 <translation id="1812302367230252929">Amárico (transliteración)</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemán</translation>
+<translation id="4862885579661885411">Configuración de Archivos</translation>
 <translation id="4867079195717347957">Haz clic para mostrar la columna en orden descendente.</translation>
 <translation id="4867297348137739678">Última semana</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">Se están copiando <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="7375951387215729722">Lista de archivos ordenados por <ph name="COLUMN_NAME" /> en orden descendente.</translation>
 <translation id="7377161162143020057">La política del administrador ha bloqueado la opción de copiar este archivo</translation>
-<translation id="7392500733467492920">Ponte en contacto con tu administrador.</translation>
 <translation id="7402503521691663770">Dispositivos ChromeOS Flex</translation>
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>

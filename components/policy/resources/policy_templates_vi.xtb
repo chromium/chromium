@@ -571,6 +571,11 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì các chính sách đám mây ở cấp người dùng sẽ không thể hợp nhất với các chính sách thuộc những nguồn khác.</translation>
 <translation id="152657506688053119">Danh sách các URL thay thế cho nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
+<translation id="152740744678799092">Nếu bạn đặt chính sách này thành Bật, hệ thống sẽ thực hiện thao tác tìm kiếm mặc định khi người dùng nhập văn bản không phải là URL vào thanh địa chỉ. Để chỉ định nhà cung cấp dịch vụ tìm kiếm mặc định, hãy đặt các chính sách tìm kiếm mặc định còn lại. Nếu bạn để trống những chính sách đó thì người dùng có thể chọn nhà cung cấp mặc định. Nếu bạn đặt chính sách này thành Tắt, hệ thống sẽ không tìm kiếm khi người dùng nhập văn bản không phải là URL vào thanh địa chỉ. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> không hỗ trợ giá trị Tắt.
+
+      Nếu bạn đặt chính sách này, người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, nhà cung cấp dịch vụ tìm kiếm mặc định sẽ được bật và người dùng có thể đặt danh sách nhà cung cấp dịch vụ tìm kiếm.
+
+      Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tuỳ chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM hoặc liên kết với một miền qua MCX.</translation>
 <translation id="1530812829012954197">Luôn hiển thị các mẫu URL sau đây trong trình duyệt chính</translation>
 <translation id="1542491165152947087">Cho phép người dùng bật hoặc tắt chế độ cài đặt Chủ đề quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị của họ.</translation>
 <translation id="1547424904796464052">Hàm băm SHA-256 được mã hoá thập lục phân của hình ảnh chương trình cơ sở.</translation>

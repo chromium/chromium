@@ -97,7 +97,6 @@
 <translation id="1773212559869067373">Potrdilo za preverjanje pristnosti je bilo zavrnjeno lokalno</translation>
 <translation id="1775381402323441512">Podatki o videoposnetku</translation>
 <translation id="180035236176489073">Če želite dostopati do datotek, mora biti vzpostavljena povezava z internetom.</translation>
-<translation id="1805030087840125683">{COUNT,plural, =1{Razširitev z ID-jem}one{Razširitve z ID-ji}two{Razširitve z ID-ji}few{Razširitve z ID-ji}other{Razširitve z ID-ji}}</translation>
 <translation id="1807938677607439181">Vse datoteke</translation>
 <translation id="1810764548349082891">Predogled ni na voljo</translation>
 <translation id="1812302367230252929">amharščina (transkripcija)</translation>
@@ -474,6 +473,7 @@
 <translation id="4843566743023903107">Naprave Chromebase</translation>
 <translation id="4850886885716139402">Pogled</translation>
 <translation id="485316830061041779">nemščina</translation>
+<translation id="4862885579661885411">Nastavitve Datotek</translation>
 <translation id="4867079195717347957">Kliknite, če želite razvrstiti elemente stolpca v padajočem vrstnem redu.</translation>
 <translation id="4867297348137739678">Prejšnji teden</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
@@ -800,7 +800,6 @@
 <translation id="7359359531237882347">Kopiranje toliko elementov: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="7375951387215729722">Seznam datotek, razvrščen glede na <ph name="COLUMN_NAME" />, v padajočem vrstnem redu.</translation>
 <translation id="7377161162143020057">Kopiranje te datoteke blokira skrbniški pravilnik.</translation>
-<translation id="7392500733467492920">ni mogoče najti. Obrnite se na skrbnika.</translation>
 <translation id="7402503521691663770">Naprave ChromeOS Flex</translation>
 <translation id="7408870451288633753">češčina</translation>
 <translation id="7417453074306512035">Tipkovnica za etiopščino</translation>
