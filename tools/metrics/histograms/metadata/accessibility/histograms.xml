@@ -1776,6 +1776,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
+    enum="WinGetLastError" expires_after="2023-11-30">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records a Screen AI library load result on Windows. The result is recorded
+    after initialization of Screen AI service and loading chrome_screen_ai.dll.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.LoadLibraryResult"
     enum="ScreenAILoadLibraryResult" expires_after="2023-11-30">
   <owner>kyungjunlee@google.com</owner>

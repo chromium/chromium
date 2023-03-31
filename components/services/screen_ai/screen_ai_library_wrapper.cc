@@ -4,6 +4,9 @@
 
 #include "components/services/screen_ai/screen_ai_library_wrapper.h"
 
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace screen_ai {
@@ -64,18 +67,28 @@ bool ScreenAILibraryWrapper::LoadFunction(T& function_variable,
 bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
 
-  if (library_.GetError() == nullptr) {
-    VLOG(0) << "Library load state cannot be read.";
-    return false;
-  }
 #if BUILDFLAG(IS_WIN)
-  if (library_.GetError()->code != 0u) {
+  DWORD error = library_.GetError()->code;
+  base::UmaHistogramSparse(
+      "Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows",
+      static_cast<int>(error));
+  if (error != ERROR_SUCCESS) {
+    // TODO(crbug.com/1278249): Remove after Windows load library issue is
+    // fixed.
+    base::debug::Alias(&error);
+    base::debug::DumpWithoutCrashing();
     VLOG(0) << "Library load error: " << library_.GetError()->code;
     return false;
   }
 #else
+
   if (!library_.GetError()->message.empty()) {
-    VLOG(0) << "Library load error: " << library_.GetError()->message;
+    std::string error = library_.GetError()->message;
+    // TODO(crbug.com/1278249): Remove after library load issues are fixed.
+    base::debug::Alias(&error);
+    DEBUG_ALIAS_FOR_CSTR(library_load_error, error.c_str(), 1024);
+    base::debug::DumpWithoutCrashing();
+    VLOG(0) << "Library load error: " << error;
     return false;
   }
 #endif
