@@ -1,0 +1,21 @@
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "pinned_tabs_overflow_egtest.mm" ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
