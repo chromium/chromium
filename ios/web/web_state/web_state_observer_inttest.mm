@@ -275,7 +275,6 @@ ACTION_P6(VerifyNewPageFinishedContext,
     std::string actual_mime_type;
     (*context)->GetResponseHeaders()->GetMimeType(&actual_mime_type);
     EXPECT_EQ(mime_type, actual_mime_type);
-    EXPECT_EQ(mime_type, actual_mime_type);
   }
   ASSERT_TRUE(web_state->IsLoading());
   ASSERT_EQ(content_is_html, web_state->ContentIsHTML());
