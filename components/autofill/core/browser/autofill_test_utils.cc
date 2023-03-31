@@ -1152,9 +1152,13 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type,
   return field_prediction;
 }
 
-FieldPrediction CreateFieldPrediction(ServerFieldType type) {
-  if (type == NO_SERVER_DATA)
+FieldPrediction CreateFieldPrediction(ServerFieldType type, bool is_override) {
+  if (is_override) {
+    return CreateFieldPrediction(type, FieldPrediction::SOURCE_OVERRIDE);
+  }
+  if (type == NO_SERVER_DATA) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_UNSPECIFIED);
+  }
   return CreateFieldPrediction(
       type, GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPasswordField
                 ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
@@ -1164,11 +1168,13 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type) {
 void AddFieldPredictionToForm(
     const FormFieldData& field_data,
     ServerFieldType field_type,
-    AutofillQueryResponse_FormSuggestion* form_suggestion) {
+    AutofillQueryResponse_FormSuggestion* form_suggestion,
+    bool is_override) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  *field_suggestion->add_predictions() = CreateFieldPrediction(field_type);
+  *field_suggestion->add_predictions() =
+      CreateFieldPrediction(field_type, is_override);
 }
 
 void AddFieldPredictionsToForm(

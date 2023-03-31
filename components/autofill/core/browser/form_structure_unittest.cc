@@ -2248,10 +2248,10 @@ TEST_P(ParameterizedFormStructureTest, EncodeQueryRequest) {
   forms.push_back(&form_structure);
 
   std::vector<FormSignature> expected_signatures;
-  expected_signatures.push_back(FormSignature(form_signature.value()));
+  expected_signatures.emplace_back(form_signature.value());
   if (autofill_across_iframes) {
-    expected_signatures.push_back(FormSignature(12345UL));
-    expected_signatures.push_back(FormSignature(67890UL));
+    expected_signatures.emplace_back(12345UL);
+    expected_signatures.emplace_back(67890UL);
   }
 
   // Prepare the expected proto string.
@@ -4032,7 +4032,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
   }
 
   // No available types.
-  // datapresent should be "" == trimmmed(0x0000000000000000) ==
+  // datapresent should be "" == trimmed(0x0000000000000000) ==
   //     0b0000000000000000000000000000000000000000000000000000000000000000
   ServerFieldTypeSet available_field_types;
 
@@ -4061,7 +4061,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
               ElementsSerializeSameAs(upload));
 
   // Only a few types available.
-  // datapresent should be "1540000240" == trimmmed(0x1540000240000000) ==
+  // datapresent should be "1540000240" == trimmed(0x1540000240000000) ==
   //     0b0001010101000000000000000000001001000000000000000000000000000000
   // The set bits are:
   //  3 == NAME_FIRST
@@ -4085,7 +4085,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
               ElementsSerializeSameAs(upload));
 
   // All supported non-credit card types available.
-  // datapresent should be "1f7e000378000008" == trimmmed(0x1f7e000378000008) ==
+  // datapresent should be "1f7e000378000008" == trimmed(0x1f7e000378000008) ==
   //     0b0001111101111110000000000000001101111000000000000000000000001000
   // The set bits are:
   //  3 == NAME_FIRST
@@ -4133,7 +4133,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
               ElementsSerializeSameAs(upload));
 
   // All supported credit card types available.
-  // datapresent should be "0000000000001fc0" == trimmmed(0x0000000000001fc0) ==
+  // datapresent should be "0000000000001fc0" == trimmed(0x0000000000001fc0) ==
   //     0b0000000000000000000000000000000000000000000000000001111111000000
   // The set bits are:
   // 51 == CREDIT_CARD_NAME_FULL
@@ -4159,7 +4159,7 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
               ElementsSerializeSameAs(upload));
 
   // All supported types available.
-  // datapresent should be "1f7e000378001fc8" == trimmmed(0x1f7e000378001fc8) ==
+  // datapresent should be "1f7e000378001fc8" == trimmed(0x1f7e000378001fc8) ==
   //     0b0001111101111110000000000000001101111000000000000001111111001000
   // The set bits are:
   //  3 == NAME_FIRST
@@ -5333,10 +5333,98 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   EXPECT_EQ(ADDRESS_HOME_CITY, form.field(2)->Type().GetStorableType());
 }
 
+// Tests that precedence of server's query response is indeed: Main frame
+// overrides > iframe overrides > main frame crowdsourcing > iframe
+// crowdsourcing
+TEST_F(FormStructureTestImpl,
+       ParseApiQueryResponse_PrecedenceRulesBetweenMainFrameAndIframe) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kAutofillAcrossIframes);
+
+  struct TestCase {
+    bool main_frame_has_override;
+    bool iframe_has_override;
+    bool main_frame_overrides_iframe;
+  } test_cases[] = {
+      {.main_frame_has_override = false,
+       .iframe_has_override = false,
+       .main_frame_overrides_iframe = true},
+      {.main_frame_has_override = false,
+       .iframe_has_override = true,
+       .main_frame_overrides_iframe = false},
+      {.main_frame_has_override = true,
+       .iframe_has_override = false,
+       .main_frame_overrides_iframe = true},
+      {.main_frame_has_override = true,
+       .iframe_has_override = true,
+       .main_frame_overrides_iframe = true},
+  };
+
+  for (const auto& [main_frame_has_override, iframe_has_override,
+                    main_frame_overrides_iframe] : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "main_frame_has_override = " << main_frame_has_override
+                 << ", iframe_has_override = " << iframe_has_override
+                 << ", main_frame_overrides_iframe = "
+                 << main_frame_overrides_iframe);
+
+    const int host_form_signature = 12345;
+    ServerFieldType main_frame_type = CREDIT_CARD_NAME_FULL;
+    ServerFieldType iframe_type = NAME_FULL;
+
+    // Create an iframe form with a single field.
+    std::vector<FormFieldData> fields;
+    FormFieldData field;
+    field.form_control_type = "text";
+    field.name = u"name";
+    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.host_form_signature = FormSignature(host_form_signature);
+    fields.push_back(field);
+
+    // Creating the main frame form.
+    FormData form;
+    form.fields = fields;
+    form.url = GURL("http://foo.com");
+    FormStructure form_structure(form);
+    std::vector<FormStructure*> forms;
+    forms.push_back(&form_structure);
+
+    // Make serialized API response.
+    AutofillQueryResponse api_response;
+    std::vector<FormSignature> encoded_signatures =
+        test::GetEncodedSignatures(forms);
+
+    // Main frame response.
+    auto* main_frame_form_suggestion = api_response.add_form_suggestions();
+    AddFieldPredictionToForm(field, main_frame_type, main_frame_form_suggestion,
+                             main_frame_has_override);
+
+    // Iframe response.
+    encoded_signatures.emplace_back(host_form_signature);
+    auto* iframe_form_suggestion = api_response.add_form_suggestions();
+    AddFieldPredictionToForm(field, iframe_type, iframe_form_suggestion,
+                             iframe_has_override);
+
+    // Serialize API response.
+    std::string response_string;
+    std::string encoded_response_string;
+    ASSERT_TRUE(api_response.SerializeToString(&response_string));
+    base::Base64Encode(response_string, &encoded_response_string);
+    FormStructure::ParseApiQueryResponse(std::move(encoded_response_string),
+                                         forms, encoded_signatures, nullptr,
+                                         nullptr);
+
+    ASSERT_EQ(forms.front()->field_count(), 1U);
+    EXPECT_EQ(forms.front()->field(0)->server_type(),
+              main_frame_overrides_iframe ? main_frame_type : iframe_type);
+  }
+}
+
 // Tests that the signatures of a field's FormFieldData::host_form_signature are
 // used as a fallback if the form's signature does not contain useful type
 // predictions.
-TEST_F(FormStructureTestImpl, ParseApiQueryResponseWithDifferentRendererForms) {
+TEST_F(FormStructureTestImpl,
+       ParseApiQueryResponse_FallbackToHostFormSignature) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kAutofillAcrossIframes);
 
