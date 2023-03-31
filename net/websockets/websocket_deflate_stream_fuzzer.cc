@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -99,7 +100,7 @@ class WebSocketFuzzedStream final : public WebSocketStream {
 
   std::vector<scoped_refptr<IOBufferWithSize>> buffers_;
 
-  FuzzedDataProvider* fuzzed_data_provider_;
+  raw_ptr<FuzzedDataProvider> fuzzed_data_provider_;
 
   NetLogWithSource net_log_;
 };

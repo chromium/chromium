@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
@@ -47,8 +48,8 @@ class FuzzedServerSocket : public ServerSocket {
   void DispatchAccept(std::unique_ptr<StreamSocket>* socket,
                       CompletionOnceCallback callback);
 
-  FuzzedDataProvider* data_provider_;
-  net::NetLog* net_log_;
+  raw_ptr<FuzzedDataProvider> data_provider_;
+  raw_ptr<net::NetLog> net_log_;
 
   IPEndPoint listening_on_;
   bool first_accept_ = true;

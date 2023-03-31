@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -72,7 +73,7 @@ class ImageCaptureTestcase
 
   // Prerequisite state.
   content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
-  content::TestRenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::TestRenderFrameHost> render_frame_host_ = nullptr;
 };
 
 ImageCaptureTestcase::ImageCaptureTestcase(const ProtoTestcase& testcase)

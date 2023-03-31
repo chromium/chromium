@@ -5,6 +5,7 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
@@ -88,8 +89,8 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
     CLOSE_WEBSOCKET_RATHER_THAN_ACCEPT = 16
   };
 
-  net::HttpServer* server_ = nullptr;
-  FuzzedDataProvider* const data_provider_;
+  raw_ptr<net::HttpServer> server_ = nullptr;
+  const raw_ptr<FuzzedDataProvider> data_provider_;
   base::OnceClosure done_closure_;
   const uint8_t action_flags_;
 };

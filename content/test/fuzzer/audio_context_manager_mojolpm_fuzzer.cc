@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -75,8 +76,8 @@ class AudioContextManagerTestcase
   content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
 
   base::SimpleTestTickClock clock_;
-  content::AudioContextManagerImpl* audio_context_manager_ = nullptr;
-  content::TestRenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::AudioContextManagerImpl> audio_context_manager_ = nullptr;
+  raw_ptr<content::TestRenderFrameHost> render_frame_host_ = nullptr;
 };
 
 AudioContextManagerTestcase::AudioContextManagerTestcase(

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_RESULT_WAITER_H_
 #define COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_RESULT_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/remote_commands_state.h"
@@ -26,7 +27,7 @@ class RemoteCommandsResultWaiter : public RemoteCommandsState::Observer {
  private:
   void OnRemoteCommandResultAvailable(int command_id) override;
 
-  RemoteCommandsState* const remote_commands_state_;
+  const raw_ptr<RemoteCommandsState> remote_commands_state_;
   const int command_id_;
   base::RunLoop run_loop_;
 };

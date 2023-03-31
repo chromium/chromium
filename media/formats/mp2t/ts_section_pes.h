@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/ts_section.h"
 
@@ -58,7 +59,7 @@ class TsSectionPes : public TsSection {
   bool wait_for_pusi_;
 
   // Used to unroll PTS and DTS.
-  TimestampUnroller* const timestamp_unroller_;
+  const raw_ptr<TimestampUnroller> timestamp_unroller_;
 };
 
 }  // namespace mp2t

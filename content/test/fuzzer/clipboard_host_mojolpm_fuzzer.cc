@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
@@ -68,7 +69,7 @@ class ClipboardHostTestcase
   void AddClipboardHost(uint32_t id, base::OnceClosure done_closure);
 
   content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
-  content::TestRenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::TestRenderFrameHost> render_frame_host_ = nullptr;
 };
 
 ClipboardHostTestcase::ClipboardHostTestcase(const ProtoTestcase& testcase)

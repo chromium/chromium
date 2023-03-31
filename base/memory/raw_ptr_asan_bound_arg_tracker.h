@@ -113,7 +113,7 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
   // We save the previously bound arguments, so that we can restore them when
   // this callback returns. This helps with coverage while avoiding false
   // positives due to nested run loops/callback re-entrancy.
-  ProtectedArgsVector* prev_protected_args_;
+  raw_ptr<ProtectedArgsVector> prev_protected_args_;
   ProtectedArgsVector protected_args_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/filter/source_stream.h"
@@ -43,7 +44,7 @@ class FuzzedSourceStream : public SourceStream {
                       scoped_refptr<IOBuffer> read_buf,
                       int result);
 
-  FuzzedDataProvider* data_provider_;
+  raw_ptr<FuzzedDataProvider> data_provider_;
 
   // Whether there is a pending Read().
   bool read_pending_ = false;

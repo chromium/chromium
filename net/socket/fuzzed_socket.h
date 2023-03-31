@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
@@ -102,7 +103,7 @@ class FuzzedSocket : public TransportClientSocket {
   // See https://crbug.com/823012
   bool ForceSync() const;
 
-  FuzzedDataProvider* data_provider_;
+  raw_ptr<FuzzedDataProvider> data_provider_;
 
   // If true, the result of the Connect() call is fuzzed - it can succeed or
   // fail with a variety of connection errors, and it can complete synchronously

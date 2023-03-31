@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -337,7 +338,7 @@ class FuzzedMdnsSocket : public DatagramServerSocket {
       std::move(callback).Run(data_provider_->PickValueInArray(kMdnsErrors));
   }
 
-  FuzzedDataProvider* const data_provider_;
+  const raw_ptr<FuzzedDataProvider> data_provider_;
   const IPEndPoint local_address_;
   const NetLogWithSource net_log_;
 
@@ -357,7 +358,7 @@ class FuzzedMdnsSocketFactory : public MDnsSocketFactory {
   }
 
  private:
-  FuzzedDataProvider* const data_provider_;
+  const raw_ptr<FuzzedDataProvider> data_provider_;
 };
 
 class FuzzedHostResolverManager : public HostResolverManager {
@@ -417,7 +418,7 @@ class FuzzedHostResolverManager : public HostResolverManager {
     SetHaveOnlyLoopbackAddresses(data_provider_->ConsumeBool());
   }
 
-  FuzzedDataProvider* const data_provider_;
+  const raw_ptr<FuzzedDataProvider> data_provider_;
 
   // Fixed value to be returned by IsIPv6Reachable.
   const bool is_ipv6_reachable_;
@@ -425,7 +426,7 @@ class FuzzedHostResolverManager : public HostResolverManager {
   // Used for UDP and TCP sockets if the async resolver is enabled.
   FuzzedSocketFactory socket_factory_;
 
-  NetLog* const net_log_;
+  const raw_ptr<NetLog> net_log_;
 
   base::WeakPtrFactory<FuzzedDataProvider> data_provider_weak_factory_;
 };

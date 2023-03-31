@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -198,10 +199,10 @@ class DiskCacheLPMFuzzer {
   // Pointers to our backend. Only one of block_impl_, simple_cache_impl_, and
   // mem_cache_ are active at one time.
   std::unique_ptr<disk_cache::Backend> cache_;
-  disk_cache::BackendImpl* block_impl_ = nullptr;
+  raw_ptr<disk_cache::BackendImpl> block_impl_ = nullptr;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
-  disk_cache::SimpleBackendImpl* simple_cache_impl_ = nullptr;
-  disk_cache::MemBackendImpl* mem_cache_ = nullptr;
+  raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_ = nullptr;
+  raw_ptr<disk_cache::MemBackendImpl> mem_cache_ = nullptr;
 
   // Maximum size of the cache, that we have currently set.
   uint32_t max_size_ = kMaxSize;

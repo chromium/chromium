@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -92,7 +93,7 @@ class MediaStreamDispatcherHostTestcase
   std::unique_ptr<media::AudioManager> audio_manager_ = nullptr;
   std::unique_ptr<media::AudioSystem> audio_system_ = nullptr;
   std::unique_ptr<content::MediaStreamManager> media_stream_manager_ = nullptr;
-  content::TestRenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::TestRenderFrameHost> render_frame_host_ = nullptr;
 };
 
 MediaStreamDispatcherHostTestcase::MediaStreamDispatcherHostTestcase(

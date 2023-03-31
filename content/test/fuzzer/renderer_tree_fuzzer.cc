@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/test/fuzzer/fuzzer_support.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
@@ -42,7 +43,7 @@ class ReservoirSampler {
   }
 
  private:
-  Random* const rnd_;
+  const raw_ptr<Random> rnd_;
   T t_;
   int n_;
 };

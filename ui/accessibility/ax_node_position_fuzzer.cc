@@ -4,6 +4,7 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -67,7 +68,7 @@ class AXNodePositionFuzzerGenerator {
                                      ui::AXPositionKind position_kind,
                                      ax::mojom::TextAffinity affinity);
 
-  ui::AXTree* tree_;
+  raw_ptr<ui::AXTree> tree_;
   const ui::AXNodeID max_id_;
   FuzzerData& fuzzer_data_;
 };
