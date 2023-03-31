@@ -169,7 +169,6 @@ if (is_android) {
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
-      "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",

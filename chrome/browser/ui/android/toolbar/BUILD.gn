@@ -363,7 +363,6 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

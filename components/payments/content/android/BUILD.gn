@@ -390,7 +390,6 @@ android_library("unit_device_javatests") {
     "//components/payments/mojom:mojom_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_sdk:android_test_base_java",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",

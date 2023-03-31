@@ -83,7 +83,6 @@ android_library("javatests") {
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/junit",

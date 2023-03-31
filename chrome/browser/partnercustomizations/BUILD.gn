@@ -57,7 +57,6 @@ android_library("test_support_java") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
 }
@@ -80,7 +79,6 @@ android_library("unit_device_javatests") {
     "//components/embedder_support/android:util_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//url:gurl_java",
