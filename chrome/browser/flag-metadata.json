@@ -3262,8 +3262,8 @@
   },
   {
     "name": "enable-touch-drag-drop",
-    "owners": [ "nzolghadr", "input-dev" ],
-    "expiry_milestone": 93
+    "owners": [ "mustaq", "input-dev" ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-touchpads-in-diagnostics-app",
