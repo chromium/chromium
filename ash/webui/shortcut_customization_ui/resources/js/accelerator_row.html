@@ -2,13 +2,15 @@
   #container {
     align-items: center;
     display: grid;
+    grid-auto-rows: minmax(52px, auto);
     grid-template-columns: 286px 1fr;
-    grid-template-rows: repeat(var(--accelerator-row-num-accels), 52px);
   }
 
   accelerator-view,
   text-accelerator {
     grid-column-start: 2;
+    /* TODO(longbowei): Update value based on the input from PM/UX */
+    line-height: 3.2;
     margin-inline-start: 24px;
     padding-bottom: 10px;
     padding-top: 10px;
