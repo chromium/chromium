@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 
+struct SkGainmapInfo;
 struct SkRect;
 struct SkIRect;
 class SkRRect;
@@ -195,6 +196,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const SkPath& path, UsePaintCache);
   void Write(const sk_sp<SkData>& data);
   void Write(const SkColorSpace* data);
+  void Write(const SkGainmapInfo& gainmap_info);
   void Write(const SkSamplingOptions&);
   void Write(const sk_sp<GrSlug>& slug);
   void Write(SkYUVColorSpace yuv_color_space);
@@ -350,6 +352,18 @@ constexpr size_t PaintOpWriter::SerializedSizeSimple() {
 template <>
 constexpr size_t PaintOpWriter::SerializedSizeSimple<size_t>() {
   return base::bits::AlignUp(sizeof(uint64_t), kDefaultAlignment);
+}
+
+template <>
+constexpr size_t PaintOpWriter::SerializedSize<SkGainmapInfo>() {
+  return SerializedSizeSimple<SkColor4f>() +  // fGainmapRatioMin
+         SerializedSizeSimple<SkColor4f>() +  // fGainmapRatioMax
+         SerializedSizeSimple<SkColor4f>() +  // fGainmapGamma
+         SerializedSizeSimple<SkColor4f>() +  // fEpsilonSdr
+         SerializedSizeSimple<SkColor4f>() +  // fEpsilonHdr
+         SerializedSizeSimple<SkScalar>() +   // fDisplayRatioSdr
+         SerializedSizeSimple<SkScalar>() +   // fDisplayRatioHdr
+         SerializedSizeSimple<uint32_t>();    // fBaseImageType
 }
 
 template <typename T>

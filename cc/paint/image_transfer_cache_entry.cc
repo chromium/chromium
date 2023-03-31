@@ -538,11 +538,22 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
       target_color_params_(target_color_params),
       id_(GetNextId()),
       image_(image) {
-  base::CheckedNumeric<uint32_t> safe_size;
-  safe_size += PaintOpWriter::SerializedSize(needs_mips_);
-  safe_size += SafeSizeForTargetColorParams(target_color_params_);
-  safe_size += SafeSizeForImage(image_);
-  size_ = safe_size.ValueOrDefault(0);
+  ComputeSize();
+}
+
+ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
+    const Image& image,
+    const Image& gainmap_image,
+    const SkGainmapInfo& gainmap_info,
+    bool needs_mips,
+    absl::optional<TargetColorParams> target_color_params)
+    : needs_mips_(needs_mips),
+      target_color_params_(target_color_params),
+      id_(GetNextId()),
+      image_(image),
+      gainmap_image_(gainmap_image),
+      gainmap_info_(gainmap_info) {
+  ComputeSize();
 }
 
 ClientImageTransferCacheEntry::~ClientImageTransferCacheEntry() = default;
@@ -565,14 +576,36 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   PaintOp::SerializeOptions options;
   PaintOpWriter writer(data.data(), data.size(), options);
 
+  DCHECK_EQ(gainmap_image_.has_value(), gainmap_info_.has_value());
+  bool has_gainmap = gainmap_image_.has_value();
+  writer.Write(has_gainmap);
   writer.Write(needs_mips_);
   WriteTargetColorParams(writer, target_color_params_);
   WriteImage(writer, image_);
+
+  if (has_gainmap) {
+    WriteImage(writer, gainmap_image_.value());
+    writer.Write(gainmap_info_.value());
+  }
 
   // Size can't be 0 after serialization unless the writer has become invalid.
   if (writer.size() == 0u)
     return false;
   return true;
+}
+
+void ClientImageTransferCacheEntry::ComputeSize() {
+  base::CheckedNumeric<uint32_t> safe_size;
+  safe_size += PaintOpWriter::SerializedSize<bool>();  // has_gainmap
+  safe_size += PaintOpWriter::SerializedSize<bool>();  // needs_mips
+  safe_size += SafeSizeForTargetColorParams(target_color_params_);
+  safe_size += SafeSizeForImage(image_);
+  if (gainmap_image_) {
+    DCHECK(gainmap_info_);
+    safe_size += SafeSizeForImage(gainmap_image_.value());
+    safe_size += PaintOpWriter::SerializedSize<SkGainmapInfo>();
+  }
+  size_ = safe_size.ValueOrDefault(0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -654,6 +687,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   PaintOpReader reader(data.data(), data.size(), options);
 
   // Parameters common to RGBA and YUVA images.
+  bool has_gainmap = false;
+  reader.Read(&has_gainmap);
   bool needs_mips = false;
   reader.Read(&needs_mips);
   absl::optional<TargetColorParams> target_color_params;
@@ -679,7 +714,23 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     plane_sizes_.push_back(plane_image->textureSize());
   }
 
-  // Perform color conversion.
+  // Read the gainmap image, if one was specified to exist.
+  sk_sp<SkImage> gainmap_image;
+  SkGainmapInfo gainmap_info;
+  if (has_gainmap) {
+    if (!target_color_params) {
+      DLOG(ERROR) << "Gainmap images need target parameters to render.";
+      return false;
+    }
+    gainmap_image = ReadImage(reader, context, mip_mapped_for_upload);
+    if (!gainmap_image) {
+      DLOG(ERROR) << "Failed to deserialize gainmap image.";
+      return false;
+    }
+    reader.Read(&gainmap_info);
+  }
+
+  // Perform color conversion and tone mapping.
   if (target_color_params) {
     auto target_color_space = target_color_params->color_space.ToSkColorSpace();
     if (!target_color_space) {
@@ -689,12 +740,19 @@ bool ServiceImageTransferCacheEntry::Deserialize(
 
     // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
     gfx::ColorConversionSkFilterCache cache;
-    image_ = cache.ConvertImage(image_, target_color_space,
-                                target_color_params->hdr_metadata,
-                                target_color_params->sdr_max_luminance_nits,
-                                target_color_params->hdr_max_luminance_relative,
-                                target_color_params->enable_tone_mapping,
-                                image_->isTextureBacked() ? context_ : nullptr);
+    if (has_gainmap) {
+      image_ =
+          cache.ApplyGainmap(image_, gainmap_image, gainmap_info,
+                             target_color_params->hdr_max_luminance_relative,
+                             image_->isTextureBacked() ? context_ : nullptr);
+    } else {
+      image_ = cache.ConvertImage(
+          image_, target_color_space, target_color_params->hdr_metadata,
+          target_color_params->sdr_max_luminance_nits,
+          target_color_params->hdr_max_luminance_relative,
+          target_color_params->enable_tone_mapping,
+          image_->isTextureBacked() ? context_ : nullptr);
+    }
     if (!image_) {
       DLOG(ERROR) << "Failed image color conversion";
       return false;

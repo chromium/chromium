@@ -451,6 +451,27 @@ void PaintOpWriter::Write(const SkColorSpace* color_space) {
   DidWrite(written);
 }
 
+void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
+  Write(gainmap_info.fGainmapRatioMin);
+  Write(gainmap_info.fGainmapRatioMax);
+  Write(gainmap_info.fGainmapGamma);
+  Write(gainmap_info.fEpsilonSdr);
+  Write(gainmap_info.fEpsilonHdr);
+  Write(gainmap_info.fDisplayRatioSdr);
+  Write(gainmap_info.fDisplayRatioHdr);
+  Write(gainmap_info.fDisplayRatioHdr);
+  uint32_t base_image_type = 0;
+  switch (gainmap_info.fBaseImageType) {
+    case SkGainmapInfo::BaseImageType::kSDR:
+      base_image_type = 0;
+      break;
+    case SkGainmapInfo::BaseImageType::kHDR:
+      base_image_type = 1;
+      break;
+  }
+  Write(base_image_type);
+}
+
 void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
   if (!valid_)
     return;

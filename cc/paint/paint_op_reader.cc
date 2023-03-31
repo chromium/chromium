@@ -38,6 +38,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/include/private/SkGainmapInfo.h"
 #include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
@@ -493,6 +494,30 @@ void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
     SetInvalid(DeserializationError::kSkColorSpaceDeserializeFailure);
 
   DidRead(size);
+}
+
+void PaintOpReader::Read(SkGainmapInfo* gainmap_info) {
+  Read(&gainmap_info->fGainmapRatioMin);
+  Read(&gainmap_info->fGainmapRatioMax);
+  Read(&gainmap_info->fGainmapGamma);
+  Read(&gainmap_info->fEpsilonSdr);
+  Read(&gainmap_info->fEpsilonHdr);
+  Read(&gainmap_info->fDisplayRatioSdr);
+  Read(&gainmap_info->fDisplayRatioHdr);
+  Read(&gainmap_info->fDisplayRatioHdr);
+  uint32_t base_image_type = 0;
+  Read(&base_image_type);
+  switch (base_image_type) {
+    case 0:
+      gainmap_info->fBaseImageType = SkGainmapInfo::BaseImageType::kSDR;
+      break;
+    case 1:
+      gainmap_info->fBaseImageType = SkGainmapInfo::BaseImageType::kHDR;
+      break;
+    default:
+      SetInvalid(DeserializationError::kSkGainmapInfoDeserializationFailure);
+      break;
+  }
 }
 
 void PaintOpReader::Read(sk_sp<GrSlug>* slug) {
