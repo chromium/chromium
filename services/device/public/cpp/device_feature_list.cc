@@ -5,6 +5,7 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "device/fido/features.h"
 #include "services/device/device_service_jni_headers/DeviceFeatureList_jni.h"
 #include "services/device/public/cpp/device_features.h"
 
@@ -19,8 +20,9 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kGenericSensorExtraClasses,
+    &device::kWebAuthnAndroidCredMan,
     &kAsyncSensorCalls,
+    &kGenericSensorExtraClasses,
 };
 
 // TODO(crbug.com/1060097): Removethis once a generalized FeatureList exists.

@@ -18,6 +18,7 @@ import org.chromium.build.annotations.MainDex;
 public class DeviceFeatureList {
     public static final String ASYNC_SENSOR_CALLS = "AsyncSensorCalls";
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
+    public static final String WEBAUTHN_ANDROID_CRED_MAN = "WebAuthenticationAndroidCredMan";
 
     private DeviceFeatureList() {}
 
@@ -25,7 +26,7 @@ public class DeviceFeatureList {
      * Returns whether the specified feature is enabled or not.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in //services/device/public/cpp/device_features.cc
+     * |kFeaturesExposedToJava| in //services/device/public/cpp/device_feature_list.cc.
      *
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.

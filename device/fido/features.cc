@@ -76,4 +76,9 @@ BASE_FEATURE(kWebAuthnNewPrioritiesImpl,
              "WebAuthenticationNewPrioritiesImpl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Added in M114. Not yet enabled by default.
+BASE_FEATURE(kWebAuthnAndroidCredMan,
+             "WebAuthenticationAndroidCredMan",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device
