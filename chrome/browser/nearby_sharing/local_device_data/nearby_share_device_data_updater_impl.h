@@ -9,9 +9,9 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 
 class NearbyShareClient;
 class NearbyShareClientFactory;

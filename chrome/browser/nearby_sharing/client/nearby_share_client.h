@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 
 namespace nearbyshare {
 namespace proto {

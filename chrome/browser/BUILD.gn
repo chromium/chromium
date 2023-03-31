@@ -5101,6 +5101,7 @@ static_library("browser") {
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/login/session",
       "//chromeos/ash/components/memory",
+      "//chromeos/ash/components/nearby/common/client",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/settings",
       "//chromeos/ash/components/standalone_browser",

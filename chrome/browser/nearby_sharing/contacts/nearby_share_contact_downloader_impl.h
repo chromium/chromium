@@ -11,10 +11,10 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyShareClient;

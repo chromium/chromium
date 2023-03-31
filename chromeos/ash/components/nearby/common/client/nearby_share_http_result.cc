@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -12,17 +12,21 @@
 
 NearbyShareHttpError NearbyShareHttpErrorForHttpResponseCode(
     int response_code) {
-  if (response_code == 400)
+  if (response_code == 400) {
     return NearbyShareHttpError::kBadRequest;
+  }
 
-  if (response_code == 403)
+  if (response_code == 403) {
     return NearbyShareHttpError::kAuthenticationError;
+  }
 
-  if (response_code == 404)
+  if (response_code == 404) {
     return NearbyShareHttpError::kEndpointNotFound;
+  }
 
-  if (response_code >= 500 && response_code < 600)
+  if (response_code >= 500 && response_code < 600) {
     return NearbyShareHttpError::kInternalServerError;
+  }
 
   return NearbyShareHttpError::kUnknown;
 }
@@ -50,8 +54,9 @@ NearbyShareHttpStatus::NearbyShareHttpStatus(
     const int net_error,
     const network::mojom::URLResponseHead* head)
     : net_error_code_(net_error) {
-  if (head && head->headers)
+  if (head && head->headers) {
     http_response_code_ = head->headers->response_code();
+  }
 
   bool net_success = (net_error_code_ == net::OK ||
                       net_error_code_ == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&

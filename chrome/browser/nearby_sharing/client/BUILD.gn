@@ -6,9 +6,6 @@ assert(is_chromeos, "Nearby Share is CrOS only")
 
 source_set("client") {
   sources = [
-    "nearby_share_api_call_flow.h",
-    "nearby_share_api_call_flow_impl.cc",
-    "nearby_share_api_call_flow_impl.h",
     "nearby_share_client.h",
     "nearby_share_client_impl.cc",
     "nearby_share_client_impl.h",
@@ -21,6 +18,7 @@ source_set("client") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/nearby_sharing/proto",
+    "//chromeos/ash/components/nearby/common/client",
     "//components/signin/public/identity_manager",
     "//net",
     "//net/traffic_annotation",
@@ -43,16 +41,14 @@ source_set("test_support") {
     "//base",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/proto",
+    "//chromeos/ash/components/nearby/common/client",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "nearby_share_api_call_flow_impl_unittest.cc",
-    "nearby_share_client_impl_unittest.cc",
-  ]
+  sources = [ "nearby_share_client_impl_unittest.cc" ]
 
   deps = [
     ":client",
@@ -60,6 +56,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/proto",
+    "//chromeos/ash/components/nearby/common/client",
     "//components/signin/public/identity_manager:test_support",
     "//net",
     "//net/traffic_annotation:test_support",

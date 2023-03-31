@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow_impl.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
-#include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -95,7 +94,9 @@ GURL NearbyShareApiCallFlowImpl::CreateApiCallUrl() {
           request_url_, key_value_pair.first, key_value_pair.second);
     }
   }
-  NS_LOG(VERBOSE) << "Creating Nearby Share HTTP URL: " << request_url_;
+
+  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
+  // (see go/np-plumbing).
   return request_url_;
 }
 
@@ -141,17 +142,16 @@ void NearbyShareApiCallFlowImpl::ProcessApiCallFailure(
   std::string error_message;
   if (net_error == net::OK) {
     int response_code = -1;
-    if (head && head->headers)
+    if (head && head->headers) {
       response_code = head->headers->response_code();
+    }
     error = NearbyShareHttpErrorForHttpResponseCode(response_code);
   } else {
     error = NearbyShareHttpError::kOffline;
   }
 
-  NS_LOG(ERROR) << "API call failed: "
-                << NearbyShareHttpStatus(net_error, head).ToString();
-  if (body)
-    NS_LOG(VERBOSE) << "API failure response body: " << *body;
+  // TODO (b/274978630): Re-add logging once CD_LOG is implemented
+  // (see go/np-plumbing).
 
   std::move(error_callback_).Run(*error);
 }

@@ -9,8 +9,6 @@ source_set("common") {
     "nearby_share_enums.h",
     "nearby_share_features.cc",
     "nearby_share_features.h",
-    "nearby_share_http_result.cc",
-    "nearby_share_http_result.h",
     "nearby_share_prefs.cc",
     "nearby_share_prefs.h",
     "nearby_share_profile_info_provider.h",

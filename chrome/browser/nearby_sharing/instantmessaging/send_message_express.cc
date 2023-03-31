@@ -8,11 +8,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

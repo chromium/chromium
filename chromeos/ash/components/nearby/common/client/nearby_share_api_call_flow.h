@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
-#define CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
 
 #include <string>
 #include <utility>
@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -78,4 +78,4 @@ class NearbyShareApiCallFlow {
           partial_traffic_annotation) = 0;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_H_

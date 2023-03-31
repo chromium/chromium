@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_COMMON_NEARBY_SHARE_HTTP_RESULT_H_
-#define CHROME_BROWSER_NEARBY_SHARING_COMMON_NEARBY_SHARE_HTTP_RESULT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_HTTP_RESULT_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_HTTP_RESULT_H_
 
 #include <ostream>
 #include <string>
@@ -77,4 +77,4 @@ std::ostream& operator<<(std::ostream& stream,
 std::ostream& operator<<(std::ostream& stream,
                          const NearbyShareHttpStatus& status);
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_COMMON_NEARBY_SHARE_HTTP_RESULT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_HTTP_RESULT_H_

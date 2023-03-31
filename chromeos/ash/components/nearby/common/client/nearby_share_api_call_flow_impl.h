@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
-#define CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_share_api_call_flow.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -105,4 +105,4 @@ class NearbyShareApiCallFlowImpl : public NearbyShareApiCallFlow,
       partial_network_annotation_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_CLIENT_NEARBY_SHARE_API_CALL_FLOW_IMPL_H_
