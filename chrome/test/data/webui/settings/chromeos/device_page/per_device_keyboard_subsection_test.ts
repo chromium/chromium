@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -13,126 +12,103 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 const KEYBOARD_FUNCTION_KEYS_SETTING_ID = 411;
 const KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID = 441;
 
-suite('PerDeviceKeyboardSubsection', function() {
-  /**
-   * @type {?SettingsPerDeviceKeyboardSubsectionElement}
-   */
-  let subsection = null;
-  /**
-   * @type {?FakeInputDeviceSettingsProvider}
-   */
-  let provider = null;
-  setup(() => {
+suite('<settings-per-device-keyboard-subsection>', () => {
+  let subsection: SettingsPerDeviceKeyboardSubsectionElement;
+  let provider: FakeInputDeviceSettingsProvider;
+
+  setup(async () => {
     provider = new FakeInputDeviceSettingsProvider();
     provider.setFakeKeyboards(fakeKeyboards);
     setInputDeviceSettingsProviderForTesting(provider);
-    PolymerTest.clearBody();
+
+    subsection =
+        document.createElement('settings-per-device-keyboard-subsection');
+    subsection.set('keyboard', {...fakeKeyboards[0]});
+    document.body.appendChild(subsection);
+    await flushTasks();
   });
 
   teardown(() => {
-    subsection = null;
-    provider = null;
+    subsection.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
   /**
-   * @return {!Promise}
+   * Changes the external state of the keyboard.
    */
-  function initializePerDeviceKeyboardSubsection() {
-    subsection =
-        document.createElement('settings-per-device-keyboard-subsection');
-    assertTrue(subsection != null);
-    const keyboard = fakeKeyboards[0];
-    subsection.keyboard = {...keyboard};
-    document.body.appendChild(subsection);
+  function changeIsExternalState(isExternal: boolean): Promise<void> {
+    const keyboard = {...subsection.get('keyboard'), isExternal: isExternal};
+    subsection.set('keyboard', keyboard);
     return flushTasks();
   }
 
   /**
-   * @param {!Boolean} isExternal
-   * @return {!Promise}
+   * Test that API are updated when keyboard settings change.
    */
-  function changeIsExternalState(isExternal) {
-    subsection.keyboard = {...subsection.keyboard, isExternal: isExternal};
-    return flushTasks();
-  }
-
-  /**
-   * @param {!Object} keyboard
-   * @return {!Promise}
-   */
-  function changeKeyboardState(keyboard) {
-    subsection.keyboard = keyboard;
-    return flushTasks();
-  }
-
-  async function getConnectedKeyboardSettings() {
-    const keyboards = await provider.getConnectedKeyboardSettings();
-    return keyboards;
-  }
-
-  /**Test that API are updated when keyboard settings change.*/
   test('Update API when keyboard settings change', async () => {
-    await initializePerDeviceKeyboardSubsection();
-
     const externalTopRowAreFunctionKeysButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#externalTopRowAreFunctionKeysButton');
-    externalTopRowAreFunctionKeysButton.click();
+    assert(externalTopRowAreFunctionKeysButton);
+    externalTopRowAreFunctionKeysButton!.click();
     await flushTasks();
-    let updatedKeyboards = await getConnectedKeyboardSettings();
+    let updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.topRowAreFkeys,
-        externalTopRowAreFunctionKeysButton.pref.value);
+        updatedKeyboards[0]!.settings.topRowAreFkeys,
+        externalTopRowAreFunctionKeysButton.pref!.value);
 
     const blockMetaFunctionKeyRewritesButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#blockMetaFunctionKeyRewritesButton');
+    assert(blockMetaFunctionKeyRewritesButton);
     blockMetaFunctionKeyRewritesButton.click();
     await flushTasks();
 
-    updatedKeyboards = await getConnectedKeyboardSettings();
+    updatedKeyboards = await provider.getConnectedKeyboardSettings();
 
     assertEquals(
-        updatedKeyboards[0].settings.suppressMetaFkeyRewrites,
-        blockMetaFunctionKeyRewritesButton.pref.value);
+        updatedKeyboards[0]!.settings.suppressMetaFkeyRewrites,
+        blockMetaFunctionKeyRewritesButton.pref!.value);
   });
 
   /**Test that keyboard settings data are from the keyboard provider.*/
   test('Verify keyboard settings data', async () => {
-    await initializePerDeviceKeyboardSubsection();
     let externalTopRowAreFunctionKeysButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#externalTopRowAreFunctionKeysButton');
+    assert(externalTopRowAreFunctionKeysButton);
     assertTrue(isVisible(externalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[0].settings.topRowAreFkeys,
-        externalTopRowAreFunctionKeysButton.pref.value);
+        fakeKeyboards[0]!.settings.topRowAreFkeys,
+        externalTopRowAreFunctionKeysButton.pref!.value);
     let blockMetaFunctionKeyRewritesButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#blockMetaFunctionKeyRewritesButton');
+    assert(blockMetaFunctionKeyRewritesButton);
     assertTrue(isVisible(blockMetaFunctionKeyRewritesButton));
     assertEquals(
-        fakeKeyboards[0].settings.suppressMetaFkeyRewrites,
-        blockMetaFunctionKeyRewritesButton.pref.value);
+        fakeKeyboards[0]!.settings.suppressMetaFkeyRewrites,
+        blockMetaFunctionKeyRewritesButton.pref!.value);
     let internalTopRowAreFunctionKeysButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#internalTopRowAreFunctionKeysButton');
     assertFalse(isVisible(internalTopRowAreFunctionKeysButton));
 
-    changeKeyboardState(fakeKeyboards[1]);
-    externalTopRowAreFunctionKeysButton = subsection.shadowRoot.querySelector(
+    subsection.set('keyboard', fakeKeyboards[1]);
+    await flushTasks();
+
+    externalTopRowAreFunctionKeysButton = subsection.shadowRoot!.querySelector(
         '#externalTopRowAreFunctionKeysButton');
     assertFalse(isVisible(externalTopRowAreFunctionKeysButton));
-    blockMetaFunctionKeyRewritesButton = subsection.shadowRoot.querySelector(
+    blockMetaFunctionKeyRewritesButton = subsection.shadowRoot!.querySelector(
         '#blockMetaFunctionKeyRewritesButton');
     assertFalse(isVisible(blockMetaFunctionKeyRewritesButton));
-    internalTopRowAreFunctionKeysButton = subsection.shadowRoot.querySelector(
+    internalTopRowAreFunctionKeysButton = subsection.shadowRoot!.querySelector(
         '#internalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(internalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[1].settings.topRowAreFkeys,
-        internalTopRowAreFunctionKeysButton.pref.value);
+        fakeKeyboards[1]!.settings.topRowAreFkeys,
+        internalTopRowAreFunctionKeysButton!.pref!.value);
   });
 
   /**
@@ -140,27 +116,26 @@ suite('PerDeviceKeyboardSubsection', function() {
    * vs external.
    */
   test('Verify keyboard settings visbility', async () => {
-    await initializePerDeviceKeyboardSubsection();
     // Change the isExternal state to true.
     await changeIsExternalState(true);
     // Verify external top-row are function keys toggle button is visible in the
     // page.
     let externalTopRowAreFunctionKeysButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector(
             '#externalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(externalTopRowAreFunctionKeysButton));
 
     // Verify block meta function key rewrites toggle button is visible in the
     // page.
     let blockMetaFunctionKeyRewritesButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector(
             '#blockMetaFunctionKeyRewritesButton');
     assertTrue(isVisible(blockMetaFunctionKeyRewritesButton));
 
     // Verify internal top-row are function keys toggle button is not visible in
     // the page.
     let internalTopRowAreFunctionKeysButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector(
             '#internalTopRowAreFunctionKeysButton');
     assertFalse(isVisible(internalTopRowAreFunctionKeysButton));
 
@@ -168,19 +143,19 @@ suite('PerDeviceKeyboardSubsection', function() {
     await changeIsExternalState(false);
     // Verify external top-row are function keys toggle button is not visible in
     // the page.
-    externalTopRowAreFunctionKeysButton = subsection.shadowRoot.querySelector(
+    externalTopRowAreFunctionKeysButton = subsection.shadowRoot!.querySelector(
         '#externalTopRowAreFunctionKeysButton');
     assertFalse(isVisible(externalTopRowAreFunctionKeysButton));
 
     // Verify block meta function key rewrites toggle button is not visible in
     // the page.
-    blockMetaFunctionKeyRewritesButton = subsection.shadowRoot.querySelector(
+    blockMetaFunctionKeyRewritesButton = subsection.shadowRoot!.querySelector(
         '#blockMetaFunctionKeyRewritesButton');
     assertFalse(isVisible(blockMetaFunctionKeyRewritesButton));
 
     // Verify internal top-row are function keys toggle button is visible in the
     // page.
-    internalTopRowAreFunctionKeysButton = subsection.shadowRoot.querySelector(
+    internalTopRowAreFunctionKeysButton = subsection.shadowRoot!.querySelector(
         '#internalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(internalTopRowAreFunctionKeysButton));
   });
@@ -188,14 +163,13 @@ suite('PerDeviceKeyboardSubsection', function() {
   /**
    * Test that expected html elements are in the page after loaded.
    */
-  test('per-device keyboard subsection loaded', async () => {
-    await initializePerDeviceKeyboardSubsection();
+  test('per-device keyboard subsection loaded', () => {
     // Verify the external top-row are function keys toggle button is in the
     // page.
     const externalTopRowAreFunctionKeysButton =
-        subsection.shadowRoot.querySelector(
+        subsection.shadowRoot!.querySelector(
             '#externalTopRowAreFunctionKeysButton');
-    assertTrue(!!externalTopRowAreFunctionKeysButton);
+    assert(externalTopRowAreFunctionKeysButton);
   });
 
   /**
@@ -203,30 +177,37 @@ suite('PerDeviceKeyboardSubsection', function() {
    * correctly displayed when the keyboard has 2, 1 or 0 remapped keys.
    */
   test('remap keys sub-label displayed correctly', async () => {
-    await initializePerDeviceKeyboardSubsection();
     const remapKeysRow =
-        subsection.shadowRoot.querySelector('#remapKeyboardKeys');
-    assertTrue(!!remapKeysRow);
+        subsection.shadowRoot!.querySelector('#remapKeyboardKeys');
+    assert(remapKeysRow);
     assertEquals(
         'Remap keyboard keys',
-        remapKeysRow.shadowRoot.querySelector('#label').textContent.trim());
+        remapKeysRow.shadowRoot!.querySelector('#label')!.textContent!.trim());
 
     const remapKeysSubLabel =
-        remapKeysRow.shadowRoot.querySelector('#subLabel');
-    assertTrue(!!remapKeysSubLabel);
+        remapKeysRow.shadowRoot!.querySelector('#subLabel');
+    assert(remapKeysSubLabel);
     assertEquals(
-        2, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
-    assertEquals('2 remapped keys', remapKeysSubLabel.textContent.trim());
+        2,
+        Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
+            .length);
+    assertEquals('2 remapped keys', remapKeysSubLabel.textContent!.trim());
 
-    await changeKeyboardState(fakeKeyboards[2]);
+    subsection.set('keyboard', fakeKeyboards[2]);
+    await flushTasks();
     assertEquals(
-        1, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
-    assertEquals('1 remapped key', remapKeysSubLabel.textContent.trim());
+        1,
+        Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
+            .length);
+    assertEquals('1 remapped key', remapKeysSubLabel.textContent!.trim());
 
-    await changeKeyboardState(fakeKeyboards[1]);
+    subsection.set('keyboard', fakeKeyboards[1]);
+    await flushTasks();
     assertEquals(
-        0, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
-    assertEquals('', remapKeysSubLabel.textContent.trim());
+        0,
+        Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
+            .length);
+    assertEquals('', remapKeysSubLabel.textContent!.trim());
   });
 
   /**
@@ -234,10 +215,9 @@ suite('PerDeviceKeyboardSubsection', function() {
    * remapped keys subpage.
    */
   test('click remap keys button redirect to new subpage', async () => {
-    await initializePerDeviceKeyboardSubsection();
-    const remapKeysRow =
-        subsection.shadowRoot.querySelector('#remapKeyboardKeys');
-    assertTrue(!!remapKeysRow);
+    const remapKeysRow = subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#remapKeyboardKeys');
+    assert(remapKeysRow);
     remapKeysRow.click();
 
     await flushTasks();
@@ -247,10 +227,10 @@ suite('PerDeviceKeyboardSubsection', function() {
 
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('keyboardId');
-    assertTrue(!!urlSearchQuery);
-    assertFalse(isNaN(urlSearchQuery));
+    assert(urlSearchQuery);
     const keyboardId = Number(urlSearchQuery);
-    const expectedKeyboardId = subsection.keyboard.id;
+    assertFalse(isNaN(keyboardId));
+    const expectedKeyboardId = subsection.get('keyboard.id');
     assertEquals(expectedKeyboardId, keyboardId);
   });
 
@@ -259,10 +239,11 @@ suite('PerDeviceKeyboardSubsection', function() {
    * searched element.
    */
   test('deep linking mixin focus on the first searched element', async () => {
-    await initializePerDeviceKeyboardSubsection();
-    const topRowAreFunctionKeysToggle = subsection.shadowRoot.querySelector(
-        '#externalTopRowAreFunctionKeysButton');
-    subsection.keyboardIndex = 0;
+    const topRowAreFunctionKeysToggle =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#externalTopRowAreFunctionKeysButton');
+    assert(topRowAreFunctionKeysToggle);
+    subsection.set('keyboardIndex', 0);
     // Enter the page from auto repeat search tag.
     const searchAutoRepeatUrl = new URLSearchParams(
         'search=keyboard&settingId=' +
@@ -273,12 +254,13 @@ suite('PerDeviceKeyboardSubsection', function() {
         /* dynamicParams= */ searchAutoRepeatUrl, /* removeSearch= */ true);
 
     await waitAfterNextRender(topRowAreFunctionKeysToggle);
-    assertTrue(!!topRowAreFunctionKeysToggle);
     assertEquals(
-        subsection.shadowRoot.activeElement, topRowAreFunctionKeysToggle);
+        subsection.shadowRoot!.activeElement, topRowAreFunctionKeysToggle);
 
-    const switchTopRowKeysButton = subsection.shadowRoot.querySelector(
-        '#blockMetaFunctionKeyRewritesButton');
+    const switchTopRowKeysButton =
+        subsection.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#blockMetaFunctionKeyRewritesButton');
+    assert(switchTopRowKeysButton);
     const searchSwitchTopRowKeysUrl = new URLSearchParams(
         'search=switch+top&settingId=' +
         encodeURIComponent(KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID));
@@ -289,8 +271,8 @@ suite('PerDeviceKeyboardSubsection', function() {
         /* removeSearch= */ true);
 
     await waitAfterNextRender(switchTopRowKeysButton);
-    assertTrue(!!switchTopRowKeysButton);
-    assertEquals(subsection.shadowRoot.activeElement, switchTopRowKeysButton);
+    assert(switchTopRowKeysButton);
+    assertEquals(subsection.shadowRoot!.activeElement, switchTopRowKeysButton);
   });
 
   /**
@@ -298,10 +280,10 @@ suite('PerDeviceKeyboardSubsection', function() {
    * searched element if it's not the first keyboard displayed.
    */
   test('deep linkng mixin does not focus on second element', async () => {
-    await initializePerDeviceKeyboardSubsection();
-    const topRowAreFunctionKeysToggle = subsection.shadowRoot.querySelector(
+    const topRowAreFunctionKeysToggle = subsection.shadowRoot!.querySelector(
         '#externalTopRowAreFunctionKeysButton');
-    subsection.keyboardIndex = 1;
+    assert(topRowAreFunctionKeysToggle);
+    subsection.set('keyboardIndex', 1);
     // Enter the page from auto repeat search tag.
     const url = new URLSearchParams(
         'search=keyboard&settingId=' +
@@ -312,11 +294,12 @@ suite('PerDeviceKeyboardSubsection', function() {
         /* dynamicParams= */ url, /* removeSearch= */ true);
     await flushTasks();
 
-    assertTrue(!!topRowAreFunctionKeysToggle);
-    assertFalse(!!subsection.shadowRoot.activeElement);
+    assertEquals(null, subsection.shadowRoot!.activeElement);
 
-    const switchTopRowKeysButton = subsection.shadowRoot.querySelector(
+    const switchTopRowKeysButton = subsection.shadowRoot!.querySelector(
         '#blockMetaFunctionKeyRewritesButton');
+    assert(switchTopRowKeysButton);
+
     const searchSwitchTopRowKeysUrl = new URLSearchParams(
         'search=switch+top&settingId=' +
         encodeURIComponent(KEYBOARD_SWITCH_TOP_ROW_KEYS_SETTING_ID));
@@ -327,7 +310,6 @@ suite('PerDeviceKeyboardSubsection', function() {
         /* removeSearch= */ true);
 
     await flushTasks();
-    assertTrue(!!switchTopRowKeysButton);
-    assertFalse(!!subsection.shadowRoot.activeElement);
+    assertEquals(null, subsection.shadowRoot!.activeElement);
   });
 });
