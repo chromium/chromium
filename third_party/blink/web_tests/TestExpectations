@@ -2922,6 +2922,12 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-end.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block-start.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-column-style-change-triggers-layout-block.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline-end.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline-start.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
