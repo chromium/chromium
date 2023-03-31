@@ -19,6 +19,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+
 /** Tests for the ForeignSessionItem model. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -28,7 +30,7 @@ public class ForeignSessionItemPropertiesUnitTest {
 
     @Before
     public void setUp() {
-        mSession = new ForeignSession("tag", "John's iPhone 6", 32L);
+        mSession = new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
         mModel = ForeignSessionItemProperties.create(
                 /*device=*/mSession, /*isSelected=*/false, /*onClickListener=*/() -> {});
     }

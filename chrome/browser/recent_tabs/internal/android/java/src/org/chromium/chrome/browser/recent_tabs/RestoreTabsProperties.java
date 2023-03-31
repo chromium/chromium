@@ -88,12 +88,16 @@ public class RestoreTabsProperties {
     public static final WritableObjectPropertyKey<ModelList> DETAIL_SCREEN_MODEL_LIST =
             new WritableObjectPropertyKey<>();
 
+    /** The number of tabs deselected on the review tabs screen. */
+    public static final WritableIntPropertyKey NUM_TABS_DESELECTED = new WritableIntPropertyKey();
+
     public static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(CURRENT_SCREEN, ScreenType.HOME_SCREEN)
                 .with(DEVICE_MODEL_LIST, new ModelList())
                 .with(REVIEW_TABS_MODEL_LIST, new ModelList())
+                .with(NUM_TABS_DESELECTED, 0)
                 .build();
     }
 
@@ -101,5 +105,5 @@ public class RestoreTabsProperties {
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, CURRENT_SCREEN,
             SELECTED_DEVICE, DEVICE_MODEL_LIST, REVIEW_TABS_MODEL_LIST, HOME_SCREEN_DELEGATE,
             DETAIL_SCREEN_TITLE, DETAIL_SCREEN_BACK_CLICK_HANDLER, REVIEW_TABS_SCREEN_DELEGATE,
-            DETAIL_SCREEN_MODEL_LIST};
+            DETAIL_SCREEN_MODEL_LIST, NUM_TABS_DESELECTED};
 }

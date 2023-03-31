@@ -46,11 +46,17 @@ public class ForeignSessionHelper {
         public final long modifiedTime;
         public final List<ForeignSessionWindow> windows = new ArrayList<ForeignSessionWindow>();
 
+        private ForeignSession(String tag, String name, long modifiedTime) {
+            this(tag, name, modifiedTime, new ArrayList<>());
+        }
+
         @VisibleForTesting
-        public ForeignSession(String tag, String name, long modifiedTime) {
+        public ForeignSession(
+                String tag, String name, long modifiedTime, List<ForeignSessionWindow> windows) {
             this.tag = tag;
             this.name = name;
             this.modifiedTime = modifiedTime;
+            this.windows.addAll(windows);
         }
     }
 
@@ -64,8 +70,14 @@ public class ForeignSessionHelper {
         public final List<ForeignSessionTab> tabs = new ArrayList<ForeignSessionTab>();
 
         private ForeignSessionWindow(long timestamp, int sessionId) {
+            this(timestamp, sessionId, new ArrayList<>());
+        }
+
+        @VisibleForTesting
+        public ForeignSessionWindow(long timestamp, int sessionId, List<ForeignSessionTab> tabs) {
             this.timestamp = timestamp;
             this.sessionId = sessionId;
+            this.tabs.addAll(tabs);
         }
     }
 
@@ -78,7 +90,8 @@ public class ForeignSessionHelper {
         public final long timestamp;
         public final int id;
 
-        private ForeignSessionTab(GURL url, String title, long timestamp, int id) {
+        @VisibleForTesting
+        public ForeignSessionTab(GURL url, String title, long timestamp, int id) {
             this.url = url;
             this.title = title;
             this.timestamp = timestamp;

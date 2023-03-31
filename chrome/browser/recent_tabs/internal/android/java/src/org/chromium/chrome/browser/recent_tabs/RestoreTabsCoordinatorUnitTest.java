@@ -48,7 +48,8 @@ public class RestoreTabsCoordinatorUnitTest {
 
     @Test
     public void testRestoreTabsCoordinator_showOptions() {
-        ForeignSession session = new ForeignSession("tag", "John's iPhone 6", 32L);
+        ForeignSession session =
+                new ForeignSession("tag", "John's iPhone 6", 32L, new ArrayList<>());
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 

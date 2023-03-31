@@ -4,15 +4,21 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DetailItemType;
 import org.chromium.chrome.browser.recent_tabs.ui.ForeignSessionItemProperties;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordinator;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator;
+import org.chromium.chrome.browser.recent_tabs.ui.TabItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +63,7 @@ public class RestoreTabsMediator {
 
     public void showOptions(List<ForeignSession> sessions) {
         setDeviceListItems(sessions);
+        setTabListItems();
         setCurrentScreen(mModel.get(RestoreTabsProperties.CURRENT_SCREEN));
         mModel.set(RestoreTabsProperties.VISIBLE, true);
     }
@@ -78,6 +85,7 @@ public class RestoreTabsMediator {
      * tag no longer exists, the first device is selected.
      * @param sessions The list of ForeignSession to set as device profiles.
      */
+    @VisibleForTesting
     public void setDeviceListItems(List<ForeignSession> sessions) {
         assert sessions != null && sessions.size() != 0;
 
@@ -107,6 +115,7 @@ public class RestoreTabsMediator {
      * of the device item entries on the device profiles page.
      * @param selectedSession The device that is to be selected.
      */
+    @VisibleForTesting
     public void setSelectedDeviceItem(ForeignSession selectedSession) {
         assert selectedSession != null;
         mModel.set(RestoreTabsProperties.SELECTED_DEVICE, selectedSession);
@@ -120,10 +129,65 @@ public class RestoreTabsMediator {
     }
 
     /**
+     * Sets the tab items and creates the corresponding models for the
+     * tab item entries on the tab list page. All tabs will be selected by default.
+     */
+    @VisibleForTesting
+    public void setTabListItems() {
+        // TODO(crbug.com/1429406): Refactor ForeignSessionHelper to retrieve only the
+        // necessary data instead of preloading all the sessions.
+        ForeignSession session = mModel.get(RestoreTabsProperties.SELECTED_DEVICE);
+        assert session != null;
+
+        List<ForeignSessionWindow> windows = session.windows;
+        List<ForeignSessionTab> tabs = new ArrayList<>();
+
+        // Flatten all tabs in every window into one list
+        for (ForeignSessionWindow window : windows) {
+            tabs.addAll(window.tabs);
+        }
+
+        // Populate all model entries.
+        ModelList tabItems = mModel.get(RestoreTabsProperties.REVIEW_TABS_MODEL_LIST);
+        tabItems.clear();
+        for (ForeignSessionTab tab : tabs) {
+            PropertyModel model = TabItemProperties.create(/*tab=*/tab, /*isSelected=*/true);
+            model.set(
+                    TabItemProperties.ON_CLICK_LISTENER, () -> { toggleTabSelectedState(model); });
+            tabItems.add(new ListItem(DetailItemType.TAB, model));
+        }
+    }
+
+    /**
+     * Toggles the selected tab and updates the IS_SELECTED entry in the models of the tab entries
+     * on the tab list page. Also updates the NUM_TABS_DESELECTED entry in the general model to
+     * track the deselect/select option
+     * @param model The property model from TabItemProperties that is associated with the tab that
+     * is having its selection toggled.
+     */
+    @VisibleForTesting
+    public void toggleTabSelectedState(PropertyModel model) {
+        assert model.get(TabItemProperties.FOREIGN_SESSION_TAB) != null;
+        boolean wasSelected = model.get(TabItemProperties.IS_SELECTED);
+        model.set(TabItemProperties.IS_SELECTED, !wasSelected);
+
+        // If the tab was selected then it will get deselected, and vice versa.
+        int numTabsDeselected = mModel.get(RestoreTabsProperties.NUM_TABS_DESELECTED);
+        if (wasSelected) {
+            numTabsDeselected++;
+        } else {
+            numTabsDeselected--;
+        }
+
+        mModel.set(RestoreTabsProperties.NUM_TABS_DESELECTED, numTabsDeselected);
+    }
+
+    /**
      * Selects the currently shown screen on the bottomsheet.
      * @param screenType A {@link RestoreTabsProperties.ScreenType} that defines the screen to be
      *         shown.
      */
+    @VisibleForTesting
     public void setCurrentScreen(int screenType) {
         if (screenType == RestoreTabsProperties.ScreenType.DEVICE_SCREEN) {
             mModel.set(RestoreTabsProperties.DETAIL_SCREEN_MODEL_LIST,
@@ -147,7 +211,21 @@ public class RestoreTabsMediator {
             // If all tabs are selected this will present a deselect all option, otherwise it will
             // present a select all option.
             @Override
-            public void onChangeSelectionStateForAllTabs() {}
+            public void onChangeSelectionStateForAllTabs() {
+                ModelList allItems = mModel.get(RestoreTabsProperties.REVIEW_TABS_MODEL_LIST);
+                boolean allTabsSelected =
+                        mModel.get(RestoreTabsProperties.NUM_TABS_DESELECTED) == 0;
+                for (ListItem item : allItems) {
+                    item.model.set(TabItemProperties.IS_SELECTED, !allTabsSelected);
+                }
+
+                // If all tabs are currently selected, then they will be deselected and vice versa.
+                if (allTabsSelected) {
+                    mModel.set(RestoreTabsProperties.NUM_TABS_DESELECTED, allItems.size());
+                } else {
+                    mModel.set(RestoreTabsProperties.NUM_TABS_DESELECTED, 0);
+                }
+            }
 
             @Override
             public void onSelectedTabsChosen() {
