@@ -7,7 +7,9 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.bookmarks.BookmarkToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bookmark_toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
-    style="@style/ModernToolbar" />
+    style="@style/ModernToolbar"
+    app:popupTheme="@style/ModernToolbarPopupTheme" />

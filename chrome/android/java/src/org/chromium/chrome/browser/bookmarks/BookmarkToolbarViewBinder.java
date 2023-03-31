@@ -42,6 +42,12 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE) {
             bookmarkToolbar.setNavigationButtonState(
                     model.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
+        } else if (key == BookmarkToolbarProperties.CHECKED_SORT_MENU_ID) {
+            bookmarkToolbar.setCheckedSortMenuId(
+                    model.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        } else if (key == BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID) {
+            bookmarkToolbar.setCheckedViewMenuId(
+                    model.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
         } else if (key == BookmarkToolbarProperties.CURRENT_FOLDER) {
             bookmarkToolbar.setCurrentFolder(model.get(BookmarkToolbarProperties.CURRENT_FOLDER));
         } else if (key == BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE) {

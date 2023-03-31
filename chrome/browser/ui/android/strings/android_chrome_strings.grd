@@ -3864,6 +3864,30 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="In-product help accessibility text that notifies a user that they can organize their saved products from a folder in bookmarks.">
         Organize your tracked products in Bookmarks from the folder icon
       </message>
+      <message name="IDS_SORT_SUBMENU"  desc="Sub-menu in the bookmarks manager for sort/view options. [CHAR_LIMIT=24]">
+        Sort and view options
+      </message>
+      <message name="IDS_SORT_BY_NEWEST"  desc="Option in the bookmarks manager to sort by newest. [CHAR_LIMIT=24]">
+        Sort by newest
+      </message>
+      <message name="IDS_SORT_BY_OLDEST"  desc="Option in the bookmarks manager to sort by newest. [CHAR_LIMIT=24]">
+        Sort by oldest
+      </message>
+      <message name="IDS_SORT_BY_ALPHA"  desc="Option in the bookmarks manager to sort alphabetically. A and Z should be substituted with the first/last letter in the localized language. [CHAR_LIMIT=24]">
+        Sort by A to Z
+      </message>
+      <message name="IDS_SORT_BY_REVERSE_ALPHA"  desc="Option in the bookmarks manager to sort alphabetically. A and Z should be substituted with the first/last letter in the localized language. [CHAR_LIMIT=24]">
+        Sort by Z to A
+      </message>
+      <message name="IDS_VISUAL_VIEW"  desc="Option in the bookmarks manager to show the visual view with expanded rows and images. [CHAR_LIMIT=24]">
+        Visual view
+      </message>
+      <message name="IDS_COMPACT_VIEW"  desc="Option in the bookmarks manager to show the compact view with smaller rows and favicons. [CHAR_LIMIT=24]">
+        Compact view
+      </message>
+      <message name="IDS_CREATE_NEW_FOLDER"  desc="Option in the bookmarks manager to show the create a new folder in the current context. [CHAR_LIMIT=24]">
+        Create new folder
+      </message>
 
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">

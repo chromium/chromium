@@ -9713,7 +9713,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-improved-bookmarks",
      flag_descriptions::kAndroidImprovedBookmarksName,
      flag_descriptions::kAndroidImprovedBookmarksDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBookmarksRefresh)},
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidImprovedBookmarks)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
