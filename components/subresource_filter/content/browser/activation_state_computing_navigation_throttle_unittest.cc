@@ -266,9 +266,11 @@ TEST_P(ActivationStateComputingThrottleMainFrameTest, Activate) {
   EXPECT_FALSE(state.filtering_disabled_for_document);
 }
 
-// TODO(crbug.com/1069398): Fix this test failure.
 TEST_P(ActivationStateComputingThrottleMainFrameTest,
-       DISABLED_NoPageActivationNotification_NoActivation) {
+       NoPageActivationNotification_NoActivation) {
+  if (dryrun_speculation()) {
+    GTEST_SKIP() << "TODO(crbug.com/1069398): Fix this test failure.";
+  }
   CreateTestNavigationForMainFrame(GURL("http://example.test/"));
   SimulateStartAndExpectToProceed();
   SimulateRedirectAndExpectToProceed(GURL("http://example.test/?v=1"));
@@ -475,45 +477,9 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, DisabledStatePropagated2) {
   EXPECT_TRUE(state.generic_blocking_rules_disabled);
 }
 
-// TODO(crbug.com/1143730): This test needs to verify that
+// TODO(crbug.com/1143730): A test is needed to verify that
 // ComputeActivationState was called appropriately.  Previously this was done
 // via looking at performance histograms, but those are now obsolete.
-TEST_P(ActivationStateComputingThrottleSubFrameTest, DISABLED_Speculation) {
-  // Main frames don't do speculative lookups, a navigation commit should only
-  // trigger a single ruleset lookup.
-  CreateTestNavigationForMainFrame(GURL("http://example.test/"));
-  SimulateStartAndExpectToProceed();
-  base::RunLoop().RunUntilIdle();
-  // Check that there was one activation decision.
-
-  SimulateRedirectAndExpectToProceed(GURL("http://example.test2/"));
-  base::RunLoop().RunUntilIdle();
-  // Check that there was one additional activation decision.
-
-  mojom::ActivationState state;
-  state.activation_level = mojom::ActivationLevel::kEnabled;
-  NotifyPageActivation(state);
-  SimulateCommitAndExpectToProceed();
-  // Check that there was one additional activation decision.
-
-  base::HistogramTester sub_histogram_tester;
-  CreateSubframeAndInitTestNavigation(GURL("http://example.test/"),
-                                      last_committed_frame_host(),
-                                      last_activation_state());
-  // For subframes, do a ruleset lookup at the start and every redirect.
-  SimulateStartAndExpectToProceed();
-  base::RunLoop().RunUntilIdle();
-  // Check that there was one additional activation decision.
-
-  SimulateRedirectAndExpectToProceed(GURL("http://example.test2/"));
-  base::RunLoop().RunUntilIdle();
-  // Check that there was one additional activation decision.
-
-  // No ruleset lookup required at commit because we've already checked the
-  // latest URL.
-  SimulateCommitAndExpectToProceed();
-  // Check that there were no additional activation decisions.
-}
 
 TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
   InitializeRulesetHandles(simple_task_runner());
