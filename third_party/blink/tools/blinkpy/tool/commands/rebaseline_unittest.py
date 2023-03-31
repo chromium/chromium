@@ -443,21 +443,6 @@ class TestRebaseline(BaseTestCase):
             'userscripts/first-test.html',
         ])
 
-    def test_rebaseline_reftest(self):
-        """Do not download the `actual_image` artifact for reftests."""
-        self._write('userscripts/first-test-expected.html', 'reference')
-        self._remove('userscripts/first-test-expected.txt')
-        self._remove('userscripts/first-test-expected.png')
-        self._remove('userscripts/first-test-expected.wav')
-        test_baseline_set = TestBaselineSet(self.tool.builders)
-        test_baseline_set.add('userscripts/first-test.html',
-                              Build('MOCK Win7'),
-                              'blink_web_tests (with patch)')
-        self.command.rebaseline(self.options(), test_baseline_set)
-
-        self._mock_copier.find_baselines_to_copy.assert_not_called()
-        self.tool.main.assert_not_called()
-
     def test_rebaseline_debug(self):
         test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('userscripts/first-test.html',

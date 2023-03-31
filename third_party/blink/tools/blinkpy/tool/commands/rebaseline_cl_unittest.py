@@ -14,7 +14,11 @@ from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
-from blinkpy.common.net.web_test_results import WebTestResults
+from blinkpy.common.net.web_test_results import (
+    Artifact,
+    WebTestResult,
+    WebTestResults,
+)
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
@@ -641,6 +645,92 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'with incomplete results later.\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
         ])
+
+    def test_detect_reftest_failure(self):
+        self._write('two/image-fail-expected.html', 'reference')
+        exit_code = self.command.execute(
+            self.command_options(builders=['MOCK Try Linux']),
+            ['two/image-fail.html'], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+            'WARNING: Some test failures should be suppressed in '
+            'TestExpectations instead of being rebaselined.\n',
+            'WARNING: Consider adding the following lines to '
+            '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
+            '[ Trusty ] two/image-fail.html [ Failure ]  # Reftest failure\n',
+        ])
+        self._mock_copier.find_baselines_to_copy.assert_not_called()
+        self.tool.main.assert_not_called()
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-linux-trusty/'
+                             'two/image-fail-expected.png')))
+
+    def test_detect_flaky_baseline(self):
+        result = WebTestResult('one/flaky-fail.html', {
+            'actual': 'FAIL FAIL',
+            'is_unexpected': True,
+        }, {
+            'actual_audio': [
+                Artifact('https://results.usercontent.cr.dev/1/actual_audio'),
+                Artifact('https://results.usercontent.cr.dev/2/actual_audio'),
+            ],
+        })
+        self.tool.results_fetcher.set_results(
+            Build('MOCK Try Mac', 4000, 'Build-2'),
+            WebTestResults([result], step_name='blink_web_tests (with patch)'))
+        exit_code = self.command.execute(self.command_options(),
+                                         ['one/flaky-fail.html'], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Rebaselining one/flaky-fail.html\n',
+            'WARNING: Some test failures should be suppressed in '
+            'TestExpectations instead of being rebaselined.\n',
+            'WARNING: Consider adding the following lines to '
+            '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
+            '[ Mac10.11 ] one/flaky-fail.html [ Failure ]  # Flaky output\n',
+        ])
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-mac-mac10.11/'
+                             'one/flaky-fail-expected.wav')))
+
+    def test_detect_flaky_baseline_using_hashes(self):
+        result = WebTestResult('two/image-fail.html', {
+            'actual': 'FAIL FAIL',
+            'is_unexpected': True,
+        }, {
+            'actual_image': [
+                Artifact('https://results.usercontent.cr.dev/1/actual_image',
+                         '5a428fb'),
+                Artifact('https://results.usercontent.cr.dev/2/actual_image',
+                         '928ba6e'),
+            ],
+        })
+        self.tool.results_fetcher.set_results(
+            Build('MOCK Try Mac', 4000, 'Build-2'),
+            WebTestResults([result], step_name='blink_web_tests (with patch)'))
+        exit_code = self.command.execute(
+            self.command_options(builders=['MOCK Try Mac']),
+            ['two/image-fail.html'], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+            'WARNING: Some test failures should be suppressed in '
+            'TestExpectations instead of being rebaselined.\n',
+            'WARNING: Consider adding the following lines to '
+            '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
+            '[ Mac10.11 ] two/image-fail.html [ Failure ]  # Flaky output\n',
+        ])
+        self.tool.web.get_binary.assert_not_called()
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-mac-mac10.11/'
+                             'two/image-fail-expected.png')))
 
     def test_execute_missing_results_with_fill_missing_continues(self):
         self.tool.results_fetcher.set_results(
