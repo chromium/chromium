@@ -39,7 +39,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
     if (!cached_data_) {
       // It's generally faster to get Isolate from the ScriptState object but
       // as long as we don't have one load the Isolate from the callback.
-      return callback_function_->GetIsolate();
+      return v8::Object::GetIsolate(callback_function_);
     }
     return cached_data_->incumbent_script_state_->GetIsolate();
   }

@@ -74,10 +74,12 @@ class PLATFORM_EXPORT V8PerContextData final
   // object, and then simply Clone that object each time we need a new one.
   // This is faster than going through the full object creation process.
   v8::Local<v8::Object> CreateWrapperFromCache(const WrapperTypeInfo* type) {
-    auto it = wrapper_boilerplates_.find(type);
-    return it != wrapper_boilerplates_.end()
-               ? it->value->Clone()
-               : CreateWrapperFromCacheSlowCase(type);
+    if (auto it = wrapper_boilerplates_.find(type);
+        it != wrapper_boilerplates_.end()) {
+      v8::Local<v8::Object> obj = it->value.Get(isolate_);
+      return obj->Clone();
+    }
+    return CreateWrapperFromCacheSlowCase(type);
   }
 
   // Returns the interface object that is appropriately initialized (e.g.
