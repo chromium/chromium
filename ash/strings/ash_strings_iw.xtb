@@ -466,6 +466,7 @@
 <translation id="3256109297135787951">הסרת הסימון מפריט במדף</translation>
 <translation id="3260969790895726815">הדיבור מעובד באופן מקומי וההכתבה פועלת במצב אופליין, אבל חלק מהפקודות הקוליות לא פועלות.</translation>
 <translation id="3269597722229482060">לחיצה ימנית</translation>
+<translation id="3289364673986435196">תפריט ההפעלה</translation>
 <translation id="3289544412142055976">‏בשלב הזה, אין תמיכה באפליקציות Linux</translation>
 <translation id="3289674678944039601">מתבצעת טעינה באמצעות מתאם</translation>
 <translation id="3290356915286466215">לא מאובטחת</translation>
@@ -693,6 +694,7 @@
 <translation id="4269883910223712419">מנהל המכשיר הזה יכול:</translation>
 <translation id="4274537685965975248">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש End, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ ימינה.</translation>
 <translation id="4279490309300973883">שיקוף</translation>
+<translation id="4280601795273309128">אין יותר עדכוני האבטחה. צריך לשדרג את המכשיר.</translation>
 <translation id="4283888303416325161">כדי לשפר את רמת ההגנה, צריך להזין סיסמה</translation>
 <translation id="4285498937028063278">ביטול הצמדה</translation>
 <translation id="4294319844246081198">בוקר טוב <ph name="GIVEN_NAME" />,</translation>
@@ -883,6 +885,7 @@
 <translation id="5147567197700016471">הנעילה בוטלה</translation>
 <translation id="5150070631291639005">הגדרות פרטיות</translation>
 <translation id="5155897006997040331">מהירות הקריאה</translation>
+<translation id="5163434717504750796">תקינות הסוללה: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | מספר המחזורים: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">שמירת שולחן העבודה הווירטואלי כתבנית</translation>
 <translation id="5168181903108465623">מכשירי העברה זמינים</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
@@ -1358,6 +1361,7 @@
 <translation id="743058460480092004">המצלמה והמיקרופון נמצאים בשימוש.</translation>
 <translation id="7452560014878697800">אפליקציה כלשהי משתמשת במצלמה שלך</translation>
 <translation id="7453330308669753048">התוצאה מהיסטוריית החיפושים הוסרה</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
 <translation id="7461924472993315131">הצמדה</translation>
 <translation id="746232733191930409">מצב הקלטת מסך</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
@@ -1730,6 +1734,7 @@
 
 יש להשתמש בתכונה הזו רק עם חשבונות מהימנים.</translation>
 <translation id="9183456764293710005">הגדלת כל המסך</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | הזמן שנותר: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">מתבצעת העברה במכשיר לא ידוע</translation>
 <translation id="9194617393863864469">הוספת משתמש אחר...</translation>
 <translation id="9198992156681343238">הרזולוציה של <ph name="DISPLAY_NAME" /> שונתה ל-<ph name="RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>

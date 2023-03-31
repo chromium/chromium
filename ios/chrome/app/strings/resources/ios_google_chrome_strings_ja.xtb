@@ -28,7 +28,7 @@
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="2576431527583832481">Chrome のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="257708665678654955">次回から Google Chrome でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
-<translation id="2671426118752779020">他のアプリや iPhone で Google パスワード マネージャに保存したパスワードを使用できます。</translation>
+<translation id="2671426118752779020">iPhone の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
 <translation id="2689064829982324496">すべてのウェブサイトで Google アカウントからログアウトするには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
@@ -67,7 +67,7 @@
 <translation id="4840404732697892756">Google アカウントでログインすると、Google パスワード マネージャーでパスワードを確認できるようになります。</translation>
 <translation id="5030102366287574140">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
 <translation id="5108659628347594808">Chrome の品質を向上</translation>
-<translation id="5119391094379141756">[Chrome] を選択する</translation>
+<translation id="5119391094379141756">[Chrome] を選択します</translation>
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
 <translation id="5389212809648216794">カメラは別のアプリが使用中のため、Google Chrome では使用できません</translation>
 <translation id="5395376160638294582">Google アカウントの Chrome データを常に使用できるようにしてください</translation>
@@ -104,7 +104,7 @@
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>
 <translation id="7173660919484573146">Chrome では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
-<translation id="72119412072970160">他のアプリや iPad で Google パスワード マネージャに保存したパスワードを使用できます。</translation>
+<translation id="72119412072970160">iPad の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
 <translation id="7261678641327190792">Chrome でパスワードを確認できません</translation>
 <translation id="7272930098487145294">画像を保存するには、[設定] をタップして写真への追加を Chrome に許可してください</translation>
 <translation id="7275945473750112644">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chrome データはこのデバイスから削除されます</translation>

@@ -1252,6 +1252,7 @@ Neuinstallation</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Noch eine Ziffer}other{Noch # Ziffern}}</translation>
 <translation id="6867938213751067702">Download von „<ph name="FILENAME" />“ pausiert</translation>
 <translation id="6878400149835617132">Tastenkombination deaktiviert</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 App}other{# Apps}}</translation>
 <translation id="6884665277231944629">Zurück zum heutigen Datum</translation>
 <translation id="6886172995547742638">Die Leistungsfähigkeit deines <ph name="DEVICE_TYPE" /> kann hierdurch beeinträchtigt werden. Verwende ein zugelassenes USB-C-Netzteil mit einer Leistung von mindestens <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Drücke den Abwärtspfeil, um zwischen Fenstern zu wechseln</translation>
@@ -1432,6 +1433,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
 <translation id="776344839111254542">Zum Aufrufen von Aktualisierungsdetails klicken</translation>
 <translation id="7768784765476638775">Vorlesen</translation>
+<translation id="7769299611924763557">Die GIF-Datei ist gleich bereit</translation>
 <translation id="7780094051999721182">Verknüpfungen</translation>
 <translation id="7780159184141939021">Bildschirm drehen</translation>
 <translation id="7796735576426975947">Neue Benachrichtigung ausgeblendet</translation>

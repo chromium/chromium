@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">תיבת הדואר שלי</translation>
 <translation id="2952820037279740115">סגירת כל החלונות האנונימיים</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">טבלה של אמצעי התשלום שנשמרו</translation>
 <translation id="295526156371527179">אזהרה: המדיניות הזו לא עברה מיזוג כמילון בהתאם למדיניות, מאחר שהיא אינה מילון.</translation>
 <translation id="2955913368246107853">סגירת סרגל החיפוש</translation>
 <translation id="2958544468932521864">קריקט</translation>
@@ -2782,6 +2783,7 @@ Del</translation>
 <translation id="7736959720849233795">העתקת הכתובת של הקישור</translation>
 <translation id="7740996059027112821">רגילה</translation>
 <translation id="77424286611022110">באתר הזה מוצגות מודעות מפריעות או מטעות. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">טבלה של הכתובות שנשמרו</translation>
 <translation id="774634243536837715">תוכן מסוכן נחסם.</translation>
 <translation id="7751971323486164747">‏התאמה אישית של הגופנים וגודל הטקסט ב-Chrome</translation>
 <translation id="7752995774971033316">ללא ניהול</translation>
@@ -3023,6 +3025,7 @@ Del</translation>
 <translation id="8347658365704983341">למידה מרחוק</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
+<translation id="835203957414790336">‏התוכן של הדפים המודפסים ומידע על המדפסת יישלחו אל Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהטקסט יעבור סריקה כדי לאתר מידע אישי רגיש.</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
 <translation id="8364627913115013041">לא מוגדר.</translation>

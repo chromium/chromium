@@ -621,7 +621,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Ik begrijp dat deze download schadelijk is voor mijn computer</translation>
 <translation id="1535228823998016251">Luid</translation>
-<translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om uitgesproken te worden' onderaan het scherm en markeer daarna de tekst.</translation>
+<translation id="1535753739390684432">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst.</translation>
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
 <translation id="1537254971476575106">Volledig scherm vergroten</translation>
 <translation id="15373452373711364">Grote muisaanwijzer</translation>
@@ -793,7 +793,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1662801900924515589"><ph name="APP" /> is geïnstalleerd</translation>
 <translation id="1665328953287874063">Gebruik een wachtwoord of pincode om je <ph name="DEVICE_TYPE" /> te ontgrendelen</translation>
 <translation id="1666232093776384142">Beveiliging voor gegevenstoegang voor randapparaten uitzetten</translation>
-<translation id="1667842670298352129">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om uitgesproken te worden' onderaan het scherm en markeer daarna de tekst. Je kunt ook een sneltoets gebruiken: markeer tekst en druk dan op Zoeken + S.</translation>
+<translation id="1667842670298352129">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst. Je kunt ook een sneltoets gebruiken: markeer tekst en druk dan op Zoeken + S.</translation>
 <translation id="1668435968811469751">Handmatig inschrijven</translation>
 <translation id="1668979692599483141">Meer informatie over suggesties</translation>
 <translation id="1670399744444387456">Basis</translation>
@@ -2391,7 +2391,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3021678814754966447">&amp;Framebron bekijken</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> wordt verwijderd van deze Chromebook en niet opgeslagen in <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Dat heb ik niet verstaan.</translation>
-<translation id="3023464535986383522">Selecteer om uitgesproken te worden</translation>
+<translation id="3023464535986383522">Selecteer om voor te lezen</translation>
 <translation id="3024374909719388945">24-uurs klok gebruiken</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{Geen opgeslagen wachtwoorden}=1{Wachtwoorden gecheckt voor {COUNT} site}other{Wachtwoorden gecheckt voor {COUNT} sites en apps}}</translation>
 <translation id="3027296729579831126">Dichtbij delen aanzetten</translation>
@@ -3776,7 +3776,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4282196459431406533">Smart Lock staat aan</translation>
-<translation id="4284903252249997120">ChromeVox-schermlezer en Selecteer om uitgesproken te worden</translation>
+<translation id="4284903252249997120">ChromeVox-schermlezer en Selecteer om voor te lezen</translation>
 <translation id="4285418559658561636">Wachtwoord updaten</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428565720843367874">Tijdens het scannen van dit bestand met antivirussoftware is er een onverwachte fout opgetreden.</translation>
@@ -5618,7 +5618,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5955809630138889698">Dit apparaat is mogelijk alleen geschikt voor de online demomodus. Neem contact op met een medewerker van support voor meer informatie.</translation>
 <translation id="5956585768868398362">Is dit de zoekpagina die je had verwacht?</translation>
 <translation id="5957918771633727933">Geen beschikbare e-simkaartprofielen. Download een nieuw <ph name="BEGIN_LINK" />profiel.<ph name="END_LINK" /></translation>
-<translation id="5957987129450536192">Tik op het icoon 'Selecteer om uitgesproken te worden' in de buurt van je profielfoto en selecteer vervolgens wat je wilt horen.</translation>
+<translation id="5957987129450536192">Tik op het icoon 'Selecteer om voor te lezen' in de buurt van je profielfoto en selecteer vervolgens wat je wilt horen.</translation>
 <translation id="5959471481388474538">Netwerk niet beschikbaar</translation>
 <translation id="595959584676692139">Laad de pagina opnieuw om deze extensie te gebruiken</translation>
 <translation id="5963413905009737549">Sectie</translation>
@@ -5709,7 +5709,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6043994281159824495">Nu uitloggen</translation>
 <translation id="6045114302329202345">Primaire TrackPoint-knop</translation>
 <translation id="6047632800149092791">Synchronisatie werkt niet. Probeer uit en weer in te loggen.</translation>
-<translation id="6048747414605857443">Selecteer stemmen voor tekst-naar-spraak en pas ze aan voor ChromeVox en Selecteer om uitgesproken te worden.</translation>
+<translation id="6048747414605857443">Selecteer stemmen voor tekst-naar-spraak en pas ze aan voor ChromeVox en Selecteer om voor te lezen.</translation>
 <translation id="6049797270917061226">Aanvallers kunnen dit bestand gebruiken om je persoonlijke informatie te stelen.</translation>
 <translation id="6051354611314852653">Het systeem kan API-toegang voor dit apparaat niet verifiëren.</translation>
 <translation id="6051811090255711417">Je organisatie heeft dit bestand geblokkeerd omdat het niet voldoet aan een beveiligingsbeleid</translation>
@@ -7634,7 +7634,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7768507955883790804">Sites volgen deze instelling automatisch als je ze bezoekt</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> kan bestanden in <ph name="FOLDERNAME" /> bekijken</translation>
 <translation id="7768770796815395237">Wijzigen</translation>
-<translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
+<translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769748505895274502">Recent gesloten tabbladen samenvouwen</translation>
 <translation id="7770072242481632881">Deelvensterkiezer</translation>
 <translation id="7770450735129978837">Klik met rechtermuisknop</translation>
@@ -8351,7 +8351,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8389492867173948260">Hiermee kan deze extensie al je gegevens lezen en wijzigen op de websites die je bezoekt:</translation>
 <translation id="8390449457866780408">Server niet beschikbaar.</translation>
 <translation id="8391218455464584335">Lp</translation>
-<translation id="8392726714909453725">Instellingen voor Selecteer om uitgesproken te worden</translation>
+<translation id="8392726714909453725">Instellingen voor Selecteer om voor te lezen</translation>
 <translation id="8393511274964623038">Plug-in stoppen</translation>
 <translation id="839363317075970734">Details bluetooth-apparaat</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
@@ -8920,7 +8920,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8899851313684471736">Link openen in nieu&amp;w venster</translation>
 <translation id="8900413463156971200">Mobiel netwerk aanzetten</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt.}other{<ph name="MANAGER" /> vereist dat je vóór de deadline een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt.}}</translation>
-<translation id="8902667442496790482">Instellingen voor 'Selecteer om uitgesproken te worden' openen</translation>
+<translation id="8902667442496790482">Instellingen voor 'Selecteer om voor te lezen' openen</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>
 <translation id="8907701755790961703">Selecteer een land</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is verwijderd</translation>

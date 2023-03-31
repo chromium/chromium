@@ -567,6 +567,7 @@
 <translation id="1485015260175968628">יכולה כעת:</translation>
 <translation id="1485141095922496924">גרסה <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">חיפוש בסיסמאות</translation>
+<translation id="1486486872607808064">‏צריך לסרוק את קוד ה-QR הזה באמצעות מצלמה במכשיר שבו רוצים ליצור מפתח גישה עבור <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">מופעל - הגדרות מותאמות אישית</translation>
 <translation id="1493892686965953381">בהמתנה ל-<ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">אתרים יכולים לבקש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
@@ -774,6 +775,7 @@
 <translation id="164936512206786300">‏ביטול הצמדה של התקן Bluetooth</translation>
 <translation id="1651008383952180276">עליך להזין אותו ביטוי סיסמה פעמיים</translation>
 <translation id="1652326691684645429">הפעלה של 'שיתוף בקרבת מקום'</translation>
+<translation id="1654580009054503925">אין הרשאה להציג בקשות</translation>
 <translation id="1656528038316521561">שקיפות רקע</translation>
 <translation id="1657406563541664238">‏רוצה לעזור לנו לשפר את <ph name="PRODUCT_NAME" /> על ידי שליחה אוטומטית של נתוני שימוש ודוחות קריסה אל Google?</translation>
 <translation id="1657937299377480641">כדי להיכנס מחדש לצורך גישה למקורות מידע חינוכיים, יש לבקש הרשאה מהורה</translation>
@@ -3434,6 +3436,7 @@
 <translation id="3957079323242030166">‏נתוני גיבוי אינם נחשבים כחלק ממכסת האחסון ב-Drive.</translation>
 <translation id="3957844511978444971">‏יש להקיש על "אישור" כדי לאשר את בחירת ההגדרות האלה של שירותי Google.</translation>
 <translation id="3958088479270651626">ייבוא סימניות והגדרות</translation>
+<translation id="3958110062351175311">יש הרשאה להציג בקשות בסרגל הכלים</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">עוד פעולות לגבי <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים</translation>
@@ -3693,6 +3696,7 @@
 <translation id="4205157409548006256">‏אירעה שגיאה במהלך ההגדרה של Linux.</translation>
 <translation id="4206144641569145248">חייזר</translation>
 <translation id="4206323443866416204">דוח משוב</translation>
+<translation id="4206585797409671301">יש הרשאה להציג בקשות</translation>
 <translation id="4207932031282227921">‏נשלחה בקשת הרשאה, יש ללחוץ על F6 כדי להשיב</translation>
 <translation id="4208390505124702064">חיפוש ב-<ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">גדול</translation>
@@ -4364,6 +4368,7 @@
 <translation id="481574578487123132">מכשירים מקושרים</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, פרטים</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{סימנייה אחת נמחקה}one{סימנייה {COUNT} נמחקה}two{{COUNT} סימניות נמחקו}other{{COUNT} סימניות נמחקו}}</translation>
+<translation id="4816900689218414104">יצירת מפתח גישה בטלפון או בטאבלט</translation>
 <translation id="4819323978093861656">{0,plural, =0{כל הדפדפנים ייסגרו עכשיו}=1{כל הדפדפנים ייסגרו בעוד: שנייה אחת}one{כל הדפדפנים ייסגרו בעוד: # שניות}two{כל הדפדפנים ייסגרו בעוד: # שניות}other{כל הדפדפנים ייסגרו בעוד: # שניות}}</translation>
 <translation id="4819607494758673676">‏התראות של Google Assistant</translation>
 <translation id="4820236583224459650">הגדרה ככרטיס פעיל</translation>
@@ -6276,6 +6281,7 @@
 <translation id="6562117348069327379">אחסון יומני מערכת בספרייה 'הורדות'.</translation>
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. יש לשמור אותו בשם קצר יותר או במיקום אחר.</translation>
 <translation id="6568283005472142698">חיפוש בכרטיסיות</translation>
+<translation id="6570622975915850879">שימוש במכשיר אחר</translation>
 <translation id="65711204837946324">נדרשת הרשאה כדי להוריד</translation>
 <translation id="6571533309669248172">עיצוב טקסט</translation>
 <translation id="6571772921213691236">עריכה נתוני הכניסה</translation>
@@ -6843,6 +6849,7 @@
 <translation id="7044606776288350625">נתוני סנכרון</translation>
 <translation id="7047059339731138197">בחירת רקע</translation>
 <translation id="7049293980323620022">להשאיר את הקובץ?</translation>
+<translation id="70496770794393383">טבלה של הסיסמאות שנשמרו</translation>
 <translation id="7050037487872780845">הגדרה לא תקינה של נקודה לשיתוף אינטרנט</translation>
 <translation id="7051551856857948729">‏הסתרת ערך IBAN</translation>
 <translation id="7052237160939977163">שליחת נתוני מעקב אחר ביצועים</translation>
