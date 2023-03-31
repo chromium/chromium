@@ -12,10 +12,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
@@ -508,55 +506,6 @@ unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
       return effective_column_index;
   }
   return effective_column_index;
-}
-
-bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {
-  NOT_DESTROYED();
-  return IsFirstCell(*To<LayoutNGTableCell>(cell.ToLayoutObject()));
-}
-
-// Only called from AXLayoutObject::IsDataTable()
-LayoutNGTableSectionInterface* LayoutNGTable::FirstBodyInterface() const {
-  NOT_DESTROYED();
-  return FirstBody();
-}
-
-// Called from many AXLayoutObject methods.
-LayoutNGTableSectionInterface* LayoutNGTable::FirstSectionInterface() const {
-  NOT_DESTROYED();
-  return FirstSection();
-}
-
-LayoutNGTableSectionInterface* LayoutNGTable::FirstNonEmptySectionInterface()
-    const {
-  NOT_DESTROYED();
-  return FirstNonEmptySection();
-}
-
-LayoutNGTableSectionInterface* LayoutNGTable::LastSectionInterface() const {
-  NOT_DESTROYED();
-  return LastSection();
-}
-
-LayoutNGTableSectionInterface* LayoutNGTable::LastNonEmptySectionInterface()
-    const {
-  NOT_DESTROYED();
-  return LastNonEmptySection();
-}
-
-LayoutNGTableSectionInterface* LayoutNGTable::NextSectionInterface(
-    const LayoutNGTableSectionInterface* target,
-    SkipEmptySectionsValue skip) const {
-  NOT_DESTROYED();
-  return NextSection(To<LayoutNGTableSection>(target->ToLayoutObject()), skip);
-}
-
-LayoutNGTableSectionInterface* LayoutNGTable::PreviousSectionInterface(
-    const LayoutNGTableSectionInterface* target,
-    SkipEmptySectionsValue skip) const {
-  NOT_DESTROYED();
-  return PreviousSection(To<LayoutNGTableSection>(target->ToLayoutObject()),
-                         skip);
 }
 
 }  // namespace blink

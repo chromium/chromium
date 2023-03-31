@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
 
 namespace blink {
 
@@ -16,8 +15,7 @@ class LayoutNGTable;
 class LayoutNGTableRow;
 class LayoutNGTableSection;
 
-class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow,
-                                      public LayoutNGTableCellInterface {
+class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGTableCell(Element*);
 
@@ -98,44 +96,16 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow,
 
   // LayoutBlockFlow methods end.
 
-  // LayoutNGTableCellInterface methods start.
+  void ColSpanOrRowSpanChanged();
 
-  const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-  const LayoutObject* ToLayoutObject() const final {
-    NOT_DESTROYED();
-    return this;
-  }
+  unsigned RowIndex() const;
 
-  LayoutObject* ToMutableLayoutObject() final {
-    NOT_DESTROYED();
-    return this;
-  }
+  unsigned ResolvedRowSpan() const;
 
-  LayoutNGTableInterface* TableInterface() const final;
-
-  void ColSpanOrRowSpanChanged() final;
-
-  unsigned RowIndex() const final;
-
-  unsigned ResolvedRowSpan() const final;
-
-  unsigned AbsoluteColumnIndex() const final;
+  unsigned AbsoluteColumnIndex() const;
 
   // Guaranteed to be between kMinColSpan and kMaxColSpan.
-  unsigned ColSpan() const final;
-
-  LayoutNGTableCellInterface* NextCellInterface() const final;
-
-  LayoutNGTableCellInterface* PreviousCellInterface() const final;
-
-  LayoutNGTableRowInterface* RowInterface() const final;
-
-  LayoutNGTableSectionInterface* SectionInterface() const final;
-
-  // LayoutNGTableCellInterface methods end.
+  unsigned ColSpan() const;
 
  protected:
   bool IsOfType(LayoutObjectType type) const final {

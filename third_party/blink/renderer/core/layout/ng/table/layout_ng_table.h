@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 
 namespace blink {
@@ -17,6 +16,8 @@ namespace blink {
 class LayoutNGTableSection;
 class LayoutNGTableCell;
 class NGTableBorders;
+
+enum SkipEmptySectionsValue { kDoNotSkipEmptySections, kSkipEmptySections };
 
 // LayoutNGTable is the LayoutObject associated with
 // display: table or inline-table.
@@ -95,8 +96,7 @@ class NGTableBorders;
 // The validation state is a IsTableColumnsConstraintsDirty flag
 // on LayoutObject. They are invalidated inside
 // LayoutObject::SetNeeds*Layout.
-class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
-                                  public LayoutNGTableInterface {
+class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
  public:
   explicit LayoutNGTable(Element*);
   ~LayoutNGTable() override;
@@ -207,80 +207,16 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
 
   // LayoutBlock methods end.
 
-  // LayoutNGTableInterface methods start.
-
-  const LayoutNGTableInterface* ToLayoutNGTableInterface() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-
-  const LayoutObject* ToLayoutObject() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-
-  // Non-const version required by TextAutosizer, AXLayoutObject.
-  LayoutObject* ToMutableLayoutObject() final {
-    NOT_DESTROYED();
-    return this;
-  }
-
-  bool ShouldCollapseBorders() const final {
+  bool ShouldCollapseBorders() const {
     NOT_DESTROYED();
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
+  // TODO(1229581): Do we need both this and ShouldCollapseBorders()?
   bool HasCollapsedBorders() const;
 
-  int16_t HBorderSpacing() const final {
-    NOT_DESTROYED();
-    return ShouldCollapseBorders() ? 0 : StyleRef().HorizontalBorderSpacing();
-  }
-  int16_t VBorderSpacing() const final {
-    NOT_DESTROYED();
-    return ShouldCollapseBorders() ? 0 : StyleRef().VerticalBorderSpacing();
-  }
-
   unsigned AbsoluteColumnToEffectiveColumn(
-      unsigned absolute_column_index) const final;
-
-  // NG does not need this method. Sections are not cached.
-  void RecalcSectionsIfNeeded() const final { NOT_DESTROYED(); }
-
-  // Not used by NG. Legacy caches sections.
-  void ForceSectionsRecalc() final { NOT_DESTROYED(); }
-
-  // Used in paint for printing. Should not be needed by NG.
-  LayoutUnit RowOffsetFromRepeatingFooter() const final {
-    NOT_DESTROYED();
-    NOTIMPLEMENTED();  // OK, never used.
-    return LayoutUnit();
-  }
-  // Used in paint for printing. Should not be needed by NG.
-  LayoutUnit RowOffsetFromRepeatingHeader() const final {
-    NOT_DESTROYED();
-    NOTIMPLEMENTED();  // OK, never used.
-    return LayoutUnit();
-  }
-
-  bool IsFirstCell(const LayoutNGTableCellInterface&) const final;
-
-  LayoutNGTableSectionInterface* FirstBodyInterface() const final;
-
-  LayoutNGTableSectionInterface* FirstSectionInterface() const final;
-  LayoutNGTableSectionInterface* FirstNonEmptySectionInterface() const final;
-  LayoutNGTableSectionInterface* LastSectionInterface() const final;
-  LayoutNGTableSectionInterface* LastNonEmptySectionInterface() const final;
-
-  LayoutNGTableSectionInterface* NextSectionInterface(
-      const LayoutNGTableSectionInterface*,
-      SkipEmptySectionsValue) const final;
-
-  LayoutNGTableSectionInterface* PreviousSectionInterface(
-      const LayoutNGTableSectionInterface*,
-      SkipEmptySectionsValue) const final;
-
-  // LayoutNGTableInterface methods end.
+      unsigned absolute_column_index) const;
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {

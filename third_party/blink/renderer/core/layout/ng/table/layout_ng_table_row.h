@@ -9,8 +9,6 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
 
 namespace blink {
 
@@ -19,8 +17,7 @@ class LayoutNGTableSection;
 class LayoutNGTable;
 
 // Every child of LayoutNGTableRow must be LayoutNGTableCell.
-class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
-                                     public LayoutNGTableRowInterface {
+class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock {
  public:
   explicit LayoutNGTableRow(Element*);
 
@@ -94,36 +91,7 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
 
   // LayoutBlock methods end.
 
-  // LayoutNGTableRowInterface methods start.
-
-  const LayoutObject* ToLayoutObject() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-
-  const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-
-  LayoutNGTableInterface* TableInterface() const final {
-    NOT_DESTROYED();
-    return SectionInterface()->TableInterface();
-  }
-
-  unsigned RowIndex() const final;
-
-  LayoutNGTableSectionInterface* SectionInterface() const final;
-
-  LayoutNGTableRowInterface* PreviousRowInterface() const final;
-
-  LayoutNGTableRowInterface* NextRowInterface() const final;
-
-  LayoutNGTableCellInterface* FirstCellInterface() const final;
-
-  LayoutNGTableCellInterface* LastCellInterface() const final;
-
-  // LayoutNGTableRowInterface methods end.
+  unsigned RowIndex() const;
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {

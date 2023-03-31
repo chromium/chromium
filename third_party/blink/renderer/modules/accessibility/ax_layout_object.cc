@@ -1401,7 +1401,7 @@ AXObject* AXLayoutObject::CellForColumnAndRow(unsigned target_column_index,
             target_column_index <= effective_last_col &&
             target_row_index >= row_index &&
             target_row_index < row_index + row_span) {
-          return AXObjectCache().GetOrCreate(cell->ToMutableLayoutObject());
+          return AXObjectCache().GetOrCreate(cell);
         }
       }
     }
@@ -1426,8 +1426,7 @@ bool AXLayoutObject::FindAllTableCellsWithRole(ax::mojom::blink::Role role,
          row = row->NextRow()) {
       for (LayoutNGTableCell* cell = row->FirstCell(); cell;
            cell = cell->NextCell()) {
-        AXObject* ax_cell =
-            AXObjectCache().GetOrCreate(cell->ToMutableLayoutObject());
+        AXObject* ax_cell = AXObjectCache().GetOrCreate(cell);
         if (ax_cell && ax_cell->RoleValue() == role)
           cells.push_back(ax_cell);
       }
@@ -1459,9 +1458,7 @@ AXObject* AXLayoutObject::HeaderObject() const {
 
   for (LayoutNGTableCell* cell = row->FirstCell(); cell;
        cell = cell->NextCell()) {
-    AXObject* ax_cell =
-        cell ? AXObjectCache().GetOrCreate(cell->ToMutableLayoutObject())
-             : nullptr;
+    AXObject* ax_cell = cell ? AXObjectCache().GetOrCreate(cell) : nullptr;
     if (ax_cell && ax_cell->RoleValue() == ax::mojom::blink::Role::kRowHeader)
       return ax_cell;
   }

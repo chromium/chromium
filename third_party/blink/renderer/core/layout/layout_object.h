@@ -82,10 +82,6 @@ class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
 class LayoutMultiColumnSpannerPlaceholder;
-class LayoutNGTableInterface;
-class LayoutNGTableRowInterface;
-class LayoutNGTableSectionInterface;
-class LayoutNGTableCellInterface;
 class LayoutView;
 class LocalFrameView;
 class PaintLayer;
@@ -1124,28 +1120,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsTableCell() || IsLayoutTableCol() || IsTableCaption() ||
            IsTableRow() || IsTableSection();
-  }
-  virtual const LayoutNGTableInterface* ToLayoutNGTableInterface() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return nullptr;
-  }
-  virtual const LayoutNGTableSectionInterface* ToLayoutNGTableSectionInterface()
-      const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return nullptr;
-  }
-  virtual const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return nullptr;
-  }
-  virtual const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface()
-      const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return nullptr;
   }
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;

@@ -184,29 +184,4 @@ unsigned LayoutNGTableRow::RowIndex() const {
   return 0;
 }
 
-LayoutNGTableSectionInterface* LayoutNGTableRow::SectionInterface() const {
-  NOT_DESTROYED();
-  return Section();
-}
-
-LayoutNGTableRowInterface* LayoutNGTableRow::PreviousRowInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(PreviousRow());
-}
-
-LayoutNGTableRowInterface* LayoutNGTableRow::NextRowInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(NextRow());
-}
-
-LayoutNGTableCellInterface* LayoutNGTableRow::FirstCellInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(FirstCell());
-}
-
-LayoutNGTableCellInterface* LayoutNGTableRow::LastCellInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(LastCell());
-}
-
 }  // namespace blink

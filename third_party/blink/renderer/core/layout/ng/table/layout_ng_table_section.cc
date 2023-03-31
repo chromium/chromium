@@ -128,24 +128,10 @@ LayoutBox* LayoutNGTableSection::CreateAnonymousBoxWithSameTypeAs(
   return CreateAnonymousWithParent(*parent);
 }
 
-LayoutNGTableInterface* LayoutNGTableSection::TableInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableInterface>(Parent());
-}
-
 void LayoutNGTableSection::SetNeedsCellRecalc() {
+  // TODO(1229581): See if we can get rid of this.
   NOT_DESTROYED();
   SetNeedsLayout(layout_invalidation_reason::kDomChanged);
-}
-
-LayoutNGTableRowInterface* LayoutNGTableSection::FirstRowInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(FirstRow());
-}
-
-LayoutNGTableRowInterface* LayoutNGTableSection::LastRowInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(LastRow());
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable, verify

@@ -255,29 +255,4 @@ void LayoutNGTableCell::UpdateColAndRowSpanFlags() {
   has_rowspan_ = ParseRowSpanFromDOM() != kDefaultRowSpan;
 }
 
-LayoutNGTableInterface* LayoutNGTableCell::TableInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableInterface>(Table());
-}
-
-LayoutNGTableCellInterface* LayoutNGTableCell::NextCellInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(NextCell());
-}
-
-LayoutNGTableCellInterface* LayoutNGTableCell::PreviousCellInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableCellInterface>(PreviousCell());
-}
-
-LayoutNGTableRowInterface* LayoutNGTableCell::RowInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableRowInterface>(Row());
-}
-
-LayoutNGTableSectionInterface* LayoutNGTableCell::SectionInterface() const {
-  NOT_DESTROYED();
-  return ToInterface<LayoutNGTableSectionInterface>(Section());
-}
-
 }  // namespace blink

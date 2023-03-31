@@ -393,7 +393,7 @@ class TableCellBackgroundClipper {
         needs_clip_(!is_painting_background_in_contents_space &&
                     (table_cell.HasLayer() || table_cell.Parent()->HasLayer() ||
                      table_cell.Parent()->Parent()->HasLayer()) &&
-                    table_cell.TableInterface()->ShouldCollapseBorders()) {
+                    table_cell.Table()->ShouldCollapseBorders()) {
     if (!needs_clip_)
       return;
 
