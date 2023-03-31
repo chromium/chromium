@@ -15,6 +15,7 @@
 #include "base/timer/wall_clock_timer.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -72,6 +73,8 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
   ~ReportSchedulerTimer() override;
 
+  network::mojom::ConnectionType connection_type() const;
+
   // Schedules `reporting_time_reached_timer_` to fire at that time, unless the
   // timer is already set to fire earlier.
   void MaybeSet(absl::optional<base::Time> reporting_time);
@@ -83,6 +86,8 @@ class CONTENT_EXPORT ReportSchedulerTimer
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType) override;
 
+  bool IsOffline() const VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Fires whenever a reporting time is reached for a report. Must be updated
   // whenever the next report time changes.
   base::WallClockTimer reporting_time_reached_timer_
@@ -91,7 +96,8 @@ class CONTENT_EXPORT ReportSchedulerTimer
   const std::unique_ptr<Delegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool offline_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+  network::mojom::ConnectionType connection_type_ GUARDED_BY_CONTEXT(
+      sequence_checker_) = network::mojom::ConnectionType::CONNECTION_NONE;
 
   base::ScopedObservation<
       network::NetworkConnectionTracker,

@@ -73,6 +73,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -215,6 +216,23 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
       return ConversionReportSendOutcome::kDropped;
     case SendResult::Status::kFailedToAssemble:
       return ConversionReportSendOutcome::kFailedToAssemble;
+  }
+}
+
+void RecordNetworkConnectionTypeOnFailure(
+    AttributionReport::Type report_type,
+    network::mojom::ConnectionType connection_type) {
+  switch (report_type) {
+    case AttributionReport::Type::kEventLevel:
+      base::UmaHistogramEnumeration(
+          "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure",
+          connection_type);
+      break;
+    case AttributionReport::Type::kAggregatableAttribution:
+      base::UmaHistogramEnumeration(
+          "Conversions.AggregatableReport.NetworkConnectionTypeOnFailure",
+          connection_type);
+      break;
   }
 }
 
@@ -1017,6 +1035,12 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
             GetFailedReportDelay(report.failed_send_attempts() + 1)) {
       new_report_time = base::Time::Now() + *delay;
     }
+  }
+
+  if (info.status == SendResult::Status::kTransientFailure ||
+      info.status == SendResult::Status::kFailure) {
+    RecordNetworkConnectionTypeOnFailure(report.GetReportType(),
+                                         scheduler_timer_.connection_type());
   }
 
   base::OnceCallback then = base::BindOnce(
