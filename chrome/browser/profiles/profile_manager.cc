@@ -1820,23 +1820,6 @@ absl::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
                      : absl::nullopt;
 }
 
-// static
-void ProfileManager::CleanUpGuestProfile() {
-// ChromeOS handles guest data independently.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-  Profile* profile =
-      profile_manager->GetProfileByPath(profile_manager->GetGuestProfilePath());
-  if (profile) {
-    // Clear all browsing data once a Guest Session completes. The Guest
-    // profile has BrowserContextKeyedServices that the ProfileDestroyer
-    // can't delete it properly.
-    profiles::RemoveBrowsingDataForProfile(GetGuestProfilePath());
-  }
-#endif  //! BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 DeleteProfileHelper& ProfileManager::GetDeleteProfileHelper() {
   return *delete_profile_helper_;
 }
@@ -2067,8 +2050,13 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
     base::UmaHistogramCustomCounts("Profile.Guest.OTR.Lifetime",
                                    duration.InMinutes(), 1,
                                    base::Days(28).InMinutes(), 100);
-
-    CleanUpGuestProfile();
+    // ChromeOS handles guest data independently.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // Clear all browsing data once a Guest Session completes. The Guest profile
+    // has BrowserContextKeyedServices that the ProfileDestroyer can't delete
+    // properly.
+    profiles::RemoveBrowsingDataForProfile(profile->GetPath());
+#endif  //! BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   base::FilePath path = profile->GetPath();
