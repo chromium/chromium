@@ -40,6 +40,9 @@ won't exist for the initial build.
      depfiles.
    * Stale paths in depfiles can cause ninja to complain of circular
      dependencies [in some cases](https://bugs.chromium.org/p/chromium/issues/detail?id=639042).
+ * Use [`action_helpers.write_depfile()`] to write these.
+
+[`action_helpers.write_depfile()`]: https://source.chromium.org/chromium/chromium/src/+/main:build/action_helpers.py?q=symbol:%5Cbwrite_depfile
 
 ### Ensuring "gn analyze" Knows About your Inputs
 "gn analyze" is used by bots to run only affected tests and build only affected
@@ -136,15 +139,19 @@ Outputs should be atomic and take advantage of `restat=1`.
     short-circuits a build when output timestamps do not change. This feature is
     the reason that the total number of build steps sometimes decreases when
     building..
-* Use [`build_utils.AtomicOutput()`](https://cs.chromium.org/chromium/src/build/android/gyp/util/build_utils.py?rcl=7d6ba28e92bec865a7b7876c35b4621d56fb37d8&l=128)
-  to perform both of these techniques.
+* Use [`action_helpers.atomic_output()`] to perform both of these techniques.
+
+[`action_helpers.atomic_output()`]: https://source.chromium.org/chromium/chromium/src/+/main:build/action_helpers.py?q=symbol:%5Cbatomic_output
 
 Actions should be deterministic in order to avoid hard-to-reproduce bugs.
 Given identical inputs, they should produce byte-for-byte identical outputs.
 * Some common mistakes:
   * Depending on filesystem iteration order.
-  * Writing timestamps in files (or in zip entries).
   * Writing absolute paths in outputs.
+  * Writing timestamps in files (or in zip entries).
+    * Tip: Use [`zip_helpers.py`] when writing `.zip` files.
+
+[`zip_helpers.py`]: https://source.chromium.org/chromium/chromium/src/+/main:build/zip_helpers.py
 
 ## Style Guide
 Chromium GN files follow
