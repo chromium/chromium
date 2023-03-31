@@ -24,6 +24,15 @@ public class ChromeCustomShareAction {
          * share sheet, the corresponding runnable will be called.
          */
         List<ChromeCustomShareAction> getCustomActions();
+
+        /**
+         * @return A modified share action that's used below the share preview. While functionally
+         * it work the same as {@link #getCustomActions()}, this action is usually used for higher
+         * priority action that can change the content being shared (e.g. reselection).
+         */
+        default ChromeCustomShareAction getModifyShareAction() {
+            return null;
+        }
     }
 
     /**

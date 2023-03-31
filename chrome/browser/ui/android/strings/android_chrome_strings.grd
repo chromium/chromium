@@ -5259,6 +5259,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Save to device
       </message>
 
+      <message name="IDS_SHARING_INCLUDE_LINK" desc="Label for the button in android share sheet to include a link to share along with highlighted text.">
+        Include link
+      </message>
+
+      <message name="IDS_SHARING_EXCLUDE_LINK" desc="Label for the button in android share sheet to share the highlighted text without a link.">
+        Exclude link
+      </message>
+
       <message name="IDS_TEXT_COPIED" desc="Text shown in the toast notification when Copy Text is selected in the sharing hub.">
         Text Copied
       </message>
