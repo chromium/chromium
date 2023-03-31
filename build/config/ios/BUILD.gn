@@ -208,11 +208,6 @@ config("ios_shared_library_flags") {
   ]
 }
 
-config("disable_implicit_retain_self_warning") {
-  cflags_objc = [ "-Wno-implicit-retain-self" ]
-  cflags_objcc = cflags_objc
-}
-
 config("xctest_config") {
   # Add some directories to the system framework search path to make
   # them available to the compiler while silencing warnings in the
