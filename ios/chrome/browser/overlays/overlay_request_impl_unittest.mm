@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/overlays/overlay_request_impl.h"
+#import "ios/chrome/browser/overlays/overlay_request_impl.h"
 
-#include "base/functional/bind.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#include "testing/platform_test.h"
+#import "base/functional/bind.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#import "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using OverlayRequestImplTest = PlatformTest;
 
@@ -19,11 +23,11 @@ TEST_F(OverlayRequestImplTest, ExecuteCallback) {
       OverlayRequest::CreateWithConfig<FakeOverlayUserData>();
   __block bool callback_executed = false;
   request->GetCallbackManager()->AddCompletionCallback(
-      base::BindOnce(base::RetainBlock(^(OverlayResponse* response) {
+      base::BindOnce(^(OverlayResponse* response) {
         callback_executed =
             response &&
             response->GetInfo<FakeOverlayUserData>()->value() == kResponseData;
-      })));
+      }));
   request->GetCallbackManager()->SetCompletionResponse(
       OverlayResponse::CreateWithInfo<FakeOverlayUserData>(kResponseData));
   request = nullptr;

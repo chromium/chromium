@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/overlays/overlay_callback_manager_impl.h"
+#import "ios/chrome/browser/overlays/overlay_callback_manager_impl.h"
 
-#include "base/functional/bind.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#include "testing/platform_test.h"
+#import "base/functional/bind.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 // Fake dispatch response info types.
@@ -25,18 +29,18 @@ TEST_F(OverlayCallbackManagerImplTest, CompletionCallbacks) {
   void* kResponseData = &kResponseData;
   // Add two completion callbacks that increment `callback_execution_count`.
   __block size_t callback_execution_count = 0;
-  void (^callback_block)(OverlayResponse* response) =
-      ^(OverlayResponse* response) {
-        if (!response)
-          return;
-        if (response->GetInfo<FakeOverlayUserData>()->value() != kResponseData)
-          return;
-        ++callback_execution_count;
-      };
-  manager.AddCompletionCallback(
-      base::BindOnce(base::RetainBlock(callback_block)));
-  manager.AddCompletionCallback(
-      base::BindOnce(base::RetainBlock(callback_block)));
+  void (^callback_block)(OverlayResponse* response) = ^(
+      OverlayResponse* response) {
+    if (!response) {
+      return;
+    }
+    if (response->GetInfo<FakeOverlayUserData>()->value() != kResponseData) {
+      return;
+    }
+    ++callback_execution_count;
+  };
+  manager.AddCompletionCallback(base::BindOnce(callback_block));
+  manager.AddCompletionCallback(base::BindOnce(callback_block));
 
   // Add a response to the queue with a fake info using kResponseData.
   manager.SetCompletionResponse(
@@ -67,12 +71,12 @@ TEST_F(OverlayCallbackManagerImplTest, DispatchCallbacks) {
       ^(OverlayResponse* response) {
         ++second_execution_count;
       };
-  manager.AddDispatchCallback(OverlayDispatchCallback(
-      base::BindRepeating(base::RetainBlock(first_callback_block)),
-      FirstResponseInfo::ResponseSupport()));
-  manager.AddDispatchCallback(OverlayDispatchCallback(
-      base::BindRepeating(base::RetainBlock(second_callback_block)),
-      SecondResponseInfo::ResponseSupport()));
+  manager.AddDispatchCallback(
+      OverlayDispatchCallback(base::BindRepeating(first_callback_block),
+                              FirstResponseInfo::ResponseSupport()));
+  manager.AddDispatchCallback(
+      OverlayDispatchCallback(base::BindRepeating(second_callback_block),
+                              SecondResponseInfo::ResponseSupport()));
   ASSERT_EQ(0U, first_execution_count);
   ASSERT_EQ(0U, second_execution_count);
 
