@@ -1359,7 +1359,7 @@
   {
     "name": "default-browser-blue-dot-promo",
     "owners": ["nicolasmacbeth@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "default-browser-fullscreen-promo-experiment",
