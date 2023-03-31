@@ -9,7 +9,11 @@
 extern "C" {
 // This JNI registration method is found and called by module framework code.
 JNI_GENERATOR_EXPORT bool JNI_OnLoad_cablev2_authenticator(JNIEnv* env) {
-  if (!cablev2_authenticator::RegisterNatives(env)) {
+  if (!base::android::IsSelectiveJniRegistrationEnabled(env) &&
+      !cablev2_authenticator::RegisterNonMainDexNatives(env)) {
+    return false;
+  }
+  if (!cablev2_authenticator::RegisterMainDexNatives(env)) {
     return false;
   }
   return true;

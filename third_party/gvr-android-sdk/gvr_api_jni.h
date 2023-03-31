@@ -1725,6 +1725,9 @@ static const JNINativeMethod kMethodsGvrApi[] = {
 };
 
 static bool RegisterNativesImpl(JNIEnv* env) {
+  if (base::android::IsSelectiveJniRegistrationEnabled(env))
+    return true;
+
   const int kMethodsGvrApiSize = std::extent<decltype(kMethodsGvrApi)>();
 
   if (env->RegisterNatives(GvrApi_clazz(env), kMethodsGvrApi,

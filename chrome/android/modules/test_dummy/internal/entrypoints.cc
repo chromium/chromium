@@ -9,7 +9,11 @@
 extern "C" {
 // This JNI registration method is found and called by module framework code.
 JNI_GENERATOR_EXPORT bool JNI_OnLoad_test_dummy(JNIEnv* env) {
-  if (!test_dummy::RegisterNatives(env)) {
+  if (!base::android::IsSelectiveJniRegistrationEnabled(env) &&
+      !test_dummy::RegisterNonMainDexNatives(env)) {
+    return false;
+  }
+  if (!test_dummy::RegisterMainDexNatives(env)) {
     return false;
   }
   return true;

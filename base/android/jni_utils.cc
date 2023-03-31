@@ -35,6 +35,10 @@ jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
   return class_loader_obj;
 }
 
+bool IsSelectiveJniRegistrationEnabled(JNIEnv* env) {
+  return Java_JNIUtils_isSelectiveJniRegistrationEnabled(env);
+}
+
 }  // namespace android
 }  // namespace base
 

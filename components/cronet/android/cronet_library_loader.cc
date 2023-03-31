@@ -88,7 +88,7 @@ bool OnInitThread() {
 jint CronetOnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (!RegisterNatives(env)) {
+  if (!RegisterMainDexNatives(env) || !RegisterNonMainDexNatives(env)) {
     return -1;
   }
   if (!base::android::OnJNIOnLoadInit())
