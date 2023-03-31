@@ -26,23 +26,25 @@ class PhoneCaptureStateToken {
     private final @VisualState int mVisualState;
     private final VisibleUrlText mVisibleUrlText;
     private final @DrawableRes int mSecurityIcon;
-    private final ColorStateList mColorStateList;
+    private final ColorStateList mHomeButtonColorStateList;
+    private final boolean mHomeButtonIsVisible;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
     private final boolean mIsPaintPreview;
     private final int mUnfocusedLocationBarLayoutWidth;
 
     public PhoneCaptureStateToken(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
             @VisualState int visualState, VisibleUrlText visibleUrlText,
-            @DrawableRes int securityIcon, ColorStateList colorStateList,
-            boolean isShowingUpdateBadgeDuringLastCapture, boolean isPaintPreview, float progress,
-            int unfocusedLocationBarLayoutWidth) {
+            @DrawableRes int securityIcon, ColorStateList homeButtonColorStateList,
+            boolean homeButtonIsVisible, boolean isShowingUpdateBadgeDuringLastCapture,
+            boolean isPaintPreview, float progress, int unfocusedLocationBarLayoutWidth) {
         mTint = tint;
         mTabCount = tabCount;
         mOptionalButtonData = optionalButtonData;
         mVisualState = visualState;
         mVisibleUrlText = visibleUrlText;
         mSecurityIcon = securityIcon;
-        mColorStateList = colorStateList;
+        mHomeButtonColorStateList = homeButtonColorStateList;
+        mHomeButtonIsVisible = homeButtonIsVisible;
         mIsShowingUpdateBadgeDuringLastCapture = isShowingUpdateBadgeDuringLastCapture;
         mIsPaintPreview = isPaintPreview;
         // Progress is not currently used for comparing snapshot states. It isn't part of the bitmap
@@ -78,7 +80,9 @@ class PhoneCaptureStateToken {
             return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
         } else if (!Objects.equals(mVisibleUrlText, that.mVisibleUrlText)) {
             return ToolbarSnapshotDifference.URL_TEXT;
-        } else if (mColorStateList.getDefaultColor() != that.mColorStateList.getDefaultColor()) {
+        } else if (mHomeButtonColorStateList.getDefaultColor()
+                        != that.mHomeButtonColorStateList.getDefaultColor()
+                || mHomeButtonIsVisible != that.mHomeButtonIsVisible) {
             // While there's more to the ColorStateList than just the default color, there's no
             // great way to check for equality. Currently default colors should be sufficient for
             // detecting changes to the toolbar.

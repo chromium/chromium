@@ -31,6 +31,7 @@ public class PhoneCaptureStateTokenTest {
     private static final String DEFAULT_URL_TEXT = "https://www.example.com/";
     private static final CharSequence DEFAULT_URL_HINT_TEXT = null;
     private static final @DrawableRes int DEFAULT_SECURITY_ICON = 0;
+    private static final boolean DEFAULT_HOME_BUTTON_IS_VISIBLE = true;
     private static final boolean DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE = false;
     private static final boolean DEFAULT_IS_PAINT_PREVIEW = false;
     private static final float DEFAULT_PROGRESS = 0.1f;
@@ -38,7 +39,7 @@ public class PhoneCaptureStateTokenTest {
 
     // Not static/final because they're initialized in #before(). Apparently ColorStateList.valueOf
     // calls into Android native code, and cannot be done too early.
-    private ColorStateList mDefaultColorStateList;
+    private ColorStateList mDefaultHomeButtonColorStateList;
     private PhoneCaptureStateToken mDefaultPhoneCaptureStateToken;
 
     private static ButtonData makeButtonDate() {
@@ -48,7 +49,7 @@ public class PhoneCaptureStateTokenTest {
 
     @Before
     public void before() {
-        mDefaultColorStateList = ColorStateList.valueOf(DEFAULT_TINT);
+        mDefaultHomeButtonColorStateList = ColorStateList.valueOf(DEFAULT_TINT);
         mDefaultPhoneCaptureStateToken = new PhoneCustomTabCaptureStateTokenBuilder().build();
     }
 
@@ -168,11 +169,19 @@ public class PhoneCaptureStateTokenTest {
     }
 
     @Test
-    public void testDifferentColorStateList() {
+    public void testDifferentHomeButtonColorStateList() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder()
-                        .setColorStateList(ColorStateList.valueOf(Color.RED))
+                        .setHomeButtonColorStateList(ColorStateList.valueOf(Color.RED))
                         .build();
+        Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON,
+                otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
+    }
+
+    @Test
+    public void testDifferentHomeButtonIsVisible() {
+        PhoneCaptureStateToken otherPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder().setHomeButtonIsVisible(false).build();
         Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
@@ -183,11 +192,11 @@ public class PhoneCaptureStateTokenTest {
         // objects, but this ColorStateList should never have reference equality with the default.
         ColorStateList colorStateList =
                 new ColorStateList(new int[][] {new int[] {}}, new int[] {DEFAULT_TINT});
-        Assert.assertNotEquals(mDefaultColorStateList, colorStateList);
+        Assert.assertNotEquals(mDefaultHomeButtonColorStateList, colorStateList);
 
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder()
-                        .setColorStateList(colorStateList)
+                        .setHomeButtonColorStateList(colorStateList)
                         .build();
         Assert.assertEquals(ToolbarSnapshotDifference.NONE,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
@@ -238,7 +247,8 @@ public class PhoneCaptureStateTokenTest {
         @Nullable
         private CharSequence mVisibleTextPrefixHint = DEFAULT_URL_HINT_TEXT;
         private @DrawableRes int mSecurityIcon = DEFAULT_SECURITY_ICON;
-        private ColorStateList mColorStateList = mDefaultColorStateList;
+        private ColorStateList mHomeButtonColorStateList = mDefaultHomeButtonColorStateList;
+        private boolean mHomeButtonIsVisible = DEFAULT_HOME_BUTTON_IS_VISIBLE;
         private boolean mIsShowingUpdateBadgeDuringLastCapture =
                 DEFAULT_IS_SHOWING_UPDATE_BADGE_DURING_LAST_CAPTURE;
         private boolean mIsPaintPreview = DEFAULT_IS_PAINT_PREVIEW;
@@ -283,9 +293,15 @@ public class PhoneCaptureStateTokenTest {
             return this;
         }
 
-        public PhoneCustomTabCaptureStateTokenBuilder setColorStateList(
-                ColorStateList colorStateList) {
-            mColorStateList = colorStateList;
+        public PhoneCustomTabCaptureStateTokenBuilder setHomeButtonColorStateList(
+                ColorStateList homeButtonColorStateList) {
+            mHomeButtonColorStateList = homeButtonColorStateList;
+            return this;
+        }
+
+        public PhoneCustomTabCaptureStateTokenBuilder setHomeButtonIsVisible(
+                boolean homeButtonIsVisible) {
+            mHomeButtonIsVisible = homeButtonIsVisible;
             return this;
         }
 
@@ -314,7 +330,7 @@ public class PhoneCaptureStateTokenTest {
         public PhoneCaptureStateToken build() {
             VisibleUrlText visibleUrlText = new VisibleUrlText(mUrlText, mVisibleTextPrefixHint);
             return new PhoneCaptureStateToken(mTint, mTabCount, mOptionalButtonData, mVisualState,
-                    visibleUrlText, mSecurityIcon, mColorStateList,
+                    visibleUrlText, mSecurityIcon, mHomeButtonColorStateList, mHomeButtonIsVisible,
                     mIsShowingUpdateBadgeDuringLastCapture, mIsPaintPreview, mProgress,
                     mUnfocusedLocationBarLayoutWidth);
         }

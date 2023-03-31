@@ -1636,6 +1636,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return new PhoneCaptureStateToken(getTint().getDefaultColor(),
                 mTabCountProvider.getTabCount(), mButtonData, mVisualState, visibleUrlText,
                 securityIconResource, ImageViewCompat.getImageTintList(mHomeButton),
+                mHomeButton.getVisibility() == View.VISIBLE,
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
                 getToolbarDataProvider().isPaintPreview(), getProgressBar().getProgress(),
                 mUnfocusedLocationBarLayoutWidth);
