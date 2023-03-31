@@ -1660,7 +1660,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-public/R114-15400.0.0",
+        "cros_img": "jacuzzi-public/R114-15404.0.0",
         "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -1689,7 +1689,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin64-public/R114-15400.0.0",
+        "cros_img": "kevin64-public/R114-15404.0.0",
         "name": "lacros_all_tast_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
