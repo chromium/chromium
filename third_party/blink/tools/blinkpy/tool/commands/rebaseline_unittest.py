@@ -523,6 +523,10 @@ class TestRebaseline(BaseTestCase):
         self.assertEqual(
             self._read('platform/test-mac-mac10.11/'
                        'userscripts/first-test-expected.png'), 'actual image')
+        self.assertEqual(self.command.baseline_cache_stats.hit_count, 1)
+        self.assertEqual(self.command.baseline_cache_stats.hit_bytes, 12)
+        self.assertEqual(self.command.baseline_cache_stats.total_count, 2)
+        self.assertEqual(self.command.baseline_cache_stats.total_bytes, 24)
 
     def test_no_optimize(self):
         test_baseline_set = TestBaselineSet(self.tool.builders)

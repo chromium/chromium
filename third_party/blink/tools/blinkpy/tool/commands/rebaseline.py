@@ -32,6 +32,7 @@ import functools
 import logging
 import optparse
 import re
+from dataclasses import dataclass
 from typing import (
     ClassVar,
     Collection,
@@ -265,6 +266,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         super(AbstractParallelRebaselineCommand,
               self).__init__(options=options)
         self._baselines_to_copy = []
+        self.baseline_cache_stats = BaselineCacheStatistics()
 
     def _release_builders(self):
         """Returns a list of builder names for continuous release builders.
@@ -474,6 +476,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         if name == 'find_baselines_to_copy':
             (baselines_to_copy, ) = args
             self._baselines_to_copy.extend(baselines_to_copy)
+        elif name == 'report_baseline_cache_stats':
+            (stats, ) = args
+            self.baseline_cache_stats += stats
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -498,6 +503,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         groups = self._group_tests_by_base(rebaselinable_set)
         self._copy_baselines(groups)
         self._download_baselines(groups)
+        _log.debug('Baseline cache statistics: %s', self.baseline_cache_stats)
 
         exit_code = 0
         if options.optimize and groups:
@@ -619,6 +625,35 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         self.rebaseline(options, test_baseline_set)
 
 
+@dataclass
+class BaselineCacheStatistics:
+    hit_count: int = 0
+    hit_bytes: int = 0
+    total_count: int = 0
+    total_bytes: int = 0
+
+    def __add__(self,
+                other: 'BaselineCacheStatistics') -> 'BaselineCacheStatistics':
+        return BaselineCacheStatistics(self.hit_count + other.hit_count,
+                                       self.hit_bytes + other.hit_bytes,
+                                       self.total_count + other.total_count,
+                                       self.total_bytes + other.total_bytes)
+
+    def __str__(self) -> str:
+        return (
+            f'hit rate: {self.hit_count}/{self.total_count} '
+            f'({_percentage(self.hit_count, self.total_count):.1f}%), '
+            f'bytes served via cache: {self.hit_bytes}/{self.total_bytes}B '
+            f'({_percentage(self.hit_bytes, self.total_bytes):.1f}%)')
+
+    def record(self, num_bytes: int, hit: bool = False):
+        self.total_bytes += num_bytes
+        self.total_count += 1
+        if hit:
+            self.hit_bytes += num_bytes
+            self.hit_count += 1
+
+
 class BaselineCache:
     """An in-memory cache keyed on a baseline's hash digest.
 
@@ -630,6 +665,7 @@ class BaselineCache:
     """
     def __init__(self, host: Host):
         self._host, self._digests_to_contents = host, {}
+        self.stats = BaselineCacheStatistics()
 
     def _fetch_contents(self, url: str) -> bytes:
         # Assume this is a local file.
@@ -638,12 +674,17 @@ class BaselineCache:
         return self._host.web.get_binary(url)
 
     def load(self, artifact: Artifact) -> bytes:
-        if not artifact.digest:
-            return self._fetch_contents(artifact.url)
-        contents = self._digests_to_contents.get(artifact.digest)
-        if contents is None:
+        hit = False
+        if artifact.digest:
+            contents = self._digests_to_contents.get(artifact.digest)
+            if contents is None:
+                contents = self._fetch_contents(artifact.url)
+                self._digests_to_contents[artifact.digest] = contents
+            else:
+                hit = True
+        else:
             contents = self._fetch_contents(artifact.url)
-            self._digests_to_contents[artifact.digest] = contents
+        self.stats.record(len(contents), hit)
         return contents
 
     def clear(self):
@@ -677,6 +718,11 @@ class Worker:
         self._host = self._connection.host
         self._fs = self._connection.host.filesystem
         self._baseline_cache = BaselineCache(self._host)
+
+    def stop(self):
+        if hasattr(self, '_baseline_cache'):
+            self._connection.post('report_baseline_cache_stats',
+                                  self._baseline_cache.stats)
 
     def handle(self, name: str, source: str, *args):
         response = self._commands[name](*args)
@@ -725,3 +771,7 @@ class Worker:
         if not self._dry_run:
             self._fs.maybe_make_directory(self._fs.dirname(dest))
             self._fs.write_binary_file(dest, data)
+
+
+def _percentage(a: float, b: float) -> float:
+    return 100 * (a / b) if b > 0 else float('nan')
