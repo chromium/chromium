@@ -527,5 +527,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
 }
 
 // Adding a new test? Awesome. But API tests are the old hotness. The new
-// hotness is extension_function_test_utils. See tabs_test.cc for an example.
+// hotness is api_test_utils. See tabs_test.cc for an example.
 // We are trying to phase out many uses of API tests as they tend to be flaky.

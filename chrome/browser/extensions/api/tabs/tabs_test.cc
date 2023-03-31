@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -26,8 +27,8 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -57,6 +58,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
@@ -82,9 +84,42 @@
 namespace extensions {
 
 namespace keys = tabs_constants;
-namespace utils = extension_function_test_utils;
+namespace utils = api_test_utils;
 
 namespace {
+
+// Returns true if |val| contains any privacy information, e.g. url,
+// pendingUrl, title or faviconUrl.
+bool HasAnyPrivacySensitiveFields(const base::Value::Dict& dict) {
+  constexpr std::array privacySensitiveKeys{
+      tabs_constants::kUrlKey, tabs_constants::kTitleKey,
+      tabs_constants::kFaviconUrlKey, tabs_constants::kPendingUrlKey};
+  for (auto* key : privacySensitiveKeys) {
+    if (dict.contains(key)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+class TestFunctionDispatcherDelegate
+    : public extensions::ExtensionFunctionDispatcher::Delegate {
+ public:
+  explicit TestFunctionDispatcherDelegate(Browser* browser)
+      : browser_(browser) {}
+  ~TestFunctionDispatcherDelegate() override = default;
+
+ private:
+  extensions::WindowController* GetExtensionWindowController() const override {
+    return browser_->extension_window_controller();
+  }
+
+  content::WebContents* GetAssociatedWebContents() const override {
+    return nullptr;
+  }
+
+  raw_ptr<Browser> browser_;
+};
 
 class ExtensionTabsTest : public PlatformAppBrowserTest {
  public:
@@ -101,9 +136,22 @@ class ExtensionTabsTest : public PlatformAppBrowserTest {
         R"([%u, {"windowTypes": ["normal", "popup", "devtools", "app"]}])",
         ExtensionTabUtil::GetWindowId(test_browser));
     base::Value::Dict result =
-        utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-            function.get(), args, browser()));
+        utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+            function.get(), args, browser()->profile()));
     return api_test_utils::GetString(result, "type");
+  }
+
+  absl::optional<base::Value>
+  RunFunctionWithDispatcherDelegateAndReturnSingleResult(
+      scoped_refptr<ExtensionFunction> function,
+      const std::string& args) {
+    auto dispatcher = std::make_unique<extensions::ExtensionFunctionDispatcher>(
+        browser()->profile());
+    TestFunctionDispatcherDelegate dispatcher_delegate(browser());
+    dispatcher->set_delegate(&dispatcher_delegate);
+    return utils::RunFunctionWithDelegateAndReturnSingleResult(
+        std::move(function), args, std::move(dispatcher),
+        utils::FunctionMode::kNone);
   }
 };
 
@@ -146,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
-          function.get(), base::StringPrintf("[%u]", window_id + 1), browser()),
+          function.get(), base::StringPrintf("[%u]", window_id + 1),
+          browser()->profile()),
       keys::kWindowNotFoundError));
 
   // Basic window details.
@@ -159,8 +208,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   function = new WindowsGetFunction();
   function->set_extension(extension.get());
   base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          function.get(), base::StringPrintf("[%u]", window_id), browser()));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf("[%u]", window_id),
+          browser()->profile()));
   EXPECT_EQ(window_id, GetWindowId(result));
   EXPECT_FALSE(api_test_utils::GetBoolean(result, "incognito"));
   EXPECT_EQ("normal", api_test_utils::GetString(result, "type"));
@@ -172,9 +222,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   // With "populate" enabled.
   function = new WindowsGetFunction();
   function->set_extension(extension.get());
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
       function.get(),
-      base::StringPrintf("[%u, {\"populate\": true}]", window_id), browser()));
+      base::StringPrintf("[%u, {\"populate\": true}]", window_id),
+      browser()->profile()));
 
   EXPECT_EQ(window_id, GetWindowId(result));
   // "populate" was enabled so tabs should be populated.
@@ -221,15 +272,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           function.get(), base::StringPrintf("[%u]", incognito_window_id),
-          browser()),
+          browser()->profile()),
       keys::kWindowNotFoundError));
 
   // With "include_incognito".
   function = new WindowsGetFunction();
   function->set_extension(extension.get());
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
       function.get(), base::StringPrintf("[%u]", incognito_window_id),
-      browser(), api_test_utils::INCLUDE_INCOGNITO));
+      browser()->profile(), api_test_utils::FunctionMode::kIncognito));
   EXPECT_TRUE(api_test_utils::GetBoolean(result, "incognito"));
 }
 
@@ -244,8 +295,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[]", new_browser));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", new_browser->profile()));
 
   // The id should match the window id of the browser instance that was passed
   // to RunFunctionAndReturnSingleResult.
@@ -255,8 +306,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   // Get the current window using the old window and make the tabs populated.
   function = new WindowsGetCurrentFunction();
   function->set_extension(extension.get());
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"populate\": true}]", browser()));
+  result = utils::ToDict(RunFunctionWithDispatcherDelegateAndReturnSingleResult(
+      function.get(), "[{\"populate\": true}]"));
 
   // The id should match the window id of the browser instance that was passed
   // to RunFunctionAndReturnSingleResult.
@@ -293,12 +344,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
-  base::Value::List windows = utils::ToList(
-      utils::RunFunctionAndReturnSingleResult(function.get(), "[]", browser()));
+  base::Value::List windows =
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", browser()->profile()));
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    base::Value::Dict result_window_dict = utils::ToDict(result_window);
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was not passed in so tabs are not populated.
@@ -312,11 +364,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
   function = new WindowsGetAllFunction();
   function->set_extension(extension.get());
   windows = utils::ToList(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"populate\": true}]", browser()));
+      function.get(), "[{\"populate\": true}]", browser()->profile()));
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    base::Value::Dict result_window_dict = utils::ToDict(result_window);
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was enabled so tabs should be populated.
@@ -362,11 +414,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
           function.get(),
           "[{\"windowTypes\": [\"app\", \"devtools\", \"normal\", \"panel\", "
           "\"popup\"]}]",
-          browser())));
+          browser()->profile())));
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    base::Value::Dict result_window_dict = utils::ToDict(result_window);
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was not passed in so tabs are not populated.
@@ -383,11 +435,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
       function.get(),
       "[{\"populate\": true, \"windowTypes\": [\"app\", \"devtools\", "
       "\"normal\", \"panel\", \"popup\"]}]",
-      browser()));
+      browser()->profile()));
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    base::Value::Dict result_window_dict = utils::ToDict(result_window);
     result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was enabled so tabs should be populated.
@@ -414,9 +466,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateNoPermissions) {
   update_tab_function->set_has_callback(true);
 
   const base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           update_tab_function.get(),
-          "[null, {\"url\": \"about:blank\", \"pinned\": true}]", browser()));
+          "[null, {\"url\": \"about:blank\", \"pinned\": true}]",
+          browser()->profile()));
   // The url is stripped since the extension does not have tab permissions.
   EXPECT_FALSE(result.contains("url"));
   EXPECT_TRUE(api_test_utils::GetBoolean(result, "pinned"));
@@ -432,12 +485,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   update_tab_function->set_extension(extension.get());
   update_tab_function->set_include_incognito_information(true);
 
-  std::string error = extension_function_test_utils::RunFunctionAndReturnError(
+  std::string error = api_test_utils::RunFunctionAndReturnError(
       update_tab_function.get(),
       std::string("[null, {\"url\": \"") + chrome::kChromeUIExtensionsURL +
           chrome::kExtensionConfigureCommandsSubPage + "\"}]",
-      incognito,  // incognito doesn't have any tabs.
-      api_test_utils::NONE);
+      incognito->profile(),  // incognito doesn't have any tabs.
+      api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 tabs_constants::kURLsNotAllowedInIncognitoError,
                 std::string(chrome::kChromeUIExtensionsURL) +
@@ -467,9 +520,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          function.get(), kArgsWithoutExplicitIncognitoParam, browser(),
-          api_test_utils::INCLUDE_INCOGNITO));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), kArgsWithoutExplicitIncognitoParam,
+          browser()->profile(), api_test_utils::FunctionMode::kIncognito));
 
   // Make sure it is a new(different) window.
   EXPECT_NE(ExtensionTabUtil::GetWindowId(browser()), GetWindowId(result));
@@ -485,9 +538,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DefaultToIncognitoWhenItIsForced) {
                                    ->GetActiveWebContents()
                                    ->GetPrimaryMainFrame());
   function->set_extension(extension.get());
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-      function.get(), kArgsWithoutExplicitIncognitoParam, incognito_browser,
-      api_test_utils::INCLUDE_INCOGNITO));
+  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+      function.get(), kArgsWithoutExplicitIncognitoParam,
+      incognito_browser->profile(), api_test_utils::FunctionMode::kIncognito));
   // Make sure it is a new(different) window.
   EXPECT_NE(ExtensionTabUtil::GetWindowId(incognito_browser),
             GetWindowId(result));
@@ -507,9 +560,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          function.get(), kEmptyArgs, browser(),
-          api_test_utils::INCLUDE_INCOGNITO));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), kEmptyArgs, browser()->profile(),
+          api_test_utils::FunctionMode::kIncognito));
 
   // Make sure it is a new(different) window.
   EXPECT_NE(ExtensionTabUtil::GetWindowId(browser()), GetWindowId(result));
@@ -521,9 +574,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   // Run without an explicit "incognito" param.
   function = new WindowsCreateFunction();
   function->set_extension(extension.get());
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-      function.get(), kEmptyArgs, incognito_browser,
-      api_test_utils::INCLUDE_INCOGNITO));
+  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+      function.get(), kEmptyArgs, incognito_browser->profile(),
+      api_test_utils::FunctionMode::kIncognito));
   // Make sure it is a new(different) window.
   EXPECT_NE(ExtensionTabUtil::GetWindowId(incognito_browser),
             GetWindowId(result));
@@ -545,8 +598,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
-      utils::RunFunctionAndReturnError(
-          function.get(), kArgsWithExplicitIncognitoParam, browser()),
+      utils::RunFunctionAndReturnError(function.get(),
+                                       kArgsWithExplicitIncognitoParam,
+                                       browser()->profile()),
       keys::kIncognitoModeIsForced));
 
   // Now try opening a normal window from incognito window.
@@ -555,8 +609,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   function = new WindowsCreateFunction();
   function->set_extension(extension.get());
   EXPECT_TRUE(base::MatchPattern(
-      utils::RunFunctionAndReturnError(
-          function.get(), kArgsWithExplicitIncognitoParam, incognito_browser),
+      utils::RunFunctionAndReturnError(function.get(),
+                                       kArgsWithExplicitIncognitoParam,
+                                       incognito_browser->profile()),
       keys::kIncognitoModeIsForced));
 }
 
@@ -574,16 +629,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   scoped_refptr<WindowsCreateFunction> function = new WindowsCreateFunction();
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
-  EXPECT_TRUE(base::MatchPattern(
-      utils::RunFunctionAndReturnError(function.get(), kArgs, browser()),
-      keys::kIncognitoModeIsDisabled));
+  EXPECT_TRUE(
+      base::MatchPattern(utils::RunFunctionAndReturnError(function.get(), kArgs,
+                                                          browser()->profile()),
+                         keys::kIncognitoModeIsDisabled));
 
   // Run in incognito window.
   function = new WindowsCreateFunction();
   function->set_extension(extension.get());
-  EXPECT_TRUE(base::MatchPattern(utils::RunFunctionAndReturnError(
-                                     function.get(), kArgs, incognito_browser),
-                                 keys::kIncognitoModeIsDisabled));
+  EXPECT_TRUE(base::MatchPattern(
+      utils::RunFunctionAndReturnError(function.get(), kArgs,
+                                       incognito_browser->profile()),
+      keys::kIncognitoModeIsDisabled));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
@@ -598,26 +655,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
   // Get tabs in the 'current' window called from non-focused browser.
   scoped_refptr<TabsQueryFunction> function = new TabsQueryFunction();
   function->set_extension(ExtensionBuilder("Test").Build().get());
-  base::Value::List result_tabs(
-      utils::ToList(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[{\"currentWindow\":true}]", browser())));
+
+  base::Value::List result_tabs =
+      utils::ToList(RunFunctionWithDispatcherDelegateAndReturnSingleResult(
+          function.get(), "[{\"currentWindow\":true}]"));
 
   // We should have one initial tab and one added tab.
   EXPECT_EQ(2u, result_tabs.size());
   for (const base::Value& result_tab : result_tabs) {
-    EXPECT_EQ(window_id, GetTabWindowId(utils::ToDictionary(result_tab)));
+    EXPECT_EQ(window_id, GetTabWindowId(utils::ToDict(result_tab)));
   }
 
   // Get tabs NOT in the 'current' window called from non-focused browser.
   function = new TabsQueryFunction();
   function->set_extension(ExtensionBuilder("Test").Build().get());
-  result_tabs = utils::ToList(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"currentWindow\":false}]", browser()));
+  result_tabs =
+      utils::ToList(RunFunctionWithDispatcherDelegateAndReturnSingleResult(
+          function.get(), "[{\"currentWindow\":false}]"));
 
   // We should have one tab for each extra window.
   EXPECT_EQ(kExtraWindows, result_tabs.size());
   for (const base::Value& result_tab : result_tabs) {
-    EXPECT_NE(window_id, GetTabWindowId(utils::ToDictionary(result_tab)));
+    EXPECT_NE(window_id, GetTabWindowId(utils::ToDict(result_tab)));
   }
 }
 
@@ -639,13 +698,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryAllTabsWithDevTools) {
   function->set_extension(ExtensionBuilder("Test").Build().get());
   base::Value::List result_tabs(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[{}]", browser())));
+          function.get(), "[{}]", browser()->profile())));
 
   std::set<int> result_ids;
   // We should have one tab per browser except for DevTools.
   EXPECT_EQ(kNumWindows, result_tabs.size());
   for (const base::Value& result_tab : result_tabs) {
-    result_ids.insert(GetTabWindowId(utils::ToDictionary(result_tab)));
+    result_ids.insert(GetTabWindowId(utils::ToDict(result_tab)));
   }
   EXPECT_EQ(window_ids, result_ids);
 
@@ -668,8 +727,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryTabGroups) {
   const std::string args = base::StringPrintf(
       kFormatQueryArgs, tab_groups_util::GetGroupId(group_id));
   base::Value::List result(
-      utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
-                                                            args, browser())));
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(
+          function.get(), args, browser()->profile())));
 
   EXPECT_EQ(2u, result.size());
 }
@@ -693,9 +752,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DontCreateTabInClosingPopupWindow) {
       "[{\"url\": \"about:blank\", \"windowId\": %u}]";
 
   const base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           create_tab_function.get(),
-          base::StringPrintf(kNewBlankTabArgs, window_id), browser()));
+          base::StringPrintf(kNewBlankTabArgs, window_id),
+          browser()->profile()));
 
   EXPECT_NE(window_id, GetTabWindowId(result));
 }
@@ -711,7 +771,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowState) {
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           function.get(),
-          base::StringPrintf(kArgsMinimizedWithFocus, window_id), browser()),
+          base::StringPrintf(kArgsMinimizedWithFocus, window_id),
+          browser()->profile()),
       keys::kInvalidWindowStateError));
 
   static const char kArgsMaximizedWithoutFocus[] =
@@ -721,7 +782,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowState) {
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           function.get(),
-          base::StringPrintf(kArgsMaximizedWithoutFocus, window_id), browser()),
+          base::StringPrintf(kArgsMaximizedWithoutFocus, window_id),
+          browser()->profile()),
       keys::kInvalidWindowStateError));
 
   static const char kArgsMinimizedWithBounds[] =
@@ -731,7 +793,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowState) {
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           function.get(),
-          base::StringPrintf(kArgsMinimizedWithBounds, window_id), browser()),
+          base::StringPrintf(kArgsMinimizedWithBounds, window_id),
+          browser()->profile()),
       keys::kInvalidWindowStateError));
 
   static const char kArgsMaximizedWithBounds[] =
@@ -741,7 +804,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowState) {
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
           function.get(),
-          base::StringPrintf(kArgsMaximizedWithBounds, window_id), browser()),
+          base::StringPrintf(kArgsMaximizedWithBounds, window_id),
+          browser()->profile()),
       keys::kInvalidWindowStateError));
 }
 
@@ -771,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
             function.get(),
             base::StringPrintf(kArgsUpdateFunction, window_id, window_left,
                                window_top),
-            browser()),
+            browser()->profile()),
         keys::kInvalidWindowBoundsError));
   }
 
@@ -787,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
             function.get(),
             base::StringPrintf(kArgsUpdateFunction, window_id, window_left,
                                window_top),
-            browser()),
+            browser()->profile()),
         keys::kInvalidWindowBoundsError));
   }
 
@@ -797,11 +861,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
     int window_top = displays.bottom() - window_bounds.height() + window_offset;
     auto function = base::MakeRefCounted<WindowsUpdateFunction>();
     function->set_extension(extension.get());
-    EXPECT_TRUE(
-        utils::RunFunction(function.get(),
-                           base::StringPrintf(kArgsUpdateFunction, window_id,
-                                              window_left, window_top),
-                           browser(), api_test_utils::NONE));
+    EXPECT_TRUE(utils::RunFunction(
+        function.get(),
+        base::StringPrintf(kArgsUpdateFunction, window_id, window_left,
+                           window_top),
+        browser()->profile(), api_test_utils::FunctionMode::kNone));
   }
 }
 
@@ -814,13 +878,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateDevToolsWindow) {
       ExtensionBuilder("Test").Build().get());
   get_function->set_extension(extension.get());
   base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           get_function.get(),
           base::StringPrintf(
               "[%u, {\"windowTypes\": [\"devtools\"]}]",
               ExtensionTabUtil::GetWindowId(
                   DevToolsWindowTesting::Get(devtools)->browser())),
-          browser()));
+          browser()->profile()));
 
   // Verify the updating width/height works.
   int32_t new_width = api_test_utils::GetInteger(result, "width") - 50;
@@ -828,13 +892,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateDevToolsWindow) {
 
   scoped_refptr<WindowsUpdateFunction> update_function =
       new WindowsUpdateFunction();
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
       update_function.get(),
       base::StringPrintf("[%u, {\"width\": %d, \"height\": %d}]",
                          ExtensionTabUtil::GetWindowId(
                              DevToolsWindowTesting::Get(devtools)->browser()),
                          new_width, new_height),
-      browser()));
+      browser()->profile()));
 
   EXPECT_EQ(new_width, api_test_utils::GetInteger(result, "width"));
   EXPECT_EQ(new_height, api_test_utils::GetInteger(result, "height"));
@@ -859,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExtensionAPICannotNavigateDevtools) {
               "[%d, {\"url\":\"http://example.com\"}]",
               ExtensionTabUtil::GetTabId(
                   DevToolsWindowTesting::Get(devtools)->main_web_contents())),
-          DevToolsWindowTesting::Get(devtools)->browser()),
+          DevToolsWindowTesting::Get(devtools)->browser()->profile()),
       tabs_constants::kNotAllowedForDevToolsError));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
@@ -882,9 +946,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   function->SetBrowserContextForTesting(browser()->profile());
 
   base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[{\"state\": \"minimized\"}]", browser(),
-          api_test_utils::INCLUDE_INCOGNITO));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[{\"state\": \"minimized\"}]", browser()->profile(),
+          api_test_utils::FunctionMode::kIncognito));
   int window_id = GetWindowId(result);
   std::string error;
   Browser* new_window = ExtensionTabUtil::GetBrowserFromWindowID(
@@ -917,9 +981,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   function = new WindowsCreateFunction();
   function->set_extension(extension.get());
   function->SetBrowserContextForTesting(browser()->profile());
-  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"state\": \"fullscreen\"}]", browser(),
-      api_test_utils::INCLUDE_INCOGNITO));
+  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[{\"state\": \"fullscreen\"}]", browser()->profile(),
+      api_test_utils::FunctionMode::kIncognito));
   window_id = GetWindowId(result);
   new_window = ExtensionTabUtil::GetBrowserFromWindowID(
       ChromeExtensionFunctionDetails(function.get()), window_id, &error);
@@ -1003,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
         function.get(),
         base::StringPrintf(kArgsCreateFunction, window_left, window_top,
                            window_width, window_height),
-        browser(), api_test_utils::NONE));
+        browser()->profile(), api_test_utils::FunctionMode::kNone));
   }
 
   {
@@ -1022,11 +1086,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
         "[{\"width\": %d, \"height\": %d }]";
     auto function = base::MakeRefCounted<WindowsCreateFunction>();
     function->set_extension(ExtensionBuilder("Test").Build().get());
-    EXPECT_TRUE(
-        utils::RunFunction(function.get(),
-                           base::StringPrintf(kArgsCreateFunctionOnlySize,
-                                              window_width, window_height),
-                           browser(), api_test_utils::NONE));
+    EXPECT_TRUE(utils::RunFunction(
+        function.get(),
+        base::StringPrintf(kArgsCreateFunctionOnlySize, window_width,
+                           window_height),
+        browser()->profile(), api_test_utils::FunctionMode::kNone));
   }
 }
 
@@ -1036,8 +1100,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, CreatePopupWindowFromWebUI) {
   function->set_source_context_type(Feature::Context::WEBUI_UNTRUSTED_CONTEXT);
 
   const base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          function.get(), R"([{"type": "popup"}])", browser()));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          function.get(), R"([{"type": "popup"}])", browser()->profile()));
   int window_id = GetWindowId(result);
   std::string error;
   EXPECT_TRUE(ExtensionTabUtil::GetBrowserFromWindowID(
@@ -1064,9 +1128,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
   duplicate_tab_function->set_has_callback(true);
 
   const base::Value::Dict duplicate_result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           duplicate_tab_function.get(), base::StringPrintf("[%u]", tab_id),
-          browser()));
+          browser()->profile()));
 
   int duplicate_tab_id = GetTabId(duplicate_result);
   int duplicate_tab_window_id = GetTabWindowId(duplicate_result);
@@ -1079,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
   // The test empty tab extension has tabs permissions, therefore
   // |duplicate_result| should contain url, pendingUrl, title or faviconUrl
   // in the function result.
-  EXPECT_TRUE(utils::HasAnyPrivacySensitiveFields(duplicate_result));
+  EXPECT_TRUE(HasAnyPrivacySensitiveFields(duplicate_result));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
@@ -1101,9 +1165,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
   duplicate_tab_function->set_has_callback(true);
 
   const base::Value::Dict duplicate_result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           duplicate_tab_function.get(), base::StringPrintf("[%u]", tab_id),
-          browser()));
+          browser()->profile()));
 
   int duplicate_tab_id = GetTabId(duplicate_result);
   int duplicate_tab_window_id = GetTabWindowId(duplicate_result);
@@ -1116,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
   // The test empty extension has no permissions, therefore |duplicate_result|
   // should not contain url, pendingUrl, title and faviconUrl in the function
   // result.
-  EXPECT_FALSE(utils::HasAnyPrivacySensitiveFields(duplicate_result));
+  EXPECT_FALSE(HasAnyPrivacySensitiveFields(duplicate_result));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsEventOnDevTools) {
@@ -1236,9 +1300,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
 
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(
-          function.get(), base::StringPrintf("[%u, {\"code\": \"true\"}]",
-                                             api::windows::WINDOW_ID_CURRENT),
-          DevToolsWindowTesting::Get(devtools)->browser()),
+          function.get(),
+          base::StringPrintf("[%u, {\"code\": \"true\"}]",
+                             api::windows::WINDOW_ID_CURRENT),
+          DevToolsWindowTesting::Get(devtools)->browser()->profile()),
       manifest_errors::kCannotAccessPageWithUrl));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
@@ -1268,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
     scoped_refptr<TabsQueryFunction> function = new TabsQueryFunction();
     function->set_extension(extension.get());
     return utils::ToList(utils::RunFunctionAndReturnSingleResult(
-        function.get(), query_info, browser()));
+        function.get(), query_info, browser()->profile()));
   };
 
   // Get non-discarded tabs.
@@ -1381,8 +1446,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
   // Run function passing the tab id as argument.
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   const base::Value::Dict result =
-      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-          discard.get(), base::StringPrintf("[%u]", tab_id), browser()));
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          discard.get(), base::StringPrintf("[%u]", tab_id),
+          browser()->profile()));
 
   // Confirms that TabManager sees the tab as discarded.
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
@@ -1403,7 +1469,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
   scoped_refptr<TabsDiscardFunction> discarded(new TabsDiscardFunction());
   discarded->set_extension(extension.get());
   std::string error = utils::RunFunctionAndReturnError(
-      discarded.get(), base::StringPrintf("[%u]", tab_id), browser());
+      discarded.get(), base::StringPrintf("[%u]", tab_id),
+      browser()->profile());
   EXPECT_TRUE(base::MatchPattern(error, keys::kCannotDiscardTab));
 }
 
@@ -1429,7 +1496,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
   tab_invalid_id++;
 
   std::string error = utils::RunFunctionAndReturnError(
-      discard.get(), base::StringPrintf("[%u]", tab_invalid_id), browser());
+      discard.get(), base::StringPrintf("[%u]", tab_invalid_id),
+      browser()->profile());
 
   // Discarded state should still be false as no tab was discarded.
   EXPECT_FALSE(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
@@ -1456,8 +1524,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
   discard->set_extension(extension.get());
 
   // Run without passing an id.
-  const base::Value::Dict result = utils::ToDictionary(
-      utils::RunFunctionAndReturnSingleResult(discard.get(), "[]", browser()));
+  const base::Value::Dict result =
+      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+          discard.get(), "[]", browser()->profile()));
 
   // Confirms that TabManager sees the tab as discarded.
   web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
@@ -1494,13 +1563,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
     scoped_refptr<TabsQueryFunction> function = new TabsQueryFunction();
     function->set_extension(extension.get());
     return utils::ToList(utils::RunFunctionAndReturnSingleResult(
-        function.get(), query_info, browser()));
+        function.get(), query_info, browser()->profile()));
   };
   auto RunUpdateFunction = [this, &extension](std::string update_info) {
     scoped_refptr<TabsUpdateFunction> function = new TabsUpdateFunction();
     function->set_extension(extension.get());
-    return utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-        function.get(), update_info, browser()));
+    return utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+        function.get(), update_info, browser()->profile()));
   };
 
   // Queries and results used.
@@ -1631,8 +1700,8 @@ bool ExtensionTabsZoomTest::RunSetZoom(int tab_id, double zoom_factor) {
 
   return utils::RunFunction(
       set_zoom_function.get(),
-      base::StringPrintf("[%u, %lf]", tab_id, zoom_factor), browser(),
-      api_test_utils::NONE);
+      base::StringPrintf("[%u, %lf]", tab_id, zoom_factor),
+      browser()->profile(), api_test_utils::FunctionMode::kNone);
 }
 
 testing::AssertionResult ExtensionTabsZoomTest::RunGetZoom(
@@ -1643,10 +1712,10 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetZoom(
   get_zoom_function->set_extension(extension_.get());
   get_zoom_function->set_has_callback(true);
 
-  std::unique_ptr<base::Value> get_zoom_result(
+  absl::optional<base::Value> get_zoom_result =
       utils::RunFunctionAndReturnSingleResult(
           get_zoom_function.get(), base::StringPrintf("[%u]", tab_id),
-          browser()));
+          browser()->profile());
 
   if (!get_zoom_result)
     return testing::AssertionFailure() << "no result";
@@ -1674,8 +1743,9 @@ bool ExtensionTabsZoomTest::RunSetZoomSettings(int tab_id,
     args = base::StringPrintf("[%u, {\"mode\": \"%s\"}]", tab_id, mode);
   }
 
-  return utils::RunFunction(set_zoom_settings_function.get(), args, browser(),
-                            api_test_utils::NONE);
+  return utils::RunFunction(set_zoom_settings_function.get(), args,
+                            browser()->profile(),
+                            api_test_utils::FunctionMode::kNone);
 }
 
 testing::AssertionResult ExtensionTabsZoomTest::RunGetZoomSettings(
@@ -1689,16 +1759,16 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetZoomSettings(
   get_zoom_settings_function->set_extension(extension_.get());
   get_zoom_settings_function->set_has_callback(true);
 
-  std::unique_ptr<base::Value> get_zoom_settings_result(
+  absl::optional<base::Value> get_zoom_settings_result =
       utils::RunFunctionAndReturnSingleResult(
           get_zoom_settings_function.get(), base::StringPrintf("[%u]", tab_id),
-          browser()));
+          browser()->profile());
 
   if (!get_zoom_settings_result)
     return testing::AssertionFailure() << "no result";
 
   base::Value::Dict get_zoom_settings_dict =
-      utils::ToDictionary(std::move(get_zoom_settings_result));
+      utils::ToDict(std::move(get_zoom_settings_result));
   *mode = api_test_utils::GetString(get_zoom_settings_dict, "mode");
   *scope = api_test_utils::GetString(get_zoom_settings_dict, "scope");
 
@@ -1714,10 +1784,10 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetDefaultZoom(
   get_zoom_settings_function->set_extension(extension_.get());
   get_zoom_settings_function->set_has_callback(true);
 
-  std::unique_ptr<base::Value> get_zoom_settings_result(
+  absl::optional<base::Value> get_zoom_settings_result =
       utils::RunFunctionAndReturnSingleResult(
           get_zoom_settings_function.get(), base::StringPrintf("[%u]", tab_id),
-          browser()));
+          browser()->profile());
 
   if (!get_zoom_settings_result && get_zoom_settings_result->is_dict()) {
     return testing::AssertionFailure()
@@ -1745,7 +1815,7 @@ std::string ExtensionTabsZoomTest::RunSetZoomExpectError(int tab_id,
   return utils::RunFunctionAndReturnError(
       set_zoom_function.get(),
       base::StringPrintf("[%u, %lf]", tab_id, zoom_factor),
-      browser());
+      browser()->profile());
 }
 
 std::string ExtensionTabsZoomTest::RunSetZoomSettingsExpectError(
@@ -1756,14 +1826,12 @@ std::string ExtensionTabsZoomTest::RunSetZoomSettingsExpectError(
       new TabsSetZoomSettingsFunction());
   set_zoom_settings_function->set_extension(extension_.get());
 
-  return utils::RunFunctionAndReturnError(set_zoom_settings_function.get(),
-                                          base::StringPrintf(
-                                              "[%u, {\"mode\": \"%s\", "
-                                              "\"scope\": \"%s\"}]",
-                                              tab_id,
-                                              mode,
-                                              scope),
-                                          browser());
+  return utils::RunFunctionAndReturnError(
+      set_zoom_settings_function.get(),
+      base::StringPrintf("[%u, {\"mode\": \"%s\", "
+                         "\"scope\": \"%s\"}]",
+                         tab_id, mode, scope),
+      browser()->profile());
 }
 
 content::WebContents* ExtensionTabsZoomTest::OpenUrlAndWaitForLoad(
@@ -2474,7 +2542,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
               R"([{"tabId": %d}])",
               ExtensionTabUtil::GetTabId(
                   DevToolsWindowTesting::Get(devtools)->main_web_contents())),
-          DevToolsWindowTesting::Get(devtools)->browser()),
+          DevToolsWindowTesting::Get(devtools)->browser()->profile()),
       tabs_constants::kNotAllowedForDevToolsError));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
@@ -2492,7 +2560,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionAPICannotMoveDevtoolsTab) {
               R"([%d, {"index": -1}])",
               ExtensionTabUtil::GetTabId(
                   DevToolsWindowTesting::Get(devtools)->main_web_contents())),
-          DevToolsWindowTesting::Get(devtools)->browser()),
+          DevToolsWindowTesting::Get(devtools)->browser()->profile()),
       tabs_constants::kNotAllowedForDevToolsError));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
@@ -2512,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionAPICannotGroupDevtoolsTab) {
               R"([{"tabIds": %d}])",
               ExtensionTabUtil::GetTabId(
                   DevToolsWindowTesting::Get(devtools)->main_web_contents())),
-          DevToolsWindowTesting::Get(devtools)->browser()),
+          DevToolsWindowTesting::Get(devtools)->browser()->profile()),
       tabs_constants::kNotAllowedForDevToolsError));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
@@ -2530,7 +2598,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionAPICannotDiscardDevtoolsTab) {
               "[%d]",
               ExtensionTabUtil::GetTabId(
                   DevToolsWindowTesting::Get(devtools)->main_web_contents())),
-          DevToolsWindowTesting::Get(devtools)->browser()),
+          DevToolsWindowTesting::Get(devtools)->browser()->profile()),
       tabs_constants::kNotAllowedForDevToolsError));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
