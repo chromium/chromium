@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM;
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -89,6 +90,8 @@ public class WebXrVrInputTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "https://crbug.com/1409794")
     public void testScreenTapsNotRegistered_WebXr() throws InterruptedException {
         screenTapsNotRegisteredImpl("webxr_test_screen_taps_not_registered", mWebXrVrTestFramework);
     }
