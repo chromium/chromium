@@ -196,9 +196,9 @@ bool MIMETypeRegistry::IsLosslessImageMIMEType(const String& mime_type) {
 
 bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
   if (EqualIgnoringASCIICase(mime_type, "text/xml") ||
-      EqualIgnoringASCIICase(mime_type, "application/xml") ||
-      EqualIgnoringASCIICase(mime_type, "text/xsl"))
+      EqualIgnoringASCIICase(mime_type, "application/xml")) {
     return true;
+  }
 
   // Per RFCs 3023 and 2045, an XML MIME type is of the form:
   // ^[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+/[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+\+xml$

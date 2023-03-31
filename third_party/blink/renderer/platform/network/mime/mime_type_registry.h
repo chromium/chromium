@@ -117,6 +117,7 @@ class PLATFORM_EXPORT MIMETypeRegistry {
   static bool IsLosslessImageMIMEType(const String& mime_type);
 
   // Checks to see if a mime type is suitable for being loaded as XML.
+  // https://mimesniff.spec.whatwg.org/#xml-mime-type
   static bool IsXMLMIMEType(const String& mime_type);
 
   // Checks to see if a mime type is suitable for being loaded as plain text.
