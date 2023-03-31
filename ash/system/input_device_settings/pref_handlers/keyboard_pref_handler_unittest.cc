@@ -165,7 +165,8 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     keyboard->settings = settings.Clone();
     keyboard->device_key = device_key;
 
-    pref_handler_->UpdateKeyboardSettings(pref_service_.get(), *keyboard);
+    pref_handler_->UpdateKeyboardSettings(pref_service_.get(),
+                                          /*keyboard_policies=*/{}, *keyboard);
   }
 
   mojom::KeyboardSettingsPtr CallInitializeKeyboardSettings(
@@ -173,16 +174,16 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
     keyboard->device_key = device_key;
 
-    pref_handler_->InitializeKeyboardSettings(pref_service_.get(),
-                                              keyboard.get());
+    pref_handler_->InitializeKeyboardSettings(
+        pref_service_.get(), /*keyboard_policies=*/{}, keyboard.get());
     return std::move(keyboard->settings);
   }
 
   mojom::KeyboardSettingsPtr CallInitializeKeyboardSettings(
       const mojom::Keyboard& keyboard) {
     const auto keyboard_ptr = keyboard.Clone();
-    pref_handler_->InitializeKeyboardSettings(pref_service_.get(),
-                                              keyboard_ptr.get());
+    pref_handler_->InitializeKeyboardSettings(
+        pref_service_.get(), /*keyboard_policies=*/{}, keyboard_ptr.get());
     return std::move(keyboard_ptr->settings);
   }
 
@@ -321,7 +322,8 @@ TEST_F(KeyboardPrefHandlerTest, NewSettingAddedRoundTrip) {
 TEST_F(KeyboardPrefHandlerTest, DefaultSettingsWhenPrefServiceNull) {
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  pref_handler_->InitializeKeyboardSettings(nullptr, &keyboard);
+  pref_handler_->InitializeKeyboardSettings(nullptr, /*keyboard_policies=*/{},
+                                            &keyboard);
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 }
 
@@ -512,6 +514,98 @@ TEST_F(KeyboardPrefHandlerTest, DefaultNotPersistedUntilUpdated) {
       settings_dict->contains(prefs::kKeyboardSettingSuppressMetaFKeyRewrites));
   CheckKeyboardSettingsAndDictAreEqual(kKeyboardSettingsDefault,
                                        *settings_dict);
+}
+
+TEST_F(KeyboardPrefHandlerTest,
+       NewKeyboard_ManagedEnterprisePolicy_GetsDefaults) {
+  mojom::KeyboardPolicies policies;
+  policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kManaged, !kDefaultTopRowAreFKeys);
+
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+
+  pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
+                                            &keyboard);
+
+  EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
+  keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+
+  const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
+}
+
+TEST_F(KeyboardPrefHandlerTest,
+       NewKeyboard_RecommendedEnterprisePolicy_GetsDefaults) {
+  mojom::KeyboardPolicies policies;
+  policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kRecommended, !kDefaultTopRowAreFKeys);
+
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+
+  pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
+                                            &keyboard);
+
+  EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
+  keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+
+  const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
+}
+
+TEST_F(KeyboardPrefHandlerTest,
+       ExistingKeyboard_RecommendedEnterprisePolicy_GetsNewPolicy) {
+  mojom::KeyboardPolicies policies;
+  policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kRecommended, !kDefaultTopRowAreFKeys);
+
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+
+  pref_handler_->InitializeKeyboardSettings(
+      pref_service_.get(), /*keyboard_policies=*/{}, &keyboard);
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+
+  pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
+                                            &keyboard);
+  EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
+  keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+
+  const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
+}
+
+TEST_F(KeyboardPrefHandlerTest,
+       ExistingKeyboard_ManagedEnterprisePolicy_GetsNewPolicy) {
+  mojom::KeyboardPolicies policies;
+  policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kManaged, !kDefaultTopRowAreFKeys);
+
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+
+  pref_handler_->InitializeKeyboardSettings(
+      pref_service_.get(), /*keyboard_policies=*/{}, &keyboard);
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+
+  keyboard.settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
+  CallUpdateKeyboardSettings(kKeyboardKey1, *keyboard.settings);
+
+  pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
+                                            &keyboard);
+  EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
+  keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
+
+  const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
+  EXPECT_EQ(
+      !kDefaultTopRowAreFKeys,
+      settings_dict->FindBool(prefs::kKeyboardSettingTopRowAreFKeys).value());
 }
 
 class KeyboardSettingsPrefConversionTest

@@ -58,15 +58,28 @@ static constexpr auto kMetaKeyMapping =
          {mojom::MetaKey::kCommand,
           ::prefs::kLanguageRemapExternalCommandKeyTo}});
 
-mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(bool is_external,
-                                                      mojom::MetaKey meta_key) {
+bool GetDefaultTopRowAreFKeysValue(
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
+  if (keyboard_policies.top_row_are_fkeys_policy &&
+      keyboard_policies.top_row_are_fkeys_policy->policy_status ==
+          mojom::PolicyStatus::kRecommended) {
+    return keyboard_policies.top_row_are_fkeys_policy->value;
+  }
+
+  return keyboard.is_external ? kDefaultTopRowAreFKeysExternal
+                              : kDefaultTopRowAreFKeys;
+}
+
+mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
-  // This setting should be enabled by default for external keyboards.
   settings->top_row_are_fkeys =
-      is_external ? kDefaultTopRowAreFKeysExternal : kDefaultTopRowAreFKeys;
+      GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard);
   // Switch control and command for Apple keyboards.
-  if (meta_key == mojom::MetaKey::kCommand) {
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
     settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;
     settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
@@ -103,15 +116,17 @@ GetModifierRemappings(PrefService* prefs, const mojom::Keyboard& keyboard) {
 
 mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
     PrefService* prefs,
+    const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard,
     ForceKeyboardSettingPersistence& force_persistence) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
 
   const auto* top_row_are_fkeys_preference =
       prefs->GetUserPrefValue(prefs::kSendFunctionKeys);
-  settings->top_row_are_fkeys = top_row_are_fkeys_preference
-                                    ? top_row_are_fkeys_preference->GetBool()
-                                    : kDefaultTopRowAreFKeys;
+  settings->top_row_are_fkeys =
+      top_row_are_fkeys_preference
+          ? top_row_are_fkeys_preference->GetBool()
+          : GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard);
   force_persistence.top_row_are_fkeys = top_row_are_fkeys_preference != nullptr;
 
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
@@ -122,17 +137,9 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
   return settings;
 }
 
-bool ExistingSettingsHasValue(base::StringPiece setting_key,
-                              const base::Value::Dict* existing_settings_dict) {
-  if (!existing_settings_dict) {
-    return false;
-  }
-
-  return existing_settings_dict->Find(setting_key) != nullptr;
-}
-
 mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
     PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard,
     const base::Value::Dict& settings_dict) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
@@ -141,8 +148,7 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
           .value_or(kDefaultSuppressMetaFKeyRewrites);
   settings->top_row_are_fkeys =
       settings_dict.FindBool(prefs::kKeyboardSettingTopRowAreFKeys)
-          .value_or(keyboard.is_external ? kDefaultTopRowAreFKeysExternal
-                                         : kDefaultTopRowAreFKeys);
+          .value_or(GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard));
 
   const auto* modifier_remappings_dict =
       settings_dict.FindDict(prefs::kKeyboardSettingModifierRemappings);
@@ -151,8 +157,8 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
   }
 
   for (const auto [from, to] : *modifier_remappings_dict) {
-    // `from` must be a string which can be converted to an int and `to` must
-    // be an int.
+    // `from` must be a string which can be converted to an int and `to` must be
+    // an int.
     int from_int, to_int;
     if (!to.is_int() || !base::StringToInt(from, &from_int)) {
       LOG(ERROR) << "Unable to parse modifier remappings from prefs. From: "
@@ -180,6 +186,7 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
 
 void UpdateKeyboardSettingsImpl(
     PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard,
     const ForceKeyboardSettingPersistence& force_persistence) {
   DCHECK(keyboard.settings);
@@ -193,29 +200,20 @@ void UpdateKeyboardSettingsImpl(
   // Populate `settings_dict` with all settings in `settings`.
   base::Value::Dict settings_dict;
 
-  // Settings should only be persisted if one or more of the following is true:
-  // - Setting was previously persisted to storage
-  // - `force_persistence` requires the setting to be persisted, this means this
-  //   device is being transitioned from the old global settings to per-device
-  //   settings and the user specified the specific value for this setting.
-  // - Setting is different than the default, which means the user manually
-  //   changed the value.
-
-  if (ExistingSettingsHasValue(prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
-                               existing_settings_dict) ||
-      force_persistence.suppress_meta_fkey_rewrites ||
-      settings.suppress_meta_fkey_rewrites !=
-          kDefaultSuppressMetaFKeyRewrites) {
+  if (ShouldPersistSetting(prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
+                           settings.suppress_meta_fkey_rewrites,
+                           kDefaultSuppressMetaFKeyRewrites,
+                           force_persistence.suppress_meta_fkey_rewrites,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
                       settings.suppress_meta_fkey_rewrites);
   }
 
-  if (ExistingSettingsHasValue(prefs::kKeyboardSettingTopRowAreFKeys,
-                               existing_settings_dict) ||
-              force_persistence.top_row_are_fkeys ||
-              settings.top_row_are_fkeys != keyboard.is_external
-          ? kDefaultTopRowAreFKeysExternal
-          : kDefaultTopRowAreFKeys) {
+  if (ShouldPersistSetting(
+          keyboard_policies.top_row_are_fkeys_policy,
+          prefs::kKeyboardSettingTopRowAreFKeys, settings.top_row_are_fkeys,
+          GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard),
+          force_persistence.top_row_are_fkeys, existing_settings_dict)) {
     settings_dict.Set(prefs::kKeyboardSettingTopRowAreFKeys,
                       settings.top_row_are_fkeys);
   }
@@ -251,10 +249,11 @@ KeyboardPrefHandlerImpl::~KeyboardPrefHandlerImpl() = default;
 
 void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
     mojom::Keyboard* keyboard) {
   if (!pref_service) {
     keyboard->settings =
-        GetDefaultKeyboardSettings(keyboard->is_external, keyboard->meta_key);
+        GetDefaultKeyboardSettings(keyboard_policies, *keyboard);
     return;
   }
 
@@ -264,26 +263,36 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
   ForceKeyboardSettingPersistence force_persistence;
 
   if (settings_dict) {
-    keyboard->settings =
-        RetrieveKeyboardSettings(pref_service, *keyboard, *settings_dict);
+    keyboard->settings = RetrieveKeyboardSettings(
+        pref_service, keyboard_policies, *keyboard, *settings_dict);
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kKeyboard,
                  keyboard->device_key)) {
     keyboard->settings = GetKeyboardSettingsFromGlobalPrefs(
-        pref_service, *keyboard, force_persistence);
+        pref_service, keyboard_policies, *keyboard, force_persistence);
   } else {
     keyboard->settings =
-        GetDefaultKeyboardSettings(keyboard->is_external, keyboard->meta_key);
+        GetDefaultKeyboardSettings(keyboard_policies, *keyboard);
   }
   DCHECK(keyboard->settings);
 
-  UpdateKeyboardSettingsImpl(pref_service, *keyboard, force_persistence);
+  UpdateKeyboardSettingsImpl(pref_service, keyboard_policies, *keyboard,
+                             force_persistence);
+
+  if (keyboard_policies.top_row_are_fkeys_policy &&
+      keyboard_policies.top_row_are_fkeys_policy->policy_status ==
+          mojom::PolicyStatus::kManaged) {
+    keyboard->settings->top_row_are_fkeys =
+        keyboard_policies.top_row_are_fkeys_policy->value;
+  }
 }
 
 void KeyboardPrefHandlerImpl::UpdateKeyboardSettings(
     PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard) {
-  UpdateKeyboardSettingsImpl(pref_service, keyboard, /*force_persistence=*/{});
+  UpdateKeyboardSettingsImpl(pref_service, keyboard_policies, keyboard,
+                             /*force_persistence=*/{});
 }
 
 }  // namespace ash

@@ -18,15 +18,20 @@ class ASH_EXPORT KeyboardPrefHandler {
   virtual ~KeyboardPrefHandler() = default;
 
   // Initializes device settings in prefs and update the `settings` member of
-  // the `mojom::Keyboard` object.
-  // If `pref_service` is null, sets the `settings` member to default settings.
-  virtual void InitializeKeyboardSettings(PrefService* pref_service,
-                                          mojom::Keyboard* keyboard) = 0;
+  // the `mojom::Keyboard` object. Respects all policies given by
+  // `keyboard_policies`. If `pref_service` is null, sets the `settings` member
+  // to default settings.
+  virtual void InitializeKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) = 0;
 
   // Updates device settings stored in prefs to match the values in
   // `keyboard.settings`.
-  virtual void UpdateKeyboardSettings(PrefService* pref_service,
-                                      const mojom::Keyboard& keyboard) = 0;
+  virtual void UpdateKeyboardSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      const mojom::Keyboard& keyboard) = 0;
 };
 
 }  // namespace ash
