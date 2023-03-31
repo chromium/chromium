@@ -103,15 +103,6 @@ class PrefModelAssociator : public syncer::SyncableService,
   // See |legacy_model_type_preferences_|.
   void RegisterPrefWithLegacyModelType(const std::string& name);
 
-  // Merges the local_value into the supplied server_value and returns
-  // the result. If there is a conflict, the server value takes precedence. Note
-  // that only certain preferences will actually be merged, all others will
-  // return a copy of the server value.
-  // Exposed for testing.
-  base::Value MergePreference(const std::string& name,
-                              const base::Value& local_value,
-                              const base::Value& server_value) const;
-
   // Fills |sync_data| with a sync representation of the preference data
   // provided.
   // Exposed for testing.

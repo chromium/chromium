@@ -27,6 +27,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
+#include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
@@ -71,41 +72,6 @@ absl::optional<base::Value> ReadPreferenceSpecifics(
     return absl::nullopt;
   }
   return std::move(*parsed_json);
-}
-
-base::Value::List MergeListValues(const base::Value::List& from_value,
-                                  const base::Value::List& to_value) {
-  base::Value::List result = to_value.Clone();
-  for (const auto& value : from_value) {
-    if (!base::Contains(result, value)) {
-      result.Append(value.Clone());
-    }
-  }
-
-  return result;
-}
-
-base::Value::Dict MergeDictionaryValues(const base::Value::Dict& from_value,
-                                        const base::Value::Dict& to_value) {
-  base::Value::Dict result = to_value.Clone();
-
-  for (auto it : from_value) {
-    // It's not clear whether using a C++17 structured binding here would cause
-    // a copy of the value or not, so in doubt unpack the old way.
-    const base::Value* from_key_value = &it.second;
-    base::Value* to_key_value = result.Find(it.first);
-    if (to_key_value) {
-      if (from_key_value->is_dict() && to_key_value->is_dict()) {
-        *to_key_value = base::Value(MergeDictionaryValues(
-            from_key_value->GetDict(), to_key_value->GetDict()));
-      }
-      // Note that for all other types we want to preserve the "to"
-      // values so we do nothing here.
-    } else {
-      result.Set(it.first, from_key_value->Clone());
-    }
-  }
-  return result;
 }
 
 }  // namespace
@@ -208,8 +174,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
       } else {
         // We have both server and local values. Merge them if account storage
         // is not supported.
-        base::Value new_value(
-            MergePreference(pref_name, *user_pref_value, sync_value));
+        base::Value new_value(helper::MergePreference(
+            client_, pref_name, *user_pref_value, sync_value));
         // Update the local preference based on what we got from the sync
         // server.
         if (new_value.is_none()) {
@@ -341,40 +307,6 @@ void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
   }
   synced_preferences_.clear();
   pref_service_->OnIsSyncingChanged();
-}
-
-base::Value PrefModelAssociator::MergePreference(
-    const std::string& name,
-    const base::Value& local_value,
-    const base::Value& server_value) const {
-  // This function special cases preferences individually, so don't attempt
-  // to merge for all migrated values.
-  if (client_) {
-    if (client_->IsMergeableListPreference(name)) {
-      if (local_value.is_none())
-        return server_value.Clone();
-      if (server_value.is_none())
-        return local_value.Clone();
-      return base::Value(
-          MergeListValues(local_value.GetList(), server_value.GetList()));
-    }
-    if (client_->IsMergeableDictionaryPreference(name)) {
-      if (local_value.is_none())
-        return server_value.Clone();
-      if (server_value.is_none())
-        return local_value.Clone();
-      return base::Value(
-          MergeDictionaryValues(local_value.GetDict(), server_value.GetDict()));
-    }
-    base::Value merged_value =
-        client_->MaybeMergePreferenceValues(name, local_value, server_value);
-    if (!merged_value.is_none()) {
-      return merged_value;
-    }
-  }
-
-  // If this is not a specially handled preference, server wins.
-  return server_value.Clone();
 }
 
 bool PrefModelAssociator::CreatePrefSyncData(

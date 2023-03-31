@@ -18,6 +18,8 @@ static_library("sync_preferences") {
     "pref_service_syncable_factory.cc",
     "pref_service_syncable_factory.h",
     "pref_service_syncable_observer.h",
+    "preferences_merge_helper.cc",
+    "preferences_merge_helper.h",
     "syncable_prefs_database.cc",
     "syncable_prefs_database.h",
     "synced_pref_observer.h",
@@ -90,6 +92,7 @@ source_set("unit_tests") {
     "dual_layer_user_pref_store_unittest.cc",
     "pref_model_associator_unittest.cc",
     "pref_service_syncable_unittest.cc",
+    "preferences_merge_helper_unittest.cc",
   ]
 
   deps = [
