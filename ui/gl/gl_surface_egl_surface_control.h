@@ -217,8 +217,9 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
   // Presenter in the java view tree.
   scoped_refptr<gfx::SurfaceControl::Surface> root_surface_;
 
-  // Set if a transaction was applied and we are waiting for it to be acked.
-  bool transaction_ack_pending_ = false;
+  // Numberf of transactions that was applied and we are waiting for it to be
+  // committed (if commit is enabled) or acked (if commit is not enabled).
+  uint32_t num_transaction_commit_or_ack_pending_ = 0u;
 
   float frame_rate_ = 0;
   bool frame_rate_update_pending_ = false;

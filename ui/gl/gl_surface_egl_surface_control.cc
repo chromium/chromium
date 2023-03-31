@@ -221,10 +221,10 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_surfaces_count_ = 0u;
   frame_rate_update_pending_ = false;
 
-  if (transaction_ack_pending_ && !use_target_deadline_) {
+  if (num_transaction_commit_or_ack_pending_ && !use_target_deadline_) {
     pending_transaction_queue_.push(std::move(pending_transaction_).value());
   } else {
-    transaction_ack_pending_ = true;
+    num_transaction_commit_or_ack_pending_++;
     pending_transaction_->Apply();
     transaction_ack_timeout_manager_.ScheduleHangDetection();
   }
@@ -452,6 +452,10 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
   pending_cb.callback = std::move(presentation_callback);
   pending_presentation_callback_queue_.push(std::move(pending_cb));
 
+  if (!using_on_commit_callback_) {
+    CHECK(num_transaction_commit_or_ack_pending_);
+    num_transaction_commit_or_ack_pending_--;
+  }
   CheckPendingPresentationCallbacks();
 
   // If we don't use OnCommit, we advance transaction queue after we received
@@ -464,15 +468,14 @@ void GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread() {
   TRACE_EVENT0("gpu",
                "GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread");
   DCHECK(using_on_commit_callback_);
+  CHECK(num_transaction_commit_or_ack_pending_);
+  num_transaction_commit_or_ack_pending_--;
   AdvanceTransactionQueue();
 }
 
 void GLSurfaceEGLSurfaceControl::AdvanceTransactionQueue() {
-  DCHECK(transaction_ack_pending_);
-  transaction_ack_pending_ = false;
-
   if (!pending_transaction_queue_.empty()) {
-    transaction_ack_pending_ = true;
+    num_transaction_commit_or_ack_pending_++;
     pending_transaction_queue_.front().Apply();
     pending_transaction_queue_.pop();
     transaction_ack_timeout_manager_.ScheduleHangDetection();
@@ -519,8 +522,12 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
   // If there are unsignaled fences and we don't have any pending transactions,
   // schedule a task to poll the fences again. If there is a pending transaction
   // already, then we'll poll when that transaction is acked.
+  // Note this check is interested in pending ack, not pending commit. However
+  // pending commit always implies pending ack, so there is no false negative
+  // where a recheck is necessary but not posted.
   if (!pending_presentation_callback_queue_.empty() &&
-      pending_transaction_queue_.empty()) {
+      pending_transaction_queue_.empty() &&
+      !num_transaction_commit_or_ack_pending_) {
     check_pending_presentation_callback_queue_task_.Reset(base::BindOnce(
         &GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks,
         weak_factory_.GetWeakPtr()));
