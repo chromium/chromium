@@ -4394,8 +4394,11 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_WEAK_PASSWORDS_SUBTITLE" desc="Subitle for the weak passwords item in the Password Checkup Homepage when there are weak passwords. [iOS only]">
         Create strong passwords
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_CHECK_AGAIN_BUTTON" desc="Label of a button which starts a new password Check [Length: 22em] [iOS only]">
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_CHECK_AGAIN_BUTTON" desc="Label of a button which starts a new password checkup [Length: 22em] [iOS only]">
         Check Again
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_ERROR_DIALOG_TITLE" desc="Title of the error dialog presented to the user when a password checkup failed. [iOS only]">
+        Something went wrong
       </message>
       <message name="IDS_IOS_ITEM_ACCOUNT_ERROR_BADGE_ACCESSIBILITY_HINT" desc="Accessibility hint to let the user know that there is an error badge associated with the listed item. The hint is appended to the a11y message that describes the item. For example, the 'settings' message will become 'settings, account error' when there is an account error badge on the item. [iOS only]">
         Account error

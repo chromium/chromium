@@ -76,7 +76,7 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
 
     PasswordCheckupViewController* view_controller =
         GetPasswordCheckupViewController();
-    view_controller.delegate = mediator_;
+
     mediator_ = [[PasswordCheckupMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                          GetForBrowserState(

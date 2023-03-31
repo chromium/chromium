@@ -17,8 +17,6 @@ typedef NS_ENUM(NSInteger, PasswordCheckupHomepageState) {
   PasswordCheckupHomepageStateDone,
   // When the password check is running.
   PasswordCheckupHomepageStateRunning,
-  // When password check failed due to network issues, quota limit or others.
-  PasswordCheckupHomepageStateError,
   // When user has no passwords and check can't be performed.
   PasswordCheckupHomepageStateDisabled,
 };
@@ -37,6 +35,10 @@ typedef NS_ENUM(NSInteger, PasswordCheckupHomepageState) {
 
 // Sets the number of affiliated groups for which the user has saved passwords.
 - (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount;
+
+// Shows an error dialog with the inidicated message. Happens when a password
+// checkup failed due to the user not being signed in, netword issues or others.
+- (void)showErrorDialogWithMessage:(NSString*)message;
 
 @end
 

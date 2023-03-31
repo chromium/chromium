@@ -15,11 +15,16 @@ source_set("password_checkup") {
     ":password_checkup_ui",
     ":password_checkup_utils",
     "//base",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/settings/password/password_issues",
+    "//ios/chrome/common:string_util",
+    "//ui/base",
   ]
 }
 
@@ -41,6 +46,7 @@ source_set("password_checkup_ui") {
     "resources:password_checkup_header_red",
     "resources:password_checkup_header_yellow",
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
