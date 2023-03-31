@@ -19,6 +19,7 @@ class TargetImpl {
   deconstruct(test_struct) {}
   flatten(values) {}
   flattenUnions(unions) {}
+  flattenMap(map) {}
   requestSubinterface(request, client) {}
 }
 
@@ -198,6 +199,32 @@ promise_test(() => {
                        assert_array_equals(reply.s, [3, 4, 6]);
                      });
 }, 'can serialize and deserialize unions');
+
+promise_test(() => {
+  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
+  targetRouter.flattenMap.addListener(map => {
+    return {keys: Object.keys(map), values: Object.values(map)};
+  });
+
+  return targetRemote.flattenMap({0: 1, 2: 3, 4: 5}).then(reply => {
+    assert_array_equals(reply.keys, [0, 2, 4]);
+    assert_array_equals(reply.values, [1, 3, 5]);
+  });
+}, 'can serialize and deserialize maps with odd number of items');
+
+promise_test(() => {
+  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
+  targetRouter.flattenMap.addListener(map => {
+    return {keys: Object.keys(map), values: Object.values(map)};
+  });
+
+  return targetRemote.flattenMap({0: 1, 2: 3}).then(reply => {
+    assert_array_equals(reply.keys, [0, 2]);
+    assert_array_equals(reply.values, [1, 3]);
+  });
+}, 'can serialize and deserialize maps with even number of items');
 
 promise_test(() => {
   let impl = new TargetImpl;
