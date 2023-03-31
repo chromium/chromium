@@ -6698,7 +6698,6 @@ crbug.com/952717 [ Win10.20h2 ] http/tests/xmlhttprequest/redirect-cross-origin-
 # Sheriff 2023-03-23 flaking on Mac
 crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-offscreen-new.html [ Failure Pass ]
-crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
@@ -6707,8 +6706,6 @@ crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-below-viewport-offscreen-new.html [ Failure Pass ]
 crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-offscreen-new.html [ Failure Pass ]
 # Possibly related - originally added from automated test imports:
-crbug.com/626703 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-new.html [ Failure ]
-crbug.com/626703 [ Mac12 ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-new.html [ Failure ]
 
 # Re-enable test after adding support for component ads in frame contexts
 crbug.com/1427455 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html [ Failure Pass Timeout ]
