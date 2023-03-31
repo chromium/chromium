@@ -49,7 +49,8 @@ TouchToFillDelegateImpl::~TouchToFillDelegateImpl() {
 
 TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
     FormGlobalId form_id,
-    FieldGlobalId field_id) {
+    FieldGlobalId field_id,
+    const FormData* optional_received_form) {
   // Trigger only on supported platforms.
   if (!manager_->client()->IsTouchToFillCreditCardSupported()) {
     return {TriggerOutcome::kUnsupportedFieldType, {}};
@@ -71,6 +72,10 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
   // and the card expiration date).
   if (!FormHasAllEmtyCreditCardFields(*form)) {
     return {TriggerOutcome::kIncompleteForm, {}};
+  }
+  if (optional_received_form != nullptr &&
+      IsFormPrefilled(*optional_received_form)) {
+    return {TriggerOutcome::kFormAlreadyFilled, {}};
   }
   // Trigger only if not shown before.
   if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
@@ -122,6 +127,7 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
 
 bool TouchToFillDelegateImpl::IntendsToShowTouchToFill(FormGlobalId form_id,
                                                        FieldGlobalId field_id) {
+  // optional_received_form is not available to pass here.
   return DryRun(form_id, field_id).outcome == TriggerOutcome::kShown;
 }
 
@@ -132,7 +138,7 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   // bottomsheet being open.
   query_form_ = form;
   query_field_ = field;
-  DryRunResult dry_run = DryRun(form.global_id(), field.global_id());
+  DryRunResult dry_run = DryRun(form.global_id(), field.global_id(), &form);
   if (dry_run.outcome == TriggerOutcome::kShown &&
       !manager_->client()->ShowTouchToFillCreditCard(
           GetWeakPtr(), std::move(dry_run.cards_to_suggest))) {
@@ -269,6 +275,19 @@ bool TouchToFillDelegateImpl::IsFillingCorrect(
   return !base::ranges::any_of(submitted_form, [](const auto& field) {
     return field->previously_autofilled();
   });
+}
+
+bool TouchToFillDelegateImpl::IsFormPrefilled(const FormData& form) {
+  return base::ranges::any_of(
+      form.fields.begin(), form.fields.end(), [&](const FormFieldData& field) {
+        AutofillField* autofill_field = manager_->GetAutofillField(form, field);
+        if (!FieldHasExpirationDateType(autofill_field) &&
+            autofill_field->Type().GetStorableType() !=
+                ServerFieldType::CREDIT_CARD_NUMBER) {
+          return false;
+        }
+        return !SanitizedFieldIsEmpty(field.value);
+      });
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {
