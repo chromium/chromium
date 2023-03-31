@@ -1387,14 +1387,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // value of the previous in-flow sibling.
   bool NeedsForcedBreakBefore(EBreakBetween previous_break_after_value) const;
 
-  // Get the name of the start page name for this object; see
-  // https://drafts.csswg.org/css-page-3/#start-page-value
-  virtual const AtomicString StartPageName() const;
-
-  // Get the name of the end page name for this object; see
-  // https://drafts.csswg.org/css-page-3/#end-page-value
-  virtual const AtomicString EndPageName() const;
-
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,

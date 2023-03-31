@@ -40,7 +40,6 @@ namespace blink {
 
 class LayoutQuote;
 class LocalFrameView;
-class NamedPagesMapper;
 class ViewFragmentationContext;
 
 // LayoutView is the root of the layout tree and the Document's LayoutObject.
@@ -210,13 +209,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   // TODO(1229581): Make non-virtual.
   virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const = 0;
-
-  // TODO(1229581): Remove this function, and the NamedPagesMapper class.
-  NamedPagesMapper* GetNamedPagesMapper() const {
-    NOT_DESTROYED();
-    NOTREACHED();
-    return nullptr;
-  }
 
   PhysicalRect DocumentRect() const;
 

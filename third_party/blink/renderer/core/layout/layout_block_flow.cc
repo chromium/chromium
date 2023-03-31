@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
-#include "third_party/blink/renderer/core/page/named_pages_mapper.h"
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -250,15 +249,9 @@ class BlockChildrenLayoutInfo {
   bool IsAtFirstInFlowChild() const { return is_at_first_in_flow_child_; }
   void ClearIsAtFirstInFlowChild() { is_at_first_in_flow_child_ = false; }
 
-  const AtomicString& PreviousEndPage() const { return previous_end_page_; }
-  void SetPreviousEndPage(const AtomicString& name) {
-    previous_end_page_ = name;
-  }
-
  private:
   MultiColumnLayoutState multi_column_layout_state_;
   MarginInfo margin_info_;
-  AtomicString previous_end_page_;
   LayoutUnit previous_float_logical_bottom_;
   EBreakBetween previous_break_after_value_;
   bool is_at_first_in_flow_child_;
@@ -589,9 +582,6 @@ void LayoutBlockFlow::ResetLayout() {
     // [1] https://drafts.csswg.org/css-break/#possible-breaks
     SetBreakBefore(LayoutBlock::BreakBefore());
     SetBreakAfter(LayoutBlock::BreakAfter());
-
-    SetPropagatedStartPageName(AtomicString());
-    SetPropagatedEndPageName(AtomicString());
   }
 }
 
@@ -841,48 +831,12 @@ void LayoutBlockFlow::InsertForcedBreakBeforeChildIfNeeded(
     LayoutBox& child,
     BlockChildrenLayoutInfo& layout_info) {
   NOT_DESTROYED();
-  LayoutState* layout_state = View()->GetLayoutState();
-
-  // If the child has a start/end page name, that's the current name. Otherwise
-  // we'll use the input page name of this block (the name specified by this
-  // block, or by an ancestor). Adjacent siblings with the same page name may be
-  // placed on the same page. Otherwise, if there's a mismatch between the
-  // previous end page name and the current start page name, we need a break,
-  // except before the first in-flow child, since there's no valid class A
-  // breakpoint there.
-  const AtomicString child_start_page = child.StartPageName();
-  const AtomicString child_end_page = child.EndPageName();
-  const AtomicString& current_start_page =
-      child_start_page ? child_start_page : layout_state->InputPageName();
-  const AtomicString& current_end_page =
-      child_end_page ? child_end_page : layout_state->InputPageName();
-  bool page_name_has_changed =
-      current_start_page != layout_info.PreviousEndPage();
-
-  // Page name changes are detected above by comparing the previous end page
-  // name and the current start page name. We're now storing the current *end*
-  // page name, for the next sibling to use in its comparison. This means that
-  // we're not paying any attention to any page name changes within the current
-  // child. That's fine, though. We're done with this child, and we've already
-  // inserted any named page breaks that were needed inside the child. Note that
-  // all of that will be discarded and re-laid out, if it turns out that we need
-  // a break before this child as well. This is how block fragmentation works;
-  // if we insert a break in front of something that we've laid out, we need
-  // another deep layout pass of all subsequent content, since pagination struts
-  // (or the whereabouts of the fragmentation boundary relative to the child)
-  // may change.
-  layout_info.SetPreviousEndPage(current_end_page);
-
   if (layout_info.IsAtFirstInFlowChild()) {
     // There's no class A break point before the first child (only *between*
     // siblings), so steal its break value and join it with what we already have
     // here.
     SetBreakBefore(
         JoinFragmentainerBreakValues(BreakBefore(), child.BreakBefore()));
-
-    // Similarly, since there's no valid class A breakpoint here, if the first
-    // child has a start page name associated, it will be propagated upwards.
-    SetPropagatedStartPageName(child_start_page);
 
     return;
   }
@@ -893,9 +847,6 @@ void LayoutBlockFlow::InsertForcedBreakBeforeChildIfNeeded(
   EBreakBetween class_a_break_point_value =
       child.ClassABreakPointValue(layout_info.PreviousBreakAfterValue());
 
-  if (page_name_has_changed && IsBreakBetweenControllable(EBreakBetween::kPage))
-    class_a_break_point_value = EBreakBetween::kPage;
-
   if (IsForcedFragmentainerBreakValue(class_a_break_point_value)) {
     layout_info.GetMarginInfo().ClearMargin();
     LayoutUnit old_logical_top = LogicalHeight();
@@ -904,16 +855,6 @@ void LayoutBlockFlow::InsertForcedBreakBeforeChildIfNeeded(
     SetLogicalHeight(new_logical_top);
     LayoutUnit pagination_strut = new_logical_top - old_logical_top;
     child.SetPaginationStrut(pagination_strut);
-    if (page_name_has_changed) {
-      // This was a forced break because of named pages. We now need to store
-      // the page number where this happened, so that we can apply the right
-      // descriptors (size, margins, page-orientation, etc.) when printing the
-      // page.
-      if (NamedPagesMapper* mapper = View()->GetNamedPagesMapper()) {
-        mapper->AddNamedPage(current_start_page,
-                             CurrentPageNumber(new_logical_top));
-      }
-    }
   }
 }
 
@@ -2307,10 +2248,6 @@ void LayoutBlockFlow::HandleAfterSideOfBlock(LayoutBox* last_child,
     // join this break-after value with the break-before value there.
     SetBreakAfter(
         JoinFragmentainerBreakValues(BreakAfter(), last_child->BreakAfter()));
-
-    // Similarly, since there's no valid class A breakpoint here, if the last
-    // child has a end page name associated, it will be propagated upwards.
-    SetPropagatedEndPageName(last_child->EndPageName());
   }
 }
 
@@ -4122,50 +4059,6 @@ void LayoutBlockFlow::SetFirstForcedBreakOffset(LayoutUnit block_offset) {
     rare_data_ = MakeGarbageCollected<LayoutBlockFlowRareData>(this);
   }
   rare_data_->first_forced_break_offset_ = block_offset;
-}
-
-const AtomicString LayoutBlockFlow::StartPageName() const {
-  NOT_DESTROYED();
-  if (const AtomicString& propagated_name = PropagatedStartPageName())
-    return propagated_name;
-  return StyleRef().Page();
-}
-
-const AtomicString LayoutBlockFlow::EndPageName() const {
-  NOT_DESTROYED();
-  if (const AtomicString& propagated_name = PropagatedEndPageName())
-    return propagated_name;
-  return StyleRef().Page();
-}
-
-const AtomicString LayoutBlockFlow::PropagatedStartPageName() const {
-  NOT_DESTROYED();
-  if (!rare_data_)
-    return AtomicString();
-  return rare_data_->propagated_start_page_name_;
-}
-
-void LayoutBlockFlow::SetPropagatedStartPageName(const AtomicString& name) {
-  NOT_DESTROYED();
-  if (name.empty() && !rare_data_)
-    return;
-  LayoutBlockFlowRareData& rare_data = EnsureRareData();
-  rare_data.propagated_start_page_name_ = name;
-}
-
-const AtomicString LayoutBlockFlow::PropagatedEndPageName() const {
-  NOT_DESTROYED();
-  if (!rare_data_)
-    return AtomicString();
-  return rare_data_->propagated_end_page_name_;
-}
-
-void LayoutBlockFlow::SetPropagatedEndPageName(const AtomicString& name) {
-  NOT_DESTROYED();
-  if (name.empty() && !rare_data_)
-    return;
-  LayoutBlockFlowRareData& rare_data = EnsureRareData();
-  rare_data.propagated_end_page_name_ = name;
 }
 
 void LayoutBlockFlow::PositionSpannerDescendant(
