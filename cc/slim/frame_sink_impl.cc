@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/slim/constants.h"
+#include "cc/slim/delayed_scheduler.h"
 #include "cc/slim/frame_sink_impl_client.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -123,7 +124,12 @@ void FrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
     return;
   }
   needs_begin_frame_ = needs_begin_frame;
+  scheduler_->SetNeedsBeginFrame(needs_begin_frame);
   frame_sink_->SetNeedsBeginFrame(needs_begin_frame);
+}
+
+void FrameSinkImpl::MaybeCompositeNow() {
+  scheduler_->MaybeCompositeNow();
 }
 
 void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
@@ -229,6 +235,9 @@ void FrameSinkImpl::DidReceiveCompositorFrameAck(
   ReclaimResources(std::move(resources));
   DCHECK_GT(num_unacked_frames_, 0u);
   num_unacked_frames_--;
+  if (!num_unacked_frames_) {
+    scheduler_->SetIsSwapThrottled(false);
+  }
   client_->DidReceiveCompositorFrameAck();
 }
 
@@ -305,6 +314,9 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
         0);
   }
   num_unacked_frames_++;
+  if (num_unacked_frames_ == 1) {
+    scheduler_->SetIsSwapThrottled(true);
+  }
   client_->DidSubmitCompositorFrame();
   return true;
 }

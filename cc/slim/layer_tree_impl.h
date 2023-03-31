@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   void UpdateTopControlsVisibleHeight(float height) override;
   void SetNeedsAnimate() override;
   void SetNeedsRedraw() override;
+  void MaybeCompositeNow() override;
   const scoped_refptr<Layer>& root() const override;
   void SetRoot(scoped_refptr<Layer> root) override;
   void SetFrameSink(std::unique_ptr<FrameSink> sink) override;
@@ -201,6 +202,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   uint32_t num_defer_begin_frame_ = 0u;
   // Number of begin frames with no draw. Stop requesting begin frames after
   // this reaches `num_unneeded_begin_frame_before_stop_`.
+  // TODO(boliu): Move this logic to DelayedScheduler.
   uint32_t num_begin_frames_with_no_draw_ =
       num_unneeded_begin_frame_before_stop_;
 

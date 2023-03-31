@@ -37,6 +37,21 @@ class Scheduler {
   // Viz called OnBeginFrame with new BeginFrameArgs.
   virtual void OnBeginFrameFromViz(
       const viz::BeginFrameArgs& begin_frame_args) = 0;
+
+  // Call from viz to inform that there are no more begin frames even when
+  // requested.
+  virtual void OnBeginFramePausedChanged(bool paused) = 0;
+
+  // Called to inform scheduler that client starts or stops requesting begin
+  // frames from viz.
+  virtual void SetNeedsBeginFrame(bool needs_begin_frame) = 0;
+
+  // Called to inform scheduler that client is swap throttled so will always
+  // return false when calling `DoBeginFrame`.
+  virtual void SetIsSwapThrottled(bool is_swap_throttled) = 0;
+
+  // See LayerTree::MaybeCompositeNow.
+  virtual void MaybeCompositeNow() = 0;
 };
 
 }  // namespace cc::slim

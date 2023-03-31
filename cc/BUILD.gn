@@ -781,6 +781,7 @@ cc_test("cc_unittests") {
     "resources/resource_pool_unittest.cc",
     "scheduler/scheduler_state_machine_unittest.cc",
     "scheduler/scheduler_unittest.cc",
+    "slim/delayer_scheduler_unittest.cc",
     "slim/slim_layer_tree_compositor_frame_unittest.cc",
     "slim/slim_layer_tree_unittest.cc",
     "slim/slim_layer_unittest.cc",
