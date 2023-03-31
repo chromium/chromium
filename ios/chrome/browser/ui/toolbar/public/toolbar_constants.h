@@ -56,9 +56,6 @@ extern const CGFloat kDimmedToolbarSpotlightAlpha;
 // Adaptive toolbar position constants.
 extern const CGFloat kExpandedLocationBarHorizontalMargin;
 extern const CGFloat kContractedLocationBarHorizontalMargin;
-// Location bar leading margin with kIOSOmniboxUpdatedPopupUI flag. Should be
-// used instead of kExpandedLocationBarHorizontalMargin.
-extern const CGFloat kExpandedLocationBarLeadingMargin;
 
 // Adaptive Location bar constants.
 extern const CGFloat kAdaptiveLocationBarBackgroundAlpha;

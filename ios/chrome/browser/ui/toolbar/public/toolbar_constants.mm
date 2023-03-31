@@ -39,7 +39,6 @@ const CGFloat kDimmedToolbarSpotlightAlpha = 0.14;
 
 const CGFloat kExpandedLocationBarHorizontalMargin = 10;
 const CGFloat kContractedLocationBarHorizontalMargin = 15;
-const CGFloat kExpandedLocationBarLeadingMargin = 16;
 
 const CGFloat kAdaptiveLocationBarBackgroundAlpha = 0.09;
 const CGFloat kAdaptiveLocationBarBackgroundAlphaIncognito = 0.12;

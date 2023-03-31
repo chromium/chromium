@@ -325,13 +325,11 @@
                        constant:kContractedLocationBarHorizontalMargin],
   ]];
 
-  CGFloat leadingMargin = kExpandedLocationBarLeadingMargin;
-
   // Constraints for contractedNoMarginConstraints.
   [self.contractedNoMarginConstraints addObjectsFromArray:@[
     [self.locationBarContainer.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:leadingMargin],
+                       constant:kExpandedLocationBarHorizontalMargin],
     [self.locationBarContainer.trailingAnchor
         constraintEqualToAnchor:safeArea.trailingAnchor
                        constant:-kExpandedLocationBarHorizontalMargin]
@@ -342,7 +340,7 @@
         constraintEqualToAnchor:self.cancelButton.leadingAnchor],
     [self.locationBarContainer.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
-                       constant:leadingMargin]
+                       constant:kExpandedLocationBarHorizontalMargin]
   ]];
 
   // Trailing StackView constraints.
