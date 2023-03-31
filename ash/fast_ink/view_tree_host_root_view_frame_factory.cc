@@ -107,7 +107,7 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(const gfx::Size& size,
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
-  resource->format = viz::SharedImageFormat::SinglePlane(format);
+  resource->format = format;
   resource->ui_source_id = ui_source_id;
   resource->resource_size = size;
 
