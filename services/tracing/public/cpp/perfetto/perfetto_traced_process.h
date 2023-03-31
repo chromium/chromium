@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -157,7 +158,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
    private:
-    PerfettoTracedProcess::DataSourceBase* const data_source_ = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #addr-of
+    RAW_PTR_EXCLUSION PerfettoTracedProcess::DataSourceBase* const
+        data_source_ = nullptr;
     raw_ptr<PerfettoTracedProcess::DataSourceBase* const> data_source_ptr_ =
         &data_source_;
     perfetto::DataSourceConfig data_source_config_;

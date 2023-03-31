@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -153,7 +154,9 @@ class DiskCacheLPMFuzzer {
     EntryInfo(const EntryInfo&) = delete;
     EntryInfo& operator=(const EntryInfo&) = delete;
 
-    disk_cache::Entry* entry_ptr = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #addr-of, #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION disk_cache::Entry* entry_ptr = nullptr;
     std::unique_ptr<TestEntryResultCompletionCallback> tcb;
   };
   void RunTaskForTest(base::OnceClosure closure);

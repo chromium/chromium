@@ -14,6 +14,7 @@
 
 #include "testing/libfuzzer/proto/skia_image_filter_proto_converter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
@@ -30,7 +31,7 @@ using skia_image_filter_proto_converter::Converter;
 static const int kBitmapSize = 24;
 
 struct Environment {
-  base::TestDiscardableMemoryAllocator* discardable_memory_allocator;
+  raw_ptr<base::TestDiscardableMemoryAllocator> discardable_memory_allocator;
   Environment() {
     base::EnableTerminationOnOutOfMemory();
     discardable_memory_allocator = new base::TestDiscardableMemoryAllocator();

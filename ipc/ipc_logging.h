@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/task/single_thread_task_runner.h"
@@ -114,10 +115,10 @@ class COMPONENT_EXPORT(IPC) Logging {
   std::vector<LogData> queued_logs_;
   bool queue_invoke_later_pending_;
 
-  Sender* sender_;
+  raw_ptr<Sender> sender_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
 
-  Consumer* consumer_;
+  raw_ptr<Consumer> consumer_;
 
   static LogFunctionMap* log_function_map_;
 };

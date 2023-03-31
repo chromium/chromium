@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
@@ -279,7 +280,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   // Used for logging.
   mutable int64_t received_time_;
   mutable std::string output_params_;
-  mutable LogData* log_data_;
+  mutable raw_ptr<LogData> log_data_;
   mutable bool dont_log_;
 #endif
 
