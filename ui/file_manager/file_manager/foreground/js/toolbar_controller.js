@@ -373,6 +373,9 @@ export class ToolbarController {
           /** @type {!FileListSelectionModel} */
           (this.directoryModel_.getFileListSelection()).getCheckSelectMode()) {
         bodyClassList.toggle('check-select');
+        if (!util.isSearchV2Enabled()) {
+          bodyClassList.toggle('check-select-v1');
+        }
       }
     }
   }

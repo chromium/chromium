@@ -632,7 +632,7 @@ body.check-select #cancel-selection-button-wrapper {
 }
 
 /* Search button */
-body.check-select #search-button {
+body.check-select-v1 #search-button {
   display: none;
 }
 
@@ -648,7 +648,7 @@ body.check-select #search-button {
   margin-inline-end: 16px;
 }
 
-body.check-select #search-box {
+body.check-select-v1 #search-box {
   display: none;
 }
 

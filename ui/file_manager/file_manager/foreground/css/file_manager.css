@@ -806,7 +806,7 @@ body.check-select #cancel-selection-button-wrapper {
 }
 
 /* Search button */
-body.check-select #search-button {
+body.check-select-v1 #search-button {
   display: none;
 }
 
@@ -828,7 +828,7 @@ body.check-select #search-button {
   caret-color: var(--cr-input-color);
 }
 
-body.check-select #search-box {
+body.check-select-v1 #search-box {
   display: none;
 }
 
