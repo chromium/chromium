@@ -898,9 +898,10 @@ class LayerPropertiesUpdater {
   void Update();
 
  private:
+  TouchAction ShouldDisableCursorControl();
   void UpdateTouchActionRegion(const HitTestData&);
   void UpdateWheelEventRegion(const HitTestData&);
-  void UpdateNonFastScrollableRegion(const HitTestData&);
+  void UpdateScrollHitTestData(DisplayItem::Type, const HitTestData&);
   void UpdateForNonCompositedScrollbar(const ScrollbarDisplayItem&);
   void UpdateRegionCaptureData(const RegionCaptureData&);
   gfx::Point MapSelectionBoundPoint(const gfx::Point&) const;
@@ -913,30 +914,36 @@ class LayerPropertiesUpdater {
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
   bool selection_only_;
+
   cc::TouchActionRegion touch_action_region_;
+  TouchAction last_disable_cursor_control_ = TouchAction::kNone;
+  const ScrollPaintPropertyNode* last_disable_cursor_control_scroll_ = nullptr;
+
   cc::Region wheel_event_region_;
   cc::Region non_fast_scrollable_region_;
   viz::RegionCaptureBounds capture_bounds_;
 };
 
-void LayerPropertiesUpdater::UpdateTouchActionRegion(
-    const HitTestData& hit_test_data) {
-  if (hit_test_data.touch_action_rects.empty()) {
-    return;
+TouchAction LayerPropertiesUpdater::ShouldDisableCursorControl() {
+  const auto* scroll_node = chunk_to_layer_mapper_.ChunkState()
+                                .Transform()
+                                .NearestScrollTranslationNode()
+                                .ScrollNode();
+  if (scroll_node == last_disable_cursor_control_scroll_) {
+    return last_disable_cursor_control_;
   }
 
+  last_disable_cursor_control_scroll_ = scroll_node;
   // If the element has an horizontal scrollable ancestor (including itself), we
   // need to disable cursor control by setting the bit kInternalPanXScrolls.
-  TouchAction disable_cursor_control = TouchAction::kNone;
+  last_disable_cursor_control_ = TouchAction::kNone;
   // TODO(input-dev): Consider to share the code with
   // ThreadedInputHandler::FindNodeToLatch.
-  for (const auto* scroll_node =
-           chunk_to_layer_mapper_.ChunkState().Transform().ScrollNode();
-       scroll_node; scroll_node = scroll_node->Parent()) {
+  for (; scroll_node; scroll_node = scroll_node->Parent()) {
     if (scroll_node->UserScrollableHorizontal() &&
         scroll_node->ContainerRect().width() <
             scroll_node->ContentsRect().width()) {
-      disable_cursor_control = TouchAction::kInternalPanXScrolls;
+      last_disable_cursor_control_ = TouchAction::kInternalPanXScrolls;
       break;
     }
     // If it is not kAuto, scroll can't propagate, so break here.
@@ -944,6 +951,14 @@ void LayerPropertiesUpdater::UpdateTouchActionRegion(
         cc::OverscrollBehavior::Type::kAuto) {
       break;
     }
+  }
+  return last_disable_cursor_control_;
+}
+
+void LayerPropertiesUpdater::UpdateTouchActionRegion(
+    const HitTestData& hit_test_data) {
+  if (hit_test_data.touch_action_rects.empty()) {
+    return;
   }
 
   for (const auto& touch_action_rect : hit_test_data.touch_action_rects) {
@@ -954,7 +969,7 @@ void LayerPropertiesUpdater::UpdateTouchActionRegion(
     }
     TouchAction touch_action = touch_action_rect.allowed_touch_action;
     if ((touch_action & TouchAction::kPanX) != TouchAction::kNone) {
-      touch_action |= disable_cursor_control;
+      touch_action |= ShouldDisableCursorControl();
     }
     touch_action_region_.Union(touch_action, rect);
   }
@@ -968,7 +983,8 @@ void LayerPropertiesUpdater::UpdateWheelEventRegion(
   }
 }
 
-void LayerPropertiesUpdater::UpdateNonFastScrollableRegion(
+void LayerPropertiesUpdater::UpdateScrollHitTestData(
+    DisplayItem::Type type,
     const HitTestData& hit_test_data) {
   if (hit_test_data.scroll_hit_test_rect.IsEmpty()) {
     return;
@@ -991,8 +1007,19 @@ void LayerPropertiesUpdater::UpdateNonFastScrollableRegion(
     }
   }
 
-  non_fast_scrollable_region_.Union(
-      chunk_to_layer_mapper_.MapVisualRect(hit_test_data.scroll_hit_test_rect));
+  gfx::Rect rect =
+      chunk_to_layer_mapper_.MapVisualRect(hit_test_data.scroll_hit_test_rect);
+  if (rect.IsEmpty()) {
+    return;
+  }
+  non_fast_scrollable_region_.Union(rect);
+
+  // The scroll hit test rect of scrollbar or resizer also contributes to the
+  // touch action region.
+  if (type == DisplayItem::Type::kScrollbarHitTest ||
+      type == DisplayItem::Type::kResizerScrollHitTest) {
+    touch_action_region_.Union(TouchAction::kNone, rect);
+  }
 }
 
 const ScrollbarDisplayItem* NonCompositedScrollbarDisplayItem(
@@ -1081,7 +1108,7 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.hit_test_data) {
         UpdateTouchActionRegion(*chunk.hit_test_data);
         UpdateWheelEventRegion(*chunk.hit_test_data);
-        UpdateNonFastScrollableRegion(*chunk.hit_test_data);
+        UpdateScrollHitTestData(chunk.id.type, *chunk.hit_test_data);
       }
       if (non_composited_scrollbar) {
         UpdateForNonCompositedScrollbar(*non_composited_scrollbar);
