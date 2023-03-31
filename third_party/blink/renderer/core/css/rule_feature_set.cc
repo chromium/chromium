@@ -174,6 +174,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoHostHasAppearance:
     case CSSSelector::kPseudoOpen:
     case CSSSelector::kPseudoClosed:
+    case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoSlotted:
     case CSSSelector::kPseudoVideoPersistent:
     case CSSSelector::kPseudoVideoPersistentAncestor:
@@ -729,6 +730,7 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoDefined:
       case CSSSelector::kPseudoOpen:
       case CSSSelector::kPseudoClosed:
+      case CSSSelector::kPseudoPopoverOpen:
       case CSSSelector::kPseudoVideoPersistent:
       case CSSSelector::kPseudoVideoPersistentAncestor:
       case CSSSelector::kPseudoXrOverlay:

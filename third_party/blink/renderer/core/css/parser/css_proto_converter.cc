@@ -106,6 +106,7 @@ const std::string Converter::kPseudoLookupTable[] = {
     "past",
     "placeholder",
     "placeholder-shown",
+    "popover-open",
     "read-only",
     "read-write",
     "required",
@@ -932,6 +933,8 @@ void Converter::Reset() {
 template <size_t EnumSize, size_t TableSize>
 void Converter::AppendTableValue(int id,
                                  const std::string (&lookup_table)[TableSize]) {
+  // If you hit this assert, you likely need to modify
+  // css/parser/templates/css.proto.tmpl.
   static_assert(EnumSize == TableSize,
                 "Enum used as index should not overflow lookup table");
   CHECK(id > 0 && static_cast<size_t>(id) < TableSize);

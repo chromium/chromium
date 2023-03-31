@@ -361,6 +361,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopoverOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRelativeAnchor:
@@ -506,6 +507,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"placeholder", CSSSelector::kPseudoPlaceholder},
     {"placeholder-shown", CSSSelector::kPseudoPlaceholderShown},
     {"playing", CSSSelector::kPseudoPlaying},
+    {"popover-open", CSSSelector::kPseudoPopoverOpen},
     {"read-only", CSSSelector::kPseudoReadOnly},
     {"read-write", CSSSelector::kPseudoReadWrite},
     {"required", CSSSelector::kPseudoRequired},
@@ -616,10 +618,10 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   bool popover_attribute_enabled =
       !document || RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
                        document->GetExecutionContext());
-  if (match->type == CSSSelector::kPseudoOpen && !popover_attribute_enabled) {
-    return CSSSelector::kPseudoUnknown;
-  }
-  if (match->type == CSSSelector::kPseudoClosed && !popover_attribute_enabled) {
+  if (!popover_attribute_enabled &&
+      (match->type == CSSSelector::kPseudoOpen ||
+       match->type == CSSSelector::kPseudoClosed ||
+       match->type == CSSSelector::kPseudoPopoverOpen)) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -835,6 +837,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopoverOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRelativeAnchor:

@@ -2,7 +2,7 @@
 <meta charset="utf-8" />
 <title>Popover light dismiss behavior</title>
 <link rel="author" href="mailto:masonf@chromium.org">
-<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<link rel=help href="https://open-ui.org/components/popover.research.explainer">
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
 
@@ -36,10 +36,10 @@
     popover1.showPopover();
     popover2.showPopover();
     eventSender.keyDown("Escape");
-    assert_true(popover1.matches(':open'));
-    assert_false(popover2.matches(':open'));
+    assert_true(popover1.matches(':popover-open'));
+    assert_false(popover2.matches(':popover-open'));
     eventSender.keyDown("Escape");
-    assert_false(popover1.matches(':open'));
-    assert_false(popover2.matches(':open'));
+    assert_false(popover1.matches(':popover-open'));
+    assert_false(popover2.matches(':popover-open'));
   },'Escape key should close top level popover');
 </script>

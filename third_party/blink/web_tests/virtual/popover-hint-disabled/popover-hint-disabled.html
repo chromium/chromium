@@ -8,16 +8,15 @@
 <script>
 const target = document.getElementById('target');
 test(() => {
-  assert_false(target.matches(':open'),"The :open pseudo class should be available and false");
-  assert_true(target.matches(':closed'),"The :closed pseudo class should be available and true");
+  assert_false(target.matches(':popover-open'),"The :popover-open pseudo class should be available and false");
 },'popover=hint should still function as a popover');
 
 test(() => {
-  assert_true(target.matches(':closed'));
+  assert_false(target.matches(':popover-open'));
   target.showPopover(); // Shouldn't throw
-  assert_true(target.matches(':open'));
+  assert_true(target.matches(':popover-open'));
   target.hidePopover();
-  assert_true(target.matches(':closed'));
+  assert_false(target.matches(':popover-open'));
 },`popover=hint should function as a manual popover`);
 
 test(() => {
