@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -118,6 +120,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   const bool is_get_display_media_call_;
+  const std::u16string app_name_;
   const bool audio_requested_;
   const bool suppress_local_audio_playback_;  // Effective only if audio shared.
   const content::GlobalRenderFrameHostId capturer_global_id_;

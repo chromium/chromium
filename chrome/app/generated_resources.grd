@@ -12515,6 +12515,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE" desc="Title for the window picker dialog shown when desktop capture is requested by an app.">
         Choose what to share
       </message>
+      <message name="IDS_DISPLAY_MEDIA_PICKER_TITLE" desc="Title for the window picker dialog shown when a getDisplayMedia capture is requested by an app.">
+        Choose what to share with <ph name="APP_NAME">$1</ph>
+      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE_SCREEN_ONLY" desc="Title for the window picker dialog shown when desktop capture of the entire screen is requested by an app.">
         Share your entire screen
       </message>
@@ -12523,6 +12526,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by the app itself.">
         <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen.
+      </message>
+      <message name="IDS_DISPLAY_MEDIA_PICKER_TEXT" desc="Text for the window picker dialog shown when a getDisplayMedia capture is requested by an app to be used by the app itself.">
+        The site will be able to see the contents of your screen
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by a tab.">
         <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>.

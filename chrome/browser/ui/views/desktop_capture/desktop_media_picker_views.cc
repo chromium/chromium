@@ -341,6 +341,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
     : web_contents_(params.web_contents),
       is_get_display_media_call_(params.is_get_display_media_call),
+      app_name_(params.app_name),
       audio_requested_(params.request_audio),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
       capturer_global_id_(
@@ -558,13 +559,18 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     AddChildView(std::move(panes.front().second));
   }
 
-  if (params.app_name == params.target_name) {
-    description_label_->SetText(l10n_util::GetStringFUTF16(
-        IDS_DESKTOP_MEDIA_PICKER_TEXT, params.app_name));
-  } else {
+  if (is_get_display_media_call_) {
     description_label_->SetText(
-        l10n_util::GetStringFUTF16(IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED,
-                                   params.app_name, params.target_name));
+        l10n_util::GetStringUTF16(IDS_DISPLAY_MEDIA_PICKER_TEXT));
+  } else {
+    if (params.app_name == params.target_name) {
+      description_label_->SetText(l10n_util::GetStringFUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_TEXT, params.app_name));
+    } else {
+      description_label_->SetText(
+          l10n_util::GetStringFUTF16(IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED,
+                                     params.app_name, params.target_name));
+    }
   }
 
   DCHECK(!categories_.empty());
@@ -791,6 +797,11 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
 }
 
 std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
+  if (is_get_display_media_call_) {
+    return l10n_util::GetStringFUTF16(IDS_DISPLAY_MEDIA_PICKER_TITLE,
+                                      app_name_);
+  }
+
   int title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE;
 
   if (!tabbed_pane_) {
