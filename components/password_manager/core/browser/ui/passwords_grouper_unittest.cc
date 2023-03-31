@@ -292,13 +292,11 @@ TEST_F(PasswordsGrouperTest, MainDomainComputationUsesPSLExtensions) {
   // a.com is considered eTLD+1 but since a.com is present in PSL Extension List
   // main domains for |forms| would be m.a.com, b.a.com, b.a.com and a.com, thus
   // only forms for b.a.com are grouped.
-  EXPECT_THAT(
-      grouper.GetAffiliatedGroupsWithGroupingInfo(),
-      UnorderedElementsAre(
-          AffiliatedGroup({credential1}, {GetShownOrigin(credential1)}),
-          AffiliatedGroup({credential2, credential3},
-                          {GetShownOrigin(credential2)}),
-          AffiliatedGroup({credential4}, {GetShownOrigin(credential4)})));
+  EXPECT_THAT(grouper.GetAffiliatedGroupsWithGroupingInfo(),
+              UnorderedElementsAre(
+                  AffiliatedGroup({credential1}, {"m.a.com"}),
+                  AffiliatedGroup({credential2, credential3}, {"b.a.com"}),
+                  AffiliatedGroup({credential4}, {"a.com"})));
 }
 
 TEST_F(PasswordsGrouperTest, HttpAndHttpsGroupedTogether) {
@@ -434,10 +432,10 @@ TEST_F(PasswordsGrouperTest, IpAddressesGroupedTogether) {
 
   CredentialUIEntry credential1({form1, form2}), credential2(form3),
       credential3(form4);
-  EXPECT_THAT(grouper().GetAffiliatedGroupsWithGroupingInfo(),
-              UnorderedElementsAre(
-                  AffiliatedGroup({credential1, credential2, credential3},
-                                  {GetShownOrigin(credential1)})));
+  EXPECT_THAT(
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
+      UnorderedElementsAre(AffiliatedGroup(
+          {credential1, credential2, credential3}, {"https://192.168.1.1"})));
 }
 
 }  // namespace password_manager

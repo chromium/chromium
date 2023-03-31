@@ -180,17 +180,26 @@ std::vector<GroupedFacets> MergeRelatedGroups(
 }
 
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
-    const CredentialUIEntry& credential) {
+    const CredentialUIEntry& credential,
+    const base::flat_set<std::string>& psl_extensions) {
   FacetBrandingInfo branding_info;
-  if (IsValidAndroidFacetURI(credential.GetFirstSignonRealm())) {
-    FacetURI facet_uri =
-        FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
+  FacetURI facet_uri =
+      FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
+  if (facet_uri.IsValidAndroidFacetURI()) {
     branding_info.name = SplitByDotAndReverse(facet_uri.android_package_name());
-
     // TODO(crbug.com/1355956): Handle Android App icon URL.
     return branding_info;
   }
-  branding_info.name = GetShownOrigin(credential);
+  std::string group_name = password_manager_util::GetExtendedTopLevelDomain(
+      credential.GetURL(), psl_extensions);
+  if (group_name.empty()) {
+    group_name =
+        credential.GetURL().is_valid()
+            ? base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+                  credential.GetURL()))
+            : facet_uri.potentially_invalid_spec();
+  }
+  branding_info.name = group_name;
   // TODO(crbug.com/1355956): Handle default icon URL.
   return branding_info;
 }
@@ -251,7 +260,8 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
     // If the branding information is missing, create a default one with the
     // sign-on realm.
     if (brandingInfo.name.empty()) {
-      brandingInfo = CreateBrandingInfoFromFacetURI(credentials[0]);
+      brandingInfo =
+          CreateBrandingInfoFromFacetURI(credentials[0], psl_extensions_);
     }
     affiliated_groups.emplace_back(std::move(credentials), brandingInfo);
   }
