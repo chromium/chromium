@@ -41891,7 +41891,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4461" label="TopicsAPIXhr"/>
   <int value="4462" label="ParseFromString"/>
   <int value="4463"
-      label="HTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
+      label="OBSOLETE_HTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
   <int value="4464" label="PopoverTypeAuto"/>
   <int value="4465" label="PopoverTypeManual"/>
   <int value="4466" label="PopoverTypeInvalid"/>

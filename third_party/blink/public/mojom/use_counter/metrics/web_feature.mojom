@@ -3801,7 +3801,7 @@ enum WebFeature {
   kTopicsAPIFetch = 4460,
   kTopicsAPIXhr = 4461,
   kParseFromString = 4462,
-  kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4463,
+  kOBSOLETE_HTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4463,
   kPopoverTypeAuto = 4464,
   kPopoverTypeManual = 4465,
   kPopoverTypeInvalid = 4466,
