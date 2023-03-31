@@ -36,7 +36,8 @@ viz::ResourceId UiResourceManager::FindResourceToReuse(
     const auto& resource = iter.second;
 
     if (resource->ui_source_id == ui_source_id &&
-        resource->resource_size == size && resource->format == format) {
+        resource->resource_size == size &&
+        resource->format.resource_format() == format) {
       return iter.first;
     }
   }
@@ -127,7 +128,7 @@ viz::TransferableResource UiResourceManager::PrepareResourceForExport(
           to_be_exported_resource->mailbox, GL_LINEAR, GL_TEXTURE_2D,
           to_be_exported_resource->sync_token,
           to_be_exported_resource->resource_size,
-          viz::SharedImageFormat::SinglePlane(to_be_exported_resource->format),
+          to_be_exported_resource->format,
           to_be_exported_resource->is_overlay_candidate);
 
   transferable_resource.id = resource_id;
