@@ -41,7 +41,6 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -2086,10 +2085,13 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
 
   // Return a WebAuthn credential.
   const std::string kId = "abcd";
+  const std::u16string kDeviceName = u"Nadeshiko's Pixel 7";
+  const std::string kNameUtf8 = "nadeshiko@example.com";
   const std::u16string kName = u"nadeshiko@example.com";
-  PasskeyCredential::Username passkeyName(kName);
-  PasskeyCredential::BackendId passkeyId(kId);
-  PasskeyCredential passkey(passkeyName, passkeyId);
+  PasskeyCredential::Username passkey_name(kNameUtf8);
+  PasskeyCredential::DeviceName device_name(kDeviceName);
+  PasskeyCredential::BackendId passkey_id(kId);
+  PasskeyCredential passkey(passkey_name, device_name, passkey_id);
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   absl::optional<std::vector<PasskeyCredential>> passkey_list =
@@ -2124,8 +2126,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
   ASSERT_EQ(open_args.suggestions[0].labels.size(), 1U);
   ASSERT_EQ(open_args.suggestions[0].labels[0].size(), 1U);
-  EXPECT_EQ(open_args.suggestions[0].labels[0][0].value,
-            l10n_util::GetStringUTF16(GetPlatformAuthenticatorLabel()));
+  EXPECT_EQ(open_args.suggestions[0].labels[0][0].value, kDeviceName);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that preview of the "username" (i.e. the credential name) works.
@@ -2202,7 +2203,8 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
 
   // Enable WebAuthn autofill to return a credential.
   PasskeyCredential passkey(
-      PasskeyCredential::Username(u"nadeshiko@example.com"),
+      PasskeyCredential::Username("nadeshiko@example.com"),
+      PasskeyCredential::DeviceName(u"Nadeshiko's Pixel 7"),
       PasskeyCredential::BackendId("abcd"));
   absl::optional<std::vector<PasskeyCredential>> passkeys =
       std::vector{std::move(passkey)};

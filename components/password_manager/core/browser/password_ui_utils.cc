@@ -161,16 +161,4 @@ std::vector<std::u16string> GetUsernamesForRealm(
   return usernames;
 }
 
-int GetPlatformAuthenticatorLabel() {
-#if BUILDFLAG(IS_WIN)
-  return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
-#elif BUILDFLAG(IS_MAC)
-  return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
-#elif BUILDFLAG(IS_ANDROID)
-  return IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
-#else
-  return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
-#endif
-}
-
 }  // namespace password_manager

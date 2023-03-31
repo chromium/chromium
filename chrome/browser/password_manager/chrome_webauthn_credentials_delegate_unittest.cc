@@ -48,8 +48,8 @@ constexpr char kUserName1[] = "John.Doe@example.com";
 constexpr char kUserName2[] = "Jane.Doe@example.com";
 constexpr char kDisplayName1[] = "John Doe";
 constexpr char kDisplayName2[] = "Jane Doe";
-constexpr uint8_t kCredId1[] = {'a', 'b', 'c', 'd'};
-constexpr uint8_t kCredId2[] = {'e', 'f', 'g', 'h'};
+constexpr char kCredId1[] = {'a', 'b', 'c', 'd'};
+constexpr char kCredId2[] = {'e', 'f', 'g', 'h'};
 constexpr char kRpId[] = "example.com";
 
 std::vector<uint8_t> UserId1() {
@@ -70,12 +70,23 @@ std::string DisplayName1() {
 std::string DisplayName2() {
   return std::string(kDisplayName2);
 }
-
+std::u16string DeviceName1() {
+  return u"Pixel 3a";
+}
+std::u16string DeviceName2() {
+  return u"Nexus 5";
+}
 std::vector<uint8_t> CredId1() {
   return std::vector<uint8_t>(std::begin(kCredId1), std::end(kCredId1));
 }
 std::vector<uint8_t> CredId2() {
   return std::vector<uint8_t>(std::begin(kCredId2), std::end(kCredId2));
+}
+std::string BackendId1() {
+  return base::Base64Encode(CredId1());
+}
+std::string BackendId2() {
+  return base::Base64Encode(CredId2());
 }
 
 }  // namespace
@@ -161,53 +172,35 @@ class ChromeWebAuthnCredentialsDelegateTest
 // Testing retrieving passkeys when there are 2 public key credentials
 // present.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
-  std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId1(), UserName1(), DisplayName1()));
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId2(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId2(), UserName2(), DisplayName2()));
-
-  credentials_delegate_->OnCredentialsReceived(users);
+  std::vector<PasskeyCredential> credentials;
+  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
+                           PasskeyCredential::DeviceName(DeviceName1()),
+                           PasskeyCredential::BackendId(BackendId1()));
+  credentials.emplace_back(PasskeyCredential::Username(UserName2()),
+                           PasskeyCredential::DeviceName(DeviceName2()),
+                           PasskeyCredential::BackendId(BackendId2()));
+  credentials_delegate_->OnCredentialsReceived(credentials);
 
   auto passkeys = credentials_delegate_->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
-  EXPECT_THAT(
-      *passkeys,
-      testing::ElementsAre(
-          PasskeyCredential(
-              PasskeyCredential::Username(base::UTF8ToUTF16(UserName1())),
-              PasskeyCredential::BackendId(base::Base64Encode(CredId1()))),
-          PasskeyCredential(
-              PasskeyCredential::Username(base::UTF8ToUTF16(UserName2())),
-              PasskeyCredential::BackendId(base::Base64Encode(CredId2())))));
+  EXPECT_EQ(*passkeys, credentials);
 }
 
 // Testing retrieving suggestions when the credentials are not received until
 // afterward.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
-  std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId1(), UserName1(), DisplayName1()));
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId2(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId2(), UserName2(), DisplayName2()));
-
-  credentials_delegate_->OnCredentialsReceived(users);
+  std::vector<PasskeyCredential> credentials;
+  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
+                           PasskeyCredential::DeviceName(DeviceName1()),
+                           PasskeyCredential::BackendId(BackendId1()));
+  credentials.emplace_back(PasskeyCredential::Username(UserName2()),
+                           PasskeyCredential::DeviceName(DeviceName2()),
+                           PasskeyCredential::BackendId(BackendId2()));
+  credentials_delegate_->OnCredentialsReceived(credentials);
 
   auto passkeys = credentials_delegate_->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
-  EXPECT_THAT(
-      *passkeys,
-      testing::ElementsAre(
-          PasskeyCredential(
-              PasskeyCredential::Username(base::UTF8ToUTF16(UserName1())),
-              PasskeyCredential::BackendId(base::Base64Encode(CredId1()))),
-          PasskeyCredential(
-              PasskeyCredential::Username(base::UTF8ToUTF16(UserName2())),
-              PasskeyCredential::BackendId(base::Base64Encode(CredId2())))));
+  EXPECT_EQ(*passkeys, credentials);
 }
 
 // Testing retrieving suggestions when there are no public key credentials
@@ -216,28 +209,6 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        RetrieveCredentialsWithEmptyList) {
   auto suggestions = credentials_delegate_->GetPasskeys();
   EXPECT_FALSE(suggestions.has_value());
-}
-
-// Testing retrieving suggestions when there is a public key credential present
-// with missing user name.
-TEST_F(ChromeWebAuthnCredentialsDelegateTest,
-       RetrieveCredentialWithNoUserName) {
-  const std::u16string kErrorLabel =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
-  std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId1(), absl::nullopt, DisplayName1()));
-
-  credentials_delegate_->OnCredentialsReceived(users);
-
-  auto passkeys = credentials_delegate_->GetPasskeys();
-  ASSERT_TRUE(passkeys.has_value());
-  EXPECT_THAT(
-      *passkeys,
-      testing::ElementsAre(PasskeyCredential(
-          PasskeyCredential::Username(kErrorLabel),
-          PasskeyCredential::BackendId(base::Base64Encode(CredId1())))));
 }
 
 // Testing selection of a credential.
@@ -251,7 +222,15 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
                          UserId2(), UserName2(), DisplayName2()));
 
   SetCredList(users);
-  credentials_delegate_->OnCredentialsReceived(users);
+
+  std::vector<PasskeyCredential> credentials;
+  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
+                           PasskeyCredential::DeviceName(DeviceName1()),
+                           PasskeyCredential::BackendId(BackendId1()));
+  credentials.emplace_back(PasskeyCredential::Username(UserName2()),
+                           PasskeyCredential::DeviceName(DeviceName2()),
+                           PasskeyCredential::BackendId(BackendId2()));
+  credentials_delegate_->OnCredentialsReceived(credentials);
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
@@ -272,11 +251,11 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 
 // Test aborting a request.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
-  std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
-                     device::PublicKeyCredentialUserEntity(
-                         UserId1(), UserName1(), DisplayName1()));
-  credentials_delegate_->OnCredentialsReceived(users);
+  std::vector<PasskeyCredential> credentials;
+  credentials.emplace_back(PasskeyCredential::Username(UserName1()),
+                           PasskeyCredential::DeviceName(DeviceName1()),
+                           PasskeyCredential::BackendId(BackendId1()));
+  credentials_delegate_->OnCredentialsReceived(credentials);
   credentials_delegate_->NotifyWebAuthnRequestAborted();
   EXPECT_FALSE(credentials_delegate_->GetPasskeys());
 }

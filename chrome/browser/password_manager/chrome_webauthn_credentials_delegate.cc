@@ -6,13 +6,10 @@
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/discoverable_credential_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -47,8 +44,8 @@ void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
 
 void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
     const std::string& backend_id) {
-  // `backend_id` is the base64-encoded credential ID. See
-  // `OnCredentialsReceived()` for where these are encoded.
+  // `backend_id` is the base64-encoded credential ID. See `PasskeyCredential`
+  // for where these are encoded.
   absl::optional<std::vector<uint8_t>> selected_credential_id =
       base::Base64Decode(backend_id);
   DCHECK(selected_credential_id);
@@ -88,23 +85,8 @@ void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
 }
 
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
-    const std::vector<device::DiscoverableCredentialMetadata>& credentials) {
-  std::vector<PasskeyCredential> passkeys;
-
-  for (const auto& credential : credentials) {
-    std::u16string name;
-    if (credential.user.name && !credential.user.name->empty()) {
-      name = base::UTF8ToUTF16(*credential.user.name);
-    } else {
-      name = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
-    }
-    passkeys.emplace_back(
-        PasskeyCredential::Username(name),
-        PasskeyCredential::BackendId(base::Base64Encode(credential.cred_id)));
-  }
-
-  passkeys_ = std::move(passkeys);
-
+    std::vector<PasskeyCredential> credentials) {
+  passkeys_ = std::move(credentials);
   if (retrieve_passkeys_callback_) {
     std::move(retrieve_passkeys_callback_).Run();
   }

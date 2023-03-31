@@ -16,10 +16,6 @@ namespace content {
 class WebContents;
 }
 
-namespace device {
-class DiscoverableCredentialMetadata;
-}
-
 // Chrome implementation of WebAuthnCredentialsDelegate.
 class ChromeWebAuthnCredentialsDelegate
     : public password_manager::WebAuthnCredentialsDelegate {
@@ -43,7 +39,7 @@ class ChromeWebAuthnCredentialsDelegate
   // as autofill suggestions. This is called when a WebAuthn Conditional UI
   // request is received.
   void OnCredentialsReceived(
-      const std::vector<device::DiscoverableCredentialMetadata>& credentials);
+      std::vector<password_manager::PasskeyCredential> credentials);
 
   // Lets the delegate know that a WebAuthn request has been aborted, and so
   // WebAuthn options should no longer show up on the autofill popup.

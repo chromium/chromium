@@ -19,8 +19,10 @@
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using password_manager::PasskeyCredential;
 
@@ -56,26 +58,27 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
   webauthn_account_selection_callback_ = std::move(callback);
 
+  std::vector<PasskeyCredential> display_credentials;
+  base::ranges::transform(
+      credentials, std::back_inserter(display_credentials),
+      [](const auto& credential) {
+        return PasskeyCredential(
+            PasskeyCredential::Username(credential.user.name),
+            PasskeyCredential::DeviceName(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK)),
+            PasskeyCredential::BackendId(
+                base::Base64Encode(credential.cred_id)));
+      });
+
   if (is_conditional_request) {
     conditional_request_in_progress_ = true;
     ReportConditionalUiPasskeyCount(credentials.size());
-
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
         content::WebContents::FromRenderFrameHost(frame_host))
         ->GetDelegateForFrame(frame_host)
-        ->OnCredentialsReceived(credentials);
+        ->OnCredentialsReceived(std::move(display_credentials));
     return;
   }
-
-  std::vector<PasskeyCredential> display_credentials;
-  base::ranges::transform(credentials, std::back_inserter(display_credentials),
-                          [](const auto& credential) {
-                            return PasskeyCredential(
-                                PasskeyCredential::Username(
-                                    base::UTF8ToUTF16(*credential.user.name)),
-                                PasskeyCredential::BackendId(
-                                    base::Base64Encode(credential.cred_id)));
-                          });
 
   if (!touch_to_fill_controller_) {
     touch_to_fill_controller_ = std::make_unique<TouchToFillController>();

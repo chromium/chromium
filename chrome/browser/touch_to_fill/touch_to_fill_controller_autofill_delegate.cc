@@ -144,7 +144,7 @@ void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
     return;
 
   password_client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get())
-      ->SelectPasskey(credential.id().value());
+      ->SelectPasskey(credential.id());
 
   CleanUpDriverAndReportOutcome(TouchToFillOutcome::kPasskeyCredentialSelected,
                                 /*show_virtual_keyboard=*/false);

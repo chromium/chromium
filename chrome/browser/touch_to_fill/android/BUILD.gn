@@ -19,6 +19,7 @@ source_set("android") {
     "//chrome/browser/touch_to_fill:public",
     "//chrome/browser/ui",
     "//components/password_manager/core/browser",
+    "//components/strings:components_strings_grit",
     "//ui/android",
     "//ui/gfx",
     "//url",
