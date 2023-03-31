@@ -1578,6 +1578,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
         } else if (isInTabSwitcherMode() || mIsShowingStartSurfaceTabSwitcher) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
+        } else if (mNtpSearchBoxTranslation.y != 0) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION);
         } else {
             PhoneCaptureStateToken newSnapshotState = generateToolbarSnapshotState();
             @ToolbarSnapshotDifference
