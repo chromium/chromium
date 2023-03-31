@@ -346,7 +346,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
         return std::make_unique<Optimizer>(
             context->GetTaskRunner(TaskType::kInternalDefault),
             CrossThreadBindOnce(&TestReadableStreamSource::Detach,
-                                WrapCrossThreadWeakPersistent(this)),
+                                MakeUnwrappingCrossThreadWeakHandle(this)),
             type_);
     }
   }
@@ -560,7 +560,7 @@ class TestWritableStreamSink final : public UnderlyingSinkBase {
     return std::make_unique<Optimizer>(
         context->GetTaskRunner(TaskType::kInternalDefault),
         CrossThreadBindOnce(&TestWritableStreamSink::Detach,
-                            WrapCrossThreadWeakPersistent(this)),
+                            MakeUnwrappingCrossThreadWeakHandle(this)),
         optimizer_flag_, type_);
   }
 
