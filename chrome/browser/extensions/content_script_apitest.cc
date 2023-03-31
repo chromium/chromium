@@ -2069,10 +2069,6 @@ class NTPInterceptionTest : public ExtensionApiTest,
         profile(), https_test_server_.base_url().spec(), ntp_url.spec());
   }
 
-  const net::EmbeddedTestServer* https_test_server() const {
-    return &https_test_server_;
-  }
-
  private:
   net::EmbeddedTestServer https_test_server_;
 };
