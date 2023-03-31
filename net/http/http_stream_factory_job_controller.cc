@@ -833,7 +833,20 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     // priority currently makes sense for preconnects. The priority for
     // preconnects is currently ignored (see RequestSocketsForPool()), but could
     // be used at some point for proxy resolution or something.
-    if (alternative_service_info_.protocol() != kProtoUnknown) {
+    // Note: When `dns_alpn_h3_job_enabled` is true, we create a
+    // PRECONNECT_DNS_ALPN_H3 job. If no matching HTTPS DNS ALPN records are
+    // received, the PRECONNECT_DNS_ALPN_H3 job will fail with
+    // ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, and `preconnect_backup_job_` will
+    // be started in OnPreconnectsComplete().
+    std::unique_ptr<Job> preconnect_job = job_factory_->CreateJob(
+        this, dns_alpn_h3_job_enabled ? PRECONNECT_DNS_ALPN_H3 : PRECONNECT,
+        session_, request_info_, IDLE, proxy_info_, server_ssl_config_,
+        proxy_ssl_config_, destination, origin_url, is_websocket_,
+        enable_ip_based_pooling_, net_log_.net_log());
+    // When there is an valid alternative service info, and `preconnect_job`
+    // has no existing QUIC session, create a job for the alternative service.
+    if (alternative_service_info_.protocol() != kProtoUnknown &&
+        !preconnect_job->HasAvailableQuicSession()) {
       GURL alternative_url = CreateAltSvcUrl(
           origin_url, alternative_service_info_.host_port_pair());
       RewriteUrlWithHostMappingRules(alternative_url);
@@ -849,19 +862,11 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
           enable_ip_based_pooling_, session_->net_log(),
           alternative_service_info_.protocol(), quic_version);
     } else {
-      // Note: When `dns_alpn_h3_job_enabled` is true, we create a
-      // PRECONNECT_DNS_ALPN_H3 job. If no matching HTTPS DNS ALPN records are
-      // received, the PRECONNECT_DNS_ALPN_H3 job will fail with
-      // ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, and |preconnect_backup_job_| will
-      // be started in OnPreconnectsComplete().
-      main_job_ = job_factory_->CreateJob(
-          this, dns_alpn_h3_job_enabled ? PRECONNECT_DNS_ALPN_H3 : PRECONNECT,
-          session_, request_info_, priority_, proxy_info_, server_ssl_config_,
-          proxy_ssl_config_, destination, origin_url, is_websocket_,
-          enable_ip_based_pooling_, net_log_.net_log());
+      main_job_ = std::move(preconnect_job);
+
       if (dns_alpn_h3_job_enabled) {
         preconnect_backup_job_ = job_factory_->CreateJob(
-            this, PRECONNECT, session_, request_info_, priority_, proxy_info_,
+            this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
             server_ssl_config_, proxy_ssl_config_, std::move(destination),
             origin_url, is_websocket_, enable_ip_based_pooling_,
             net_log_.net_log());
