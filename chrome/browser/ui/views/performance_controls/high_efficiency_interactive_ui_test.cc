@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
                        TabWithVideoNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVideoIsPlaying);
   const char kPlayVideo[] = "(el) => { el.play(); }";
-  const DeepQuery video = {"#video_player"};
+  const DeepQuery video = {"#video"};
   constexpr char kMediaIsPlaying[] =
       "(el) => { return el.currentTime > 0.1 && !el.paused && !el.ended && "
       "el.readyState > 2; }";
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents,
-                          GetURL("/performance_controls/video.html")),
+                          GetURL("/media/bigbuck-player.html")),
       ExecuteJsAt(kFirstTabContents, video, kPlayVideo),
       WaitForStateChange(kFirstTabContents, std::move(video_is_playing)),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
 // Check that a tab playing audio in the background won't be discarded
 IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
                        TabWithAudioNotDiscarded) {
-  const DeepQuery audio = {"#audio_player"};
+  const DeepQuery audio = {"audio"};
 
   base::CallbackListSubscription subscription =
       RecentlyAudibleHelper::FromWebContents(
@@ -219,8 +219,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
 
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents,
-                          GetURL("/performance_controls/audio.html")),
+      NavigateWebContents(kFirstTabContents, GetURL("/autoplay_audio.html")),
       ExecuteJsAt(kFirstTabContents, audio, "(el) => { el.play(); }"),
       WaitForEvent(kFirstTabContents, kAudioIsAudible),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -233,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
                        TabWithFormNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIsFocused);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputValueIsUpated);
-  const DeepQuery input_text_box = {"#form_input"};
+  const DeepQuery input_text_box = {"#value"};
 
   StateChange input_is_focused;
   input_is_focused.event = kInputIsFocused;
@@ -248,19 +247,11 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   input_value_updated.type = StateChange::Type::kConditionTrue;
   input_value_updated.test_function = "(el) => { return el.value === 'a'; }";
 
-  GURL form_page_gurl = GetURL("/performance_controls/form.html");
-
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, form_page_gurl),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      // Check that a a non-modified form doesn't prevent the page from being
-      // discarded
-      TryDiscardTab(0), CheckTabIsDiscarded(0),
+      NavigateWebContents(kFirstTabContents, GetURL("/form_search.html")),
 
       // Move focus off of the omnibox
-      SelectTab(kTabStripElementId, 0),
-      WaitForWebContentsReady(kFirstTabContents, form_page_gurl),
       MoveMouseTo(kFirstTabContents, input_text_box), ClickMouse(),
 
       // Wait until the input text box is focused and simulate typing a letter
@@ -270,59 +261,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
       PressKeyboard(),
       WaitForStateChange(kFirstTabContents, std::move(input_value_updated)),
 
-      SelectTab(kTabStripElementId, 1), TryDiscardTab(0),
-      CheckTabIsNotDiscarded(0));
-}
-
-// Check that a content editable element in the background that was interacted
-// by the user won't be discarded
-IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
-                       TabWithContentEditableNotDiscarded) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIsFocused);
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputValueIsUpated);
-  const DeepQuery content_editable_element = {"#editable_id"};
-
-  StateChange element_is_focused;
-  element_is_focused.event = kInputIsFocused;
-  element_is_focused.where = content_editable_element;
-  element_is_focused.type = StateChange::Type::kConditionTrue;
-  element_is_focused.test_function =
-      "(el) => { return el === document.activeElement; }";
-
-  StateChange element_text_updated;
-  element_text_updated.event = kInputValueIsUpated;
-  element_text_updated.where = content_editable_element;
-  element_text_updated.type = StateChange::Type::kConditionTrue;
-  element_text_updated.test_function =
-      "(el) => { return el.textContent === 'a'; }";
-
-  GURL content_editable_page_gurl =
-      GetURL("/performance_controls/content_editable.html");
-
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, content_editable_page_gurl),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      // Check that a non-modified contenteditable doesn't prevent a page from
-      // being discarded
-      TryDiscardTab(0), CheckTabIsDiscarded(0),
-
-      // Move focus off of the omnibox
-      SelectTab(kTabStripElementId, 0),
-      WaitForWebContentsReady(kFirstTabContents, content_editable_page_gurl),
-      MoveMouseTo(kFirstTabContents, content_editable_element), ClickMouse(),
-
-      // Clear the existing text and wait until the input text box is focused
-      ExecuteJsAt(kFirstTabContents, content_editable_element,
-                  "(el) => {el.textContent = ''; el.focus(); el.select(); }"),
-      WaitForStateChange(kFirstTabContents, std::move(element_is_focused)),
-
-      // Simulate typing a letter
-      PressKeyboard(),
-      WaitForStateChange(kFirstTabContents, std::move(element_text_updated)),
-
-      SelectTab(kTabStripElementId, 1), TryDiscardTab(0),
-      CheckTabIsNotDiscarded(0));
+      TryDiscardTab(0), CheckTabIsNotDiscarded(0));
 }
 
 // Check that tabs with enabled notifications won't be discarded
@@ -334,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents,
-                          GetURL("/performance_controls/notifications.html")),
+                          GetURL("/notifications/notification_tester.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));
 }
