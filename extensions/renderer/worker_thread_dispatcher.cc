@@ -200,19 +200,28 @@ void WorkerThreadDispatcher::DispatchEventOnWorkerThread(
 
 bool WorkerThreadDispatcher::OnControlMessageReceived(
     const IPC::Message& message) {
-  if (HandlesMessageOnWorkerThread(message)) {
-    int worker_thread_id = content::WorkerThread::kInvalidWorkerThreadId;
-    // TODO(lazyboy): Route |message| directly to the child thread using routed
-    // IPC. Probably using mojo?
-    bool found = base::PickleIterator(message).ReadInt(&worker_thread_id);
-    CHECK(found);
-    if (worker_thread_id == kMainThreadId)
-      return false;
-    return PostTaskToWorkerThread(
-        worker_thread_id, base::BindOnce(&WorkerThreadDispatcher::ForwardIPC,
-                                         worker_thread_id, message));
+  if (!HandlesMessageOnWorkerThread(message)) {
+    return false;
   }
-  return false;
+
+  int worker_thread_id = content::WorkerThread::kInvalidWorkerThreadId;
+  // TODO(lazyboy): Route |message| directly to the child thread using routed
+  // IPC. Probably using mojo?
+  bool found = base::PickleIterator(message).ReadInt(&worker_thread_id);
+  CHECK(found);
+  if (worker_thread_id == kMainThreadId) {
+    return false;
+  }
+
+  // If posting the task fails, we still have to return true, which effectively
+  // drops the message. Otherwise, the caller will dispatch the message to the
+  // main thread, which is wrong.
+  if (!PostTaskToWorkerThread(
+          worker_thread_id, base::BindOnce(&WorkerThreadDispatcher::ForwardIPC,
+                                           worker_thread_id, message))) {
+    LOG(ERROR) << "Failed to post task for message: " << message.type();
+  }
+  return true;
 }
 
 bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
