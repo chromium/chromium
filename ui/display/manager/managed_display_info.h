@@ -438,6 +438,10 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // If you add a new member, you need to update Copy().
 };
 
+// Creates a managed display info for testing purposes only.
+ManagedDisplayInfo DISPLAY_MANAGER_EXPORT
+CreateDisplayInfo(int64_t id, const gfx::Rect& bounds);
+
 // Resets the synthesized display id for testing. This
 // is necessary to avoid overflowing the output index.
 void DISPLAY_MANAGER_EXPORT ResetDisplayIdForTest();

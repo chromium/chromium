@@ -143,8 +143,7 @@ class TouchTransformControllerTest : public testing::Test {
   ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                        const ui::TouchscreenDevice& device,
                                        const gfx::Rect& bounds) {
-    ManagedDisplayInfo info(id, std::string(), false);
-    info.SetBounds(bounds);
+    ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
 
     // Create a default mode.
     ManagedDisplayInfo::ManagedDisplayModeList default_modes(

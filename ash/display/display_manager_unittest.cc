@@ -2600,10 +2600,10 @@ TEST_F(DisplayManagerTest, UnifiedDesktopWithHardwareMirroring) {
   Shell::GetPrimaryRootWindow()->RemoveObserver(this);
 
   // Enter to hardware mirroring.
-  display::ManagedDisplayInfo d1(1, "", false);
-  d1.SetBounds(gfx::Rect(0, 0, 500, 400));
-  display::ManagedDisplayInfo d2(2, "", false);
-  d2.SetBounds(gfx::Rect(0, 0, 500, 400));
+  display::ManagedDisplayInfo d1 =
+      display::CreateDisplayInfo(1, gfx::Rect(0, 0, 500, 400));
+  display::ManagedDisplayInfo d2 =
+      display::CreateDisplayInfo(2, gfx::Rect(0, 0, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(d1);
   display_info_list.push_back(d2);

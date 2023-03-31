@@ -92,11 +92,6 @@ CreateDisplayIdList(const DisplayInfoList& updated_displays);
 DISPLAY_MANAGER_EXPORT std::string DisplayIdListToString(
     const DisplayIdList& list);
 
-// Creates managed display info.
-DISPLAY_MANAGER_EXPORT display::ManagedDisplayInfo CreateDisplayInfo(
-    int64_t id,
-    const gfx::Rect& bounds);
-
 // Get the display id after the output index (8 bits) is masked out.
 DISPLAY_MANAGER_EXPORT int64_t GetDisplayIdWithoutOutputIndex(int64_t id);
 

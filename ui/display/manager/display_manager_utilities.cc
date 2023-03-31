@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
@@ -190,17 +189,6 @@ std::string DisplayIdListToString(const DisplayIdList& list) {
     sep = ",";
   }
   return s.str();
-}
-
-display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
-                                              const gfx::Rect& bounds) {
-  // Output index is stored in the first 8 bits.
-  const uint8_t connector_index = id & 0xFF;
-
-  display::ManagedDisplayInfo info(id, "x-" + base::NumberToString(id), false);
-  info.SetBounds(bounds);
-  info.set_connector_index(connector_index);
-  return info;
 }
 
 int64_t GetDisplayIdWithoutOutputIndex(int64_t id) {

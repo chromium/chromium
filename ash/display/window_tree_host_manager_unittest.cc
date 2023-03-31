@@ -583,8 +583,8 @@ namespace {
 
 display::ManagedDisplayInfo
 CreateDisplayInfo(int64_t id, int y, display::Display::Rotation rotation) {
-  display::ManagedDisplayInfo info(id, "", false);
-  info.SetBounds(gfx::Rect(0, y, 600, 500));
+  display::ManagedDisplayInfo info =
+      display::CreateDisplayInfo(id, gfx::Rect(0, y, 600, 500));
   info.SetRotation(rotation, display::Display::RotationSource::ACTIVE);
   return info;
 }
@@ -1090,9 +1090,8 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
   // Deleting 2nd display and adding 2nd display with a different ID.  The 2nd
   // display shouldn't become primary.
   UpdateDisplay("300x200");
-  display::ManagedDisplayInfo third_display_info(secondary_display.id() + 1,
-                                                 std::string(), false);
-  third_display_info.SetBounds(secondary_display.bounds());
+  display::ManagedDisplayInfo third_display_info = display::CreateDisplayInfo(
+      secondary_display.id() + 1, secondary_display.bounds());
   ASSERT_NE(primary_display.id(), third_display_info.id());
 
   const display::ManagedDisplayInfo& primary_display_info =

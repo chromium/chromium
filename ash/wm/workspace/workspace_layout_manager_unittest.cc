@@ -141,8 +141,7 @@ display::Display GetDisplayNearestWindow(aura::Window* window) {
 }
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id, gfx::Rect bounds) {
-  display::ManagedDisplayInfo info(id, "", false);
-  info.SetBounds(bounds);
+  display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
   info.SetRotation(display::Display::ROTATE_0,
                    display::Display::RotationSource::ACTIVE);
   return info;

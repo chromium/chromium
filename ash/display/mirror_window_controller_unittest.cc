@@ -34,9 +34,7 @@ namespace {
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds,
                                               float scale = 1.f) {
-  display::ManagedDisplayInfo info(
-      id, base::StringPrintf("x-%d", static_cast<int>(id)), false);
-  info.SetBounds(bounds);
+  display::ManagedDisplayInfo info = display::CreateDisplayInfo(id, bounds);
   info.set_device_scale_factor(scale);
   return info;
 }
