@@ -331,8 +331,10 @@ crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/r
 # Single tests doing large amounts of work (i.e. does not send heartbeats
 # throughout the test). This is fine with the passthrough decoder on non-debug
 # builds, but the validating decoder/debug builds slow them down significantly.
+# Also slow on Fuchsia smart displays due to their lower specs.
 crbug.com/1426593 [ no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 crbug.com/1426593 [ debug passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ passthrough web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 # Seems to do enough JavaScript work that heartbeats are not reliably sent.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/misc/uninitialized-test-2.html [ Slow ]
