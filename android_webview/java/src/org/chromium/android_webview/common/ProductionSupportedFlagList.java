@@ -402,6 +402,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.NEW_BASE_URL_INHERITANCE_BEHAVIOR,
                     "Enables the new base-url inheritance behavior for about:blank and "
                             + "about:srcdoc pages loaded in a webview."),
+            Flag.baseFeature("MojoIpcz"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
