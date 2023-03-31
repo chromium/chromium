@@ -24,6 +24,7 @@
 ../../../third_party/markupsafe/_native.py
 ../../action_helpers.py
 ../../gn_helpers.py
+../../zip_helpers.py
 compile_resources.py
 proto/Configuration_pb2.py
 proto/Resources_pb2.py

@@ -9,11 +9,10 @@ import argparse
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                             os.pardir, os.pardir, os.pardir,
-                             'build', 'android', 'gyp'))
-from util import build_utils
+_DIR_SOURCE_ROOT = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+sys.path.append(os.path.abspath(os.path.join(_DIR_SOURCE_ROOT, 'build')))
 import action_helpers
+import zip_helpers
 
 
 def main():
@@ -49,7 +48,10 @@ def main():
       file_list.append(file_to_add)
 
   with action_helpers.atomic_output(args.output) as f:
-    build_utils.DoZip(file_list, f, args.base_dir, timestamp=args.timestamp)
+    zip_helpers.add_files_to_zip(file_list,
+                                 f,
+                                 base_dir=args.base_dir,
+                                 timestamp=args.timestamp)
 
 
 if '__main__' == __name__:

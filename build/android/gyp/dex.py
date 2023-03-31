@@ -17,8 +17,8 @@ import zipfile
 
 from util import build_utils
 from util import md5_check
-from util import zipalign
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 _DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
@@ -236,7 +236,7 @@ def _ZipAligned(dex_files, output_path):
   with zipfile.ZipFile(output_path, 'w') as z:
     for i, dex_file in enumerate(dex_files):
       name = 'classes{}.dex'.format(i + 1 if i > 0 else '')
-      zipalign.AddToZipHermetic(z, name, src_path=dex_file, alignment=4)
+      zip_helpers.add_to_zip_hermetic(z, name, src_path=dex_file, alignment=4)
 
 
 def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):

@@ -4,4 +4,5 @@
 ../../../build/android/gyp/util/__init__.py
 ../../../build/android/gyp/util/build_utils.py
 ../../../build/gn_helpers.py
+../../../build/zip_helpers.py
 jar_src.py

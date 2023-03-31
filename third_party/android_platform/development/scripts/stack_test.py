@@ -26,8 +26,8 @@ import stack
 
 # Use Python-based zipalign so that these tests can run on the Presubmit bot.
 sys.path.insert(
-    1, os.path.join(constants.DIR_SOURCE_ROOT, 'build', 'android', 'gyp'))
-from util import zipalign
+    1, os.path.join(constants.DIR_SOURCE_ROOT, 'build'))
+import zip_helpers
 
 
 # These tests exercise stack.py by generating fake APKs (zip-aligned archives),
@@ -116,11 +116,10 @@ class StackDecodeTest(unittest.TestCase):
 
         # Add the library to the APK.
         name_in_apk = 'crazy.' + lib if crazy else lib
-        zipalign.AddToZipHermetic(
+        zip_helpers.add_to_zip_hermetic(
             archive,
             name_in_apk,
             src_path=library_file,
-            compress=False,
             alignment=0x1000)
 
   # Accept either a multi-line string or a list of strings, strip leading and

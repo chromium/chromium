@@ -26,6 +26,8 @@ from util import build_utils
 from util import manifest_utils
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
+
 
 # Location of language-based assets in bundle modules.
 _LOCALES_SUBDIR = 'assets/locales/'
@@ -319,11 +321,10 @@ def _SplitModuleForAssetTargeting(src_module_zip, tmp_dir, split_dimensions):
         if src_path in language_files:
           dst_path = _RewriteLanguageAssetPath(src_path)
 
-        build_utils.AddToZipHermetic(
-            dst_zip,
-            dst_path,
-            data=src_zip.read(src_path),
-            compress=is_compressed)
+        zip_helpers.add_to_zip_hermetic(dst_zip,
+                                        dst_path,
+                                        data=src_zip.read(src_path),
+                                        compress=is_compressed)
 
     return tmp_zip
 

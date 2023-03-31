@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -15,18 +15,16 @@ This zip archive is then used by the signing bots to:
 TODO(garykac) We should consider merging this with build-webapp.py.
 """
 
-from __future__ import print_function
-
 import os
 import shutil
 import subprocess
 import sys
-import zipfile
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-    "build", "android", "gyp"))
-from util import build_utils
+    "build"))
+import zip_helpers
+
 
 def cleanDir(dir):
   """Deletes and recreates the dir to make sure it is clean.
@@ -195,9 +193,9 @@ def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
     else:
       shutil.copy2(bs, dst_file)
 
-  build_utils.ZipDir(
+  zip_helpers.zip_directory(
     zip_path, temp_dir,
-    compress_fn=lambda _: zipfile.ZIP_DEFLATED,
+    compress=True,
     zip_prefix_path=os.path.splitext(os.path.basename(zip_path))[0])
 
 

@@ -17,6 +17,7 @@ import dex
 from util import build_utils
 from util import diff_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
     # A separate expectation file is created for these files.
@@ -204,7 +205,9 @@ class _SplitContext:
     # Add to .jar using Python rather than having R8 output to a .zip directly
     # in order to disable compression of the .jar, saving ~500ms.
     tmp_jar_output = self.staging_dir + '.jar'
-    build_utils.DoZip(found_files, tmp_jar_output, base_dir=self.staging_dir)
+    zip_helpers.add_files_to_zip(found_files,
+                                 tmp_jar_output,
+                                 base_dir=self.staging_dir)
     shutil.move(tmp_jar_output, self.final_output_path)
 
 
@@ -681,7 +684,7 @@ def main():
     _Run(options)
   finally:
     if options.dump_inputs:
-      build_utils.ZipDir('r8inputs.zip', _DUMP_DIR_NAME)
+      zip_helpers.zip_directory('r8inputs.zip', _DUMP_DIR_NAME)
 
 
 if __name__ == '__main__':

@@ -11,10 +11,10 @@ import zipfile
 
 SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
     '..', '..', '..'))
-sys.path.append(os.path.join(SRC_DIR, 'build', 'android', 'gyp'))
+sys.path.append(os.path.join(SRC_DIR, 'build'))
 
-from util import build_utils
 import action_helpers
+import zip_helpers
 
 
 def GenerateService(i):
@@ -46,9 +46,9 @@ def DoMain(argv):
   with action_helpers.atomic_output(output) as f:
     with zipfile.ZipFile(f, 'w', zipfile.ZIP_STORED) as srcjar:
       for i in range(number):
-        build_utils.AddToZipHermetic(srcjar,
-                                     path_template.format(i),
-                                     data=GenerateService(i))
+        zip_helpers.add_to_zip_hermetic(srcjar,
+                                        path_template.format(i),
+                                        data=GenerateService(i))
 
 if __name__ == '__main__':
   DoMain(sys.argv[1:])

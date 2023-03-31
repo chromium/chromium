@@ -9,7 +9,10 @@ import("//remoting/host/installer/win/wix_path.gni")
 action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
 
-  sources = [ "//build/android/gyp/util/build_utils.py" ]
+  sources = [
+    # Used by build-installer-archive.py.
+    "//build/zip_helpers.py",
+  ]
 
   deps = [
     "//remoting/host:remoting_native_messaging_manifests",

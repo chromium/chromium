@@ -10,6 +10,7 @@ import sys
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers
 
 
 def CreatePathTransform(exclude_globs, include_globs):
@@ -57,7 +58,8 @@ def main():
   path_transform = CreatePathTransform(args.exclude_globs, args.include_globs)
   with action_helpers.atomic_output(args.output) as f:
     if path_transform:
-      build_utils.MergeZips(f.name, [args.input], path_transform=path_transform)
+      zip_helpers.merge_zips(f.name, [args.input],
+                             path_transform=path_transform)
     else:
       shutil.copy(args.input, f.name)
 

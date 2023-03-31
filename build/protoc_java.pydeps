@@ -5,3 +5,4 @@ android/gyp/util/__init__.py
 android/gyp/util/build_utils.py
 gn_helpers.py
 protoc_java.py
+zip_helpers.py
