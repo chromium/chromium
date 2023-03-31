@@ -17,9 +17,7 @@
 WebOmniboxEditModelDelegateImpl::WebOmniboxEditModelDelegateImpl(
     id<OmniboxControllerDelegate> delegate,
     id<OmniboxFocusDelegate> focus_delegate)
-    : delegate_(delegate), focus_delegate_(focus_delegate) {
-  // TODO(crbug.com/818645): add security icon and its a11y labels
-}
+    : delegate_(delegate), focus_delegate_(focus_delegate) {}
 
 WebOmniboxEditModelDelegateImpl::~WebOmniboxEditModelDelegateImpl() {}
 
@@ -62,7 +60,6 @@ void WebOmniboxEditModelDelegateImpl::OnAutocompleteAccept(
 void WebOmniboxEditModelDelegateImpl::OnChanged() {
   // Called when anything is changed. Since the Mediator already observes the
   // WebState for security status changes, no need to do anything.
-  // TODO(crbug.com/818645): update the security icon in LocationBarMediator.
 }
 
 LocationBarModel* WebOmniboxEditModelDelegateImpl::GetLocationBarModel() {
