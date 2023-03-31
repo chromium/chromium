@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -41,7 +42,7 @@
 namespace extensions {
 
 namespace keys = tabs_constants;
-namespace utils = api_test_utils;
+namespace utils = extension_function_test_utils;
 
 using ContextType = ExtensionBrowserTest::ContextType;
 using ExtensionTabsTest = InProcessBrowserTest;
@@ -65,8 +66,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
   base::Value::Dict result =
-      utils::ToDict(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[]", new_browser->profile()));
+      utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", new_browser));
 
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.
@@ -75,8 +76,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
 
   function = new extensions::WindowsGetLastFocusedFunction();
   function->set_extension(extension.get());
-  result = utils::ToDict(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"populate\": true}]", browser()->profile()));
+  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[{\"populate\": true}]", browser()));
 
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.
@@ -113,14 +114,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   function->set_extension(extension.get());
   base::Value::List result_tabs(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[{\"lastFocusedWindow\":true}]",
-          browser()->profile())));
+          function.get(), "[{\"lastFocusedWindow\":true}]", browser())));
 
   // We should have one initial tab and one added tab.
   EXPECT_EQ(2u, result_tabs.size());
   for (const base::Value& result_tab : result_tabs) {
     EXPECT_EQ(focused_window_id,
-              api_test_utils::GetInteger(utils::ToDict(result_tab),
+              api_test_utils::GetInteger(utils::ToDictionary(result_tab),
                                          keys::kWindowIdKey));
   }
 
@@ -128,13 +128,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   function = new extensions::TabsQueryFunction();
   function->set_extension(extension.get());
   result_tabs = utils::ToList(utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[{\"lastFocusedWindow\":false}]", browser()->profile()));
+      function.get(), "[{\"lastFocusedWindow\":false}]", browser()));
 
   // We should get one tab for each extra window and one for the initial window.
   EXPECT_EQ(kExtraWindows + 1, result_tabs.size());
   for (const base::Value& result_tab : result_tabs) {
     EXPECT_NE(focused_window_id,
-              api_test_utils::GetInteger(utils::ToDict(result_tab),
+              api_test_utils::GetInteger(utils::ToDictionary(result_tab),
                                          keys::kWindowIdKey));
   }
 }
@@ -212,8 +212,8 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   int GetTabId(const base::Value::Dict& dict) const;
 
-  absl::optional<base::Value> RunFunction(ExtensionFunction* function,
-                                          const std::string& params);
+  std::unique_ptr<base::Value> RunFunction(ExtensionFunction* function,
+                                           const std::string& params);
 
   const Extension* extension() { return extension_.get(); }
 
@@ -295,12 +295,11 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   return tab_dict->FindInt(keys::kIdKey).value_or(-2);
 }
 
-absl::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
+std::unique_ptr<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
     ExtensionFunction* function,
     const std::string& params) {
   function->set_extension(extension_.get());
-  return utils::RunFunctionAndReturnSingleResult(function, params,
-                                                 browser()->profile());
+  return utils::RunFunctionAndReturnSingleResult(function, params, browser());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
@@ -314,8 +313,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result =
-        utils::ToDict(RunFunction(function.get(), "[{\"populate\": true}]"));
+    const base::Value::Dict result = utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]"));
     EXPECT_NE(devtools_window_id, api_test_utils::GetInteger(result, "id"));
   }
 
@@ -331,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result = utils::ToDict(
+    const base::Value::Dict result = utils::ToDictionary(
         RunFunction(get_current_app_function.get(), "[{\"populate\": true}]"));
     int app_window_id = app_window->session_id().id();
     EXPECT_NE(app_window_id, api_test_utils::GetInteger(result, "id"));
@@ -349,8 +348,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result =
-        utils::ToDict(RunFunction(function.get(), "[{\"populate\": true}]"));
+    const base::Value::Dict result = utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]"));
     int normal_browser_window_id =
         ExtensionTabUtil::GetWindowId(normal_browser);
     EXPECT_EQ(normal_browser_window_id,
@@ -365,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result =
-        utils::ToDict(RunFunction(function.get(), "[{\"populate\": true}]"));
+    const base::Value::Dict result = utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]"));
     int popup_browser_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
     EXPECT_EQ(popup_browser_window_id,
               api_test_utils::GetInteger(result, "id"));
@@ -381,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result = utils::ToDict(RunFunction(
+    const base::Value::Dict result = utils::ToDictionary(RunFunction(
         function.get(),
         "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]"));
     int devtools_window_id = ExtensionTabUtil::GetWindowId(
@@ -404,11 +403,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
     scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
         new WindowsGetLastFocusedFunction();
     get_current_app_function->set_extension(extension());
-    EXPECT_EQ(tabs_constants::kNoLastFocusedWindowError,
-              api_test_utils::RunFunctionAndReturnError(
-                  get_current_app_function.get(),
-                  "[{\"populate\": true, \"windowTypes\": [ \"app\" ]}]",
-                  browser()->profile()));
+    EXPECT_EQ(
+        tabs_constants::kNoLastFocusedWindowError,
+        extension_function_test_utils::RunFunctionAndReturnError(
+            get_current_app_function.get(),
+            "[{\"populate\": true, \"windowTypes\": [ \"app\" ]}]", browser()));
   }
 
   chrome::CloseWindow(normal_browser);
