@@ -190,9 +190,9 @@ void OfflinePageTabHelper::DidStartNavigation(web::WebState* web_state,
         context->GetPageTransition(), ui::PAGE_TRANSITION_RELOAD);
     is_offline_navigation_ =
         reading_list::IsOfflineEntryURL(initial_navigation_url_);
+    navigation_transition_type_ = context->GetPageTransition();
     is_new_navigation_ =
         ui::PageTransitionIsNewNavigation(navigation_transition_type_);
-    navigation_transition_type_ = context->GetPageTransition();
     navigation_is_renderer_initiated_ = context->IsRendererInitiated();
   }
 
