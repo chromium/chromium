@@ -8,6 +8,11 @@
     padding-top: 8px;
     width: var(--side-bar-width);
   }
+
+  #compromisedPasswords {
+    margin-inline-end: 20px;
+    margin-inline-start: auto;
+  }
 </style>
 <div role="navigation">
   <cr-menu-selector id="menu" selectable=".page-item" attr-for-selected="path"
@@ -21,7 +26,9 @@
     <a id="checkup" role="menuitem" class="page-item cr-nav-menu-item"
         path="checkup" href="/checkup" on-click="onItemClick_">
       <iron-icon icon="passwords-icon:checkup"></iron-icon>
-      $i18n{checkup}
+      <span>$i18n{checkup}</span>
+      <div id="compromisedPasswords"
+          hidden$="[[!compromisedPasswords_]]">[[compromisedPasswords_]]</div>
     </a>
     <a id="settings" role="menuitem" class="page-item cr-nav-menu-item"
         path="settings" href="/settings" on-click="onItemClick_">

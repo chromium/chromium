@@ -10,14 +10,17 @@ import './shared_style.css.js';
 import './icons.html.js';
 
 import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 
 export interface PasswordManagerSideBarElement {
   $: {
     'menu': CrMenuSelector,
+    'compromisedPasswords': HTMLElement,
   };
 }
 
@@ -35,10 +38,49 @@ export class PasswordManagerSideBarElement extends RouteObserverMixin
     return {
       // The id of the currently selected page.
       selectedPage_: String,
+
+      // The count of compromised passwords currently known to the password
+      // manager.
+      compromisedPasswords_: Number,
     };
   }
 
   private selectedPage_: Page;
+  private compromisedPasswords_: number;
+  private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
+      null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.insecureCredentialsChangedListener_ = insecureCredentials => {
+      const compromisedTypes = [
+        chrome.passwordsPrivate.CompromiseType.LEAKED,
+        chrome.passwordsPrivate.CompromiseType.PHISHED,
+      ];
+      this.compromisedPasswords_ =
+          insecureCredentials
+              .filter(cred => {
+                return !cred.compromisedInfo!.isMuted &&
+                    cred.compromisedInfo!.compromiseTypes.some(type => {
+                      return compromisedTypes.includes(type);
+                    });
+              })
+              .length;
+    };
+
+    PasswordManagerImpl.getInstance().getInsecureCredentials().then(
+        this.insecureCredentialsChangedListener_);
+    PasswordManagerImpl.getInstance().addInsecureCredentialsListener(
+        this.insecureCredentialsChangedListener_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.insecureCredentialsChangedListener_);
+    PasswordManagerImpl.getInstance().removeInsecureCredentialsListener(
+        this.insecureCredentialsChangedListener_);
+    this.insecureCredentialsChangedListener_ = null;
+  }
 
   override currentRouteChanged(route: Route, _: Route): void {
     this.selectedPage_ = route.page;
