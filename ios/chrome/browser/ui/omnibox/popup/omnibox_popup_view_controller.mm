@@ -43,7 +43,7 @@
 namespace {
 const CGFloat kTopPadding = 8.0;
 const CGFloat kBottomPadding = 8.0;
-const CGFloat kFooterHeight = 12.0;
+const CGFloat kFooterHeight = 4.0;
 /// Percentage of the suggestion height that needs to be visible in order to
 /// consider the suggestion as visible.
 const CGFloat kVisibleSuggestionThreshold = 0.6;
@@ -57,7 +57,7 @@ const CGFloat kHeaderPaddingBottom = 10.0f;
 /// Leading and trailing padding for table view headers.
 const CGFloat kHeaderPadding = 2.0f;
 /// Top padding for table view headers.
-const CGFloat kHeaderTopPadding = 16.0f;
+const CGFloat kHeaderTopPadding = 10.0f;
 
 /// Returns whether the keyboard is dismissed when scrolling suggestions.
 BOOL ShouldDismissKeyboardOnScroll() {
@@ -67,10 +67,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
 }  // namespace
 
-@interface OmniboxPopupViewController () <UITableViewDataSource,
-                                          UITableViewDelegate,
-                                          OmniboxPopupCarouselCellDelegate,
-                                          OmniboxPopupRowCellDelegate>
+@interface OmniboxPopupViewController () <OmniboxPopupCarouselCellDelegate,
+                                          OmniboxPopupRowCellDelegate,
+                                          UITableViewDataSource,
+                                          UITableViewDelegate>
 
 /// Index path of currently highlighted row. The rows can be highlighted by
 /// tapping and holding on them or by using arrow keys on a hardware keyboard.
@@ -584,7 +584,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
   [self.acceptReturnDelegate omniboxReturnPressed:sender];
 }
 
-#pragma mark - Table view delegate
+#pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
       willDisplayCell:(UITableViewCell*)cell
@@ -665,8 +665,9 @@ BOOL ShouldDismissKeyboardOnScroll() {
   UIView* footer = [[UIView alloc] init];
   footer.backgroundColor = tableView.backgroundColor;
   UIView* hairline = [[UIView alloc]
-      initWithFrame:CGRectMake(0, 8, tableView.bounds.size.width,
+      initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width,
                                2 / tableView.window.screen.scale)];
+
   hairline.backgroundColor =
       self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
                      : [UIColor.blackColor colorWithAlphaComponent:0.12];
@@ -676,7 +677,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
   return footer;
 }
 
-#pragma mark - Table view data source
+#pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
   return self.currentResult.count;
