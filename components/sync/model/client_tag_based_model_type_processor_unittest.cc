@@ -2869,7 +2869,7 @@ TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
 
 // Test that commit only types are deleted after commit response.
 TEST_F(CommitOnlyClientTagBasedModelTypeProcessorTest,
-       DISABLED_ShouldCommitAndDeleteWhenAcked) {
+       ShouldCommitAndDeleteWhenAcked) {
   InitializeToReadyState();
   EXPECT_EQ(db()->model_type_state().initial_sync_state(),
             sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
