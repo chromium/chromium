@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
@@ -42,6 +47,11 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepageManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
@@ -115,6 +125,14 @@ public class ReturnToChromeUtilUnitTest {
     private ChromeInactivityTracker mInactivityTracker;
     @Mock
     private Resources mResources;
+    @Mock
+    private TabModel mCurrentTabModel;
+    @Mock
+    private TabCreator mTabCreater;
+    @Mock
+    private Tab mTab1;
+    @Mock
+    private Tab mNtpTab;
 
     @Before
     public void setUp() {
@@ -518,6 +536,49 @@ public class ReturnToChromeUtilUnitTest {
                 false, intent, mTabModelSelector, mInactivityTracker));
         Assert.assertTrue(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                 true, intent, mTabModelSelector, mInactivityTracker));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
+        Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
+
+        // Verifies that the existing NTP is reused, and no new NTP is created.
+        doReturn(2).when(mCurrentTabModel).getCount();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
+        doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL)).when(mNtpTab).getUrl();
+        doReturn(mNtpTab).when(mCurrentTabModel).getTabAt(1);
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+                false, true /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
+        verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
+        verify(mCurrentTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
+    public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
+        Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
+
+        doReturn(1).when(mCurrentTabModel).getCount();
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
+        doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
+
+        // Verifies that if the return time doesn't arrive, there isn't a new NTP is created.
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(false,
+                false /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
+        verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
+
+        // Verifies that a new NTP is created when there isn't any existing one to reuse.
+        doReturn(2).when(mNtpTab).getId();
+        doReturn(mNtpTab)
+                .when(mTabCreater)
+                .createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+                false, true /* shouldShowNtpHomeSurfaceOnStartup */, mCurrentTabModel, mTabCreater);
+        verify(mTabCreater, times(1)).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
     }
 
     private Intent createMainIntentFromLauncher() {

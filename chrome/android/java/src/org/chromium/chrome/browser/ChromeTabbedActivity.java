@@ -1179,7 +1179,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
-        if (mHasDeterminedOverviewStateForCurrentSession || isTablet()) return;
+        if (isTablet()) {
+            if (mFromResumption) {
+                setInitialOverviewState();
+            }
+            return;
+        }
+        if (mHasDeterminedOverviewStateForCurrentSession) return;
 
         mHasDeterminedOverviewStateForCurrentSession = true;
         boolean isOverviewVisible = isInOverviewMode();
@@ -1208,6 +1214,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         mAppLaunchDrawBlocker.onOverviewPageAvailable(
                 mOverviewShownOnStart && !isInstantStartEnabled());
+    }
+
+    /**
+     * Called on warm startup on Tablet to show a home surface instead of the last active Tab if the
+     * user has left Chrome for a while.
+     */
+    private void setInitialOverviewState() {
+        ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
+                mTabModelSelector.isIncognitoSelected(), shouldShowNtpHomeSurfaceOnStartup(),
+                getCurrentTabModel(), getTabCreator(false));
     }
 
     private void logMainIntentBehavior(Intent intent) {

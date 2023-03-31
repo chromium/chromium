@@ -42,7 +42,9 @@ import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformSer
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -509,6 +511,29 @@ public final class ReturnToChromeUtil {
         // Creates a new Tab if doesn't find an existing to reuse.
         return tabCreator.createNewTab(
                 new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
+    }
+
+    /**
+     * Shows a NTP on warm startup on tablets if return time arrives. Only create a new NTP if there
+     * isn't any existing NTP to reuse.
+     * @param isIncognito Whether the incognito mode is selected.
+     * @param shouldShowNtpHomeSurfaceOnStartup Whether to show a NTP as home surface on startup.
+     * @param currentTabModel The object of the current {@link  TabModel}.
+     * @param tabCreator The {@link TabCreator} object.
+     */
+    public static void setInitialOverviewStateOnResumeOnTablet(boolean isIncognito,
+            boolean shouldShowNtpHomeSurfaceOnStartup, TabModel currentTabModel,
+            TabCreator tabCreator) {
+        if (isIncognito || !shouldShowNtpHomeSurfaceOnStartup) {
+            return;
+        }
+
+        int indexOfFirstNtp = TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
+        if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
+            TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
+        } else {
+            createNewTab(tabCreator);
+        }
     }
 
     /*
