@@ -254,6 +254,17 @@ export class NavigationViewPanelElement extends PolymerElement {
   }
 
   /**
+   * Selects the page that has the given id.
+   * @param {string} id
+   */
+  selectPageById(id) {
+    const selectorItem = this.selectorItems_.find(item => item.id == id);
+    if (selectorItem) {
+      this.selectedItem = selectorItem;
+    }
+  }
+
+  /**
    * @param {!SelectorItem} item
    * @private
    */
