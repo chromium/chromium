@@ -598,11 +598,23 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
 #if BUILDFLAG(IS_WIN)
   options.set_allow_cropping_window_capturer(true);
+
+  // We prefer to allow the WGC and DXGI capturers to embed the cursor when
+  // possible. The DXGI implementation uses this switch in combination with
+  // internal checks for support of if it is possible to embed the cursor.
+  // Note that, very few graphical adapters support embedding the cursor into
+  // the captured frame in combination with DXGI; hence most cursors will be
+  // added separately by a desktop and cursor composer even if this option is
+  // set to true. GDI does not use this option.
+  // TODO(crbug.com/1421656): Possibly remove this flag. Keeping for now to
+  // force non embedded cursor for all capture APIs on Windows.
+  static BASE_FEATURE(kAllowWinCursorEmbedded, "AllowWinCursorEmbedded",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  if (base::FeatureList::IsEnabled(kAllowWinCursorEmbedded)) {
+    options.set_prefer_cursor_embedded(true);
+  }
   if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
     options.set_allow_wgc_capturer(true);
-
-    // We prefer to allow the WGC capturer to embed the cursor when possible.
-    options.set_prefer_cursor_embedded(true);
 
     // 0Hz support is by default disabled for WGC but it can be enabled using
     // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer
