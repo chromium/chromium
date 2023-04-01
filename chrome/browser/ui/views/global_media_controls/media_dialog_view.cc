@@ -59,9 +59,9 @@ using media_session::mojom::MediaSessionAction;
 namespace {
 
 static constexpr int kLiveCaptionBetweenChildSpacing = 4;
-static constexpr int kLiveCaptionHorizontalMarginDip = 10;
+static constexpr int kLiveCaptionHorizontalMarginDip = 16;
 static constexpr int kLiveCaptionImageWidthDip = 20;
-static constexpr int kLiveCaptionVerticalMarginDip = 16;
+static constexpr int kLiveCaptionVerticalMarginDip = 10;
 
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
@@ -354,10 +354,8 @@ void MediaDialogView::Init() {
       live_caption_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal,
-              // TODO(crbug.com/1305767): The order of the parameters to
-              // gfx::Insets::VH() seems wrong.
-              gfx::Insets::VH(kLiveCaptionHorizontalMarginDip,
-                              kLiveCaptionVerticalMarginDip),
+              gfx::Insets::VH(kLiveCaptionVerticalMarginDip,
+                              kLiveCaptionHorizontalMarginDip),
               kLiveCaptionBetweenChildSpacing));
 
   auto live_caption_image = std::make_unique<views::ImageView>();
