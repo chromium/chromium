@@ -14,5 +14,6 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 }

@@ -28,6 +28,7 @@ class CompanionUrlBuilder {
   // query parameter set to the protobuf representation of the `page_url` and
   // associated state.
   GURL BuildCompanionURL(GURL page_url);
+  GURL BuildCompanionURL(GURL page_url, const std::string& text_query);
 
  private:
   // The base URL for companion.

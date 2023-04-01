@@ -6,6 +6,7 @@ import './strings.m.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {MethodType, PromoAction, PromoType} from './companion.mojom-webui.js';
 import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
@@ -21,10 +22,10 @@ function validatePromoArguments(promoType: any, promoAction: any): boolean {
 
 function initialize() {
   // When the url is changed, we update our iframe src to pass new parameters.
-  companionProxy.callbackRouter.onURLChanged.addListener((newUrl: string) => {
+  companionProxy.callbackRouter.onURLChanged.addListener((newUrl: Url) => {
     const frame = document.body.querySelector('iframe');
     assert(frame);
-    frame.src = newUrl;
+    frame.src = newUrl.url;
   });
 
   companionProxy.handler.showUI();

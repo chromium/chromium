@@ -63,6 +63,11 @@ CompanionUrlBuilder::CompanionUrlBuilder(PrefService* pref_service,
 CompanionUrlBuilder::~CompanionUrlBuilder() = default;
 
 GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
+  return BuildCompanionURL(page_url, /*text_query=*/"");
+}
+
+GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
+                                            const std::string& text_query) {
   // Fill the protobuf with the required query params.
   companion::proto::QueryParams url_params;
   bool is_msbb_enabled =
@@ -73,6 +78,9 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
 
   url_params.set_has_msbb_enabled(is_msbb_enabled);
   url_params.set_signin_allowed_and_required(signin_delegate_->AllowedSignin());
+  if (!text_query.empty()) {
+    url_params.set_search_query(text_query);
+  }
 
   companion::proto::PromoState* promo_state = url_params.mutable_promo_state();
   promo_state->set_signin_promo_denial_count(

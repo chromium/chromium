@@ -52,7 +52,6 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
           GetBrowserView()->GetProfile(),
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false);
-  auto* raw_wrapper = wrapper.get();
   auto companion_web_view =
       std::make_unique<SidePanelWebUIViewT<CompanionSidePanelUntrustedUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
@@ -61,10 +60,6 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
   // Observe on the webcontents for opening links in new tab.
   Observe(companion_web_view->GetWebContents());
 
-  // Need to set browser after SidePanelWebUIViewT is constructed since it
-  // creates the WebUIController. The WebUI needs a Browser pointer in order
-  // to observe changes to the tab strip model.
-  raw_wrapper->GetWebUIController()->GetWeakPtr()->set_browser(browser_);
   return companion_web_view;
 }
 

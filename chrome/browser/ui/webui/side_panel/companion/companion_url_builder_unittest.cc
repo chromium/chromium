@@ -24,6 +24,7 @@ namespace companion {
 namespace {
 
 constexpr char kValidUrl[] = "https://foo.com/";
+constexpr char kTextQuery[] = "Apples";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
 
 class MockSigninDelegate : public SigninDelegate {
@@ -162,4 +163,43 @@ TEST_F(CompanionUrlBuilderTest, ValidPageUrls) {
   VerifyPageUrlSent(GURL("https://192.168.0.1"), false);
   VerifyPageUrlSent(GURL("https://localhost:8888"), false);
 }
+
+TEST_F(CompanionUrlBuilderTest, WithTextQuery) {
+  GURL page_url(kValidUrl);
+  GURL companion_url = url_builder_->BuildCompanionURL(page_url, kTextQuery);
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
+  EXPECT_EQ(value, page_url.spec());
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
+  EXPECT_EQ(value, kOrigin);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::QueryParams proto =
+      DeserializeCompanionRequest(companion_url);
+
+  EXPECT_EQ(proto.page_url(), page_url.spec());
+  EXPECT_EQ(proto.search_query(), kTextQuery);
+}
+
+TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
+  GURL page_url(kValidUrl);
+  GURL companion_url = url_builder_->BuildCompanionURL(page_url);
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "url", &value));
+  EXPECT_EQ(value, page_url.spec());
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
+  EXPECT_EQ(value, kOrigin);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::QueryParams proto =
+      DeserializeCompanionRequest(companion_url);
+
+  EXPECT_EQ(proto.page_url(), page_url.spec());
+  EXPECT_EQ(proto.search_query(), std::string());
+}
+
 }  // namespace companion
