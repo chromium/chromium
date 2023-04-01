@@ -4,11 +4,14 @@
 
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/assistant/assistant_test_api_impl.h"
 #include "ash/app_list/views/launcher_search_iph_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/main_stage/assistant_zero_state_view.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test.h"
@@ -143,10 +147,11 @@ class AppListIphBrowserTestWithDemoMode : public AppListIphBrowserTest {
 
   raw_ptr<ash::SearchBoxView> search_box_view() { return search_box_view_; }
 
- private:
+ protected:
   std::unique_ptr<feature_engagement::test::ScopedIphFeatureList>
       scoped_iph_feature_list_;
 
+ private:
   raw_ptr<AppListClientImpl> app_list_client_impl_ = nullptr;
   raw_ptr<ash::SearchBoxView> search_box_view_ = nullptr;
 };
@@ -251,3 +256,53 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
+
+// The bool param indicates if the AssistantLearnMore feature is enabled or not.
+class AppListIphBrowserTestWithLearnMoreToast
+    : public AppListIphBrowserTestWithDemoMode,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_iph_feature_list_ =
+        std::make_unique<feature_engagement::test::ScopedIphFeatureList>();
+    if (GetParam()) {
+      scoped_iph_feature_list_->InitAndEnableFeatures(
+          {ash::assistant::features::kEnableAssistantLearnMore});
+    }
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithLearnMoreToast,
+                       ShowAssistantLearnMoreToast) {
+  OpenAppList();
+
+  auto* assistant_button = search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  EXPECT_EQ(ash::AppListBubblePage::kAssistant,
+            ash::GetAppListBubbleView()->current_page_for_test());
+
+  ash::AssistantZeroStateView* zero_state_view =
+      static_cast<ash::AssistantZeroStateView*>(
+          ash::GetAppListBubbleView()->GetViewByID(
+              ash::AssistantViewID::kZeroStateView));
+  ASSERT_TRUE(zero_state_view->GetVisible());
+
+  ash::AppListToastView* learn_more_toast = static_cast<ash::AppListToastView*>(
+      ash::GetAppListBubbleView()->GetViewByID(
+          ash::AssistantViewID::kLearnMoreToast));
+  ASSERT_TRUE(learn_more_toast);
+  if (GetParam()) {
+    ASSERT_TRUE(learn_more_toast->GetVisible());
+    ASSERT_TRUE(learn_more_toast->IsDrawn());
+  } else {
+    ASSERT_FALSE(learn_more_toast->GetVisible());
+    ASSERT_FALSE(learn_more_toast->IsDrawn());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         AppListIphBrowserTestWithLearnMoreToast,
+                         /*values=*/testing::Bool());
