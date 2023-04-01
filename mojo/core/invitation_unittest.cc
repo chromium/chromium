@@ -579,7 +579,8 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
 // Fuchsia has no named pipe support.
 #if !BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1426421): Flaky on Linux TSAN.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || BUILDFLAG(IS_IOS)
 #define MAYBE_SendInvitationWithServer DISABLED_SendInvitationWithServer
 #else
 #define MAYBE_SendInvitationWithServer SendInvitationWithServer
