@@ -445,8 +445,8 @@ SegmentID HistoryBackend::GetLastSegmentID(VisitID from_visit) {
     visit_id = row.referring_visit;
 
     if (visit_set.find(visit_id) != visit_set.end()) {
-      NOTREACHED() << "Loop in referer chain, giving up";
-      break;
+      DLOG(WARNING) << "Loop in referer chain, possible db corruption";
+      return 0;
     }
     visit_set.insert(visit_id);
   }
@@ -2351,7 +2351,7 @@ VisitVector HistoryBackend::GetRedirectChain(VisitRow visit) {
       if (!db_->GetRowForVisit(visit.referring_visit, &referring_visit))
         return {};
       if (visit_set.count(referring_visit.visit_id)) {
-        NOTREACHED() << "Loop in visit redirect chain, giving up";
+        DLOG(WARNING) << "Loop in visit redirect chain, possible db corruption";
         break;
       }
       result.push_back(referring_visit);
