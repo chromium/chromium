@@ -28,6 +28,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_select_file_dialog_factory.h"
@@ -819,6 +820,37 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogHeadlessBrowserTest, SelectFileDialog) {
   WaitForSelectFileDialogCallback();
 
   EXPECT_EQ(select_file_dialog_type_, expected_type());
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, NetworkServiceCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  HeadlessWebContents* headless_web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
+          .Build();
+  ASSERT_TRUE(WaitForLoad(headless_web_contents));
+
+  SimulateNetworkServiceCrash();
+
+  content::WebContents* wc =
+      HeadlessWebContentsImpl::From(headless_web_contents)->web_contents();
+  const GURL new_url = embedded_test_server()->GetURL("/blue_page.html");
+  // Wait for navigaitons including those non-committed and re-try as needed,
+  // as a navigation may be aborted during network service restart.
+  do {
+    wc->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(new_url));
+
+    content::TestNavigationObserver nav_observer(
+        wc, /* expected_number_of_navigations */ 1,
+        content::MessageLoopRunner::QuitMode::IMMEDIATE,
+        /* ignore_uncommitted_navigations */ false);
+    nav_observer.Wait();
+  } while (wc->GetController().GetLastCommittedEntry()->GetURL() != new_url);
 }
 
 }  // namespace headless
