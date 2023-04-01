@@ -74,10 +74,3 @@ base::Feature flag, which can be remotely disabled by a server configuration.
     * For code in blink, this can be as simple as using a
 [Runtime Enabled Feature](/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md),
 which has long been common-practice for new or changed APIs.
-* For any base::Feature flag guarding code that runs in (or otherwise affects)
-Android WebView, a corresponding
-[WebView experiment flag](/android_webview/docs/developer-ui.md#flag-ui) should
-be added to provide developers with a way to identify whether a given flag is
-causing breakage. For Googler committers, this requirement is enforced when
-enabling or disabling any base::Feature flag via Finch
-([internal link](http://go/finch-tricorder#webview-flag)).
