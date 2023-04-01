@@ -9,9 +9,8 @@
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {addWebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestChromeVoxSubpageBrowserProxy} from './test_chromevox_subpage_browser_proxy.js';
@@ -23,6 +22,7 @@ import {TestChromeVoxSubpageBrowserProxy} from './test_chromevox_subpage_browser
 export const ControlType = {
   DROPDOWN: 'dropdown',
   TOGGLE: 'toggle',
+  INPUT: 'input',
 };
 
 suite('ChromeVoxSubpageTests', function() {
@@ -80,6 +80,46 @@ suite('ChromeVoxSubpageTests', function() {
       type: ControlType.TOGGLE,
     },
     {
+      id: 'virtualBrailleDisplayRowsInput',
+      prefKey: 'settings.a11y.chromevox.virtual_braille_rows',
+      defaultValue: 1,
+      secondaryValue: 2,
+      correctedValues: [
+        ['', 1],
+        [0, 1],
+        [1, 1],
+        [2, 2],
+        [98, 98],
+        [99, 99],
+        [100, 99],
+        [-4, 99],
+        [-999, 99],
+        [20, 20],
+        ['', 20],
+      ],
+      type: ControlType.INPUT,
+    },
+    {
+      id: 'virtualBrailleDisplayColumnsInput',
+      prefKey: 'settings.a11y.chromevox.virtual_braille_columns',
+      defaultValue: 40,
+      secondaryValue: 80,
+      correctedValues: [
+        ['', 40],
+        [0, 40],
+        [1, 1],
+        [2, 2],
+        [98, 98],
+        [99, 99],
+        [100, 99],
+        [-4, 99],
+        [-999, 99],
+        [20, 20],
+        ['', 20],
+      ],
+      type: ControlType.INPUT,
+    },
+    {
       id: 'menuBrailleCommandsToggle',
       prefKey: 'settings.a11y.chromevox.menu_braille_commands',
       defaultValue: false,
@@ -110,7 +150,8 @@ suite('ChromeVoxSubpageTests', function() {
   ];
 
   settingsControls.forEach(control => {
-    const {id, prefKey, defaultValue, secondaryValue, type} = control;
+    const {id, prefKey, defaultValue, secondaryValue, type, correctedValues} =
+        control;
 
     test(`ChromeVox ${type} ${id} syncs to Pref: ${prefKey}`, async () => {
       // Make sure control exists.
@@ -121,17 +162,46 @@ suite('ChromeVoxSubpageTests', function() {
       let pref = page.getPref(prefKey);
       assertEquals(defaultValue, pref.value);
 
-      // Update control to secondary value.
       switch (type) {
         case ControlType.TOGGLE:
+          // Make sure toggle control is set to the default value.
+          await waitAfterNextRender(control);
+          const crToggleElement = control.shadowRoot.querySelector('cr-toggle');
+          assertEquals(defaultValue, crToggleElement.checked);
+          // Click toggle control to attempt updating to secondary value.
           control.click();
           break;
+
         case ControlType.DROPDOWN:
+          // Make sure dropdown is set to the default value.
           await waitAfterNextRender(control);
-          const controlElement = control.shadowRoot.querySelector('select');
-          controlElement.value = secondaryValue;
-          controlElement.dispatchEvent(
+          const selectElement = control.shadowRoot.querySelector('select');
+          assertEquals(defaultValue, selectElement.value);
+          // Update dropdown to secondary value.
+          selectElement.value = secondaryValue;
+          selectElement.dispatchEvent(
               new CustomEvent('change', {bubbles: true, composed: true}));
+          break;
+
+        case ControlType.INPUT:
+          // Make sure input is set to the default value.
+          await waitAfterNextRender(control);
+          const inputElement = control.shadowRoot.querySelector('input');
+          assertEquals(String(defaultValue), inputElement.value);
+          // Make sure out-of-range values get updated to correct values.
+          for (const [startValue, correctedValue] of correctedValues) {
+            inputElement.value = startValue;
+            inputElement.dispatchEvent(
+                new CustomEvent('input', {bubbles: true, composed: true}));
+            inputElement.dispatchEvent(
+                new CustomEvent('focusout', {bubbles: true, composed: true}));
+            await waitAfterNextRender(control);
+            assertEquals(String(correctedValue), inputElement.value);
+          }
+          // Update input to secondary value.
+          inputElement.value = secondaryValue;
+          inputElement.dispatchEvent(
+              new CustomEvent('input', {bubbles: true, composed: true}));
           break;
       }
 

@@ -8,10 +8,11 @@
  * ChromeVox settings.
  */
 
-import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import '../../settings_shared.css.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -22,8 +23,8 @@ import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 
 import {getTemplate} from './chromevox_subpage.html.js';
 import {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
@@ -36,6 +37,14 @@ const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 const ESPEAK_TTS_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
 const EVENT_STREAM_FILTERS_PREF_KEY =
     'settings.a11y.chromevox.event_stream_filters';
+const VIRTUAL_BRAILLE_ROWS_PREF_KEY =
+    'settings.a11y.chromevox.virtual_braille_rows';
+const VIRTUAL_BRAILLE_COLUMNS_PREF_KEY =
+    'settings.a11y.chromevox.virtual_braille_columns';
+const MIN_BRAILLE_ROWS = 1;
+const MAX_BRAILLE_ROWS = 99;
+const MIN_BRAILLE_COLUMNS = 1;
+const MAX_BRAILLE_COLUMNS = 99;
 
 type EventStreamFiltersPrefValue = Record<string, boolean>;
 
@@ -362,6 +371,52 @@ class SettingsChromeVoxSubpageElement extends
     Router.getInstance().navigateTo(
         routes.MANAGE_TTS_SETTINGS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
+  }
+
+  private onBrailleRowsInput_(e: KeyboardEvent): void {
+    const inputBox = e.target as CrInputElement;
+    if (inputBox.value === '') {
+      return;
+    }
+    const numericalValue = parseInt(inputBox.value, 10);
+    if (numericalValue < MIN_BRAILLE_ROWS ||
+        numericalValue > MAX_BRAILLE_ROWS) {
+      inputBox.value =
+          String(this.getPref<number>(VIRTUAL_BRAILLE_ROWS_PREF_KEY).value);
+    } else {
+      this.setPrefValue(VIRTUAL_BRAILLE_ROWS_PREF_KEY, numericalValue);
+    }
+  }
+
+  private onBrailleRowsFocusout_(e: KeyboardEvent): void {
+    const inputBox = e.target as CrInputElement;
+    if (inputBox.value === '') {
+      inputBox.value =
+          String(this.getPref<number>(VIRTUAL_BRAILLE_ROWS_PREF_KEY).value);
+    }
+  }
+
+  private onBrailleColumnsInput_(e: KeyboardEvent): void {
+    const inputBox = e.target as CrInputElement;
+    if (inputBox.value === '') {
+      return;
+    }
+    const numericalValue = parseInt(inputBox.value, 10);
+    if (numericalValue < MIN_BRAILLE_COLUMNS ||
+        numericalValue > MAX_BRAILLE_COLUMNS) {
+      inputBox.value =
+          String(this.getPref<number>(VIRTUAL_BRAILLE_COLUMNS_PREF_KEY).value);
+    } else {
+      this.setPrefValue(VIRTUAL_BRAILLE_COLUMNS_PREF_KEY, numericalValue);
+    }
+  }
+
+  private onBrailleColumnsFocusout_(e: KeyboardEvent): void {
+    const inputBox = e.target as CrInputElement;
+    if (inputBox.value === '') {
+      inputBox.value =
+          String(this.getPref<number>(VIRTUAL_BRAILLE_COLUMNS_PREF_KEY).value);
+    }
   }
 
   private onEventLogTap_(): void {
