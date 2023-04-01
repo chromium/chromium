@@ -312,20 +312,22 @@ void KeyboardBacklightColorController::DisplayBacklightColor(
   DVLOG(3) << __func__ << " backlight_color=" << backlight_color;
   switch (backlight_color) {
     case personalization_app::mojom::BacklightColor::kWallpaper: {
-      // If colors have not been calculated yet, do nothing.
       const auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
       DCHECK(wallpaper_controller);
-      if (!wallpaper_controller->calculated_colors().has_value()) {
-        return;
+      SkColor color = kDefaultColor;
+      bool missing_wallpaper_color =
+          !wallpaper_controller->calculated_colors().has_value();
+      if (!missing_wallpaper_color) {
+        color = ConvertBacklightColorToSkColor(backlight_color);
       }
-      SkColor color = ConvertBacklightColorToSkColor(backlight_color);
-      bool valid_color = color != kInvalidWallpaperColor;
+      bool invalid_color =
+          color == kInvalidWallpaperColor || missing_wallpaper_color;
       base::UmaHistogramBoolean(
           "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid",
-          valid_color);
+          !invalid_color);
       // Default to |kDefaultColor| if |color| is invalid or
       // |ShouldUseDefaultColor| is true.
-      if (!valid_color || ShouldUseDefaultColor(color)) {
+      if (invalid_color || ShouldUseDefaultColor(color)) {
         color = kDefaultColor;
       }
       rgb_keyboard_manager->SetStaticBackgroundColor(

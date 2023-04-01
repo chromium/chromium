@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -114,6 +115,14 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
     rgb_keyboard_manager->OnCapabilityUpdatedForTesting(capability);
   }
 
+  // Set the cached wallpaper color to `color`.
+  void SetWallpaperColor(SkColor color) {
+    WallpaperControllerTestApi test_api(wallpaper_controller_);
+    WallpaperCalculatedColors calculated_colors;
+    calculated_colors.k_mean_color = color;
+    test_api.SetCalculatedColors(calculated_colors);
+  }
+
   std::unique_ptr<KeyboardBacklightColorController> controller_;
   WallpaperControllerImpl* wallpaper_controller_ = nullptr;
 
@@ -165,16 +174,14 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
 
 TEST_F(KeyboardBacklightColorControllerTest,
        DisplaysDefaultColorForNearlyBlackColor) {
+  SetWallpaperColor(SkColorSetRGB(/*r=*/0, /*g=*/0, /*b=*/10));
   controller_->OnRgbKeyboardSupportedChanged(true);
-  TestWallpaperObserver observer;
-  SimulateUserLogin(account_id_1);
-  gfx::ImageSkia one_shot_wallpaper =
-      CreateImage(640, 480, SkColorSetRGB(/*r=*/0, /*g=*/0, /*b=*/10));
-  wallpaper_controller_->ShowOneShotWallpaper(one_shot_wallpaper);
-  observer.WaitForWallpaperColorsChanged();
 
+  // This triggers twice. Once because OnWallpaperColorsChanged() is triggered
+  // in OnRgbKeyboardSupportedChanged() and again in that same method because
+  // we're logged in.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 1);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 2);
   EXPECT_EQ(kDefaultColor, displayed_color());
 }
 
