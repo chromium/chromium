@@ -122,6 +122,13 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure) {
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 }
 
+void WaylandTestBase::SetUseAuraOutputManager(bool use_aura_output_manager) {
+  // Must be called before the test server is started and the global display has
+  // been created.
+  DCHECK(!server_.display());
+  config_.use_aura_output_manager = use_aura_output_manager;
+}
+
 void WaylandTestBase::DisableSyncOnTearDown() {
   initialized_ = false;
 }

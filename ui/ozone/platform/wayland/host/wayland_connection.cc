@@ -535,6 +535,13 @@ void WaylandConnection::Global(void* data,
     }
   } else if (!connection->xdg_output_manager_ &&
              strcmp(interface, "zxdg_output_manager_v1") == 0) {
+    // Responsibilities of zxdg_output_manager_v1 have been subsumed into the
+    // zaura_output_manager. If using the zaura_output_manager avoid binding
+    // unnecessarily.
+    if (connection->zaura_output_manager_) {
+      LOG(WARNING) << "Skipping bind to zxdg_output_manager_v1";
+      return;
+    }
     connection->xdg_output_manager_ = wl::Bind<struct zxdg_output_manager_v1>(
         registry, name, std::min(version, kMaxXdgOutputManagerVersion));
     if (!connection->xdg_output_manager_) {

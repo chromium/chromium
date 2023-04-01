@@ -22,6 +22,9 @@ class TestZAuraOutputManager : public GlobalObject {
   // Propagates events for metrics to bound clients for the output.
   void SendOutputMetrics(wl_resource* output_resource,
                          const TestOutputMetrics& metrics);
+
+  // Sends the activated event for the given output.
+  void SendActivated(wl_resource* output_resource);
 };
 
 }  // namespace wl

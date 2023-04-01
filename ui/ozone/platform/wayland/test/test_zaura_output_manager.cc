@@ -12,7 +12,7 @@
 namespace wl {
 
 namespace {
-constexpr uint32_t kZAuraOutputManagerVersion = 1;
+constexpr uint32_t kZAuraOutputManagerVersion = 2;
 
 }  // namespace
 
@@ -56,6 +56,10 @@ void TestZAuraOutputManager::SendOutputMetrics(
                                               metrics.aura_logical_transform);
 
   zaura_output_manager_send_done(resource(), output_resource);
+}
+
+void TestZAuraOutputManager::SendActivated(wl_resource* output_resource) {
+  zaura_output_manager_send_activated(resource(), output_resource);
 }
 
 }  // namespace wl

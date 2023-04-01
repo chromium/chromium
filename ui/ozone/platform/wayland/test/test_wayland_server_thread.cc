@@ -109,6 +109,25 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   if (!alpha_compositing_.Initialize(display_.get()))
     return false;
 
+  if (config.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
+    if (config.use_aura_output_manager) {
+      // zaura_output_manager should be initialized before any wl_output
+      // globals.
+      if (!zaura_output_manager_.Initialize(display_.get())) {
+        return false;
+      }
+    } else {
+      if (!zxdg_output_manager_.Initialize(display_.get())) {
+        return false;
+      }
+    }
+
+    output_.set_aura_shell_enabled();
+    if (!zaura_shell_.Initialize(display_.get())) {
+      return false;
+    }
+  }
+
   if (!output_.Initialize(display_.get()))
     return false;
 
@@ -122,19 +141,6 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
 
   if (!xdg_shell_.Initialize(display_.get()))
     return false;
-
-  if (config.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
-    if (!zaura_output_manager_.Initialize(display_.get())) {
-      return false;
-    }
-
-    if (!zxdg_output_manager_.Initialize(display_.get()))
-      return false;
-
-    output_.set_aura_shell_enabled();
-    if (!zaura_shell_.Initialize(display_.get()))
-      return false;
-  }
 
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;

@@ -8,15 +8,52 @@
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/wayland/wayland_display_util.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 namespace ui {
+namespace {
+
+// A Test Screen that uses Display info in WaylandOutputManager. It has a bare
+// minimum impl to support the test case for Set|Get|DisplayForNewWindows().
+class WaylandTestScreen : public display::test::TestScreen {
+ public:
+  explicit WaylandTestScreen(WaylandScreen* wayland_screen)
+      : display::test::TestScreen(/*create_display=*/false,
+                                  /*register_screen=*/true),
+        wayland_screen_(wayland_screen) {}
+
+  const std::vector<display::Display>& GetAllDisplays() const override {
+    return wayland_screen_->GetAllDisplays();
+  }
+
+ private:
+  raw_ptr<WaylandScreen> wayland_screen_;
+};
+
+class MockWaylandOutputDelegate : public WaylandOutput::Delegate {
+ public:
+  MOCK_METHOD(void,
+              OnOutputHandleMetrics,
+              (const WaylandOutput::Metrics& metrics),
+              (override));
+};
+
+}  // namespace
 
 class WaylandZAuraOutputManagerTest : public WaylandTestSimpleWithAuraShell {
  protected:
+  // WaylandTestSimpleWithAuraShell:
+  void SetUp() override {
+    SetUseAuraOutputManager(true);
+    WaylandTestSimpleWithAuraShell::SetUp();
+  }
+
+  // Sends sample metrics to the primary output configured for this fixture.
   void SendSampleMetrics(const WaylandOutput::Metrics& metrics) {
     const auto wayland_display_id =
         ui::wayland::ToWaylandDisplayIdPair(metrics.display_id);
@@ -55,10 +92,17 @@ class WaylandZAuraOutputManagerTest : public WaylandTestSimpleWithAuraShell {
     });
   }
 
-  // Returns a Metrics object with fixed sample values for testing.
+  // Returns a Metrics object with fixed sample values for testing consistent
+  // with the current primary output.
   WaylandOutput::Metrics GetSampleMetrics() {
+    // Metrics should have already been propagated and the output as part of
+    // test setup.
+    const auto* output = primary_output();
+    EXPECT_TRUE(output->IsReady());
+
     WaylandOutput::Metrics metrics;
-    metrics.display_id = 10;
+    metrics.output_id = output->GetMetrics().output_id;
+    metrics.display_id = output->GetMetrics().display_id;
     metrics.origin = gfx::Point(10, 20);
     metrics.scale_factor = 1;
     metrics.logical_size = gfx::Size(100, 200);
@@ -83,7 +127,12 @@ class WaylandZAuraOutputManagerTest : public WaylandTestSimpleWithAuraShell {
     return aura_output_manager;
   }
 
-  const WaylandOutput* primary_output() {
+  WaylandOutput* primary_output() {
+    return const_cast<WaylandOutput*>(
+        static_cast<const WaylandZAuraOutputManagerTest*>(this)
+            ->primary_output());
+  }
+  const WaylandOutput* primary_output() const {
     return wayland_output_manager()->GetPrimaryOutput();
   }
 };
@@ -192,6 +241,101 @@ TEST_F(WaylandZAuraOutputManagerTest, HandlesMetricsRequestsForUnknownOutputs) {
   const WaylandOutput::Id output_id = primary_output()->output_id();
 
   EXPECT_EQ(nullptr, aura_output_manager()->GetOutputMetrics(output_id + 1));
+}
+
+TEST_F(WaylandZAuraOutputManagerTest, ActiveDisplay) {
+  WaylandTestScreen test_screen(wayland_output_manager()->wayland_screen());
+
+  wl::TestOutput* primary_output = nullptr;
+  wl::TestOutput* secondary_output = nullptr;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    primary_output = server->output();
+    secondary_output = server->CreateAndInitializeOutput();
+  });
+
+  int64_t primary_id = display::kInvalidDisplayId;
+  int64_t secondary_id = display::kInvalidDisplayId;
+  // Wait so that the output metrics are flushed to clients immediately after
+  // the bind.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    primary_id = primary_output->GetDisplayId();
+    secondary_id = secondary_output->GetDisplayId();
+  });
+
+  WaitForAllDisplaysReady();
+
+  auto* platform_screen = wayland_output_manager()->wayland_screen();
+  DCHECK(platform_screen);
+  ASSERT_EQ(2u, platform_screen->GetAllDisplays().size());
+
+  EXPECT_EQ(primary_id, platform_screen->GetAllDisplays()[0].id());
+  EXPECT_EQ(secondary_id, platform_screen->GetAllDisplays()[1].id());
+
+  // Activate the secondary output.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    server->zaura_output_manager()->SendActivated(secondary_output->resource());
+  });
+  EXPECT_EQ(secondary_id,
+            display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+
+  // Activate the primary output.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    server->zaura_output_manager()->SendActivated(primary_output->resource());
+  });
+  EXPECT_EQ(primary_id,
+            display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+}
+
+// Tests that metrics reported by WaylandOutput correctly reflect the state sent
+// to the aura output manager.
+TEST_F(WaylandZAuraOutputManagerTest,
+       UsesAuraOutputManagerMetricsWhenManagerBound) {
+  const auto verify_output_metrics = [](const WaylandOutput::Metrics& metrics,
+                                        const WaylandOutput* output) {
+    const auto& reported_metrics = output->GetMetrics();
+    EXPECT_EQ(metrics.display_id, reported_metrics.display_id);
+    EXPECT_EQ(metrics.origin, reported_metrics.origin);
+    EXPECT_EQ(metrics.scale_factor, reported_metrics.scale_factor);
+    EXPECT_EQ(metrics.logical_size, reported_metrics.logical_size);
+    EXPECT_EQ(metrics.physical_size, reported_metrics.physical_size);
+    EXPECT_EQ(metrics.insets, reported_metrics.insets);
+    EXPECT_EQ(metrics.panel_transform, reported_metrics.panel_transform);
+    EXPECT_EQ(metrics.logical_transform, reported_metrics.logical_transform);
+    EXPECT_EQ(metrics.name, reported_metrics.name);
+    EXPECT_EQ(metrics.description, reported_metrics.description);
+  };
+
+  // Send the initial set of sample metrics, this should be reflected in the
+  // WaylandOutput's reported metrics.
+  auto sample_metrics = GetSampleMetrics();
+
+  SendSampleMetrics(sample_metrics);
+  verify_output_metrics(sample_metrics, primary_output());
+
+  // Update the sample metrics, this should again be reflected in the reported
+  // metrics.
+  sample_metrics.origin = gfx::Point(20, 40);
+  sample_metrics.scale_factor = 2;
+  sample_metrics.logical_size = gfx::Size(200, 400);
+  sample_metrics.physical_size = gfx::Size(400, 800);
+  sample_metrics.insets = gfx::Insets(20);
+  sample_metrics.panel_transform = WL_OUTPUT_TRANSFORM_180;
+  sample_metrics.logical_transform = WL_OUTPUT_TRANSFORM_90;
+  sample_metrics.name = "NewDisplayName";
+  sample_metrics.description = "NewDisplayDiscription";
+
+  SendSampleMetrics(sample_metrics);
+  verify_output_metrics(sample_metrics, primary_output());
+}
+
+// Tests that delegate notifications are triggered on the WaylandOutput when the
+// done event has arrived at the aura output manager.
+TEST_F(WaylandZAuraOutputManagerTest,
+       TriggersWaylandOutputNotificationsOnDone) {
+  testing::NiceMock<MockWaylandOutputDelegate> output_delegate;
+  EXPECT_CALL(output_delegate, OnOutputHandleMetrics(testing::_)).Times(1);
+  primary_output()->set_delegate_for_testing(&output_delegate);
+  SendSampleMetrics(GetSampleMetrics());
 }
 
 }  // namespace ui

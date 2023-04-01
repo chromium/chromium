@@ -133,11 +133,25 @@ const WaylandOutput::Metrics& WaylandOutput::GetMetrics() const {
   return metrics_;
 }
 
+void WaylandOutput::SetMetrics(const Metrics& metrics) {
+  metrics_ = metrics;
+}
+
 float WaylandOutput::scale_factor() const {
   return metrics_.scale_factor;
 }
 
 bool WaylandOutput::IsReady() const {
+  // zaura_output_manager is guaranteed to have received all relevant output
+  // metrics before the first wl_output.done event. zaura_output_manager is
+  // responsible for updating `metrics_` in an atomic and consistent way as soon
+  // as it receives all its necessary output metrics events.
+  if (IsUsingZAuraOutputManager()) {
+    // WaylandOutput should be considered ready after the first atomic update to
+    // `metrics_`.
+    return metrics_.output_id == output_id_;
+  }
+
   // The aura output requires both the logical size and the display ID
   // to become ready. If a client that uses xdg_output but not aura_output
   // needs different condition for readiness, this needs to be updated.
@@ -184,6 +198,10 @@ void WaylandOutput::UpdateMetrics() {
   }
 }
 
+bool WaylandOutput::IsUsingZAuraOutputManager() const {
+  return connection_->zaura_output_manager() != nullptr;
+}
+
 // static
 void WaylandOutput::OutputHandleGeometry(void* data,
                                          wl_output* obj,
@@ -222,23 +240,29 @@ void WaylandOutput::OutputHandleMode(void* data,
 
 // static
 void WaylandOutput::OutputHandleDone(void* data, struct wl_output* wl_output) {
-  if (auto* output = static_cast<WaylandOutput*>(data)) {
-    output->is_ready_ = true;
+  auto* output = static_cast<WaylandOutput*>(data);
 
-    if (auto& xdg_output = output->xdg_output_) {
-      xdg_output->OnDone();
-    }
-
-    if (auto& aura_output = output->aura_output_) {
-      aura_output->OnDone();
-    }
-
-    // Once all metrics have been received perform an atomic update on this
-    // output's `metrics_`.
-    output->UpdateMetrics();
-
-    output->TriggerDelegateNotifications();
+  // zaura_output_manager takes responsibility of keeping `metrics_` up to date
+  // and triggering delegate notifications.
+  if (!output || output->IsUsingZAuraOutputManager()) {
+    return;
   }
+
+  output->is_ready_ = true;
+
+  if (auto& xdg_output = output->xdg_output_) {
+    xdg_output->OnDone();
+  }
+
+  if (auto& aura_output = output->aura_output_) {
+    aura_output->OnDone();
+  }
+
+  // Once all metrics have been received perform an atomic update on this
+  // output's `metrics_`.
+  output->UpdateMetrics();
+
+  output->TriggerDelegateNotifications();
 }
 
 // static
