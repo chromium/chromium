@@ -610,6 +610,22 @@ LayoutUnit NGGridLayoutTrackCollection::ComputeSetSpanSize(
       .ClampNegativeToZero();
 }
 
+bool NGGridLayoutTrackCollection::IsSpanningIndefiniteSet(
+    wtf_size_t begin_set_index,
+    wtf_size_t end_set_index) const {
+  if (last_indefinite_index_.empty()) {
+    return false;
+  }
+
+  DCHECK_LT(begin_set_index, end_set_index);
+  DCHECK_LT(end_set_index, last_indefinite_index_.size());
+  const wtf_size_t last_indefinite_index =
+      last_indefinite_index_[end_set_index];
+
+  return last_indefinite_index != kNotFound &&
+         begin_set_index <= last_indefinite_index;
+}
+
 NGGridLayoutTrackCollection
 NGGridLayoutTrackCollection::CreateSubgridCollection(
     wtf_size_t begin_range_index,
@@ -618,18 +634,19 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
   DCHECK_LE(begin_range_index, end_range_index);
   DCHECK_LT(end_range_index, ranges_.size());
 
-  NGGridLayoutTrackCollection subgrid_collection(subgrid_track_direction);
-  subgrid_collection.ranges_.ReserveInitialCapacity(end_range_index + 1 -
-                                                    begin_range_index);
+  NGGridLayoutTrackCollection subgrid(subgrid_track_direction);
+  subgrid.ranges_.ReserveInitialCapacity(end_range_index + 1 -
+                                         begin_range_index);
 
   const wtf_size_t start_line_offset = ranges_[begin_range_index].start_line;
   const wtf_size_t begin_set_index = ranges_[begin_range_index].begin_set_index;
 
   for (wtf_size_t i = begin_range_index; i <= end_range_index; ++i) {
-    NGGridRange translated_range = ranges_[i];
+    auto translated_range = ranges_[i];
     translated_range.start_line -= start_line_offset;
     translated_range.begin_set_index -= begin_set_index;
-    subgrid_collection.ranges_.emplace_back(std::move(translated_range));
+    subgrid.properties_ |= translated_range.properties;
+    subgrid.ranges_.emplace_back(std::move(translated_range));
   }
 
   const wtf_size_t end_set_index = ranges_[end_range_index].begin_set_index +
@@ -641,14 +658,29 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
   const wtf_size_t set_span_size = end_set_index - begin_set_index;
   const auto first_set_offset = sets_geometry_[begin_set_index].offset;
 
-  subgrid_collection.sets_geometry_.ReserveInitialCapacity(set_span_size + 1);
-  subgrid_collection.sets_geometry_.emplace_back(/* offset */ LayoutUnit(),
-                                                 /* track_count */ 0);
+  subgrid.sets_geometry_.ReserveInitialCapacity(set_span_size + 1);
+  subgrid.sets_geometry_.emplace_back(/* offset */ LayoutUnit(),
+                                      /* track_count */ 0);
 
   for (wtf_size_t i = begin_set_index + 1; i <= end_set_index; ++i) {
-    subgrid_collection.sets_geometry_.emplace_back(
+    subgrid.sets_geometry_.emplace_back(
         sets_geometry_[i].offset - first_set_offset,
         sets_geometry_[i].track_count);
+  }
+
+  if (!last_indefinite_index_.empty()) {
+    DCHECK_LT(end_set_index, last_indefinite_index_.size());
+
+    subgrid.last_indefinite_index_.ReserveInitialCapacity(set_span_size + 1);
+    subgrid.last_indefinite_index_.push_back(kNotFound);
+
+    for (wtf_size_t i = begin_set_index + 1; i <= end_set_index; ++i) {
+      subgrid.last_indefinite_index_.push_back(
+          (last_indefinite_index_[i] == kNotFound ||
+           last_indefinite_index_[i] < begin_set_index)
+              ? kNotFound
+              : last_indefinite_index_[i] - begin_set_index);
+    }
   }
 
   if (baselines_ && !baselines_->major.empty()) {
@@ -663,15 +695,15 @@ NGGridLayoutTrackCollection::CreateSubgridCollection(
       subgrid_baselines.major.emplace_back(baselines_->major[i]);
       subgrid_baselines.minor.emplace_back(baselines_->minor[i]);
     }
-    subgrid_collection.baselines_ = std::move(subgrid_baselines);
+    subgrid.baselines_ = std::move(subgrid_baselines);
   }
 
-  subgrid_collection.gutter_size_ = gutter_size_;
-  subgrid_collection.sets_geometry_start_offset_ =
-      subgrid_collection.start_extra_margin_ = start_extra_margin_;
-  subgrid_collection.end_extra_margin_ = end_extra_margin_;
+  subgrid.gutter_size_ = gutter_size_;
+  subgrid.sets_geometry_start_offset_ = subgrid.start_extra_margin_ =
+      start_extra_margin_;
+  subgrid.end_extra_margin_ = end_extra_margin_;
 
-  return subgrid_collection;
+  return subgrid;
 }
 
 bool NGGridLayoutTrackCollection::HasFlexibleTrack() const {
@@ -709,7 +741,7 @@ NGGridSizingTrackCollection::NGGridSizingTrackCollection(
     }
   }
 
-  last_indefinite_indices_.ReserveInitialCapacity(set_count + 1);
+  last_indefinite_index_.ReserveInitialCapacity(set_count + 1);
   sets_geometry_.ReserveInitialCapacity(set_count + 1);
   sets_.ReserveInitialCapacity(set_count);
 }
@@ -741,21 +773,6 @@ NGGridSizingTrackCollection::GetSetIterator(wtf_size_t begin_set_index,
   return SetIterator(this, begin_set_index, end_set_index);
 }
 
-bool NGGridSizingTrackCollection::IsSpanningIndefiniteSet(
-    wtf_size_t begin_set_index,
-    wtf_size_t end_set_index) const {
-  if (last_indefinite_indices_.empty())
-    return false;
-
-  DCHECK_LT(begin_set_index, end_set_index);
-  DCHECK_LT(end_set_index, last_indefinite_indices_.size());
-  const wtf_size_t last_indefinite_index =
-      last_indefinite_indices_[end_set_index];
-
-  return last_indefinite_index != kNotFound &&
-         begin_set_index <= last_indefinite_index;
-}
-
 LayoutUnit NGGridSizingTrackCollection::TotalTrackSize() const {
   if (sets_.empty())
     return LayoutUnit();
@@ -767,18 +784,18 @@ LayoutUnit NGGridSizingTrackCollection::TotalTrackSize() const {
 }
 
 void NGGridSizingTrackCollection::CacheDefiniteSetsGeometry() {
-  DCHECK(sets_geometry_.empty() && last_indefinite_indices_.empty());
+  DCHECK(sets_geometry_.empty() && last_indefinite_index_.empty());
 
   LayoutUnit first_set_offset;
-  last_indefinite_indices_.push_back(kNotFound);
+  last_indefinite_index_.push_back(kNotFound);
   sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
 
   for (const auto& set : sets_) {
     if (set.track_size.IsDefinite()) {
       first_set_offset += set.base_size + gutter_size_ * set.track_count;
-      last_indefinite_indices_.push_back(last_indefinite_indices_.back());
+      last_indefinite_index_.push_back(last_indefinite_index_.back());
     } else {
-      last_indefinite_indices_.push_back(last_indefinite_indices_.size() - 1);
+      last_indefinite_index_.push_back(last_indefinite_index_.size() - 1);
     }
 
     DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
@@ -788,18 +805,18 @@ void NGGridSizingTrackCollection::CacheDefiniteSetsGeometry() {
 
 void NGGridSizingTrackCollection::CacheInitializedSetsGeometry(
     LayoutUnit first_set_offset) {
-  last_indefinite_indices_.Shrink(0);
+  last_indefinite_index_.Shrink(0);
   sets_geometry_.Shrink(0);
 
-  last_indefinite_indices_.push_back(kNotFound);
+  last_indefinite_index_.push_back(kNotFound);
   sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
 
   for (const auto& set : sets_) {
     if (set.growth_limit == kIndefiniteSize) {
-      last_indefinite_indices_.push_back(last_indefinite_indices_.size() - 1);
+      last_indefinite_index_.push_back(last_indefinite_index_.size() - 1);
     } else {
       first_set_offset += set.growth_limit + gutter_size_ * set.track_count;
-      last_indefinite_indices_.push_back(last_indefinite_indices_.back());
+      last_indefinite_index_.push_back(last_indefinite_index_.back());
     }
 
     DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
@@ -812,7 +829,7 @@ void NGGridSizingTrackCollection::FinalizeSetsGeometry(
     LayoutUnit override_gutter_size) {
   gutter_size_ = override_gutter_size;
 
-  last_indefinite_indices_.Shrink(0);
+  last_indefinite_index_.Shrink(0);
   sets_geometry_.Shrink(0);
 
   sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);

@@ -1124,13 +1124,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
     const NGLayoutResult* result = nullptr;
     if (space.AvailableSize().inline_size == kIndefiniteSize) {
-      // The only case where we will have an indefinite block size is for the
-      // first column resolution step; after that we will always have the used
-      // sizes of the previous step for the orthogonal direction.
-      DCHECK(is_for_columns);
-
-      // If we are orthogonal grid-item, resolving against an indefinite size,
-      // set our inline-size to our max content-contribution size.
+      // If we are orthogonal grid item, resolving against an indefinite size,
+      // set our inline size to our max-content contribution size.
       const auto fallback_space = CreateConstraintSpaceForMeasure(
           *grid_item, sizing_subtree, track_direction,
           /* opt_fixed_block_size */ MaxContentSize());
