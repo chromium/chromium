@@ -170,8 +170,6 @@ void OverlayProcessorUsingStrategy::SetFrameSequenceNumber(
   frame_sequence_number_ = frame_sequence_number;
 }
 
-DBG_FLAG_FBOOL("processor.overlay.disable", disable_overlay)
-
 void OverlayProcessorUsingStrategy::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
@@ -206,7 +204,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // If we have any copy requests, we can't remove any quads for overlays or
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
-  if (render_pass->copy_requests.empty() && !disable_overlay()) {
+  if (render_pass->copy_requests.empty()) {
     success = AttemptWithStrategies(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
         render_passes, &surface_damage_rect_list, output_surface_plane,
