@@ -656,6 +656,7 @@ int CameraHalDelegate::GetCameraIdFromDeviceId(const std::string& device_id) {
 VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer,
     const VideoCaptureDeviceDescriptor& device_descriptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!vcd_task_runner_) {
     vcd_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   }
