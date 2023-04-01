@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/set_bid_bindings.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
@@ -276,6 +277,14 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
     }
   }
 
+  absl::optional<double> modeling_signals;
+  double tmp_modeling_signals;
+  if (result_dict.Get("modelingSignals", &tmp_modeling_signals) &&
+      !std::isnan(tmp_modeling_signals) && !std::isinf(tmp_modeling_signals) &&
+      tmp_modeling_signals >= 0 && tmp_modeling_signals < (1 << 12)) {
+    modeling_signals = tmp_modeling_signals;
+  }
+
   std::string render_url_string;
   absl::optional<blink::AdSize> render_size = absl::nullopt;
   if (ad_render->IsString()) {
@@ -405,11 +414,11 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   // including the time from the last setBid() call to when the bidder worklet
   // timed out, if the worklet did time out. So `bid_duration` is calculated
   // when ownership of the bid is taken by the caller, instead of here.
-  bid_ =
-      mojom::BidderWorkletBid::New(std::move(ad_json), bid, std::move(ad_cost),
-                                   blink::AdDescriptor(render_url, render_size),
-                                   std::move(ad_component_descriptors),
-                                   /*bid_duration=*/base::TimeDelta());
+  bid_ = mojom::BidderWorkletBid::New(
+      std::move(ad_json), bid, std::move(ad_cost),
+      blink::AdDescriptor(render_url, render_size),
+      std::move(ad_component_descriptors), std::move(modeling_signals),
+      /*bid_duration=*/base::TimeDelta());
   return true;
 }
 

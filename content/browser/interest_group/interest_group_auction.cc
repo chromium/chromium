@@ -401,6 +401,7 @@ InterestGroupAuction::Bid::Bid(
     absl::optional<double> ad_cost,
     blink::AdDescriptor ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
+    absl::optional<uint16_t> modeling_signals,
     base::TimeDelta bid_duration,
     absl::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
@@ -412,6 +413,7 @@ InterestGroupAuction::Bid::Bid(
       ad_cost(std::move(ad_cost)),
       ad_descriptor(std::move(ad_descriptor)),
       ad_component_descriptors(std::move(ad_component_descriptors)),
+      modeling_signals(modeling_signals),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
       interest_group(&bid_state->bidder->interest_group),
@@ -1441,8 +1443,8 @@ class InterestGroupAuction::BuyerHelper
     return std::make_unique<Bid>(
         bid_role, std::move(mojo_bid->ad), mojo_bid->bid, mojo_bid->ad_cost,
         std::move(mojo_bid->ad_descriptor), std::move(ad_component_descriptors),
-        mojo_bid->bid_duration, bidding_signals_data_version, matching_ad,
-        &bid_state, auction_);
+        std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
+        bidding_signals_data_version, matching_ad, &bid_state, auction_);
   }
 
   // Close all Mojo pipes associated with `state`.
@@ -1750,6 +1752,8 @@ InterestGroupAuction::CreateReporter(
   // winning bidder's generateBid() method.
   winning_bid_info.bid = winner->bid->auction->top_bid()->bid->bid;
   winning_bid_info.ad_cost = winner->bid->auction->top_bid()->bid->ad_cost;
+  winning_bid_info.modeling_signals =
+      winner->bid->auction->top_bid()->bid->modeling_signals;
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
@@ -2724,9 +2728,9 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       modified_bid_params->has_bid ? modified_bid_params->bid
                                    : component_bid->bid,
       component_bid->ad_cost, component_bid->ad_descriptor,
-      component_bid->ad_component_descriptors, component_bid->bid_duration,
-      component_bid->bidding_signals_data_version, component_bid->bid_ad,
-      component_bid->bid_state, component_bid->auction);
+      component_bid->ad_component_descriptors, component_bid->modeling_signals,
+      component_bid->bid_duration, component_bid->bidding_signals_data_version,
+      component_bid->bid_ad, component_bid->bid_state, component_bid->auction);
 }
 
 void InterestGroupAuction::OnBidSourceDone() {

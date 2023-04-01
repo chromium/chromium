@@ -11920,6 +11920,120 @@ INSTANTIATE_TEST_SUITE_P(
     CostRoundingTest,
     testing::Values(8, 16, 53));
 
+TEST_F(AuctionRunnerTest, ModelingSignalsPassed) {
+  // Due to noising, modelingSignals is only correctly passed 99% of the time.
+  //
+  // Since the noising pseudorandom number generator is uniform, in 30 runs, the
+  // probability that at least 15 of those get the correct answer is
+  //
+  // CDF[BinomialDistribution[30, 0.99], 30] -
+  // CDF[BinomialDistribution[30, 0.99], 15]
+  //
+  // Which is *extremely* close to 1 (within 10^(-20)):
+  // https://www.wolframalpha.com/input?i=N%5B%5BCDF%5BBinomialDistribution%5B30%2C+0.99%5D%2C+30%5D+-+CDF%5BBinomialDistribution%5B30%2C+0.99%5D%2C+15%5D%5D%2C+30%5D
+  //
+  // The chosen constants below balance having an extremely low (basically 0)
+  // probability of flakes, shorter runtime of the test (auctions are slow), and
+  // having a substantial number of the runs return the correct value.
+  constexpr int kNumRuns = 30;
+  constexpr int kNumCorrectAtLeast = 15;
+
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: 1,
+              render: interestGroup.ads[0].renderUrl,
+              modelingSignals: 0xF23};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?modelingSignals=" +
+                   browserSignals.modelingSignals);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  int num_correct = 0;
+  for (int i = 0; i < kNumRuns; i++) {
+    RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+    EXPECT_FALSE(result_.manually_aborted);
+    EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+    ASSERT_EQ(result_.report_urls.size(), 1u);
+    base::StringPiece query = result_.report_urls[0].query_piece();
+    std::vector<base::StringPiece> split = base::SplitStringPiece(
+        query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    ASSERT_EQ(split.size(), 2u);
+    int reported_modeling_signals;
+    EXPECT_TRUE(base::StringToInt(split[1], &reported_modeling_signals));
+    // Even noised results should be in the modeling signals range.
+    EXPECT_GE(reported_modeling_signals, 0);
+    EXPECT_LE(reported_modeling_signals, 0x0FFF);
+    if (reported_modeling_signals == 0xF23) {
+      num_correct++;
+    }
+  }
+  EXPECT_GE(num_correct, kNumCorrectAtLeast);
+}
+
+TEST_F(AuctionRunnerTest, ModelingSignalsNotPresent) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: 1,
+              render: interestGroup.ads[0].renderUrl};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?modelingSignals=" +
+                   browserSignals.modelingSignals);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  // modelingSignals should be undefined.
+  EXPECT_THAT(
+      result_.report_urls,
+      testing::ElementsAre(GURL(
+          "https://buyer-reporting.example.com/?modelingSignals=undefined")));
+}
+
 TEST_P(BidRoundingTest, BidRounded) {
   const char kBidScript[] = R"(
     function generateBid(
@@ -14681,7 +14795,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
            auction_worklet::mojom::BidderWorkletBid::New(
                "ad", 5.0, /*ad_cost=*/absl::nullopt,
                blink::AdDescriptor(GURL("https://ad2.com")),
-               /*ad_component_urls=*/absl::nullopt, base::TimeDelta())),
+               /*ad_component_urls=*/absl::nullopt,
+               /*modeling_signals=*/absl::nullopt, base::TimeDelta())),
        /*expect_winner=*/true},
       // A non-k-anon bid as k-anon one. Enforced, so auction fails.
       {
@@ -14692,7 +14807,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
               auction_worklet::mojom::BidderWorkletBid::New(
                   "ad", 5.0, /*ad_cost=*/absl::nullopt,
                   blink::AdDescriptor(GURL("https://ad2.com")),
-                  /*ad_component_urls=*/absl::nullopt, base::TimeDelta())),
+                  /*ad_component_urls=*/absl::nullopt,
+                  /*modeling_signals=*/absl::nullopt, base::TimeDelta())),
           /*expect_winner=*/false,
       },
       // A non-k-anon bid as k-anon one. Simulate, so auction succeeds.
@@ -14704,7 +14820,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
               auction_worklet::mojom::BidderWorkletBid::New(
                   "ad", 5.0, /*ad_cost=*/absl::nullopt,
                   blink::AdDescriptor(GURL("https://ad2.com")),
-                  /*ad_component_urls=*/absl::nullopt, base::TimeDelta())),
+                  /*ad_component_urls=*/absl::nullopt,
+                  /*modeling_signals=*/absl::nullopt, base::TimeDelta())),
           /*expect_winner=*/true,
       },
       // Sending k-anon data when it's not even on.

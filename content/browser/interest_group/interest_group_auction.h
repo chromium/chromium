@@ -262,6 +262,7 @@ class CONTENT_EXPORT InterestGroupAuction
         absl::optional<double> ad_cost,
         blink::AdDescriptor ad_descriptor,
         std::vector<blink::AdDescriptor> ad_component_descriptors,
+        absl::optional<uint16_t> modeling_signals,
         base::TimeDelta bid_duration,
         absl::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
@@ -294,6 +295,7 @@ class CONTENT_EXPORT InterestGroupAuction
     const absl::optional<double> ad_cost;
     const blink::AdDescriptor ad_descriptor;
     const std::vector<blink::AdDescriptor> ad_component_descriptors;
+    const absl::optional<uint16_t> modeling_signals;
     const base::TimeDelta bid_duration;
     const absl::optional<uint32_t> bidding_signals_data_version;
 

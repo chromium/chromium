@@ -111,6 +111,9 @@ struct BidderWorkletBid {
   // field.
   array<blink.mojom.AdDescriptor>? ad_component_descriptors;
 
+  // `modelingSignals` returned by generateBid, if any.
+  uint16? modeling_signals;
+
   // How long it took to run the generateBid() script.
   mojo_base.mojom.TimeDelta bid_duration;
 };
@@ -431,6 +434,10 @@ interface BidderWorklet {
   // `browser_signal_ad_cost` The numeric value of the adCost associated with
   //  the winning bid, if specified by `generateBid()`.
   //
+  //  `browser_signal_modeling_signals` The masked and noised numeric value of
+  //  the modelingSignals associated with the winning bid, if specified by
+  //  `generateBid()`.
+  //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
@@ -475,6 +482,7 @@ interface BidderWorklet {
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
       double? browser_signal_ad_cost,
+      uint16? browser_signal_modeling_signals,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       uint32 bidding_signals_data_version,
