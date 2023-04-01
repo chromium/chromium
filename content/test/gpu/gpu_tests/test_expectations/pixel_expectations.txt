@@ -309,8 +309,6 @@ crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
-
-
 # Failing likely due to protected memory, but cause TBD.
 crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
 crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
@@ -407,6 +405,9 @@ crbug.com/1383180 [ android android-pixel-6 android-chromium ] Pixel_MediaRecord
 crbug.com/1383180 [ android android-pixel-4 android-chromium ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 crbug.com/1383180 [ android android-pixel-6 android-chromium ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 # finder:group-end
+
+crbug.com/1429731 [ chromeos chromeos-board-kevin ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
