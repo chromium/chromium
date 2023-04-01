@@ -303,14 +303,14 @@ class DesktopCaptureDeviceTest : public testing::Test {
   std::unique_ptr<webrtc::DesktopFrame> output_frame_;
 };
 
-TEST_F(DesktopCaptureDeviceTest, Capture) {
 #if BUILDFLAG(IS_FUCHSIA)
-  if (ui::OzonePlatform::GetInstance()->GetPlatformNameForTest() !=
-      "flatland") {
-    GTEST_SKIP() << "ScreenCapturer is supported only when using Flatland";
-  }
+// TODO(crbug.com/1424897) The test is currently broken on Fuchsia.
+#define MAYBE_Capture DISABLED_Capture
+#else
+#define MAYBE_Capture Capture
 #endif
 
+TEST_F(DesktopCaptureDeviceTest, MAYBE_Capture) {
   std::unique_ptr<webrtc::DesktopCapturer> capturer(
       webrtc::DesktopCapturer::CreateScreenCapturer(
           webrtc::DesktopCaptureOptions::CreateDefault()));

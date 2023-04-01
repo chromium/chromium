@@ -92,7 +92,7 @@ declare_args() {
       ozone_platform_wayland = true
       ozone_platform_x11 = true
     } else if (is_fuchsia) {
-      ozone_platform = "scenic"
+      ozone_platform = "flatland"
       ozone_platform_scenic = true
       ozone_platform_flatland = true
     }
