@@ -280,7 +280,7 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnOpenTag(
   box->fragment_start = line_box.size();
   box->ResetStyle(style, is_svg_text_, *item.GetLayoutObject());
   box->item = &item;
-  box->has_start_edge = item_result.has_edge;
+  box->has_start_edge = true;
   box->margin_inline_start = item_result.margins.inline_start;
   box->margin_inline_end = item_result.margins.inline_end;
   box->borders = item_result.borders;
@@ -299,10 +299,9 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnCloseTag(
     const NGConstraintSpace& space,
     NGLogicalLineItems* line_box,
     NGInlineBoxState* box,
-    FontBaseline baseline_type,
-    bool has_end_edge) {
+    FontBaseline baseline_type) {
   DCHECK_EQ(box, &stack_.back());
-  box->has_end_edge = has_end_edge;
+  box->has_end_edge = true;
   EndBoxState(space, box, line_box, baseline_type);
   // TODO(kojii): When the algorithm restarts from a break token, the stack may
   // underflow. We need either synthesize a missing box state, or push all

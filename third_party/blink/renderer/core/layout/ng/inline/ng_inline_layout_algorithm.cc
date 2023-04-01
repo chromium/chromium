@@ -128,8 +128,8 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::HandleCloseTag(
     NGInlineBoxState* box) {
   if (UNLIKELY(quirks_mode_ && !item.IsEmptyItem()))
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
-  box = box_states_->OnCloseTag(ConstraintSpace(), line_box, box,
-                                baseline_type_, item.HasEndEdge());
+  box =
+      box_states_->OnCloseTag(ConstraintSpace(), line_box, box, baseline_type_);
   // Just clear |NeedsLayout| flags. Culled inline boxes do not need paint
   // invalidations. If this object produces box fragments,
   // |NGInlineBoxStateStack| takes care of invalidations.
@@ -629,7 +629,6 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
   DCHECK(To<LayoutBox>(layout_object)->IsMonolithic());
   layout_object->SetIsTruncated(false);
 
-  item_result->has_edge = true;
   NGInlineBoxState* box = box_states_->OnOpenTag(
       ConstraintSpace(), item, *item_result, baseline_type_, *line_box);
 
@@ -728,8 +727,6 @@ void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
   DCHECK(item_result->layout_result);
   DCHECK(!IsA<LayoutNGTextCombine>(item.GetLayoutObject()));
   DCHECK(!item_result->spacing_before);
-
-  item_result->has_edge = true;
 
   // Because of the initial letter box should not contribute baseline position
   // to surrounding text, we should not update `NGInlineBoxState` for avoiding
