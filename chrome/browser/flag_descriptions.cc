@@ -1498,6 +1498,10 @@ const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
     "Enables JavaScript API to intermediate federated identity requests.";
 
+const char kFedCmAuthzName[] = "FedCmAuthz";
+const char kFedCmAuthzDescription[] =
+    "Enables RPs to request authorization for custom IdP scopes.";
+
 const char kFedCmAutoReauthnName[] = "FedCmAutoReauthn";
 const char kFedCmAutoReauthnDescription[] =
     "Enables auto re-authentication in the FedCM API. Requires FedCM to be "

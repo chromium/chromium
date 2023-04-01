@@ -831,6 +831,9 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmName[];
 extern const char kFedCmDescription[];
 
+extern const char kFedCmAuthzName[];
+extern const char kFedCmAuthzDescription[];
+
 extern const char kFedCmAutoReauthnName[];
 extern const char kFedCmAutoReauthnDescription[];
 

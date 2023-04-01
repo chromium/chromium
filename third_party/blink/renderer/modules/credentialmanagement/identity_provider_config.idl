@@ -9,6 +9,9 @@ dictionary IdentityProviderConfig {
   required USVString configURL;
   required USVString clientId;
   USVString nonce;
+  [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
+  [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
+  [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
   [RuntimeEnabled=FedCmLoginHint] LoginHint loginHint;
 };
 

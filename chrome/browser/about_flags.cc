@@ -8265,6 +8265,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFedCmFeatureVariations,
                                     "FedCmFeatureVariations")},
 
+    {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
+     flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
+
     {"fedcm-auto-re-authn", flag_descriptions::kFedCmAutoReauthnName,
      flag_descriptions::kFedCmAutoReauthnDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAutoReauthn)},

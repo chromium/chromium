@@ -86,6 +86,7 @@ CONTENT_EXPORT extern const char kFedCmIdpSignoutFieldTrialParamName[];
 CONTENT_EXPORT extern const char kFedCmIdpSigninStatusFieldTrialParamName[];
 CONTENT_EXPORT extern const char
     kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName[];
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmAuthz);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmAutoReauthn);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdPRegistration);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIframeSupport);

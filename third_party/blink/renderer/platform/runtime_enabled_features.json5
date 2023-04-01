@@ -1488,6 +1488,13 @@
       base_feature: "none",
     },
     {
+      name: "FedCmAuthz",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "FedCmAutoReauthn",
       depends_on: ["FedCm"],
       public: true,

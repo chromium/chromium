@@ -59982,6 +59982,7 @@ from previous Chrome versions.
   <int value="-991412904" label="SettingsLandingPageRedesign:disabled"/>
   <int value="-991253797"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:disabled"/>
+  <int value="-991025017" label="FedCmAuthz:enabled"/>
   <int value="-990704221" label="TerminalSSH:enabled"/>
   <int value="-990187062" label="SendTabToSelfShowSendingUI:enabled"/>
   <int value="-990031172" label="FedCmIframeSupport:disabled"/>
@@ -64974,6 +64975,7 @@ from previous Chrome versions.
       label="AutofillEnableIbanClientSideUrlFiltering:disabled"/>
   <int value="1780392521"
       label="OmniboxUpdatedConnectionSecurityIndicators:disabled"/>
+  <int value="1781225884" label="FedCmAuthz:disabled"/>
   <int value="1781422070" label="PasspointARCSupport:enabled"/>
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
   <int value="1782808560"
