@@ -24,7 +24,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1087110696012418426">Xayrli kun, <ph name="GIVEN_NAME" /></translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, fayllar, ilovalar va boshqalarni qidirish. Ilovalarni strelka tugmalari yordamida varaqlang.</translation>
 <translation id="109942774857561566">Men zerikdim</translation>
-<translation id="1104084341931202936">Maxsus imkoniyatlar sozlamalarini ochish</translation>
+<translation id="1104084341931202936">Qulayliklar sozlamalarini ochish</translation>
 <translation id="1104621072296271835">Qurilmalaringiz birgalikda yaxshiroq ishlaydi</translation>
 <translation id="1111021433905331574">Klaviatura orqa chirogʻi rangini Sozlamalar &gt; <ph name="APP_TITLE" /> sahifasidan oʻzgartirish mumkin</translation>
 <translation id="112308213915226829">Javonni avtomatik yashirish</translation>
@@ -128,7 +128,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1610778689852195798">“Qaytarish”</translation>
 <translation id="1611993646327628135">Yoniq</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
+<translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Qulayliklar orqali faolsizlantirish mumkin.</translation>
 <translation id="163517899691012366">Bezovta qilinmasin rejimi yoniqligida bildirishnomalar ovozsiz chiqariladi</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ta qurilma</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
@@ -160,7 +160,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-qator, <ph name="COLUMN_NUMBER" />-ustunga oʻtdi.</translation>
 <translation id="1771761307086386028">Oʻngga aylantirish</translation>
 <translation id="1774796056689732716">Taqvim, <ph name="CURRENT_MONTH_YEAR" />, hozir <ph name="DATE" /> tanlangan.</translation>
-<translation id="1787955149152357925">Yoqilmagan</translation>
+<translation id="1787955149152357925">Oʻchiq</translation>
 <translation id="1797271123677381264">Parolni unutdim</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="1812997170047690955">Ekranda nimalar bor?</translation>
@@ -478,7 +478,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3593646411856133110">Ochiq ilovalarni chiqarish uchun tepaga suring va ushlab turing.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
 <translation id="3596012367874587041">Ilova sozlamalari</translation>
-<translation id="3600061223661453002">Yoqilmagan</translation>
+<translation id="3600061223661453002">Oʻchiq</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ish stoli yaratildi</translation>
 <translation id="3606978283550408104">Brayl displeyi ulandi.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
@@ -545,7 +545,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3945867833895287237">Hotspotga ulanmoqda...</translation>
 <translation id="3950820424414687140">Kirish</translation>
 <translation id="3962859241508114581">Avvalgi trek</translation>
-<translation id="3969043077941541451">Yoqilmagan</translation>
+<translation id="3969043077941541451">Oʻchiq</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="397726367135689299">Batareya quvvatlanishi kuchsiz boʻlishi mumkin.</translation>
 <translation id="3977512764614765090">Batareya <ph name="PERCENTAGE" />% va quvvatlanmoqda.</translation>
@@ -559,7 +559,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ekraningiz namoyish qilinmoqda</translation>
 <translation id="4057003836560082631">Brauzerdagi <ph name="INDEX" />-varaq, jami <ph name="TOTAL_COUNT" /> ta. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Yoqilmagan, 1 ta ilova}other{Yoqilmagan, # ta ilova}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Oʻchiq, 1 ta ilova}other{Oʻchiq, # ta ilova}}</translation>
 <translation id="4066027111132117168">Yoniq, <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="4072264167173457037">Signal o‘rtacha</translation>
 <translation id="4086921558679520050">Qurilmadagi mikrofon tashqi tugmasini bosing</translation>
@@ -579,7 +579,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4192112279662688596">Yoki</translation>
 <translation id="4195814663415092787">Avval ochilgan ichki oynalar</translation>
 <translation id="4195877955194704651">Avtomatik bosish menyusi</translation>
-<translation id="4197790712631116042">Yoqilmagan</translation>
+<translation id="4197790712631116042">Oʻchiq</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> mavjud emas.</translation>
 <translation id="4201051445878709314">Avvalgi oyni ko‘rsatish</translation>
 <translation id="4209973997261364186">Wi-Fi yoqildi</translation>
@@ -774,7 +774,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5216991270656129561">Oʻchiqlik muddati: <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="5234764350956374838">Yopish</translation>
-<translation id="523505283826916779">Maxsus imkoniyatlar sozlamalari</translation>
+<translation id="523505283826916779">Qulayliklar sozlamalari</translation>
 <translation id="5245201184978705914">Transkripsiya yaratilmadi</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> nomli qurilmaga ulandi, batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Saqlangan ish stollari topilmadi</translation>
@@ -785,7 +785,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5286194356314741248">Qidiruv</translation>
 <translation id="5293671101077843611">Bugun hech qanday tadbir yoʻq</translation>
 <translation id="5297423144044956168">Mobil qurilmalar topilmadi</translation>
-<translation id="5297704307811127955">Yoqilmagan</translation>
+<translation id="5297704307811127955">Oʻchiq</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5302048478445481009">Til</translation>
 <translation id="5308380583665731573">Ulanish</translation>
@@ -1253,7 +1253,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7866482334467279021">yoniq</translation>
 <translation id="7868900307798234037">Ekran qulfi barmoq izi orqali yechildi</translation>
 <translation id="7872195908557044066">Administrator eSIM kartangizni tiklamoqda. Bir necha daqiqa kuting.</translation>
-<translation id="7872786842639831132">Yoqilmagan</translation>
+<translation id="7872786842639831132">Oʻchiq</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> qurilmangizda Bluetooth yoniqligini tekshiring. Phone Hub xizmatidan foydalanish uchun Bluetooth aloqasini yoqing</translation>
 <translation id="7877557217297072640">{0,plural, =0{Qurilma tizimini hoziroq eski versiyaga qaytaring}=1{Qurilma tizimini 1 soniya ichida eski versiyaga qaytaring}other{Qurilma tizimini # soniya ichida eski versiyaga qaytaring}}</translation>
 <translation id="7886169021410746335">Maxfiylik sozlamalarini moslash</translation>
@@ -1287,7 +1287,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8029629653277878342">Xavfsizlikni oshirish uchun PIN kod yoki parol kiriting</translation>
 <translation id="8030169304546394654">Uzildi</translation>
 <translation id="8036504271468642248">Avvalgi gap</translation>
-<translation id="8042893070933512245">Maxsus imkoniyatlar sozlamalari menyusini ochish</translation>
+<translation id="8042893070933512245">Qulayliklar sozlamalari menyusini ochish</translation>
 <translation id="8044457332620420407">Klaviatura orqa chirogʻi oʻchiq</translation>
 <translation id="8048123526339889627">Bluetooth sozlamalari</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> nomli andoza bor</translation>
@@ -1334,7 +1334,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8270450402312105425">{0,plural, =1{Qurilma tizimini bir soat ichida eski versiyaga qaytaring}other{Qurilma tizimini # soat ichida eski versiyaga qaytaring}}</translation>
 <translation id="8277261673056602147">Ekrandagi matnni tanlash</translation>
 <translation id="8284362522226889623">Avvalgi ish stoliga qaytish uchun 4 ta barmoq bilan chapga suring</translation>
-<translation id="828708037801473432">Yoqilmagan</translation>
+<translation id="828708037801473432">Oʻchiq</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8308637677604853869">Avvalgi menyu</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -1391,7 +1391,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8614517853887502247">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" /> va <ph name="APP_2_TITLE" /> bildirishnomalari yashirildi</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> qurilmasiga ulandi</translation>
 <translation id="8630991711272431708">Kameraga ruxsatni faolsizlantirish</translation>
-<translation id="8631727435199967028">Maxsus imkoniyatlar sozlamalari</translation>
+<translation id="8631727435199967028">Qulayliklar sozlamalari</translation>
 <translation id="8637598503828012618">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> qoldi</translation>
 <translation id="8641805545866562088">Profillar roʻyxati yangilanmoqda. Bir necha daqiqa kuting.</translation>
