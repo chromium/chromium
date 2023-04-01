@@ -39,9 +39,7 @@ def main():
   parser.add_argument("--depfile",
                       help="depfile to output with header dependencies")
   parser.add_argument("--output", help="output .rs bindings", required=True)
-  parser.add_argument("--ld-library-path",
-                      help="LD_LIBRARY_PATH (or DYLD_LIBRARY_PATH on Mac) to "
-                      "set")
+  parser.add_argument("--ld-library-path", help="LD_LIBRARY_PATH to set")
   parser.add_argument("-I", "--include", help="include path", action="append")
   parser.add_argument(
       "clangargs",
@@ -55,8 +53,6 @@ def main():
   # Bindgen settings we use for Chromium
   genargs.append('--no-layout-tests')
   genargs.append('--size_t-is-usize')
-  # TODO(danakj): We need to point bindgen to //third_party/rust-toolchain/bin/rustfmt.
-  genargs.append('--no-rustfmt-bindings')
   genargs += ['--rust-target', 'nightly']
 
   if args.depfile:
@@ -69,10 +65,7 @@ def main():
   genargs.extend(filter_clang_args(args.clangargs))
   env = os.environ
   if args.ld_library_path:
-    if sys.platform == 'darwin':
-      env["DYLD_LIBRARY_PATH"] = args.ld_library_path
-    else:
-      env["LD_LIBRARY_PATH"] = args.ld_library_path
+    env["LD_LIBRARY_PATH"] = args.ld_library_path
   returncode = subprocess.run([args.exe, *genargs], env=env).returncode
   if returncode != 0:
     # Make sure we don't emit anything if bindgen failed.

@@ -73,17 +73,7 @@ def main():
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
-        # Build the Rust toolchain.
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_rust.py')]
-        if args.build_mac_arm:
-            build_cmd.append('--build-mac-arm')
-        TeeCmd(build_cmd, log)
-
-        # Build bindgen.
-        build_cmd = [
-            sys.executable,
-            os.path.join(THIS_DIR, 'build_bindgen.py')
-        ]
         if args.build_mac_arm:
             build_cmd.append('--build-mac-arm')
         TeeCmd(build_cmd, log)

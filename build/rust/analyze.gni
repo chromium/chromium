@@ -28,7 +28,7 @@ if (compute_inputs_for_analyze) {
 
       args = [
         "--generate-depfile",
-        "${rust_sysroot}/bin/rustc",
+        "third_party/rust-toolchain/bin/rustc",
         rebase_path(crate_root, root_build_dir),
         rebase_path(depfile, root_build_dir),
         "{{rustflags}}",

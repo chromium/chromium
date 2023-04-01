@@ -58,6 +58,11 @@ syn = {version = "1", features = ["full"]}
 version = "0.1"
 features = [ "unbounded_depth", "float_roundtrip" ]
 
+[dependencies.bindgen]
+version = "0.60"
+build-script-outputs = [ "host-target.txt" ]
+features = [ "static" ]
+
 [dependencies.rustversion]
 version = "1"
 allow-first-party-usage = false
