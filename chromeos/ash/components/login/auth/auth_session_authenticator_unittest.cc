@@ -644,7 +644,12 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
 // homedir needs to be created.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+
+  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
+  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
+  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
+  // accounts anymore.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
   EXPECT_CALL(userdataauth(),
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
                                                      AUTH_INTENT_DECRYPT),
@@ -665,7 +670,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
   // as no further editing is assumed.
 
   // Act.
-  authenticator().LoginAsKioskAccount(kAccountId);
+  authenticator().LoginAsKioskAccount(kAccountId, /*ephemeral=*/false);
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -677,7 +682,12 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
 // homedir already exists.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+
+  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
+  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
+  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
+  // accounts anymore.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
   KeyData key_data;
   key_data.set_type(KeyData::KEY_TYPE_KIOSK);
   EXPECT_CALL(userdataauth(),
@@ -696,7 +706,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
       .WillOnce(ReplyWith(PreparePersistentVaultReply()));
 
   // Act.
-  authenticator().LoginAsKioskAccount(kAccountId);
+  authenticator().LoginAsKioskAccount(kAccountId, /*ephemeral=*/false);
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -707,7 +717,12 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
 // Test the `LoginAsKioskAccount()` method in the ephemeral kiosk scenario.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+
+  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
+  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
+  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
+  // accounts anymore.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
   EXPECT_CALL(
       userdataauth(),
       StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_EPHEMERAL_USER,
@@ -721,7 +736,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
       .WillOnce(ReplyWith(PrepareEphemeralVaultReply()));
 
   // Act.
-  authenticator().LoginAsKioskAccount(kAccountId);
+  authenticator().LoginAsKioskAccount(kAccountId, /*ephemeral=*/true);
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.
@@ -733,7 +748,12 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
 // kiosk is requested while having stale persistent data for the same user.
 TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
   // Arrange.
-  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+
+  // Intentionally use `is_ephemeral_mount_enforced` with the opposite value to
+  // `ephemeral` flag passed to `LoginAsKioskAccount` function because
+  // `is_ephemeral_mount_enforced` does not control ephemeral mount for kiosk
+  // accounts anymore.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
   {
     testing::InSequence seq;
     EXPECT_CALL(userdataauth(),
@@ -761,7 +781,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
   }
 
   // Act.
-  authenticator().LoginAsKioskAccount(kAccountId);
+  authenticator().LoginAsKioskAccount(kAccountId, /*ephemeral=*/true);
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.

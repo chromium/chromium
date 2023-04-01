@@ -598,27 +598,31 @@ void AuthSessionAuthenticator::DoLoginAsPublicSession(
 }
 
 void AuthSessionAuthenticator::LoginAsKioskAccount(
-    const AccountId& app_account_id) {
+    const AccountId& app_account_id,
+    bool ephemeral) {
   LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_KIOSK_APP,
-                   /*force_dircrypto=*/false);
+                   /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 
 void AuthSessionAuthenticator::LoginAsArcKioskAccount(
-    const AccountId& app_account_id) {
+    const AccountId& app_account_id,
+    bool ephemeral) {
   LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_ARC_KIOSK_APP,
-                   /*force_dircrypto=*/true);
+                   /*force_dircrypto=*/true, /*ephemeral=*/ephemeral);
 }
 
 void AuthSessionAuthenticator::LoginAsWebKioskAccount(
-    const AccountId& app_account_id) {
+    const AccountId& app_account_id,
+    bool ephemeral) {
   LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_WEB_KIOSK_APP,
-                   /*force_dircrypto=*/false);
+                   /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 
 void AuthSessionAuthenticator::LoginAsKioskImpl(
     const AccountId& app_account_id,
     user_manager::UserType user_type,
-    bool force_dircrypto) {
+    bool force_dircrypto,
+    bool ephemeral) {
   PrepareForNewAttempt("LoginAs*Kiosk", "Kiosk user");
 
   std::unique_ptr<UserContext> context =
@@ -632,21 +636,21 @@ void AuthSessionAuthenticator::LoginAsKioskImpl(
     return;
   }
   StartAuthSessionForLogin(
-      std::move(context), is_ephemeral_mount_enforced_,
-      AuthSessionIntent::kDecrypt,
+      std::move(context), ephemeral, AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsKiosk,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), ephemeral));
 }
 
 void AuthSessionAuthenticator::DoLoginAsKiosk(
+    bool ephemeral,
     bool user_exists,
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
-  AuthErrorCallback error_callback = base::BindOnce(
-      &AuthSessionAuthenticator::ProcessCryptohomeError,
-      weak_factory_.GetWeakPtr(),
-      is_ephemeral_mount_enforced_ ? AuthFailure::COULD_NOT_MOUNT_TMPFS
-                                   : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+  AuthErrorCallback error_callback =
+      base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
+                     weak_factory_.GetWeakPtr(),
+                     ephemeral ? AuthFailure::COULD_NOT_MOUNT_TMPFS
+                               : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Kiosk "
                      << error.value().get_cryptohome_code();
@@ -654,7 +658,7 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
     return;
   }
   LOGIN_LOG(EVENT) << "Kiosk user " << user_exists;
-  DCHECK(!user_exists || !is_ephemeral_mount_enforced_);
+  DCHECK(!user_exists || !ephemeral);
   AuthSuccessCallback success_callback = base::BindOnce(
       &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
 
@@ -670,7 +674,7 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
                                    auth_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                    mount_performer_->AsWeakPtr()));
-  } else if (is_ephemeral_mount_enforced_) {
+  } else if (ephemeral) {
     steps.push_back(base::BindOnce(&MountPerformer::MountEphemeralDirectory,
                                    mount_performer_->AsWeakPtr()));
   } else {
