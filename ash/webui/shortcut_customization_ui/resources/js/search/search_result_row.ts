@@ -112,6 +112,27 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
     return indexOfAcceleratorInfo !==
         this.searchResult.acceleratorInfos.length - 1;
   }
+
+  /**
+   * Only relevant when the focus-row-control is focus()ed. This keypress
+   * handler specifies that pressing 'Enter' should cause a route change.
+   */
+  private onKeyPress(e: KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      this.onSearchResultSelected();
+    }
+  }
+
+  /**
+   * Navigate to a search result route based on the search result.
+   */
+  onSearchResultSelected(): void {
+    // @TODO(cambickel) Navigate to the correct route.
+
+    this.dispatchEvent(new CustomEvent(
+        'navigated-to-result-route', {bubbles: true, composed: true}));
+  }
 }
 
 declare global {

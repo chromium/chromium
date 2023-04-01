@@ -64,6 +64,9 @@
 
   iron-list {
     max-height: 50vh;
+    /* Explicitly set the min-height here so that iron-list can render correctly
+     * in browser tests. */
+    min-height: 1px;
     user-select: none;
   }
 
@@ -110,6 +113,7 @@
             search-result="[[item]]"
             last-focused="{{lastFocused}}"
             list-blurred="{{listBlurred}}"
+            on-navigated-to-result-route="onNavigatedToResultRowRoute"
             tabindex$="[[getRowTabIndex(item, selectedItem,
                 shouldShowDropdown)]]"
             iron-list-tab-index$="[[getRowTabIndex(item, selectedItem,

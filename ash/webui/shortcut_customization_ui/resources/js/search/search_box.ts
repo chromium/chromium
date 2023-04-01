@@ -12,6 +12,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -104,6 +105,7 @@ export class SearchBoxElement extends SearchBoxElementBase {
   shouldShowDropdown: boolean;
   private lastFocused: HTMLElement|null;
   private listBlurred: boolean;
+  private resizeObserver: ResizeObserver;
   private searchResultsExist: boolean;
   private selectedItem: MojoSearchResult;
   private shortcutSearchHandler: ShortcutSearchHandlerInterface;
@@ -133,6 +135,26 @@ export class SearchBoxElement extends SearchBoxElementBase {
     searchInput.addEventListener('focus', this.onSearchInputFocused.bind(this));
     searchInput.addEventListener(
         'mousedown', this.onSearchInputMousedown.bind(this));
+
+    // This is a required work around to get the iron-list to display correctly
+    // on the first search query. Currently iron-list won't generate item
+    // elements on attach if the element is not visible. To work around this, we
+    // listen for resize events and manually call notifyResize on the iron-list
+    // when the iron-dropdown state changes.
+    this.resizeObserver = new ResizeObserver(() => {
+      const ironListElement =
+          (this.shadowRoot?.querySelector('iron-list') as IronListElement);
+      if (ironListElement) {
+        ironListElement.notifyResize();
+      }
+    });
+    this.resizeObserver.observe(
+        strictQuery('iron-dropdown', this.shadowRoot, HTMLElement));
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.resizeObserver.disconnect();
   }
 
   private onBlur(event: UIEvent): void {
@@ -207,6 +229,24 @@ export class SearchBoxElement extends SearchBoxElementBase {
   }
 
   private onKeyDown(e: KeyboardEvent): void {
+    const isSearchFocused =
+        strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
+            .isSearchFocused();
+    if (!this.searchResultsExist || !(isSearchFocused || this.lastFocused)) {
+      // No action should be taken if there are no search results, or when
+      // neither the search input nor a <search-result-row> is focused
+      // (ChromeVox may focus on clear search input button).
+      return;
+    }
+
+    // Press enter to navigate to the selected search result.
+    // Check that a selected search result exists first, since it's possible for
+    // the user to press enter before the iron-list is fully rendered.
+    if (e.key === 'Enter' && this.hasSelectedSearchResultRow()) {
+      this.getSelectedSearchResultRow().onSearchResultSelected();
+      return;
+    }
+
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       // Do not impact the position of <cr-toolbar-search-field>'s caret.
       e.preventDefault();
@@ -229,8 +269,18 @@ export class SearchBoxElement extends SearchBoxElementBase {
 
     if (this.shouldShowDropdown && !this.searchResultsExist) {
       getAnnouncerInstance().announce(this.i18n('searchNoResults'));
-      return;
     }
+  }
+
+  private onNavigatedToResultRowRoute(): void {
+    // Blur search input to prevent blinking caret. Note that this blur event
+    // will not always be propagated to the SearchBoxElement (e.g. user decides
+    // to click on the same search result twice) so |this.shouldShowDropdown|
+    // must always be set to false in |this.onNavigatedToResultRowRoute()|.
+    strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement).blur();
+
+    // Shortcuts has navigated to another page; close search results dropdown.
+    this.shouldShowDropdown = false;
   }
 
   /**
@@ -240,6 +290,13 @@ export class SearchBoxElement extends SearchBoxElementBase {
   private isItemSelected(item: MojoSearchResult): boolean {
     return this.searchResults.indexOf(item) ===
         this.searchResults.indexOf(this.selectedItem);
+  }
+
+  /**
+   * @return True if there is a selected <search-result-row> element.
+   */
+  private hasSelectedSearchResultRow(): boolean {
+    return !!this.shadowRoot?.querySelector('search-result-row[selected]');
   }
 
   /**
