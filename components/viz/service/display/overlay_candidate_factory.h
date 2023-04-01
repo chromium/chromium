@@ -55,7 +55,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
                           const gfx::RectF primary_rect,
                           bool is_delegated_context = false,
                           bool supports_clip_rect = false,
-                          bool supports_arbitrary_transform = false);
+                          bool supports_arbitrary_transform = false,
+                          bool supports_rounded_display_masks = false);
 
   OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
   OverlayCandidateFactory& operator=(const OverlayCandidateFactory&) = delete;
@@ -89,6 +90,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
       QuadList::ConstIterator quad_list_end,
       const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
           render_pass_backdrop_filters) const;
+
+  // Returns true if any of the quads in the list given by |quad_list_begin|
+  // and |quad_list_end| occlude |candidate|.
+  bool IsOccluded(const OverlayCandidate& candidate,
+                  QuadList::ConstIterator quad_list_begin,
+                  QuadList::ConstIterator quad_list_end) const;
 
  private:
   CandidateStatus FromDrawQuadResource(const DrawQuad* quad,
@@ -130,6 +137,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   const bool is_delegated_context_;
   const bool supports_clip_rect_;
   const bool supports_arbitrary_transform_;
+  const bool supports_rounded_display_masks_;
 
   // The union of all surface damages that are not specifically assigned to a
   // draw quad.

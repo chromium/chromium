@@ -15,6 +15,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
@@ -177,7 +178,8 @@ OverlayCandidateFactory::OverlayCandidateFactory(
     const gfx::RectF primary_rect,
     bool is_delegated_context,
     bool supports_clip_rect,
-    bool supports_arbitrary_transform)
+    bool supports_arbitrary_transform,
+    bool supports_rounded_corner_masks)
     : render_pass_(render_pass),
       resource_provider_(resource_provider),
       surface_damage_rect_list_(surface_damage_rect_list),
@@ -185,7 +187,8 @@ OverlayCandidateFactory::OverlayCandidateFactory(
       primary_rect_(primary_rect),
       is_delegated_context_(is_delegated_context),
       supports_clip_rect_(supports_clip_rect),
-      supports_arbitrary_transform_(supports_arbitrary_transform) {
+      supports_arbitrary_transform_(supports_arbitrary_transform),
+      supports_rounded_display_masks_(supports_rounded_corner_masks) {
   DCHECK(supports_clip_rect_ || !supports_arbitrary_transform_);
 
   // TODO(crbug.com/1323002): Replace this set with a simple ordered linear
@@ -260,6 +263,30 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
               render_pass_draw_quad->render_pass_id)) {
         return true;
       }
+    }
+  }
+  return false;
+}
+
+bool OverlayCandidateFactory::IsOccluded(
+    const OverlayCandidate& candidate,
+    QuadList::ConstIterator quad_list_begin,
+    QuadList::ConstIterator quad_list_end) const {
+  // The rects are rounded as they're snapped by the compositor to pixel unless
+  // it is AA'ed, in which case, it won't be overlaid.
+  gfx::Rect target_rect =
+      gfx::ToRoundedRect(OverlayCandidate::DisplayRectInTargetSpace(candidate));
+
+  // Check that no visible quad overlaps the candidate.
+  for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
+       ++overlap_iter) {
+    gfx::Rect overlap_rect = gfx::ToRoundedRect(cc::MathUtil::MapClippedRect(
+        overlap_iter->shared_quad_state->quad_to_target_transform,
+        gfx::RectF(overlap_iter->rect)));
+
+    if (!OverlayCandidate::IsInvisibleQuad(*overlap_iter) &&
+        target_rect.Intersects(overlap_rect)) {
+      return true;
     }
   }
   return false;
@@ -475,6 +502,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     return CandidateStatus::kFailPriority;
   }
 
+  if (!quad->rounded_display_masks_info.IsEmpty() &&
+      !supports_rounded_display_masks_) {
+    DCHECK(!is_delegated_context_);
+    return CandidateStatus::kFailRoundedDisplayMasksNotSupported;
+  }
+
   if (quad->nearest_neighbor)
     return CandidateStatus::kFailNearFilter;
 
@@ -531,6 +564,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     // SkiaRenderer requires overlays to be backed by SharedImages.
     if (!candidate.mailbox.IsSharedImage())
       return CandidateStatus::kFailNotSharedImage;
+
+    candidate.has_rounded_display_masks =
+        !quad->rounded_display_masks_info.IsEmpty();
   }
   return rtn;
 }

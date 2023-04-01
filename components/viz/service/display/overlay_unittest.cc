@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -76,9 +77,12 @@ using testing::Mock;
 namespace viz {
 namespace {
 
+using RoundedDisplayMasksInfo = TextureDrawQuad::RoundedDisplayMasksInfo;
+
 const gfx::Size kDisplaySize(256, 256);
 const gfx::Rect kOverlayRect(0, 0, 256, 256);
 const gfx::Rect kOverlayTopLeftRect(0, 0, 128, 128);
+const gfx::Rect kOverlayTopRightRect(128, 0, 128, 128);
 const gfx::Rect kOverlayBottomRightRect(128, 128, 128, 128);
 const gfx::Rect kOverlayClipRect(0, 0, 128, 128);
 const gfx::PointF kUVTopLeft(0.1f, 0.2f);
@@ -247,7 +251,8 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
     }
   }
 
-  // Sort required overlay candidates first, then just by input order.
+  // Sort required overlay candidates first, followed by candidates with
+  // rounded_display masks and then just by input order.
   void SortProposedOverlayCandidates(
       std::vector<OverlayProposedCandidate>* proposed_candidates) override {
     // We want the power gains to be assigned for the OverlayCombinationCache.
@@ -261,6 +266,13 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
           if (a.candidate.requires_overlay != b.candidate.requires_overlay) {
             return a.candidate.requires_overlay > b.candidate.requires_overlay;
           }
+
+          if (a.candidate.has_rounded_display_masks !=
+              b.candidate.has_rounded_display_masks) {
+            return a.candidate.has_rounded_display_masks >
+                   b.candidate.has_rounded_display_masks;
+          }
+
           return a.relative_power_gain > b.relative_power_gain;
         });
   }
@@ -286,6 +298,13 @@ class MultiOverlayProcessor : public MultiOverlayProcessorBase {
     strategies_.push_back(std::make_unique<OverlayStrategyFullscreen>(this));
     strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
     strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+  }
+};
+
+class MultiSingleOnTopProcessor : public MultiOverlayProcessorBase {
+ public:
+  MultiSingleOnTopProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
   }
 };
 
@@ -603,6 +622,50 @@ TextureDrawQuad* CreateFullscreenCandidateQuad(
       shared_quad_state, render_pass, render_pass->output_rect);
 }
 
+TextureDrawQuad* CreateQuadWithRoundedDisplayMasksAt(
+    DisplayResourceProvider* parent_resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    ContextProvider* child_context_provider,
+    const SharedQuadState* shared_quad_state,
+    AggregatedRenderPass* render_pass,
+    bool is_overlay_candidate,
+    const gfx::Rect& rect,
+    const RoundedDisplayMasksInfo& rounded_display_masks_info) {
+  bool needs_blending = true;
+  bool premultiplied_alpha = true;
+  bool flipped = false;
+  bool nearest_neighbor = false;
+  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  gfx::Size resource_size_in_pixels = rect.size();
+  ResourceId resource_id = CreateResource(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      resource_size_in_pixels, is_overlay_candidate);
+
+  auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  overlay_quad->SetNew(
+      shared_quad_state, rect, rect, needs_blending, resource_id,
+      premultiplied_alpha, kUVTopLeft, kUVBottomRight, SkColors::kTransparent,
+      vertex_opacity, flipped, nearest_neighbor,
+      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  overlay_quad->rounded_display_masks_info = rounded_display_masks_info;
+
+  return overlay_quad;
+}
+
+TextureDrawQuad* CreateFullscreenQuadWithRoundedDisplayMasks(
+    DisplayResourceProvider* parent_resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    ContextProvider* child_context_provider,
+    const SharedQuadState* shared_quad_state,
+    AggregatedRenderPass* render_pass,
+    bool is_overlay_candidate,
+    const RoundedDisplayMasksInfo& rounded_display_masks_info) {
+  return CreateQuadWithRoundedDisplayMasksAt(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      shared_quad_state, render_pass, is_overlay_candidate,
+      render_pass->output_rect, rounded_display_masks_info);
+}
+
 void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         const SharedQuadState* shared_quad_state,
                         AggregatedRenderPass* render_pass,
@@ -760,6 +823,8 @@ using UnderlayCastTest = OverlayTest<UnderlayCastOverlayProcessor>;
 #endif
 using MultiOverlayTest = UseMultipleOverlaysTest<MultiOverlayProcessor>;
 using MultiUnderlayTest = UseMultipleOverlaysTest<MultiUnderlayProcessor>;
+using MultiSingleOnTopOverlayTest =
+    UseMultipleOverlaysTest<MultiSingleOnTopProcessor>;
 using SizeSortedMultiOverlayTest =
     UseMultipleOverlaysTest<SizeSortedMultiOverlayProcessor>;
 
@@ -807,6 +872,42 @@ TEST_F(FullscreenOverlayTest, SuccessfulOverlay) {
   gfx::Rect overlay_damage_rect =
       overlay_processor_->GetAndResetOverlayDamage();
   EXPECT_EQ(output_rect, overlay_damage_rect);
+}
+
+TEST_F(FullscreenOverlayTest, FailIfFullscreenQuadHasRoundedDisplayMasks) {
+  gfx::Rect rect = kOverlayRect;
+
+  auto pass = CreateRenderPass();
+
+  // Create a full-screen quad.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, rect,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  // Add something behind it.
+  CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                             pass->shared_quad_state_list.back(), pass.get());
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+  ASSERT_EQ(0U, candidate_list.size());
+
+  // Check that the 2 quads are not gone.
+  EXPECT_EQ(2U, main_pass->quad_list.size());
 }
 
 TEST_F(FullscreenOverlayTest, FailOnOutputColorMatrix) {
@@ -1033,6 +1134,296 @@ TEST_F(SingleOverlayOnTopTest, SuccessfulOverlay) {
 
   // Check that the right resource id got extracted.
   EXPECT_EQ(original_resource_id, candidate_list.back().resource_id);
+}
+
+TEST_F(MultiSingleOnTopOverlayTest,
+       SuccessfulOverlay_OccludedByOverlayRoundedDisplayMaskCandidate) {
+  auto pass = CreateRenderPass();
+
+  // Add a quad with rounded-display masks.
+  CreateFullscreenQuadWithRoundedDisplayMasks(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+  overlay_processor_->AddExpectedRect(kOverlayRect, /*response=*/true);
+
+  CreateFullscreenCandidateQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+  overlay_processor_->AddExpectedRect(kOverlayRect, /*response=*/true);
+
+  // Add something behind it.
+  CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                             pass->shared_quad_state_list.back(), pass.get());
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // Since the rounded-display mask quad is an overlay candidate, it will not
+  // occlude the other potential single-on-top candidate. Both the
+  // rounded-display mask quad and other single-on-top candidate quad will get
+  // promoted.
+  ASSERT_EQ(2U, candidate_list.size());
+
+  // Check that the two quads are gone.
+  EXPECT_EQ(1U, main_pass->quad_list.size());
+}
+
+TEST_F(MultiSingleOnTopOverlayTest,
+       FailedOverlay_OccludedByNonOverlayRoundedDisplayMaskCandidate) {
+  auto pass = CreateRenderPass();
+
+  // Add a quad with rounded-display masks that is not an overlay candidate.
+  CreateFullscreenQuadWithRoundedDisplayMasks(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/false,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  CreateFullscreenCandidateQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // Since the rounded-display mask quad is not marked overlay candidate, it
+  // will occlude the potential single-on-top candidate, causing it to fail.
+  ASSERT_EQ(0U, candidate_list.size());
+
+  // Check that the quad is gone.
+  EXPECT_EQ(2U, main_pass->quad_list.size());
+}
+
+using DeathMultiSingleOnTopOverlayTest = MultiSingleOnTopOverlayTest;
+TEST_F(DeathMultiSingleOnTopOverlayTest,
+       RoundedDisplayMaskCandidatesNotDrawnOnTop) {
+  auto pass = CreateRenderPass();
+
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kOverlayTopRightRect);
+
+  overlay_processor_->AddExpectedRect(kOverlayTopRightRect, /*response=*/true);
+
+  // Add a quad with rounded-display masks that is an overlay candidate.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kOverlayTopLeftRect,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+  overlay_processor_->AddExpectedRect(kOverlayTopLeftRect, /*response=*/true);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  EXPECT_DCHECK_DEATH(overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_));
+}
+
+TEST_F(MultiSingleOnTopOverlayTest,
+       PromoteRoundedDisplayMaskCandidateIfOccludeOtherCandidates) {
+  // Given different rect sizes, the candidate will be out of draw order once
+  // sorted.
+  auto pass = CreateRenderPass();
+
+  constexpr auto kCandidateRect1 = gfx::Rect(0, 0, 256, 10);
+
+  // Add a quad with rounded-display masks that is an overlay candidate.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kCandidateRect1,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(0, 10));
+  overlay_processor_->AddExpectedRect(kCandidateRect1, true);
+
+  constexpr gfx::Rect kCandidateRect2 = {0, 0, 64, 64};
+
+  // This candidate is not occluded by quad with rounded-display masks was it
+  // does not intersect any of the mask rect.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kCandidateRect2);
+  overlay_processor_->AddExpectedRect(kCandidateRect2, true);
+
+  // This candidate occludes quad with rounded-display masks.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kOverlayTopRightRect);
+  overlay_processor_->AddExpectedRect(kOverlayTopRightRect, true);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // All the quads will get promoted.
+  ASSERT_EQ(3U, candidate_list.size());
+  EXPECT_EQ(0U, main_pass->quad_list.size());
+}
+
+TEST_F(
+    MultiSingleOnTopOverlayTest,
+    FailToPromoteRoundedDisplayMaskCandidatesIfTheyDontOccludeOtherCandidates) {
+  // Given different rect sizes, the candidate will be out of draw order once
+  // sorted.
+  auto pass = CreateRenderPass();
+
+  // Add a quad with rounded-display masks that is an overlay candidate.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, gfx::Rect(0, 0, 256, 10),
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(0, 10));
+
+  // Add a quad with rounded-display masks that is an overlay candidate.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, gfx::Rect(0, 20, 256, 10),
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(0, 10));
+
+  // This candidate does not occludes any of the quads with rounded-display
+  // masks.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kOverlayTopLeftRect);
+  overlay_processor_->AddExpectedRect(kOverlayTopLeftRect, true);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  // Only the candidate without rounded-display masks will be promoted.
+  ASSERT_EQ(1U, candidate_list.size());
+  // Confirm that candidates with rounded-display masks are not promoted.
+  EXPECT_FALSE(candidate_list.back().has_rounded_display_masks);
+  EXPECT_EQ(2U, main_pass->quad_list.size());
+}
+
+TEST_F(MultiSingleOnTopOverlayTest,
+       OcclusionOptimizationForRoundedDisplayMaskCandidate) {
+  auto pass = CreateRenderPass();
+
+  // Add a quad with rounded-display masks that is an overlay candidate. This
+  // will not get promoted since it does not occlude any other candidate.
+  const auto* not_promoted_candidate = CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, gfx::Rect(0, 0, 100, 10),
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 10));
+
+  constexpr gfx::Rect kCandidateWithMaskRect2 = gfx::Rect(0, 100, 100, 10);
+
+  // Add a quad with rounded-display masks that is an overlay candidate. This
+  // will get promoted since it occlude candidate at bounds `kCandidateRect2`.
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, kCandidateWithMaskRect2,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 10));
+  overlay_processor_->AddExpectedRect(kCandidateWithMaskRect2,
+                                      /*response=*/true);
+
+  constexpr gfx::Rect kCandidateRect1 = gfx::Rect(10, 0, 50, 50);
+
+  // Even though it intersects the display_rect of quad with rounded-corners, it
+  // is not occluded since it does not intersects one of the mask rects.
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kCandidateRect1);
+  overlay_processor_->AddExpectedRect(kCandidateRect1, /*response=*/true);
+
+  constexpr gfx::Rect kCandidateRect2 = gfx::Rect(0, 90, 50, 50);
+
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kCandidateRect2);
+  overlay_processor_->AddExpectedRect(kCandidateRect2, /*response=*/true);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  ASSERT_EQ(3U, candidate_list.size());
+
+  // Check that the top quad is gone.
+  EXPECT_EQ(1U, main_pass->quad_list.size());
+
+  for (const auto& candidate : candidate_list) {
+    EXPECT_NE(candidate.resource_id, not_promoted_candidate->resource_id());
+  }
 }
 
 TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
@@ -2112,6 +2503,32 @@ TEST_F(UnderlayTest, AllowsOpaqueCandidates) {
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
+}
+
+TEST_F(UnderlayTest, DisallowsQuadsWithRoundedDisplayMasks) {
+  gfx::Rect rect = kOverlayRect;
+
+  auto pass = CreateRenderPass();
+  CreateQuadWithRoundedDisplayMasksAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      /*is_overlay_candidate=*/true, rect,
+      RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(10, 0));
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  ASSERT_EQ(0U, candidate_list.size());
 }
 
 TEST_F(UnderlayTest, DisallowsTransparentCandidates) {
@@ -4127,78 +4544,6 @@ void AddQuad(gfx::Rect quad_rect,
       render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   solid_quad->SetNew(quad_state, quad_rect, quad_rect, SkColors::kBlack,
                      false /* force_anti_aliasing_off */);
-}
-
-OverlayCandidate CreateCandidate(float left,
-                                 float top,
-                                 float right,
-                                 float bottom) {
-  OverlayCandidate candidate;
-  candidate.display_rect.SetRect(left, top, right - left, bottom - top);
-  return candidate;
-}
-
-using OverlayCandidateTest = testing::Test;
-
-TEST_F(OverlayCandidateTest, IsOccluded) {
-  std::unique_ptr<AggregatedRenderPass> render_pass =
-      std::make_unique<AggregatedRenderPass>();
-  gfx::Transform identity;
-  identity.MakeIdentity();
-
-  // Create overlapping quads around 1,1 - 10,10.
-  AddQuad(gfx::Rect(0, 0, 1, 10), identity, render_pass.get());
-  AddQuad(gfx::Rect(0, 0, 10, 1), identity, render_pass.get());
-  AddQuad(gfx::Rect(10, 0, 1, 10), identity, render_pass.get());
-  AddQuad(gfx::Rect(0, 10, 10, 1), identity, render_pass.get());
-
-  EXPECT_FALSE(OverlayCandidate::IsOccluded(
-      CreateCandidate(0.5f, 0.5f, 10.49f, 10.49f),
-      render_pass->quad_list.begin(), render_pass->quad_list.end()));
-
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(0.49f, 0.5f, 10.49f, 10.49f),
-      render_pass->quad_list.begin(), render_pass->quad_list.end()));
-
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(0.5f, 0.49f, 10.50f, 10.5f),
-      render_pass->quad_list.begin(), render_pass->quad_list.end()));
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(0.5f, 0.5f, 10.5f, 10.49f),
-      render_pass->quad_list.begin(), render_pass->quad_list.end()));
-
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(0.5f, 0.5f, 10.49f, 10.5f),
-      render_pass->quad_list.begin(), render_pass->quad_list.end()));
-}
-
-TEST_F(OverlayCandidateTest, IsOccludedScaled) {
-  std::unique_ptr<AggregatedRenderPass> render_pass =
-      std::make_unique<AggregatedRenderPass>();
-  gfx::Transform quad_to_target_transform;
-  quad_to_target_transform.Scale(1.6, 1.6);
-
-  // Create overlapping quads around 1.6,2.4 - 14.4,17.6.
-  AddQuad(gfx::Rect(0, 0, 1, 10), quad_to_target_transform, render_pass.get());
-  AddQuad(gfx::Rect(0, 0, 10, 2), quad_to_target_transform, render_pass.get());
-  AddQuad(gfx::Rect(9, 0, 1, 10), quad_to_target_transform, render_pass.get());
-  AddQuad(gfx::Rect(0, 11, 10, 1), quad_to_target_transform, render_pass.get());
-
-  EXPECT_FALSE(OverlayCandidate::IsOccluded(
-      CreateCandidate(2.f, 3.f, 14.f, 17.f), render_pass->quad_list.begin(),
-      render_pass->quad_list.end()));
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(1.f, 3.f, 14.f, 17.f), render_pass->quad_list.begin(),
-      render_pass->quad_list.end()));
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(2.f, 2.f, 14.f, 17.f), render_pass->quad_list.begin(),
-      render_pass->quad_list.end()));
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(2.f, 3.f, 15.f, 17.f), render_pass->quad_list.begin(),
-      render_pass->quad_list.end()));
-  EXPECT_TRUE(OverlayCandidate::IsOccluded(
-      CreateCandidate(2.f, 3.f, 15.f, 18.f), render_pass->quad_list.begin(),
-      render_pass->quad_list.end()));
 }
 
 TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
