@@ -28,9 +28,6 @@ class ViewTransitionStyleBuilder {
   void AddAnimationAndBlending(const String& tag,
                                const ContainerProperties& source_properties);
 
-  void AddIncomingObjectViewBox(const String& tag, const String& value);
-  void AddOutgoingObjectViewBox(const String& tag, const String& value);
-
   void AddContainerStyles(const String& tag, const String& rules);
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
@@ -42,10 +39,6 @@ class ViewTransitionStyleBuilder {
   // Adds the needed keyframes and returns the animation name to use.
   String AddKeyframes(const String& tag,
                       const ContainerProperties& source_properties);
-  void AddObjectViewBox(const String& selector,
-                        const String& tag,
-                        const String& value);
-
   void AddRules(const String& selector, const String& tag, const String& rules);
 
   StringBuilder builder_;
