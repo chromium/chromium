@@ -559,6 +559,15 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           winning_bid_info_.storage_interest_group->interest_group.owner ==
               seller_info.highest_scoring_other_bid_owner.value(),
       rounded_ad_cost, noised_and_masked_modeling_signals,
+      NoiseAndBucketJoinCount(
+          // Browser signals may be null in tests.
+          winning_bid_info_.storage_interest_group->bidding_browser_signals
+              ? winning_bid_info_.storage_interest_group
+                    ->bidding_browser_signals->join_count
+              : 1),
+      NoiseAndBucketRecency(
+          base::Time::Now() -
+          winning_bid_info_.storage_interest_group->join_time),
       auction_config->seller,
       /*browser_signal_top_level_seller_origin=*/
       component_seller_winning_bid_info_

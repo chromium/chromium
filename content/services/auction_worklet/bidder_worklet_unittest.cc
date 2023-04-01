@@ -325,6 +325,8 @@ class BidderWorkletTest : public testing::Test {
     browser_signal_made_highest_scoring_other_bid_ = false;
     browser_signal_ad_cost_.reset();
     browser_signal_modeling_signals_.reset();
+    browser_signal_join_count_ = 2;
+    browser_signal_recency_ = 5;
     data_version_.reset();
   }
 
@@ -492,7 +494,8 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_highest_scoring_other_bid_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
-        browser_signal_modeling_signals_, browser_signal_seller_origin_,
+        browser_signal_modeling_signals_, browser_signal_join_count_,
+        browser_signal_recency_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, data_version_.value_or(0),
         data_version_.has_value(),
         /*trace_id=*/1,
@@ -820,6 +823,7 @@ class BidderWorkletTest : public testing::Test {
   bool browser_signal_made_highest_scoring_other_bid_;
   absl::optional<double> browser_signal_ad_cost_;
   absl::optional<uint16_t> browser_signal_modeling_signals_;
+  uint8_t browser_signal_recency_;
 
   // Use a single constant start time. Only delta times are provided to scripts,
   // relative to the time of the auction, so no need to vary the auction time.
@@ -3245,7 +3249,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_highest_scoring_other_bid_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
-      browser_signal_modeling_signals_, browser_signal_seller_origin_,
+      browser_signal_modeling_signals_, browser_signal_join_count_,
+      browser_signal_recency_, browser_signal_seller_origin_,
       browser_signal_top_level_seller_origin_, data_version_.value_or(0),
       data_version_.has_value(),
       /*trace_id=*/1,
@@ -4492,7 +4497,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_highest_scoring_other_bid_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
-      browser_signal_modeling_signals_, browser_signal_seller_origin_,
+      browser_signal_modeling_signals_, browser_signal_join_count_,
+      browser_signal_recency_, browser_signal_seller_origin_,
       browser_signal_top_level_seller_origin_, data_version_.value_or(0),
       data_version_.has_value(),
       /*trace_id=*/1,
@@ -4539,6 +4545,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           browser_signal_highest_scoring_other_bid_,
           browser_signal_made_highest_scoring_other_bid_,
           browser_signal_ad_cost_, browser_signal_modeling_signals_,
+          browser_signal_join_count_, browser_signal_recency_,
           browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_, data_version_.value_or(0),
           data_version_.has_value(),
@@ -4586,7 +4593,8 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_highest_scoring_other_bid_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
-        browser_signal_modeling_signals_, browser_signal_seller_origin_,
+        browser_signal_modeling_signals_, browser_signal_join_count_,
+        browser_signal_recency_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, data_version_.value_or(0),
         data_version_.has_value(),
         /*trace_id=*/1,
@@ -4830,6 +4838,22 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalModelingSignals) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalJoinCount) {
+  browser_signal_join_count_ = 7;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.joinCount === 7)
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+}
+
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalRecency) {
+  browser_signal_recency_ = 19u;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.recency === 19)
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+}
+
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
 //
@@ -4878,7 +4902,8 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_highest_scoring_other_bid_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
-        browser_signal_modeling_signals_, browser_signal_seller_origin_,
+        browser_signal_modeling_signals_, browser_signal_join_count_,
+        browser_signal_recency_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_, data_version_.value_or(0),
         data_version_.has_value(),
         /*trace_id=*/1,
@@ -5635,7 +5660,8 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_highest_scoring_other_bid_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
-      browser_signal_modeling_signals_, browser_signal_seller_origin_,
+      browser_signal_modeling_signals_, browser_signal_join_count_,
+      browser_signal_recency_, browser_signal_seller_origin_,
       browser_signal_top_level_seller_origin_, data_version_.value_or(0),
       data_version_.has_value(),
       /*trace_id=*/1,

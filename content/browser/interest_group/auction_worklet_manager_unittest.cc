@@ -210,6 +210,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       bool browser_signal_made_highest_scoring_other_bid,
       absl::optional<double> browser_signal_ad_cost,
       absl::optional<uint16_t> browser_signal_modeling_signals,
+      uint8_t browser_signal_join_count,
+      uint8_t browser_signal_recency,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t browser_signal_data_version,

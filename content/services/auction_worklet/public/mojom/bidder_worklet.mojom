@@ -483,6 +483,8 @@ interface BidderWorklet {
       bool browser_signal_made_highest_scoring_other_bid,
       double? browser_signal_ad_cost,
       uint16? browser_signal_modeling_signals,
+      uint8 browser_signal_join_count,
+      uint8 browser_signal_recency,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
       uint32 bidding_signals_data_version,

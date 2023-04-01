@@ -1465,6 +1465,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     source_id_ = ukm::AssignNewSourceId();
 
+    task_environment()->FastForwardBy(between_join_run_auction_delay_);
+
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     abortable_ad_auction_.reset();
     auction_runner_ = AuctionRunner::CreateAndStart(
@@ -2267,6 +2269,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   bool auction_complete_ = false;
   // Result of the most recent auction.
   Result result_;
+
+  // Delay between joining interest groups and starting the auction.
+  base::TimeDelta between_join_run_auction_delay_;
 
   network::TestURLLoaderFactory url_loader_factory_;
 
@@ -12032,6 +12037,165 @@ TEST_F(AuctionRunnerTest, ModelingSignalsNotPresent) {
       result_.report_urls,
       testing::ElementsAre(GURL(
           "https://buyer-reporting.example.com/?modelingSignals=undefined")));
+}
+
+TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
+  // Due to noising, joinCount is only correctly passed 99% of the time.
+  //
+  // Since the noising pseudorandom number generator is uniform, in 30 runs, the
+  // probability that at least 15 of those get the correct answer is
+  //
+  // CDF[BinomialDistribution[30, 0.99], 30] -
+  // CDF[BinomialDistribution[30, 0.99], 15]
+  //
+  // Which is *extremely* close to 1 (within 10^(-20)):
+  // https://www.wolframalpha.com/input?i=N%5B%5BCDF%5BBinomialDistribution%5B30%2C+0.99%5D%2C+30%5D+-+CDF%5BBinomialDistribution%5B30%2C+0.99%5D%2C+15%5D%5D%2C+30%5D
+  //
+  // The chosen constants below balance having an extremely low (basically 0)
+  // probability of flakes, shorter runtime of the test (auctions are slow), and
+  // having a substantial number of the runs return the correct value.
+  constexpr int kNumRuns = 30;
+  constexpr int kNumCorrectAtLeast = 15;
+
+  // Chosen arbitrarily to exercise bucketing.
+  constexpr int kJoinCount = 13;
+  constexpr int kJoinCountBucketed = 11;
+
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: 1,
+              render: interestGroup.ads[0].renderUrl};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?joinCount=" +
+                   browserSignals.joinCount);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  int num_correct = 0;
+  for (int i = 0; i < kNumRuns; i++) {
+    std::vector<StorageInterestGroup> bidders;
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, kBidder1Name, kBidder1Url,
+        /*trusted_bidding_signals_url=*/absl::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+    bidders[0].bidding_browser_signals->join_count = kJoinCount;
+    StartAuction(kSellerUrl, std::move(bidders));
+    auction_run_loop_->Run();
+
+    EXPECT_FALSE(result_.manually_aborted);
+    EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+    ASSERT_EQ(result_.report_urls.size(), 1u);
+    base::StringPiece query = result_.report_urls[0].query_piece();
+    std::vector<base::StringPiece> split = base::SplitStringPiece(
+        query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    ASSERT_EQ(split.size(), 2u);
+    int reported_join_count;
+    EXPECT_TRUE(base::StringToInt(split[1], &reported_join_count));
+    // Even noised results should be in the join count range.
+    EXPECT_GE(reported_join_count, 1);
+    EXPECT_LE(reported_join_count, 16);
+    if (reported_join_count == kJoinCountBucketed) {
+      num_correct++;
+    }
+  }
+  EXPECT_GE(num_correct, kNumCorrectAtLeast);
+}
+
+TEST_F(AuctionRunnerTest, RecencyPassed) {
+  // Due to noising, recency is only correctly passed 99% of the time.
+  //
+  // Since the noising pseudorandom number generator is uniform, in 30 runs, the
+  // probability that at least 15 of those get the correct answer is
+  //
+  // CDF[BinomialDistribution[30, 0.99], 30] -
+  // CDF[BinomialDistribution[30, 0.99], 15]
+  //
+  // Which is *extremely* close to 1 (within 10^(-20)):
+  // https://www.wolframalpha.com/input?i=N%5B%5BCDF%5BBinomialDistribution%5B30%2C+0.99%5D%2C+30%5D+-+CDF%5BBinomialDistribution%5B30%2C+0.99%5D%2C+15%5D%5D%2C+30%5D
+  //
+  // The chosen constants below balance having an extremely low (basically 0)
+  // probability of flakes, shorter runtime of the test (auctions are slow), and
+  // having a substantial number of the runs return the correct value.
+  constexpr int kNumRuns = 30;
+  constexpr int kNumCorrectAtLeast = 15;
+
+  // Chosen arbitrarily to exercise bucketing.
+  constexpr base::TimeDelta kRecency = base::Minutes(70);
+  constexpr int kRecencyBucketed = 16;
+
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: 1,
+              render: interestGroup.ads[0].renderUrl};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?recency=" +
+                   browserSignals.recency);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  int num_correct = 0;
+  for (int i = 0; i < kNumRuns; i++) {
+    between_join_run_auction_delay_ = kRecency;
+    RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+    EXPECT_FALSE(result_.manually_aborted);
+    EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+    ASSERT_EQ(result_.report_urls.size(), 1u);
+    base::StringPiece query = result_.report_urls[0].query_piece();
+    std::vector<base::StringPiece> split = base::SplitStringPiece(
+        query, "=", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    ASSERT_EQ(split.size(), 2u);
+    int reported_recency;
+    EXPECT_TRUE(base::StringToInt(split[1], &reported_recency));
+    // Even noised results should be in the recency range.
+    EXPECT_GE(reported_recency, 1);
+    EXPECT_LE(reported_recency, 32);
+    if (reported_recency == kRecencyBucketed) {
+      num_correct++;
+    }
+  }
+  EXPECT_GE(num_correct, kNumCorrectAtLeast);
 }
 
 TEST_P(BidRoundingTest, BidRounded) {
