@@ -702,6 +702,20 @@ crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/r
 crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/default/default_001_to_001.html [ Failure ]
 crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/mix/mix_001_to_006.html [ Failure ]
 
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-eviction-with-garbage-collection.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-draw-buffers-max-draw-buffers.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/glsl/constructors/glsl-construct-ivec2.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/glsl/implicit/divide_ivec3_vec3.vert.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/glsl/misc/shader-with-comma-conditional-assignment.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/glsl/misc/shader-with-webgl-identifier.vert.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/mat/mat_009_to_016.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/struct/struct_049_to_056.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/image_bitmap_from_image_bitmap/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-17.html [ Failure ]
+
 ## VM Issues ##
 
 # Failing on chromeos-amd64-generic-rel.
