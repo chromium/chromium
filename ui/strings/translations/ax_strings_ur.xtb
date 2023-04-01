@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
-<translation id="1018939186200882850">مینو آئٹم</translation>
+<translation id="1018939186200882850">مینیو آئٹم</translation>
 <translation id="10623998915015855">ٹوگل بٹن</translation>
 <translation id="1188858454923323853">اعزازی</translation>
 <translation id="1206619573307042055">marquee</translation>
@@ -52,7 +52,7 @@
 <translation id="4193965531860883258">پیش لفظ</translation>
 <translation id="4202807286478387388">جائیں</translation>
 <translation id="421884353938374759">رنگ کا منتخب کنندہ</translation>
-<translation id="4248100235867064564">مینو بار</translation>
+<translation id="4248100235867064564">مینیو بار</translation>
 <translation id="4293574643247337246">صفحے کا ہیڈر</translation>
 <translation id="4384583879834880242">سوال و جواب</translation>
 <translation id="4446524499724042288">فرہنگ کا حوالہ</translation>
@@ -107,7 +107,7 @@
 <translation id="6981594929165378967">داخل کرنا</translation>
 <translation id="7034405885550056553">تجویز</translation>
 <translation id="7139483182332611405">دیباچہ</translation>
-<translation id="7198226213493847604">مینو پاپ اپ بٹن</translation>
+<translation id="7198226213493847604">مینیو پاپ اپ بٹن</translation>
 <translation id="7214187073215825913">مواد کی معلومات</translation>
 <translation id="7238347055216017155">زور</translation>
 <translation id="727747134524199931">کالم ہیڈر</translation>
@@ -149,5 +149,5 @@
 <translation id="9108370397979208512">ریاضی</translation>
 <translation id="9138385573473225930">الرٹ</translation>
 <translation id="9168329111483466115">فٹ نوٹ</translation>
-<translation id="966787709310836684">مینو</translation>
+<translation id="966787709310836684">مینیو</translation>
 </translationbundle>

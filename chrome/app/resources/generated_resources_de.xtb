@@ -1885,7 +1885,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2640299212685523844">GTK verwenden</translation>
 <translation id="264083724974021997">Mit dem Smartphone verbinden – Dialogfenster</translation>
 <translation id="2642111877055905627">Fußball</translation>
-<translation id="2643064289437760082">Du kannst jederzeit Daten zur Analyse von Werbung löschen, indem du deine Browserdaten löschst</translation>
+<translation id="2643064289437760082">Du kannst jederzeit Daten zur Erfolgsmessung von Anzeigen löschen, indem du deine Browserdaten löschst</translation>
 <translation id="2643698698624765890">Klicke zum Verwalten deiner Erweiterungen im Menü „Fenster“ auf „Erweiterungen“.</translation>
 <translation id="2643887015830197688">Bei Aufrufen von HTTP-Websites auf HTTPS umstellen und warnen, bevor Websites geladen werden, die HTTPS nicht unterstützen.
 
@@ -2131,7 +2131,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2844169650293029770">USB-C-Gerät (Port vorne links)</translation>
 <translation id="2844809857160214557">Druckaufträge ansehen und verwalten</translation>
 <translation id="2845382757467349449">Lesezeichenleiste immer anzeigen</translation>
-<translation id="2845751331501453107">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK1" />der von Apps empfohlenen Werbung<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />deinen Cookie-Einstellungen<ph name="LINK_END2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
+<translation id="2845751331501453107">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK1" />der von Websites vorgeschlagenen Werbung<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />deinen Cookie-Einstellungen<ph name="LINK_END2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
 <translation id="284581348330507117">Erstelle unterschiedliche Passwörter</translation>
 <translation id="284805635805850872">Schädliche Software entfernen?</translation>
 <translation id="2849035674501872372">Nachsehen</translation>
@@ -2496,7 +2496,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3183944777708523606">Monitoranordnung</translation>
 <translation id="3184536091884214176">CUPS-Drucker einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Diese App ist blockiert}other{Einige Apps sind blockiert}}</translation>
-<translation id="3187472288455401631">Analyse von Werbung</translation>
+<translation id="3187472288455401631">Erfolgsmessung von Anzeigen</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
@@ -4133,7 +4133,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4666472247053585787">Benachrichtigungen von deinem Smartphone auf deinem <ph name="DEVICE_TYPE" /> erhalten</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667027203988048332">Welche Daten verwendet werden:</translation>
-<translation id="4668279686271488041">Daten zur Analyse von Werbung werden regelmäßig von deinem Gerät gelöscht</translation>
+<translation id="4668279686271488041">Daten zur Erfolgsmessung von Anzeigen werden regelmäßig von deinem Gerät gelöscht</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> jetzt öffnen</translation>
 <translation id="46733273239502219">Offlinedaten in installierten Apps werden auch gelöscht</translation>
 <translation id="4673442866648850031">Eingabestift-Tools werden automatisch geöffnet, sobald der Eingabestift entfernt wird</translation>
@@ -6930,7 +6930,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7258192266780953209">Transformationen</translation>
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wähle "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7260186537988033909">Geräteregistrierung für Kioske und digitale Beschilderung abgeschlossen</translation>
-<translation id="7260367682327802201">Dein Android-Gerät verfügt möglicherweise über eine ähnliche Einstellung. Wenn die Analyse von Werbung in Chrome und auf deinem Android-Gerät aktiviert ist, können Unternehmen möglicherweise die Effektivität von Werbung auf den von dir besuchten Websites und in den von dir verwendeten Apps analysieren.</translation>
+<translation id="7260367682327802201">Dein Android-Gerät verfügt möglicherweise über eine ähnliche Einstellung. Wenn die Erfolgsmessung von Anzeigen in Chrome und auf deinem Android-Gerät aktiviert ist, können Unternehmen möglicherweise die Effektivität von Werbung auf den von dir besuchten Websites und in den von dir verwendeten Apps analysieren.</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Berechtigungen für 1 Website entfernt}other{Berechtigungen für {NUM_SITES} Websites entfernt}}</translation>
 <translation id="7264695323040866038">Immer die <ph name="APP" /> App verwenden, um unterstützte Weblinks zu öffnen?</translation>
