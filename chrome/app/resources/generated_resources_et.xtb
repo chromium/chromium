@@ -44,6 +44,7 @@
 <translation id="1036511912703768636">Juurdepääs ükskõik millisele nimetatud USB-seadmele</translation>
 <translation id="1038168778161626396">Ainult šifreerimine</translation>
 <translation id="1038462104119736705">Linuxi jaoks on soovitatav vähemalt <ph name="INSTALL_SIZE" /> vaba ruumi. Ruumi vabastamiseks kustutage oma seadmest mõned failid.</translation>
+<translation id="1038643060055067718">Read:</translation>
 <translation id="1039337018183941703">Sobimatu või rikutud fail</translation>
 <translation id="1041175011127912238">Leht ei reageeri</translation>
 <translation id="1041263367839475438">Saadaolevad seadmed</translation>
@@ -2606,6 +2607,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3234978181857588512">Salvesta seadmesse</translation>
 <translation id="3238192140106069382">Ühendamine ja kinnitamine</translation>
 <translation id="3239373508713281971">Rakenduse <ph name="APP_NAME" /> ajapiirang eemaldati</translation>
+<translation id="3241638166094654466">Igal real olevad lahtrid:</translation>
 <translation id="3241680850019875542">Valige pakitava laienduse juurkaust. Laienduse värskendamiseks valige uuesti kasutamiseks ka privaatvõtme fail.</translation>
 <translation id="3242289508736283383">Rakendus manifesti atribuudiga „kiosk_only“ tuleb installida Chrome OS-i kioskirežiimis</translation>
 <translation id="3242665648857227438">See profiil kasutab Chrome OS-i puhverserveri seadeid.</translation>
@@ -6020,7 +6022,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="630948338437014525">mälestused</translation>
 <translation id="6309510305002439352">Mikrofon on välja lülitatud</translation>
 <translation id="6310141306111263820">eSIM-i profiili installimine ei õnnestunud. Abi saamiseks võtke ühendust operaatoriga.</translation>
-<translation id="6311165245110979290">Virtuaalkaart on saadaval</translation>
 <translation id="6311220991371174222">Chrome'i ei saa käivitada, kuna midagi läks teie profiili avamisel valesti. Proovige Chrome taaskäivitada.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Ohutuskontroll tehti 1 päev tagasi}other{Ohutuskontroll tehti {NUM_DAYS} päeva tagasi}}</translation>
 <translation id="6312638141433622592">Pakutakse artiklite kuvamist lugeja vaates, kui seda toetatakse</translation>
@@ -7254,6 +7255,8 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7427315069950454694">teie tänased mälestused</translation>
 <translation id="7427348830195639090">Taustleht: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Kõne seadmest <ph name="DEVICE_NAME" /></translation>
+<translation id="7429415133937917139">Simuleerib ekraani ülaosas oleval ChromeVoxi paneelil
+    värskendatava Braille' ekraani väljundit</translation>
 <translation id="7431719494109538750">HID-seadmeid ei leitud</translation>
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7432200167665670017">Teie administraator on blokeerinud rakenduse/laienduse „<ph name="EXTENSION_NAME" />“ – Rakenduse ID <ph name="EXTENSION_ID" /></translation>
@@ -7765,6 +7768,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7870790288828963061">Ühtegi uuema versiooniga kioski rakendust ei leitud. Midagi pole värskendada. Eemaldage USB-mälupulk.</translation>
 <translation id="7871049986386271121">Sellel saidil alati</translation>
 <translation id="7871109039747854576">Kasuta klahve <ph name="COMMA" /> ja <ph name="PERIOD" /> kandidaatide loendi lehitsemiseks</translation>
+<translation id="7871691770940645922">Virtuaalne punktkirjaekraan</translation>
 <translation id="787268756490971083">Väljas</translation>
 <translation id="7872758299142009420">Liiga palju pesastatud gruppe: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome'i taustad</translation>
@@ -8432,6 +8436,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8448729345478502352">Muutke ekraanil kuvatud üksused väiksemaks või suuremaks</translation>
 <translation id="8449008133205184768">Kleebi ja ühita laad</translation>
 <translation id="8449036207308062757">Halda salvestusruumi</translation>
+<translation id="8449836157089738489">Ava kõik uues vahelehegrupis</translation>
 <translation id="845702320058262034">Ühendust ei saa luua. Veenduge, et telefonis oleks Bluetooth sisse lülitatud.</translation>
 <translation id="8457451314607652708">Impordi järjehoidjad</translation>
 <translation id="8458341576712814616">Otsetee</translation>

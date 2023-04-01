@@ -234,7 +234,7 @@
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2664621323652615289">停止</translation>
-<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式，使用儲存至 Google 密碼管理員的密碼。</translation>
+<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員中所儲存的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="26915454213703967">使用 Google 搜尋圖片內容</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
@@ -388,7 +388,7 @@
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3608008480985212611">如要管理偏好設定，請登入帳戶。</translation>
 <translation id="3609785682760573515">同步處理中...</translation>
-<translation id="3631443864840848029">請確認要儲存你目前在這個網站使用的密碼。</translation>
+<translation id="3631443864840848029">請確認你儲存的是這個網站目前的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
 <translation id="3661160521073045932">有可用的設定描述檔</translation>
 <translation id="3670030362669914947">號碼</translation>
@@ -601,7 +601,7 @@
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
 <translation id="5118713593561876160">興趣喜好</translation>
 <translation id="5118764316110575523">關閉</translation>
-<translation id="5119391094379141756">選取 [Chrome]</translation>
+<translation id="5119391094379141756">選取「Chrome」</translation>
 <translation id="5121618895923301719">你已追蹤這項產品，這個頁面會儲存在<ph name="BEGIN_LINK" />行動裝置的書籤<ph name="END_LINK" />中。</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} 組密碼的強度太低}other{{COUNT} 組密碼的強度太低}}</translation>
@@ -951,6 +951,7 @@
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="734758817008927353">卡片儲存選項</translation>
 <translation id="7351537303876921605">輕觸內容選單中的「建立連結」</translation>
+<translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353432112255316844">驗證身分</translation>
 <translation id="7383797227493018512">閱讀清單</translation>
 <translation id="7398893703713203428">建立連結</translation>
@@ -1064,7 +1065,7 @@
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8084285576995584326">控管 Google 帳戶資料</translation>
 <translation id="809543534949702122">在歷史記錄中搜尋</translation>
-<translation id="8101409298456377967">建立、儲存及管理密碼，讓你輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">設定、儲存及管理密碼，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="8114753159095730575">可下載檔案，相關選項位於畫面底部。</translation>
