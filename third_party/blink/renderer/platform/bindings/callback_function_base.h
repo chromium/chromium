@@ -19,6 +19,9 @@ namespace blink {
 // overload resolutions, SFINAE technique, etc.) so that it's possible to
 // distinguish callback functions from anything else. Also it provides a common
 // implementation of callback functions.
+// This base class does not provide support for task attribution, so the
+// callback that require such a functionality should inherit from
+// CallbackFunctionWithTaskAttributionBase class.
 //
 // As the signatures of callback functions vary, this class does not implement
 // |Invoke| member function that performs "invoke" steps. Subclasses will
@@ -100,20 +103,6 @@ class PLATFORM_EXPORT CallbackFunctionBase
     callback_function_.Reset();
   }
 
-  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
-    if (!cached_data_) {
-      return {};
-    }
-    return cached_data_->parent_task_id_;
-  }
-
-  void SetParentTaskId(absl::optional<scheduler::TaskAttributionId> task_id) {
-    if (!cached_data_) {
-      MakeCachedData();
-    }
-    cached_data_->parent_task_id_ = task_id;
-  }
-
  protected:
   explicit CallbackFunctionBase(v8::Local<v8::Object>);
 
@@ -158,8 +147,6 @@ class PLATFORM_EXPORT CallbackFunctionBase
     // is converted to an IDL value.
     // https://webidl.spec.whatwg.org/#dfn-callback-context
     Member<ScriptState> incumbent_script_state_;
-
-    absl::optional<scheduler::TaskAttributionId> parent_task_id_;
   };
 
   // The "callback function type" value.
@@ -170,6 +157,31 @@ class PLATFORM_EXPORT CallbackFunctionBase
   TraceWrapperV8Reference<v8::Object> callback_function_;
   // Pointer to lazily computed data which is not needed in most of the cases.
   mutable Member<CachedData> cached_data_;
+};
+
+// CallbackFunctionWithTaskAttributionBase is the common base class of callback
+// function that require task attribution support.
+// Callbacks that require such a functionality should be defined with
+// [SupportsTaskAttribution] IDL extended attribute.
+class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
+    : public CallbackFunctionBase {
+ public:
+  ~CallbackFunctionWithTaskAttributionBase() override = default;
+
+  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
+    return parent_task_id_;
+  }
+
+  void SetParentTaskId(absl::optional<scheduler::TaskAttributionId> task_id) {
+    parent_task_id_ = task_id;
+  }
+
+ protected:
+  explicit CallbackFunctionWithTaskAttributionBase(v8::Local<v8::Object> object)
+      : CallbackFunctionBase(object) {}
+
+ private:
+  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
 };
 
 }  // namespace blink

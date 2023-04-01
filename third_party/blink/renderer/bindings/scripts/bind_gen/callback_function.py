@@ -260,7 +260,7 @@ if (!callback_relevant_script_state) {
         ])
 
     if cg_context.callback_function:
-        template_params = ["CallbackFunctionBase"]
+        template_params = ["${base_class_name}"]
         if is_construct_call:
             template_params.append(
                 "bindings::CallbackInvokeHelperMode::kConstructorCall")
@@ -504,9 +504,14 @@ def generate_callback_function(callback_function_identifier):
     # Class names
     class_name = blink_class_name(callback_function)
 
+    if "SupportsTaskAttribution" in callback_function.extended_attributes:
+        base_class_name = "CallbackFunctionWithTaskAttributionBase"
+    else:
+        base_class_name = "CallbackFunctionBase"
+
     cg_context = CodeGenContext(callback_function=callback_function,
                                 class_name=class_name,
-                                base_class_name="CallbackFunctionBase")
+                                base_class_name=base_class_name)
 
     # Filepaths
     header_path = path_manager.api_path(ext="h")
@@ -526,7 +531,7 @@ def generate_callback_function(callback_function_identifier):
 
     # Class definition
     class_def = CxxClassDefNode(cg_context.class_name,
-                                base_class_names=["CallbackFunctionBase"],
+                                base_class_names=[base_class_name],
                                 final=True,
                                 export=component_export(
                                     api_component, for_testing))
