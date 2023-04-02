@@ -45,6 +45,7 @@ struct NavigationDownloadPolicy;
 namespace content {
 class FrameTree;
 class FrameTreeNode;
+class NavigationEntryScreenshotCache;
 class NavigationRequest;
 class RenderFrameHostImpl;
 class SiteInstance;
@@ -166,6 +167,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // FrameTree is being initialized. See NavigationEntry::IsInitialEntry() on
   // what this means.
   void CreateInitialEntry();
+
+  // Gets the `NavigationEntryScreenshotCache` for this `NavigationController`.
+  // Due to MPArch there can be multiple `FrameTree`s within a single tab. This
+  // should only be called for the primary FrameTree.  This cache is
+  // lazy-initialized when this method is first called.
+  NavigationEntryScreenshotCache* GetNavigationEntryScreenshotCache();
 
   // Starts a navigation in a newly created subframe as part of a history
   // navigation. Returns true if the history navigation could start, false
@@ -960,6 +967,11 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Stores frozen RenderFrameHost. Restores them on history navigation.
   // See BackForwardCache class documentation.
   BackForwardCacheImpl back_forward_cache_;
+
+  // Stores captured screenshots for this `NavigationController`. The
+  // screenshots are used to present the user with the previews of the
+  // previously visited pages when the back/forward navigations occur.
+  std::unique_ptr<NavigationEntryScreenshotCache> nav_entry_screenshot_cache_;
 
   // Holds the entry that was committed at the time an error page was triggered
   // due to a call to LoadPostCommitErrorPage. The error entry will take its

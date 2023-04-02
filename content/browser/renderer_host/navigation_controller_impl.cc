@@ -58,6 +58,7 @@
 #include "cc/base/switches.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
@@ -68,6 +69,8 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -2525,6 +2528,20 @@ bool NavigationControllerImpl::IsEntryMarkedToBeSkipped(int index) {
 
 BackForwardCacheImpl& NavigationControllerImpl::GetBackForwardCache() {
   return back_forward_cache_;
+}
+
+NavigationEntryScreenshotCache*
+NavigationControllerImpl::GetNavigationEntryScreenshotCache() {
+  CHECK_EQ(frame_tree_->type(), FrameTree::Type::kPrimary);
+  if (!nav_entry_screenshot_cache_ && AreBackForwardTransitionsEnabled()) {
+    nav_entry_screenshot_cache_ =
+        std::make_unique<NavigationEntryScreenshotCache>(
+            BrowserContextImpl::From(browser_context_)
+                ->GetNavigationEntryScreenshotManager()
+                ->GetSafeRef(),
+            this);
+  }
+  return nav_entry_screenshot_cache_.get();
 }
 
 void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
