@@ -1756,7 +1756,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2456794251167091176">Importen er udført</translation>
 <translation id="2456827790665612305">Følg ikke website</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ønsker at kopiere filer fra <ph name="VOLUME_NAME" />.</translation>
-<translation id="2457842160081795172">I øjeblikket på kanalen <ph name="CHANNEL_NAME" />.</translation>
+<translation id="2457842160081795172">I øjeblikket på <ph name="CHANNEL_NAME" />-kanalen.</translation>
 <translation id="2458379781610688953">Opdater konto, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Tokenet for enhedsadministration er ugyldigt.</translation>
 <translation id="2459703812219683497">Aktiveringskoden blev registreret</translation>

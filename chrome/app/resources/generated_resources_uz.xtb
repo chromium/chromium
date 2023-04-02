@@ -791,6 +791,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="16620462294541761">Afsuski, parolni tekshirib bo‘lmadi. Qayta urinib ko‘ring.</translation>
 <translation id="166278006618318542">Subyekt ochiq kaliti algoritmi</translation>
 <translation id="1662801900924515589"><ph name="APP" /> oʻrnatildi</translation>
+<translation id="1663698992894057019">Oxirgi xavfsizlik sozlamalari va dasturlardan foydalanish uchun yangi Chromebook oling</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> qurilmangizni qulfdan chiqarish uchun parol yoki PIN koddan foydalaning</translation>
 <translation id="1666232093776384142">Tashqi qurilmalar uchun maʼlumotlarga kirish cheklovi olib tashlansinmi?</translation>
 <translation id="1667842670298352129">Kerakli matnni oʻqib eshittirish. Avval ekranning quyi qismidagi Teginib tinglash belgisini bosing va keyin matnni belgilang. Shuningdek, tezkor tugma ishlatish mumkin: Matnni belgilab, Search+S tugmalarini bosing.</translation>
@@ -3732,6 +3733,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4231141543165771749">Oʻyin boshqaruvlarini yoping</translation>
 <translation id="4231542173270219144">Sinov muddatlari yoqilganida Spam va firibgarlikka qarshi kurashda saytlar botlarni odamlardan ajratish maqsadida ishonch tokenlaridan foydalanadi.</translation>
 <translation id="4232375817808480934">Kerberos chiptasini moslash</translation>
+<translation id="4233739489690259993">Chromebook qurilmangiz endi xavfsizlikka oid va dasturiy yangilanishlar olmaydi. Oxirgi xavfsizlik sozlamalari va yangi funksiyalarni olish uchun qurilmani yangilang. Taklif shartlari amal qiladi.</translation>
 <translation id="4235965441080806197">Hisobga kirishni bekor qilish</translation>
 <translation id="4236163961381003811">Boshqa kengaytmalarni koʻrish</translation>
 <translation id="4237282663517880406">Google Drive takliflarini chiqarish</translation>
@@ -4818,6 +4820,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5228579091201413441">Sinxronlashni yoqish</translation>
 <translation id="5229337741799419985">Bu sozlama ishlashida shaxsingiz aniqlanmaydi va brauzeringiz tarixi saytlarga koʻrinmaydi</translation>
 <translation id="5230516054153933099">Oyna</translation>
+<translation id="5231427103154766313">Translatsiyani pult orqali toʻxtating.</translation>
 <translation id="5233019165164992427">NaCl nosozliklarni ko‘rib chiqish porti</translation>
 <translation id="5233231016133573565">Jarayon ID raqami</translation>
 <translation id="5233638681132016545">Yangi varaq</translation>
@@ -5239,6 +5242,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5601503069213153581">PIN kod</translation>
 <translation id="5601823921345337195">MIDI qurilmalarga ulanishga ruxsat berilmagan</translation>
 <translation id="5601833336918638013">Saytlar Bluetooth qurilmalarni qidirishi mumkin emas</translation>
+<translation id="5602586420788540146">Yangi varaqlar guruhida ochish</translation>
 <translation id="5602765853043467355">Qurilmadagi xatcho‘plar, tarix, parollar va boshqa ma’lumotlarni tozalash</translation>
 <translation id="5605758115928394442">Telefoningizga bildirishnoma yuborildi. Shaxsingizni tasdiqlang.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu kengaytma bloklandi}other{Bu kengaytmalar bloklandi}}</translation>
@@ -6303,6 +6307,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="657229725818377235">Zararli saytlar va yuklanmalarga qarshi himoyani oshiring</translation>
 <translation id="6573096386450695060">Har doim ruxsat berilsin</translation>
 <translation id="6573497332121198392">Yorliq olib tashlanmadi</translation>
+<translation id="6573915150656780875">Chromebook qurilmangiz endi xavfsizlikka oid va dasturiy yangilanishlar olmaydi. Barcha imkoniyatlardan foydalanish yangi Chromebook oling.</translation>
 <translation id="657402800789773160">&amp;Sahifani yangilash</translation>
 <translation id="6577284282025554716">Yuklanma bekor qilindi: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Tarmoqning umumiy holati</translation>
@@ -7736,6 +7741,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7844992432319478437">diff vositasi yangilanmoqda</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />‘ga o‘tish uchun Ctrl + Alt + S tugmalarini bosing</translation>
+<translation id="7848244988854036372">Barchasini (<ph name="URL_COUNT" />) yangi varaqlar guruhida ochish</translation>
 <translation id="7849264908733290972">Tasvirni yangi varaqda ochish</translation>
 <translation id="784934925303690534">Vaqt diapazoni</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani, odatda qancha xotira ishlatilishi, Android ilovasi diagnostika va foydalanish statistikasi kabi maʼlumotlar kirishi mumkin. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />

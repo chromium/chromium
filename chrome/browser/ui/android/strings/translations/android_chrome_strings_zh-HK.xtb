@@ -456,6 +456,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3495219333887281978">登入頁底面板宜家顯示喺畫面下半部。</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">按最舊日期排序</translation>
 <translation id="3507132249039706973">已開啟「標準保護功能」</translation>
 <translation id="3509330069915219067">離線。Chrome 無法檢查更新。</translation>
 <translation id="3513704683820682405">擴張實境</translation>
@@ -576,6 +577,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4177222230309051052">取得所有書籤</translation>
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="4181841719683918333">語言</translation>
+<translation id="4188221736490993796">由 Z 到 A 排序</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196597275619698563">建立資訊卡</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
@@ -641,6 +643,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4572422548854449519">登入受管理的帳戶</translation>
 <translation id="4576892426230499203">請改用其他驗證選項</translation>
+<translation id="4577115723294378384">由 A 到 Z 排序</translation>
 <translation id="4578289292431526768">開始設定</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="4587589328781138893">網站</translation>
@@ -664,6 +667,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4689792375321623175">使用 Google 搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
+<translation id="4710167854527459075">按最新日期排序</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720023427747327413">用 <ph name="PRODUCT_NAME" /> 開啟</translation>
 <translation id="47217992755561375">查看熱門網站</translation>
@@ -833,6 +837,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5561162485081632007">偵測並在危險事件發生時發出警告</translation>
 <translation id="5561549206367097665">正在等待網絡連線…</translation>
 <translation id="5568069709869097550">無法登入</translation>
+<translation id="557018954714092179">建立新資料夾</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5581519193887989363">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。</translation>
 <translation id="5590372121997663538">記住此電腦</translation>
@@ -937,6 +942,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6138832295072039549">在此變更網站設定</translation>
 <translation id="6140709049082532940">強化保護功能：</translation>
 <translation id="6140912465461743537">國家/地區</translation>
+<translation id="6148266338772765473">不包括連結</translation>
 <translation id="6150320133806434356">已儲存書籤</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>
 <translation id="6159729262978459665">清除所有已同步裝置上的記錄。</translation>
@@ -1028,6 +1034,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6590680911007613645">請確保您儲存的密碼與 <ph name="SITE" /> 上的密碼相符</translation>
 <translation id="6593061639179217415">桌面版網站</translation>
 <translation id="6594121454516132231">查看 Chrome 如何計劃防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡</translation>
+<translation id="6594347733515723558">排序和檢視選項</translation>
 <translation id="6595046016124923392">圖片會傳送至 Google，以便為您提供更完善的說明。</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>

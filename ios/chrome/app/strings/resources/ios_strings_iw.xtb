@@ -55,6 +55,7 @@
 <translation id="1283524564873030414">מ-24 השעות האחרונות</translation>
 <translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
 <translation id="1291506870746876680">ההרשאות לאתר <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> יאופסו לאחר היציאה ממנו.</translation>
+<translation id="1305822519689023679">‏כדי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך, עליך לאמת את הזהות שלך.</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
 <translation id="1322735045095424339">מצב אנונימי נדרש על ידי הארגון שלך</translation>
@@ -104,6 +105,7 @@
 <translation id="1626771852476987600">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
+<translation id="165008673352427892">תכונה חדשה</translation>
 <translation id="1650222530560417226">‏אפשר להקיש על הלחצן "התחלת הרישום ביומן" כדי לאסוף רשומות יומן ושגיאות של לוח JavaScript מכל הכרטיסיות. רשומות היומן ייאספו (ויישמרו רק בזיכרון) עד לסגירת הדף הזה, או להקשה על "הפסקת הרישום ביומן".</translation>
 <translation id="1653432787084483144">{count,plural, =1{סיסמה שמורה אחת ({count}) זמינה מעל למקלדת.}one{{count} סיסמאות שמורות זמינות מעל המקלדת.}two{{count} סיסמאות שמורות זמינות מעל המקלדת.}other{{count} סיסמאות שמורות זמינות מעל המקלדת.}}</translation>
 <translation id="1657011748321897393">השיתוף נכשל משום שאין לך חיבור לרשת.</translation>
@@ -117,6 +119,7 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
 <translation id="1715515772563243997">אם הכתובת <ph name="SITE" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה כדי להיכנס לחשבון.</translation>
 <translation id="1740468249224277719">יש להקיש פעמיים כדי להתקין.</translation>
+<translation id="1750238553597293878">‏המשך השימוש בסיסמאות בחשבון Google שלך</translation>
 <translation id="1752547299766512813">שמירת סיסמאות</translation>
 <translation id="1753905327828125965">עם המבקרים הרבים ביותר</translation>
 <translation id="1767766085187034454">Google Translate</translation>
@@ -404,6 +407,7 @@
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3818293389945649617">חיפוש המחרוזת הבאה</translation>
 <translation id="3819183753496523827">אין לך חיבור לאינטרנט. צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
+<translation id="3832419617903252251">הסיסמה נשמרה רק במכשיר הזה</translation>
 <translation id="3835964409414434850">מעבר לכרטיסייה הבאה</translation>
 <translation id="3838691874161539578">כדאי לבדוק את הסיסמאות השמורות כדי להגביר את האבטחה ולשמור על הבטיחות באינטרנט</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -634,6 +638,7 @@
 <translation id="54401264925851789">פרטי אבטחת דף</translation>
 <translation id="5443952882982198570">כרטיסי אשראי</translation>
 <translation id="5444892875087332195">סימניות</translation>
+<translation id="5453250766792920795">{count,plural, =1{הסימנייה נשמרה בחשבון שלך, {email}}one{הסימניות נשמרו בחשבון שלך, {email}}two{הסימניות נשמרו בחשבון שלך, {email}}other{הסימניות נשמרו בחשבון שלך, {email}}}</translation>
 <translation id="5457226814769348910">פתיחה של גרסת אופליין</translation>
 <translation id="5489208564673669003">‏הסבר על ניהול קובצי ה-cookie עבור כל האתרים זמין במאמר <ph name="BEGIN_LINK" />הגדרות קובצי cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
@@ -660,6 +665,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5669617676038747374">‏יצירת קוד QR</translation>
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5683499062697987550">‏כדי להשתמש בסיסמאות ולשמור אותן בחשבון Google, עליך לאמת את הזהות שלך.</translation>
 <translation id="5690398455483874150">{count,plural, =1{‏כרגע מוצג חלון Chrome אחד}one{‏כרגע מוצגים {count} חלונות Chrome}two{‏כרגע מוצגים {count} חלונות Chrome}other{‏כרגע מוצגים {count} חלונות Chrome}}</translation>
 <translation id="5701270923492462699">יש הרשאת גישה למצלמה</translation>
 <translation id="5704908597376970822">אי אפשר להיכנס.</translation>
@@ -792,6 +798,7 @@
 
 הנתונים שלך הוצפנו ב-<ph name="TIME" /> באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="6418346271604475326">‏PDF בהכנה</translation>
+<translation id="6421095165635308">{count,plural, =1{הסימנייה נשמרה בתיקייה {title} בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה {title} בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה {title} בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה {title} בחשבון שלך, {email}}}</translation>
 <translation id="6429213933892582367">פתיחת האפשרויות של סיסמאות</translation>
 <translation id="6434591244308415567">אירעה שגיאה. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="6435236283694032571">הוספה לרשימת הקריאה</translation>
@@ -880,6 +887,7 @@
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6897187120838603299">הסיסמה שלך תישמר במכשיר.</translation>
+<translation id="6906448540340261898">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. רק במכשיר הזה.</translation>
 <translation id="6914583639806229067">חיפוש תמונה שהעתקת</translation>
 <translation id="6914783257214138813">כל מי שיוכל לגשת אל הקובץ המיוצא יוכל לראות את הסיסמאות שלך.</translation>

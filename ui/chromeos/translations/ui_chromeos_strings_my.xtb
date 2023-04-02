@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ဂြိုဟ်</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ကို ထုတ်ပယ်ထားသည်။</translation>
 <translation id="2307462900900812319">ကွန်ရက် ပြုပြင်ရန်</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID ပါသော နောက်ဆက်တွဲကို <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။}other{ID ပါသော နောက်ဆက်တွဲများကို <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။}}</translation>
 <translation id="2325650632570794183">ဤဖိုင်အမျိုးစားအား မထောက်ပံ့ပါ။ Chrome ဝက်ဘ်စတိုးသို့ဝင်ရောက်ကာ ဤဖိုင်အမျိုးစားကို ဖွင့်နိုင်သည့် အက်ပ် ကိုရှာပါ။</translation>
 <translation id="2326539130272988168">ဘူလ်ဂေးရီးယား</translation>
 <translation id="2337715497728194187">Bruschetta အား မျှဝေရန်</translation>

@@ -2252,6 +2252,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2886119409731773154">Gallai hyn gymryd hyd at 30 eiliad</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> a <ph name="NUMBER_OF_DEVICES" /> eraill</translation>
+<translation id="2889043468805635730">Ni chanfuwyd unrhyw broblemau</translation>
 <translation id="2889064240420137087">Agor y ddolen gyda...</translation>
 <translation id="2891566119238851894">Agor chwilio yn y panel ochr. Nid yw chwilio ar agor yn y panel ochr.</translation>
 <translation id="2891922230654533301">Defnyddio eich dyfais i fewngofnodi i <ph name="APP_NAME" />?</translation>
@@ -3350,6 +3351,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3861977424605124250">Dangos ar gychwyn</translation>
 <translation id="386239283124269513">&amp;Adfer y Grŵp</translation>
 <translation id="3865414814144988605">Cydraniad</translation>
+<translation id="3866142613641074814">Mae gennych gyfrineiriau sydd mewn perygl</translation>
 <translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="3867134342671430205">Llusgwch neu defnyddiwch y bysellau saeth i symud sgrîn</translation>
 <translation id="3867944738977021751">Meysydd Tystysgrif</translation>
@@ -8691,6 +8693,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="866611985033792019">Ymddiried yn y dystysgrif hon i adnabod defnyddwyr e-bost</translation>
 <translation id="8666321716757704924">Cafwyd caniatâd eto ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">Ynglŷn â phersonoleiddio hysbysebion ar sail Porwr</translation>
+<translation id="8667261224612332309">Mae gennych gyfrineiriau y gellir eu gwella</translation>
 <translation id="8667328578593601900">Mae <ph name="FULLSCREEN_ORIGIN" /> bellach yn sgrîn lawn ac wedi analluogi cyrchwr eich llygoden.</translation>
 <translation id="8667760277771450375">Rydym yn archwilio ffyrdd i gyfyngu ar olrhain traws-wefan tra'n galluogi gwefannau i stopio sothach hysbysebion a thwyll.</translation>
 <translation id="8668378421690365723">Mae'n bosib na fydd eich dyfais yn gweithio'n iawn mwyach, ac mae'n bosib y bydd yn profi problemau diogelwch a pherfformiad.</translation>
@@ -9024,6 +9027,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8953476467359856141">Wrth wefru</translation>
 <translation id="895347679606913382">Wrthi'n dechrau…</translation>
 <translation id="8957757410289731985">Personoleiddio'r proffil</translation>
+<translation id="8959144235813727886">Gwefannau ac apiau</translation>
 <translation id="895944840846194039">Cof JavaScript</translation>
 <translation id="8960208913905765425">Trosi uned Atebion Cyflym</translation>
 <translation id="8960638196855923532">Gallwch bellach weld hysbysiadau ac apiau eich ffôn</translation>

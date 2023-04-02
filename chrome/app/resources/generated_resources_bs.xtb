@@ -2248,6 +2248,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2886119409731773154">Ovo može potrajati do 30 min</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> i još <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2889043468805635730">Problemi nisu pronađeni</translation>
 <translation id="2889064240420137087">Otvori link koristeći…</translation>
 <translation id="2891566119238851894">Otvaranje pretraživanja na bočnoj ploči. Pretraživanje nije otvoreno na bočnoj ploči.</translation>
 <translation id="2891922230654533301">Želite li se svojim uređajem prijaviti u aplikaciju <ph name="APP_NAME" />?</translation>
@@ -3346,6 +3347,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3861977424605124250">Prikaži prilikom pokretanja</translation>
 <translation id="386239283124269513">&amp;Vrati grupu</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
+<translation id="3866142613641074814">Imate zaporke koje su ugrožene</translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3867134342671430205">Prevucite ili koristite tipke sa strelicama da pomjerite ekran</translation>
 <translation id="3867944738977021751">Polja potvrda</translation>
@@ -8684,6 +8686,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="866611985033792019">Vjeruj ovoj potvrdi za identifikaciju korisnika e-pošte</translation>
 <translation id="8666321716757704924">Ponovo su dozvoljena odobrenja za <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">O personalizaciji oglasa zasnovanoj na pregledniku</translation>
+<translation id="8667261224612332309">Imate zaporke koje se mogu poboljšati</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> se sada prikazuje preko cijelog ekrana i onemogućuje kursor miša.</translation>
 <translation id="8667760277771450375">Istražujemo načine da ograničimo unakrsno praćenje web lokacija pružajući mogućnost web lokacijama da zaustave neželjene sadržaje i prevare.</translation>
 <translation id="8668378421690365723">Vaš uređaj možda više neće funkcionirati ispravno i možete naići na probleme sa sigurnošću i performansama.</translation>
@@ -9015,6 +9018,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8953476467359856141">Tokom punjenja</translation>
 <translation id="895347679606913382">Pokretanje…</translation>
 <translation id="8957757410289731985">Prilagodite profil</translation>
+<translation id="8959144235813727886">Web-lokacije i aplikacije</translation>
 <translation id="895944840846194039">JavaScript memorija</translation>
 <translation id="8960208913905765425">Pretvaranje jedinica Brzih odgovora</translation>
 <translation id="8960638196855923532">Sada možete pregledati obavještenja i aplikacije telefona</translation>
