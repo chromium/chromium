@@ -9,19 +9,15 @@ updates:
     directory: /
     schedule:
       interval: monthly
-    open-pull-requests-limit: 1
   - package-ecosystem: pip
     directory: examples/
     schedule:
       interval: monthly
-    open-pull-requests-limit: 1
   - package-ecosystem: pip
     directory: tests/
     schedule:
       interval: monthly
-    open-pull-requests-limit: 1
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: monthly
-    open-pull-requests-limit: 1
