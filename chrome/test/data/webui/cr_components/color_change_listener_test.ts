@@ -2,55 +2,80 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addColorChangeListener, colorProviderChangeHandler, COLORS_CSS_SELECTOR, refreshColorCss, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {addColorChangeListener, colorProviderChangeHandler, refreshColorCss, removeColorChangeListener} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ColorChangeListenerTest', () => {
   setup(() => {
-    document.body.innerHTML =
-        getTrustedHTML`<link rel="stylesheet" href="chrome://theme/colors.css?sets=ui"/>`;
+    document.body.innerHTML = getTrustedHTML`
+      <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui"/>`;
   });
 
-  test('CorrectlyUpdatesColorsStylesheetURL', async () => {
-    const colorCssNode =
-        document.querySelector<HTMLLinkElement>(COLORS_CSS_SELECTOR);
-    assertTrue(!!colorCssNode);
-    const initialHref = colorCssNode.getAttribute('href');
-    assertTrue(!!initialHref);
-    assertTrue(initialHref.startsWith('chrome://theme/colors.css'));
+  /**
+   * Finds the most recently added link element in page whose href starts with
+   * `matcher`, then returns the `param` search parameter on this elements href.
+   */
+  function getSearchParam(matcher: string, param: string) {
+    const nodes =
+        document.querySelectorAll<HTMLLinkElement>(`link[href*='${matcher}']`);
+    // Since refreshColorCSS() won't remove the old link until the new link has
+    // finished loading we may have multiple matches. Pick the last one to
+    // ensure were getting the most recently added element.
+    const node = nodes[nodes.length - 1];
+    assertTrue(!!node);
+    const href = node!.getAttribute('href');
+    assertTrue(!!href);
+    const params = new URLSearchParams(new URL(href!, location.href).search);
+    return params.has(param) ? params.get(param) : null;
+  }
 
-    // refreshColorCss() should append search params to the colors CSS href.
+  test('CorrectlyUpdatesColorsStylesheetURL', async () => {
+    assertEquals(getSearchParam('chrome://theme/colors.css', 'version'), null);
+
+    // refreshColorCss() should append search params to the chrome://theme href.
     assertTrue(refreshColorCss());
 
-    let colorCssNodes =
-        document.querySelectorAll<HTMLLinkElement>(COLORS_CSS_SELECTOR);
-    const newColorCssNode = colorCssNodes[colorCssNodes.length - 1]!;
-    const secondHref = newColorCssNode.getAttribute('href');
-    assertTrue(!!secondHref);
-    assertTrue(secondHref.startsWith('chrome://theme/colors.css'));
-    const params = new URLSearchParams(new URL(secondHref).search);
-    assertTrue(!!params.get('version'));
-    assertEquals('ui', params.get('sets'));
-
-    assertNotEquals(initialHref, secondHref);
+    let version = getSearchParam('chrome://theme/colors.css', 'version');
+    assertNotEquals(version, null);
+    const lastVersion = version;
+    assertEquals(getSearchParam('chrome://theme/colors.css', 'sets'), 'ui');
 
     // Wait 1 millisecond before refresh. Otherwise the timestamp-based
     // version might not yet be updated.
     await new Promise(resolve => setTimeout(resolve, 1));
-    // refreshColorCss() should append search params to the colors CSS href.
     assertTrue(refreshColorCss());
 
-    colorCssNodes =
-        document.querySelectorAll<HTMLLinkElement>(COLORS_CSS_SELECTOR);
-    const thirdHref =
-        colorCssNodes[colorCssNodes.length - 1]!.getAttribute('href');
-    assertTrue(!!thirdHref);
-    assertTrue(thirdHref.startsWith('chrome://theme/colors.css'));
-    assertTrue(!!new URL(thirdHref).search);
+    version = getSearchParam('chrome://theme/colors.css', 'version');
+    assertTrue(!!version);
+    assertNotEquals(version, lastVersion);
+    assertEquals(getSearchParam('chrome://theme/colors.css', 'sets'), 'ui');
+  });
 
-    assertNotEquals(initialHref, thirdHref);
-    assertNotEquals(secondHref, thirdHref);
+  test('IgnoresNonTargetStylesheetURLs', async () => {
+    document.body.innerHTML = getTrustedHTML`
+      <link rel="stylesheet" href="chrome://resources/colors.css"/>`;
+
+    assertEquals(
+        getSearchParam('chrome://resources/colors.css', 'version'), null);
+
+    assertFalse(refreshColorCss());
+
+    assertEquals(
+        getSearchParam('chrome://resources/colors.css', 'version'), null);
+  });
+
+  test('HandlesRelativeURLs', () => {
+    // Handles the case where the link element exists but the attribute is
+    // malformed.
+    document.body.innerHTML = getTrustedHTML`
+      <link rel="stylesheet" href="//theme/colors.css?sets=ui"/>
+    `;
+    assertEquals(getSearchParam('//theme/colors.css', 'version'), null);
+
+    assertTrue(refreshColorCss());
+
+    assertTrue(!!getSearchParam('//theme/colors.css', 'version'));
   });
 
   test('HandlesCasesWhereColorsStylesheetIsNotSetCorrectly', () => {
