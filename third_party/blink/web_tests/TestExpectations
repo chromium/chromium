@@ -5786,18 +5786,6 @@ crbug.com/1066772 http/tests/devtools/elements/shadow/shadow-slot-assignment.js 
 # Flaky on multiple platforms
 crbug.com/1338536 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
 
-# Tests that compare a float color to an integer color can suffer off-by-one errors
-# There is no mechanism for fuzzing reference tests outside of WPT and tests that require internals cannot be in WPT
-# When the scrollbarOverlay is moved to float color these can be re-enabled
-crbug.com/1308932 compositing/overflow/reparented-overlay-scrollbars-should-respect-ancestor-clip.html [ Failure ]
-crbug.com/1308932 compositing/overflow/reparented-unclipped-overlay-scrollbars-with-offset-from-renderer.html [ Failure ]
-crbug.com/1308932 compositing/squashing/squashing-inside-perspective-with-reparented-scrolling.html [ Failure ]
-crbug.com/1308932 fast/scrolling/overlay-scrollbars.html [ Failure ]
-crbug.com/1308932 scrollbars/overlay-scrollbar-over-child-layer-nested-4.html [ Failure ]
-crbug.com/1308932 compositing/overflow/non-reparented-overlay-scrollbars.html [ Failure ]
-crbug.com/1308932 scrollbars/auto-scrollbar-fades-out.html [ Failure ]
-crbug.com/1308932 scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Failure ]
-
 # Temporarily disable test for CSS nesting support CL in DevTools to land
 crbug.com/1172985 http/tests/devtools/elements/styles-1/commit-selector-mark-matching.js [ Failure Pass ]
 crbug.com/1172985 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Failure Pass ]
