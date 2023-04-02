@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL e.style['flex-flow'] = "column nowrap" should set the property value assert_equals: serialization should be canonical expected "column" but got "column nowrap"
+FAIL e.style['flex-flow'] = "nowrap column" should set the property value assert_equals: serialization should be canonical expected "column" but got "column nowrap"
+PASS e.style['flex-flow'] = "wrap row-reverse" should set the property value
+Harness: the test ran to completion.
+
