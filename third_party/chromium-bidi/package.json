@@ -48,7 +48,7 @@
     "@types/node": "18.11.14",
     "@types/sinon": "10.0.11",
     "@types/websocket": "1.0.5",
-    "@types/ws": "8.5.3",
+    "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.38.0",
     "@typescript-eslint/parser": "5.38.0",
     "argparse": "2.0.1",
@@ -74,7 +74,7 @@
     "tslib": "2.4.0",
     "typescript": "4.7.4",
     "websocket": "1.0.34",
-    "ws": "8.6.0",
+    "ws": "8.13.0",
     "zod": "3.21.4"
   },
   "dependencies": {
