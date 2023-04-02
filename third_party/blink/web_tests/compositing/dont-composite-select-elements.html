@@ -1,0 +1,18 @@
+<!doctype HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<select size="2">
+  <option> value 1</option>
+  <option> value 2</option>
+  <option> value 3</option>
+  <option> value 4</option>
+</select>
+<script>
+if (window.internals)
+  internals.settings.setPreferCompositingToLCDTextEnabled(true);
+test(function() {
+    var json = JSON.parse(internals.layerTreeAsText(document));
+    // The <select> element's scroller should be painted into the root layer.
+    assert_equals(json["layers"].length, 1);
+}, "test");
+</script>

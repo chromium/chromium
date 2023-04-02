@@ -2490,8 +2490,9 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
   EXPECT_EQ(nullptr, ScrollableAreaByDOMElementId("displaynone"));
 }
 
-// Tests that the compositor gets a scroll node for a non-composited (due to
-// non-opaque background) scrollable input box.
+// Tests that the compositor gets a scroll node for scrollable input boxes,
+// which are unique as they are not a composited scroller but also do not have
+// NonCompositedMainThreadScrollingReasons.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   // This test requires scroll unification.
   if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
@@ -2511,8 +2512,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   Compositor().BeginFrame();
 
   auto* scrollable_area = ScrollableAreaByDOMElementId("textinput");
-  ASSERT_EQ(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText,
-            scrollable_area->GetNonCompositedMainThreadScrollingReasons());
+  ASSERT_EQ(0u, scrollable_area->GetNonCompositedMainThreadScrollingReasons());
 
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
   ASSERT_TRUE(scroll_node);

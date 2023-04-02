@@ -2474,6 +2474,20 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   return !properties->ScrollTranslation()->HasDirectCompositingReasons();
 }
 
+static bool LayerNodeMayNeedCompositedScrolling(const PaintLayer* layer) {
+  // Don't force composite scroll for select or text input elements.
+  if (Node* node = layer->GetLayoutObject().GetNode()) {
+    if (IsA<HTMLSelectElement>(node))
+      return false;
+    if (TextControlElement* text_control = EnclosingTextControl(node)) {
+      if (IsA<HTMLInputElement>(text_control)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
   const auto* box = GetLayoutBox();
@@ -2506,7 +2520,8 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   }
 
   if (!force_prefer_compositing_to_lcd_text &&
-      RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
+      (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled() ||
+       !LayerNodeMayNeedCompositedScrolling(layer_))) {
     return false;
   }
 
