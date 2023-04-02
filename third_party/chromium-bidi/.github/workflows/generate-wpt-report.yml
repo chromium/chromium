@@ -90,7 +90,7 @@ jobs:
       - name: Deploy to GitHub Pages
         if: ${{ always() }}
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
 
 env:
   FORCE_COLOR: 3
