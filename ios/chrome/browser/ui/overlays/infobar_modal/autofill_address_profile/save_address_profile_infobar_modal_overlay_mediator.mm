@@ -22,8 +22,9 @@
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
+using save_address_profile_infobar_modal_responses::
+    LegacyEditedProfileSaveAction;
 
 @interface SaveAddressProfileInfobarModalOverlayMediator ()
 // The save address profile modal config from the request.
@@ -110,9 +111,8 @@ using save_address_profile_infobar_modal_responses::CancelViewAction;
 #pragma mark - InfobarEditAddressProfileModalDelegate
 
 - (void)saveEditedProfileWithData:(NSDictionary*)profileData {
-  [self
-      dispatchResponse:OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(
-                           profileData)];
+  [self dispatchResponse:OverlayResponse::CreateWithInfo<
+                             LegacyEditedProfileSaveAction>(profileData)];
   [self dismissOverlay];
 }
 

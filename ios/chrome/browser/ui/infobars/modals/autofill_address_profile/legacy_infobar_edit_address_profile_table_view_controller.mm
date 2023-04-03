@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_modal_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -43,10 +43,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface InfobarEditAddressProfileTableViewController () <UITextFieldDelegate>
+@interface LegacyInfobarEditAddressProfileTableViewController () <
+    UITextFieldDelegate>
 
 // The delegate passed to this instance.
-@property(nonatomic, weak) id<InfobarEditAddressProfileModalDelegate> delegate;
+@property(nonatomic, weak) id<LegacyInfobarEditAddressProfileModalDelegate>
+    delegate;
 
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
@@ -59,12 +61,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @end
 
-@implementation InfobarEditAddressProfileTableViewController
+@implementation LegacyInfobarEditAddressProfileTableViewController
 
 #pragma mark - Initialization
 
 - (instancetype)initWithModalDelegate:
-    (id<InfobarEditAddressProfileModalDelegate>)modalDelegate {
+    (id<LegacyInfobarEditAddressProfileModalDelegate>)modalDelegate {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
     _delegate = modalDelegate;

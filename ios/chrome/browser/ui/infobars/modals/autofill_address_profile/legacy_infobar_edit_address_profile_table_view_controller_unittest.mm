@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_table_view_controller.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/legacy_infobar_edit_address_profile_modal_delegate.h"
 #import "testing/gtest_mac.h"
 
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -16,16 +16,17 @@
 #error "This file requires ARC support."
 #endif
 
-// Test fixture for testing InfobarEditAddressProfileTableViewController class.
-class InfobarEditAddressProfileTableViewControllerTest
+// Test fixture for testing LegacyInfobarEditAddressProfileTableViewController
+// class.
+class LegacyInfobarEditAddressProfileTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
-  InfobarEditAddressProfileTableViewControllerTest()
+  LegacyInfobarEditAddressProfileTableViewControllerTest()
       : delegate_(OCMProtocolMock(
-            @protocol(InfobarSaveAddressProfileModalDelegate))) {}
+            @protocol(LegacyInfobarEditAddressProfileModalDelegate))) {}
 
   ChromeTableViewController* InstantiateController() override {
-    return [[InfobarEditAddressProfileTableViewController alloc]
+    return [[LegacyInfobarEditAddressProfileTableViewController alloc]
         initWithModalDelegate:delegate_];
   }
 
@@ -33,7 +34,7 @@ class InfobarEditAddressProfileTableViewControllerTest
 };
 
 // Tests that the edit modal has been initialized.
-TEST_F(InfobarEditAddressProfileTableViewControllerTest,
+TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTest,
        TestEditModalInitialization) {
   CreateController();
   CheckController();

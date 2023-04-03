@@ -21,8 +21,9 @@
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
+using save_address_profile_infobar_modal_responses::
+    LegacyEditedProfileSaveAction;
 
 SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller(
@@ -47,7 +48,8 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     return;
   }
 
-  EditedProfileSaveAction* info = response->GetInfo<EditedProfileSaveAction>();
+  LegacyEditedProfileSaveAction* info =
+      response->GetInfo<LegacyEditedProfileSaveAction>();
   interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
 }
 
@@ -75,7 +77,7 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
           &SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
               SaveEditedProfileDetailsCallback,
           weak_factory_.GetWeakPtr(), request),
-      EditedProfileSaveAction::ResponseSupport()));
+      LegacyEditedProfileSaveAction::ResponseSupport()));
 
   manager->AddDispatchCallback(OverlayDispatchCallback(
       base::BindRepeating(

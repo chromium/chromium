@@ -10,14 +10,15 @@
 
 namespace save_address_profile_infobar_modal_responses {
 
-#pragma mark - EditedProfileSaveAction
+#pragma mark - LegacyEditedProfileSaveAction
 
-OVERLAY_USER_DATA_SETUP_IMPL(EditedProfileSaveAction);
+OVERLAY_USER_DATA_SETUP_IMPL(LegacyEditedProfileSaveAction);
 
-EditedProfileSaveAction::EditedProfileSaveAction(NSDictionary* profileData)
+LegacyEditedProfileSaveAction::LegacyEditedProfileSaveAction(
+    NSDictionary* profileData)
     : profile_data_(profileData) {}
 
-EditedProfileSaveAction::~EditedProfileSaveAction() = default;
+LegacyEditedProfileSaveAction::~LegacyEditedProfileSaveAction() = default;
 
 #pragma mark - CancelViewAction
 
