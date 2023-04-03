@@ -306,15 +306,9 @@ RTCDataChannel::RTCDataChannel(
     rtc::scoped_refptr<webrtc::DataChannelInterface> channel,
     RTCPeerConnectionHandler* peer_connection_handler)
     : ExecutionContextLifecycleObserver(context),
-      state_(webrtc::DataChannelInterface::kConnecting),
-      binary_type_(kBinaryTypeArrayBuffer),
       scheduled_event_timer_(context->GetTaskRunner(TaskType::kNetworking),
                              this,
                              &RTCDataChannel::ScheduledEventTimerFired),
-      buffered_amount_low_threshold_(0U),
-      buffered_amount_(0U),
-      stopped_(false),
-      closed_from_owner_(false),
       observer_(base::MakeRefCounted<Observer>(
           context->GetTaskRunner(TaskType::kNetworking),
           this,
@@ -387,9 +381,19 @@ bool RTCDataChannel::negotiated() const {
 
 absl::optional<uint16_t> RTCDataChannel::id() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (channel()->id() == -1)
+  if (id_.has_value()) {
+    return id_;
+  }
+
+  int id = channel()->id();
+  if (id == -1) {
     return absl::nullopt;
-  return channel()->id();
+  }
+
+  DCHECK(id >= 0 && id <= std::numeric_limits<uint16_t>::max());
+  id_ = static_cast<uint16_t>(id);
+
+  return id;
 }
 
 String RTCDataChannel::readyState() const {
