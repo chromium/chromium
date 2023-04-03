@@ -686,6 +686,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     // This is implemented as a public utility function to better facilitate testing.
+    @VisibleForTesting
     public void launchOsChannelSettingsFromPreference(Preference preference) {
         // There is no notification channel if the origin is merely embargoed. Create it
         // just-in-time if the user tries to change to setting.
