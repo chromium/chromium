@@ -173,10 +173,7 @@ class OmniboxViewViews
                           const gfx::Range& range);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxViewViewsTest,
-      RendererInitiatedFocusPreservesCursorWhenStartingFocused);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry);
+  friend class TestingOmniboxView;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, EmitAccessibilityEvents);
   // TODO(tommycli): Remove the rest of these friends after porting these
   // browser tests to unit tests.
