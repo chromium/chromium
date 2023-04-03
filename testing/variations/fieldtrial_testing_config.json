@@ -4959,6 +4959,21 @@
             ]
         }
     ],
+    "FastCheckout": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FastCheckout"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairPowerConsumption": [
         {
             "platforms": [
