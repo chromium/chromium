@@ -349,24 +349,46 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
 }
 
 // Test that the History permission takes precedence over the Tabs permission,
-// and that the Sessions permission modifies this final message.
+// and that the Sessions permission modifies the Tabs permission message.
 TEST_F(PermissionMessageCombinationsUnittest, TabsHistorySessionsCoalescing) {
+  // By itself, "tabs" only gives access to tabs on the current device.
   CreateAndInstall(
       "{"
       "  'permissions': ["
       "    'tabs'"
       "  ]"
       "}");
-  ASSERT_TRUE(CheckManifestProducesPermissions("Read your browsing history"));
+  EXPECT_TRUE(CheckManifestProducesPermissions("Read your browsing history"));
 
+  // Combined with "sessions", "tabs" gives access to data from all devices.
   CreateAndInstall(
       "{"
       "  'permissions': ["
       "    'tabs', 'sessions'"
       "  ]"
       "}");
-  ASSERT_TRUE(CheckManifestProducesPermissions(
+  EXPECT_TRUE(CheckManifestProducesPermissions(
       "Read your browsing history on all your signed-in devices"));
+
+  // "history" by itself already produces the most comprehensive warning, so it
+  // makes no difference whether "sessions" and/or "tabs" are also present.
+  CreateAndInstall(
+      "{"
+      "  'permissions': ["
+      "    'history'"
+      "  ]"
+      "}");
+  EXPECT_TRUE(CheckManifestProducesPermissions(
+      "Read and change your browsing history on all your signed-in devices"));
+
+  CreateAndInstall(
+      "{"
+      "  'permissions': ["
+      "    'sessions', 'history'"
+      "  ]"
+      "}");
+  EXPECT_TRUE(CheckManifestProducesPermissions(
+      "Read and change your browsing history on all your signed-in devices"));
 
   CreateAndInstall(
       "{"
@@ -374,8 +396,8 @@ TEST_F(PermissionMessageCombinationsUnittest, TabsHistorySessionsCoalescing) {
       "    'tabs', 'history'"
       "  ]"
       "}");
-  ASSERT_TRUE(CheckManifestProducesPermissions(
-      "Read and change your browsing history"));
+  EXPECT_TRUE(CheckManifestProducesPermissions(
+      "Read and change your browsing history on all your signed-in devices"));
 
   CreateAndInstall(
       "{"
@@ -383,7 +405,7 @@ TEST_F(PermissionMessageCombinationsUnittest, TabsHistorySessionsCoalescing) {
       "    'tabs', 'history', 'sessions'"
       "  ]"
       "}");
-  ASSERT_TRUE(CheckManifestProducesPermissions(
+  EXPECT_TRUE(CheckManifestProducesPermissions(
       "Read and change your browsing history on all your signed-in devices"));
 }
 

@@ -4743,13 +4743,10 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ" desc="Permission string for access to browsing history.">
           Read your browsing history
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_AND_SESSIONS" desc="Permission string for access to both browsing history and signed in sessions.">
+        <message name="IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_ON_ALL_DEVICES" desc="Permission string for access to browsing history on all signed-in devices.">
           Read your browsing history on all your signed-in devices
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE" desc="Permission string for access to modify browsing history.">
-          Read and change your browsing history
-        </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_AND_SESSIONS" desc="Permission string for access to modify both browsing history and signed in sessions.">
+        <message name="IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES" desc="Permission string for access to modify browsing history on all signed-in devices.">
           Read and change your browsing history on all your signed-in devices
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_HOME_PAGE_SETTING_OVERRIDE" desc="Permission string for home page override.">
