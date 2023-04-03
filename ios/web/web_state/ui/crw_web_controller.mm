@@ -877,7 +877,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)closeMediaPresentations {
   if (@available(iOS 16, *)) {
-    if (self.webView.fullscreenState == WKFullscreenStateInFullscreen) {
+    if (self.webView.fullscreenState == WKFullscreenStateInFullscreen ||
+        self.webView.fullscreenState == WKFullscreenStateEnteringFullscreen) {
       [self.webView closeAllMediaPresentationsWithCompletionHandler:^{
       }];
       return;
