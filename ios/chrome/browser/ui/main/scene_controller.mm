@@ -21,6 +21,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -1925,6 +1926,27 @@ void InjectNTP(Browser* browser) {
       savePasswordsControllerForBrowser:browser
                                delegate:self
                        showCancelButton:showCancelButton];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
+- (void)showPasswordDetailsForCredential:
+            (password_manager::CredentialUIEntry)credential
+                        showCancelButton:(BOOL)showCancelButton {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController
+        showPasswordDetailsForCredential:credential
+                        showCancelButton:showCancelButton];
+    return;
+  }
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      passwordDetailsControllerForBrowser:browser
+                                 delegate:self
+                               credential:credential
+                         showCancelButton:showCancelButton];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

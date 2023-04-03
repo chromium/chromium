@@ -33,6 +33,10 @@
 @property(nonatomic, strong, readonly)
     UIBarButtonItem* customRightToolbarButton;
 
+// Back button on navigation panel. This is used to store back button while it
+// is replaced with Cancel during editing.
+@property(nonatomic, strong) UIBarButtonItem* backButtonItem;
+
 // Whether this table view controller should hide the "Done" button (the right
 // navigation bar button). Default is NO.
 @property(nonatomic, assign) BOOL shouldHideDoneButton;

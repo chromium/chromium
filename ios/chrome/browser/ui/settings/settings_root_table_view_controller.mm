@@ -52,10 +52,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 // store the item while the interaction is prevented.
 @property(nonatomic, strong) UIBarButtonItem* savedBarButtonItem;
 
-// Back button on navigation panel. This is used to store back button while it
-// is replaced with Cancel during editing.
-@property(nonatomic, strong) UIBarButtonItem* backButtonItem;
-
 // Veil preventing interactions with the TableView.
 @property(nonatomic, strong) UIView* veil;
 

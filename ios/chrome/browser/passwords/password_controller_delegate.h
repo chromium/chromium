@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CONTROLLER_DELEGATE_H_
 
+namespace password_manager {
+struct CredentialUIEntry;
+}  // namespace password_manager
+
 // Delegate for registering view controller and displaying its view. Used to
 // add views to BVC.
 // TODO(crbug.com/1272487): Refactor this API to not be coupled to the BVC and
@@ -18,6 +22,10 @@
 
 // Opens the list of saved passwords in the settings.
 - (void)displaySavedPasswordList;
+
+// Opens the password details for credential.
+- (void)showPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential;
 
 @end
 
