@@ -53,8 +53,6 @@ class MockReadAnythingPageHandler : public read_anything::mojom::PageHandler {
   mojo::Receiver<read_anything::mojom::PageHandler> receiver_{this};
 };
 
-// TODO(b/1266555): Surface private members needed for tests from the
-// controller more consistently.
 class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
  public:
   ReadAnythingAppControllerTest() = default;
@@ -68,12 +66,17 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     content::RenderFrame* render_frame =
         content::RenderFrame::FromWebFrame(GetMainFrame());
     controller_ = ReadAnythingAppController::Install(render_frame);
-    controller_->SetPageHandlerForTesting(
-        page_handler_.BindNewPipeAndPassRemote());
+
+    // Set the page handler for testing.
+    controller_->page_handler_.reset();
+    controller_->page_handler_.Bind(page_handler_.BindNewPipeAndPassRemote());
+
+    // Set distiller for testing.
     std::unique_ptr<AXTreeDistiller> distiller =
         std::make_unique<MockAXTreeDistiller>(render_frame);
-    distiller_ = static_cast<MockAXTreeDistiller*>(
-        controller_->SetDistillerForTesting(std::move(distiller)));
+    controller_->distiller_ = std::move(distiller);
+    distiller_ =
+        static_cast<MockAXTreeDistiller*>(controller_->distiller_.get());
 
     // Create a tree id.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();

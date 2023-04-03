@@ -746,15 +746,3 @@ void ReadAnythingAppController::SetContentForTesting(
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot},
                              {selectionEvent});
 }
-
-AXTreeDistiller* ReadAnythingAppController::SetDistillerForTesting(
-    std::unique_ptr<AXTreeDistiller> distiller) {
-  distiller_ = std::move(distiller);
-  return distiller_.get();
-}
-
-void ReadAnythingAppController::SetPageHandlerForTesting(
-    mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler) {
-  page_handler_.reset();
-  page_handler_.Bind(std::move(page_handler));
-}

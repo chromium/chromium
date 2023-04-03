@@ -142,8 +142,11 @@ class ReadAnythingAppController
 
   void PostProcessSelection();
 
-  // The following methods are used for testing ReadAnythingAppTest.
-  // Snapshot_lite is a data structure which resembles an AXTreeUpdate. E.g.:
+  // SetContentForTesting and SetThemeForTesting are used by
+  // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController
+  // even though ReadAnythingAppControllerBrowserTest is friended.
+  // Snapshot_lite is a data structure which resembles an
+  // AXTreeUpdate. E.g.:
   //   const axTree = {
   //     root_id: 1,
   //     nodes: [
@@ -167,10 +170,6 @@ class ReadAnythingAppController
                           SkColor background_color,
                           int line_spacing,
                           int letter_spacing);
-  AXTreeDistiller* SetDistillerForTesting(
-      std::unique_ptr<AXTreeDistiller> distiller);
-  void SetPageHandlerForTesting(
-      mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler);
 
   content::RenderFrame* render_frame_;
   std::unique_ptr<AXTreeDistiller> distiller_;
