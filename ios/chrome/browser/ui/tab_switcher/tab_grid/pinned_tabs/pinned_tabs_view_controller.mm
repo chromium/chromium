@@ -743,7 +743,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
   collectionView.showsHorizontalScrollIndicator = NO;
-  collectionView.accessibilityIdentifier = kPinnedViewIdentifier;
 
   self.view = collectionView;
 
@@ -834,10 +833,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                      }
                    }];
   }
-
-  cell.accessibilityIdentifier =
-      [NSString stringWithFormat:@"%@%ld", kPinnedCellIdentifier,
-                                 [self indexOfItemWithID:cell.itemIdentifier]];
 
   if (item.showsActivity) {
     [cell showActivityIndicator];
