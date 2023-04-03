@@ -98,6 +98,11 @@ IN_PROC_BROWSER_TEST_P(CrosComponentsBrowserTest, NoRuntimeErrors) {
 
   static constexpr const char kWaitElementToBeDefined[] = R"(
 (async () => {
+  const errors = []
+  globalThis.onerror = (e) => {
+    errors.push(e);
+  };
+
   let injectScript = new Promise((resolve, reject) => {
     const staticUrlPolicy = trustedTypes.createPolicy(
       'script-js-static',
@@ -112,6 +117,11 @@ IN_PROC_BROWSER_TEST_P(CrosComponentsBrowserTest, NoRuntimeErrors) {
   });
 
   await injectScript;
+
+  if (errors.length != 0) {
+    return errors;
+  }
+
   await customElements.whenDefined('%s');
 
   return true;
