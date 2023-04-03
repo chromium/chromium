@@ -104,6 +104,21 @@ class ProcessMap : public KeyedService {
 
   std::set<std::string> GetExtensionsInProcess(int process_id) const;
 
+  // Returns true if the given `process_id` is considered a privileged context
+  // for the given `extension`. That is, if it would *probably* correspond to a
+  // Feature::BLESSED_EXTENSION_CONTEXT.
+  // NOTE: There are circumstances in which a context from a privileged
+  // extension *process* may not correspond to a privileged extension *context*
+  // (Feature::BLESSED_EXTENSION_CONTEXT).
+  // These include, for instance, sandboxed extension frames or offscreen
+  // documents, which run in the same process, but are not considered
+  // privileged contexts.
+  // However, these are not necessarily security bugs. There is no security
+  // boundary between an extension's offscreen document and other frames, and
+  // extension sandboxed frames behave slightly differently than sandboxed pages
+  // on the web.
+  bool IsPrivilegedExtensionProcess(const Extension& extension, int process_id);
+
   // Gets the most likely context type for the process with ID |process_id|
   // which hosts Extension |extension|, if any (may be nullptr). Context types
   // are renderer (JavaScript) concepts but the browser can do a decent job in

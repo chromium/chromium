@@ -3203,6 +3203,7 @@ if (!is_android) {
         "../browser/extensions/permissions_manager_browsertest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",
+        "../browser/extensions/process_map_browsertest.cc",
         "../browser/extensions/process_util_browsertest.cc",
         "../browser/extensions/protocol_handler_apitest.cc",
         "../browser/extensions/renderer_initialization_browsertest.cc",

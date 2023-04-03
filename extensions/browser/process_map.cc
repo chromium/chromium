@@ -108,6 +108,20 @@ std::set<std::string> ProcessMap::GetExtensionsInProcess(int process_id) const {
   return result;
 }
 
+bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,
+                                              int process_id) {
+  return Contains(extension.id(), process_id) &&
+         // Hosted apps aren't considered privileged extension processes...
+         (!extension.is_hosted_app() ||
+          // ... Unless they're component hosted apps, like the webstore.
+          // TODO(https://crbug/1429667): We can clean this up when we remove
+          // special handling of component hosted apps.
+          extension.location() == mojom::ManifestLocation::kComponent) &&
+         // Lock screen contexts are not the same as privileged extension
+         // processes.
+         !is_lock_screen_context_;
+}
+
 Feature::Context ProcessMap::GetMostLikelyContextType(
     const Extension* extension,
     int process_id,

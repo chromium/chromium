@@ -2043,27 +2043,15 @@ blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
 
   content::BrowserContext* context = requesting_frame->GetBrowserContext();
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(context);
-  const GURL& owner_site_url =
-      requesting_frame->GetSiteInstance()->GetSiteURL();
   const Extension* owner_extension =
       extensions::ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
           requesting_frame);
-  switch (process_map->GetMostLikelyContextType(
-      owner_extension, requesting_frame->GetProcess()->GetID(),
-      &owner_site_url)) {
-    case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
-    case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
-    case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
-    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
-    case extensions::Feature::UNSPECIFIED_CONTEXT:
-    case extensions::Feature::WEBUI_CONTEXT:
-    case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
-    case extensions::Feature::WEB_PAGE_CONTEXT:
-      return blink::ProtocolHandlerSecurityLevel::kStrict;
-    case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
-      return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
+  if (owner_extension &&
+      process_map->IsPrivilegedExtensionProcess(
+          *owner_extension, requesting_frame->GetProcess()->GetID())) {
+    return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
   }
+  return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
 void Browser::RegisterProtocolHandler(
