@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/guid.h"
 #include "base/system/sys_info.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 
@@ -29,7 +29,7 @@ bool Event::MetricValue::operator==(const Event::MetricValue& rhs) const {
 Event::MetricValue::~MetricValue() = default;
 
 Event::EventSequenceMetadata::EventSequenceMetadata(int reset_counter)
-    : reset_counter(reset_counter), event_unique_id(base::GenerateGUID()) {}
+    : reset_counter(reset_counter), event_unique_id(base::GenerateUuid()) {}
 
 Event::EventSequenceMetadata::EventSequenceMetadata(
     const Event::EventSequenceMetadata& other) = default;
