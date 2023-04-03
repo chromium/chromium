@@ -107,10 +107,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   ScrollAxis GetAxis() const { return axis_; }
 
-  void GetCurrentAndMaxOffset(const LayoutBox*,
-                              double& current_offset,
-                              double& max_offset) const;
-
   // Mark every effect target of every Animation attached to this timeline
   // for style recalc.
   void InvalidateEffectTargetStyle();

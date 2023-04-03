@@ -311,45 +311,6 @@ Element* ScrollTimeline::SourceInternal() const {
   return nullptr;
 }
 
-void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
-                                            double& current_offset,
-                                            double& max_offset) const {
-  DCHECK(layout_box);
-  DCHECK(layout_box->GetScrollableArea());
-
-  // Depending on the writing-mode and direction, the scroll origin shifts and
-  // the scroll offset may be negative. The easiest way to deal with this is to
-  // use only the magnitude of the scroll offset, and compare it to (max_offset
-  // - min_offset).
-  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
-
-  // Using the absolute value of the scroll offset only makes sense if either
-  // the max or min scroll offset for a given axis is 0. This should be
-  // guaranteed by the scroll origin code, but these DCHECKs ensure that.
-  DCHECK(scrollable_area->MaximumScrollOffset().y() == 0 ||
-         scrollable_area->MinimumScrollOffset().y() == 0);
-  DCHECK(scrollable_area->MaximumScrollOffset().x() == 0 ||
-         scrollable_area->MinimumScrollOffset().x() == 0);
-  ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
-  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
-                                   scrollable_area->MinimumScrollOffset();
-
-  auto physical_orientation = ToPhysicalScrollOrientation(axis_, *layout_box);
-
-  if (physical_orientation == kHorizontalScroll) {
-    current_offset = scroll_offset.x();
-    max_offset = scroll_dimensions.x();
-  } else {
-    current_offset = scroll_offset.y();
-    max_offset = scroll_dimensions.y();
-  }
-  // When using a rtl direction, current_offset grows correctly from 0 to
-  // max_offset, but is negative. Since our offsets are all just deltas along
-  // the axis direction, we can just take the absolute current_offset and
-  // use that everywhere.
-  current_offset = std::abs(current_offset);
-}
-
 void ScrollTimeline::AnimationAttached(Animation* animation) {
   if (resolved_source_ && !HasAnimations())
     resolved_source_->RegisterScrollTimeline(this);
