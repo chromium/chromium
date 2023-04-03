@@ -12,6 +12,7 @@
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 #include "url/url_file.h"
 #include "url/url_parse_internal.h"
 #include "url/url_util.h"
@@ -162,7 +163,12 @@ bool DoIsRelativeURL(const char* base,
 
   // If the scheme isn't valid, then it's relative.
   if (!IsValidScheme(url, scheme)) {
-    if (!is_base_hierarchical) {
+    if (url[begin] == '#' &&
+        base::FeatureList::IsEnabled(
+            kResolveBareFragmentWithColonOnNonHierarchical)) {
+      // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
+      // against any base. Fall-through.
+    } else if (!is_base_hierarchical) {
       // Don't allow relative URLs if the base scheme doesn't support it.
       return false;
     }
