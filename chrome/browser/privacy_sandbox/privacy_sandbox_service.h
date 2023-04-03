@@ -118,7 +118,10 @@ class PrivacySandboxService : public KeyedService {
     // User migrated from EEA to ROW, and had already previously finished the
     // EEA consent flow.
     kEEAFlowCompletedBeforeRowMigration = 6,
-    kMaxValue = kEEAFlowCompletedBeforeRowMigration,
+    // User migrated from ROW to EEA, but had already disabled Topics from
+    // settings.
+    kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration = 7,
+    kMaxValue = kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration,
   };
 
   PrivacySandboxService(
