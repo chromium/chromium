@@ -1514,9 +1514,16 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOtherBookmarksButton() {
     // Title is set in Loaded.
     button = std::make_unique<BookmarkFolderButton>(base::BindRepeating(
         [](BookmarkBarView* bar, const ui::Event& event) {
-          bar->browser_view_->side_panel_coordinator()->Show(
-              SidePanelEntry::Id::kBookmarks,
-              SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
+          SidePanelCoordinator* side_panel_coordinator =
+              bar->browser_view_->side_panel_coordinator();
+          if (side_panel_coordinator->GetCurrentEntryId() ==
+              SidePanelEntry::Id::kBookmarks) {
+            side_panel_coordinator->Close();
+          } else {
+            side_panel_coordinator->Show(
+                SidePanelEntry::Id::kBookmarks,
+                SidePanelUtil::SidePanelOpenTrigger::kBookmarkBar);
+          }
         },
         base::Unretained(this)));
   } else {
