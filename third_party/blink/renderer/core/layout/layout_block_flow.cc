@@ -214,8 +214,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   SubtreeLayoutScope layout_scope(*this);
 
-  LayoutUnit previous_height = LogicalHeight();
-  LayoutUnit old_left = LogicalLeft();
   bool logical_width_changed = UpdateLogicalWidthAndColumnWidth();
   relayout_children |= logical_width_changed;
 
@@ -244,14 +242,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   // Adjust logical height to satisfy whatever computed style requires.
   UpdateLogicalHeight();
-
-  if (LogicalHeight() != previous_height || IsDocumentElement())
-    relayout_children = true;
-
-  PositionedLayoutBehavior behavior = kDefaultLayout;
-  if (old_left != LogicalLeft())
-    behavior = kForcedLayoutAfterContainingBlockMoved;
-  LayoutPositionedObjects(relayout_children, behavior);
 
   // Add overflow from children.
   ComputeLayoutOverflow(unconstrained_client_after_edge, false);

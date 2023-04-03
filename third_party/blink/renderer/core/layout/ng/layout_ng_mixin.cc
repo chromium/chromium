@@ -293,7 +293,6 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
     child_legacy_box->SetY(child_offset.top);
   }
   DCHECK_EQ(fragment.Children()[0]->GetLayoutObject(), this);
-  Base::SetIsLegacyInitiatedOutOfFlowLayout(true);
 }
 
 template <typename Base>

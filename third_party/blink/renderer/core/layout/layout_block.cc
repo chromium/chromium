@@ -115,8 +115,7 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
       is_self_collapsing_(false),
       descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
-      has_svg_text_descendants_(false),
-      is_legacy_initiated_out_of_flow_layout_(false) {
+      has_svg_text_descendants_(false) {
   // LayoutBlockFlow calls setChildrenInline(true).
   // By default, subclasses do not have inline children.
 }
@@ -626,48 +625,6 @@ void LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
   }
 }
 
-void LayoutBlock::MarkFixedPositionObjectForLayoutIfNeeded(
-    LayoutObject* child,
-    SubtreeLayoutScope& layout_scope) {
-  NOT_DESTROYED();
-  if (child->StyleRef().GetPosition() != EPosition::kFixed)
-    return;
-
-  bool has_static_block_position =
-      child->StyleRef().HasStaticBlockPosition(IsHorizontalWritingMode());
-  bool has_static_inline_position =
-      child->StyleRef().HasStaticInlinePosition(IsHorizontalWritingMode());
-  if (!has_static_block_position && !has_static_inline_position)
-    return;
-
-  LayoutObject* o = child->Parent();
-  bool is_layout_view = IsA<LayoutView>(o);
-  while (!is_layout_view && o->StyleRef().GetPosition() != EPosition::kAbsolute)
-    o = o->Parent();
-  // The LayoutView is absolute-positioned, but does not move.
-  if (is_layout_view)
-    return;
-
-  // We must compute child's width and height, but not update them now.
-  // The child will update its width and height when it gets laid out, and needs
-  // to see them change there.
-  auto* box = To<LayoutBox>(child);
-  if (has_static_inline_position) {
-    LogicalExtentComputedValues computed_values;
-    box->ComputeLogicalWidth(computed_values);
-    LayoutUnit new_left = computed_values.position_;
-    if (new_left != box->LogicalLeft())
-      layout_scope.SetChildNeedsLayout(child);
-  }
-  if (has_static_block_position) {
-    LogicalExtentComputedValues computed_values;
-    box->ComputeLogicalHeight(computed_values);
-    LayoutUnit new_top = computed_values.position_;
-    if (new_top != box->LogicalTop())
-      layout_scope.SetChildNeedsLayout(child);
-  }
-}
-
 LayoutUnit LayoutBlock::MarginIntrinsicLogicalWidthForChild(
     const LayoutBox& child) const {
   NOT_DESTROYED();
@@ -682,100 +639,6 @@ LayoutUnit LayoutBlock::MarginIntrinsicLogicalWidthForChild(
   if (margin_right.IsFixed())
     margin += margin_right.Value();
   return margin;
-}
-
-static bool NeedsLayoutDueToStaticPosition(LayoutBox* child) {
-  // When a non-positioned block element moves, it may have positioned children
-  // that are implicitly positioned relative to the non-positioned block.
-  const ComputedStyle* style = child->Style();
-  bool is_horizontal = style->IsHorizontalWritingMode();
-  if (style->HasStaticBlockPosition(is_horizontal)) {
-    LayoutBox::LogicalExtentComputedValues computed_values;
-    LayoutUnit current_logical_top = child->LogicalTop();
-    LayoutUnit current_logical_height = child->LogicalHeight();
-    child->ComputeLogicalHeight(current_logical_height, current_logical_top,
-                                computed_values);
-    if (computed_values.position_ != current_logical_top ||
-        computed_values.extent_ != current_logical_height)
-      return true;
-  }
-  if (style->HasStaticInlinePosition(is_horizontal)) {
-    LayoutBox::LogicalExtentComputedValues computed_values;
-    LayoutUnit current_logical_left = child->LogicalLeft();
-    LayoutUnit current_logical_width = child->LogicalWidth();
-    child->ComputeLogicalWidth(computed_values);
-    if (computed_values.position_ != current_logical_left ||
-        computed_values.extent_ != current_logical_width)
-      return true;
-  }
-  return false;
-}
-
-void LayoutBlock::LayoutPositionedObjects(bool relayout_children,
-                                          PositionedLayoutBehavior info) {
-  NOT_DESTROYED();
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
-  if (!positioned_descendants)
-    return;
-
-  for (const auto& positioned_object : *positioned_descendants) {
-    LayoutPositionedObject(positioned_object, relayout_children, info);
-  }
-}
-
-void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
-                                         bool relayout_children,
-                                         PositionedLayoutBehavior info) {
-  NOT_DESTROYED();
-  positioned_object->SetShouldCheckForPaintInvalidation();
-
-  SubtreeLayoutScope layout_scope(*positioned_object);
-  // If positionedObject is fixed-positioned and moves with an absolute-
-  // positioned ancestor (other than the LayoutView, which cannot move),
-  // mark it for layout now.
-  MarkFixedPositionObjectForLayoutIfNeeded(positioned_object, layout_scope);
-  if (info == kLayoutOnlyFixedPositionedObjects) {
-    positioned_object->LayoutIfNeeded();
-    return;
-  }
-
-  if (!positioned_object->NormalChildNeedsLayout()) {
-    bool update_child_needs_layout =
-        relayout_children || height_available_to_children_changed_;
-    if (!update_child_needs_layout) {
-      if (!positioned_object->IsLayoutNGObject() ||
-          To<LayoutBlock>(positioned_object)
-              ->IsLegacyInitiatedOutOfFlowLayout()) {
-        update_child_needs_layout |=
-            NeedsLayoutDueToStaticPosition(positioned_object);
-      }
-    }
-    if (update_child_needs_layout)
-      layout_scope.SetChildNeedsLayout(positioned_object);
-  }
-
-  // FIXME: We should be able to do a r->setNeedsPositionedMovementLayout()
-  // here instead of a full layout. Need to investigate why it does not
-  // trigger the correct invalidations in that case. crbug.com/350756
-  if (info == kForcedLayoutAfterContainingBlockMoved) {
-    positioned_object->SetNeedsLayout(
-        layout_invalidation_reason::kAncestorMoved, kMarkOnlyThis);
-  }
-
-  if (positioned_object->NeedsLayout())
-    positioned_object->UpdateLayout();
-}
-
-void LayoutBlock::MarkPositionedObjectsForLayout() {
-  NOT_DESTROYED();
-  if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
-          PositionedObjects()) {
-    for (const auto& descendant : *positioned_descendants)
-      descendant->SetChildNeedsLayout();
-  }
 }
 
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
