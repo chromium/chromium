@@ -67,6 +67,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
 
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
+      .SetCrashUploadURL("https://crash.example.com")
+      .SetDeviceManagementURL("https://dm.example.com")
       .SetUseCUP(false)
       .SetInitialDelay(base::Seconds(123))
       .SetServerKeepAliveTime(base::Seconds(2))
@@ -83,6 +85,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
+  EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://crash.example.com"));
+  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://dm.example.com"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(2));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
@@ -106,6 +110,9 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
   EXPECT_EQ(urls[0], GURL("https://www.google.com"));
   EXPECT_EQ(urls[1], GURL("https://www.example.com"));
 
+  EXPECT_EQ(verifier->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
+  EXPECT_EQ(verifier->DeviceManagementURL(),
+            GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
@@ -116,9 +123,13 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_TRUE(builder
                   .SetUpdateURL(std::vector<std::string>{
                       "https://www.google.com", "https://www.example.com"})
+                  .SetCrashUploadURL("https://crash.example.com")
+                  .SetDeviceManagementURL("https://dm.example.com")
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Seconds(123.4))
                   .ClearUpdateURL()
+                  .ClearCrashUploadURL()
+                  .ClearDeviceManagementURL()
                   .ClearUseCUP()
                   .ClearInitialDelay()
                   .ClearServerKeepAliveSeconds()
@@ -134,6 +145,9 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
 
+  EXPECT_EQ(verifier->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
+  EXPECT_EQ(verifier->DeviceManagementURL(),
+            GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveTime(), kServerKeepAliveTime);
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
@@ -146,11 +160,15 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_TRUE(
       ExternalConstantsBuilder()
           .SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
+          .SetCrashUploadURL("https://crash.google.com")
+          .SetDeviceManagementURL("https://dm.google.com")
           .SetUseCUP(true)
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(2))
           .SetGroupPolicies(group_policies)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
+          .SetCrashUploadURL("https://crash.example.com")
+          .SetDeviceManagementURL("https://dm.example.com")
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(937.6))
           .SetServerKeepAliveTime(base::Seconds(3))
@@ -166,6 +184,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
+  EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://crash.example.com"));
+  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://dm.example.com"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(937.6));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 1U);
@@ -180,6 +200,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
 
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
+          .SetCrashUploadURL("https://crash.google.com")
+          .SetDeviceManagementURL("https://dm.google.com")
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(3))
@@ -197,6 +219,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
+  EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://crash.google.com"));
+  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://dm.google.com"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
@@ -208,6 +232,8 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_TRUE(builder.SetInitialDelay(base::Seconds(92.3))
                   .SetServerKeepAliveTime(base::Seconds(4))
                   .ClearUpdateURL()
+                  .ClearCrashUploadURL()
+                  .ClearDeviceManagementURL()
                   .SetGroupPolicies(group_policies2)
                   .Overwrite());
 
@@ -222,6 +248,9 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ASSERT_EQ(urls2.size(), 1ul);
   EXPECT_EQ(urls2[0], GURL(UPDATE_CHECK_URL));  // Cleared; should be default.
 
+  EXPECT_EQ(verifier2->CrashUploadURL(), GURL(CRASH_UPLOAD_URL));
+  EXPECT_EQ(verifier2->DeviceManagementURL(),
+            GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_EQ(verifier2->InitialDelay(),
             base::Seconds(92.3));  // Updated; update should be seen.
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(4));
@@ -237,10 +266,14 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
 
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
+          .SetCrashUploadURL("https://crash.google.com")
+          .SetDeviceManagementURL("https://dm.google.com")
           .SetUseCUP(false)
           .SetInitialDelay(base::Seconds(123.4))
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
+          .SetCrashUploadURL("https://crash.example.com")
+          .SetDeviceManagementURL("https://dm.example.com")
           .SetGroupPolicies(group_policies)
           .Overwrite());
 
@@ -254,6 +287,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
+  EXPECT_EQ(verifier->CrashUploadURL(), GURL("https://crash.example.com"));
+  EXPECT_EQ(verifier->DeviceManagementURL(), GURL("https://dm.example.com"));
   EXPECT_EQ(verifier->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier->ServerKeepAliveTime(), base::Seconds(3));
   EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
@@ -279,6 +314,8 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   urls = verifier2->UpdateURL();
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
+  EXPECT_EQ(verifier2->CrashUploadURL(), GURL("https://crash.example.com"));
+  EXPECT_EQ(verifier2->DeviceManagementURL(), GURL("https://dm.example.com"));
   EXPECT_EQ(verifier2->InitialDelay(), base::Seconds(123.4));
   EXPECT_EQ(verifier2->ServerKeepAliveTime(), base::Seconds(3));
 }

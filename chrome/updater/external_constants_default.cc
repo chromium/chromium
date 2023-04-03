@@ -25,6 +25,12 @@ class DefaultExternalConstants : public ExternalConstants {
     return std::vector<GURL>{GURL(UPDATE_CHECK_URL)};
   }
 
+  GURL CrashUploadURL() const override { return GURL(CRASH_UPLOAD_URL); }
+
+  GURL DeviceManagementURL() const override {
+    return GURL(DEVICE_MANAGEMENT_SERVER_URL);
+  }
+
   bool UseCUP() const override { return true; }
 
   base::TimeDelta InitialDelay() const override { return kInitialDelay; }
