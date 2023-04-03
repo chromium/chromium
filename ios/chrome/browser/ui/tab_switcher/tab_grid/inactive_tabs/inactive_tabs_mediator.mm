@@ -125,8 +125,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // Push the tabs to the consumer.
     PopulateConsumerItems(_consumer, _webStateList);
 
-    // TODO(crbug.com/1421321): The snapshot cache never returns snapshots.
-    // Investigate why.
     _snapshotCache = snapshotCache;
     [_snapshotCache addObserver:self];
 
