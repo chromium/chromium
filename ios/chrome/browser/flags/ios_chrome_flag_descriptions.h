@@ -592,6 +592,16 @@ extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 extern const char kOmniboxHttpsUpgradesName[];
 extern const char kOmniboxHttpsUpgradesDescription[];
 
+// Title and description for the flag to enable Omnibox Grouping implementation
+// for ZPS.
+extern const char kOmniboxGroupingFrameworkForZPSName[];
+extern const char kOmniboxGroupingFrameworkForZPSDescription[];
+
+// Title and description for the flag to enable Omnibox Grouping implementation
+// for Typed Suggestions.
+extern const char kOmniboxGroupingFrameworkForTypedSuggestionsName[];
+extern const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[];
+
 // Title and description for the flag to enable paste button in the omnibox's
 // keyboard accessory.
 extern const char kOmniboxKeyboardPasteButtonName[];

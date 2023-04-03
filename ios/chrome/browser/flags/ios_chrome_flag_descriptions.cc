@@ -653,6 +653,18 @@ const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";
 
+const char kOmniboxGroupingFrameworkForZPSName[] =
+    "Omnibox Grouping Framework for ZPS";
+const char kOmniboxGroupingFrameworkForZPSDescription[] =
+    "Enables an alternative grouping implementation for omnibox "
+    "autocompletion.";
+
+const char kOmniboxGroupingFrameworkForTypedSuggestionsName[] =
+    "Omnibox Grouping Framework for Typed Suggestions";
+const char kOmniboxGroupingFrameworkForTypedSuggestionsDescription[] =
+    "Enables an alternative grouping implementation for omnibox "
+    "autocompletion.";
+
 const char kOmniboxHttpsUpgradesName[] = "Omnibox HTTPS upgrades";
 const char kOmniboxHttpsUpgradesDescription[] =
     "Enables HTTPS upgrades for omnibox navigations typed without a scheme";

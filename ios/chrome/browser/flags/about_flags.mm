@@ -1508,6 +1508,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"fix-pdf-snapshot", flag_descriptions::kPDFSnapshotName,
      flag_descriptions::kPDFSnapshotDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPDFSnapshot)},
+    {"omnibox-grouping-framework-zps",
+     flag_descriptions::kOmniboxGroupingFrameworkForZPSName,
+     flag_descriptions::kOmniboxGroupingFrameworkForZPSDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForZPS)},
+    {"omnibox-grouping-framework-non-zps",
+     flag_descriptions::kOmniboxGroupingFrameworkForTypedSuggestionsName,
+     flag_descriptions::kOmniboxGroupingFrameworkForTypedSuggestionsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

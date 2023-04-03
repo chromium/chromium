@@ -200,3 +200,70 @@ void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
     nav_group.set_limit(limit_ - 2);
   }
 }
+
+IOSNTPZpsSection::IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(20,
+                 {
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+IOSWebZpsSection::IOSWebZpsSection(omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(20,
+                 {
+                     // Verbatim match:
+                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+IOSSRPZpsSection::IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(20,
+                 {
+                     // Verbatim match:
+                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(10,
+                 {
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+IOSIpadWebZpsSection::IOSIpadWebZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(10,
+                 {
+                     // Verbatim match:
+                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {8, omnibox::GROUP_VISITED_DOC_RELATED},
+                     {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
+
+IOSIpadSRPZpsSection::IOSIpadSRPZpsSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(10,
+                 {
+                     // Verbatim match:
+                     {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {8, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                     {10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                 },
+                 group_configs) {}
