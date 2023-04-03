@@ -246,7 +246,7 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
 
 const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
   if (features::IsChromeRefresh2023()) {
-    return GetChecked() ? kCheckboxActiveCr2023Icon : kCheckboxNormalIcon;
+    return GetChecked() ? kCheckboxActiveCr2023Icon : kCheckboxNormalCr2023Icon;
   }
 
   return GetChecked() ? kCheckboxActiveIcon : kCheckboxNormalIcon;
