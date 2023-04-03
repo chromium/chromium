@@ -1743,8 +1743,7 @@ id<GREYMatcher> EditDoneButton() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-// TODO(crbug.com/1429627): Re-enable after fixing hard-coded issue.
-- (void)DISABLED_testManyPasswords {
+- (void)testManyPasswords {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/906551): Enable the test on iPad once the bug is fixed.
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
@@ -1774,7 +1773,7 @@ id<GREYMatcher> EditDoneButton() {
 
   if ([self groupingEnabled]) {
     [GetInteractionForPasswordEntry([NSString
-        stringWithFormat:@"www01.example.com, %d accounts", kPasswordsCount])
+        stringWithFormat:@"example.com, %d accounts", kPasswordsCount])
         performAction:grey_tap()];
   } else {
     // The scrolling in GetInteractionForPasswordEntry has too fine steps to
@@ -2311,8 +2310,7 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Tests that removing multiple passwords works fine.
-// TODO(crbug.com/1429627): Re-enable after fixing hard-coded issue.
-- (void)DISABLED_testRemovingMultiplePasswords {
+- (void)testRemovingMultiplePasswords {
   constexpr int kPasswordsCount = 4;
 
   // Send the passwords to the queue to be added to the PasswordStore.
@@ -2330,7 +2328,7 @@ id<GREYMatcher> EditDoneButton() {
   TapEdit();
 
   if ([self groupingEnabled]) {
-    [[GetInteractionForPasswordEntry(@"www01.example.com, 4 accounts")
+    [[GetInteractionForPasswordEntry(@"example.com, 4 accounts")
         assertWithMatcher:grey_notNil()] performAction:grey_tap()];
     [[GetInteractionForPasswordEntry(@"example11.com")
         assertWithMatcher:grey_notNil()] performAction:grey_tap()];
