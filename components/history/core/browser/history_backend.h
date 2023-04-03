@@ -580,6 +580,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Generic operations --------------------------------------------------------
 
+  // Sets the device information for all syncing devices.
+  void SetSyncDeviceInfo(SyncDeviceInfoMap sync_device_info);
+
   void ProcessDBTask(
       std::unique_ptr<HistoryDBTask> task,
       scoped_refptr<base::SequencedTaskRunner> origin_loop,
@@ -1058,6 +1061,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // HistoryBackend::Init() is called. Defined after `observers_` because
   // it unregisters itself as observer during destruction.
   std::unique_ptr<HistorySyncBridge> history_sync_bridge_;
+
+  // Contains device information for all syncing devices.
+  SyncDeviceInfoMap sync_device_info_;
 };
 
 }  // namespace history

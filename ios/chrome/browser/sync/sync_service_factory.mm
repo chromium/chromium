@@ -10,12 +10,17 @@
 #import "base/no_destructor.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/history/core/browser/features.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_service_impl.h"
+#import "components/sync_device_info/device_info.h"
+#import "components/sync_device_info/device_info_sync_service.h"
+#import "components/sync_device_info/device_info_tracker.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
@@ -154,6 +159,23 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize();
+
+  // TODO(crbug.com/1400663): Remove the workaround below once
+  // PrivacySandboxSettingsFactory correctly declares its KeyedServices
+  // dependencies.
+  if (history::IsSyncSegmentsDataEnabled()) {
+    history::HistoryService* history_service =
+        ios::HistoryServiceFactory::GetForBrowserStateIfExists(
+            browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+
+    syncer::DeviceInfoSyncService* device_info_sync_service =
+        DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
+
+    if (history_service && device_info_sync_service) {
+      history_service->SetDeviceInfoTracker(
+          device_info_sync_service->GetDeviceInfoTracker());
+    }
+  }
 
   return sync_service;
 }

@@ -102,6 +102,7 @@ static_library("browser") {
   public_deps = [
     "//components/sessions:session_id",
     "//components/sync/protocol",
+    "//components/sync_device_info",
     "//skia",
   ]
 

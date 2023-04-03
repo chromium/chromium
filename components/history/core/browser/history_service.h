@@ -21,9 +21,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -36,6 +38,8 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "sql/init_status.h"
 #include "ui/base/page_transition_types.h"
 
@@ -85,7 +89,8 @@ class WebHistoryService;
 
 // The history service records page titles, visit times, and favicons, as well
 // as information about downloads.
-class HistoryService : public KeyedService {
+class HistoryService : public KeyedService,
+                       public syncer::DeviceInfoTracker::Observer {
  public:
   // Must call Init after construction. The empty constructor provided only for
   // unit tests. When using the full constructor, `history_client` may only be
@@ -652,6 +657,14 @@ class HistoryService : public KeyedService {
 
   // Generic Stuff -------------------------------------------------------------
 
+  // Sets the history service's device info tracker.
+  void SetDeviceInfoTracker(syncer::DeviceInfoTracker* device_info_tracker);
+
+  // syncer::DeviceInfoTracker::Observer overrides.
+  void OnDeviceInfoChange() override;
+
+  void OnDeviceInfoShutdown() override;
+
   // Schedules a HistoryDBTask for running on the history backend. See
   // HistoryDBTask for details on what this does. Takes ownership of `task`.
   virtual base::CancelableTaskTracker::TaskId ScheduleDBTask(
@@ -1070,6 +1083,12 @@ class HistoryService : public KeyedService {
   std::unique_ptr<DeleteDirectiveHandler> delete_directive_handler_;
 
   base::OnceClosure origin_queried_closure_for_testing_;
+
+  raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_ = nullptr;
+
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      device_info_tracker_observation_{this};
 
   // All vended weak pointers are invalidated in Cleanup().
   base::WeakPtrFactory<HistoryService> weak_ptr_factory_{this};

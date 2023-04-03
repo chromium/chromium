@@ -3319,6 +3319,10 @@ void HistoryBackend::KillHistoryDatabase() {
   CloseAllDatabases();
 }
 
+void HistoryBackend::SetSyncDeviceInfo(SyncDeviceInfoMap sync_device_info) {
+  sync_device_info_ = std::move(sync_device_info);
+}
+
 void HistoryBackend::ProcessDBTask(
     std::unique_ptr<HistoryDBTask> task,
     scoped_refptr<base::SequencedTaskRunner> origin_loop,
