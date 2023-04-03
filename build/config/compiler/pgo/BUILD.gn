@@ -56,6 +56,8 @@ config("pgo_optimization_flags") {
     } else if (is_chromeos_lacros) {
       if (target_cpu == "arm") {
         _pgo_target = "lacros-arm"
+      } else {
+        _pgo_target = "lacros64"
       }
     } else if (is_android) {
       # Temporarily use mac-arm profile until Android native PGO support works.
@@ -79,6 +81,8 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/mac.pgo.txt" ]
     } else if (_pgo_target == "linux") {
       inputs = [ "//chrome/build/linux.pgo.txt" ]
+    } else if (_pgo_target == "lacros64") {
+      inputs = [ "//chrome/build/lacros64.pgo.txt" ]
     } else if (_pgo_target == "lacros-arm") {
       inputs = [ "//chrome/build/lacros-arm.pgo.txt" ]
     }

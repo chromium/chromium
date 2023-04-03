@@ -5027,6 +5027,17 @@ hooks = [
     ],
   },
   {
+    'name': 'Fetch PGO profiles for lacros amd64',
+    'pattern': '.',
+    'condition': 'checkout_pgo_profiles and checkout_lacros_sdk',
+    'action': [ 'python3',
+                'src/tools/update_pgo_profiles.py',
+                '--target=lacros64',
+                'update',
+                '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
+    ],
+  },
+  {
     'name': 'Fetch PGO profiles for lacros arm',
     'pattern': '.',
     'condition': 'checkout_pgo_profiles and checkout_lacros_sdk',
