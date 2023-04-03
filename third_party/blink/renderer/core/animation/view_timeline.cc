@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/view_timeline_attachment.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -243,8 +244,10 @@ ViewTimeline::ViewTimeline(Document* document,
                            Element* subject,
                            ScrollAxis axis,
                            TimelineInset inset)
-    : ScrollTimeline(document, ReferenceType::kNearestAncestor, subject, axis),
-      inset_(inset) {
+    : ScrollTimeline(
+          document,
+          TimelineAttachmentType::kLocal,
+          MakeGarbageCollected<ViewTimelineAttachment>(subject, axis, inset)) {
   // Ensure that the timeline stays alive as long as the subject.
   if (subject)
     subject->RegisterScrollTimeline(this);
@@ -297,7 +300,8 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   DCHECK(subject());
   LayoutBox* layout_box = subject()->GetLayoutBox();
   DCHECK(layout_box);
-  Element* source = SourceInternal();
+  DCHECK(CurrentAttachment());
+  Element* source = CurrentAttachment()->ComputeSourceNoLayout();
   Node* resolved_source = ResolvedSource();
   DCHECK(source);
   DCHECK(resolved_source);
@@ -319,7 +323,7 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
 
   viewport_size_ = viewport_size.ToDouble();
 
-  TimelineInset inset = ResolveAuto(inset_, *source, GetAxis());
+  TimelineInset inset = ResolveAuto(GetInset(), *source, GetAxis());
 
   // Update inset lengths if style dependent.
   if (style_dependant_start_inset_ || style_dependant_end_inset_) {
@@ -409,6 +413,33 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
       (timeline_progress - relative_start_offset) / range;
 
   return CSSUnitValues::percent(named_range_progress * 100);
+}
+
+Element* ViewTimeline::subject() const {
+  return CurrentAttachment() ? CurrentAttachment()->GetReferenceElement()
+                             : nullptr;
+}
+
+bool ViewTimeline::Matches(Element* subject,
+                           ScrollAxis axis,
+                           const TimelineInset& inset) const {
+  const auto* attachment =
+      DynamicTo<ViewTimelineAttachment>(CurrentAttachment());
+  // TODO(crbug.com/1425939): When attachments other than kLocal
+  // are supported, attachment may be nullptr.
+  DCHECK(attachment);
+  return ScrollTimeline::Matches(ReferenceType::kNearestAncestor,
+                                 /* reference_element */ subject, axis) &&
+         (attachment->GetInset() == inset);
+}
+
+const TimelineInset& ViewTimeline::GetInset() const {
+  const auto* attachment =
+      DynamicTo<ViewTimelineAttachment>(CurrentAttachment());
+  // TODO(crbug.com/1425939): When attachments other than kLocal
+  // are supported, attachment may be nullptr.
+  DCHECK(attachment);
+  return attachment->GetInset();
 }
 
 double ViewTimeline::ToFractionalOffset(

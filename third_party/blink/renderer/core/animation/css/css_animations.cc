@@ -725,16 +725,13 @@ struct CSSViewTimelineOptions {
 
 bool TimelineMatches(const ScrollTimeline& timeline,
                      const CSSScrollTimelineOptions& options) {
-  return (timeline.GetReferenceType() == options.reference_type) &&
-         (timeline.ReferenceElement() == options.reference_element) &&
-         (timeline.GetAxis() == options.axis);
+  return timeline.Matches(options.reference_type, options.reference_element,
+                          options.axis);
 }
 
 bool TimelineMatches(const ViewTimeline& timeline,
                      const CSSViewTimelineOptions& options) {
-  return (timeline.subject() == options.subject) &&
-         (timeline.GetAxis() == options.axis) &&
-         (timeline.GetInset() == options.inset);
+  return timeline.Matches(options.subject, options.axis, options.inset);
 }
 
 }  // namespace

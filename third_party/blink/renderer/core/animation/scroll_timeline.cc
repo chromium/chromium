@@ -89,11 +89,20 @@ ScrollTimeline::ScrollTimeline(Document* document,
                                ReferenceType reference_type,
                                Element* reference,
                                ScrollAxis axis)
+    : ScrollTimeline(
+          document,
+          TimelineAttachmentType::kLocal,
+          MakeGarbageCollected<ScrollTimelineAttachment>(reference_type,
+                                                         reference,
+                                                         axis)) {}
+
+ScrollTimeline::ScrollTimeline(Document* document,
+                               TimelineAttachmentType attachment_type,
+                               ScrollTimelineAttachment* attachment)
     : AnimationTimeline(document),
       ScrollSnapshotClient(document->GetFrame()),
-      reference_type_(reference_type),
-      reference_element_(reference),
-      axis_(axis) {
+      attachment_type_(attachment_type),
+      attachments_(1u, attachment) {
   UpdateResolvedSource();
 }
 
@@ -102,6 +111,9 @@ bool ScrollTimeline::IsActive() const {
 }
 
 bool ScrollTimeline::ComputeIsResolved() const {
+  if (!CurrentAttachment()) {
+    return false;
+  }
   LayoutBox* layout_box =
       resolved_source_ ? resolved_source_->GetLayoutBox() : nullptr;
   return layout_box && layout_box->IsScrollContainer();
@@ -176,7 +188,8 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
          scrollable_area->MinimumScrollOffset().x() == 0);
 
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
-  auto physical_orientation = ToPhysicalScrollOrientation(axis_, *layout_box);
+  auto physical_orientation =
+      ToPhysicalScrollOrientation(GetAxis(), *layout_box);
   double current_offset = (physical_orientation == kHorizontalScroll)
                               ? scroll_offset.x()
                               : scroll_offset.y();
@@ -279,36 +292,7 @@ void ScrollTimeline::UpdateSnapshot() {
 }
 
 Element* ScrollTimeline::source() const {
-  if (reference_type_ == ReferenceType::kNearestAncestor)
-    GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-
-  return SourceInternal();
-}
-
-Element* ScrollTimeline::SourceInternal() const {
-  if (reference_type_ == ReferenceType::kSource)
-    return reference_element_.Get();
-
-  // ReferenceType::kNearestAncestor
-  if (!reference_element_)
-    return nullptr;
-
-  LayoutBox* layout_box = reference_element_->GetLayoutBox();
-  if (!layout_box)
-    return nullptr;
-
-  const LayoutBox* scroll_container = layout_box->ContainingScrollContainer();
-  if (!scroll_container)
-    return reference_element_->GetDocument().ScrollingElementNoLayout();
-
-  Node* node = scroll_container->GetNode();
-  if (node->IsElementNode())
-    return DynamicTo<Element>(node);
-  if (node->IsDocumentNode())
-    return DynamicTo<Document>(node)->ScrollingElementNoLayout();
-
-  NOTREACHED();
-  return nullptr;
+  return CurrentAttachment() ? CurrentAttachment()->ComputeSource() : nullptr;
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
@@ -332,13 +316,14 @@ void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
 }
 
 void ScrollTimeline::UpdateResolvedSource() {
-  if (reference_type_ == ReferenceType::kSource && resolved_source_) {
+  if (!CurrentAttachment()) {
     is_resolved_ = ComputeIsResolved();
     return;
   }
 
   Node* old_resolved_source = resolved_source_.Get();
-  resolved_source_ = ResolveSource(SourceInternal());
+  resolved_source_ =
+      ResolveSource(CurrentAttachment()->ComputeSourceNoLayout());
   is_resolved_ = ComputeIsResolved();
 
   if (old_resolved_source == resolved_source_.Get() || !HasAnimations())
@@ -352,11 +337,31 @@ void ScrollTimeline::UpdateResolvedSource() {
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(reference_element_);
   visitor->Trace(resolved_source_);
   visitor->Trace(attached_worklet_animations_);
+  visitor->Trace(attachments_);
   AnimationTimeline::Trace(visitor);
   ScrollSnapshotClient::Trace(visitor);
+}
+
+bool ScrollTimeline::Matches(ReferenceType reference_type,
+                             Element* reference_element,
+                             ScrollAxis axis) const {
+  const ScrollTimelineAttachment* attachment = CurrentAttachment();
+  // TODO(crbug.com/1425939): When attachments other than kLocal
+  // are supported, attachment may be nullptr.
+  DCHECK(attachment);
+  return (attachment->GetReferenceType() == reference_type) &&
+         (attachment->GetReferenceElement() == reference_element) &&
+         (attachment->GetAxis() == axis);
+}
+
+ScrollAxis ScrollTimeline::GetAxis() const {
+  const ScrollTimelineAttachment* attachment = CurrentAttachment();
+  // TODO(crbug.com/1425939): When attachments other than kLocal
+  // are supported, attachment may be nullptr.
+  DCHECK(attachment);
+  return attachment->GetAxis();
 }
 
 void ScrollTimeline::InvalidateEffectTargetStyle() {
@@ -387,7 +392,8 @@ void ScrollTimeline::FlushStyleUpdate() {
   DCHECK(layout_box);
   PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
   DCHECK(scrollable_area);
-  auto physical_orientation = ToPhysicalScrollOrientation(axis_, *layout_box);
+  auto physical_orientation =
+      ToPhysicalScrollOrientation(GetAxis(), *layout_box);
   CalculateOffsets(scrollable_area, physical_orientation);
 }
 

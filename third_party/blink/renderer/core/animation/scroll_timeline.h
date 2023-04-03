@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline_attachment.h"
+#include "third_party/blink/renderer/core/animation/timeline_attachment_type.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -24,6 +26,7 @@ namespace blink {
 
 class PaintLayerScrollableArea;
 class ScrollTimelineOptions;
+class ScrollTimelineAttachment;
 class WorkletAnimationBase;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
@@ -42,14 +45,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
  public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
   using ScrollAxis = V8ScrollAxis::Enum;
-
-  // Indicates the relation between the reference element and source of the
-  // scroll timeline.
-  enum class ReferenceType {
-    kSource,          // The reference element matches the source.
-    kNearestAncestor  // The source is the nearest scrollable ancestor to the
-                      // reference element.
-  };
+  using ReferenceType = ScrollTimelineAttachment::ReferenceType;
 
   static ScrollTimeline* Create(Document&,
                                 ScrollTimelineOptions*,
@@ -89,7 +85,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   // IDL API implementation.
   Element* source() const;
-  const V8ScrollAxis axis() const { return V8ScrollAxis(axis_); }
+  const V8ScrollAxis axis() const { return V8ScrollAxis(GetAxis()); }
 
   V8CSSNumberish* currentTime() override;
   V8CSSNumberish* duration() override;
@@ -105,10 +101,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
-  ReferenceType GetReferenceType() const { return reference_type_; }
-  Element* ReferenceElement() const { return reference_element_.Get(); }
+  bool Matches(ReferenceType, Element* reference_element, ScrollAxis) const;
 
-  ScrollAxis GetAxis() const { return axis_; }
+  ScrollAxis GetAxis() const;
 
   // Mark every effect target of every Animation attached to this timeline
   // for style recalc.
@@ -141,18 +136,18 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // the resolved source so that timeline offsets can be properly computed.
   virtual void FlushStyleUpdate();
 
- protected:
-  PhaseAndTime CurrentPhaseAndTime() override;
-
-  // Determines the source for the scroll timeline. It may be the reference
-  // element or its nearest scrollable ancestor, depending on |souce_type|.
-  // This version does not force a style update and is therefore safe to call
-  // during lifecycle update.
-  Element* SourceInternal() const;
-
-  bool HasExplicitSource() const {
-    return reference_type_ == ReferenceType::kSource;
+  ScrollTimelineAttachment* CurrentAttachment() {
+    return (attachments_.size() == 1u) ? attachments_.back().Get() : nullptr;
   }
+
+  const ScrollTimelineAttachment* CurrentAttachment() const {
+    return const_cast<ScrollTimeline*>(this)->CurrentAttachment();
+  }
+
+ protected:
+  ScrollTimeline(Document*, TimelineAttachmentType, ScrollTimelineAttachment*);
+
+  PhaseAndTime CurrentPhaseAndTime() override;
 
   void UpdateResolvedSource();
 
@@ -191,16 +186,15 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   TimelineState ComputeTimelineState();
 
-  ReferenceType reference_type_;
-  Member<Element> reference_element_;
+  TimelineAttachmentType attachment_type_;
   Member<Node> resolved_source_;
-  ScrollAxis axis_;
   bool is_resolved_ = false;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
 
   HeapHashSet<WeakMember<WorkletAnimationBase>> attached_worklet_animations_;
+  HeapVector<Member<ScrollTimelineAttachment>, 1> attachments_;
 };
 
 template <>

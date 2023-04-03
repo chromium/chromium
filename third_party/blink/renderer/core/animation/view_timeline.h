@@ -41,9 +41,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
       const Timing&) override;
 
   // IDL API implementation.
-  Element* subject() const { return ReferenceElement(); }
+  Element* subject() const;
 
-  const TimelineInset& GetInset() const { return inset_; }
+  bool Matches(Element* subject, ScrollAxis, const TimelineInset&) const;
+
+  const TimelineInset& GetInset() const;
 
   // Converts a delay that is expressed as a (phase,percentage) pair to
   // a fractional offset.
@@ -79,7 +81,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   mutable double end_side_inset_;
   mutable double start_offset_ = 0;
   mutable double end_offset_ = 0;
-  TimelineInset inset_;
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.
   Member<const CSSValue> style_dependant_start_inset_;
