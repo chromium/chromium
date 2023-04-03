@@ -18,16 +18,15 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
 #include "chrome/common/extensions/api/mdns.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using media_router::MockDnsSdRegistry;
@@ -102,7 +101,7 @@ class MockEventRouter : public EventRouter {
   explicit MockEventRouter(content::BrowserContext* browser_context,
                            ExtensionPrefs* extension_prefs)
       : EventRouter(browser_context, extension_prefs) {}
-  ~MockEventRouter() override {}
+  ~MockEventRouter() override = default;
 
   void BroadcastEvent(std::unique_ptr<Event> event) override {
     BroadcastEventPtr(event.get());
@@ -122,8 +121,8 @@ class EventServiceListSizeMatcher
   explicit EventServiceListSizeMatcher(size_t expected_size)
       : expected_size_(expected_size) {}
 
-  virtual bool MatchAndExplain(const Event& e,
-                               testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(const Event& e,
+                       testing::MatchResultListener* listener) const override {
     if (e.event_args.size() != 1) {
       *listener << "event.event_arg.GetSize() should be 1 but is "
                 << e.event_args.size();
@@ -139,12 +138,12 @@ class EventServiceListSizeMatcher
         .MatchAndExplain(services->size(), listener);
   }
 
-  virtual void DescribeTo(::std::ostream* os) const {
+  void DescribeTo(::std::ostream* os) const override {
     *os << "is an onServiceList event where the number of services is "
         << expected_size_;
   }
 
-  virtual void DescribeNegationTo(::std::ostream* os) const {
+  void DescribeNegationTo(::std::ostream* os) const override {
     *os << "isn't an onServiceList event where the number of services is "
         << expected_size_;
   }
@@ -332,7 +331,7 @@ TEST_F(MDnsAPIMaxServicesTest, OnServiceListDoesNotExceedLimit) {
   // BroadcastEvent method.
   media_router::DnsSdRegistry::DnsSdServiceList services;
   for (int i = 0; i < api::mdns::MAX_SERVICE_INSTANCES_PER_EVENT + 10; ++i) {
-    services.push_back(media_router::DnsSdService());
+    services.emplace_back();
   }
   EXPECT_CALL(
       *event_router(),
