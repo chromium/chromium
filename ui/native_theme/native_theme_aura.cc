@@ -359,13 +359,11 @@ void NativeThemeAura::PaintScrollbarCorner(cc::PaintCanvas* canvas,
                                            ColorScheme color_scheme) const {
   // Overlay Scrollbar should never paint a scrollbar corner.
   DCHECK(!use_overlay_scrollbars_);
+  const SkColor corner_color = GetControlColor(kScrollbarCornerControlColorId,
+                                               color_scheme, color_provider);
+
   cc::PaintFlags flags;
-  // TODO(crbug.com/1374573): use the system color for the high contrast mode.
-  // Move the definition to the NativeThemeBase::GetControlColor().
-  SkColor bg_color = color_scheme == ui::NativeTheme::ColorScheme::kDark
-                         ? SkColorSetRGB(0x12, 0x12, 0x12)
-                         : SkColorSetRGB(0xDC, 0xDC, 0xDC);
-  flags.setColor(bg_color);
+  flags.setColor(corner_color);
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
 
