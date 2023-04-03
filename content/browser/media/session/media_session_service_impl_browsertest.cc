@@ -232,10 +232,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   // actions are reset.
   NavigateToURLAndWaitForFinish(shell(), GetTestUrl(".", "title2.html"));
 
-  EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::NONE,
-            GetService()->playback_state());
-  EXPECT_FALSE(GetService()->metadata());
-  EXPECT_EQ(0u, GetService()->actions().size());
+  // The service should be destroyed.
+  EXPECT_EQ(GetService(), nullptr);
 }
 
 // crbug.com/927234.

@@ -172,6 +172,7 @@ MediaSession::MediaSession(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       clock_(base::DefaultTickClock::GetInstance()),
       playback_state_(mojom::blink::MediaSessionPlaybackState::NONE),
+      service_(navigator.GetExecutionContext()),
       client_receiver_(this, navigator.DomWindow()) {}
 
 void MediaSession::setPlaybackState(const String& playback_state) {
@@ -406,19 +407,20 @@ void MediaSession::RecalculatePositionState(bool was_set) {
 }
 
 mojom::blink::MediaSessionService* MediaSession::GetService() {
-  if (service_)
+  if (service_) {
     return service_.get();
+  }
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner = window->GetTaskRunner(TaskType::kMiscPlatformAPI);
   window->GetBrowserInterfaceBroker().GetInterface(
-      service_.BindNewPipeAndPassReceiver());
+      service_.BindNewPipeAndPassReceiver(task_runner));
   if (service_.get())
     service_->SetClient(client_receiver_.BindNewPipeAndPassRemote(task_runner));
-
   return service_.get();
 }
 
@@ -450,6 +452,7 @@ void MediaSession::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(metadata_);
   visitor->Trace(action_handlers_);
+  visitor->Trace(service_);
   ScriptWrappable::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
 }
