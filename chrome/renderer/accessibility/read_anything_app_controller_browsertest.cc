@@ -505,8 +505,6 @@ TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
 }
 
-// TODO(b/1266555) Move tests using DisplayNodeIdsContains to the tests for the
-// model once logic around selection has been pulled into the model.
 TEST_F(ReadAnythingAppControllerTest, SelectionNodeIdsContains_Selection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -524,7 +522,7 @@ TEST_F(ReadAnythingAppControllerTest, SelectionNodeIdsContains_Selection) {
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       DisplayNodeIdsContains_BackwardSelection) {
+       SelectionNodeIdsContains_BackwardSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.tree_data.sel_anchor_object_id = 3;
