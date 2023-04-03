@@ -135,7 +135,7 @@ GPUDevice* ExternalTextureCache::device() const {
 
 void ExternalTextureCache::ExpireAtEndOfTask(
     GPUExternalTexture* external_texture) {
-  DCHECK(external_texture);
+  CHECK(external_texture);
   expire_list_.push_back(external_texture);
 
   if (expire_task_scheduled_) {
@@ -172,7 +172,7 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     media::PaintCanvasVideoRenderer* video_renderer,
     absl::optional<media::VideoFrame::ID> media_video_frame_unique_id,
     ExceptionState& exception_state) {
-  DCHECK(media_video_frame);
+  CHECK(media_video_frame);
 
   // TODO(crbug.com/1330250): Support additional color spaces for external
   // textures.
@@ -339,7 +339,7 @@ GPUExternalTexture::GPUExternalTexture(
 }
 
 void GPUExternalTexture::Refresh() {
-  DCHECK(status_ != Status::Destroyed);
+  CHECK(status_ != Status::Destroyed);
 
   GetProcs().externalTextureRefresh(GetHandle());
   status_ = Status::Active;
@@ -355,15 +355,15 @@ void GPUExternalTexture::Expire() {
 }
 
 void GPUExternalTexture::Destroy() {
-  DCHECK(!destroyed());
-  DCHECK(mailbox_texture_);
+  CHECK(!destroyed());
+  CHECK(mailbox_texture_);
 
   status_ = Status::Destroyed;
   mailbox_texture_.reset();
 }
 
 void GPUExternalTexture::ListenToHTMLVideoElement(HTMLVideoElement* video) {
-  DCHECK(video);
+  CHECK(video);
   video->GetDocument()
       .GetScriptedAnimationController()
       .WebGPURegisterVideoFrameStateCallback(WTF::BindRepeating(
@@ -378,7 +378,7 @@ void GPUExternalTexture::ListenToHTMLVideoElement(HTMLVideoElement* video) {
 }
 
 bool GPUExternalTexture::ContinueCheckingCurrentVideoFrame() {
-  DCHECK(media_video_frame_unique_id_.has_value());
+  CHECK(media_video_frame_unique_id_.has_value());
 
   if (destroyed() || !video_) {
     return false;
@@ -411,8 +411,8 @@ void GPUExternalTexture::Trace(Visitor* visitor) const {
 }
 
 void GPUExternalTexture::OnSourceInvalidated() {
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_);
+  CHECK(task_runner_->BelongsToCurrentThread());
 
   // OnSourceInvalidated is called for both VideoFrame and HTMLVE.
   // VideoFrames are invalidated with and explicit close() call that
@@ -421,16 +421,9 @@ void GPUExternalTexture::OnSourceInvalidated() {
   // that imported the ExternalTexture. In that case defer the invalidation
   // until the end of the task to preserve the semantic of ExternalTexture.
   if (status_ == Status::Active && video_) {
-    if (task_runner_->BelongsToCurrentThread()) {
-      task_runner_->PostTask(FROM_HERE,
-                             WTF::BindOnce(&GPUExternalTexture::RemoveFromCache,
-                                           WrapWeakPersistent(this)));
-    } else {
-      task_runner_->PostTask(FROM_HERE,
-                             ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                                 &GPUExternalTexture::RemoveFromCache,
-                                 WrapCrossThreadWeakPersistent(this))));
-    }
+    task_runner_->PostTask(FROM_HERE,
+                           WTF::BindOnce(&GPUExternalTexture::RemoveFromCache,
+                                         WrapWeakPersistent(this)));
   } else {
     RemoveFromCache();
   }
@@ -463,7 +456,7 @@ void GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
 }
 
 void GPUExternalTexture::OnVideoFrameClosed() {
-  DCHECK(task_runner_);
+  CHECK(task_runner_);
 
   if (destroyed())
     return;
