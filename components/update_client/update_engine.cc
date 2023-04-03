@@ -132,12 +132,10 @@ base::RepeatingClosure UpdateEngine::Update(
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<base::RepeatingClosure> cancel_closure = InvokeOperation(
-      is_foreground, /*is_update_check_only=*/false, is_install, ids,
-      std::move(crx_data_callback), std::move(crx_state_change_callback),
-      std::move(callback));
-  CHECK(cancel_closure.has_value());
-  return *cancel_closure;
+  return InvokeOperation(is_foreground, /*is_update_check_only=*/false,
+                         is_install, ids, std::move(crx_data_callback),
+                         std::move(crx_state_change_callback),
+                         std::move(callback));
 }
 
 void UpdateEngine::CheckForUpdate(
@@ -152,7 +150,7 @@ void UpdateEngine::CheckForUpdate(
                   std::move(crx_state_change_callback), std::move(callback));
 }
 
-absl::optional<base::RepeatingClosure> UpdateEngine::InvokeOperation(
+base::RepeatingClosure UpdateEngine::InvokeOperation(
     bool is_foreground,
     bool is_update_check_only,
     bool is_install,
@@ -206,9 +204,8 @@ absl::optional<base::RepeatingClosure> UpdateEngine::InvokeOperation(
     CHECK_EQ(update_context->components[id]->state(), ComponentState::kNew);
 
     const auto crx_component = crx_components[i];
-    if (crx_component) {
+    if (crx_component && (id == GetCrxComponentID(*crx_component))) {
       // This component can be checked for updates.
-      CHECK_EQ(id, GetCrxComponentID(*crx_component));
       auto& component = update_context->components[id];
       component->set_crx_component(*crx_component);
       component->set_previous_version(component->crx_component()->version);
@@ -228,12 +225,12 @@ absl::optional<base::RepeatingClosure> UpdateEngine::InvokeOperation(
                          ? &UpdateEngine::HandleComponent
                          : &UpdateEngine::DoUpdateCheck,
                      this, update_context));
-  return is_update_check_only ? absl::nullopt
-                              : absl::make_optional(base::BindRepeating(
+  return is_update_check_only ? base::DoNothing()
+                              : base::BindRepeating(
                                     [](scoped_refptr<UpdateContext> context) {
                                       context->is_cancelled = true;
                                     },
-                                    update_context));
+                                    update_context);
 }
 
 void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
