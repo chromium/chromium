@@ -110,6 +110,8 @@ export class TopicSourceItem extends WithPersonalizationStore {
       }
     } else if (this.topicSource === TopicSource.kArtGallery) {
       return this.i18n('ambientModeTopicSourceArtGalleryDescription');
+    } else if (this.topicSource === TopicSource.kVideo) {
+      return this.i18n('ambientModeTopicSourceVideoDescription');
     } else {
       return '';
     }

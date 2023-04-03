@@ -95,7 +95,8 @@ export class AlbumList extends WithPersonalizationStore {
       }
       return getCountText(album.numberOfPhotos);
     }
-    if (this.topicSource === TopicSource.kArtGallery) {
+    if (this.topicSource === TopicSource.kArtGallery ||
+        this.topicSource === TopicSource.kVideo) {
       return album.description;
     }
     return '';

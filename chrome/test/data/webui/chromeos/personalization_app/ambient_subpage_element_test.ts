@@ -853,12 +853,14 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!topicSourceList);
     const topicSourceItems =
         topicSourceList.shadowRoot!.querySelectorAll('topic-source-item');
-    assertEquals(2, topicSourceItems!.length);
-    const googlePhotos = topicSourceItems[0] as TopicSourceItem;
-    const art = topicSourceItems[1] as TopicSourceItem;
+    assertEquals(3, topicSourceItems!.length);
+    const video = topicSourceItems[0] as TopicSourceItem;
+    const googlePhotos = topicSourceItems[1] as TopicSourceItem;
+    const art = topicSourceItems[2] as TopicSourceItem;
     assertEquals(TopicSource.kGooglePhotos, googlePhotos.topicSource);
     assertEquals(TopicSource.kArtGallery, art.topicSource);
 
+    assertFalse(video.disabled);
     assertTrue(googlePhotos.disabled);
     assertTrue(art.disabled);
   });

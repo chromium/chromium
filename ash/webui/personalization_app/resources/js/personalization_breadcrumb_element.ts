@@ -217,6 +217,8 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
           breadcrumbs.push(this.i18n('ambientModeTopicSourceGooglePhotos'));
         } else if (topicSourceVal === TopicSource.kArtGallery) {
           breadcrumbs.push(this.i18n('ambientModeTopicSourceArtGallery'));
+        } else if (topicSourceVal === TopicSource.kVideo) {
+          breadcrumbs.push(this.i18n('ambientModeTopicSourceVideo'));
         } else {
           console.warn('Invalid TopicSource value.', topicSourceVal);
         }

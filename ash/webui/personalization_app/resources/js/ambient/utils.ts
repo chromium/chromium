@@ -31,6 +31,8 @@ export function getTopicSourceName(topicSource: TopicSource): string {
       return loadTimeData.getString('ambientModeTopicSourceGooglePhotos');
     case TopicSource.kArtGallery:
       return loadTimeData.getString('ambientModeTopicSourceArtGallery');
+    case TopicSource.kVideo:
+      return loadTimeData.getString('ambientModeTopicSourceVideo');
     default:
       console.warn('Invalid TopicSource value.');
       return '';

@@ -12,6 +12,7 @@ import './topic_source_item_element.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {AnimationTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {isTimeOfDayScreenSaverEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './topic_source_list_element.html.js';
@@ -30,7 +31,16 @@ export class TopicSourceList extends WithPersonalizationStore {
     return {
       topicSources: {
         type: Array,
-        value: [TopicSource.kGooglePhotos, TopicSource.kArtGallery],
+        value() {
+          const topicSources =
+              [TopicSource.kGooglePhotos, TopicSource.kArtGallery];
+          // Pushes the video image source to the front to highlight exclusive
+          // content.
+          if (isTimeOfDayScreenSaverEnabled()) {
+            topicSources.unshift(TopicSource.kVideo);
+          }
+          return topicSources;
+        },
       },
 
       selectedAnimationTheme: AnimationTheme,

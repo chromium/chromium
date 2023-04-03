@@ -85,12 +85,14 @@ export class AlbumsSubpage extends WithPersonalizationStore {
     return this.ambientModeEnabled_ !== null && this.ambientModeEnabled_;
   }
 
-  private getTitleInnerHtml_(): string {
-    if (this.topicSource === TopicSource.kGooglePhotos) {
-      return this.i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosTitle')
-          .toString();
-    } else {
-      return this.i18n('ambientModeTopicSourceArtGalleryDescription');
+  private getTitleInnerHtml_(): string|TrustedHTML {
+    switch (this.topicSource) {
+      case TopicSource.kGooglePhotos:
+        return this.i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosTitle');
+      case TopicSource.kArtGallery:
+        return this.i18n('ambientModeTopicSourceArtGalleryDescription');
+      case TopicSource.kVideo:
+        return this.i18n('ambientModeTopicSourceVideoDescription');
     }
   }
 
