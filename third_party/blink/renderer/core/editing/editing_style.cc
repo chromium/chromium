@@ -94,7 +94,6 @@ static const CSSPropertyID kStaticEditingProperties[] = {
     CSSPropertyID::kTextDecorationLine,
     CSSPropertyID::kTextIndent,
     CSSPropertyID::kTextTransform,
-    CSSPropertyID::kWhiteSpace,
     CSSPropertyID::kWidows,
     CSSPropertyID::kWordSpacing,
     CSSPropertyID::kWebkitTextDecorationsInEffect,
@@ -112,9 +111,18 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   if (properties.empty()) {
+    properties.ReserveInitialCapacity(std::size(kStaticEditingProperties) + 2);
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
         std::size(kStaticEditingProperties), properties);
+    // TODO(crbug.com/1417543): Move to `kStaticEditingProperties` when removing
+    // the runtime switch.
+    if (RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
+      properties.push_back(&GetCSSPropertyWhiteSpaceCollapse());
+      properties.push_back(&GetCSSPropertyTextWrap());
+    } else {
+      properties.push_back(&GetCSSPropertyWhiteSpace());
+    }
   }
   return properties;
 }
@@ -123,10 +131,19 @@ static const Vector<const CSSProperty*>& InheritableEditingProperties(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   if (properties.empty()) {
+    properties.ReserveInitialCapacity(std::size(kStaticEditingProperties) + 2);
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
         std::size(kStaticEditingProperties), properties,
         [](const CSSProperty& property) { return property.IsInherited(); });
+    // TODO(crbug.com/1417543): Move to `kStaticEditingProperties` when removing
+    // the runtime switch.
+    if (RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
+      properties.push_back(&GetCSSPropertyWhiteSpaceCollapse());
+      properties.push_back(&GetCSSPropertyTextWrap());
+    } else {
+      properties.push_back(&GetCSSPropertyWhiteSpace());
+    }
   }
   return properties;
 }
@@ -1008,11 +1025,25 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
   for (unsigned i = 0; i < property_count; ++i) {
     CSSPropertyID property_id = mutable_style_->PropertyAt(i).Id();
 
-    // We don't override whitespace property of a tab span because that would
-    // collapse the tab into a space.
-    if (property_id == CSSPropertyID::kWhiteSpace &&
-        IsTabHTMLSpanElement(element))
+    // We don't override `white-space-collapse` property of a tab span because
+    // that would collapse the tab into a space.
+    //
+    // Logically speaking, only `white-space-collapse` is needed (i.e.,
+    // `text-wrap` is not needed.) But including other longhands helps producing
+    // `white-space` instead of `white-space-collapse`. Because the snippet
+    // produced by this logic may be sent to other browsers by copy&paste,
+    // e-mail, etc., `white-space` is more interoperable when
+    // `white-space-collapse` is not broadly supported. See crbug.com/1417543
+    // and `editing/pasteboard/pasting-tabs.html`.
+    DCHECK_NE(property_id, CSSPropertyID::kAlternativeWhiteSpace);
+    const bool is_whitespace_property =
+        RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()
+            ? property_id == CSSPropertyID::kWhiteSpaceCollapse ||
+                  property_id == CSSPropertyID::kTextWrap
+            : property_id == CSSPropertyID::kWhiteSpace;
+    if (is_whitespace_property && IsTabHTMLSpanElement(element)) {
       continue;
+    }
 
     if (property_id == CSSPropertyID::kWebkitTextDecorationsInEffect &&
         inline_style->GetPropertyCSSValue(CSSPropertyID::kTextDecorationLine)) {
@@ -1741,6 +1772,7 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
     if (IsTabHTMLSpanElementTextNode(position.AnchorNode()) ||
         IsTabHTMLSpanElement((position.AnchorNode()))) {
       mutable_style->RemoveProperty(CSSPropertyID::kWhiteSpace);
+      mutable_style->RemoveProperty(CSSPropertyID::kAlternativeWhiteSpace);
     }
   }
 
