@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -31,7 +31,7 @@ class SavedTabGroup {
       const std::u16string& title,
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
-      absl::optional<base::GUID> saved_guid = absl::nullopt,
+      absl::optional<base::Uuid> saved_guid = absl::nullopt,
       absl::optional<int> position = absl::nullopt,
       absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt,
       absl::optional<base::Time> creation_time_windows_epoch_micros =
@@ -42,7 +42,7 @@ class SavedTabGroup {
   ~SavedTabGroup();
 
   // Metadata accessors.
-  const base::GUID& saved_guid() const { return saved_guid_; }
+  const base::Uuid& saved_guid() const { return saved_guid_; }
   const absl::optional<tab_groups::TabGroupId>& local_group_id() const {
     return local_group_id_;
   }
@@ -62,21 +62,21 @@ class SavedTabGroup {
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
   // Accessors for Tabs based on id.
-  const SavedTabGroupTab* GetTab(const base::GUID& saved_tab_guid) const;
+  const SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid) const;
   const SavedTabGroupTab* GetTab(const base::Token& local_tab_id) const;
 
   // Non const accessors for tabs based on id. this should only be used inside
   // of the model methods.
-  SavedTabGroupTab* GetTab(const base::GUID& saved_tab_guid);
+  SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid);
   SavedTabGroupTab* GetTab(const base::Token& local_tab_id);
 
   // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
   // returns absl::nullopt.
-  absl::optional<int> GetIndexOfTab(const base::GUID& saved_tab_guid) const;
+  absl::optional<int> GetIndexOfTab(const base::Uuid& saved_tab_guid) const;
   absl::optional<int> GetIndexOfTab(const base::Token& local_tab_id) const;
 
   // Returns true if the `tab_id` was found in `saved_tabs_`.
-  bool ContainsTab(const base::GUID& saved_tab_guid) const;
+  bool ContainsTab(const base::Uuid& saved_tab_guid) const;
   bool ContainsTab(const base::Token& tab_id) const;
 
   // Metadata mutators.
@@ -102,16 +102,16 @@ class SavedTabGroup {
   // Removes a tab from `saved_tabs_` denoted by `saved_tab_guid` even if that
   // was the last tab in the group: crbug/1371959. If `update_tab_positions` is
   // true, update the positions of all tabs in the group.
-  SavedTabGroup& RemoveTab(const base::GUID& saved_tab_guid,
+  SavedTabGroup& RemoveTab(const base::Uuid& saved_tab_guid,
                            bool update_tab_positions = false);
 
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
   // replacement tab already exists. In this case we CHECK.
-  SavedTabGroup& ReplaceTabAt(const base::GUID& saved_tab_guid,
+  SavedTabGroup& ReplaceTabAt(const base::Uuid& saved_tab_guid,
                               SavedTabGroupTab tab);
   // Moves the tab denoted by `tab_id` from its current index to the
   // `new_index`.
-  SavedTabGroup& MoveTab(const base::GUID& saved_tab_guid, size_t new_index);
+  SavedTabGroup& MoveTab(const base::Uuid& saved_tab_guid, size_t new_index);
 
   // Merges this groups data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values of this group.
@@ -154,7 +154,7 @@ class SavedTabGroup {
 
  private:
   // The ID used to represent the group in sync.
-  base::GUID saved_guid_;
+  base::Uuid saved_guid_;
 
   // The ID of the tab group in the tab strip which is associated with the saved
   // tab group object. This can be null if the saved tab group is not in any tab

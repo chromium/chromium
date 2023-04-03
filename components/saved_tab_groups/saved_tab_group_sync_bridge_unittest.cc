@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
@@ -198,9 +198,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   base::Time group_creation_time = group.creation_time_windows_epoch_micros();
   base::Time tab_1_creation_time = tab_1.creation_time_windows_epoch_micros();
   base::Time tab_2_creation_time = tab_2.creation_time_windows_epoch_micros();
@@ -260,7 +260,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
 TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
-  base::GUID orphaned_guid = base::GUID::GenerateRandomV4();
+  base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid);
 
@@ -308,7 +308,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
 TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
-  base::GUID orphaned_guid = base::GUID::GenerateRandomV4();
+  base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
                                 orphaned_guid);
   orphaned_tab.SetUpdateTimeWindowsEpochMicros(base::Time::Now() -
@@ -350,7 +350,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabDiscardedAfter90Days) {
 TEST_F(SavedTabGroupSyncBridgeTest, OprhanedTabGroupFoundAfter90Days) {
   // Merge an orphaned tab. Then merge its missing group. This aims to
   // simulate data spread out over multiple changes.
-  base::GUID orphaned_guid = base::GUID::GenerateRandomV4();
+  base::Uuid orphaned_guid = base::Uuid::GenerateRandomV4();
 
   SavedTabGroup missing_group(u"New Group Title",
                               tab_groups::TabGroupColorId::kOrange, {},
@@ -436,7 +436,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
   // Orphaned tabs are tabs that do not have a respective group stored in the
   // model. As such, these tabs are kept in local storage but not the model.
   SavedTabGroupTab orphaned_tab(GURL("https://mail.google.com"), u"Mail",
-                                base::GUID::GenerateRandomV4());
+                                base::Uuid::GenerateRandomV4());
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
@@ -527,7 +527,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, DeleteSyncData) {
       saved_tab_group_model_.Get(group.saved_guid());
 
   // Ensure a deleted tab is deleted from the group correctly in the model.
-  base::GUID tab_to_remove = group.saved_tabs()[0].saved_tab_guid();
+  base::Uuid tab_to_remove = group.saved_tabs()[0].saved_tab_guid();
 
   syncer::EntityChangeList delete_tab_change_list;
   delete_tab_change_list.push_back(
@@ -565,9 +565,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
 
   EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _));
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _));
@@ -587,9 +587,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
   EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
@@ -610,9 +610,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _));
@@ -637,10 +637,10 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
-  base::GUID tab_3_guid = tab_3.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_3_guid = tab_3.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
   EXPECT_CALL(processor_, Put(tab_3_guid.AsLowercaseString(), _, _));
@@ -667,9 +667,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
   EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
@@ -693,10 +693,10 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
                          group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
 
-  base::GUID group_guid = group.saved_guid();
-  base::GUID tab_1_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_guid = tab_2.saved_tab_guid();
-  base::GUID tab_3_guid = tab_3.saved_tab_guid();
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_3_guid = tab_3.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
   EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));

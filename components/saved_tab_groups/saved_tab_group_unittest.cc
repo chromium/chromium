@@ -10,11 +10,11 @@
 #include "url/url_constants.h"
 
 namespace {
-base::GUID MakeUniqueGUID() {
+base::Uuid MakeUniqueGUID() {
   static uint64_t unique_value = 0;
   unique_value++;
   uint64_t kBytes[] = {0, unique_value};
-  return base::GUID::FormatRandomDataAsV4ForTesting(
+  return base::Uuid::FormatRandomDataAsV4ForTesting(
       as_bytes(base::make_span(kBytes)));
 }
 
@@ -29,13 +29,13 @@ SavedTabGroup CreateDefaultEmptySavedTabGroup() {
                        tab_groups::TabGroupColorId::kGrey, {});
 }
 
-SavedTabGroupTab CreateDefaultSavedTabGroupTab(const base::GUID& group_guid) {
+SavedTabGroupTab CreateDefaultSavedTabGroupTab(const base::Uuid& group_guid) {
   return SavedTabGroupTab(GURL("www.google.com"), u"Default Title", group_guid);
 }
 
 void AddTabToEndOfGroup(
     SavedTabGroup& group,
-    absl::optional<base::GUID> saved_guid = absl::nullopt,
+    absl::optional<base::Uuid> saved_guid = absl::nullopt,
     absl::optional<base::Token> local_tab_id = absl::nullopt) {
   group.AddTab(SavedTabGroupTab(
       GURL(url::kAboutBlankURL), std::u16string(u"default_title"),
@@ -44,8 +44,8 @@ void AddTabToEndOfGroup(
 }  // namespace
 
 TEST(SavedTabGroupTest, GetTabByGUID) {
-  base::GUID tab_1_saved_guid = MakeUniqueGUID();
-  base::GUID tab_2_saved_guid = MakeUniqueGUID();
+  base::Uuid tab_1_saved_guid = MakeUniqueGUID();
+  base::Uuid tab_2_saved_guid = MakeUniqueGUID();
 
   // create a group with a couple tabs
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
@@ -83,8 +83,8 @@ TEST(SavedTabGroupTest, AddTabLocallyDisrespectsPositions) {
   SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
 
-  base::GUID tab_1_saved_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_saved_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_1_saved_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Set the positions on the tabs and expect the group to ignore them.
   tab_1.SetPosition(1);
@@ -114,8 +114,8 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
 
-  base::GUID tab_1_saved_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_saved_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_1_saved_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Add both tabs to the group.
   group.AddTab(std::move(tab_1));
@@ -152,8 +152,8 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
 
-  base::GUID tab_1_saved_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_saved_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_1_saved_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Set the positions on the tabs and expect the group to respect them.
   tab_1.SetPosition(1);
@@ -180,8 +180,8 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
 
-  base::GUID tab_1_saved_guid = tab_1.saved_tab_guid();
-  base::GUID tab_2_saved_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_1_saved_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Add both tabs to the group.
   group.AddTab(std::move(tab_1));

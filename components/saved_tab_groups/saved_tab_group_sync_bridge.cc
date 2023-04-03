@@ -14,9 +14,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -113,7 +113,7 @@ absl::optional<syncer::ModelError> SavedTabGroupSyncBridge::ApplySyncChanges(
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE: {
         DeleteDataFromLocalStorage(
-            base::GUID::ParseLowercase(change->storage_key()),
+            base::Uuid::ParseLowercase(change->storage_key()),
             write_batch.get());
         break;
       }
@@ -153,7 +153,7 @@ void SavedTabGroupSyncBridge::GetData(StorageKeyList storage_keys,
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const std::string& guid : storage_keys) {
-    base::GUID parsed_guid = base::GUID::ParseLowercase(guid);
+    base::Uuid parsed_guid = base::Uuid::ParseLowercase(guid);
     for (const SavedTabGroup& group : model_->saved_tab_groups()) {
       if (group.saved_guid() == parsed_guid) {
         AddEntryToBatch(batch.get(), group.ToSpecifics());
@@ -186,7 +186,7 @@ void SavedTabGroupSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
 // SavedTabGroupModelObserver
 void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
-    const base::GUID& guid) {
+    const base::Uuid& guid) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
@@ -228,8 +228,8 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
-    const base::GUID& group_guid,
-    const absl::optional<base::GUID>& tab_guid) {
+    const base::Uuid& group_guid,
+    const absl::optional<base::Uuid>& tab_guid) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
@@ -278,7 +278,7 @@ void SavedTabGroupSyncBridge::UpsertEntitySpecific(
 }
 
 void SavedTabGroupSyncBridge::RemoveEntitySpecific(
-    const base::GUID& guid,
+    const base::Uuid& guid,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
   write_batch->DeleteData(guid.AsLowercaseString());
 
@@ -297,7 +297,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
   std::string group_id =
       specifics.has_tab() ? specifics.tab().group_guid() : specifics.guid();
   const SavedTabGroup* existing_group =
-      model_->Get(base::GUID::ParseLowercase(group_id));
+      model_->Get(base::Uuid::ParseLowercase(group_id));
 
   // Cases where `specifics` is a group.
   if (specifics.has_group()) {
@@ -327,7 +327,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
   // Cases where `specifics` is a tab.
   if (specifics.has_tab()) {
     if (existing_group && existing_group->ContainsTab(
-                              base::GUID::ParseLowercase(specifics.guid()))) {
+                              base::Uuid::ParseLowercase(specifics.guid()))) {
       // Resolve the conflict by merging the sync and local data. Once finished,
       // write the result to the store and update sync with the new merged
       // result if appropriate.
@@ -367,7 +367,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
 }
 
 void SavedTabGroupSyncBridge::DeleteDataFromLocalStorage(
-    const base::GUID& guid,
+    const base::Uuid& guid,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
   write_batch->DeleteData(guid.AsLowercaseString());
   // Check if the model contains the group guid. If so, remove that group and
@@ -392,7 +392,7 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
   auto tab_iterator = tabs_missing_groups_.begin();
   while (tab_iterator != tabs_missing_groups_.end()) {
     const SavedTabGroup* group = model_->Get(
-        base::GUID::ParseLowercase(tab_iterator->tab().group_guid()));
+        base::Uuid::ParseLowercase(tab_iterator->tab().group_guid()));
     if (!group) {
       base::Time last_update_time = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(tab_iterator->update_time_windows_epoch_micros()));
@@ -400,7 +400,7 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
 
       // Discard orphaned tabs that have not been updated for 90 days.
       if (now - last_update_time >= discard_orphaned_tabs_threshold) {
-        RemoveEntitySpecific(base::GUID::ParseLowercase(tab_iterator->guid()),
+        RemoveEntitySpecific(base::Uuid::ParseLowercase(tab_iterator->guid()),
                              write_batch);
         tab_iterator = tabs_missing_groups_.erase(tab_iterator);
       } else {
