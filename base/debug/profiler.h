@@ -6,6 +6,7 @@
 #define BASE_DEBUG_PROFILER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <string>
 
