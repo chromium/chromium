@@ -13,9 +13,17 @@ ts_library("cros_components_ts") {
   out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
 
-  in_files = [ "button/button.ts" ]
+  in_files = [
+    "button/button.ts",
+    "checkbox/checkbox.ts",
+    "radio/radio.ts",
+    "switch/switch.ts",
+  ]
 
-  path_mappings = []
+  root_src_dir = rebase_path("//", target_gen_dir)
+
+  path_mappings = [ "@material/*|$root_src_dir/third_party/material_web_components/components-chromium/node_modules/@material/*" ]
+
   foreach(_mwc_mapping, mwc_path_mappings) {
     path_mappings +=
         [ _mwc_mapping[0] + "|" + rebase_path(_mwc_mapping[1], target_gen_dir) ]
@@ -30,7 +38,12 @@ rewrite_imports("cros_components_rewrite") {
       "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
   out_dir = "$root_gen_dir/ui/webui/resources/tsc/cros_components/rewritten"
 
-  in_files = [ "button/button.js" ]
+  in_files = [
+    "button/button.js",
+    "checkbox/checkbox.js",
+    "radio/radio.js",
+    "switch/switch.js",
+  ]
 
   import_mappings = [
     "lit|//resources/mwc/lit/index.js",
