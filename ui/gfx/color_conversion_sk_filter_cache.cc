@@ -238,7 +238,8 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
   SkSamplingOptions sampling_options(SkFilterMode::kNearest);
   surface->getCanvas()->drawImage(image,
                                   /*x=*/0, /*y=*/0, sampling_options, &paint);
-  return surface->makeImageSnapshot();
+  return surface->makeImageSnapshot()->reinterpretColorSpace(
+      target_color_space);
 }
 
 }  // namespace gfx
