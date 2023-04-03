@@ -823,6 +823,11 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
+    test('customize chrome in product help might show on startup'), () => {
+      assertEquals(
+          1, handler.getCallCount('maybeShowCustomizeChromeFeaturePromo'));
+    };
+
     test('clicking customize button opens side panel', () => {
       // Act.
       $$<HTMLElement>(app, '#customizeButton')!.click();

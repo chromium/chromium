@@ -524,6 +524,7 @@ export class AppElement extends AppElementBase {
     document.documentElement.setAttribute('lazy-loaded', String(true));
     this.registerHelpBubble(
         CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, '#customizeButton', {fixed: true});
+    this.pageHandler_.maybeShowCustomizeChromeFeaturePromo();
   }
 
   private onOpenVoiceSearch_() {

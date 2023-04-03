@@ -19,6 +19,7 @@ const char kClosedTabWithEightOrMore[] = "closed_tab_with_eight_or_more";
 const char kReadingListItemAdded[] = "reading_list_item_added";
 const char kReadingListMenuOpened[] = "reading_list_menu_opened";
 const char kBookmarkStarMenuOpened[] = "bookmark_star_menu_opened";
+const char kCustomizeChromeOpened[] = "customize_chrome_opened";
 
 const char kReopenTabConditionsMet[] = "reopen_tab_conditions_met";
 const char kTabReopened[] = "tab_reopened";
