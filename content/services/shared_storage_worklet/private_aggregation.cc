@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <map>
 #include <string>
 #include <utility>
@@ -13,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "content/services/worklet_utils/private_aggregation_utils.h"
 #include "gin/arguments.h"
@@ -45,6 +47,16 @@ PrivateAggregation::PrivateAggregation(
       global_scope_(global_scope) {}
 
 PrivateAggregation::~PrivateAggregation() {
+  // Ensure any unfinished operations are properly handled.
+  std::vector<int64_t> remaining_operation_ids;
+  remaining_operation_ids.reserve(operation_states_.size());
+  base::ranges::transform(operation_states_,
+                          std::back_inserter(remaining_operation_ids),
+                          [](auto& elem) { return elem.first; });
+
+  base::ranges::for_each(remaining_operation_ids, [this](int64_t operation_id) {
+    OnOperationFinished(operation_id);
+  });
   CHECK(operation_states_.empty());
 }
 

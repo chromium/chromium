@@ -2644,4 +2644,37 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
       )");
 }
 
+// Regression test for crbug.com/1429895.
+TEST_F(SharedStoragePrivateAggregationTest,
+       GlobalScopeDeletedBeforeOperationCompletes_ContributionsStillFlushed) {
+  EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<
+                  blink::mojom::AggregatableReportHistogramContributionPtr>
+                  contributions,
+              blink::mojom::AggregationServiceMode aggregation_mode,
+              blink::mojom::DebugModeDetailsPtr debug_mode_details) {
+            ASSERT_EQ(contributions.size(), 1u);
+            EXPECT_EQ(contributions[0]->bucket, 1);
+            EXPECT_EQ(contributions[0]->value, 2);
+            EXPECT_EQ(aggregation_mode,
+                      blink::mojom::AggregationServiceMode::kDefault);
+            EXPECT_FALSE(debug_mode_details->is_enabled);
+          }));
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  v8::Local<v8::Context> context = LocalContext();
+  v8::Context::Scope context_scope(context);
+  std::string error_str;
+
+  // Intentionally discard returned operation completion closure without
+  // running.
+  global_scope_->StartOperationForTesting();
+
+  WorkletV8Helper::CompileAndRunScript(
+      LocalContext(),
+      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
+      GURL("https://example.test"), &error_str);
+}
+
 }  // namespace shared_storage_worklet
