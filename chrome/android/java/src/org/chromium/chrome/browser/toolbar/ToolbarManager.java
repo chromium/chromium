@@ -1207,8 +1207,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         @Override
         public boolean hasCompletedFirstLayout() {
-            assert getNewTabPageForCurrentTab() != null;
-            return getNewTabPageForCurrentTab().hasCompletedFirstLayout();
+            NewTabPage newTabPage = getNewTabPageForCurrentTab();
+            return newTabPage != null && newTabPage.hasCompletedFirstLayout();
         }
 
         @Override
