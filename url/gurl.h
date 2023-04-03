@@ -15,7 +15,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/strings/string_piece.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"

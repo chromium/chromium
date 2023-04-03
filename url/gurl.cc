@@ -15,8 +15,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
