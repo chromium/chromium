@@ -247,6 +247,7 @@ SystemUIComponentsGridView::~SystemUIComponentsGridView() = default;
 void SystemUIComponentsGridView::ChildPreferredSizeChanged(views::View* child) {
   // Update the layout when a child size is changed.
   grid_layout_->ChildPreferredSizeChanged(this, child);
+  PreferredSizeChanged();
 }
 
 void SystemUIComponentsGridView::AddInstanceImpl(const std::u16string& name,
@@ -263,6 +264,7 @@ void SystemUIComponentsGridView::AddInstanceImpl(const std::u16string& name,
 
   grid_layout_->AppendView(this, label_ptr);
   grid_layout_->AppendView(this, instance_view);
+  PreferredSizeChanged();
 }
 
 }  // namespace ash
