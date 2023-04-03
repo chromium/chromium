@@ -54,6 +54,9 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
         }
       })");
 
+// The image radius value for card art images.
+constexpr int kCardArtImageRadius = 3;  // 3dp
+
 // The SkAlpha value for the image grey overlay.
 constexpr double kImageOverlayAlpha = 0.04;  // 4%
 
@@ -104,7 +107,8 @@ void AutofillImageFetcherImpl::OnCardArtImageFetched(
     credit_card_art_image->card_art_image =
         base::FeatureList::IsEnabled(
             features::kAutofillEnableNewCardArtAndNetworkImages)
-            ? card_art_image
+            ? gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+                  kCardArtImageRadius, card_art_image.AsImageSkia()))
             : AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
   }
 
