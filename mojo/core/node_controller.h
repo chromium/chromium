@@ -188,8 +188,15 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   void SendBrokerClientInvitationOnIOThread(
       base::Process target_process,
       ConnectionParams connection_params,
-      ports::NodeName token,
+      ports::NodeName temporary_node_name,
       const ProcessErrorCallback& process_error_callback);
+  void FinishSendBrokerClientInvitationOnIOThread(
+      base::Process target_process,
+      ConnectionParams connection_params,
+      ports::NodeName temporary_node_name,
+      Channel::HandlePolicy handle_policy,
+      const ProcessErrorCallback& process_error_callback);
+
   void AcceptBrokerClientInvitationOnIOThread(
       ConnectionParams connection_params,
       absl::optional<PlatformHandle> broker_host_handle);

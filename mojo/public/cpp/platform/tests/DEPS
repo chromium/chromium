@@ -1,3 +1,4 @@
 include_rules = [
+  "+mojo/core",
   "+mojo/public",
 ]

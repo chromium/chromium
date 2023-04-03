@@ -55,14 +55,8 @@ class ChannelMac : public Channel,
         self_(this),
         io_task_runner_(io_task_runner),
         watch_controller_(FROM_HERE) {
-    PlatformHandle channel_handle;
-    if (connection_params.server_endpoint().is_valid()) {
-      channel_handle =
-          connection_params.TakeServerEndpoint().TakePlatformHandle();
-    } else {
-      channel_handle = connection_params.TakeEndpoint().TakePlatformHandle();
-    }
-
+    PlatformHandle channel_handle =
+        connection_params.TakeEndpoint().TakePlatformHandle();
     if (channel_handle.is_mach_send()) {
       send_port_ = channel_handle.TakeMachSendRight();
     } else if (channel_handle.is_mach_receive()) {
