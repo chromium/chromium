@@ -118,7 +118,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool HasTree(ui::AXTreeID tree_id) { return model_->ContainsTree(tree_id); }
 
-  void EraseTree(ui::AXTreeID tree_id) { model_->EraseTree(tree_id); }
+  void EraseTree(ui::AXTreeID tree_id) { model_->EraseTreeForTesting(tree_id); }
 
   void AddTree(ui::AXTreeID tree_id,
                std::unique_ptr<ui::AXSerializableTree> tree) {
