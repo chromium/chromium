@@ -547,7 +547,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self.UIHandler close];
   [self.jsNavigationHandler close];
   [self.requestController close];
-  [self.requestController close];
   [self.webViewNavigationObserver close];
 
   // Mark the destruction sequence has started, in case someone else holds a
