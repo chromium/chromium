@@ -61567,6 +61567,7 @@ from previous Chrome versions.
   <int value="-120430245" label="EnableExpKitTextClassifier:enabled"/>
   <int value="-120091289" label="CrostiniAppSearch:enabled"/>
   <int value="-119841719" label="ThreadingOptimizationsOnIo:disabled"/>
+  <int value="-119283387" label="NtpAlphaBackgroundCollections:disabled"/>
   <int value="-119055644" label="GenericSensor:enabled"/>
   <int value="-118993417" label="TLS13HardeningForLocalAnchors:disabled"/>
   <int value="-118897826" label="IntensiveWakeUpThrottling:enabled"/>
@@ -63832,6 +63833,7 @@ from previous Chrome versions.
   <int value="1129542111" label="CastAllowAllIPs:disabled"/>
   <int value="1129888794" label="ash-touch-hud"/>
   <int value="1131627624" label="DefaultStyleSheetsEarlyInit:enabled"/>
+  <int value="1132415818" label="NtpAlphaBackgroundCollections:enabled"/>
   <int value="1132521402" label="ConnectivityDiagnosticsWebUi:enabled"/>
   <int value="1132737110" label="WebAssemblyCodeProtectionPku:disabled"/>
   <int value="1133207726" label="MediaInspectorLogging:enabled"/>

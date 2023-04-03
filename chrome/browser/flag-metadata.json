@@ -5116,6 +5116,11 @@
       "expiry_milestone": 116
   },
   {
+    "name": "ntp-alpha-background-collections",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "ntp-cache-one-google-bar",
     "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 100

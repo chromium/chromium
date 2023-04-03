@@ -6106,6 +6106,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRetailCouponsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kRetailCoupons)},
 
+    {"ntp-alpha-background-collections",
+     flag_descriptions::kNtpAlphaBackgroundCollectionsName,
+     flag_descriptions::kNtpAlphaBackgroundCollectionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpAlphaBackgroundCollections)},
+
     {"ntp-cache-one-google-bar", flag_descriptions::kNtpCacheOneGoogleBarName,
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},

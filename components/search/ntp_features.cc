@@ -68,6 +68,11 @@ BASE_FEATURE(kRealboxUseGoogleGIcon,
              "NtpRealboxUseGoogleGIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, alpha NTP backgrounds will show in Customize Chrome.
+BASE_FEATURE(kNtpAlphaBackgroundCollections,
+             "NtpAlphaBackgroundCollections",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, chrome cart module will be shown.
 BASE_FEATURE(kNtpChromeCartModule,
              "NtpChromeCartModule",

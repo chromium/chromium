@@ -4418,6 +4418,11 @@ const char kMuteNotificationSnoozeActionName[] =
 const char kMuteNotificationSnoozeActionDescription[] =
     "Adds a Snooze action to mute notifications shown while sharing a screen.";
 
+const char kNtpAlphaBackgroundCollectionsName[] =
+    "NTP Alpha Background Collections";
+const char kNtpAlphaBackgroundCollectionsDescription[] =
+    "Shows alpha NTP background collections in Customize Chrome.";
+
 const char kNtpCacheOneGoogleBarName[] = "Cache OneGoogleBar";
 const char kNtpCacheOneGoogleBarDescription[] =
     "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "
