@@ -146,6 +146,9 @@ BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 // Feature that enables Cormorant for users.
 BASE_DECLARE_FEATURE(kCormorant);
 
+// Feature that enables reporting feed user interaction reliability.
+BASE_DECLARE_FEATURE(kFeedUserInteractionReliabilityReport);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_
