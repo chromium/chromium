@@ -548,9 +548,6 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       }
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    UMA_HISTOGRAM_ENUMERATION("ChildProcess.Disconnected2",
-                              static_cast<ProcessType>(data_.process_type),
-                              PROCESS_TYPE_MAX);
 #if BUILDFLAG(IS_CHROMEOS)
     if (info.status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM) {
       UMA_HISTOGRAM_ENUMERATION("ChildProcess.Killed2.OOM",

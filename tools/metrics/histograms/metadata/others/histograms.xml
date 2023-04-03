@@ -2223,14 +2223,6 @@ chromium-metrics-reviews@google.com.
   <summary>Count of child process crashes grouped by process type.</summary>
 </histogram>
 
-<histogram name="ChildProcess.Disconnected2" enum="ProcessType2"
-    expires_after="2020-04-26">
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Count of child process abnormal channel disconnects grouped by process type.
-  </summary>
-</histogram>
-
 <histogram name="ChildProcess.DisconnectedAlive2" enum="ProcessType2"
     expires_after="never">
 <!-- expires-never: For monitoring stability regressions. -->
