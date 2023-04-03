@@ -607,22 +607,6 @@ ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {
   return CreateArgumentListResponse(base::Value::List());
 }
 
-ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
-    base::Value arg) {
-  base::Value::List args;
-  args.Append(std::move(arg));
-  return CreateArgumentListResponse(std::move(args));
-}
-
-ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
-    base::Value arg1,
-    base::Value arg2) {
-  base::Value::List args;
-  args.Append(std::move(arg1));
-  args.Append(std::move(arg2));
-  return CreateArgumentListResponse(std::move(args));
-}
-
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     base::Value::List results) {
   return CreateArgumentListResponse(std::move(results));
