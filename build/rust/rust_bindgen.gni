@@ -101,22 +101,51 @@ template("rust_bindgen") {
       "{{include_dirs}}",
       "{{cflags}}",
       "{{cflags_c}}",
-
-      # This path contains important C headers (e.g. stddef.h) and {{cflags}}
-      # does not include it. Normally this path is implicitly added by clang but
-      # it does not happen for libclang.
-      #
-      # Add it last so includes from deps and configs take precedence.
-      "-isystem" + rebase_path(
-              clang_base_path + "/lib/clang/" + clang_version + "/include",
-              root_build_dir),
-
-      # Passes C comments through as rustdoc attributes.
-      "-fparse-all-comments",
-
-      # Default configs include "-fvisibility=hidden", and for some reason this
-      # causes bindgen not to emit function bindings. Override it.
-      "-fvisibility=default",
     ]
+
+    # This path contains important C headers (e.g. stddef.h) and {{cflags}}
+    # does not include it. Normally this path is implicitly added by clang but
+    # it does not happen for libclang.
+    #
+    # Add it after cflags so includes from deps and configs take precedence.
+    clang_headers = rebase_path(
+            clang_base_path + "/lib/clang/" + clang_version + "/include",
+            root_build_dir)
+    if (is_win) {
+      args += [ "-imsvc" + clang_headers ]
+    } else {
+      args += [ "-isystem" + clang_headers ]
+    }
+
+    # Passes C comments through as rustdoc attributes.
+    if (is_win) {
+      args += [ "/clang:-fparse-all-comments" ]
+    } else {
+      args += [ "-fparse-all-comments" ]
+    }
+
+    # Default configs include "-fvisibility=hidden", and for some reason this
+    # causes bindgen not to emit function bindings. Override it.
+    if (!is_win) {
+      args += [ "-fvisibility=default" ]
+    }
+
+    if (is_win) {
+      # We pass MSVC style flags to clang on Windows, and libclang needs to be
+      # told explicitly to accept them.
+      args += [ "--driver-mode=cl" ]
+
+      # On Windows, libclang adds arguments that it then fails to understand.
+      # -fno-spell-checking
+      # -fallow-editor-placeholders
+      # These should not cause bindgen to fail.
+      args += [ "-Wno-unknown-argument" ]
+
+      # Replace these two arguments with a version that clang-cl can parse.
+      args += [
+        "/clang:-fno-spell-checking",
+        "/clang:-fallow-editor-placeholders",
+      ]
+    }
   }
 }
