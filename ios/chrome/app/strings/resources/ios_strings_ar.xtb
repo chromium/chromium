@@ -204,7 +204,7 @@
 <translation id="2430198251915534025">{COUNT,plural, =1{كلمة مرور واحدة محتمَل تعرّضها للاختراق ({COUNT})}zero{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}two{كلِمتا مرور محتمَل تعرّضهما للاختراق ({COUNT})}few{‫{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{‫{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
-<translation id="2451654228769116489">‏Pin Tab (تثبيت علامة تبويب)</translation>
+<translation id="2451654228769116489">تثبيت علامة تبويب</translation>
 <translation id="2461070143328828326">إعدادات كلمة المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
