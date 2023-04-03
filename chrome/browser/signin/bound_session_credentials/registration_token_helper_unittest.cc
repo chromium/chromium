@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
@@ -30,7 +31,7 @@ class RegistrationTokenHelperTest : public testing::Test {
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
   unexportable_keys::UnexportableKeyTaskManager task_manager_;
-  unexportable_keys::UnexportableKeyService unexportable_key_service_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
 };
 
 TEST_F(RegistrationTokenHelperTest, Success) {
