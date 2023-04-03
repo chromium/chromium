@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -138,6 +139,9 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
+  TRACE_EVENT0("browser",
+               "ContextClusteringHistoryServiceObserver::OnURLVisited");
+
   ScopedVisitProcessingTimer url_visited_processing_timer(
       VisitProcessingStage::kUrlVisited);
 
@@ -291,6 +295,8 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
 void ContextClustererHistoryServiceObserver::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  TRACE_EVENT0("browser",
+               "ContextClusteringHistoryServiceObserver::OnURLsDeleted");
   ScopedVisitProcessingTimer urls_deleted_processing_timer(
       VisitProcessingStage::kUrlsDeleted);
 
@@ -329,6 +335,9 @@ void ContextClustererHistoryServiceObserver::OnURLsDeleted(
 }
 
 void ContextClustererHistoryServiceObserver::CleanUpClusters() {
+  TRACE_EVENT0("browser",
+               "ContextClusteringHistoryServiceObserver::CleanUpClusters");
+
   ScopedVisitProcessingTimer clean_up_timer(
       VisitProcessingStage::kCleanUpTimer);
 
