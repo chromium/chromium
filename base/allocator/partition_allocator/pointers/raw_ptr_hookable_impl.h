@@ -44,6 +44,11 @@ PA_COMPONENT_EXPORT(RAW_PTR) void InstallRawPtrHooks(const RawPtrHooks*);
 PA_COMPONENT_EXPORT(RAW_PTR) void ResetRawPtrHooks();
 
 struct RawPtrHookableImpl {
+  // Since this Impl is used for BRP-ASan, match BRP as closely as possible.
+  static constexpr bool kMustZeroOnInit = true;
+  static constexpr bool kMustZeroOnMove = true;
+  static constexpr bool kMustZeroOnDestruct = true;
+
   // Wraps a pointer.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
