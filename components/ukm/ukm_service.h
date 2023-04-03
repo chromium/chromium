@@ -35,6 +35,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics;
 namespace metrics {
 class MetricsServiceClient;
 class UkmBrowserTestBase;
+class UkmRecorderClientInterfaceRegistry;
 }  // namespace metrics
 
 namespace ukm {
@@ -159,6 +160,12 @@ class UkmService : public UkmRecorderImpl {
   FRIEND_TEST_ALL_PREFIXES(UkmServiceTest, PurgeAppDataFromUnsentLogStore);
   FRIEND_TEST_ALL_PREFIXES(UkmServiceTest, PurgeMsbbDataFromUnsentLogStore);
 
+  // Updates the |recorder_client_registry_| about the changes in
+  // UkmRecorderParameters. Thread-safe.
+  void OnRecorderParametersChanged() override;
+
+  void OnRecorderParametersChangedImpl();
+
   // Starts metrics client initialization.
   void StartInitTask();
 
@@ -186,6 +193,13 @@ class UkmService : public UkmRecorderImpl {
   void AddSyncedUserNoiseBirthYearAndGenderToReport(Report* report);
 
   void SetInitializationCompleteCallbackForTesting(base::OnceClosure callback);
+
+  // UkmRecorderClientInterfaceRegistry keeps track of attached MojoUkmRecorder
+  // clients. This registry can be used to update all the attached clients with
+  // the new UkmRecorderParameters, which then can be used by clients to decide
+  // whether UkmInterface::AddEntry IPC needs to be sent or not.
+  std::unique_ptr<metrics::UkmRecorderClientInterfaceRegistry>
+      recorder_client_registry_;
 
   // A weak pointer to the PrefService used to read and write preferences.
   raw_ptr<PrefService> pref_service_;
@@ -233,6 +247,11 @@ class UkmService : public UkmRecorderImpl {
   base::CallbackListSubscription cloned_install_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // SequencedTaskRunner is used to dispatch OnRecorderParametersChanged() on
+  // the correct sequence, set on construction using the instance assigned to
+  // the current thread.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as UkmService.

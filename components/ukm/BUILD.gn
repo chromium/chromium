@@ -141,6 +141,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/variations",
     "//net:test_support",
+    "//services/metrics",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
     "//third_party/zlib/google:compression_utils",

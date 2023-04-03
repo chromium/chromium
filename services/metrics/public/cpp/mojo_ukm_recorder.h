@@ -9,9 +9,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_recorder_impl_utils.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
 namespace ukm {
@@ -34,7 +36,9 @@ namespace ukm {
  *      .SetMyMetric(metric_value)
  *      .Record(ukm_recorder.get());
  */
-class METRICS_EXPORT MojoUkmRecorder : public UkmRecorder {
+class METRICS_EXPORT MojoUkmRecorder
+    : public UkmRecorder,
+      public ukm::mojom::UkmRecorderClientInterface {
  public:
   explicit MojoUkmRecorder(
       mojo::PendingRemote<mojom::UkmRecorderInterface> recorder_interface);
@@ -47,6 +51,9 @@ class METRICS_EXPORT MojoUkmRecorder : public UkmRecorder {
   base::WeakPtr<MojoUkmRecorder> GetWeakPtr();
 
  private:
+  bool ShouldDropEntry(const mojom::UkmEntry& entry);
+  void ClientDisconnected();
+
   // UkmRecorder:
   void UpdateSourceURL(SourceId source_id, const GURL& url) override;
   void UpdateAppURL(SourceId source_id,
@@ -58,7 +65,15 @@ class METRICS_EXPORT MojoUkmRecorder : public UkmRecorder {
   void AddEntry(mojom::UkmEntryPtr entry) override;
   void MarkSourceForDeletion(ukm::SourceId source_id) override;
 
+  // UkmRecorderClientInterface:
+  void SetParameters(ukm::mojom::UkmRecorderParametersPtr params) override;
+
   mojo::Remote<mojom::UkmRecorderInterface> interface_;
+  mojo::Receiver<ukm::mojom::UkmRecorderClientInterface> receiver_;
+  // params_->event_hash_bypass_list needs to be sorted for ShouldDropEntry to
+  // work correctly, since a binary search is done for finding event hash of
+  // UkmEntry in event_hash_bypass_list.
+  ukm::mojom::UkmRecorderParametersPtr params_;
 
   base::WeakPtrFactory<MojoUkmRecorder> weak_factory_{this};
 };

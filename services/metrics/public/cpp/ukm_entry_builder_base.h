@@ -28,8 +28,8 @@ class METRICS_EXPORT UkmEntryBuilderBase {
   // further calls to this or TakeEntry() will do nothing.
   void Record(UkmRecorder* recorder);
 
-  // Extracts the created UkmEntryPtr. Record() cannot be called after this.
-  mojom::UkmEntryPtr TakeEntry();
+  // Return a copy of created UkmEntryPtr for testing.
+  mojom::UkmEntryPtr GetEntryForTesting();
 
  protected:
   UkmEntryBuilderBase(ukm::SourceIdObj source_id, uint64_t event_hash);

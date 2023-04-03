@@ -7,7 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/sequenced_task_runner.h"
+#include "services/metrics/public/cpp/ukm_recorder_client_interface_registry.h"
 
 namespace ukm {
 
@@ -27,15 +27,33 @@ DelegatingUkmRecorder* DelegatingUkmRecorder::Get() {
 }
 
 void DelegatingUkmRecorder::AddDelegate(base::WeakPtr<UkmRecorder> delegate) {
-  base::AutoLock auto_lock(lock_);
-  delegates_.insert(
-      {delegate.get(),
-       Delegate(base::SequencedTaskRunner::GetCurrentDefault(), delegate)});
+  bool multiple_delegates = false;
+  {
+    base::AutoLock auto_lock(lock_);
+    delegates_.insert(
+        {delegate.get(),
+         Delegate(base::SequencedTaskRunner::GetCurrentDefault(), delegate)});
+    multiple_delegates = delegates_.size() > 1;
+  }
+  // If multiple delegates are present, allow all clients to send an IPC to
+  // browser process for AddEntry. This is because delegates can have different
+  // parameters and be attached to different clients, and if an event being
+  // observed by any of the clients occurs, all the clients should be able to
+  // send UkmInterface::AddEntry IPC. Multiple Delegates should only be present
+  // in test environment.
+  if (multiple_delegates) {
+    metrics::UkmRecorderClientInterfaceRegistry::NotifyMultipleDelegates();
+  }
 }
 
 void DelegatingUkmRecorder::RemoveDelegate(UkmRecorder* delegate) {
   base::AutoLock auto_lock(lock_);
   delegates_.erase(delegate);
+}
+
+bool DelegatingUkmRecorder::HasMultipleDelegates() {
+  base::AutoLock lock(lock_);
+  return delegates_.size() > 1;
 }
 
 void DelegatingUkmRecorder::UpdateSourceURL(SourceId source_id,

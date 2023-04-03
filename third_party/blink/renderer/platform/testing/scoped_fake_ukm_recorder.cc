@@ -39,6 +39,9 @@ void ScopedFakeUkmRecorder::UpdateSourceURL(int64_t source_id,
   recorder_->UpdateSourceURL(source_id, GURL(url));
 }
 
+void ScopedFakeUkmRecorder::BindClient(
+    mojo::PendingRemote<ukm::mojom::UkmRecorderClientInterface>) {}
+
 void ScopedFakeUkmRecorder::ResetRecorder() {
   recorder_ = std::make_unique<ukm::TestUkmRecorder>();
 }

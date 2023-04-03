@@ -189,6 +189,16 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Get the UkmConsentType associated for a given SourceIdType.
   static UkmConsentType GetConsentType(SourceIdType type);
 
+ protected:
+  // Get the set of hashes of event types that are observed by any of the
+  // |observers_|. These observers_ need to be notified of a new UKM event with
+  // event_hash in set of observed event_hashes even when UKM recording is
+  // disabled.
+  std::set<uint64_t> GetObservedEventHashes();
+  // Update the MojoUkmRecorder clients about any update in parameters. This
+  // method can be called on any thread.
+  virtual void OnRecorderParametersChanged() {}
+
  private:
   friend ::metrics::UkmBrowserTestBase;
   friend ::ukm::debug::UkmDebugDataExtractor;

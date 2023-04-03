@@ -16,6 +16,10 @@ namespace ukm {
 
 BASE_FEATURE(kUkmFeature, "Ukm", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUkmReduceAddEntryIPC,
+             "UkmReduceAddEntryIPC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 UkmRecorder::UkmRecorder() = default;
 
 UkmRecorder::~UkmRecorder() = default;
