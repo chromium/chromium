@@ -44,6 +44,12 @@ export class TopicSourceItem extends WithPersonalizationStore {
         observer: 'onCheckedChanged_',
       },
 
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       topicSource: TopicSource,
 
       hasGooglePhotosAlbums: {
@@ -60,6 +66,7 @@ export class TopicSourceItem extends WithPersonalizationStore {
   }
 
   checked: boolean;
+  disabled: boolean;
   topicSource: TopicSource;
   hasGooglePhotosAlbums: boolean|null;
   override ariaLabel: string;

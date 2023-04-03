@@ -11,10 +11,11 @@ import '../../css/common.css.js';
 import './topic_source_item_element.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {TopicSource} from '../../personalization_app.mojom-webui.js';
+import {AnimationTheme, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './topic_source_list_element.html.js';
+import {isValidTopicSourceAndTheme} from './utils.js';
 
 export class TopicSourceList extends WithPersonalizationStore {
   static get is() {
@@ -32,6 +33,8 @@ export class TopicSourceList extends WithPersonalizationStore {
         value: [TopicSource.kGooglePhotos, TopicSource.kArtGallery],
       },
 
+      selectedAnimationTheme: AnimationTheme,
+
       selectedTopicSource: TopicSource,
 
       hasGooglePhotosAlbums: Boolean,
@@ -39,6 +42,7 @@ export class TopicSourceList extends WithPersonalizationStore {
   }
 
   topicSources: TopicSource[];
+  selectedAnimationTheme: AnimationTheme;
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
 
@@ -48,6 +52,12 @@ export class TopicSourceList extends WithPersonalizationStore {
     if (elem) {
       elem.focus();
     }
+  }
+
+  private isTopicSourceDisabled_(
+      topicSource: TopicSource,
+      selectedAnimationTheme: AnimationTheme): boolean {
+    return !isValidTopicSourceAndTheme(topicSource, selectedAnimationTheme);
   }
 
   private isSelected_(
