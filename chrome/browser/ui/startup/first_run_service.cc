@@ -157,6 +157,9 @@ enum class FinishedReason {
   kFinishedFlow,
   kProfileAlreadySetUp,
   kSkippedByPolicies,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  kExperimentCounterfactual,
+#endif
 };
 
 void SetFirstRunFinished(FinishedReason reason) {
@@ -436,6 +439,7 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
   }
 
   if (!base::FeatureList::IsEnabled(kForYouFre)) {
+    SetFirstRunFinished(FinishedReason::kExperimentCounterfactual);
     return nullptr;
   }
 #endif
