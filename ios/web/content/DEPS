@@ -1,5 +1,6 @@
 include_rules = [
   "+content/public/browser",
+  "+components/crash/core/common",
 ]
 specific_include_rules = {
   "content_web_state\.mm": [
