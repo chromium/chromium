@@ -41,11 +41,12 @@ struct MediaRecorderBitrates {
 };
 
 // Boundaries of Opus bitrate from https://www.opus-codec.org/.
-const int kSmallestPossibleOpusBitRate = 6000;
+const int kSmallestPossibleOpusBitRate = 5000;
 const int kLargestAutoAllocatedOpusBitRate = 128000;
 
 // Smallest Vpx bitrate that can be requested.
-const int kSmallestPossibleVpxBitRate = 100000;
+// 75kbps is the min bitrate recommended by VP9 VOD settings for 320x240 videos.
+const int kSmallestPossibleVpxBitRate = 75000;
 
 // Both values come from YouTube recommended upload encoding settings and are
 // used by other browser vendors. See
