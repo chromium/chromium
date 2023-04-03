@@ -20,6 +20,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/mojo_util.h"
 #include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
 #include "remoting/host/security_key/security_key_message_handler.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -33,12 +34,11 @@
 namespace remoting {
 
 int StartRemoteSecurityKey() {
-#if BUILDFLAG(IS_WIN)
-  if (!AddProcessAccessRightForWellKnownSid(
-          WinLocalServiceSid, PROCESS_QUERY_LIMITED_INFORMATION)) {
+  if (!ChromotingHostServicesClient::Initialize()) {
     return kInitializationFailed;
   }
 
+#if BUILDFLAG(IS_WIN)
   // GetStdHandle() returns pseudo-handles for stdin and stdout even if
   // the hosting executable specifies "Windows" subsystem. However the returned
   // handles are invalid in that case unless standard input and output are

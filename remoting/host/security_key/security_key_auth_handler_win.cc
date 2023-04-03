@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -20,36 +21,41 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/win_util.h"
-#include "ipc/ipc_channel.h"
-#include "ipc/ipc_listener.h"
-#include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_details.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
-#include "remoting/host/security_key/security_key_ipc_server.h"
+
+namespace remoting {
 
 namespace {
 
-// The timeout used to disconnect a client from the IPC Server channel if it
-// forgets to do so.  This ensures the server channel is not blocked forever.
+// The timeout used to disconnect a client from the IPC Server if it forgets to
+// do so.  This ensures the server channel is not blocked forever.
 constexpr base::TimeDelta kInitialRequestTimeout = base::Seconds(5);
 
 // This value represents the amount of time to wait for a security key request
 // from the client before terminating the connection.
 constexpr base::TimeDelta kSecurityKeyRequestTimeout = base::Seconds(60);
 
+struct ActiveConnection {
+  mojo::ReceiverId receiver_id;
+  base::OneShotTimer disconnect_timer;
+  mojom::SecurityKeyForwarder::OnSecurityKeyRequestCallback
+      on_security_key_request_callback;
+};
+
 }  // namespace
 
-namespace remoting {
-
-// Creates an IPC server channel which services IPC clients that want to start
-// a security key forwarding session.  Once an IPC Client connects to the
-// server, the SecurityKeyAuthHandlerWin class will create a new
-// SecurityKeyIpcServer instance to service the next request.  This system
-// allows multiple security key forwarding sessions to occur concurrently.
+// Implements the mojom::SecurityKeyForwarder interface and handles incoming SK
+// requests from the IPC client. The caller is responsible for running the IPC
+// server and passing in new connections through BindSecurityKeyForwarder().
 // TODO(joedow): Update SecurityKeyAuthHandler impls to run on a separate IO
 // thread instead of the thread it was created on: crbug.com/591739
-class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
+class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler,
+                                  public mojom::SecurityKeyForwarder {
  public:
   explicit SecurityKeyAuthHandlerWin(
       ClientSessionDetails* client_session_details);
@@ -61,9 +67,13 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   ~SecurityKeyAuthHandlerWin() override;
 
  private:
-  using ActiveChannels = std::map<int, std::unique_ptr<SecurityKeyIpcServer>>;
+  // On Windows, sizeof(int) != sizeof(ReceiverId), so we can't just use the
+  // receiver ID as the connection ID.
+  using ActiveConnections = std::map</* connection_id */ int, ActiveConnection>;
 
   // SecurityKeyAuthHandler interface.
+  void BindSecurityKeyForwarder(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
   void CreateSecurityKeyConnection() override;
   bool IsValidConnectionId(int security_key_connection_id) const override;
   void SendClientResponse(int security_key_connection_id,
@@ -73,20 +83,18 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   size_t GetActiveConnectionCountForTest() const override;
   void SetRequestTimeoutForTest(base::TimeDelta timeout) override;
 
-  // Creates the IPC server channel and waits for a connection using
-  // |ipc_server_channel_name_|.
-  void StartIpcServerChannel();
+  // mojom::SecurityKeyForwarder interface.
+  void OnSecurityKeyRequest(const std::string& request_data,
+                            OnSecurityKeyRequestCallback callback) override;
 
-  // Closes the IPC channel created for a security key forwarding session.
-  void CloseSecurityKeyRequestIpcChannel(int connection_id);
+  void OnIpcPeerDisconnected();
 
-  // Returns the IPC Channel instance created for |connection_id|.
-  ActiveChannels::const_iterator GetChannelForConnectionId(
-      int connection_id) const;
+  // Closes the connection created for a security key forwarding session.
+  void CloseSecurityKeyRequestConnection(int connection_id);
 
-  void OnChannelConnected();
+  base::OnceClosure GetCloseConnectionClosure(int connection_id);
 
-  // Represents the last id assigned to a new security key request IPC channel.
+  // Represents the last id assigned to a new security key request connection.
   int last_connection_id_ = 0;
 
   // Sends a security key extension message to the client when called.
@@ -95,11 +103,14 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   // Interface which provides details about the client session.
   raw_ptr<ClientSessionDetails> client_session_details_ = nullptr;
 
-  // Tracks the IPC channel created for each security key forwarding session.
-  ActiveChannels active_channels_;
+  // Tracks the connection created for each security key forwarding session.
+  ActiveConnections active_connections_;
+
+  mojo::ReceiverSet<mojom::SecurityKeyForwarder, /* connection_id */ int>
+      receiver_set_;
 
   // The amount of time to wait for a client to process the connection details
-  // message and disconnect from the IPC server channel before disconnecting it.
+  // message and disconnect from the IPC server before disconnecting it.
   base::TimeDelta disconnect_timeout_;
 
   // Ensures SecurityKeyAuthHandlerWin methods are called on the same thread.
@@ -123,21 +134,38 @@ SecurityKeyAuthHandlerWin::SecurityKeyAuthHandlerWin(
     : client_session_details_(client_session_details),
       disconnect_timeout_(kInitialRequestTimeout) {
   DCHECK(client_session_details_);
+  receiver_set_.set_disconnect_handler(
+      base::BindRepeating(&SecurityKeyAuthHandlerWin::OnIpcPeerDisconnected,
+                          weak_factory_.GetWeakPtr()));
 }
 
 SecurityKeyAuthHandlerWin::~SecurityKeyAuthHandlerWin() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void SecurityKeyAuthHandlerWin::CreateSecurityKeyConnection() {
+void SecurityKeyAuthHandlerWin::BindSecurityKeyForwarder(
+    mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  StartIpcServerChannel();
+  int new_connection_id = ++last_connection_id_;
+  // Note that this default-constructs the object.
+  ActiveConnection& connection = active_connections_[new_connection_id];
+  connection.receiver_id =
+      receiver_set_.Add(this, std::move(receiver), new_connection_id);
+  // Close the connection if the client doesn't send any requests within the
+  // deadline.
+  connection.disconnect_timer.Start(
+      FROM_HERE, disconnect_timeout_,
+      GetCloseConnectionClosure(new_connection_id));
+}
+
+void SecurityKeyAuthHandlerWin::CreateSecurityKeyConnection() {
+  // No-op, since the caller maintains the IPC connection and passes pending
+  // receivers via BindSecurityKeyForwarder().
 }
 
 bool SecurityKeyAuthHandlerWin::IsValidConnectionId(int connection_id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return connection_id != last_connection_id_ &&
-         (GetChannelForConnectionId(connection_id) != active_channels_.end());
+  return active_connections_.find(connection_id) != active_connections_.end();
 }
 
 void SecurityKeyAuthHandlerWin::SendClientResponse(
@@ -145,24 +173,24 @@ void SecurityKeyAuthHandlerWin::SendClientResponse(
     const std::string& response_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  ActiveChannels::const_iterator iter =
-      GetChannelForConnectionId(connection_id);
-  if (iter == active_channels_.end()) {
+  auto iter = active_connections_.find(connection_id);
+  if (iter == active_connections_.end()) {
     HOST_LOG << "Invalid security key connection ID received: "
              << connection_id;
     return;
   }
-
-  if (!iter->second->SendResponse(response_data)) {
-    CloseSecurityKeyRequestIpcChannel(connection_id);
-  }
+  ActiveConnection& connection = iter->second;
+  std::move(connection.on_security_key_request_callback).Run(response_data);
+  // Reset the timer to give the client a chance to send another request.
+  connection.disconnect_timer.Start(FROM_HERE, disconnect_timeout_,
+                                    GetCloseConnectionClosure(connection_id));
 }
 
 void SecurityKeyAuthHandlerWin::SendErrorAndCloseConnection(int connection_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   SendClientResponse(connection_id, kSecurityKeyConnectionError);
-  CloseSecurityKeyRequestIpcChannel(connection_id);
+  CloseSecurityKeyRequestConnection(connection_id);
 }
 
 void SecurityKeyAuthHandlerWin::SetSendMessageCallback(
@@ -172,11 +200,7 @@ void SecurityKeyAuthHandlerWin::SetSendMessageCallback(
 }
 
 size_t SecurityKeyAuthHandlerWin::GetActiveConnectionCountForTest() const {
-  if (active_channels_.empty()) {
-    return 0u;
-  }
-  // One channel is waiting for a connection.
-  return active_channels_.size() - 1;
+  return active_connections_.size();
 }
 
 void SecurityKeyAuthHandlerWin::SetRequestTimeoutForTest(
@@ -184,36 +208,50 @@ void SecurityKeyAuthHandlerWin::SetRequestTimeoutForTest(
   disconnect_timeout_ = timeout;
 }
 
-void SecurityKeyAuthHandlerWin::StartIpcServerChannel() {
+void SecurityKeyAuthHandlerWin::OnSecurityKeyRequest(
+    const std::string& request_data,
+    OnSecurityKeyRequestCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(send_message_callback_);
 
-  int new_connection_id = ++last_connection_id_;
-  std::unique_ptr<SecurityKeyIpcServer> ipc_server(SecurityKeyIpcServer::Create(
-      new_connection_id, client_session_details_, disconnect_timeout_,
-      send_message_callback_,
-      base::BindOnce(&SecurityKeyAuthHandlerWin::OnChannelConnected,
-                     base::Unretained(this)),
-      base::BindOnce(
-          &SecurityKeyAuthHandlerWin::CloseSecurityKeyRequestIpcChannel,
-          base::Unretained(this), new_connection_id)));
-  ipc_server->CreateChannel(remoting::GetSecurityKeyIpcChannel(),
-                            kSecurityKeyRequestTimeout);
-  active_channels_[new_connection_id] = std::move(ipc_server);
+  int connection_id = receiver_set_.current_context();
+  auto iter = active_connections_.find(connection_id);
+  DCHECK(iter != active_connections_.end());
+  ActiveConnection& connection = iter->second;
+  if (connection.on_security_key_request_callback) {
+    LOG(ERROR) << "Received security key request while waiting for a response";
+    CloseSecurityKeyRequestConnection(connection_id);
+    return;
+  }
+  // Reset the timer to give the client a chance to send the response.
+  connection.disconnect_timer.Start(FROM_HERE, kSecurityKeyRequestTimeout,
+                                    GetCloseConnectionClosure(connection_id));
+  connection.on_security_key_request_callback = std::move(callback);
+  send_message_callback_.Run(connection_id, request_data);
 }
 
-void SecurityKeyAuthHandlerWin::CloseSecurityKeyRequestIpcChannel(
+void SecurityKeyAuthHandlerWin::OnIpcPeerDisconnected() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  active_connections_.erase(receiver_set_.current_context());
+}
+
+void SecurityKeyAuthHandlerWin::CloseSecurityKeyRequestConnection(
     int connection_id) {
-  active_channels_.erase(connection_id);
+  DCHECK(thread_checker_.CalledOnValidThread());
+  auto iter = active_connections_.find(connection_id);
+  if (iter == active_connections_.end()) {
+    LOG(ERROR) << "Connection ID " << connection_id << " doesn't exist.";
+    return;
+  }
+  receiver_set_.Remove(iter->second.receiver_id);
+  active_connections_.erase(iter);
 }
 
-SecurityKeyAuthHandlerWin::ActiveChannels::const_iterator
-SecurityKeyAuthHandlerWin::GetChannelForConnectionId(int connection_id) const {
-  return active_channels_.find(connection_id);
-}
-
-void SecurityKeyAuthHandlerWin::OnChannelConnected() {
-  // Create another server to accept the next connection.
-  StartIpcServerChannel();
+base::OnceClosure SecurityKeyAuthHandlerWin::GetCloseConnectionClosure(
+    int connection_id) {
+  return base::BindOnce(
+      &SecurityKeyAuthHandlerWin::CloseSecurityKeyRequestConnection,
+      weak_factory_.GetWeakPtr(), connection_id);
 }
 
 }  // namespace remoting

@@ -1135,11 +1135,13 @@ if (enable_me2me_host) {
         ":main",
         "//remoting/host/it2me:main",
         "//remoting/host/remote_open_url:main",
-        "//remoting/host/security_key:main",
         "//remoting/host/setup:native_messaging_host_main",
         "//remoting/host/setup:start_host_main",
         "//remoting/host/webauthn:main",
       ]
+      if (is_win) {
+        deps += [ "//remoting/host/security_key:main" ]
+      }
     }
     if (is_win) {
       group("remoting_core") {

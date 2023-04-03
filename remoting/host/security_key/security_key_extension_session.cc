@@ -121,6 +121,13 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
   return true;
 }
 
+#if BUILDFLAG(IS_WIN)
+void SecurityKeyExtensionSession::BindSecurityKeyForwarder(
+    mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) {
+  security_key_auth_handler_->BindSecurityKeyForwarder(std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void SecurityKeyExtensionSession::ProcessControlMessage(
     const base::Value::Dict& message_data) const {
   const std::string* option = message_data.FindString(kControlOption);

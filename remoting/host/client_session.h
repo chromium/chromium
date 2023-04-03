@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -189,6 +190,10 @@ class ClientSession : public protocol::HostStub,
       mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
   void BindRemoteUrlOpener(
       mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) override;
+#if BUILDFLAG(IS_WIN)
+  void BindSecurityKeyForwarder(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
+#endif
 
   void BindReceiver(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);

@@ -12,6 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
 
 namespace base {
 class FilePath;
@@ -26,7 +28,7 @@ class ClientSessionDetails;
 // and the client.
 class SecurityKeyAuthHandler {
  public:
-  virtual ~SecurityKeyAuthHandler() {}
+  virtual ~SecurityKeyAuthHandler() = default;
 
   // Used to send security key extension messages to the client.
   using SendMessageCallback =
@@ -47,6 +49,12 @@ class SecurityKeyAuthHandler {
   static void SetSecurityKeySocketName(
       const base::FilePath& security_key_socket_name);
 #endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_WIN)
+  // Binds a SecurityKeyForwarder receiver for receiving SK forwarding requests.
+  virtual void BindSecurityKeyForwarder(
+      mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) = 0;
+#endif  // BUILDFLAG(IS_WIN)
 
   // Sets the callback used to send messages to the client.
   virtual void SetSendMessageCallback(const SendMessageCallback& callback) = 0;

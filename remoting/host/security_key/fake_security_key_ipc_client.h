@@ -10,30 +10,20 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_security_key.mojom.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
-
-namespace IPC {
-class Channel;
-class Message;
-}  // namespace IPC
-
-namespace mojo {
-class IsolatedConnection;
-}
 
 namespace remoting {
 
 // Simulates the SecurityKeyIpcClient and provides access to data members
-// for testing.  This class is used for scenarios which require an IPC channel
-// as well as for tests which only need callbacks activated.
+// for testing.  This class is used for scenarios which require an IPC
+// connection as well as for tests which only need callbacks activated.
 class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
  public:
   explicit FakeSecurityKeyIpcClient(
-      const base::RepeatingClosure& channel_event_callback);
+      const base::RepeatingClosure& connection_event_callback);
 
   FakeSecurityKeyIpcClient(const FakeSecurityKeyIpcClient&) = delete;
   FakeSecurityKeyIpcClient& operator=(const FakeSecurityKeyIpcClient&) = delete;
@@ -49,15 +39,13 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
                               ResponseCallback response_callback) override;
   void CloseIpcConnection() override;
 
-  // Connects as a client to an IPC Channel backed by |pipe|.
-  bool ConnectWithPipe(mojo::ScopedMessagePipeHandle pipe);
-
-  // Connects as a client to the |server_name| IPC Channel.
-  bool ConnectToServerChannel(
-      const mojo::NamedPlatformChannel::ServerName& server_name);
+  // Returns a pending receiver that can be bound to receive requests from the
+  // fake client.
+  mojo::PendingReceiver<mojom::SecurityKeyForwarder>
+  BindNewPipeAndPassReceiver();
 
   // Override of SendSecurityKeyRequest() interface method for tests which use
-  // an IPC channel for testing.
+  // an IPC connection for testing.
   void SendSecurityKeyRequestViaIpc(const std::string& request_payload);
 
   base::WeakPtr<FakeSecurityKeyIpcClient> AsWeakPtr();
@@ -66,7 +54,7 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
     return last_message_received_;
   }
 
-  bool ipc_channel_connected() { return ipc_channel_connected_; }
+  bool ipc_connected() { return ipc_connected_; }
 
   bool connection_ready() { return connection_ready_; }
 
@@ -87,22 +75,15 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   }
 
  private:
-  // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnChannelConnected(int32_t peer_pid) override;
-  void OnChannelError() override;
+  void OnQueryVersionResult(uint32_t unused_version);
 
   // Handles security key response IPC messages.
   void OnSecurityKeyResponse(const std::string& request_data);
 
-  // Called when a change in the IPC channel state has occurred.
-  base::RepeatingClosure channel_event_callback_;
+  // Called when a change in the IPC connection state has occurred.
+  base::RepeatingClosure connection_event_callback_;
 
-  // Used for sending/receiving security key messages between processes.
-  std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
-  std::unique_ptr<IPC::Channel> client_channel_;
-
-  mojo::AssociatedRemote<mojom::SecurityKeyForwarder> security_key_forwarder_;
+  mojo::Remote<mojom::SecurityKeyForwarder> security_key_forwarder_;
 
   // Provides the contents of the last IPC message received.
   std::string last_message_received_;
@@ -116,8 +97,8 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   // Value returned by CheckForSecurityKeyIpcServerChannel() method.
   bool check_for_ipc_channel_return_value_ = true;
 
-  // Stores whether a connection to the server IPC channel is active.
-  bool ipc_channel_connected_ = false;
+  // Stores whether a connection to the server IPC connection is active.
+  bool ipc_connected_ = false;
 
   // Tracks whether a ConnectionReady message has been received.
   bool connection_ready_ = false;

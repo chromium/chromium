@@ -11,18 +11,10 @@ source_set("security_key") {
     "security_key_extension.h",
     "security_key_extension_session.cc",
     "security_key_extension_session.h",
-    "security_key_ipc_client.cc",
-    "security_key_ipc_client.h",
     "security_key_ipc_constants.cc",
     "security_key_ipc_constants.h",
-    "security_key_ipc_server.cc",
-    "security_key_ipc_server.h",
-    "security_key_ipc_server_impl.cc",
-    "security_key_ipc_server_impl.h",
     "security_key_message.cc",
     "security_key_message.h",
-    "security_key_message_handler.cc",
-    "security_key_message_handler.h",
     "security_key_message_reader.h",
     "security_key_message_reader_impl.cc",
     "security_key_message_reader_impl.h",
@@ -34,7 +26,6 @@ source_set("security_key") {
   ]
 
   deps = [
-    "//ipc",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//net:net",
@@ -53,30 +44,36 @@ source_set("security_key") {
   }
 
   if (is_win) {
-    sources += [ "security_key_auth_handler_win.cc" ]
-  }
-}
-
-source_set("main") {
-  configs += [ "//remoting/build/config:host_implementation" ]
-
-  sources = [ "remote_security_key_main.cc" ]
-  deps = [
-    ":remote_security_key_main_headers",
-    ":security_key",
-    "//base:debugging_buildflags",
-    "//mojo/core/embedder",
-    "//remoting/base",
-    "//remoting/base:breakpad",
-    "//remoting/host:common",
-    "//remoting/host/base",
-  ]
-  if (is_win) {
-    deps += [ "//remoting/host/win:acl_util" ]
+    sources += [
+      "security_key_auth_handler_win.cc",
+      "security_key_ipc_client.cc",
+      "security_key_ipc_client.h",
+      "security_key_message_handler.cc",
+      "security_key_message_handler.h",
+    ]
+    deps += [ "//remoting/host:chromoting_host_services_client" ]
   }
 }
 
 if (is_win) {
+  source_set("main") {
+    configs += [ "//remoting/build/config:host_implementation" ]
+
+    sources = [ "remote_security_key_main.cc" ]
+    deps = [
+      ":remote_security_key_main_headers",
+      ":security_key",
+      "//base:debugging_buildflags",
+      "//mojo/core/embedder",
+      "//remoting/base",
+      "//remoting/base:breakpad",
+      "//remoting/host:chromoting_host_services_client",
+      "//remoting/host:common",
+      "//remoting/host/base",
+      "//remoting/host/win:acl_util",
+    ]
+  }
+
   executable("remote_security_key") {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -95,11 +92,11 @@ if (is_win) {
       "remote_security_key_entry_point.cc",
     ]
   }
-}
 
-source_set("remote_security_key_main_headers") {
-  sources = [ "remote_security_key_main.h" ]
-  deps = [ "//remoting/host:host_main_headers" ]
+  source_set("remote_security_key_main_headers") {
+    sources = [ "remote_security_key_main.h" ]
+    deps = [ "//remoting/host:host_main_headers" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -107,9 +104,6 @@ source_set("unit_tests") {
 
   sources = [
     "security_key_extension_session_unittest.cc",
-    "security_key_ipc_client_unittest.cc",
-    "security_key_ipc_server_unittest.cc",
-    "security_key_message_handler_unittest.cc",
     "security_key_message_reader_impl_unittest.cc",
     "security_key_message_writer_impl_unittest.cc",
   ]
@@ -129,21 +123,16 @@ source_set("unit_tests") {
     "//remoting/protocol:protocol",
   ]
 
-  if (is_linux) {
-    # MojoIpcz (enabled on Linux) does not allow processes to start a server
-    # endpoint and connect to it within the same process boundary. The proper
-    # fix is to turn the tests into multi-process tests, but the plan is to
-    # migrate security key IPCs to NamedMojoIpcServer, and SecurityKeyIpcServer
-    # is technically only used on Windows, so it's not worth the effort.
-    sources -= [ "security_key_ipc_server_unittest.cc" ]
-  }
-
   if (is_posix) {
     sources += [ "security_key_auth_handler_posix_unittest.cc" ]
   }
 
   if (is_win) {
-    sources += [ "security_key_auth_handler_win_unittest.cc" ]
+    sources += [
+      "security_key_auth_handler_win_unittest.cc",
+      "security_key_ipc_client_unittest.cc",
+      "security_key_message_handler_unittest.cc",
+    ]
   }
 }
 
@@ -151,19 +140,21 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_security_key_ipc_client.cc",
-    "fake_security_key_ipc_client.h",
-    "fake_security_key_ipc_server.cc",
-    "fake_security_key_ipc_server.h",
     "fake_security_key_message_reader.cc",
     "fake_security_key_message_reader.h",
     "fake_security_key_message_writer.cc",
     "fake_security_key_message_writer.h",
   ]
 
+  if (is_win) {
+    sources += [
+      "fake_security_key_ipc_client.cc",
+      "fake_security_key_ipc_client.h",
+    ]
+  }
+
   deps = [
     ":security_key",
-    "//ipc",
     "//remoting/host:common",
     "//remoting/host/mojom",
     "//remoting/proto",

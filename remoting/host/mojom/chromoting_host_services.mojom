@@ -5,6 +5,7 @@
 module remoting.mojom;
 
 import "remoting/host/mojom/webauthn_proxy.mojom";
+import "remoting/host/mojom/remote_security_key.mojom";
 import "remoting/host/mojom/remote_url_opener.mojom";
 
 // ChromotingHostServices defines the APIs that live in the Chromoting host
@@ -41,4 +42,11 @@ interface ChromotingSessionServices {
   // Binds the RemoteUrlOpener interface which allows applications on the host
   // side to open links on the remote client's browser.
   BindRemoteUrlOpener(pending_receiver<RemoteUrlOpener> receiver);
+
+  // Binds the SecurityKeyForwarder interface which allows the remote security
+  // key binary (used for SK forwarding) to send SK requests to the chromoting
+  // host via IPC. This is only used on Windows, since other platforms use
+  // different mechanisms for sending the SK requests.
+  [EnableIf=is_win]
+  BindSecurityKeyForwarder(pending_receiver<SecurityKeyForwarder> receiver);
 };
