@@ -442,9 +442,6 @@ const char kEnableSyncConsent[] = "sync_consent.enabled";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Copy of the primary pointing stick buttons option to use on login screen.
-const char kOwnerPrimaryPointingStickButtonRight[] =
-    "owner.pointing_stick.primary_right";
 
 // A boolean pref set to true if time should be displayed in 24-hour clock.
 const char kUse24HourClock[] = "settings.clock.use_24hour_clock";

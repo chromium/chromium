@@ -150,7 +150,7 @@ class PreferencesTest : public LoginManagerTest {
     EXPECT_EQ(local_state->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight),
               prefs->GetBoolean(prefs::kPrimaryMouseButtonRight));
     EXPECT_EQ(
-        local_state->GetBoolean(::prefs::kOwnerPrimaryPointingStickButtonRight),
+        local_state->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight),
         prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight));
   }
 

@@ -44,7 +44,7 @@ bool GetSystemPointingStickPrimaryButtonRight() {
 // Set "owner.pointing_stick.primary_right" preference.
 void SetOwnerPointingStickPrimaryRight(bool val) {
   g_browser_process->local_state()->SetBoolean(
-      ::prefs::kOwnerPrimaryPointingStickButtonRight, val);
+      prefs::kOwnerPrimaryPointingStickButtonRight, val);
 }
 
 // Gets current pointing_stick primary button right value.

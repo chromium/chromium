@@ -24,7 +24,7 @@ LoginUIPrefController::LoginUIPrefController() {
       base::BindRepeating(&LoginUIPrefController::UpdatePrimaryMouseButtonRight,
                           weak_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
-      ::prefs::kOwnerPrimaryPointingStickButtonRight,
+      prefs::kOwnerPrimaryPointingStickButtonRight,
       base::BindRepeating(
           &LoginUIPrefController::UpdatePrimaryPointingStickButtonRight,
           weak_factory_.GetWeakPtr()));
@@ -54,7 +54,7 @@ void LoginUIPrefController::UpdatePrimaryMouseButtonRight() {
 void LoginUIPrefController::UpdatePrimaryPointingStickButtonRight() {
   system::InputDeviceSettings::Get()->SetPointingStickPrimaryButtonRight(
       g_browser_process->local_state()->GetBoolean(
-          ::prefs::kOwnerPrimaryPointingStickButtonRight));
+          prefs::kOwnerPrimaryPointingStickButtonRight));
 }
 
 void LoginUIPrefController::UpdateTapToClickEnabled() {
