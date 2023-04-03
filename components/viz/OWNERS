@@ -16,7 +16,6 @@ vasilyt@chromium.org
 
 # Skia renderer
 per-file skia_*=michaelludwig@google.com
-per-file skia_*=bsalomon@google.com
 
 # display_embedder / ozone
 rjkroege@chromium.org
