@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -344,6 +345,45 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
     return MediaQueryExp(feature, *value);
   }
   return Invalid();
+}
+
+bool MediaQueryExpValue::IsResolution() const {
+  switch (type_) {
+    case Type::kNumeric:
+      return CSSPrimitiveValue::IsResolution(Unit());
+    case Type::kCSSValue:
+      if (const auto* math_function =
+              DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
+        return math_function->IsResolution();
+      }
+      return false;
+    default:
+      return false;
+  }
+}
+
+double MediaQueryExpValue::Value() const {
+  if (const auto* math_function =
+          DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
+    if (math_function->IsResolution()) {
+      return math_function->ComputeDotsPerPixel();
+    }
+  }
+
+  DCHECK(IsNumeric());
+  return numeric_.value;
+}
+
+CSSPrimitiveValue::UnitType MediaQueryExpValue::Unit() const {
+  if (const auto* math_function =
+          DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
+    if (math_function->IsResolution()) {
+      return CSSPrimitiveValue::UnitType::kDotsPerPixel;
+    }
+  }
+
+  DCHECK(IsNumeric());
+  return numeric_.unit;
 }
 
 absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
