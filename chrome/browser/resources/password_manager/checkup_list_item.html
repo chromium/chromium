@@ -75,7 +75,7 @@
       <div id="usernameContainer" class="cr-secondary-text label">
         <span id="username">[[item.username]]</span>
         <input id="insecurePassword" focus-row-control
-                  focus-type="passwordField" readonly
+                  focus-type="passwordField" readonly disabled
                   type="[[getPasswordInputType(isPasswordVisible)]]"
                   value="[[getPasswordValue_(item, isPasswordVisible)]]">
       </div>
@@ -91,7 +91,8 @@
   </div>
   <template is="dom-if" if="[[item.changePasswordUrl]]">
     <div class="button-container" id="changeButton">
-      <cr-button id="changePasswordButton" on-click="onChangePasswordClick_">
+      <cr-button id="changePasswordButton" on-click="onChangePasswordClick_"
+          aria-label$="[[getChangeButtonAriaLabel_(group)]]">
         $i18n{changePassword}
         <iron-icon icon="cr:open-in-new" id="change-password-link-icon">
         </iron-icon>
@@ -106,7 +107,7 @@
     <span id="changePasswordInApp">$i18n{changePasswordInApp}</span>
   </template>
   <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}"
-      on-click="onMoreClick_">
+      on-click="onMoreClick_" aria-label$="[[getMoreButtonAriaLabel_(group)]]">
   </cr-icon-button>
 </div>
 <template is="dom-if" if="[[showEditPasswordDisclaimer_]]" restamp>
