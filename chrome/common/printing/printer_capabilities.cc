@@ -205,8 +205,11 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
                                                 base::BlockingType::MAY_BLOCK);
 
   PRINTER_LOG(EVENT) << "Get printer capabilities start for " << device_name;
-  crash_keys::ScopedPrinterInfo crash_key(
-      print_backend->GetPrinterDriverInfo(device_name));
+  const std::string driver_info =
+      print_backend->GetPrinterDriverInfo(device_name);
+  PRINTER_LOG(EVENT) << "Driver info: " << driver_info;
+
+  crash_keys::ScopedPrinterInfo crash_key(driver_info);
 
   auto caps = absl::make_optional<PrinterSemanticCapsAndDefaults>();
   mojom::ResultCode result =
