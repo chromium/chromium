@@ -465,52 +465,6 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
   LayoutObject::RecalcVisualOverflow();
 }
 
-void LayoutBoxModelObject::AbsoluteQuadsForSelf(
-    Vector<gfx::QuadF>& quads,
-    MapCoordinatesFlags mode) const {
-  NOT_DESTROYED();
-  NOTREACHED();
-}
-
-void LayoutBoxModelObject::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
-  NOT_DESTROYED();
-  NOTREACHED();
-}
-
-void LayoutBoxModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                         MapCoordinatesFlags mode) const {
-  QuadsInternal(quads, mode, true);
-}
-
-void LayoutBoxModelObject::LocalQuads(Vector<gfx::QuadF>& quads) const {
-  QuadsInternal(quads, 0, false);
-}
-
-void LayoutBoxModelObject::QuadsInternal(Vector<gfx::QuadF>& quads,
-                                         MapCoordinatesFlags mode,
-                                         bool map_to_absolute) const {
-  NOT_DESTROYED();
-  if (map_to_absolute)
-    AbsoluteQuadsForSelf(quads, mode);
-  else
-    LocalQuadsForSelf(quads);
-}
-
-gfx::RectF LayoutBoxModelObject::LocalBoundingBoxRectF() const {
-  NOT_DESTROYED();
-  Vector<gfx::QuadF> quads;
-  LocalQuads(quads);
-
-  wtf_size_t n = quads.size();
-  if (n == 0)
-    return gfx::RectF();
-
-  gfx::RectF result = quads[0].BoundingBox();
-  for (wtf_size_t i = 1; i < n; ++i)
-    result.Union(quads[i].BoundingBox());
-  return result;
-}
-
 void LayoutBoxModelObject::UpdateFromStyle() {
   NOT_DESTROYED();
   const ComputedStyle& style_to_use = StyleRef();

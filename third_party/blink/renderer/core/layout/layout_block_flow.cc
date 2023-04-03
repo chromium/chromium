@@ -1921,32 +1921,6 @@ void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
   }
 }
 
-void LayoutBlockFlow::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
-  return QuadsForSelfInternal(quads, 0, false);
-}
-
-void LayoutBlockFlow::AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
-                                           MapCoordinatesFlags mode) const {
-  return QuadsForSelfInternal(quads, mode, true);
-}
-
-void LayoutBlockFlow::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
-                                           MapCoordinatesFlags mode,
-                                           bool map_to_absolute) const {
-  NOT_DESTROYED();
-  // For blocks inside inlines, we go ahead and include margins so that we run
-  // right up to the inline boxes above and below us (thus getting merged with
-  // them to form a single irregular shape).
-  // FIXME: This is wrong for vertical writing-modes.
-  // https://bugs.webkit.org/show_bug.cgi?id=46781
-  PhysicalRect local_rect = PhysicalBorderBoxRect();
-  local_rect.Expand(CollapsedMarginBoxLogicalOutsets());
-  if (map_to_absolute)
-    quads.push_back(LocalRectToAbsoluteQuad(local_rect, mode));
-  else
-    quads.push_back(gfx::QuadF(gfx::RectF(local_rect)));
-}
-
 RootInlineBox* LayoutBlockFlow::CreateAndAppendRootInlineBox() {
   NOT_DESTROYED();
   RootInlineBox* root_box = CreateRootInlineBox();

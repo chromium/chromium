@@ -643,12 +643,8 @@ bool LayoutInline::AbsoluteTransformDependsOnPoint(
   return false;
 }
 
-void LayoutInline::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
-  QuadsForSelfInternal(quads, 0, false);
-}
-
-void LayoutInline::AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
-                                        MapCoordinatesFlags mode) const {
+void LayoutInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
+                                 MapCoordinatesFlags mode) const {
   QuadsForSelfInternal(quads, mode, true);
 }
 
@@ -1419,6 +1415,23 @@ void LayoutInline::AddOutlineRects(
   if (info) {
     *info = OutlineInfo::GetFromStyle(StyleRef());
   }
+}
+
+gfx::RectF LayoutInline::LocalBoundingBoxRectF() const {
+  NOT_DESTROYED();
+  Vector<gfx::QuadF> quads;
+  QuadsForSelfInternal(quads, 0, false);
+
+  wtf_size_t n = quads.size();
+  if (n == 0) {
+    return gfx::RectF();
+  }
+
+  gfx::RectF result = quads[0].BoundingBox();
+  for (wtf_size_t i = 1; i < n; ++i) {
+    result.Union(quads[i].BoundingBox());
+  }
+  return result;
 }
 
 gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {

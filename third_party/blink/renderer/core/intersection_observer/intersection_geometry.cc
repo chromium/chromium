@@ -128,7 +128,7 @@ std::pair<PhysicalRect, bool> InitializeTargetRect(const LayoutObject* target,
                      flags & IntersectionGeometry::kUseOverflowClipEdge);
   } else if (target->IsLayoutInline()) {
     result.first = PhysicalRect::EnclosingRect(
-        To<LayoutBoxModelObject>(target)->LocalBoundingBoxRectF());
+        To<LayoutInline>(target)->LocalBoundingBoxRectF());
   } else {
     result.first = To<LayoutText>(target)->PhysicalLinesBoundingBox();
   }

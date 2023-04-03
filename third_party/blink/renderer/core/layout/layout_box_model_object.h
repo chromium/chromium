@@ -534,16 +534,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   bool BackgroundTransfersToView(
       const ComputedStyle* document_element_style = nullptr) const;
 
-  // Same as AbsoluteQuads, but in the local border box coordinates of this
-  // object.
-  void LocalQuads(Vector<gfx::QuadF>& quads) const;
-
-  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode = 0) const override;
-
-  // Returns the bounodiong box of all quads returned by LocalQuads.
-  gfx::RectF LocalBoundingBoxRectF() const;
-
   virtual LayoutUnit OverrideContainingBlockContentWidth() const {
     NOT_DESTROYED();
     NOTREACHED();
@@ -570,14 +560,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                                         NGOutlineType) const;
 
  protected:
-  // Compute absolute quads for |this|, but not any continuations. May only be
-  // called for objects which can be or have continuations, i.e. LayoutInline or
-  // LayoutBlockFlow.
-  virtual void AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
-                                    MapCoordinatesFlags mode = 0) const;
-  // Same as AbsoluteQuadsForSelf, but in the local border box coordinates.
-  virtual void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const;
-
   void WillBeDestroyed() override;
 
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
@@ -654,10 +636,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       const LayoutBox* box_to_split) const;
 
  private:
-  void QuadsInternal(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode,
-                     bool map_to_absolute) const;
-
   void CreateLayerAfterStyleChange();
 
   LayoutUnit ComputedCSSPadding(const Length&) const;
