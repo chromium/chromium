@@ -36,6 +36,10 @@ bool PermissionRequest::IsDuplicateOf(PermissionRequest* other_request) const {
          requesting_origin() == other_request->requesting_origin();
 }
 
+base::WeakPtr<PermissionRequest> PermissionRequest::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 std::u16string PermissionRequest::GetDialogMessageText() const {
   int message_id = 0;

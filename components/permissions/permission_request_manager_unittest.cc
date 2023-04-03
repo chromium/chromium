@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -513,6 +514,90 @@ TEST_P(PermissionRequestManagerTest, SameRequestRejected) {
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(request1_.granted());
   EXPECT_FALSE(prompt_factory_->is_visible());
+}
+
+TEST_P(PermissionRequestManagerTest, WeakDuplicateRequests) {
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+  auto dupe_request_1 = request1_.CreateDuplicateRequest();
+  auto dupe_request_2 = request1_.CreateDuplicateRequest();
+  auto dupe_request_3 = request1_.CreateDuplicateRequest();
+  auto dupe_request_4 = request1_.CreateDuplicateRequest();
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_1.get());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_2.get());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_3.get());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_4.get());
+  dupe_request_1.reset();
+  dupe_request_3.reset();
+  EXPECT_EQ(4ul, manager_->duplicate_requests_.front().size());
+  EXPECT_EQ(1ul, manager_->duplicate_requests_.size());
+  auto request_list = manager_->FindDuplicateRequestList(&request1_);
+  EXPECT_NE(request_list, manager_->duplicate_requests_.end());
+  EXPECT_EQ(3ul, manager_->duplicate_requests_.front().size());
+  dupe_request_4.reset();
+  manager_->VisitDuplicateRequests(
+      base::BindRepeating(
+          [](const base::WeakPtr<PermissionRequest>& weak_request) {}),
+      &request1_);
+  EXPECT_EQ(1ul, manager_->duplicate_requests_.front().size());
+  EXPECT_EQ(1ul, manager_->duplicate_requests_.size());
+  Accept();
+  EXPECT_EQ(0ul, manager_->duplicate_requests_.size());
+}
+
+class QuicklyDeletedRequest : public PermissionRequest {
+ public:
+  QuicklyDeletedRequest(const GURL& requesting_origin,
+                        RequestType request_type,
+                        PermissionRequestGestureType gesture_type)
+      : PermissionRequest(requesting_origin,
+                          request_type,
+                          gesture_type == PermissionRequestGestureType::GESTURE,
+                          base::BindLambdaForTesting(
+                              [](ContentSetting result,
+                                 bool is_one_time,
+                                 bool is_final_decision) { NOTREACHED(); }),
+                          base::NullCallback()) {}
+
+  static std::unique_ptr<QuicklyDeletedRequest> CreateRequest(
+      MockPermissionRequest* request) {
+    return std::make_unique<QuicklyDeletedRequest>(request->requesting_origin(),
+                                                   request->request_type(),
+                                                   request->GetGestureType());
+  }
+};
+
+TEST_P(PermissionRequestManagerTest, WeakDuplicateRequestsAccept) {
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1_);
+  WaitForBubbleToBeShown();
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(), &request2_);
+  auto dupe_request_1 = QuicklyDeletedRequest::CreateRequest(&request1_);
+  auto dupe_request_2 = request1_.CreateDuplicateRequest();
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_1.get());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_2.get());
+  auto dupe_request_3 = QuicklyDeletedRequest::CreateRequest(&request2_);
+  auto dupe_request_4 = request2_.CreateDuplicateRequest();
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_3.get());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       dupe_request_4.get());
+  dupe_request_1.reset();
+  dupe_request_3.reset();
+  EXPECT_EQ(2ul, manager_->duplicate_requests_.size());
+  EXPECT_EQ(2ul, manager_->duplicate_requests_.front().size());
+  EXPECT_EQ(2ul, manager_->duplicate_requests_.back().size());
+  WaitForBubbleToBeShown();
+  Accept();
+  EXPECT_EQ(1ul, manager_->duplicate_requests_.size());
+  WaitForBubbleToBeShown();
+  Accept();
+  EXPECT_EQ(0ul, manager_->duplicate_requests_.size());
 }
 
 TEST_P(PermissionRequestManagerTest, DuplicateRequest) {
