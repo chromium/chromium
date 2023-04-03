@@ -4971,8 +4971,9 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   Initialize(HttpRequestInfo());
 
-  auto stream = ConnectQuicHttpStream(/*alt_destination=*/true,
-                                      /*require_dns_https_alpn=*/false);
+  std::unique_ptr<QuicHttpStream> stream =
+      ConnectQuicHttpStream(/*alt_destination=*/true,
+                            /*require_dns_https_alpn=*/false);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, "alt.example.org", 443);
@@ -5014,8 +5015,9 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   Initialize(HttpRequestInfo());
 
-  auto stream = ConnectQuicHttpStream(/*alt_destination=*/false,
-                                      /*require_dns_https_alpn=*/true);
+  std::unique_ptr<QuicHttpStream> stream =
+      ConnectQuicHttpStream(/*alt_destination=*/false,
+                            /*require_dns_https_alpn=*/true);
   request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
 
   CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
@@ -5059,8 +5061,9 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 
-  auto stream = ConnectQuicHttpStream(/*alt_destination=*/false,
-                                      /*require_dns_https_alpn=*/true);
+  std::unique_ptr<QuicHttpStream> stream =
+      ConnectQuicHttpStream(/*alt_destination=*/false,
+                            /*require_dns_https_alpn=*/true);
   request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
 
   CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
@@ -5476,6 +5479,38 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectDnsAlpnH3) {
   EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
             job_controller_->main_job()->job_type());
 
+  MakeQuicJobSucceed(0, /*expect_stream_ready=*/false);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       PreconnectAltSvcAvailableActiveSessionAvailable) {
+  SetPreconnect();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+  Initialize(request_info);
+
+  // Register Alt-Svc info.
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  // Create an active session of require_dns_https_alpn = true.
+  std::unique_ptr<QuicHttpStream> stream =
+      ConnectQuicHttpStream(/*alt_destination=*/false,
+                            /*require_dns_https_alpn=*/true);
+
+  CreateJobController(request_info);
+  // Preconnect must succeed using the existing session.
+  job_controller_->Preconnect(/*num_streams=*/1);
+  ASSERT_TRUE(job_controller_->main_job());
+  EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
+            job_controller_->main_job()->job_type());
   MakeQuicJobSucceed(0, /*expect_stream_ready=*/false);
 
   base::RunLoop().RunUntilIdle();

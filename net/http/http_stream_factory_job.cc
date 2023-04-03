@@ -343,7 +343,8 @@ bool HttpStreamFactory::Job::HasAvailableSpdySession() const {
 bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   if (!using_quic_)
     return false;
-  bool require_dns_https_alpn = (job_type_ == DNS_ALPN_H3);
+  bool require_dns_https_alpn =
+      (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
   return quic_request_.CanUseExistingSession(
       origin_url_, request_info_.privacy_mode, request_info_.socket_tag,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
