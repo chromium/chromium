@@ -18,7 +18,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-import {BrowsingContext, Message} from '../../../protocol/protocol.js';
+import {BrowsingContext, Message, Script} from '../../../protocol/protocol.js';
 import {LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {IEventManager} from '../events/EventManager.js';
@@ -527,6 +527,25 @@ export class BrowsingContextImpl {
     return {
       result: {
         data: result.data,
+      },
+    };
+  }
+
+  async addPreloadScript(
+    params: Script.AddPreloadScriptParameters
+  ): Promise<Script.AddPreloadScriptResult> {
+    const result = await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        // The spec provides a function, and CDP expects an evaluation.
+        source: `(${params.expression})();`,
+        worldName: params.sandbox,
+      }
+    );
+
+    return {
+      result: {
+        script: result.identifier,
       },
     };
   }

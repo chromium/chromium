@@ -694,10 +694,13 @@ export namespace Script {
   export type AddPreloadScriptParameters = {
     expression: string;
     sandbox?: string;
+    context?: CommonDataTypes.BrowsingContext;
   };
 
   export type AddPreloadScriptResult = {
-    script: PreloadScript;
+    result: {
+      script: PreloadScript;
+    };
   };
 
   export type RemovePreloadScriptCommand = {
