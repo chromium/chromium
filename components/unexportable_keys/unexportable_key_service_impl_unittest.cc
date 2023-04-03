@@ -46,15 +46,37 @@ class UnexportableKeyServiceImplTest : public testing::Test {
     service_ = std::make_unique<UnexportableKeyServiceImpl>(*task_manager_);
   }
 
+  void DisableKeyProvider() {
+    // Using `emplace()` to destroy the existing scoped object before
+    // constructing a new one.
+    scoped_key_provider_.emplace<crypto::ScopedNullUnexportableKeyProvider>();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  // Provides a mock key provider by default.
+  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
+                crypto::ScopedNullUnexportableKeyProvider>
+      scoped_key_provider_;
   std::unique_ptr<UnexportableKeyTaskManager> task_manager_;
   std::unique_ptr<UnexportableKeyServiceImpl> service_;
 };
+
+TEST_F(UnexportableKeyServiceImplTest, IsUnexportableKeyProviderSupported) {
+  EXPECT_TRUE(UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported());
+  DisableKeyProvider();
+  EXPECT_FALSE(
+      UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported());
+
+  // Test that the service returns a `ServiceError::kNoKeyProvider` error.
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          future.GetCallback());
+  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
+}
 
 TEST_F(UnexportableKeyServiceImplTest, GenerateKey) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;

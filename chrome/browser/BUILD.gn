@@ -6747,6 +6747,8 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h",
       "signin/bound_session_credentials/registration_token_helper.cc",
       "signin/bound_session_credentials/registration_token_helper.h",
+      "signin/bound_session_credentials/unexportable_key_service_factory.cc",
+      "signin/bound_session_credentials/unexportable_key_service_factory.h",
     ]
 
     deps += [ "//components/unexportable_keys" ]
