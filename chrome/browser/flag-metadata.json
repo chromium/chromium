@@ -5331,11 +5331,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-default-browser-pedal",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-disable-cgi-param-matching",
     "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 96

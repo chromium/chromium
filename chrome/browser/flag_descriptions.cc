@@ -2095,10 +2095,6 @@ const char kOmniboxCR23SteadyStateIconsName[] = "Omnibox Steady State Icons";
 const char kOmniboxCR23SteadyStateIconsDescription[] =
     "Updates Omnibox steady state icons to comply with CR23 guidelines.";
 
-const char kOmniboxDefaultBrowserPedalName[] = "Omnibox Default Browser Pedal";
-const char kOmniboxDefaultBrowserPedalDescription[] =
-    "Enables a pedal that helps the user 'set default browser'.";
-
 const char kOmniboxDisableCGIParamMatchingName[] =
     "Disable CGI Param Name Matching";
 const char kOmniboxDisableCGIParamMatchingDescription[] =

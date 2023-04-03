@@ -606,27 +606,6 @@ const base::FeatureParam<int>
         "FuzzyUrlSuggestionsPenaltyTaperLength",
         0);
 
-bool OmniboxFieldTrial::IsDefaultBrowserPedalEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxDefaultBrowserPedal);
-}
-
-const base::FeatureParam<bool> OmniboxFieldTrial::kDefaultBrowserPedalImmediate(
-    &omnibox::kOmniboxDefaultBrowserPedal,
-    "DefaultBrowserPedalImmediate",
-    false);
-
-const base::FeatureParam<bool>
-    OmniboxFieldTrial::kDefaultBrowserPedalInteractive(
-        &omnibox::kOmniboxDefaultBrowserPedal,
-        "DefaultBrowserPedalInteractive",
-        true);
-
-const base::FeatureParam<bool>
-    OmniboxFieldTrial::kDefaultBrowserPedalUnattended(
-        &omnibox::kOmniboxDefaultBrowserPedal,
-        "DefaultBrowserPedalUnattended",
-        true);
-
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }
