@@ -23,6 +23,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -317,6 +318,34 @@ void FindAndSetDefaultVideoCamera(
 
 }  // namespace
 
+class VideoCaptureDeviceFactoryWin::ComThreadData
+    : public base::RefCountedThreadSafe<ComThreadData> {
+ public:
+  ComThreadData(base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory,
+                scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner,
+                scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner)
+      : device_factory_(std::move(device_factory)),
+        com_thread_runner_(std::move(com_thread_runner)),
+        origin_task_runner_(std::move(origin_task_runner)) {}
+
+  void EnumerateDevicesUWP(std::vector<VideoCaptureDeviceInfo> devices_info,
+                           GetDevicesInfoCallback result_callback);
+
+  void FoundAllDevicesUWP(
+      std::vector<VideoCaptureDeviceInfo> devices_info,
+      GetDevicesInfoCallback result_callback,
+      IAsyncOperation<DeviceInformationCollection*>* operation);
+
+ private:
+  friend class base::RefCountedThreadSafe<ComThreadData>;
+  ~ComThreadData() = default;
+
+  std::unordered_set<IAsyncOperation<DeviceInformationCollection*>*> async_ops_;
+  base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory_;
+  scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
+};
+
 // Returns true if the current platform supports the Media Foundation API
 // and that the DLLs are available.  On Vista this API is an optional download
 // but the API is advertised as a part of Windows 7 and onwards.  However,
@@ -569,37 +598,36 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
     devices_info = GetDevicesInfoDirectShow(devices_info);
   }
 
-  origin_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   com_thread_.init_com_with_mta(true);
   com_thread_.Start();
+  com_thread_data_ =
+      base::MakeRefCounted<VideoCaptureDeviceFactoryWin::ComThreadData>(
+          weak_ptr_factory_.GetWeakPtr(), com_thread_.task_runner(),
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   com_thread_.task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP,
-                     base::Unretained(this), std::move(devices_info),
-                     std::move(callback)));
+      base::BindOnce(
+          &VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP,
+          com_thread_data_, std::move(devices_info), std::move(callback)));
 }
 
-void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
+void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback) {
   DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
-
-  VideoCaptureDeviceFactoryWin* factory = this;
-  scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner =
-      com_thread_.task_runner();
 
   // The |device_info_callback| created by base::BindRepeating() is copyable,
   // which is necessary for the below lambda function of |callback| for the
   // asynchronous operation. The reason is to permanently capture anything in a
   // lambda, it must be copyable, merely movable is insufficient.
   auto device_info_callback = base::BindRepeating(
-      &VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP,
-      base::UnsafeDanglingUntriaged(factory), base::Passed(&devices_info),
+      &VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP,
+      scoped_refptr<ComThreadData>(this), base::Passed(&devices_info),
       base::Passed(&result_callback));
   auto callback = Microsoft::WRL::Callback<
       ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
           DeviceInformationCollection*>>(
-      [com_thread_runner, device_info_callback](
+      [com_thread_runner = com_thread_runner_, device_info_callback](
           IAsyncOperation<DeviceInformationCollection*>* operation,
           AsyncStatus status) -> HRESULT {
         com_thread_runner->PostTask(
@@ -642,7 +670,7 @@ void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
   async_ops_.insert(async_op);
 }
 
-void VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP(
+void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback,
     IAsyncOperation<DeviceInformationCollection*>* operation) {
@@ -650,7 +678,7 @@ void VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP(
     origin_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(devices_info),
+                       device_factory_, std::move(devices_info),
                        std::move(result_callback)));
     return;
   }
@@ -714,10 +742,9 @@ void VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP(
   FindAndSetDefaultVideoCamera(&devices_info);
 
   origin_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(devices_info),
-                     std::move(result_callback)));
+      FROM_HERE, base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
+                                device_factory_, std::move(devices_info),
+                                std::move(result_callback)));
 
   auto it = async_ops_.find(operation);
   DCHECK(it != async_ops_.end());
@@ -730,6 +757,7 @@ void VideoCaptureDeviceFactoryWin::DeviceInfoReady(
     GetDevicesInfoCallback result_callback) {
   if (com_thread_.IsRunning()) {
     com_thread_.Stop();
+    com_thread_data_.reset();
   }
 
   std::move(result_callback).Run(std::move(devices_info));
