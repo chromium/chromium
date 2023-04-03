@@ -19,7 +19,7 @@
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -319,7 +319,7 @@ void NearbyShareClientImpl::OnAccessTokenFetched(
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
-    OnApiCallFailed(NearbyShareHttpError::kAuthenticationError);
+    OnApiCallFailed(ash::nearby::NearbyHttpError::kAuthenticationError);
     return;
   }
   access_token_used_ = access_token_info.token;
@@ -367,14 +367,15 @@ void NearbyShareClientImpl::OnFlowSuccess(
     const std::string& serialized_response) {
   ResponseProto response;
   if (!response.ParseFromString(serialized_response)) {
-    OnApiCallFailed(NearbyShareHttpError::kResponseMalformed);
+    OnApiCallFailed(ash::nearby::NearbyHttpError::kResponseMalformed);
     return;
   }
   notifier_->NotifyOfResponse(response);
   std::move(result_callback).Run(response);
 }
 
-void NearbyShareClientImpl::OnApiCallFailed(NearbyShareHttpError error) {
+void NearbyShareClientImpl::OnApiCallFailed(
+    ash::nearby::NearbyHttpError error) {
   NS_LOG(ERROR) << "Nearby Share RPC call failed with error " << error;
   std::move(error_callback_).Run(error);
 }

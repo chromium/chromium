@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -130,7 +130,7 @@ void NearbyApiCallFlowImpl::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   if (!body) {
-    std::move(error_callback_).Run(NearbyShareHttpError::kResponseMalformed);
+    std::move(error_callback_).Run(NearbyHttpError::kResponseMalformed);
     return;
   }
   std::move(result_callback_).Run(std::move(*body));
@@ -140,16 +140,16 @@ void NearbyApiCallFlowImpl::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  absl::optional<NearbyShareHttpError> error;
+  absl::optional<NearbyHttpError> error;
   std::string error_message;
   if (net_error == net::OK) {
     int response_code = -1;
     if (head && head->headers) {
       response_code = head->headers->response_code();
     }
-    error = NearbyShareHttpErrorForHttpResponseCode(response_code);
+    error = NearbyHttpErrorForHttpResponseCode(response_code);
   } else {
-    error = NearbyShareHttpError::kOffline;
+    error = NearbyHttpError::kOffline;
   }
 
   // TODO (b/274978630): Re-add logging once CD_LOG is implemented

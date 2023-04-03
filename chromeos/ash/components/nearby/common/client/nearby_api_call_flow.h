@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -22,7 +22,7 @@ class NearbyApiCallFlow {
  public:
   using ResultCallback =
       base::OnceCallback<void(const std::string& serialized_response)>;
-  using ErrorCallback = base::OnceCallback<void(NearbyShareHttpError error)>;
+  using ErrorCallback = base::OnceCallback<void(NearbyHttpError error)>;
   using QueryParameters = std::vector<std::pair<std::string, std::string>>;
 
   NearbyApiCallFlow() = default;

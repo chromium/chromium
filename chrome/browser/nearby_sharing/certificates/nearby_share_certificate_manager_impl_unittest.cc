@@ -295,7 +295,7 @@ class NearbyShareCertificateManagerImplTest
           break;
         } else if (result == DownloadPublicCertificatesResult::kHttpError) {
           std::move(request.error_callback)
-              .Run(NearbyShareHttpError::kResponseMalformed);
+              .Run(ash::nearby::NearbyHttpError::kResponseMalformed);
           break;
         }
       }

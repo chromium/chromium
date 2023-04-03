@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow.h"
-#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -114,7 +114,7 @@ class NearbyShareClientImpl : public NearbyShareClient {
       const std::string& serialized_response);
 
   // Called when the current API call fails at any step.
-  void OnApiCallFailed(NearbyShareHttpError error);
+  void OnApiCallFailed(ash::nearby::NearbyHttpError error);
 
   // Constructs and executes the actual HTTP request.
   std::unique_ptr<ash::nearby::NearbyApiCallFlow> api_call_flow_;

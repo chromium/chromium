@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/nearby/common/client/nearby_share_http_result.h"
+#include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -10,49 +10,49 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-NearbyShareHttpError NearbyShareHttpErrorForHttpResponseCode(
-    int response_code) {
+namespace ash::nearby {
+
+NearbyHttpError NearbyHttpErrorForHttpResponseCode(int response_code) {
   if (response_code == 400) {
-    return NearbyShareHttpError::kBadRequest;
+    return NearbyHttpError::kBadRequest;
   }
 
   if (response_code == 403) {
-    return NearbyShareHttpError::kAuthenticationError;
+    return NearbyHttpError::kAuthenticationError;
   }
 
   if (response_code == 404) {
-    return NearbyShareHttpError::kEndpointNotFound;
+    return NearbyHttpError::kEndpointNotFound;
   }
 
   if (response_code >= 500 && response_code < 600) {
-    return NearbyShareHttpError::kInternalServerError;
+    return NearbyHttpError::kInternalServerError;
   }
 
-  return NearbyShareHttpError::kUnknown;
+  return NearbyHttpError::kUnknown;
 }
 
-NearbyShareHttpResult NearbyShareHttpErrorToResult(NearbyShareHttpError error) {
+NearbyHttpResult NearbyHttpErrorToResult(NearbyHttpError error) {
   switch (error) {
-    case NearbyShareHttpError::kOffline:
-      return NearbyShareHttpResult::kHttpErrorOffline;
-    case NearbyShareHttpError::kEndpointNotFound:
-      return NearbyShareHttpResult::kHttpErrorEndpointNotFound;
-    case NearbyShareHttpError::kAuthenticationError:
-      return NearbyShareHttpResult::kHttpErrorAuthenticationError;
-    case NearbyShareHttpError::kBadRequest:
-      return NearbyShareHttpResult::kHttpErrorBadRequest;
-    case NearbyShareHttpError::kResponseMalformed:
-      return NearbyShareHttpResult::kHttpErrorResponseMalformed;
-    case NearbyShareHttpError::kInternalServerError:
-      return NearbyShareHttpResult::kHttpErrorInternalServerError;
-    case NearbyShareHttpError::kUnknown:
-      return NearbyShareHttpResult::kHttpErrorUnknown;
+    case NearbyHttpError::kOffline:
+      return NearbyHttpResult::kHttpErrorOffline;
+    case NearbyHttpError::kEndpointNotFound:
+      return NearbyHttpResult::kHttpErrorEndpointNotFound;
+    case NearbyHttpError::kAuthenticationError:
+      return NearbyHttpResult::kHttpErrorAuthenticationError;
+    case NearbyHttpError::kBadRequest:
+      return NearbyHttpResult::kHttpErrorBadRequest;
+    case NearbyHttpError::kResponseMalformed:
+      return NearbyHttpResult::kHttpErrorResponseMalformed;
+    case NearbyHttpError::kInternalServerError:
+      return NearbyHttpResult::kHttpErrorInternalServerError;
+    case NearbyHttpError::kUnknown:
+      return NearbyHttpResult::kHttpErrorUnknown;
   }
 }
 
-NearbyShareHttpStatus::NearbyShareHttpStatus(
-    const int net_error,
-    const network::mojom::URLResponseHead* head)
+NearbyHttpStatus::NearbyHttpStatus(const int net_error,
+                                   const network::mojom::URLResponseHead* head)
     : net_error_code_(net_error) {
   if (head && head->headers) {
     http_response_code_ = head->headers->response_code();
@@ -73,16 +73,15 @@ NearbyShareHttpStatus::NearbyShareHttpStatus(
   }
 }
 
-NearbyShareHttpStatus::NearbyShareHttpStatus(
-    const NearbyShareHttpStatus& status) = default;
+NearbyHttpStatus::NearbyHttpStatus(const NearbyHttpStatus& status) = default;
 
-NearbyShareHttpStatus::~NearbyShareHttpStatus() = default;
+NearbyHttpStatus::~NearbyHttpStatus() = default;
 
-bool NearbyShareHttpStatus::IsSuccess() const {
+bool NearbyHttpStatus::IsSuccess() const {
   return status_ == Status::kSuccess;
 }
 
-int NearbyShareHttpStatus::GetResultCodeForMetrics() const {
+int NearbyHttpStatus::GetResultCodeForMetrics() const {
   switch (status_) {
     case Status::kNetworkFailure:
       return net_error_code_;
@@ -92,7 +91,7 @@ int NearbyShareHttpStatus::GetResultCodeForMetrics() const {
   }
 }
 
-std::string NearbyShareHttpStatus::ToString() const {
+std::string NearbyHttpStatus::ToString() const {
   std::string status;
   switch (status_) {
     case Status::kSuccess:
@@ -116,48 +115,47 @@ std::string NearbyShareHttpStatus::ToString() const {
          ", response_code=" + response_code;
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         const NearbyShareHttpResult& result) {
+std::ostream& operator<<(std::ostream& stream, const NearbyHttpResult& result) {
   switch (result) {
-    case NearbyShareHttpResult::kSuccess:
+    case NearbyHttpResult::kSuccess:
       stream << "[Success]";
       break;
-    case NearbyShareHttpResult::kTimeout:
+    case NearbyHttpResult::kTimeout:
       stream << "[Timeout]";
       break;
-    case NearbyShareHttpResult::kHttpErrorOffline:
+    case NearbyHttpResult::kHttpErrorOffline:
       stream << "[HTTP Error: Offline]";
       break;
-    case NearbyShareHttpResult::kHttpErrorEndpointNotFound:
+    case NearbyHttpResult::kHttpErrorEndpointNotFound:
       stream << "[HTTP Error: Endpoint not found]";
       break;
-    case NearbyShareHttpResult::kHttpErrorAuthenticationError:
+    case NearbyHttpResult::kHttpErrorAuthenticationError:
       stream << "[HTTP Error: Authentication error]";
       break;
-    case NearbyShareHttpResult::kHttpErrorBadRequest:
+    case NearbyHttpResult::kHttpErrorBadRequest:
       stream << "[HTTP Error: Bad request]";
       break;
-    case NearbyShareHttpResult::kHttpErrorResponseMalformed:
+    case NearbyHttpResult::kHttpErrorResponseMalformed:
       stream << "[HTTP Error: Response malformed]";
       break;
-    case NearbyShareHttpResult::kHttpErrorInternalServerError:
+    case NearbyHttpResult::kHttpErrorInternalServerError:
       stream << "[HTTP Error: Internal server error]";
       break;
-    case NearbyShareHttpResult::kHttpErrorUnknown:
+    case NearbyHttpResult::kHttpErrorUnknown:
       stream << "[HTTP Error: Unknown]";
       break;
   }
   return stream;
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         const NearbyShareHttpError& error) {
-  stream << NearbyShareHttpErrorToResult(error);
+std::ostream& operator<<(std::ostream& stream, const NearbyHttpError& error) {
+  stream << NearbyHttpErrorToResult(error);
   return stream;
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         const NearbyShareHttpStatus& status) {
+std::ostream& operator<<(std::ostream& stream, const NearbyHttpStatus& status) {
   stream << status.ToString();
   return stream;
 }
+
+}  // namespace ash::nearby

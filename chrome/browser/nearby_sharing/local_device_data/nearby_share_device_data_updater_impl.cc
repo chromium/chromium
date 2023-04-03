@@ -15,7 +15,7 @@ const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kContactsFieldMaskPath[] = "contacts";
 const char kCertificatesFieldMaskPath[] = "public_certificates";
 
-void RecordResultMetrics(NearbyShareHttpResult result) {
+void RecordResultMetrics(ash::nearby::NearbyHttpResult result) {
   base::UmaHistogramEnumeration(
       "Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult", result);
 }
@@ -91,20 +91,20 @@ void NearbyShareDeviceDataUpdaterImpl::OnRpcSuccess(
   timer_.Stop();
   nearbyshare::proto::UpdateDeviceResponse response_copy(response);
   client_.reset();
-  RecordResultMetrics(NearbyShareHttpResult::kSuccess);
+  RecordResultMetrics(ash::nearby::NearbyHttpResult::kSuccess);
   FinishAttempt(response_copy);
 }
 
 void NearbyShareDeviceDataUpdaterImpl::OnRpcFailure(
-    NearbyShareHttpError error) {
+    ash::nearby::NearbyHttpError error) {
   timer_.Stop();
   client_.reset();
-  RecordResultMetrics(NearbyShareHttpErrorToResult(error));
+  RecordResultMetrics(ash::nearby::NearbyHttpErrorToResult(error));
   FinishAttempt(/*response=*/absl::nullopt);
 }
 
 void NearbyShareDeviceDataUpdaterImpl::OnTimeout() {
   client_.reset();
-  RecordResultMetrics(NearbyShareHttpResult::kTimeout);
+  RecordResultMetrics(ash::nearby::NearbyHttpResult::kTimeout);
   FinishAttempt(/*response=*/absl::nullopt);
 }
