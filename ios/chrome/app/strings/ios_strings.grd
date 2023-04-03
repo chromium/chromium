@@ -1289,7 +1289,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INACTIVE_TABS_TITLE" desc="Title of the grid of Inactive Tabs.">
         Inactive Tabs
       </message>
-     <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
+      <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE" desc="Title of the user education panel explaining Inactive Tabs. Title case.">
+        Inactive Tabs Help You Stay Focused
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE" desc="Subtitle of the user education panel explaining Inactive Tabs.">
+        {COUNT, plural,
+          =1 {Open tabs not used for one day or more get moved to Inactive Tabs so you can easily focus on the tabs you use the most. You can change this anytime in settings.}
+          other {Open tabs not used for {COUNT} days or more get moved to Inactive Tabs so you can easily focus on the tabs you use the most. You can change this anytime in settings.}}
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_DONE" desc="Title of the button dismissing the user education panel explaining Inactive Tabs. Title case.">
+        Done
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_GO_TO_SETTINGS" desc="Title of the button to go to the app's setting from the user education panel explaining Inactive Tabs. Title case.">
+        Go to Settings
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
         Learn more about Incognito mode
       </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE" desc="Title of interstitial which lets the user choose, when they open a link from an external app, whether to open it in Incognito mode or in a regular tab. [iOS only]">
@@ -1752,7 +1766,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY" desc="Subtitle for the View Your Chrome History acceleration pedal in the omnibox that should correspond to the path to History">
        Menu → History
       </message>
-
       <message name="IDS_IOS_OPEN_TABS_LAST_USED" desc="Last used timestamp label [Length: 20em] [iOS only]">
         Last synced: <ph name="LAST_USED_TIME">$1<ex>3 mins ago</ex></ph>
       </message>

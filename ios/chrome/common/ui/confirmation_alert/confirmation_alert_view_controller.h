@@ -19,8 +19,8 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // A view controller useful to show modal alerts and confirmations. The main
 // content consists in a big image, a title, and a subtitle which are contained
 // in a scroll view for cases when the content doesn't fit in the screen.
-// The view controller can have up to three action buttons, which are position
-// in the bottom. They are arranged, from top to bottom,
+// The view controller can have up to three action buttons, which are positioned
+// at the bottom. They are arranged, from top to bottom,
 // `primaryActionString`, `secondaryActionString`, `tertiaryActionString`.
 // Setting those properties will make those buttons be added to the view
 // controller.
