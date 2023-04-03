@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,6 +134,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
+import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -1563,6 +1565,30 @@ public class RootUiCoordinator
 
     public OneshotSupplier<IncognitoReauthController> getIncognitoReauthControllerSupplier() {
         return mIncognitoReauthControllerOneshotSupplier;
+    }
+
+    /**
+     * Saves relevant information that will be used to restore the UI state after the activity is
+     * recreated. This is expected to be invoked in {@code Activity#onSaveInstanceState(Bundle)}.
+     *
+     * @param outState The {@link Bundle} that is used to save state information.
+     * @param isRecreatingForTabletModeChange Whether the activity is recreated due to a fold
+     *         configuration change. {@code true} if the fold configuration changed, {@code false}
+     *         otherwise.
+     */
+    public void onSaveInstanceState(Bundle outState, boolean isRecreatingForTabletModeChange) {
+        FoldTransitionController.saveUiState(outState, getToolbarManager(), mActivityTabProvider,
+                isRecreatingForTabletModeChange);
+    }
+
+    /**
+     * Restores the relevant UI state when the activity is recreated on a device fold transition.
+     *
+     * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
+     */
+    public void restoreUiState(Bundle savedInstanceState) {
+        FoldTransitionController.restoreUiState(
+                savedInstanceState, getToolbarManager(), mLayoutManager, new Handler());
     }
 
     // Testing methods
