@@ -150,12 +150,7 @@ class CORE_EXPORT CSSAnimations final {
           specified_timing(new_animation.timing),
           style_rule(new_animation.style_rule),
           style_rule_version(new_animation.style_rule_version),
-          play_state_list(new_animation.play_state_list) {
-      if (animation->timeline() && animation->timeline()->IsViewTimeline()) {
-        scroll_offsets =
-            To<ViewTimeline>(animation->timeline())->GetResolvedScrollOffsets();
-      }
-    }
+          play_state_list(new_animation.play_state_list) {}
 
     AnimationTimeline* Timeline() const { return animation->timeline(); }
     const absl::optional<TimelineOffset>& RangeStart() const {
@@ -171,11 +166,6 @@ class CORE_EXPORT CSSAnimations final {
       style_rule_version = update.style_rule_version;
       play_state_list = update.play_state_list;
       specified_timing = update.specified_timing;
-      if (update.animation->timeline() &&
-          update.animation->timeline()->IsViewTimeline()) {
-        scroll_offsets = To<ViewTimeline>(update.animation->timeline())
-                             ->GetResolvedScrollOffsets();
-      }
     }
 
     void Trace(Visitor* visitor) const {
@@ -190,7 +180,6 @@ class CORE_EXPORT CSSAnimations final {
     Member<StyleRuleKeyframes> style_rule;
     unsigned style_rule_version;
     Vector<EAnimPlayState> play_state_list;
-    absl::optional<ScrollTimeline::ScrollOffsets> scroll_offsets;
   };
 
   struct RunningTransition : public GarbageCollected<RunningTransition> {
