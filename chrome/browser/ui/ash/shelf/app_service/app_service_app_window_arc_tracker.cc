@@ -589,6 +589,8 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
 void AppServiceAppWindowArcTracker::AttachControllerToSession(int session_id) {
   ArcAppWindowInfo* const app_window_info =
       session_id_to_arc_app_window_info_[session_id].get();
+  CHECK(app_window_info);
+
   const arc::ArcAppShelfId& app_shelf_id = app_window_info->app_shelf_id();
   if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
     app_shelf_group_to_controller_map_[app_shelf_id]->AddSessionId(session_id);
