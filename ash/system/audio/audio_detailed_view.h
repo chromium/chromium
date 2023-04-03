@@ -16,6 +16,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "components/soda/soda_installer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 

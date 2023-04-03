@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 
@@ -31,6 +32,8 @@ class Button;
 class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
                                        public NetworkInfoBubble::Delegate {
  public:
+  METADATA_HEADER(NetworkDetailedView);
+
   // This class defines the interface that NetworkDetailedView will use to
   // propagate user interactions.
   class Delegate {
