@@ -126,7 +126,7 @@ void AppServer::Uninitialize() {
 }
 
 void AppServer::MaybeUninstall() {
-  if (!prefs_) {
+  if (!prefs_ || IsInternalService()) {
     return;
   }
 
