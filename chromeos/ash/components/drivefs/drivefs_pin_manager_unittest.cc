@@ -1396,7 +1396,8 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     event.stable_id = static_cast<int64_t>(id1);
     event.path = path1.value();
     event.state = ItemEvent::State::kQueued;
-    event.bytes_to_transfer = 0;
+    event.bytes_to_transfer = 10000;
+    event.bytes_transferred = 0;
     EXPECT_FALSE(manager.OnSyncingEvent(event));
   }
 
@@ -1586,7 +1587,8 @@ TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
     event->stable_id = static_cast<int64_t>(id1);
     event->path = path1.value();
     event->state = ItemEvent::State::kQueued;
-    event->bytes_to_transfer = 0;
+    event->bytes_to_transfer = 10000;
+    event->bytes_transferred = 0;
     events.item_events.push_back(ItemEvent::New(*event));
     events.item_events.push_back(std::move(event));
   }
