@@ -439,6 +439,15 @@ BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables all chrome-refresh-2023 features. The features are guarded by an OR;
+// enabling either this feature or the feature-specific features will enable the
+// respective features. The omnibox CR23 features aren't controlled by
+// `kChromeRefresh2023` as we need to experiment with all of non-omnibox CR23 +
+// a subset of omnibox CR23.
+BASE_FEATURE(kCr2023Umbrella,
+             "OmniboxCr2023Umbrella",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Omnibox "steady state" background color is updated to match GM3
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
@@ -490,13 +499,13 @@ BASE_FEATURE(kOmniboxSteadyStateTextColor,
 // Specifies the GM3 omnibox text color in Dark Mode.
 //
 // In order to control the value of this param via Finch, the
-// kOmniboxSteadyStateTextColor feature flag must be enabled.
+// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
 //
-// Enabling only the kChromeRefresh2023 flag, while leaving the
-// kOmniboxSteadyStateTextColor flag disabled, will result in the param being
+// Enabling only the `kCr2023Umbrella` flag, while leaving the
+// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
 // locked to its default value and ignoring any overrides provided via Finch.
 //
-// If neither kChromeRefresh2023 nor kOmniboxSteadyStateTextColor are enabled,
+// If neither `kCr2023Umbrella` nor `kOmniboxSteadyStateTextColor` are enabled,
 // then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxTextColorDarkMode(
     &omnibox::kOmniboxSteadyStateTextColor,
@@ -506,13 +515,13 @@ const base::FeatureParam<std::string> kOmniboxTextColorDarkMode(
 // Specifies the GM3 omnibox text color in Dark Mode (dimmed).
 //
 // In order to control the value of this param via Finch, the
-// kOmniboxSteadyStateTextColor feature flag must be enabled.
+// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
 //
-// Enabling only the kChromeRefresh2023 flag, while leaving the
-// kOmniboxSteadyStateTextColor flag disabled, will result in the param being
+// Enabling only the `kCr2023Umbrella` flag, while leaving the
+// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
 // locked to its default value and ignoring any overrides provided via Finch.
 //
-// If neither kChromeRefresh2023 nor kOmniboxSteadyStateTextColor are enabled,
+// If neither `kCr2023Umbrella` nor `kOmniboxSteadyStateTextColor` are enabled,
 // then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode(
     &omnibox::kOmniboxSteadyStateTextColor,
@@ -522,13 +531,13 @@ const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode(
 // Specifies the GM3 omnibox text color in Light Mode.
 //
 // In order to control the value of this param via Finch, the
-// kOmniboxSteadyStateTextColor feature flag must be enabled.
+// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
 //
-// Enabling only the kChromeRefresh2023 flag, while leaving the
-// kOmniboxSteadyStateTextColor flag disabled, will result in the param being
+// Enabling only the `kCr2023Umbrella` flag, while leaving the
+// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
 // locked to its default value and ignoring any overrides provided via Finch.
 //
-// If neither kChromeRefresh2023 nor kOmniboxSteadyStateTextColor are enabled,
+// If neither `kCr2023Umbrella` nor `kOmniboxSteadyStateTextColor` are enabled,
 // then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxTextColorLightMode(
     &omnibox::kOmniboxSteadyStateTextColor,
@@ -538,13 +547,13 @@ const base::FeatureParam<std::string> kOmniboxTextColorLightMode(
 // Specifies the GM3 omnibox text color in Light Mode (dimmed).
 //
 // In order to control the value of this param via Finch, the
-// kOmniboxSteadyStateTextColor feature flag must be enabled.
+// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
 //
-// Enabling only the kChromeRefresh2023 flag, while leaving the
-// kOmniboxSteadyStateTextColor flag disabled, will result in the param being
+// Enabling only the `kCr2023Umbrella` flag, while leaving the
+// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
 // locked to its default value and ignoring any overrides provided via Finch.
 //
-// If neither kChromeRefresh2023 nor kOmniboxSteadyStateTextColor are enabled,
+// If neither `kCr2023Umbrella` nor `kOmniboxSteadyStateTextColor` are enabled,
 // then this feature param will have zero effect on Chrome UI.
 const base::FeatureParam<std::string> kOmniboxTextColorDimmedLightMode(
     &omnibox::kOmniboxSteadyStateTextColor,

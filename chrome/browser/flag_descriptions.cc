@@ -714,7 +714,9 @@ const char kChromeLabsDescription[] =
     "experimental features.";
 
 const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
-const char kChromeRefresh2023Description[] = "Refresh of Chrome Desktop UI";
+const char kChromeRefresh2023Description[] =
+    "Refresh of Chrome Desktop UI, excluding most of omnibox UI that is "
+    "controlled by a separate flag.";
 
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
