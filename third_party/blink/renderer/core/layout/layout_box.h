@@ -944,30 +944,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     LogicalMarginToPhysicalSetter(override_style).SetEnd(value);
   }
 
-  // The following functions are used to implement collapsing margins.
-  // All objects know their maximal positive and negative margins. The formula
-  // for computing a collapsed margin is |maxPosMargin| - |maxNegmargin|.
-  // For a non-collapsing box, such as a leaf element, this formula will simply
-  // return the margin of the element.  Blocks override the maxMarginBefore and
-  // maxMarginAfter methods.
-  virtual bool IsSelfCollapsingBlock() const {
-    NOT_DESTROYED();
-    return false;
-  }
-  virtual LayoutUnit CollapsedMarginBefore() const {
-    NOT_DESTROYED();
-    return MarginBefore();
-  }
-  virtual LayoutUnit CollapsedMarginAfter() const {
-    NOT_DESTROYED();
-    return MarginAfter();
-  }
-  LayoutRectOutsets CollapsedMarginBoxLogicalOutsets() const {
-    NOT_DESTROYED();
-    return LayoutRectOutsets(CollapsedMarginBefore(), LayoutUnit(),
-                             CollapsedMarginAfter(), LayoutUnit());
-  }
-
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const override;

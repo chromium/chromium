@@ -304,11 +304,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
 
-  void SetIsSelfCollapsingFromNG(bool is_self_collapsing) {
-    NOT_DESTROYED();
-    is_self_collapsing_ = is_self_collapsing;
-  }
-
   // These functions are only public so we can call it from NGBlockNode while
   // we're still working on LayoutNG.
   void AddVisualOverflowFromFloats(const NGPhysicalFragment& fragment);
@@ -502,9 +497,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                             // will have two total lines for the <div>.
 
   LayoutBlockFlowRareData& EnsureRareData();
-
-  bool IsSelfCollapsingBlock() const override;
-  bool CheckIfIsSelfCollapsingBlock() const;
 
  protected:
   Member<LayoutBlockFlowRareData> rare_data_;

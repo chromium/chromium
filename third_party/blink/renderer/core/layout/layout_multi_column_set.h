@@ -250,11 +250,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void WillBeRemovedFromTree() final;
   LayoutSize Size() const override;
 
-  bool IsSelfCollapsingBlock() const override {
-    NOT_DESTROYED();
-    return false;
-  }
-
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const override;

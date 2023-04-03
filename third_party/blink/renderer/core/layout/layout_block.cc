@@ -112,7 +112,6 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
       has_markup_truncation_(false),
       width_available_to_children_changed_(false),
       height_available_to_children_changed_(false),
-      is_self_collapsing_(false),
       descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
       has_svg_text_descendants_(false) {

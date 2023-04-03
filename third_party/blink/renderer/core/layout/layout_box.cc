@@ -4509,7 +4509,7 @@ void LayoutBox::ComputeLogicalHeight(
   }
 
   if (StretchesToViewport()) {
-    LayoutUnit margins = CollapsedMarginBefore() + CollapsedMarginAfter();
+    LayoutUnit margins = MarginBefore() + MarginAfter();
     LayoutUnit visible_height = View()->ViewLogicalHeightForPercentages();
     if (IsDocumentElement()) {
       computed_values.extent_ =

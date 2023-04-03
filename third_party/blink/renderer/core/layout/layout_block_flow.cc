@@ -113,93 +113,6 @@ bool LayoutBlockFlow::IsInitialLetterBox() const {
          !StyleRef().InitialLetter().IsNormal();
 }
 
-// TODO(1229581): Remove this function.
-bool LayoutBlockFlow::IsSelfCollapsingBlock() const {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-  DCHECK(CreatesNewFormattingContext());
-  return false;
-}
-
-bool LayoutBlockFlow::CheckIfIsSelfCollapsingBlock() const {
-  NOT_DESTROYED();
-  // We are not self-collapsing if we
-  // (a) have a non-zero height according to layout (an optimization to avoid
-  //     wasting time)
-  // (b) have border/padding,
-  // (c) have a min-height
-  // (d) have specified that one of our margins can't collapse using a CSS
-  //     extension
-  // (e) establish a new block formatting context.
-
-  // The early exit must be done before we check for clean layout.
-  // We should be able to give a quick answer if the box is a relayout boundary.
-  // Being a relayout boundary implies a block formatting context, and also
-  // our internal layout shouldn't affect our container in any way.
-  if (CreatesNewFormattingContext())
-    return false;
-
-  // Placeholder elements are not laid out until the dimensions of their parent
-  // text control are known, so they don't get layout until their parent has had
-  // layout - this is unique in the layout tree and means when we call
-  // isSelfCollapsingBlock on them we find that they still need layout.
-  auto* element = DynamicTo<Element>(GetNode());
-  DCHECK(!NeedsLayout() ||
-         (element && element->ShadowPseudoId() ==
-                         shadow_element_names::kPseudoInputPlaceholder));
-
-  if (LogicalHeight() > LayoutUnit() ||
-      StyleRef().LogicalMinHeight().IsPositive())
-    return false;
-
-  const Length& logical_height_length = StyleRef().LogicalHeight();
-  bool has_auto_height = logical_height_length.IsAuto();
-  if (logical_height_length.IsPercentOrCalc() &&
-      !GetDocument().InQuirksMode()) {
-    has_auto_height = true;
-    if (LayoutBlock* cb = ContainingBlock()) {
-      if (!IsA<LayoutView>(cb) &&
-          (cb->StyleRef().LogicalHeight().IsFixed() || cb->IsTableCell()))
-        has_auto_height = false;
-    }
-  }
-
-  // If the height is 0 or auto, then whether or not we are a self-collapsing
-  // block depends on whether we have content that is all self-collapsing.
-  // TODO(alancutter): Make this work correctly for calc lengths.
-  if (has_auto_height || ((logical_height_length.IsFixed() ||
-                           logical_height_length.IsPercentOrCalc()) &&
-                          logical_height_length.IsZero())) {
-    // Marker_container should be a self-collapsing block. Marker_container is a
-    // zero height anonymous block and marker is its only child.
-    if (logical_height_length.IsFixed() && logical_height_length.IsZero() &&
-        IsAnonymous() && Parent() && Parent()->IsListItem()) {
-      LayoutObject* first_child = FirstChild();
-      if (first_child && first_child->IsListMarker() &&
-          !first_child->NextSibling())
-        return true;
-    }
-
-    // If the block has inline children, see if we generated any line boxes.
-    // If we have any line boxes, then we can't be self-collapsing, since we
-    // have content.
-    if (ChildrenInline())
-      return !FirstLineBox();
-
-    // Whether or not we collapse is dependent on whether all our normal flow
-    // children are also self-collapsing.
-    for (LayoutBox* child = FirstChildBox(); child;
-         child = child->NextSiblingBox()) {
-      if (child->IsFloatingOrOutOfFlowPositioned() || child->IsColumnSpanAll())
-        continue;
-      if (!child->IsSelfCollapsingBlock())
-        return false;
-    }
-    return true;
-  }
-  return false;
-}
-
 DISABLE_CFI_PERF
 void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
@@ -251,7 +164,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   UpdateAfterLayout();
 
   ClearNeedsLayout();
-  is_self_collapsing_ = CheckIfIsSelfCollapsingBlock();
 }
 
 DISABLE_CFI_PERF

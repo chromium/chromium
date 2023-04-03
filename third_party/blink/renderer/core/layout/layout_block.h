@@ -520,8 +520,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   unsigned has_markup_truncation_ : 1;
   unsigned width_available_to_children_changed_ : 1;
   unsigned height_available_to_children_changed_ : 1;
-  // True if margin-before and margin-after are adjoining.
-  unsigned is_self_collapsing_ : 1;
   unsigned descendants_with_floats_marked_for_layout_ : 1;
 
   unsigned has_positioned_objects_ : 1;
