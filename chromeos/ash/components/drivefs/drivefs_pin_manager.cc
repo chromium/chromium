@@ -25,6 +25,8 @@ namespace {
 
 using base::SequencedTaskRunner;
 using base::TimeDelta;
+using drivefs::mojom::QueryItem;
+using drivefs::mojom::QueryItemPtr;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
 using std::ostream;
@@ -734,12 +736,11 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
   q->GetNextPage(base::BindOnce(
       [](const base::WeakPtr<PinManager> pin_manager, Id dir_id, Path dir_path,
          Query query, const drive::FileError error,
-         const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+         const absl::optional<std::vector<QueryItemPtr>> items) {
         if (pin_manager) {
           pin_manager->OnSearchResult(
               dir_id, std::move(dir_path), std::move(query), error,
-              items ? *items
-                    : base::span<const drivefs::mojom::QueryItemPtr>{});
+              items ? *items : base::span<const QueryItemPtr>{});
         } else {
           VLOG(1) << "Dropped query for " << dir_id << " " << Quote(dir_path);
         }
@@ -747,12 +748,11 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
       GetWeakPtr(), dir_id, std::move(dir_path), std::move(query)));
 }
 
-void PinManager::OnSearchResult(
-    const Id dir_id,
-    Path dir_path,
-    Query query,
-    const drive::FileError error,
-    const base::span<const drivefs::mojom::QueryItemPtr> items) {
+void PinManager::OnSearchResult(const Id dir_id,
+                                Path dir_path,
+                                Query query,
+                                const drive::FileError error,
+                                const base::span<const QueryItemPtr> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
@@ -799,67 +799,74 @@ void PinManager::OnSearchResult(
     return StartPinning();
   }
 
+  progress_.listed_items += items.size();
   VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
           << Quote(dir_path);
-  const Path files_by_id_path("/.files-by-id");
 
-  for (const mojom::QueryItemPtr& item : items) {
+  for (const QueryItemPtr& item : items) {
     DCHECK(item);
-    DCHECK(item->metadata);
-    const FileMetadata& md = *item->metadata;
-    const Id id = Id(md.stable_id);
-
-    const Path& path = item->path;
-    if (files_by_id_path.IsParent(path) || !dir_path.IsParent(path)) {
-      LOG(ERROR) << "Unexpected path " << Quote(path) << " for " << Quote(md)
-                 << " when listing items in " << dir_id << " "
-                 << Quote(dir_path);
-    }
-
-    if (md.shortcut_details) {
-      progress_.skipped_items++;
-      progress_.listed_shortcuts++;
-      VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
-              << md.type << " " << Id(md.shortcut_details->target_stable_id);
-      continue;
-    }
-
-    using Type = FileMetadata::Type;
-
-    switch (md.type) {
-      case Type::kFile:
-        progress_.listed_files++;
-        Add(md, path);
-        continue;
-
-      case Type::kHosted:
-        progress_.listed_docs++;
-        Add(md, path);
-        continue;
-
-      case Type::kDirectory:
-        progress_.listed_dirs++;
-
-        if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path);
-            !ok) {
-          DCHECK_EQ(it->first, id);
-          progress_.skipped_items++;
-          VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
-                  << dir_id << " " << Quote(dir_path)
-                  << " was previously seen when listing " << Quote(it->second);
-          continue;
-        }
-
-        ListItems(id, path);
-    }
+    HandleQueryItem(dir_id, dir_path, *item);
   }
 
-  progress_.listed_items += items.size();
   VLOG(1) << NiceNum << "Listed " << progress_.listed_items << " items in "
           << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
           << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
   GetNextPage(dir_id, std::move(dir_path), std::move(query));
+}
+
+void PinManager::HandleQueryItem(Id dir_id,
+                                 const Path& dir_path,
+                                 const drivefs::mojom::QueryItem& item) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(item.metadata);
+  const FileMetadata& md = *item.metadata;
+  const Id id = Id(md.stable_id);
+  const Path& path = item.path;
+
+  if (Path("/.files-by-id").IsParent(path) || !dir_path.IsParent(path)) {
+    LOG(ERROR) << "Unexpected path " << Quote(path) << " for " << Quote(md)
+               << " when listing items in " << dir_id << " " << Quote(dir_path);
+  }
+
+  if (md.shortcut_details) {
+    progress_.skipped_items++;
+    progress_.listed_shortcuts++;
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
+            << md.type << " " << Id(md.shortcut_details->target_stable_id);
+    return;
+  }
+
+  using Type = FileMetadata::Type;
+  switch (md.type) {
+    case Type::kFile:
+      progress_.listed_files++;
+      Add(md, path);
+      return;
+
+    case Type::kHosted:
+      progress_.listed_docs++;
+      Add(md, path);
+      return;
+
+    case Type::kDirectory:
+      progress_.listed_dirs++;
+
+      if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path); !ok) {
+        DCHECK_EQ(it->first, id);
+        progress_.skipped_items++;
+        VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
+                << dir_id << " " << Quote(dir_path)
+                << " was previously seen when listing " << Quote(it->second);
+        return;
+      }
+
+      ListItems(id, path);
+      return;
+  }
+
+  LOG(ERROR) << "Unexpected item type " << Quote(md.type) << " for " << id
+             << " " << path;
 }
 
 void PinManager::Complete(const Stage stage) {

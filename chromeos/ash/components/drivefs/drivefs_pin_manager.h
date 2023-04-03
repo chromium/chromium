@@ -339,6 +339,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
                       drive::FileError error,
                       base::span<const drivefs::mojom::QueryItemPtr> items);
 
+  // Handles one query item retrieved by a search query.
+  void HandleQueryItem(Id dir_id,
+                       const Path& dir_path,
+                       const drivefs::mojom::QueryItem& item);
+
   // When the pinning has finished, this ensures appropriate cleanup happens on
   // the underlying search query mojo connection.
   void Complete(Stage stage);
@@ -454,6 +459,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, PinSomeFiles);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CheckStalledFiles);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotifyProgress);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnSearchResult);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, HandleQueryItem);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

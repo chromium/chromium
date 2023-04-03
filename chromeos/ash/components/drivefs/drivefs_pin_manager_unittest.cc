@@ -1957,6 +1957,52 @@ TEST_F(DriveFsPinManagerTest, SetOnline) {
   EXPECT_FALSE(manager.is_online_);
 }
 
+// Tests PinManager::HandleQueryItem().
+TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kListingFiles;
+  manager.progress_.max_active_queries = 2;
+  manager.progress_.active_queries = 2;
+
+  const Id dir_id = Id(101);
+  const Path dir_path("/root/Folder");
+  QueryItem item;
+  item.path = Path("/root/Folder/Item");
+  item.metadata = FileMetadata::New();
+  FileMetadata& md = *item.metadata;
+  md.stable_id = 102;
+  md.type = FileMetadata::Type(-1);
+  md.size = 0;
+  md.pinned = false;
+  md.available_offline = false;
+  md.capabilities = mojom::Capabilities::New();
+
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+
+  manager.Stop();
+}
+
+// Tests PinManager::OnSearchResult() when a query finishes and there are still
+// other active queries.
+TEST_F(DriveFsPinManagerTest, OnSearchResult) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kListingFiles;
+  manager.progress_.max_active_queries = 2;
+  manager.progress_.active_queries = 2;
+
+  manager.OnSearchResult(Id(101), Path("/root/My Folder"), PinManager::Query(),
+                         FileError::FILE_ERROR_OK, {});
+
+  EXPECT_EQ(manager.progress_.max_active_queries, 2);
+  EXPECT_EQ(manager.progress_.active_queries, 1);
+
+  manager.Stop();
+}
+
 // Tests PinManager::OnSearchResult() with transient errors.
 TEST_F(DriveFsPinManagerTest, OnTransientError) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
