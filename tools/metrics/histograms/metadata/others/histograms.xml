@@ -2244,15 +2244,6 @@ chromium-metrics-reviews@google.com.
   <summary>Count of child process kills grouped by process type.</summary>
 </histogram>
 
-<histogram name="ChildProcess.Killed2.OOM" enum="ProcessType2"
-    expires_after="2020-11-08">
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    Out of ChildProcess.Killled, number of kills due to SIGKILL, which is a
-    strong signal of out of memory on Chrome OS, grouped by process type.
-  </summary>
-</histogram>
-
 <histogram name="ChildProcess.Launched.UtilityProcessHash"
     enum="UtilityProcessNameHash" expires_after="2023-08-27">
   <owner>wfh@chromium.org</owner>
