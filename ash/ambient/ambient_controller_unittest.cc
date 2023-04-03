@@ -12,6 +12,8 @@
 #include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
@@ -1592,8 +1594,11 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
- protected:
+class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
+ public:
+  AmbientControllerForManagedScreensaverTest()
+      : photo_source_(std::make_unique<TestAmbientManagedPhotoSource>()) {}
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
@@ -1603,6 +1608,13 @@ class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
     CreateTestData();
   }
 
+  void TearDown() override {
+    ASSERT_TRUE(temp_dir_.Delete());
+    image_file_paths_.clear();
+    AmbientAshTestBase::TearDown();
+  }
+
+ protected:
   void CreateTestData() {
     bool success = temp_dir_.CreateUniqueTempDir();
     ASSERT_TRUE(success);
@@ -1623,17 +1635,23 @@ class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
     FastForwardTiny();
     EXPECT_TRUE(ambient_controller()->IsShown());
   }
+
+  TestAmbientManagedPhotoSource* ambient_managed_photo_source() {
+    return photo_source_.get();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
+  std::unique_ptr<TestAmbientManagedPhotoSource> photo_source_;
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(AmbientControllerForManagedScreensaver,
+TEST_F(AmbientControllerForManagedScreensaverTest,
        ScreensaverIsShownWithEnoughImages) {
   SetAmbientModeManagedScreensaverEnabled(true);
 
-  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
   SimulateScreensaverStart();
 
   ASSERT_TRUE(GetContainerView());
@@ -1649,7 +1667,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   ASSERT_FALSE(GetContainerView());
 }
 
-TEST_F(AmbientControllerForManagedScreensaver,
+TEST_F(AmbientControllerForManagedScreensaverTest,
        ScreensaverIsNotShownWithoutImages) {
   SetAmbientModeManagedScreensaverEnabled(true);
   LockScreen();
@@ -1662,7 +1680,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerForManagedScreensaver,
+TEST_F(AmbientControllerForManagedScreensaverTest,
        UiLauncherIsNullWhenManagedAmbientModeIsDisabled) {
   SetAmbientModeEnabled(false);
   SetAmbientModeManagedScreensaverEnabled(false);
@@ -1672,11 +1690,11 @@ TEST_F(AmbientControllerForManagedScreensaver,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerForManagedScreensaver,
+TEST_F(AmbientControllerForManagedScreensaverTest,
        DisablingManagedAmbientModeFallsbackToUserAmbientModeIfEnabled) {
   SetAmbientModeEnabled(true);
   SetAmbientModeManagedScreensaverEnabled(true);
-  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
   SimulateScreensaverStart();
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
@@ -1684,6 +1702,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   SetAmbientModeManagedScreensaverEnabled(false);
   DisableBackupCacheDownloads();
   UnlockScreen();
+
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -1695,7 +1714,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerForManagedScreensaver,
+TEST_F(AmbientControllerForManagedScreensaverTest,
        LaunchingManagedAmbientModeAfterAmbientModeWorksAsExpected) {
   SetAmbientModeEnabled(/*enabled=*/true);
   ASSERT_FALSE(ambient_controller()->ambient_ui_launcher());
@@ -1709,7 +1728,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerForManagedScreensaver,
+TEST_F(AmbientControllerForManagedScreensaverTest,
        LaunchingAmbientModeAfterManagedAmbientModeWorksAsExpected) {
   SetAmbientModeEnabled(/*enabled=*/false);
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
@@ -1722,7 +1741,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
-TEST_F(AmbientControllerForManagedScreensaver, PrefObserverUpdatesUiModel) {
+TEST_F(AmbientControllerForManagedScreensaverTest, PrefObserverUpdatesUiModel) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
   ASSERT_TRUE(ambient_controller()->ambient_ui_launcher());
   PrefService* pref_service =
@@ -1740,6 +1759,33 @@ TEST_F(AmbientControllerForManagedScreensaver, PrefObserverUpdatesUiModel) {
       kExpectedPhotoRefreshInterval);
   EXPECT_EQ(base::Seconds(kExpectedPhotoRefreshInterval),
             ui_model->photo_refresh_interval());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverTest,
+       WorksWithAmbientManagedPhotoSource) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+
+  SimulateScreensaverStart();
+  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+
+  // Forward the task environment a bit to make sure any pending tasks get
+  // started.
+  FastForwardTiny();
+
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  UnlockScreen();
+
+  ASSERT_FALSE(GetContainerView());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  SimulateScreensaverStart();
+  // Will start as there are images present already
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
 }
 
 TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {

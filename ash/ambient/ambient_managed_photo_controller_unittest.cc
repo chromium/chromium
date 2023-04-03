@@ -11,6 +11,7 @@
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/mock_ambient_backend_model_observer.h"
+#include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/test/in_process_image_decoder.h"
@@ -48,6 +49,9 @@ MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
 
 class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
  public:
+  AmbientManagedPhotoControllerTest()
+      : photo_source_(std::make_unique<TestAmbientManagedPhotoSource>()) {}
+
   void CreateTestData() {
     bool success = temp_dir_.CreateUniqueTempDir();
     ASSERT_TRUE(success);
@@ -69,7 +73,10 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
     image_file_paths_.push_back(image_4);
   }
 
-  void CleanUpTestData() { ASSERT_TRUE(temp_dir_.Delete()); }
+  void CleanUpTestData() {
+    ASSERT_TRUE(temp_dir_.Delete());
+    image_file_paths_.clear();
+  }
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -151,6 +158,7 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<TestAmbientManagedPhotoSource> photo_source_;
   std::unique_ptr<AmbientManagedPhotoController> photo_controller_;
 };
 
