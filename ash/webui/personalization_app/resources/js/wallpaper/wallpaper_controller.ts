@@ -208,7 +208,7 @@ export async function fetchGooglePhotosSharedAlbums(
 }
 
 /** Fetches whether the user is allowed to access Google Photos. */
-async function fetchGooglePhotosEnabled(
+export async function fetchGooglePhotosEnabled(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   // Whether access is allowed should only be fetched once.
@@ -518,15 +518,6 @@ export async function initializeBackdropData(
     store: PersonalizationStore): Promise<void> {
   await fetchCollections(provider, store);
   await fetchAllImagesForCollections(provider, store);
-}
-
-// TODO(b:230635452): Remove this method since it is now just a thin wrapper.
-/** Fetches initial Google Photos data and saves it to the store. */
-export async function initializeGooglePhotosData(
-    provider: WallpaperProviderInterface,
-    store: PersonalizationStore): Promise<void> {
-  // Fetch whether the user is allowed to access Google Photos.
-  await fetchGooglePhotosEnabled(provider, store);
 }
 
 /**

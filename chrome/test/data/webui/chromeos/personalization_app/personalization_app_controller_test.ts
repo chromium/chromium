@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -51,7 +51,7 @@ suite('Personalization app controller', () => {
   test('initializes Google Photos data in store', async () => {
     loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: true});
 
-    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
 
     const expectedEnabled = GooglePhotosEnablementState.kEnabled;
 
@@ -146,7 +146,7 @@ suite('Personalization app controller', () => {
 
     // Attempts to `fetchGooglePhotosAlbum()` will fail unless the entire list
     // of Google Photos albums has already been fetched and saved to the store.
-    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
     await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
     personalizationStore.reset(personalizationStore.data);
 

@@ -21,7 +21,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
 import {getTemplate} from './google_photos_collection_element.html.js';
-import {fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums, initializeGooglePhotosData} from './wallpaper_controller.js';
+import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /** A Promise<T> which can be externally |resolve()|-ed. */
@@ -186,7 +186,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     this.updateFromStore();
 
-    initializeGooglePhotosData(this.wallpaperProvider_, this.getStore())
+    fetchGooglePhotosEnabled(this.wallpaperProvider_, this.getStore())
         .then(() => this.initializeGooglePhotosDataPromise_.resolve());
   }
 

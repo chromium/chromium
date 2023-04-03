@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fetchGooglePhotosAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -110,7 +110,7 @@ suite('GooglePhotosAlbumsTest', function() {
         'no wallpaper grid items yet');
 
     // Initialize Google Photos data in the |personalizationStore|.
-    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
     await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
@@ -144,8 +144,7 @@ suite('GooglePhotosAlbumsTest', function() {
         // Initialize Google Photos data in the |personalizationStore| and
         // expect an |error|.
         personalizationStore.expectAction(PersonalizationActionName.SET_ERROR);
-        await initializeGooglePhotosData(
-            wallpaperProvider, personalizationStore);
+        await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
         await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
         const {error} =
             await personalizationStore.waitForAction(
@@ -287,7 +286,7 @@ suite('GooglePhotosAlbumsTest', function() {
     wallpaperProvider.setGooglePhotosAlbumsResumeToken(resumeToken);
 
     // Initialize Google Photos data in |personalizationStore|.
-    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+    await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
     await fetchGooglePhotosAlbums(wallpaperProvider, personalizationStore);
     assertEquals(
         await wallpaperProvider.whenCalled('fetchGooglePhotosAlbums'),
