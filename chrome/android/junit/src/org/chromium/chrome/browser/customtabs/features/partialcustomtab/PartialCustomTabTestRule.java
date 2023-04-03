@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
@@ -42,6 +43,8 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -52,6 +55,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +66,14 @@ import java.util.function.BooleanSupplier;
  * to the Partial Custom Tabs logic.
  */
 public class PartialCustomTabTestRule implements TestRule {
+    @Implements(SemanticColorUtils.class)
+    static class ShadowSemanticColorUtils {
+        @Implementation
+        public static int getDividerLineBgColor(Context context) {
+            return Color.LTGRAY;
+        }
+    }
+
     // Pixel 3 XL metrics
     static final float DENSITY = 1.25f;
     static final int DEVICE_HEIGHT = 2960;

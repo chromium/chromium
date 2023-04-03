@@ -11,11 +11,13 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
@@ -367,8 +369,11 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected boolean shouldDrawDividerLine() {
+        // Elevation shadows are only rendered properly on devices >= Android Q
         return SysUtils.isLowEndDevice()
-                || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+                || mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER
+                || (mDecorationType == ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q);
     }
 
     @Override

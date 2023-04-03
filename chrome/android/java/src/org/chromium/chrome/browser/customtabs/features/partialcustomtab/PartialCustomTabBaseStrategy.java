@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
@@ -394,7 +395,7 @@ public abstract class PartialCustomTabBaseStrategy
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
 
-        cctBackground.setStroke(width, toolbar.getToolbarHairlineColor(mToolbarColor));
+        cctBackground.setStroke(width, SemanticColorUtils.getDividerLineBgColor(mActivity));
 
         // We need an inset to make the outline shadow visible.
         dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
