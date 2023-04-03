@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/debug/debug.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
@@ -256,6 +257,10 @@ test("components_unittests") {
       "//components/supervised_user/core/browser:unit_tests",
       "//components/supervised_user/core/common:unit_tests",
     ]
+  }
+
+  if (build_allocation_stack_trace_recorder) {
+    deps += [ "//components/allocation_recorder/crash_client:unit_tests" ]
   }
 
   if (!is_ios) {
