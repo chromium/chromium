@@ -1423,6 +1423,9 @@ const char kPointingStickAcceleration[] =
 const char kTimeOfLastSessionActivation[] =
     "ash.session.time_of_last_activation";
 
+// Copy of owner swap mouse buttons option to use on login screen.
+const char kOwnerPrimaryMouseButtonRight[] = "owner.mouse.primary_right";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

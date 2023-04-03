@@ -676,6 +676,9 @@ extern const char kPointingStickAcceleration[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTimeOfLastSessionActivation[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOwnerPrimaryMouseButtonRight[];
+
 }  // namespace prefs
 }  // namespace ash
 

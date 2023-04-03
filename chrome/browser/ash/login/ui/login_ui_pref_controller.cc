@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/login_ui_pref_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -23,12 +24,12 @@ LoginUIPrefController::LoginUIPrefController() {
       base::BindRepeating(&LoginUIPrefController::UpdatePrimaryMouseButtonRight,
                           weak_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
-      prefs::kOwnerPrimaryPointingStickButtonRight,
+      ::prefs::kOwnerPrimaryPointingStickButtonRight,
       base::BindRepeating(
           &LoginUIPrefController::UpdatePrimaryPointingStickButtonRight,
           weak_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
-      prefs::kOwnerTapToClickEnabled,
+      ::prefs::kOwnerTapToClickEnabled,
       base::BindRepeating(&LoginUIPrefController::UpdateTapToClickEnabled,
                           weak_factory_.GetWeakPtr()));
   if (prefs->GetAllPrefStoresInitializationStatus() ==
@@ -53,13 +54,13 @@ void LoginUIPrefController::UpdatePrimaryMouseButtonRight() {
 void LoginUIPrefController::UpdatePrimaryPointingStickButtonRight() {
   system::InputDeviceSettings::Get()->SetPointingStickPrimaryButtonRight(
       g_browser_process->local_state()->GetBoolean(
-          prefs::kOwnerPrimaryPointingStickButtonRight));
+          ::prefs::kOwnerPrimaryPointingStickButtonRight));
 }
 
 void LoginUIPrefController::UpdateTapToClickEnabled() {
   system::InputDeviceSettings::Get()->SetTapToClick(
       g_browser_process->local_state()->GetBoolean(
-          prefs::kOwnerTapToClickEnabled));
+          ::prefs::kOwnerTapToClickEnabled));
 }
 
 void LoginUIPrefController::InitOwnerPreferences(bool success) {

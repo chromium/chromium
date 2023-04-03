@@ -97,13 +97,13 @@ IN_PROC_BROWSER_TEST_F(LoginUIPrefControllerTest,
   SetDeviceLoginScreenPrimaryMouseButtonSwitch(true);
   RefreshDevicePolicy();
   WaitForPrefValue(g_browser_process->local_state(),
-                   ::prefs::kOwnerPrimaryMouseButtonRight, base::Value(true));
+                   prefs::kOwnerPrimaryMouseButtonRight, base::Value(true));
   EXPECT_TRUE(GetSystemMousePrimaryButtonRight());
 
   SetDeviceLoginScreenPrimaryMouseButtonSwitch(false);
   RefreshDevicePolicy();
   WaitForPrefValue(g_browser_process->local_state(),
-                   ::prefs::kOwnerPrimaryMouseButtonRight, base::Value(false));
+                   prefs::kOwnerPrimaryMouseButtonRight, base::Value(false));
   EXPECT_FALSE(GetSystemMousePrimaryButtonRight());
 }
 
