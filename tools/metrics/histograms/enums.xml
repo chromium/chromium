@@ -92412,6 +92412,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              start)"/>
 </enum>
 
+<enum name="SecagentdBootmodeCros">
+  <int value="0" label="Bootmode successfully retrieved"/>
+  <int value="1" label="Bootmode manager did not respond"/>
+  <int value="2" label="Bootmode service unavailable"/>
+  <int value="3" label="Failed to retrieve bootmode"/>
+</enum>
+
+<enum name="SecagentdBootmodeUefi">
+  <int value="0" label="Bootmode successfully retrieved"/>
+  <int value="1" label="Boot params file not found"/>
+  <int value="2" label="Failed to read boot params file"/>
+  <int value="3" label="Boot params file invalid size"/>
+</enum>
+
 <enum name="SecagentdBpfAttachResult">
   <int value="0" label="BPF loaded and attached successfully"/>
   <int value="1" label="BPF failed to Open"/>
@@ -92420,10 +92434,51 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="BPF failed Ring Buffer creation"/>
 </enum>
 
+<enum name="SecagentdCache">
+  <int value="0" label="Cache hit"/>
+  <int value="1" label="Cache miss"/>
+  <int value="2" label="Cache miss but filled from procfs"/>
+</enum>
+
 <enum name="SecagentdPolicy">
   <int value="0"
       label="Device XDR reporting policy was checked at startup (baseline)"/>
   <int value="1" label="XDR reporting was enabled by Device policy"/>
+</enum>
+
+<enum name="SecagentdProcessEvent">
+  <int value="0" label="Process event fully filled"/>
+  <int value="1" label="Spawn process not found"/>
+  <int value="2" label="Process not found"/>
+  <int value="3" label="Parent process not found"/>
+  <int value="4" label="Parent process still alive"/>
+</enum>
+
+<enum name="SecagentdSendMessageResult">
+  <int value="0" label="Message successfully sent"/>
+  <int value="1" label="CANCELLED"/>
+  <int value="2" label="UNKNOWN"/>
+  <int value="3" label="INVALID_ARGUMENT"/>
+  <int value="4" label="DEADLINE_EXCEEDED"/>
+  <int value="5" label="NOT_FOUND"/>
+  <int value="6" label="ALREADY_EXISTS"/>
+  <int value="7" label="PERMISSION_DENIED"/>
+  <int value="8" label="RESOURCE_EXHAUSTED"/>
+  <int value="9" label="FAILED_PRECONDITION"/>
+  <int value="10" label="ABORTED"/>
+  <int value="11" label="OUT_OF_RANGE"/>
+  <int value="12" label="UNIMPLEMENTED"/>
+  <int value="13" label="INTERNAL"/>
+  <int value="14" label="UNAVAILABLE"/>
+  <int value="15" label="DATA_LOSS"/>
+  <int value="16" label="UNAUTHENTICATED"/>
+</enum>
+
+<enum name="SecagentdTpm">
+  <int value="0" label="Tpm info successfully retrieved"/>
+  <int value="1" label="Tpm manager did not respond"/>
+  <int value="2" label="Tpm service unavailable"/>
+  <int value="3" label="Failed to retrieve Tpm"/>
 </enum>
 
 <enum name="SecondaryAccountConsentLoggerResult">
