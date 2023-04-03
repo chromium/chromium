@@ -425,6 +425,11 @@ _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('rendering.desktop'),
 ])
+_MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('rendering.desktop'),
+])
 _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
@@ -644,6 +649,12 @@ MAC_M1_MINI_2020_PGO = PerfPlatform(
     'Mac M1 Mini 2020',
     _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
     4,
+    'mac')
+MAC_M1_PRO = PerfPlatform(
+    'mac-m1-pro-perf',
+    'Mac M1 PRO 2020',
+    _MAC_M1_PRO_BENCHMARK_CONFIGS,
+    5,
     'mac')
 
 # Win
