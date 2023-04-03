@@ -14,11 +14,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
@@ -57,7 +57,7 @@ UpdateContext::UpdateContext(
       crx_state_change_callback(crx_state_change_callback),
       notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
-      session_id(base::StrCat({"{", base::GenerateGUID(), "}"})),
+      session_id(base::StrCat({"{", base::GenerateUuid(), "}"})),
       persisted_data(persisted_data),
       is_update_check_only(is_update_check_only) {
   for (const auto& id : ids) {
@@ -83,7 +83,7 @@ UpdateContext::UpdateContext(
       crx_state_change_callback(crx_state_change_callback),
       notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
-      session_id(base::StrCat({"{", base::GenerateGUID(), "}"})),
+      session_id(base::StrCat({"{", base::GenerateUuid(), "}"})),
       persisted_data(persisted_data),
       is_update_check_only(is_update_check_only) {
   for (const auto& id : ids) {

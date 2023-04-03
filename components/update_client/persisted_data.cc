@@ -12,10 +12,10 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -128,7 +128,7 @@ void PersistedData::SetDateLastDataHelper(
   for (const auto& id : ids) {
     base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->Set("dlrc", datenum);
-    app_key->Set("pf", base::GenerateGUID());
+    app_key->Set("pf", base::GenerateUuid());
     if (GetInstallDate(id) == kDateFirstTime)
       app_key->Set("installdate", datenum);
     if (active_ids.find(id) != active_ids.end()) {
