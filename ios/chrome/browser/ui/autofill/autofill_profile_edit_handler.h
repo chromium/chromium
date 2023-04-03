@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+@protocol UITextFieldDelegate;
+
 // Protocol for updating the autofill profile edit view controller.
 @protocol AutofillProfileEditHandler <NSObject>
 
@@ -22,7 +24,8 @@
 
 // Called for setting `cell` properties at `indexPath`.
 - (UITableViewCell*)cell:(UITableViewCell*)cell
-       forRowAtIndexPath:(NSIndexPath*)indexPath;
+       forRowAtIndexPath:(NSIndexPath*)indexPath
+        withTextDelegate:(id<UITextFieldDelegate>)delegate;
 
 // Returns header sections view controller  whose height should be 0.
 - (BOOL)heightForHeaderShouldBeZeroInSection:(NSInteger)section;
@@ -30,15 +33,8 @@
 // Returns footer sections in the view controller whose height should be 0.
 - (BOOL)heightForFooterShouldBeZeroInSection:(NSInteger)section;
 
-// Returns YES if the row is editable for `indexPath` in the view controller.
-- (BOOL)canEditRowAtIndexPath:(NSIndexPath*)indexPath;
-
-// Decides the editing style for the `indexPath` in the view controller.
-- (UITableViewCellEditingStyle)editingStyleForRowAtIndexPath:
-    (NSIndexPath*)indexPath;
-
-// Decides to indent row when editing at `indexPath`.
-- (BOOL)shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath;
+// Called from settings view for adding footer to the views.
+- (void)loadFooterForSettings;
 
 // Called when the edit button is pressed.
 - (void)editButtonPressed;

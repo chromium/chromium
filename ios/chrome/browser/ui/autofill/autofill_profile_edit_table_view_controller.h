@@ -14,9 +14,7 @@
 // The table view shared between the settings and messages UI for the edit
 // functionality.
 @interface AutofillProfileEditTableViewController
-    : NSObject <AutofillProfileEditConsumer,
-                AutofillProfileEditHandler,
-                UITextFieldDelegate>
+    : NSObject <AutofillProfileEditConsumer, AutofillProfileEditHandler>
 
 // Initializes a AutofillProfileEditTableViewController with passed `delegate`
 // and `userEmail`.

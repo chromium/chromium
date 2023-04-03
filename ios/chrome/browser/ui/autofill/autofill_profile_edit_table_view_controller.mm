@@ -204,17 +204,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
           toSectionWithIdentifier:SectionIdentifierFields];
     }
   }
-
-  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
-      _userEmail != nil) {
-    [model addSectionWithIdentifier:SectionIdentifierFooter];
-    [model setFooter:[self footerItem]
-        forSectionWithIdentifier:SectionIdentifierFooter];
-  }
 }
 
 - (UITableViewCell*)cell:(UITableViewCell*)cell
-       forRowAtIndexPath:(NSIndexPath*)indexPath {
+       forRowAtIndexPath:(NSIndexPath*)indexPath
+        withTextDelegate:(id<UITextFieldDelegate>)delegate {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   NSInteger itemType =
       [self.controller.tableViewModel itemTypeForIndexPath:indexPath];
@@ -234,7 +228,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   TableViewTextEditCell* textFieldCell =
       base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
   textFieldCell.accessibilityIdentifier = textFieldCell.textLabel.text;
-  textFieldCell.textField.delegate = self;
+  textFieldCell.textField.delegate = delegate;
   return textFieldCell;
 }
 
@@ -271,19 +265,15 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   return sectionIdentifier == SectionIdentifierFields;
 }
 
-- (BOOL)canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  // If we don't allow the edit of the cell, the selection of the cell isn't
-  // forwarded.
-  return YES;
-}
+- (void)loadFooterForSettings {
+  TableViewModel* model = self.controller.tableViewModel;
 
-- (UITableViewCellEditingStyle)editingStyleForRowAtIndexPath:
-    (NSIndexPath*)indexPath {
-  return UITableViewCellEditingStyleNone;
-}
-
-- (BOOL)shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
-  return NO;
+  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
+      _userEmail != nil) {
+    [model addSectionWithIdentifier:SectionIdentifierFooter];
+    [model setFooter:[self footerItem]
+        forSectionWithIdentifier:SectionIdentifierFooter];
+  }
 }
 
 #pragma mark - TableViewTextEditItemDelegate
