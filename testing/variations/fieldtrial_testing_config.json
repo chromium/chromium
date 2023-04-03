@@ -8367,6 +8367,22 @@
             ]
         }
     ],
+    "OmniboxFuzzyUrlSuggestions": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxFuzzyUrlSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxImplementationChangeIOS": [
         {
             "platforms": [
