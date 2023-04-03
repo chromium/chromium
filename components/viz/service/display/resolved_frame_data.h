@@ -49,6 +49,10 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   // of aggregation. Stored in front-to-back order like in |render_pass|.
   std::vector<const DrawQuad*> prewalk_quads;
 
+  // How many times this render pass is embedded by another render pass in the
+  // same frame.
+  int embed_count = 0;
+
   AggregatedRenderPassId remapped_id;
   bool is_root = false;
   std::vector<ResolvedQuadData> draw_quads;
@@ -115,10 +119,18 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
     return fixed_.prewalk_quads;
   }
 
+  // Returns true if the render pass is not embedded by another render pass and
+  // is not the root render pass.
+  bool IsUnembedded() const {
+    return !fixed_.is_root && fixed_.embed_count == 0;
+  }
+
   AggregationPassData& aggregation() { return aggregation_; }
   const AggregationPassData& aggregation() const { return aggregation_; }
 
  private:
+  friend class ResolvedFrameData;
+
   // Data that is constant for the life of the resolved pass.
   FixedPassData fixed_;
 
