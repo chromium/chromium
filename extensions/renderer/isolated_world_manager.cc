@@ -26,6 +26,8 @@ IsolatedWorldManager& IsolatedWorldManager::GetInstance() {
 }
 
 std::string IsolatedWorldManager::GetHostIdForIsolatedWorld(int world_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   for (const auto& entry : isolated_worlds_) {
     if (entry.second == world_id) {
       return entry.first;
@@ -35,11 +37,15 @@ std::string IsolatedWorldManager::GetHostIdForIsolatedWorld(int world_id) {
 }
 
 void IsolatedWorldManager::RemoveIsolatedWorld(const std::string& host_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   isolated_worlds_.erase(host_id);
 }
 
 int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     const InjectionHost& injection_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   static int g_next_isolated_world_id =
       ExtensionsRendererClient::Get()->GetLowestIsolatedWorldId();
 

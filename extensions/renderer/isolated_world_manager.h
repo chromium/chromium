@@ -8,6 +8,8 @@
 #include <map>
 #include <string>
 
+#include "base/sequence_checker.h"
+
 class InjectionHost;
 
 namespace extensions {
@@ -56,6 +58,8 @@ class IsolatedWorldManager {
   using IsolatedWorldMap = std::map<std::string, int>;
 
   IsolatedWorldMap isolated_worlds_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace extensions
