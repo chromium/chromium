@@ -48,7 +48,7 @@
           'FAIL: Unexpected top function: expected ' + expectedName +
           ', found ' + topFunctionName);
     TestRunner.assertEquals(
-        SDK.DebuggerModel.BreakReason.Other, reason,
+        SDK.DebuggerModel.BreakReason.Step, reason,
         'FAIL: wrong pause reason: ' + reason);
   }
 
