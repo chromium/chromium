@@ -48,8 +48,8 @@ class CONTENT_EXPORT FuchsiaMediaCodecProviderImpl final
 
   // Handlers for events on the codec factory API channel.
   void OnCodecFactoryDisconnected(zx_status_t status);
-  void OnGetDetailedCodecDescriptions(
-      fuchsia::mediacodec::CodecFactoryGetDetailedCodecDescriptionsResponse);
+  void OnCodecList(
+      std::vector<fuchsia::mediacodec::CodecDescription> codec_list);
 
   void RunPendingGetSupportedVideoDecoderConfigsCallbacks();
 
