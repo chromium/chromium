@@ -41,6 +41,9 @@ BASE_FEATURE(kEnableWifiSignalEventsReporting,
 BASE_FEATURE(kEnableNetworkConnectionStateEventsReporting,
              "EnableNetworkConnectionStateEventsReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableVpnConnectionStateEventsReporting,
+             "EnableVpnConnectionStateEventsReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 NetworkEventsObserver::NetworkEventsObserver()
     : MojoServiceEventsObserverBase<
@@ -56,20 +59,27 @@ void NetworkEventsObserver::OnConnectionStateChanged(
   using NetworkStateMojom = chromeos::network_health::mojom::NetworkState;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!base::FeatureList::IsEnabled(
-          kEnableNetworkConnectionStateEventsReporting)) {
-    return;
-  }
-
   const auto* network_state = ::ash::NetworkHandler::Get()
                                   ->network_state_handler()
                                   ->GetNetworkStateFromGuid(guid);
   if (!network_state) {
     return;
   }
+
+  MetricData metric_data;
   const auto network_type =
       ::ash::NetworkTypePattern::Primitive(network_state->type());
-  if (!network_type.MatchesPattern(ash::NetworkTypePattern::Physical())) {
+  if (network_type.MatchesPattern(ash::NetworkTypePattern::Physical()) &&
+      base::FeatureList::IsEnabled(
+          kEnableNetworkConnectionStateEventsReporting)) {
+    metric_data.mutable_event_data()->set_type(
+        MetricEventType::NETWORK_STATE_CHANGE);
+  } else if (network_type.Equals(ash::NetworkTypePattern::VPN()) &&
+             base::FeatureList::IsEnabled(
+                 kEnableVpnConnectionStateEventsReporting)) {
+    metric_data.mutable_event_data()->set_type(
+        MetricEventType::VPN_CONNECTION_STATE_CHANGE);
+  } else {
     return;
   }
 
@@ -80,9 +90,6 @@ void NetworkEventsObserver::OnConnectionStateChanged(
   }
   connection_state_map_[guid] = state;
 
-  MetricData metric_data;
-  metric_data.mutable_event_data()->set_type(
-      MetricEventType::NETWORK_STATE_CHANGE);
   auto* const connection_change_data =
       metric_data.mutable_telemetry_data()
           ->mutable_networks_telemetry()
