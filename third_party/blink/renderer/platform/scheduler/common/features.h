@@ -21,58 +21,6 @@ BASE_FEATURE(kBestEffortPriorityForFindInPage,
              "BlinkSchedulerBestEffortPriorityForFindInPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables setting the priority of background (with no audio) pages'
-// task queues to low priority.
-BASE_FEATURE(kLowPriorityForBackgroundPages,
-             "BlinkSchedulerLowPriorityForBackgroundPages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of background (with no audio) pages'
-// task queues to best effort.
-BASE_FEATURE(kBestEffortPriorityForBackgroundPages,
-             "BlinkSchedulerBestEffortPriorityForBackgroundPages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of sub-frame task queues to low
-// priority.
-BASE_FEATURE(kLowPriorityForSubFrame,
-             "BlinkSchedulerLowPriorityForSubFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of throttleable task queues to
-// low priority.
-BASE_FEATURE(kLowPriorityForThrottleableTask,
-             "BlinkSchedulerLowPriorityForThrottleableTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of sub-frame throttleable
-// task queues to low priority.
-BASE_FEATURE(kLowPriorityForSubFrameThrottleableTask,
-             "BlinkSchedulerLowPriorityForSubFrameThrottleableTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of hidden frame task queues to
-// low priority.
-BASE_FEATURE(kLowPriorityForHiddenFrame,
-             "BlinkSchedulerLowPriorityForHiddenFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of an ad frame to low priority.
-BASE_FEATURE(kLowPriorityForAdFrame,
-             "BlinkSchedulerLowPriorityForAdFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of an ad frame to best effort priority.
-BASE_FEATURE(kBestEffortPriorityForAdFrame,
-             "BlinkSchedulerBestEffortPriorityForAdFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the priority of cross-origin task queues to
-// low priority.
-BASE_FEATURE(kLowPriorityForCrossOrigin,
-             "BlinkSchedulerLowPriorityForCrossOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Prioritizes loading and compositing tasks while loading.
 BASE_FEATURE(kPrioritizeCompositingAndLoadingDuringEarlyLoading,
              "PrioritizeCompositingAndLoadingDuringEarlyLoading",

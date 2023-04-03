@@ -532,26 +532,6 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           YesNoStateToString) {}
 
 MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
-  low_priority_background_page =
-      base::FeatureList::IsEnabled(kLowPriorityForBackgroundPages);
-  best_effort_background_page =
-      base::FeatureList::IsEnabled(kBestEffortPriorityForBackgroundPages);
-
-  low_priority_hidden_frame =
-      base::FeatureList::IsEnabled(kLowPriorityForHiddenFrame);
-  low_priority_subframe = base::FeatureList::IsEnabled(kLowPriorityForSubFrame);
-  low_priority_throttleable =
-      base::FeatureList::IsEnabled(kLowPriorityForThrottleableTask);
-  low_priority_subframe_throttleable =
-      base::FeatureList::IsEnabled(kLowPriorityForSubFrameThrottleableTask);
-
-  low_priority_ad_frame = base::FeatureList::IsEnabled(kLowPriorityForAdFrame);
-  best_effort_ad_frame =
-      base::FeatureList::IsEnabled(kBestEffortPriorityForAdFrame);
-
-  low_priority_cross_origin =
-      base::FeatureList::IsEnabled(kLowPriorityForCrossOrigin);
-
   prioritize_compositing_and_loading_during_early_loading =
       base::FeatureList::IsEnabled(
           kPrioritizeCompositingAndLoadingDuringEarlyLoading);
