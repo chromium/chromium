@@ -123,7 +123,7 @@ int Center(int size, int item_size) {
 
 class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
-  explicit TabStyleHighlightPathGenerator(TabStyle* tab_style)
+  explicit TabStyleHighlightPathGenerator(TabStyleViews* tab_style)
       : tab_style_(tab_style) {}
   TabStyleHighlightPathGenerator(const TabStyleHighlightPathGenerator&) =
       delete;
@@ -136,7 +136,7 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const raw_ptr<TabStyle, DanglingUntriaged> tab_style_;
+  const raw_ptr<TabStyleViews, DanglingUntriaged> tab_style_;
 };
 
 }  // namespace

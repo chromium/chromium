@@ -21,8 +21,6 @@ namespace gfx {
 class Canvas;
 }
 
-class SkPath;
-
 // Holds the basic logic for rendering tabs, including preferred sizes, paths,
 // etc.
 class TabStyle {
@@ -107,16 +105,6 @@ class TabStyle {
   TabStyle(const TabStyle&) = delete;
   TabStyle& operator=(const TabStyle&) = delete;
   virtual ~TabStyle();
-
-  // Gets the specific |path_type| associated with the specific |tab|.
-  // If |force_active| is true, applies an active appearance on the tab (usually
-  // involving painting an optional stroke) even if the tab is not the active
-  // tab.
-  virtual SkPath GetPath(
-      PathType path_type,
-      float scale,
-      bool force_active = false,
-      RenderUnits render_units = RenderUnits::kPixels) const = 0;
 
   // Returns the insets to use for laying out tab contents.
   virtual gfx::Insets GetContentsInsets() const = 0;
