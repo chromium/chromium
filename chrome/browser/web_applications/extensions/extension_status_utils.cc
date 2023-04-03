@@ -116,9 +116,6 @@ bool ClearExternalExtensionUninstalled(content::BrowserContext* context,
     BUILDFLAG(IS_FUCHSIA)
 bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
                                          const std::string& extension_id) {
-  if (!base::FeatureList::IsEnabled(features::kChromeAppsDeprecation))
-    return false;
-
   if (extension_id == extensions::kWebStoreAppId)
     return false;
 

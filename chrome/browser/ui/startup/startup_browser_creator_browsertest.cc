@@ -808,15 +808,14 @@ class StartupBrowserCreatorChromeAppShortcutTest
       case ChromeAppsEnabledPrefValue::kDefault:
         break;
     }
+    // Under no circumstance can the kChromeAppsDeprecation flag be used to
+    // globally disable deprecation.
     switch (std::get<0>(GetParam())) {
       case ChromeAppDeprecationFeatureValue::kEnabledWithLaunchOption:
-        return false;
       case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
-        return false;
       case ChromeAppDeprecationFeatureValue::kDefault:
-        return !base::FeatureList::IsEnabled(features::kChromeAppsDeprecation);
       case ChromeAppDeprecationFeatureValue::kDisabled:
-        return true;
+        return false;
     }
 #endif
     return true;
@@ -830,12 +829,10 @@ class StartupBrowserCreatorChromeAppShortcutTest
                    ? ExpectedLaunchBehavior::kLaunchAnywaysInTab
                    : ExpectedLaunchBehavior::kLaunchAnywaysInWindow;
       case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
-        return ExpectedLaunchBehavior::kNoLaunch;
       case ChromeAppDeprecationFeatureValue::kDefault:
-        NOTREACHED();
-        return ExpectedLaunchBehavior::kNoLaunch;
       case ChromeAppDeprecationFeatureValue::kDisabled:
-        NOTREACHED();
+        // Under no circumstance can the kChromeAppsDeprecation flag be used to
+        // globally disable deprecation.
         return ExpectedLaunchBehavior::kNoLaunch;
     }
   }
