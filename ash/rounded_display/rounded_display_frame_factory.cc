@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -163,7 +164,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   resource->damaged = true;
   resource->ui_source_id = ui_source_id;
   resource->is_overlay_candidate = is_overlay;
-  resource->format = format;
+  resource->format = viz::SharedImageFormat::SinglePlane(format);
   resource->resource_size = size;
   resource->gpu_memory_buffer = std::move(gpu_memory_buffer);
 
