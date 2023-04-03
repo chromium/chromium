@@ -4,13 +4,18 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "pinned_tabs_overflow_egtest.mm" ]
+  sources = [
+    "pinned_tabs_drag_drop_egtest.mm",
+    "pinned_tabs_overflow_egtest.mm",
+  ]
 
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:constants",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
