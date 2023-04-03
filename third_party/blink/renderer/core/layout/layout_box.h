@@ -114,7 +114,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   LayoutUnit pagination_strut_;
 
-  Member<LayoutBlock> percent_height_container_;
   // For snap area, the owning snap container.
   Member<LayoutBox> snap_container_;
   // For snap container, the descendant snap areas that contribute snap
@@ -1889,13 +1888,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanRenderBorderImage() const;
 
-  LayoutBlock* PercentHeightContainer() const {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->percent_height_container_ : nullptr;
-  }
-  void SetPercentHeightContainer(LayoutBlock*);
-  void RemoveFromPercentHeightContainer();
-  void ClearPercentHeightDescendants();
   // For snap areas, returns the snap container that owns us.
   LayoutBox* SnapContainer() const;
   void SetSnapContainer(LayoutBox*);

@@ -27,8 +27,6 @@ bool LayoutNGRubyBase::IsChildAllowed(LayoutObject*,
 void LayoutNGRubyBase::MoveChildren(LayoutNGRubyBase& to_base,
                                     LayoutObject* before_child) {
   NOT_DESTROYED();
-  // Callers should have handled the percent height descendant map.
-  DCHECK(!HasPercentHeightDescendants());
 
   if (before_child && before_child->Parent() != this) {
     before_child = SplitAnonymousBoxesAroundChild(before_child);

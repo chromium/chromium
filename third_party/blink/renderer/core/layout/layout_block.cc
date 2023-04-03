@@ -110,15 +110,6 @@ TrackedContainerMap& GetPositionedContainerMap() {
   return *map;
 }
 
-// This map keeps track of the descendants whose 'height' is percentage
-// associated with a containing block. Like |gPositionedDescendantsMap|, it is
-// also recomputed for every layout (see the comment above about why).
-static TrackedDescendantsMap& GetPercentHeightDescendantsMap() {
-  DEFINE_STATIC_LOCAL(Persistent<TrackedDescendantsMap>, map,
-                      (MakeGarbageCollected<TrackedDescendantsMap>()));
-  return *map;
-}
-
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
       has_markup_truncation_(false),
@@ -127,7 +118,6 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
       is_self_collapsing_(false),
       descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
-      has_percent_height_descendants_(false),
       has_svg_text_descendants_(false),
       pagination_state_changed_(false),
       is_legacy_initiated_out_of_flow_layout_(false) {
@@ -149,15 +139,6 @@ void LayoutBlock::RemoveFromGlobalMaps() {
     for (LayoutBox* descendant : *descendants) {
       DCHECK_EQ(GetPositionedContainerMap().at(descendant), this);
       GetPositionedContainerMap().erase(descendant);
-    }
-  }
-  if (HasPercentHeightDescendants()) {
-    TrackedLayoutBoxLinkedHashSet* descendants =
-        GetPercentHeightDescendantsMap().Take(this);
-    DCHECK(!descendants->empty());
-    for (LayoutBox* descendant : *descendants) {
-      DCHECK_EQ(descendant->PercentHeightContainer(), this);
-      descendant->SetPercentHeightContainer(nullptr);
     }
   }
   if (has_svg_text_descendants_) {
@@ -1020,60 +1001,6 @@ void LayoutBlock::RemovePositionedObjects(
   }
 }
 
-void LayoutBlock::AddPercentHeightDescendant(LayoutBox* descendant) {
-  NOT_DESTROYED();
-  // A replaced object is incapable of properly acting as a containing block for
-  // its children. This is an issue with VIDEO elements, for instance, which
-  // insert some percentage height flexbox children. It is also very easily
-  // achievable with a foreignObject inside an SVG. Detect this situation and
-  // bail. The assumption is that there is no situation where we require quirky
-  // percentage height behavior inside replaced content.
-  if (UNLIKELY(descendant->Container()->IsLayoutReplaced()))
-    return;
-
-  if (descendant->PercentHeightContainer()) {
-    if (descendant->PercentHeightContainer() == this) {
-      DCHECK(HasPercentHeightDescendant(descendant));
-      return;
-    }
-    descendant->RemoveFromPercentHeightContainer();
-  }
-  descendant->SetPercentHeightContainer(this);
-
-  // Mark our containing block chain as potentially having a percent height
-  // descendant.
-  LayoutBlock* cb = descendant->ContainingBlock();
-  while (cb) {
-    cb->SetMaybeHasPercentHeightDescendant();
-    if (cb == this)
-      break;
-    cb = cb->ContainingBlock();
-  }
-
-  auto it = GetPercentHeightDescendantsMap().find(this);
-  TrackedLayoutBoxLinkedHashSet* descendant_set =
-      it != GetPercentHeightDescendantsMap().end() ? &*it->value : nullptr;
-  if (!descendant_set) {
-    descendant_set = MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
-    GetPercentHeightDescendantsMap().Set(this, descendant_set);
-  }
-  descendant_set->insert(descendant);
-
-  has_percent_height_descendants_ = true;
-}
-
-void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
-  NOT_DESTROYED();
-  if (TrackedLayoutBoxLinkedHashSet* descendants = PercentHeightDescendants()) {
-    descendants->erase(descendant);
-    descendant->SetPercentHeightContainer(nullptr);
-    if (descendants->empty()) {
-      GetPercentHeightDescendantsMap().erase(this);
-      has_percent_height_descendants_ = false;
-    }
-  }
-}
-
 void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
   NOT_DESTROYED();
   DCHECK(IsA<LayoutNGSVGText>(svg_text));
@@ -1098,34 +1025,6 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
   if (descendants->empty()) {
     map.erase(this);
     has_svg_text_descendants_ = false;
-  }
-}
-
-TrackedLayoutBoxLinkedHashSet* LayoutBlock::PercentHeightDescendantsInternal()
-    const {
-  NOT_DESTROYED();
-  auto it = GetPercentHeightDescendantsMap().find(this);
-  return it != GetPercentHeightDescendantsMap().end() ? &*it->value : nullptr;
-}
-
-void LayoutBlock::DirtyForLayoutFromPercentageHeightDescendants(
-    SubtreeLayoutScope& layout_scope) {
-  NOT_DESTROYED();
-  TrackedLayoutBoxLinkedHashSet* descendants = PercentHeightDescendants();
-  if (!descendants)
-    return;
-
-  for (LayoutBox* box : *descendants) {
-    DCHECK(box->IsDescendantOf(this));
-    while (box != this) {
-      if (box->NormalChildNeedsLayout())
-        break;
-      layout_scope.SetChildNeedsLayout(box);
-      box = box->ContainingBlock();
-      DCHECK(box);
-      if (!box)
-        break;
-    }
   }
 }
 

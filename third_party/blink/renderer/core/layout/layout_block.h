@@ -187,28 +187,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return has_positioned_objects_;
   }
 
-  void AddPercentHeightDescendant(LayoutBox*);
-  void RemovePercentHeightDescendant(LayoutBox*);
-  bool HasPercentHeightDescendant(LayoutBox* o) const {
-    NOT_DESTROYED();
-    return HasPercentHeightDescendants() &&
-           PercentHeightDescendantsInternal()->Contains(o);
-  }
-
-  TrackedLayoutBoxLinkedHashSet* PercentHeightDescendants() const {
-    NOT_DESTROYED();
-    return HasPercentHeightDescendants() ? PercentHeightDescendantsInternal()
-                                         : nullptr;
-  }
-  bool HasPercentHeightDescendants() const {
-    NOT_DESTROYED();
-    DCHECK(has_percent_height_descendants_
-               ? (PercentHeightDescendantsInternal() &&
-                  !PercentHeightDescendantsInternal()->empty())
-               : !PercentHeightDescendantsInternal());
-    return has_percent_height_descendants_;
-  }
-
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);
 
@@ -389,8 +367,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  protected:
   void WillBeDestroyed() override;
 
-  void DirtyForLayoutFromPercentageHeightDescendants(SubtreeLayoutScope&);
-
   void UpdateLayout() override;
 
   enum PositionedLayoutBehavior {
@@ -529,7 +505,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
 
   TrackedLayoutBoxLinkedHashSet* PositionedObjectsInternal() const;
-  TrackedLayoutBoxLinkedHashSet* PercentHeightDescendantsInternal() const;
 
   void ComputeBlockPreferredLogicalWidths(LayoutUnit& min_logical_width,
                                           LayoutUnit& max_logical_width) const;
@@ -584,7 +559,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   unsigned descendants_with_floats_marked_for_layout_ : 1;
 
   unsigned has_positioned_objects_ : 1;
-  unsigned has_percent_height_descendants_ : 1;
   unsigned has_svg_text_descendants_ : 1;
 
   // When an object ceases to establish a fragmentation context (e.g. the

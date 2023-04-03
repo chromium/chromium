@@ -116,13 +116,7 @@ void LayoutNGRubyRun::AddChild(LayoutObject* child,
       auto& new_base = new_run.EnsureRubyBase();
       new_run.AddChild(child);
 
-      // Make sure we don't leave anything in the percentage descendant
-      // map before moving the children to the new base.
-      auto& base = EnsureRubyBase();
-      if (HasPercentHeightDescendants() || base.HasPercentHeightDescendants()) {
-        ClearPercentHeightDescendants();
-      }
-      base.MoveChildren(new_base, before_child);
+      EnsureRubyBase().MoveChildren(new_base, before_child);
     }
   } else {
     // child is not a text -> insert it into the base
@@ -151,9 +145,6 @@ void LayoutNGRubyRun::RemoveChild(LayoutObject* child) {
       auto& right_base = right_run->EnsureRubyBase();
       if (right_base.FirstChild()) {
         // Collect all children in a single base, then swap the bases.
-        if (right_base.HasPercentHeightDescendants()) {
-          right_base.ClearPercentHeightDescendants();
-        }
         right_base.MoveChildren(*base);
         MoveChildTo(right_run, base);
         right_run->MoveChildTo(this, &right_base);

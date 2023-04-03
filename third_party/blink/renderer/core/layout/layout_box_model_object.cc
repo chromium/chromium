@@ -526,8 +526,8 @@ LayoutBlock* LayoutBoxModelObject::ContainingBlockForAutoHeightDetection(
   return cb;
 }
 
-bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
-    RegisterPercentageDescendant register_percentage_descendant) const {
+bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
+    const {
   NOT_DESTROYED();
   // TODO(rego): Check if we can somehow reuse LayoutBlock::
   // availableLogicalHeightForPercentageComputation() (see crbug.com/635655).
@@ -535,10 +535,6 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
   const Length& logical_height_length = StyleRef().LogicalHeight();
   LayoutBlock* cb =
       ContainingBlockForAutoHeightDetection(logical_height_length);
-  if (register_percentage_descendant == kRegisterPercentageDescendant &&
-      logical_height_length.IsPercentOrCalc() && cb && IsBox()) {
-    cb->AddPercentHeightDescendant(const_cast<LayoutBox*>(To<LayoutBox>(this)));
-  }
   if (this_box && this_box->IsFlexItemIncludingNG()) {
     if (const NGLayoutResult* result =
             this_box->GetSingleCachedLayoutResult()) {
@@ -992,9 +988,6 @@ void LayoutBoxModelObject::MoveChildTo(
   DCHECK_EQ(this, child->Parent());
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
 
-  if (full_remove_insert && IsLayoutBlock() && child->IsBox())
-    To<LayoutBox>(child)->RemoveFromPercentHeightContainer();
-
   if (full_remove_insert && (to_box_model_object->IsLayoutBlock() ||
                              to_box_model_object->IsLayoutInline())) {
     // Takes care of adding the new child correctly if toBlock and fromBlock
@@ -1022,7 +1015,6 @@ void LayoutBoxModelObject::MoveChildrenTo(
   auto* block = DynamicTo<LayoutBlock>(this);
   if (full_remove_insert && block) {
     block->RemovePositionedObjects(nullptr);
-    block->RemoveFromPercentHeightContainer();
   }
 
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
@@ -1075,11 +1067,7 @@ LayoutObject* LayoutBoxModelObject::SplitAnonymousBoxesAroundChild(
     }
   }
 
-  // Splitting the box means the left side of the container chain will lose any
-  // percent height descendants below |boxAtTopOfNewBranch| on the right hand
-  // side.
   if (box_at_top_of_new_branch) {
-    box_at_top_of_new_branch->ClearPercentHeightDescendants();
     MarkBoxForRelayoutAfterSplit(this);
   }
 

@@ -1026,7 +1026,6 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
                                           LayoutUnit before_edge,
                                           LayoutUnit after_edge) {
   NOT_DESTROYED();
-  DirtyForLayoutFromPercentageHeightDescendants(layout_scope);
 
   BlockChildrenLayoutInfo layout_info(this, before_edge, after_edge);
 

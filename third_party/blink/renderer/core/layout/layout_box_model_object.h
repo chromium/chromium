@@ -568,12 +568,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   LayoutRect LocalCaretRectForEmptyElement(LayoutUnit width,
                                            LayoutUnit text_indent_offset) const;
 
-  enum RegisterPercentageDescendant {
-    kDontRegisterPercentageDescendant,
-    kRegisterPercentageDescendant,
-  };
-  bool HasAutoHeightOrContainingBlockWithAutoHeight(
-      RegisterPercentageDescendant = kRegisterPercentageDescendant) const;
+  bool HasAutoHeightOrContainingBlockWithAutoHeight() const;
   LayoutBlock* ContainingBlockForAutoHeightDetection(
       const Length& logical_height) const;
 

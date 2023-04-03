@@ -469,12 +469,10 @@ LayoutBoxRareData::LayoutBoxRareData()
       has_override_containing_block_content_logical_height_(false),
       has_override_percentage_resolution_block_size_(false),
       has_previous_content_box_rect_(false),
-      percent_height_container_(nullptr),
       snap_container_(nullptr) {}
 
 void LayoutBoxRareData::Trace(Visitor* visitor) const {
   visitor->Trace(spanner_placeholder_);
-  visitor->Trace(percent_height_container_);
   visitor->Trace(snap_container_);
   visitor->Trace(snap_areas_);
   visitor->Trace(layout_child_);
@@ -524,7 +522,6 @@ void LayoutBox::WillBeDestroyed() {
   if (IsOutOfFlowPositioned())
     LayoutBlock::RemovePositionedObject(this);
 
-  RemoveFromPercentHeightContainer();
   if (IsOrthogonalWritingModeRoot() && !DocumentBeingDestroyed())
     UnmarkOrthogonalWritingModeRoot();
 
@@ -703,10 +700,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       parent_flow_block)
     parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
 
-  const ComputedStyle& new_style = StyleRef();
-  if (NeedsLayout() && old_style)
-    RemoveFromPercentHeightContainer();
-
   if (old_horizontal_writing_mode != IsHorizontalWritingMode()) {
     if (old_style) {
       if (IsOrthogonalWritingModeRoot())
@@ -714,8 +707,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       else
         UnmarkOrthogonalWritingModeRoot();
     }
-
-    ClearPercentHeightDescendants();
   }
 
   SetOverflowClipAxes(ComputeOverflowClipAxes());
@@ -725,6 +716,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   // scroll offset may be outside the normal min/max range of the scrollable
   // area, which is weird but OK, because the scrollable area will update its
   // min/max in updateAfterLayout().
+  const ComputedStyle& new_style = StyleRef();
   if (IsScrollContainer() && old_style &&
       old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
     PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
@@ -4946,7 +4938,6 @@ LayoutUnit LayoutBox::ComputePercentageLogicalHeight(
           &cb, &skipped_auto_height_containing_block);
 
   DCHECK(cb);
-  cb->AddPercentHeightDescendant(const_cast<LayoutBox*>(this));
 
   if (available_height == -1)
     return available_height;
@@ -5156,11 +5147,6 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
       bool has_perpendicular_containing_block =
           cb->IsHorizontalWritingMode() != IsHorizontalWritingMode();
       LayoutUnit stretched_height(-1);
-      auto* block = DynamicTo<LayoutBlock>(cb);
-      if (block) {
-        block->AddPercentHeightDescendant(const_cast<LayoutBox*>(this));
-      }
-
       LayoutUnit available_height;
       if (IsOutOfFlowPositioned()) {
         available_height = ContainingBlockLogicalHeightForPositioned(
@@ -5184,8 +5170,6 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
         while (!IsA<LayoutView>(cb) &&
                (cb->StyleRef().LogicalHeight().IsAuto() ||
                 cb->StyleRef().LogicalHeight().IsPercentOrCalc())) {
-          To<LayoutBlock>(cb)->AddPercentHeightDescendant(
-              const_cast<LayoutBox*>(this));
           cb = cb->ContainingBlock();
         }
       }
@@ -7607,35 +7591,6 @@ void LayoutBox::LogicalExtentAfterUpdatingLogicalWidth(
 ShapeOutsideInfo* LayoutBox::GetShapeOutsideInfo() const {
   NOT_DESTROYED();
   return ShapeOutsideInfo::Info(*this);
-}
-
-void LayoutBox::SetPercentHeightContainer(LayoutBlock* container) {
-  NOT_DESTROYED();
-  DCHECK(!container || !PercentHeightContainer());
-  if (!container && !rare_data_)
-    return;
-  EnsureRareData().percent_height_container_ = container;
-}
-
-void LayoutBox::RemoveFromPercentHeightContainer() {
-  NOT_DESTROYED();
-  if (!PercentHeightContainer())
-    return;
-
-  DCHECK(PercentHeightContainer()->HasPercentHeightDescendant(this));
-  PercentHeightContainer()->RemovePercentHeightDescendant(this);
-  // The above call should call this object's
-  // setPercentHeightContainer(nullptr).
-  DCHECK(!PercentHeightContainer());
-}
-
-void LayoutBox::ClearPercentHeightDescendants() {
-  NOT_DESTROYED();
-  for (LayoutObject* curr = SlowFirstChild(); curr;
-       curr = curr->NextInPreOrder(this)) {
-    if (curr->IsBox())
-      To<LayoutBox>(curr)->RemoveFromPercentHeightContainer();
-  }
 }
 
 LayoutUnit LayoutBox::PageLogicalHeightForOffset(LayoutUnit offset) const {
