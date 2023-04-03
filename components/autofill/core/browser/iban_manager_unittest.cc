@@ -69,9 +69,9 @@ class IBANManagerTest : public testing::Test {
 
   void SetUp() override {
     personal_data_manager_.SetAutofillCreditCardEnabled(true);
-    if (ui::ResourceBundle::HasSharedInstance()) {
-      ui::ResourceBundle::CleanupSharedInstance();
-    }
+    original_resource_bundle_ =
+        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", &mock_resource_delegate_,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
@@ -82,6 +82,11 @@ class IBANManagerTest : public testing::Test {
                 autofill_client_.GetAutofillOptimizationGuide()),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
+  }
+
+  void TearDown() override {
+    ui::ResourceBundle::CleanupSharedInstance();
+    ui::ResourceBundle::SwapSharedInstanceForTesting(original_resource_bundle_);
   }
 
   // Sets up the TestPersonalDataManager with an IBAN.
@@ -141,6 +146,7 @@ class IBANManagerTest : public testing::Test {
   std::unique_ptr<FormStructure> form_structure_;
   IBANManager iban_manager_;
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
+  raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
 MATCHER_P(MatchesTextAndFrontendId, suggestion, "") {
