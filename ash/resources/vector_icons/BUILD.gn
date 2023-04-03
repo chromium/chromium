@@ -524,6 +524,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "video_conference_microphone_muted.icon",
     "video_conference_noise_cancellation_on.icon",
     "video_conference_portrait_relight_on.icon",
+    "video_conference_up_chevron.icon",
     "visibility.icon",
     "visibility_off.icon",
     "wallpaper.icon",
