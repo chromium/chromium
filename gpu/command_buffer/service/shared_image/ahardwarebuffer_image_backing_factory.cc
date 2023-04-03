@@ -191,7 +191,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
@@ -404,7 +404,7 @@ AHardwareBufferImageBacking::ProduceGLTexturePassthrough(
 }
 
 std::unique_ptr<SkiaImageRepresentation>
-AHardwareBufferImageBacking::ProduceSkia(
+AHardwareBufferImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

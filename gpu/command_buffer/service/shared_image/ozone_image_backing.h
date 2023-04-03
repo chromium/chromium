@@ -77,7 +77,7 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
+  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

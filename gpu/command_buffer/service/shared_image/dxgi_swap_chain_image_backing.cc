@@ -246,11 +246,12 @@ DXGISwapChainImageBacking::ProduceOverlay(SharedImageManager* manager,
       manager, this, tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation> DXGISwapChainImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+DXGISwapChainImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  TRACE_EVENT0("gpu", "DXGISwapChainImageBacking::ProduceSkia");
+  TRACE_EVENT0("gpu", "DXGISwapChainImageBacking::ProduceSkiaGanesh");
 
   if (!gl_texture_holder_) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer_texture;

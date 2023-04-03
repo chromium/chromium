@@ -835,7 +835,8 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+IOSurfaceImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

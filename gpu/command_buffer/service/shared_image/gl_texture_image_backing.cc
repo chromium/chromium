@@ -248,7 +248,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
       std::move(view_formats), this, IsPassthrough());
 }
 
-std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+GLTextureImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

@@ -550,7 +550,8 @@ CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, this, tracker, std::move(real_rep));
 }
 
-std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation>
+CompoundImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -559,7 +560,7 @@ std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
     return nullptr;
 
   auto real_rep =
-      backing->ProduceSkia(manager, tracker, std::move(context_state));
+      backing->ProduceSkiaGanesh(manager, tracker, std::move(context_state));
   if (!real_rep)
     return nullptr;
 

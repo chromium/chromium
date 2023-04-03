@@ -1116,7 +1116,7 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, this, tracker, std::move(gl_texture_holders));
 }
 
-std::unique_ptr<SkiaImageRepresentation> D3DImageBacking::ProduceSkia(
+std::unique_ptr<SkiaImageRepresentation> D3DImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
