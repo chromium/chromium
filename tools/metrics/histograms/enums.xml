@@ -26764,6 +26764,22 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="60" label="DeprecationIssue"/>
   <int value="61" label="ClientHintIssue::MetaTagAllowListInvalidOrigin"/>
   <int value="62" label="ClientHintIssue::MetaTagModifiedHTML"/>
+  <int value="64" label="GenericIssue::CrossOriginPortalPostMessageError"/>
+  <int value="65" label="GenericIssue::FormLabelForNameError"/>
+  <int value="66" label="GenericIssue::FormDuplicateIdForInputError"/>
+  <int value="67" label="GenericIssue::FormInputWithNoLabelError"/>
+  <int value="68" label="GenericIssue::FormAutocompleteAttributeEmptyError"/>
+  <int value="69"
+      label="GenericIssue::FormEmptyIdAndNameAttributesForInputError"/>
+  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingId"/>
+  <int value="71"
+      label="GenericIssue::FormInputAssignedAutocompleteValueToIdOrNameAttributeError"/>
+  <int value="72" label="GenericIssue::FormLabelHasNeitherForNorNestedInput"/>
+  <int value="73" label="GenericIssue::FormLabelForMatchesNonExistingIdError"/>
+  <int value="74"
+      label="GenericIssue::FormHasPasswordFieldWithoutUsernameFieldError"/>
+  <int value="75"
+      label="GenericIssue::FormInputHasWrongButWellIntendedAutocompleteValueError"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
