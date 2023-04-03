@@ -171,19 +171,6 @@ void NavigateEvent::DoCommit() {
       state_object, dispatch_params_->frame_load_type,
       dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document);
-
-  // This is considered a soft navigation URL change at this point, when the
-  // user visible URL change happens. Skip the descendant check because the URL
-  // change doesn't happen in a JS task.
-  auto* soft_navigation_heuristics =
-      DomWindow() ? SoftNavigationHeuristics::From(*DomWindow()) : nullptr;
-  if (soft_navigation_heuristics && user_initiated_ && !download_request_) {
-    auto* script_state = ToScriptStateForMainWorld(DomWindow()->GetFrame());
-    ScriptState::Scope scope(script_state);
-    soft_navigation_heuristics->SawURLChange(script_state,
-                                             dispatch_params_->url,
-                                             /*skip_descendant_check=*/true);
-  }
 }
 
 void NavigateEvent::React(ScriptState* script_state) {

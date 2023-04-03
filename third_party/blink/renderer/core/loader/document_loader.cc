@@ -827,14 +827,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
         soft_navigation_heuristics_task_id) {
   DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
 
-  if (frame_->IsMainFrame() && type == WebFrameLoadType::kBackForward) {
-    if (ScriptState* script_state = ToScriptStateForMainWorld(frame_)) {
-      DCHECK(frame_->DomWindow());
-      SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*frame_->DomWindow());
-      heuristics->SetAsyncSoftNavigationURL(script_state, new_url);
-    }
-  }
   SinglePageAppNavigationType single_page_app_navigation_type =
       CategorizeSinglePageAppNavigation(same_document_navigation_type, type);
   UMA_HISTOGRAM_ENUMERATION(
@@ -911,6 +903,15 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       commit_type, is_synchronously_committed, same_document_navigation_type,
       is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
+
+  if (frame_->IsMainFrame()) {
+    if (ScriptState* script_state = ToScriptStateForMainWorld(frame_)) {
+      DCHECK(frame_->DomWindow());
+      SoftNavigationHeuristics* heuristics =
+          SoftNavigationHeuristics::From(*frame_->DomWindow());
+      heuristics->SameDocumentNavigationCommitted(script_state, new_url);
+    }
+  }
 
   // If intercept() was called during this same-document navigation's
   // NavigateEvent, the navigation will finish asynchronously, so

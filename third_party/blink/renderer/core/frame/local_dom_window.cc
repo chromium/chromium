@@ -926,7 +926,7 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
       // test to guard against this.
       SoftNavigationHeuristics* heuristics =
           SoftNavigationHeuristics::From(*this);
-      heuristics->SawURLChange(script_state, new_url);
+      heuristics->SameDocumentNavigationStarted(script_state);
     }
   }
   // https://html.spec.whatwg.org/C/#history-traversal

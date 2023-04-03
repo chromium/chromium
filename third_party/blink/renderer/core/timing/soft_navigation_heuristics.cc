@@ -123,43 +123,38 @@ void SoftNavigationHeuristics::ClickEventEnded(ScriptState* script_state) {
 bool SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(
     ScriptState* script_state,
     FlagType type,
-    absl::optional<String> url,
-    bool skip_descendant_check) {
-  if (!skip_descendant_check &&
+    bool run_descendent_check) {
+  if (run_descendent_check &&
       !IsCurrentTaskDescendantOfClickEventHandler(script_state)) {
     // A non-descendent URL change should not set the flag.
     return false;
   }
   flag_set_.Put(type);
-  if (url) {
-    url_ = *url;
-  }
   CheckAndReportSoftNavigation(script_state);
   return true;
 }
 
-void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state,
-                                            const String& url,
-                                            bool skip_descendant_check) {
+void SoftNavigationHeuristics::SameDocumentNavigationStarted(
+    ScriptState* script_state) {
   bool descendant = true;
-  if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange, url,
-                                   skip_descendant_check)) {
+
+  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  // If we have no current task when the navigation is started, there's no need
+  // to run a descendent check.
+  bool run_descendent_check =
+      tracker && tracker->RunningTaskAttributionId(script_state);
+
+  url_ = String();
+  if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange,
+                                   run_descendent_check)) {
     ResetHeuristic();
     descendant = false;
   }
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::SawURLChange",
+  TRACE_EVENT1("scheduler",
+               "SoftNavigationHeuristics::SameDocumentNavigationStarted",
                "descendant", descendant);
 }
-
-void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
-  bool descendant =
-      SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification);
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedDOM",
-               "descendant", descendant);
-  SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
-}
-
-void SoftNavigationHeuristics::SetAsyncSoftNavigationURL(
+void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     ScriptState* script_state,
     const String& url) {
   if (!url_.empty()) {
@@ -167,6 +162,19 @@ void SoftNavigationHeuristics::SetAsyncSoftNavigationURL(
   }
   url_ = url;
   CheckAndReportSoftNavigation(script_state);
+  TRACE_EVENT1("scheduler",
+               "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
+               "url", url);
+}
+
+void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
+  bool descendant = SetFlagIfDescendantAndCheck(
+      script_state, FlagType::kMainModification, /*run_descendent_check=*/true);
+  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedDOM",
+               "descendant", descendant);
+  // TODO(https://crbug.com/1430009): This is racy. We should figure out another
+  // point in time to stop the heuristic.
+  SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
 void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
@@ -181,12 +189,8 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   }
   LocalDOMWindow* window = frame->DomWindow();
   DCHECK(window);
-  // In case of a Soft Navigation where the url does not change immediately,
-  //`SawURLChange` was called with an empty URL. If that's the case, don't
-  // report the Soft Navigation just yet, and wait for
-  // `SetAsyncSoftNavigationURL` to be called with the correct URL (in the case
-  // of traversals, the renderer only knows about the correct URL asynchronously
-  // anyway).
+  // The URL is empty when we saw a Same-Document navigation started, but it
+  // wasn't yet committed (and hence we may not know the URL just yet).
   if (url_.empty()) {
     ResetPaintsIfNeeded(frame, window);
     return;

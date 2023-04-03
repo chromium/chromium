@@ -35,12 +35,10 @@ class SoftNavigationHeuristics
   // The class's API.
   void UserInitiatedClick(ScriptState*);
   void ClickEventEnded(ScriptState*);
-  void SawURLChange(ScriptState*,
-                    const String& url,
-                    bool skip_descendant_check = false);
+  void SameDocumentNavigationStarted(ScriptState*);
+  void SameDocumentNavigationCommitted(ScriptState*, const String& url);
   void ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
-  void SetAsyncSoftNavigationURL(ScriptState* script_state, const String& url);
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;
@@ -58,8 +56,7 @@ class SoftNavigationHeuristics
   bool IsCurrentTaskDescendantOfClickEventHandler(ScriptState*);
   bool SetFlagIfDescendantAndCheck(ScriptState*,
                                    FlagType,
-                                   absl::optional<String> url = absl::nullopt,
-                                   bool skip_descendant_check = false);
+                                   bool run_descendent_check);
   void ResetHeuristic();
   void ResetPaintsIfNeeded(LocalFrame*, LocalDOMWindow*);
 

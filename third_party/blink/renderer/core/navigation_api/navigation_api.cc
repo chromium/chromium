@@ -548,7 +548,7 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
   if (window_->GetFrame()->IsMainFrame()) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window_);
-    heuristics->SawURLChange(script_state, /*url=*/String(""));
+    heuristics->SameDocumentNavigationStarted(script_state);
   }
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   absl::optional<scheduler::TaskAttributionId> task_id;
@@ -756,6 +756,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // as potential soft navigation tasks.
     soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
         soft_navigation_heuristics, script_state);
+
+    soft_navigation_heuristics->SameDocumentNavigationStarted(script_state);
   }
   auto* navigate_event =
       NavigateEvent::Create(window_, event_type_names::kNavigate, init);
