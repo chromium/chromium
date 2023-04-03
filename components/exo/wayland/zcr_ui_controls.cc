@@ -41,7 +41,7 @@ namespace {
 
 using UiControlsState = UiControls::UiControlsState;
 
-constexpr uint32_t kUiControlsVersion = 1;
+constexpr uint32_t kUiControlsVersion = 2;
 
 base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
                                                   uint32_t id) {
