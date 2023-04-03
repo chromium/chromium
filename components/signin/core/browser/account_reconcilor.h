@@ -159,6 +159,12 @@ class AccountReconcilor
   // Returns true if reconcilor is blocked.
   bool IsReconcileBlocked() const;
 
+  // Returns the 'most severe' error encountered during the last attempt to
+  // reconcile (after the state is already set to kOk or kError).
+  // If the last reconciliation attempt was successful, this will be
+  // `GoogleServiceAuthError::State::NONE`.
+  GoogleServiceAuthError GetReconcileError() const;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Gets the ConsistencyCookieManager, which updates the
   // "CHROME_ID_CONSISTENCY_STATE" cookie.
