@@ -31,6 +31,7 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
                             ApprovalRequestInitiatedCallback callback) override;
   bool IsMainFrame(int frame_id) override;
   void CleanUpInfoBarOnMainFrame(int frame_id) override;
+  void ShowFeedback(GURL url, std::u16string reason) override;
 
  private:
   void OnLocalApprovalRequestCompleted(
