@@ -67,6 +67,8 @@ export class SettingsAutofillSectionElement extends
 
   static get properties() {
     return {
+      accountInfo_: Object,
+
       /** An array of saved addresses. */
       addresses: Array,
 
@@ -230,6 +232,13 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.saveAddress(event.detail);
   }
 
+  private isInAccountOrSyncable_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
+    return address.metadata?.source ===
+        chrome.autofillPrivate.AddressSource.ACCOUNT ||
+        !!accountInfo?.isSyncEnabledForAutofillProfiles;
+  }
   /**
    * @returns the title for the More Actions button corresponding to the address
    *     which is described by `label` and `sublabel`.
