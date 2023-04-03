@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/iban_manager.h"
 
 #include "base/guid.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -140,7 +141,7 @@ class IBANManagerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  MockSuggestionsHandler suggestions_handler_;
+  testing::NiceMock<MockSuggestionsHandler> suggestions_handler_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<FormStructure> form_structure_;
@@ -240,15 +241,9 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_NoSuggestion) {
   test_field.value = std::u16string(kIbanValue_0);
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
-  // Setting up mock to verify that the handler is not returned any IBAN-based
+  // Verify that `OnSuggestionsReturned` handler is not triggered any IBAN-based
   // suggestions as the field already contains an IBAN.
-  EXPECT_CALL(suggestions_handler_,
-              OnSuggestionsReturned(
-                  _, _,
-                  testing::Truly(
-                      [](const std::vector<Suggestion>& returned_suggestions) {
-                        return returned_suggestions.empty();
-                      })));
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -318,15 +313,9 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
 
   test_field.value = u"AB56";
 
-  // Setting up mock to verify that the handler does not return any
-  // IBAN-based suggestion as no prefix matches `prefix_`.
-  EXPECT_CALL(suggestions_handler_,
-              OnSuggestionsReturned(
-                  _, _,
-                  testing::Truly(
-                      [](const std::vector<Suggestion>& returned_suggestions) {
-                        return returned_suggestions.empty();
-                      })));
+  // Verify that the handler is not triggered because no IBAN suggestions match
+  // the given prefix.
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -405,6 +394,101 @@ TEST_F(IBANManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
       AutoselectFirstSuggestion(false), test_field, autofill_client_,
       suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
+}
+
+// Test that the metrics for IBAN-related suggestions shown and shown once are
+// logged correctly.
+TEST_F(IBANManagerTest, Metrics_SuggestionsShown) {
+  base::HistogramTester histogram_tester;
+  SetUpIBAN(kIbanValue_0, kNickname_0);
+
+  AutofillField test_field;
+  test_field.unique_renderer_id = test::MakeFieldRendererId();
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Simulate request for suggestions.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(), context));
+
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(), context));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Iban.Suggestions"),
+      BucketsAre(
+          base::Bucket(
+              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShown, 2),
+          base::Bucket(
+              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce,
+              1)));
+}
+
+// Test that the metrics for IBAN-related suggestion selected and selected once
+// are logged correctly.
+TEST_F(IBANManagerTest, Metrics_SuggestionSelected) {
+  base::HistogramTester histogram_tester;
+  SetUpIBAN(kIbanValue_0, kNickname_0);
+  SetUpIBAN(kIbanValue_1, kNickname_1);
+  SetUpIBAN(kIbanValue_2, u"");
+
+  AutofillField test_field;
+  test_field.unique_renderer_id = test::MakeFieldRendererId();
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Simulate request for suggestions and select one suggested IBAN.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(), context));
+  iban_manager_.OnSingleFieldSuggestionSelected(u"", POPUP_ITEM_ID_IBAN_ENTRY);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce, 1);
+
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(), context));
+  iban_manager_.OnSingleFieldSuggestionSelected(u"", POPUP_ITEM_ID_IBAN_ENTRY);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected, 2);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Iban.Suggestions",
+      autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce, 1);
+}
+
+TEST_F(IBANManagerTest, Metrics_NoSuggestionShown) {
+  base::HistogramTester histogram_tester;
+  SetUpIBAN(kIbanValue_0, kNickname_0);
+  SetUpIBAN(kIbanValue_1, kNickname_1);
+  AutofillField test_field;
+  // Input a prefix that does not have any matching IBAN value so that no IBAN
+  // suggestions will be shown.
+  test_field.value = u"XY";
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
+
+  // The suggestion handler should be triggered as some IBANs are available.
+  // However, no suggestions are returned due to the prefix match requirement.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Iban.Suggestions"),
+      BucketsAre(
+          base::Bucket(
+              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShown, 0),
+          base::Bucket(
+              autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionsShownOnce,
+              0)));
 }
 
 }  // namespace autofill

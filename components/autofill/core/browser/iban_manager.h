@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -51,11 +52,26 @@ class IBANManager : public SingleFieldFormFiller,
                                             const std::u16string& value,
                                             int frontend_id) override {}
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       int frontend_id) override {}
+                                       int frontend_id) override;
 
   base::WeakPtr<IBANManager> GetWeakPtr();
 
  private:
+  // Records metrics related to the IBAN suggestions popup.
+  class UmaRecorder {
+   public:
+    void OnIbanSuggestionsShown(FieldGlobalId field_global_id);
+    void OnIbanSuggestionSelected();
+
+   private:
+    // The global id of the field that most recently had IBAN suggestions shown.
+    FieldGlobalId most_recent_suggestions_shown_field_global_id_;
+
+    // The global id of the field that most recently had an IBAN suggestion
+    // selected.
+    FieldGlobalId most_recent_suggestion_selected_field_global_id_;
+  };
+
   // Sends suggestions for |ibans| to the |query_handler|'s handler for display
   // in the associated Autofill popup.
   void SendIBANSuggestions(const std::vector<IBAN*>& ibans,
@@ -63,6 +79,8 @@ class IBANManager : public SingleFieldFormFiller,
 
   raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_ =
       nullptr;
+
+  UmaRecorder uma_recorder_;
 
   base::WeakPtrFactory<IBANManager> weak_ptr_factory_{this};
 };

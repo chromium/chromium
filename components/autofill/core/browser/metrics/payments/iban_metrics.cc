@@ -67,4 +67,8 @@ void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname) {
       save_with_nickname);
 }
 
+void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event) {
+  base::UmaHistogramEnumeration("Autofill.Iban.Suggestions", event);
+}
+
 }  // namespace autofill::autofill_metrics

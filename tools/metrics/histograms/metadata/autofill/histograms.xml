@@ -2192,6 +2192,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Iban.Suggestions" enum="IbanSuggestionsEvent"
+    expires_after="2024-03-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    These metrics are relevant to the IBAN suggestions popup, such as when it is
+    shown or when a suggestion is selected. The IBAN-based suggestions popup
+    gets displayed when a form's field that can be autofilled with an IBAN is
+    selected, and the user has at least one IBAN saved. The metric is recorded
+    upon each action, such as IBAN suggestions being shown or selected.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields"
     units="frames" expires_after="2023-01-01">
   <obsolete>
