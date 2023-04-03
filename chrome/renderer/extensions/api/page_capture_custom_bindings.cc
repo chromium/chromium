@@ -52,9 +52,9 @@ void PageCaptureCustomBindings::SendResponseAck(
     render_frame->Send(new ExtensionHostMsg_ResponseAck(
         render_frame->GetRoutingID(), args[0].As<v8::Int32>()->Value()));
   } else if (context()->IsForServiceWorker()) {
-    WorkerThreadDispatcher::Get()->Send(new ExtensionHostMsg_WorkerResponseAck(
+    WorkerThreadDispatcher::Get()->WorkerResponseAck(
         args[0].As<v8::Int32>()->Value(),
-        context()->service_worker_version_id()));
+        context()->service_worker_version_id());
   }
 }
 

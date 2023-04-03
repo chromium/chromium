@@ -10,10 +10,12 @@
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/frame.mojom.h"
 
 namespace extensions {
 
@@ -25,6 +27,8 @@ ServiceWorkerHost::ServiceWorkerHost(
     content::RenderProcessHost* render_process_host)
     : render_process_host_(render_process_host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  dispatcher_ =
+      std::make_unique<ExtensionFunctionDispatcher>(GetBrowserContext());
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() = default;
@@ -187,6 +191,27 @@ void ServiceWorkerHost::DecrementServiceWorkerActivity(
         render_process_host_->GetID(),
         bad_message::ESWMF_INVALID_DECREMENT_ACTIVITY);
   }
+}
+
+void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!GetBrowserContext()) {
+    return;
+  }
+
+  dispatcher_->DispatchForServiceWorker(std::move(params),
+                                        render_process_host_->GetID());
+}
+
+void ServiceWorkerHost::WorkerResponseAck(int request_id,
+                                          int64_t service_worker_version_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!GetBrowserContext()) {
+    return;
+  }
+
+  dispatcher_->ProcessServiceWorkerResponse(request_id,
+                                            service_worker_version_id);
 }
 
 content::BrowserContext* ServiceWorkerHost::GetBrowserContext() {

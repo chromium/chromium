@@ -416,9 +416,9 @@ void ExtensionFunctionDispatcher::Dispatch(
 }
 
 void ExtensionFunctionDispatcher::DispatchForServiceWorker(
-    const mojom::RequestParams& params,
+    mojom::RequestParamsPtr params,
     int render_process_id) {
-  ScopedRequestParamsCrashKeys request_params_crash_keys(params);
+  ScopedRequestParamsCrashKeys request_params_crash_keys(*params);
 
   // The IPC might race with RenderProcessHost destruction.  This may only
   // happen in scenarios that are already inherently racey, so dropping the IPC
@@ -430,30 +430,32 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   if (!rph)
     return;
 
-  if (auto bad_message_code = ValidateRequest(params, nullptr, *rph)) {
+  if (auto bad_message_code = ValidateRequest(*params, nullptr, *rph)) {
     // Kill the renderer if it's an invalid request.
     bad_message::ReceivedBadMessage(render_process_id, *bad_message_code);
     return;
   }
 
-  WorkerId worker_id{params.extension_id, render_process_id,
-                     params.service_worker_version_id, params.worker_thread_id};
+  WorkerId worker_id{params->extension_id, render_process_id,
+                     params->service_worker_version_id,
+                     params->worker_thread_id};
   // Ignore if the worker has already stopped.
   if (!ProcessManager::Get(browser_context_)->HasServiceWorker(worker_id))
     return;
 
   WorkerResponseCallbackMapKey key(render_process_id,
-                                   params.service_worker_version_id);
+                                   params->service_worker_version_id);
   std::unique_ptr<WorkerResponseCallbackWrapper>& callback_wrapper =
       response_callback_wrappers_for_worker_[key];
   if (!callback_wrapper) {
     callback_wrapper = std::make_unique<WorkerResponseCallbackWrapper>(
-        weak_ptr_factory_.GetWeakPtr(), rph, params.worker_thread_id);
+        weak_ptr_factory_.GetWeakPtr(), rph, params->worker_thread_id);
   }
 
-  DispatchWithCallbackInternal(params, nullptr, render_process_id,
-                               callback_wrapper->CreateCallback(
-                                   params.request_id, params.worker_thread_id));
+  DispatchWithCallbackInternal(
+      *params, nullptr, render_process_id,
+      callback_wrapper->CreateCallback(params->request_id,
+                                       params->worker_thread_id));
 }
 
 void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(

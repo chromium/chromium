@@ -589,6 +589,28 @@ void WorkerThreadDispatcher::DecrementServiceWorkerActivity(
       service_worker_version_id, request_uuid));
 }
 
+void WorkerThreadDispatcher::RequestWorker(mojom::RequestParamsPtr params) {
+  PostTaskToIOThread(base::BindOnce(
+      [](mojom::RequestParamsPtr params) {
+        auto* dispatcher = WorkerThreadDispatcher::Get();
+        dispatcher->GetServiceWorkerHostOnIO()->RequestWorker(
+            std::move(params));
+      },
+      std::move(params)));
+}
+
+void WorkerThreadDispatcher::WorkerResponseAck(
+    int request_id,
+    int64_t service_worker_version_id) {
+  PostTaskToIOThread(base::BindOnce(
+      [](int request_id, int64_t service_worker_version_id) {
+        WorkerThreadDispatcher::Get()
+            ->GetServiceWorkerHostOnIO()
+            ->WorkerResponseAck(request_id, service_worker_version_id);
+      },
+      request_id, service_worker_version_id));
+}
+
 void WorkerThreadDispatcher::RemoveWorkerData(
     int64_t service_worker_version_id) {
   if (service_worker_data) {

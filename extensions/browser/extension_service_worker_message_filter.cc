@@ -14,12 +14,10 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/event_ack_data.h"
-#include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/mojom/frame.mojom.h"
 
 namespace extensions {
 
@@ -57,8 +55,7 @@ ExtensionServiceWorkerMessageFilter::ExtensionServiceWorkerMessageFilter(
     : content::BrowserMessageFilter(ExtensionWorkerMsgStart),
       browser_context_(context),
       render_process_id_(render_process_id),
-      service_worker_context_(service_worker_context),
-      dispatcher_(new ExtensionFunctionDispatcher(context)) {
+      service_worker_context_(service_worker_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   shutdown_notifier_subscription_ =
       ShutdownNotifierFactory::GetInstance()->Get(context)->Subscribe(
@@ -86,9 +83,7 @@ ExtensionServiceWorkerMessageFilter::~ExtensionServiceWorkerMessageFilter() =
 void ExtensionServiceWorkerMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message,
     content::BrowserThread::ID* thread) {
-  if (message.type() == ExtensionHostMsg_RequestWorker::ID ||
-      message.type() == ExtensionHostMsg_EventAckWorker::ID ||
-      message.type() == ExtensionHostMsg_WorkerResponseAck::ID) {
+  if (message.type() == ExtensionHostMsg_EventAckWorker::ID) {
     *thread = content::BrowserThread::UI;
   }
 }
@@ -97,29 +92,10 @@ bool ExtensionServiceWorkerMessageFilter::OnMessageReceived(
     const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ExtensionServiceWorkerMessageFilter, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_RequestWorker, OnRequestWorker)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_EventAckWorker, OnEventAckWorker)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_WorkerResponseAck, OnResponseWorker)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
-}
-
-void ExtensionServiceWorkerMessageFilter::OnRequestWorker(
-    const mojom::RequestParams& params) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!browser_context_)
-    return;
-  dispatcher_->DispatchForServiceWorker(params, render_process_id_);
-}
-
-void ExtensionServiceWorkerMessageFilter::OnResponseWorker(
-    int request_id,
-    int64_t service_worker_version_id) {
-  if (!browser_context_)
-    return;
-  dispatcher_->ProcessServiceWorkerResponse(request_id,
-                                            service_worker_version_id);
 }
 
 void ExtensionServiceWorkerMessageFilter::OnEventAckWorker(

@@ -20,8 +20,6 @@ class ServiceWorkerContext;
 
 namespace extensions {
 
-class ExtensionFunctionDispatcher;
-
 // IPC handler class for extension service worker.
 //
 // Created and destroyed on the UI thread.
@@ -54,8 +52,6 @@ class ExtensionServiceWorkerMessageFilter
   void ShutdownOnUIThread();
 
   // Message handlers.
-  void OnRequestWorker(const mojom::RequestParams& params);
-  void OnResponseWorker(int request_id, int64_t service_worker_version_id);
   void OnEventAckWorker(const ExtensionId& extension_id,
                         int64_t service_worker_version_id,
                         int thread_id,
@@ -73,10 +69,6 @@ class ExtensionServiceWorkerMessageFilter
   // Owned by the StoragePartition of our profile.
   raw_ptr<content::ServiceWorkerContext, DanglingUntriaged>
       service_worker_context_;
-
-  std::unique_ptr<ExtensionFunctionDispatcher,
-                  content::BrowserThread::DeleteOnUIThread>
-      dispatcher_;
 };
 
 }  // namespace extensions

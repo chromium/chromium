@@ -96,6 +96,9 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void DecrementServiceWorkerActivity(int64_t service_worker_version_id,
                                       const std::string& request_uuid);
 
+  void RequestWorker(mojom::RequestParamsPtr params);
+  void WorkerResponseAck(int request_id, int64_t service_worker_version_id);
+
   // content::RenderThreadObserver:
   bool OnControlMessageReceived(const IPC::Message& message) override;
 
