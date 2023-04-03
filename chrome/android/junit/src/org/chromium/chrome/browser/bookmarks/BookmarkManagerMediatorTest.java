@@ -6,15 +6,17 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
 import android.app.Activity;
+import android.content.Context;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
@@ -94,6 +96,8 @@ public class BookmarkManagerMediatorTest {
     AccountManagerFacade mAccountManagerFacade;
     @Mock
     BookmarkUndoController mBookmarkUndoController;
+    @Mock
+    AccessibilityManager mAccessibilityManager;
 
     final ObservableSupplierImpl<Boolean> mBackPressStateSupplier = new ObservableSupplierImpl<>();
     final ObservableSupplierImpl<Boolean> mSelectableListLayoutHandleBackPressChangedSupplier =
@@ -101,14 +105,13 @@ public class BookmarkManagerMediatorTest {
     final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
     final BookmarkId mFolder2Id = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
 
-    private ActivityScenario<TestActivity> mActivityScenario;
     private Activity mActivity;
     private BookmarkManagerMediator mMediator;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> {
-            mActivity = activity;
+            mActivity = spy(activity);
 
             // Setup BookmarkModel.
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
@@ -122,6 +125,9 @@ public class BookmarkManagerMediatorTest {
             doReturn(mSelectableListLayoutHandleBackPressChangedSupplier)
                     .when(mSelectableListLayout)
                     .getHandleBackPressChangedSupplier();
+            doReturn(mAccessibilityManager)
+                    .when(mActivity)
+                    .getSystemService(Context.ACCESSIBILITY_SERVICE);
 
             // Setup BookmarkUIObserver.
             doRunnable(() -> mMediator.removeUiObserver(mBookmarkUiObserver))
@@ -188,6 +194,7 @@ public class BookmarkManagerMediatorTest {
         mMediator.onDestroy();
         verify(mBookmarkUiObserver).onDestroy();
         verify(mBookmarkUndoController).destroy();
+        verify(mAccessibilityManager).removeAccessibilityStateChangeListener(any());
     }
 
     @Test

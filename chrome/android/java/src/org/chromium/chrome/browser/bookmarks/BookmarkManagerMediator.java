@@ -79,6 +79,12 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             mA11yManager.addAccessibilityStateChangeListener(mA11yChangeListener);
         }
 
+        void destroy() {
+            if (mA11yManager != null) {
+                mA11yManager.removeAccessibilityStateChangeListener(mA11yChangeListener);
+            }
+        }
+
         // DragStateDelegate implementation
         @Override
         public boolean getDragEnabled() {
@@ -403,6 +409,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         PartnerBookmarksReader.removeFaviconUpdateObserver(this);
 
         mBookmarkUndoController.destroy();
+        mDragStateDelegate.destroy();
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
