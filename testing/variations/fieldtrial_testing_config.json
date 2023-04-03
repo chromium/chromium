@@ -1634,27 +1634,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230331",
                     "enable_features": [
-                        "AllowPageWithIDBConnectionInBFCache"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardCacheEnabledForIndexedDBTransaction": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "AllowPageWithIDBConnectionInBFCache",
                         "AllowPageWithIDBTransactionInBFCache"
                     ]
                 }
