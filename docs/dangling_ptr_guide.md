@@ -55,14 +55,22 @@ improving our knowledge of Chrome.
 
 This represents ~25% of the dangling pointers.
 
-In the majority of cases, this happens when dependent objects are declared in
+In the majority of cases, this happens when dependent objects are destroyed in
 the wrong order in a class, causing the dependency to be released first, thus
 creating a dangling pointer in the other.
 
-It is important to reorder them correctly to prevent pre-existing and future UAF
-in destructors.
+Recall that destructors destroy class members in the inverse order of their
+appearance. It is usually possible to resolve destruction order issues by
+re-ordering member declarations so that members which need to live longer come
+first. It is important to order members correctly to prevent pre-existing and
+future UAF in destructors.
 
 See [Fix member declaration order](https://docs.google.com/document/d/11YYsyPF9rQv_QFf982Khie3YuNPXV0NdhzJPojpZfco/edit?resourcekey=0-h1dr1uDzZGU7YWHth5TRAQ#bookmark=id.jgjtzldk9pvc) and [Fix reset ordering](https://docs.google.com/document/d/11YYsyPF9rQv_QFf982Khie3YuNPXV0NdhzJPojpZfco/edit?resourcekey=0-h1dr1uDzZGU7YWHth5TRAQ#bookmark=id.xdam727ioy4q) examples.
+
+One good practice is make owning members (`unique_ptr<>`, `scoped_refptr<>`)
+appear before unowned members (`raw_ptr<>`), and to make the unowned members
+appear last in the class, since the unowned members often refer to resources
+owned by the owning members or the class itself.
 
 #### Observer callback
 
