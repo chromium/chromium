@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "components/sessions/core/session_id.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #include "ios/web/public/js_messaging/content_world.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -317,7 +318,16 @@ class WebState : public base::SupportsUserData {
   // to identify locally this WebState (e.g. can be used as part of the name
   // of the file that is used to store a snapshot of the WebState, or it can
   // be used as a key in an NSDictionary).
+  //
+  // DEPRECATED: use GetUniqueIdentifier() instead.
   virtual NSString* GetStableIdentifier() const = 0;
+
+  // Returns a unique identifier for this WebState that is stable across
+  // restart of the application (and across "undo" after a tab is closed).
+  // It is local to the device and not synchronized (but may be used by
+  // the sync code to uniquely identify a session on the current device).
+  // It can be used as a key to identify this WebState.
+  virtual SessionID GetUniqueIdentifier() const = 0;
 
   // Gets the contents MIME type.
   virtual const std::string& GetContentsMimeType() const = 0;

@@ -1,7 +1,8 @@
 include_rules = [
-  "+components/url_formatter",
   "+components/leveldb_proto/public",
+  "+components/sessions/core/session_id.h",
   "+components/shared_highlighting/core/common",
+  "+components/url_formatter",
   "+crypto",
   "+ios/net",
   "+ios/web",

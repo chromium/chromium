@@ -51,6 +51,7 @@ class WebStateImpl::SerializedData {
   base::Time GetCreationTime() const;
   BrowserState* GetBrowserState() const;
   NSString* GetStableIdentifier() const;
+  SessionID GetUniqueIdentifier() const;
   const std::u16string& GetTitle() const;
   const FaviconStatus& GetFaviconStatus() const;
   void SetFaviconStatus(const FaviconStatus& favicon_status);

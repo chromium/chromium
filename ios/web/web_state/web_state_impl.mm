@@ -84,7 +84,8 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
   if (session_storage) {
     saved_ = std::make_unique<SerializedData>(this, params, session_storage);
   } else {
-    pimpl_ = std::make_unique<RealizedWebState>(this);
+    pimpl_ = std::make_unique<RealizedWebState>(
+        this, [[NSUUID UUID] UUIDString], SessionID::NewUnique());
     pimpl_->Init(params, session_storage, FaviconStatus{});
   }
 
@@ -364,7 +365,9 @@ WebState* WebStateImpl::ForceRealized() {
     // both `pimpl_` and `saved_` that are non-null. This is one of the
     // reason why the initialisation of the RealizedWebState needs to
     // be done after the constructor is done.
-    pimpl_ = std::make_unique<RealizedWebState>(this);
+    pimpl_ = std::make_unique<RealizedWebState>(
+        this, session_storage.stableIdentifier,
+        session_storage.uniqueIdentifier);
 
     // Delete the SerializedData without calling TearDown() as the WebState
     // itself is not destroyed. The TearDown() method will be called on the
@@ -507,6 +510,11 @@ void WebStateImpl::ExecuteUserJavaScript(NSString* javascript) {
 NSString* WebStateImpl::GetStableIdentifier() const {
   return LIKELY(pimpl_) ? pimpl_->GetStableIdentifier()
                         : saved_->GetStableIdentifier();
+}
+
+SessionID WebStateImpl::GetUniqueIdentifier() const {
+  return LIKELY(pimpl_) ? pimpl_->GetUniqueIdentifier()
+                        : saved_->GetUniqueIdentifier();
 }
 
 const std::string& WebStateImpl::GetContentsMimeType() const {

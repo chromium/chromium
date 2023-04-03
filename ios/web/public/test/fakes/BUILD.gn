@@ -8,6 +8,7 @@ source_set("fakes") {
 
   deps = [
     "//base",
+    "//components/sessions:session_id",
     "//ios/web/common",
     "//ios/web/common:uikit",
     "//ios/web/js_messaging",

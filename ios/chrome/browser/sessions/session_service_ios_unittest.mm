@@ -71,7 +71,7 @@ class SessionServiceTest : public PlatformTest {
     std::unique_ptr<WebStateList> web_state_list =
         std::make_unique<WebStateList>(&web_state_list_delegate_);
     for (int i = 0; i < tabs_count; ++i) {
-      auto web_state = std::make_unique<web::FakeWebState>([@(i) stringValue]);
+      auto web_state = std::make_unique<web::FakeWebState>();
       web_state->SetNavigationItemCount(1);
       web_state_list->InsertWebState(i, std::move(web_state),
                                      WebStateList::INSERT_FORCE_INDEX,

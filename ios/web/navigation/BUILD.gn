@@ -18,6 +18,7 @@ source_set("navigation") {
     ":core",
     ":navigation_manager_util",
     "//base",
+    "//components/sessions:session_id",
     "//ios/net",
     "//ios/web:core",
     "//ios/web/common",

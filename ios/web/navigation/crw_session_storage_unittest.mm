@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_item_storage_test_util.h"
@@ -68,12 +69,14 @@ CRWSessionUserData* SessionUserDataFromDictionary(
 
 class CRWSessionStorageTest : public PlatformTest {
  protected:
-  CRWSessionStorageTest() : session_storage_([[CRWSessionStorage alloc] init]) {
+  CRWSessionStorageTest() {
     // Set up `session_storage_`.
+    session_storage_ = [[CRWSessionStorage alloc] init];
     session_storage_.hasOpener = YES;
     session_storage_.lastCommittedItemIndex = 4;
     session_storage_.userAgentType = web::UserAgentType::DESKTOP;
     session_storage_.stableIdentifier = [[NSUUID UUID] UUIDString];
+    session_storage_.uniqueIdentifier = SessionID::NewUnique();
     session_storage_.userData =
         SessionUserDataFromDictionary(@{@"key" : @"value"});
 
