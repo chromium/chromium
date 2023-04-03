@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TIMELINE_INSET_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TIMELINE_INSET_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_INSET_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_INSET_H_
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -18,6 +17,9 @@ class CORE_EXPORT TimelineInset {
   TimelineInset(const Length& start, const Length& end)
       : start_(start), end_(end) {}
 
+  // Note these represent the logical start/end sides of the source scroller,
+  // not the start/end of the timeline.
+  // https://drafts.csswg.org/css-writing-modes-4/#css-start
   const Length& GetStart() const { return start_; }
   const Length& GetEnd() const { return end_; }
 
@@ -34,4 +36,4 @@ class CORE_EXPORT TimelineInset {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TIMELINE_INSET_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_INSET_H_

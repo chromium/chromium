@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_VIEW_TIMELINE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/animation/timeline_inset.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/timeline_inset.h"
 
 namespace blink {
 
@@ -31,7 +31,7 @@ class CORE_EXPORT CSSViewTimeline : public ViewTimeline {
 
     Element* subject_;
     ScrollAxis axis_;
-    ViewTimeline::Inset inset_;
+    TimelineInset inset_;
   };
 
   CSSViewTimeline(Document*, Options&&);

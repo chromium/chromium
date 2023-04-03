@@ -68,22 +68,22 @@ bool IsBlockDirection(ViewTimeline::ScrollAxis axis, WritingMode writing_mode) {
 // property).
 //
 // https://drafts.csswg.org/scroll-animations-1/#valdef-view-timeline-inset-auto
-ViewTimeline::Inset ResolveAuto(const ViewTimeline::Inset& inset,
-                                Element& source,
-                                ViewTimeline::ScrollAxis axis) {
+TimelineInset ResolveAuto(const TimelineInset& inset,
+                          Element& source,
+                          ViewTimeline::ScrollAxis axis) {
   const ComputedStyle* style = source.GetComputedStyle();
   if (!style)
     return inset;
 
-  const Length& start = inset.start_side;
-  const Length& end = inset.end_side;
+  const Length& start = inset.GetStart();
+  const Length& end = inset.GetEnd();
 
   if (IsBlockDirection(axis, style->GetWritingMode())) {
-    return ViewTimeline::Inset(
+    return TimelineInset(
         start.IsAuto() ? style->ScrollPaddingBlockStart() : start,
         end.IsAuto() ? style->ScrollPaddingBlockEnd() : end);
   }
-  return ViewTimeline::Inset(
+  return TimelineInset(
       start.IsAuto() ? style->ScrollPaddingInlineStart() : start,
       end.IsAuto() ? style->ScrollPaddingInlineEnd() : end);
 }
@@ -220,14 +220,15 @@ ViewTimeline* ViewTimeline::Create(Document& document,
     end_inset_value = &value_pair->Second();
   }
 
-  Inset inset;
-  inset.start_side = InsetValueToLength(start_inset_value.value_or(nullptr),
-                                        subject, Length(Length::Type::kFixed));
-  inset.end_side = InsetValueToLength(end_inset_value.value_or(nullptr),
-                                      subject, inset.start_side);
+  Length inset_start_side =
+      InsetValueToLength(start_inset_value.value_or(nullptr), subject,
+                         Length(Length::Type::kFixed));
+  Length inset_end_side = InsetValueToLength(end_inset_value.value_or(nullptr),
+                                             subject, inset_start_side);
 
-  ViewTimeline* view_timeline =
-      MakeGarbageCollected<ViewTimeline>(&document, subject, axis, inset);
+  ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
+      &document, subject, axis,
+      TimelineInset(inset_start_side, inset_end_side));
 
   if (start_inset_value && IsStyleDependent(start_inset_value.value()))
     view_timeline->style_dependant_start_inset_ = start_inset_value.value();
@@ -241,7 +242,7 @@ ViewTimeline* ViewTimeline::Create(Document& document,
 ViewTimeline::ViewTimeline(Document* document,
                            Element* subject,
                            ScrollAxis axis,
-                           Inset inset)
+                           TimelineInset inset)
     : ScrollTimeline(document, ReferenceType::kNearestAncestor, subject, axis),
       inset_(inset) {
   // Ensure that the timeline stays alive as long as the subject.
@@ -318,26 +319,31 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
 
   viewport_size_ = viewport_size.ToDouble();
 
-  Inset inset = ResolveAuto(inset_, *source, GetAxis());
+  TimelineInset inset = ResolveAuto(inset_, *source, GetAxis());
 
   // Update inset lengths if style dependent.
-  if (style_dependant_start_inset_) {
-    inset.start_side = InsetValueToLength(style_dependant_start_inset_,
-                                          subject(), Length::Fixed());
-  }
-  if (style_dependant_end_inset_) {
-    inset.end_side = InsetValueToLength(style_dependant_end_inset_, subject(),
-                                        Length::Fixed());
+  if (style_dependant_start_inset_ || style_dependant_end_inset_) {
+    Length updated_start = inset.GetStart();
+    Length updated_end = inset.GetEnd();
+    if (style_dependant_start_inset_) {
+      updated_start = InsetValueToLength(style_dependant_start_inset_,
+                                         subject(), Length::Fixed());
+    }
+    if (style_dependant_end_inset_) {
+      updated_end = InsetValueToLength(style_dependant_end_inset_, subject(),
+                                       Length::Fixed());
+    }
+    inset = TimelineInset(updated_start, updated_end);
   }
 
   // Note that the end_side_inset is used to adjust the start offset,
   // and the start_side_inset is used to adjust the end offset.
-  // This is because "start side" refers to fical start side [1] of the
-  // source box, where as "start offset" refers to the start of the timeline,
+  // This is because "start side" refers to the logical start side [1] of the
+  // source box, whereas "start offset" refers to the start of the timeline,
   // and similarly for end side/offset.
   // [1] https://drafts.csswg.org/css-writing-modes-4/#css-start
-  end_side_inset_ = ComputeInset(inset.end_side, viewport_size);
-  start_side_inset_ = ComputeInset(inset.start_side, viewport_size);
+  end_side_inset_ = ComputeInset(inset.GetEnd(), viewport_size);
+  start_side_inset_ = ComputeInset(inset.GetStart(), viewport_size);
 
   double start_offset = target_offset_ - viewport_size_ + end_side_inset_;
   double end_offset = target_offset_ + target_size_ - start_side_inset_;

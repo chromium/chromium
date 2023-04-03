@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/timeline_inset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -27,26 +28,9 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // https://drafts.csswg.org/scroll-animations-1/#view-timeline-inset
-  struct Inset {
-   public:
-    Inset() = default;
-    Inset(const Length& start_side, const Length& end_side)
-        : start_side(start_side), end_side(end_side) {}
-    bool operator==(const Inset& o) const {
-      return start_side == o.start_side && end_side == o.end_side;
-    }
-    bool operator!=(const Inset& o) const { return !(*this == o); }
-    // Note these represent the logical start/end sides of the source scroller,
-    // not the start/end of the timeline.
-    // https://drafts.csswg.org/css-writing-modes-4/#css-start
-    Length start_side = Length::Fixed();
-    Length end_side = Length::Fixed();
-  };
-
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  ViewTimeline(Document*, Element* subject, ScrollAxis axis, Inset);
+  ViewTimeline(Document*, Element* subject, ScrollAxis axis, TimelineInset);
 
   bool IsViewTimeline() const override { return true; }
 
@@ -74,7 +58,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   void Trace(Visitor*) const override;
 
  protected:
-  const Inset& GetInset() const { return inset_; }
+  const TimelineInset& GetInset() const { return inset_; }
 
   absl::optional<ScrollOffsets> CalculateOffsets(
       PaintLayerScrollableArea* scrollable_area,
@@ -95,7 +79,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   mutable double end_side_inset_;
   mutable double start_offset_ = 0;
   mutable double end_offset_ = 0;
-  Inset inset_;
+  TimelineInset inset_;
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.
   Member<const CSSValue> style_dependant_start_inset_;

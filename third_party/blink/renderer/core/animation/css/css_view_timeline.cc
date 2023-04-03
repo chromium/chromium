@@ -14,7 +14,7 @@ CSSViewTimeline::Options::Options(Element* subject,
                                   TimelineInset inset)
     : subject_(subject),
       axis_(CSSScrollTimeline::Options::ComputeAxis(axis)),
-      inset_(inset.GetStart(), inset.GetEnd()) {}
+      inset_(inset) {}
 
 CSSViewTimeline::CSSViewTimeline(Document* document, Options&& options)
     : ViewTimeline(document, options.subject_, options.axis_, options.inset_) {}
