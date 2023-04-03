@@ -2018,13 +2018,14 @@ TEST_F(DriveFsPinManagerTest, OnError) {
   manager.OnError(std::as_const(error));
   EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
 
+  // Stopping the pin manager should retain the existing error stage.
   manager.Stop();
-  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
 
   // Error of type kPinningFailedDiskFull should not have any effect if the pin
   // manager is already stopped.
   manager.OnError(std::as_const(error));
-  EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
 }
 
 // Tests that calling PinManager::Start() when the PinManager is already in

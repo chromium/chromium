@@ -143,6 +143,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
 
   // Returns whether required_space + some margin is less than free_space.
   bool HasEnoughFreeSpace() const;
+
+  // Returns whether the stage is a stopped or error stage.
+  bool IsStoppedOrError() const;
 };
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:

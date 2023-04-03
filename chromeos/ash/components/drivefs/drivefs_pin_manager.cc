@@ -354,6 +354,25 @@ bool Progress::HasEnoughFreeSpace() const {
   return enough;
 }
 
+bool Progress::IsStoppedOrError() const {
+  switch (stage) {
+    case Stage::kStopped:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+      return true;
+
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kPaused:
+    case Stage::kSuccess:
+    case Stage::kSyncing:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
+}
+
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
 
 bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
@@ -613,7 +632,7 @@ void PinManager::Start() {
 void PinManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.stage != Stage::kStopped) {
+  if (!progress_.IsStoppedOrError()) {
     VLOG(1) << "Stopping";
     Complete(Stage::kStopped);
   }
