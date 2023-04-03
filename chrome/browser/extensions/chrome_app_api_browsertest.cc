@@ -286,16 +286,14 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, InstallAndRunningStateFrame) {
   EXPECT_FALSE(IsAppInstalledInIFrame());
 }
 
-class ChromeAppAPIFencedFrameTest
-    : public ChromeAppAPITest,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+class ChromeAppAPIFencedFrameTest : public ChromeAppAPITest {
  public:
   ChromeAppAPIFencedFrameTest() {
     // kPrivacySandboxAdsAPIOverride must also be set since kFencedFrames
     // cannot be enabled independently without it.
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+        {{blink::features::kFencedFrames, {}},
+         {blink::features::kFencedFramesAPIChanges, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
   }
@@ -316,7 +314,7 @@ class ChromeAppAPIFencedFrameTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(ChromeAppAPIFencedFrameTest, NoInfo) {
+IN_PROC_BROWSER_TEST_F(ChromeAppAPIFencedFrameTest, NoInfo) {
   GURL app_url = https_server()->GetURL(
       "a.test", "/extensions/get_app_details_for_fenced_frame.html");
 
@@ -332,7 +330,3 @@ IN_PROC_BROWSER_TEST_P(ChromeAppAPIFencedFrameTest, NoInfo) {
   ASSERT_TRUE(fenced_frame);
   EXPECT_EQ("cannot_run", RunningStateInFrame(fenced_frame));
 }
-
-INSTANTIATE_TEST_SUITE_P(ChromeAppAPIFencedFrameTest,
-                         ChromeAppAPIFencedFrameTest,
-                         testing::Bool());

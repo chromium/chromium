@@ -2,6 +2,10 @@
 <html>
 <body>
   <p>This document hosts a fenced frame:</p>
-  <fencedframe src="fenced_frame.html"></fencedframe>
+  <fencedframe></fencedframe>
+  <script>
+    const url = new URL("fenced_frame.html", location.href);
+    document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+  </script>
 </body>
 </html>

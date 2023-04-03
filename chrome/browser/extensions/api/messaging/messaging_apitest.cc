@@ -1640,7 +1640,8 @@ class MessagingApiFencedFrameTest : public MessagingApiTest {
  protected:
   MessagingApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames, {{}}},
+        {{blink::features::kFencedFrames, {}},
+         {blink::features::kFencedFramesAPIChanges, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
   }

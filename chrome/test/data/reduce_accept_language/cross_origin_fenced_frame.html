@@ -1,6 +1,10 @@
 <html>
 <link rel="icon" href="data:;base64,=">
 <body>
-<fencedframe src="https://my-site.com:44444/subframe_simple_3p.html"></fencedframe>
+<fencedframe></fencedframe>
+<script>
+  const url = "https://my-site.com:44444/subframe_simple_3p.html";
+  document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+</script>
 </body>
 </html>

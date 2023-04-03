@@ -6,9 +6,10 @@
 
 function createFencedFrame(url, name) {
   const frame = document.createElement('fencedframe');
+  const config = new FencedFrameConfig(url);
   frame.name = name;
   frame.id = name;
-  frame.src = url;
+  frame.config = config;
   document.body.appendChild(frame);
 }
 

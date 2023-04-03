@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <fencedframe src="subframe_simple.html"></fencedframe>
+    <fencedframe></fencedframe>
+    <script>
+        const url = new URL("subframe_simple.html", location.href);
+        document.querySelector("fencedframe").config =
+            new FencedFrameConfig(url);
+    </script>
 </body>
 </html>
