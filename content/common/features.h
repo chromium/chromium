@@ -74,6 +74,10 @@ CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
 // https://crbug.com/1286501.
 BASE_DECLARE_FEATURE(kRestrictCanAccessDataForOriginToUIThread);
 
+// When enabled, ensures that an unlocked process cannot access data for
+// sites that require a dedicated process.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationCitadelEnforcement);
+
 // (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
 BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
 

@@ -25,6 +25,7 @@
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -83,14 +84,7 @@ class ChildProcessSecurityPolicyTestBrowserClient
 };
 
 bool IsCitadelProtectionEnabled() {
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(lukasza): https://crbug.com/566091: Once remote NTP is capable of
-  // embedding OOPIFs, start enforcing citadel-style checks on desktop
-  // platforms.
-  return false;
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(kSiteIsolationCitadelEnforcement);
 }
 
 void LockProcessIfNeeded(int process_id,

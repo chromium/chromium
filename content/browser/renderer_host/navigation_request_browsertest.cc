@@ -3758,6 +3758,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // The process should also be considered used at this point.
   EXPECT_FALSE(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->IsUnused());
+
+  // Ensure the navigation finishes before we restore the ContentBrowserClient
+  // which would turn strict site isolation back on.  Otherwise, the navigation
+  // commit may fail citadel protection checks at test teardown.
+  EXPECT_TRUE(manager.WaitForNavigationFinished());
+  EXPECT_TRUE(manager.was_successful());
 }
 
 // Check that a subframe can load an error page with an about:srcdoc URL, and
