@@ -37,8 +37,7 @@ class PrintPreviewDialogController
 
   static PrintPreviewDialogController* GetInstance();
 
-  // Initiate print preview for `initiator`.
-  // Call this instead of GetOrCreatePreviewDialog().
+  // Initiates print preview for `initiator`.
   static void PrintPreview(content::WebContents* initiator);
 
   // Returns true if `url` is a Print Preview dialog URL (has `chrome://print`
@@ -48,11 +47,6 @@ class PrintPreviewDialogController
   // Returns true if `url` is a Print Preview content URL (has
   // `chrome-untrusted://print` origin).
   static bool IsPrintPreviewContentURL(const GURL& url);
-
-  // Get/Create the print preview dialog for `initiator`.
-  // Exposed for unit tests.
-  content::WebContents* GetOrCreatePreviewDialog(
-      content::WebContents* initiator);
 
   // Returns the preview dialog for `contents`.
   // Returns `contents` if `contents` is a preview dialog.
@@ -64,12 +58,16 @@ class PrintPreviewDialogController
   // Returns NULL if no initiator exists for `preview_dialog`.
   content::WebContents* GetInitiator(content::WebContents* preview_dialog);
 
-  // Run `callback` on the dialog of each active print preview operation.
+  // Runs `callback` on the dialog of each active print preview operation.
   void ForEachPreviewDialog(
       base::RepeatingCallback<void(content::WebContents*)> callback);
 
-  // Erase the initiator info associated with `preview_dialog`.
+  // Erases the initiator info associated with `preview_dialog`.
   void EraseInitiatorInfo(content::WebContents* preview_dialog);
+
+  // Exposes GetOrCreatePreviewDialog() for testing.
+  content::WebContents* GetOrCreatePreviewDialogForTesting(
+      content::WebContents* initiator);
 
   bool is_creating_print_preview_dialog() const {
     return is_creating_print_preview_dialog_;
@@ -108,7 +106,12 @@ class PrintPreviewDialogController
   void OnPreviewDialogNavigated(content::WebContents* preview_dialog,
                                 content::NavigationHandle* navigation_handle);
 
-  // Creates a new print preview dialog.
+  // Gets/Creates the print preview dialog for `initiator`.
+  content::WebContents* GetOrCreatePreviewDialog(
+      content::WebContents* initiator);
+
+  // Creates a new print preview dialog if GetOrCreatePreviewDialog() cannot
+  // find a print preview dialog for `initiator`.
   content::WebContents* CreatePrintPreviewDialog(
       content::WebContents* initiator);
 

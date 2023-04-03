@@ -223,6 +223,11 @@ void PrintPreviewDialogController::PrintPreview(WebContents* initiator) {
   }
 }
 
+WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialogForTesting(
+    WebContents* initiator) {
+  return GetOrCreatePreviewDialog(initiator);
+}
+
 WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
     WebContents* initiator) {
   DCHECK(initiator);
