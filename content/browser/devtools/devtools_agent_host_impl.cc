@@ -358,12 +358,18 @@ bool DevToolsAgentHostImpl::Inspect() {
 }
 
 void DevToolsAgentHostImpl::ForceDetachAllSessions() {
-  scoped_refptr<DevToolsAgentHostImpl> protect(this);
+  std::ignore = ForceDetachAllSessionsImpl();
+}
+
+scoped_refptr<DevToolsAgentHost>
+DevToolsAgentHostImpl::ForceDetachAllSessionsImpl() {
+  scoped_refptr<DevToolsAgentHost> retain_this(this);
   while (!sessions_.empty()) {
     DevToolsAgentHostClient* client = (*sessions_.begin())->GetClient();
     DetachClient(client);
     client->AgentHostClosed(this);
   }
+  return retain_this;
 }
 
 void DevToolsAgentHostImpl::ForceDetachRestrictedSessions(

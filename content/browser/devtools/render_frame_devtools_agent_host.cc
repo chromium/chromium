@@ -561,9 +561,9 @@ void RenderFrameDevToolsAgentHost::RenderFrameDeleted(RenderFrameHost* rfh) {
 }
 
 void RenderFrameDevToolsAgentHost::DestroyOnRenderFrameGone() {
-  scoped_refptr<RenderFrameDevToolsAgentHost> protect(this);
+  scoped_refptr<DevToolsAgentHost> retain_this;
   if (IsAttached()) {
-    ForceDetachAllSessions();
+    retain_this = ForceDetachAllSessionsImpl();
     UpdateRawHeadersAccess(frame_host_);
   }
   WebContentsObserver::Observe(nullptr);
