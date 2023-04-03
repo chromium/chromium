@@ -213,15 +213,6 @@ class PersonalDataManager : public KeyedService,
   // Autofill address profiles to their account.
   virtual bool IsEligibleForAddressAccountStorage() const;
 
-  // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
-  // multiple side-effects for the profile:
-  // - It is stored in a different backend.
-  // - It receives a new GUID.
-  // Like all database operations, the migration happens asynchronously.
-  // `profile` (the kLocalOrSyncable one) will not be available in the
-  // PersonalDataManager anymore once the migrating has finished.
-  void MigrateProfileToAccount(const AutofillProfile& profile);
-
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
   // Below conditions should be met before adding `iban` to the database:

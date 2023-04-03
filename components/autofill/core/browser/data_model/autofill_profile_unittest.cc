@@ -1716,6 +1716,20 @@ TEST(AutofillProfileTest, HasStructuredData) {
   EXPECT_TRUE(profile.HasStructuredData());
 }
 
+TEST(AutofillProfileTest, ConvertToAccountProfile) {
+  const AutofillProfile kLocalProfile = test::GetFullProfile();
+  ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  const AutofillProfile kAccountProfile =
+      kLocalProfile.ConvertToAccountProfile();
+  EXPECT_EQ(kAccountProfile.source(), AutofillProfile::Source::kAccount);
+  EXPECT_EQ(kAccountProfile.initial_creator_id(),
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+  EXPECT_EQ(kAccountProfile.last_modifier_id(),
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+  EXPECT_NE(kLocalProfile.guid(), kAccountProfile.guid());
+  EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
+}
+
 TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   // Returns true if at least one field was removed.
   auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile) {
