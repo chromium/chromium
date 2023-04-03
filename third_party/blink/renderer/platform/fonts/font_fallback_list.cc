@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 
 #include "base/timer/elapsed_timer.h"
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -49,7 +50,8 @@ FontFallbackList::FontFallbackList(FontFallbackMap& font_fallback_map)
       has_custom_font_(false),
       can_shape_word_by_word_(false),
       can_shape_word_by_word_computed_(false),
-      is_invalid_(false) {}
+      is_invalid_(false),
+      record_replay_id_(recordreplay::NewIdMainThread("FontFallbackList")) {}
 
 FontFallbackList::~FontFallbackList() {
   ReleaseFontData();
@@ -94,7 +96,8 @@ bool FontFallbackList::ShouldSkipDrawing() const {
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontData(
     const FontDescription& font_description) {
   // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] FontFallbackList::DeterminePrimarySimpleFontData");
+  recordreplay::Assert("[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontData %d",
+                       record_replay_id_);
 
   base::ElapsedTimer timer;
   const SimpleFontData* result =
@@ -108,12 +111,13 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
   bool should_load_custom_font = true;
 
   recordreplay::Assert(
-    "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #0"
+    "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #0 %d",
+    record_replay_id_
   );
   for (unsigned font_index = 0;; ++font_index) {
     recordreplay::Assert(
-      "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #1 fontidx=%u",
-      font_index
+      "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #1 %d fontidx=%u",
+      record_replay_id_, font_index
     );
     const FontData* font_data = FontDataAt(font_description, font_index);
     if (!font_data) {
@@ -121,8 +125,8 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
       font_data = FontDataAt(font_description, 0);
       if (font_data) {
         recordreplay::Assert(
-          "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #2 fontidx=%u gotFontData",
-          font_index
+          "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #2 %d fontidx=%u gotFontData",
+          record_replay_id_, font_index
         );
         return font_data->FontDataForCharacter(kSpaceCharacter);
       }
@@ -132,7 +136,8 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
           font_cache.GetLastResortFallbackFont(font_description).get();
       DCHECK(last_resort_fallback);
       recordreplay::Assert(
-        "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #3 fontidx=%u lastResortFb=%d",
+        "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #3 %d fontidx=%u lastResortFb=%d",
+        record_replay_id_,
         font_index,
         !!last_resort_fallback
       );
@@ -141,7 +146,8 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
 
     const auto* segmented = DynamicTo<SegmentedFontData>(font_data);
     recordreplay::Assert(
-      "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #4 fontidx=%u segmented=%d",
+      "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #4 %d fontidx=%u segmented=%d",
+      record_replay_id_,
       font_index,
       !!segmented
     );
@@ -157,7 +163,8 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     // font which may not act as the correct fallback font.
     if (!font_data_for_space->IsLoadingFallback()) {
       recordreplay::Assert(
-        "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #5 fontidx=%u fontDataForSpace=%d",
+        "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #5 %d fontidx=%u fontDataForSpace=%d",
+        record_replay_id_,
         font_index,
         !!font_data_for_space
       );
@@ -170,7 +177,8 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
             segmented->FaceAt(i)->FontData();
         if (!range_font_data->IsLoadingFallback()) {
           recordreplay::Assert(
-            "[RUN-1219-1597] FontFallbackList::DeterminePrimarySimpleFontDataCore #6 fontidx=%u rangeFontData=%d",
+            "[RUN-1219-1650] FontFallbackList::DeterminePrimarySimpleFontDataCore #6 %d fontidx=%u rangeFontData=%d",
+            record_replay_id_,
             font_index,
             !!range_font_data
           );

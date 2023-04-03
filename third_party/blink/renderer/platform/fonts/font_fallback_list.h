@@ -89,13 +89,13 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
   const SimpleFontData* PrimarySimpleFontData(
       const FontDescription& font_description) {
-    recordreplay::Assert("[RUN-1219-1406] FontFallbackList::PrimarySimpleFontData %d",
-      (int) !!cached_primary_simple_font_data_);
+    recordreplay::Assert("[RUN-1219-1406] FontFallbackList::PrimarySimpleFontData %d %d",
+      record_replay_id_, (int) !!cached_primary_simple_font_data_);
     if (!cached_primary_simple_font_data_) {
       cached_primary_simple_font_data_ =
           DeterminePrimarySimpleFontData(font_description);
-      recordreplay::Assert("[RUN-1219-1597] FontFallbackList::PrimarySimpleFontData #2 %d",
-        (int) !!cached_primary_simple_font_data_);
+      recordreplay::Assert("[RUN-1219-1597] FontFallbackList::PrimarySimpleFontData #2 %d %d",
+        record_replay_id_, (int) !!cached_primary_simple_font_data_);
       DCHECK(cached_primary_simple_font_data_);
     }
     return cached_primary_simple_font_data_;
@@ -138,6 +138,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool is_invalid_ : 1;
 
   base::WeakPtr<ShapeCache> shape_cache_;
+  int record_replay_id_;
 };
 
 }  // namespace blink
