@@ -27,13 +27,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_WORD_BREAK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_WORD_BREAK_H_
 
-#include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 
 namespace blink {
 
-class LayoutWordBreak : public LayoutText {
+class HTMLWBRElement;
+
+class LayoutWordBreak : public LayoutNGText {
  public:
-  explicit LayoutWordBreak(Node* node);
+  explicit LayoutWordBreak(HTMLWBRElement& node);
 
   Position PositionForCaretOffset(unsigned offset) const final;
   absl::optional<unsigned> CaretOffsetForPosition(const Position&) const final;

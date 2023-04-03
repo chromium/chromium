@@ -13,7 +13,6 @@ namespace blink {
 
 class ComputedStyle;
 class Document;
-class HTMLElement;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
@@ -48,9 +47,6 @@ class LayoutObjectFactory {
                                                 int start_offset,
                                                 int length,
                                                 LegacyLayout);
-
-  static LayoutObject* CreateBR(Node*, LegacyLayout);
-  static LayoutObject* CreateWordBreak(HTMLElement*, LegacyLayout);
 };
 
 }  // namespace blink

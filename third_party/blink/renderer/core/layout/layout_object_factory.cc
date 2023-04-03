@@ -20,10 +20,8 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_br.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_word_break.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
@@ -167,16 +165,6 @@ LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
   if (force_legacy)
     layout_text_fragment->SetForceLegacyLayout();
   return layout_text_fragment;
-}
-
-LayoutObject* LayoutObjectFactory::CreateBR(Node* node, LegacyLayout legacy) {
-  return CreateObject<LayoutObject, LayoutNGBR, LayoutBR>(*node, legacy);
-}
-
-LayoutObject* LayoutObjectFactory::CreateWordBreak(HTMLElement* element,
-                                                   LegacyLayout legacy) {
-  return CreateObject<LayoutObject, LayoutNGWordBreak, LayoutWordBreak>(
-      *element, legacy);
 }
 
 }  // namespace blink

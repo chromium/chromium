@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 
 namespace blink {
@@ -33,7 +34,8 @@ static String NewlineString() {
   return string;
 }
 
-LayoutBR::LayoutBR(Node* node) : LayoutText(node, NewlineString()) {}
+LayoutBR::LayoutBR(HTMLBRElement& node)
+    : LayoutNGText(&node, NewlineString()) {}
 
 LayoutBR::~LayoutBR() = default;
 
@@ -47,7 +49,7 @@ int LayoutBR::LineHeight(bool first_line) const {
 void LayoutBR::StyleDidChange(StyleDifference diff,
                               const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutText::StyleDidChange(diff, old_style);
+  LayoutNGText::StyleDidChange(diff, old_style);
 }
 
 int LayoutBR::CaretMinOffset() const {
