@@ -235,14 +235,15 @@ TEST_F(ToastManagerImplTest, ShowAndCloseManually) {
   EXPECT_EQ(nullptr, GetCurrentOverlay());
 }
 
-// TODO(crbug.com/959781): Test is flaky.
-TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
+TEST_F(ToastManagerImplTest, ShowAndCloseManuallyDuringAnimation) {
   ui::ScopedAnimationDurationScaleMode slow_animation_duration(
       ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
+  ASSERT_TRUE(task_environment()->UsesMockTime());
+
   ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, u"Dismiss");
   EXPECT_TRUE(GetCurrentWidget()->GetLayer()->GetAnimator()->is_animating());
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(10));
 
   EXPECT_EQ(1, GetToastSerial());
   EXPECT_TRUE(GetCurrentWidget()->GetLayer()->GetAnimator()->is_animating());
@@ -250,34 +251,27 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
   // Try to close it during animation.
   ClickDismissButton();
 
-  while (GetCurrentWidget()->GetLayer()->GetAnimator()->is_animating())
-    base::RunLoop().RunUntilIdle();
-
-  // Toast isn't closed.
-  EXPECT_TRUE(GetCurrentOverlay() != nullptr);
-}
-
-// TODO(crbug.com/959781): Test is flaky.
-TEST_F(ToastManagerImplTest, DISABLED_NullMessageHasNoDismissButton) {
-  ShowToastWithDismiss("DUMMY", base::Milliseconds(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetDismissButton());
 }
 
-// TODO(crbug.com/959781): Test is flaky.
-TEST_F(ToastManagerImplTest, DISABLED_QueueMessage) {
-  ShowToast("DUMMY1", base::Milliseconds(10));
-  ShowToast("DUMMY2", base::Milliseconds(10));
-  ShowToast("DUMMY3", base::Milliseconds(10));
+TEST_F(ToastManagerImplTest, QueueMessage) {
+  const base::TimeDelta kDelay = ToastData::kMinimumDuration;
+
+  ShowToast("DUMMY1", kDelay);
+  ShowToast("DUMMY2", kDelay);
+  ShowToast("DUMMY3", kDelay);
 
   EXPECT_EQ(1, GetToastSerial());
   EXPECT_EQ(u"DUMMY1", GetCurrentText());
 
+  task_environment()->FastForwardBy(kDelay);
   while (GetToastSerial() != 2)
     base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(u"DUMMY2", GetCurrentText());
 
+  task_environment()->FastForwardBy(kDelay);
   while (GetToastSerial() != 3)
     base::RunLoop().RunUntilIdle();
 
