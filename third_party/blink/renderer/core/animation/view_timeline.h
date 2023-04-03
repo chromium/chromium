@@ -43,6 +43,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   // IDL API implementation.
   Element* subject() const { return ReferenceElement(); }
 
+  const TimelineInset& GetInset() const { return inset_; }
+
   // Converts a delay that is expressed as a (phase,percentage) pair to
   // a fractional offset.
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
@@ -58,8 +60,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   void Trace(Visitor*) const override;
 
  protected:
-  const TimelineInset& GetInset() const { return inset_; }
-
   absl::optional<ScrollOffsets> CalculateOffsets(
       PaintLayerScrollableArea* scrollable_area,
       ScrollOrientation physical_orientation) const override;

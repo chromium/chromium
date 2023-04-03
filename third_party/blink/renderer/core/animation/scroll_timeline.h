@@ -105,6 +105,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
+  ReferenceType GetReferenceType() const { return reference_type_; }
+  Element* ReferenceElement() const { return reference_element_.Get(); }
+
   ScrollAxis GetAxis() const { return axis_; }
 
   // Mark every effect target of every Animation attached to this timeline
@@ -141,15 +144,11 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
  protected:
   PhaseAndTime CurrentPhaseAndTime() override;
 
-  virtual Element* ReferenceElement() const { return reference_element_.Get(); }
-
   // Determines the source for the scroll timeline. It may be the reference
   // element or its nearest scrollable ancestor, depending on |souce_type|.
   // This version does not force a style update and is therefore safe to call
   // during lifecycle update.
   Element* SourceInternal() const;
-
-  ReferenceType GetReferenceType() const { return reference_type_; }
 
   bool HasExplicitSource() const {
     return reference_type_ == ReferenceType::kSource;

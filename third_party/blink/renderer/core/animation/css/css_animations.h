@@ -199,11 +199,11 @@ class CORE_EXPORT CSSAnimations final {
     DISALLOW_NEW();
 
    public:
-    void SetScrollTimeline(const ScopedCSSName& name, CSSScrollTimeline*);
+    void SetScrollTimeline(const ScopedCSSName& name, ScrollTimeline*);
     const CSSScrollTimelineMap& GetScrollTimelines() const {
       return scroll_timelines_;
     }
-    void SetViewTimeline(const ScopedCSSName& name, CSSViewTimeline*);
+    void SetViewTimeline(const ScopedCSSName& name, ViewTimeline*);
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
@@ -305,13 +305,12 @@ class CORE_EXPORT CSSAnimations final {
   static ScrollTimeline* FindTimelineForNode(const ScopedCSSName& name,
                                              Node*,
                                              const CSSAnimationUpdate*);
-  static CSSScrollTimeline* FindScrollTimelineForElement(
-      const ScopedCSSName&,
-      const CSSAnimationUpdate*,
-      const TimelineData*);
-  static CSSViewTimeline* FindViewTimelineForElement(const ScopedCSSName& name,
-                                                     const CSSAnimationUpdate*,
-                                                     const TimelineData*);
+  static ScrollTimeline* FindScrollTimelineForElement(const ScopedCSSName&,
+                                                      const CSSAnimationUpdate*,
+                                                      const TimelineData*);
+  static ViewTimeline* FindViewTimelineForElement(const ScopedCSSName& name,
+                                                  const CSSAnimationUpdate*,
+                                                  const TimelineData*);
   template <typename TimelineType>
   static TimelineType* FindTimelineForElement(
       const ScopedCSSName& name,
