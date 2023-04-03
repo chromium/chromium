@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/commander/simple_command_source.h"
 
+#include <vector>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/no_destructor.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,10 +34,11 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
   // translated strings so we can experiment without adding translation load.
   // As implied, none of these strings are final, or necessarily expected to
   // ship.
-  const struct {
+  struct CommandEntry {
     int id;
     std::u16string title;
-  } command_map[] = {
+  };
+  static const base::NoDestructor<std::vector<CommandEntry>> kCommandMap({
       {IDC_FIND, l10n_util::GetStringUTF16(IDS_FIND)},
       {IDC_SAVE_PAGE, l10n_util::GetStringUTF16(IDS_SAVE_PAGE)},
       {IDC_PRINT, l10n_util::GetStringUTF16(IDS_PRINT)},
@@ -71,11 +75,12 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_MOVE_TAB_NEXT, u"Move tab forward"},
       {IDC_MOVE_TAB_PREVIOUS, u"Move tab backward"},
       {IDC_QRCODE_GENERATOR, u"Create QR code"},
-  };
+  });
+
   CommandSource::CommandResults results;
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
-  for (const auto& command_spec : command_map) {
+  for (const auto& command_spec : *kCommandMap) {
     if (!chrome::IsCommandEnabled(browser, command_spec.id))
       continue;
     std::u16string title = command_spec.title;
