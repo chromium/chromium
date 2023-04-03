@@ -89,6 +89,10 @@ group("deps") {
         deps += [ "test_local_std:test_local_std_unittests" ]
       }
     }
+
+    if (is_win) {
+      deps += [ "test_control_flow_guard" ]
+    }
   }
 }
 

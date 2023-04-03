@@ -337,12 +337,16 @@ config("default_cfg_compiler") {
   # This is needed to allow functions to be called by code that is built
   # with CFG enabled, such as system libraries.
   # The CFG guards are only emitted if |win_enable_cfg_guards| is enabled.
-  if (is_clang) {
-    if (win_enable_cfg_guards) {
+  if (win_enable_cfg_guards) {
+    if (is_clang) {
       cflags = [ "/guard:cf" ]
-    } else {
+    }
+    rustflags = [ "-Ccontrol-flow-guard" ]
+  } else {
+    if (is_clang) {
       cflags = [ "/guard:cf,nochecks" ]
     }
+    rustflags = [ "-Ccontrol-flow-guard=nochecks" ]
   }
 }
 
@@ -355,6 +359,7 @@ config("disable_guards_cfg_compiler") {
   if (is_clang) {
     cflags = [ "/guard:cf,nochecks" ]
   }
+  rustflags = [ "-Ccontrol-flow-guard=nochecks" ]
 }
 
 config("cfi_linker") {
