@@ -152,6 +152,10 @@ class AmbientControllerTest : public AmbientAshTestBase {
     return ui_model_bound;
   }
 
+  bool IsInactivityTimerRunning() {
+    return ambient_controller()->inactivity_timer_.IsRunning();
+  }
+
   base::test::ScopedFeatureList feature_list_;
 
  protected:
@@ -1592,6 +1596,38 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
 
   GetEventGenerator()->ReleaseTouch();
   EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest,
+       ShouldResetInactivityTimerOnUserActivityWhileUiIsHidden) {
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  HideAmbientScreen();
+  FastForwardTiny();
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kHidden);
+
+  const base::TimeDelta inactivity_timeout =
+      ambient_controller()
+          ->ambient_ui_model()
+          ->lock_screen_inactivity_timeout();
+  task_environment()->FastForwardBy(inactivity_timeout * 0.5);
+  ambient_controller()->OnUserActivity(
+      std::make_unique<ui::KeyEvent>(ui::ET_KEY_PRESSED, ui::VKEY_A,
+                                     ui::EF_NONE)
+          .get());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  task_environment()->FastForwardBy(inactivity_timeout * 0.8);
+  EXPECT_TRUE(IsInactivityTimerRunning());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  task_environment()->FastForwardBy(inactivity_timeout * 0.3);
+  EXPECT_FALSE(IsInactivityTimerRunning());
+  EXPECT_TRUE(ambient_controller()->IsShown());
 }
 
 class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
