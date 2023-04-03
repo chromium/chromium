@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -681,7 +682,6 @@ test("gpu_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/test:test_trace_processor",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
@@ -720,6 +720,11 @@ test("gpu_unittests") {
     "//ui/gl:test_support",
     "//url",
   ]
+
+  if (!is_cronet_build) {
+    # Cronet disables tracing (crbug.com/1400235).
+    deps += [ "//base/test:test_trace_processor" ]
+  }
 
   if (is_android) {
     deps += [

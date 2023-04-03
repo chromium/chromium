@@ -22,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -32,6 +31,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/sockaddr_storage.h"
 #include "net/base/sys_addrinfo.h"
+#include "net/base/tracing.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -43,7 +43,6 @@
 #include "net/socket/socket_posix.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"

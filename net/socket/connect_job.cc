@@ -7,10 +7,10 @@
 #include <set>
 #include <utility>
 
-#include "base/trace_event/trace_event.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
+#include "net/base/tracing.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_controller.h"

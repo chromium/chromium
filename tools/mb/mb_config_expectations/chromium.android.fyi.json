@@ -69,6 +69,7 @@
       "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
+      "enable_base_tracing": false,
       "enable_reporting": true,
       "enable_resource_allowlist_generation": false,
       "enable_websockets": false,

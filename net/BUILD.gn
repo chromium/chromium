@@ -249,6 +249,8 @@ component("net") {
     "base/sockaddr_storage.cc",
     "base/sockaddr_storage.h",
     "base/sys_addrinfo.h",
+    "base/trace_event_stub.h",
+    "base/tracing.h",
     "base/transport_info.cc",
     "base/transport_info.h",
     "base/upload_bytes_element_reader.cc",
@@ -1643,6 +1645,7 @@ source_set("net_deps") {
 
   public_deps = [
     ":constants",
+    ":cronet_buildflags",
     ":isolation_info_proto",
     ":net_export_header",
     ":net_resources",
@@ -1989,6 +1992,7 @@ static_library("test_support") {
   configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
+    ":cronet_buildflags",
     ":gtest_util",
     "//base",
     "//base/test:test_support",
@@ -2652,7 +2656,6 @@ test("net_unittests") {
     "log/net_log_unittest.cc",
     "log/net_log_util_unittest.cc",
     "log/net_log_values_unittest.cc",
-    "log/trace_net_log_observer_unittest.cc",
     "nqe/effective_connection_type_unittest.cc",
     "nqe/event_creator_unittest.cc",
     "nqe/network_id_unittest.cc",
@@ -2793,7 +2796,10 @@ test("net_unittests") {
   ]
 
   if (!is_cronet_build) {
-    sources += [ "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc" ]
+    sources += [
+      "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
+      "log/trace_net_log_observer_unittest.cc",
+    ]
   }
 
   if (is_android) {
@@ -2893,7 +2899,9 @@ test("net_unittests") {
     deps += [ "//net/server:tests" ]
   }
 
-  if (!is_cronet_build) {
+  if (is_cronet_build) {
+    deps += [ "//third_party/perfetto/include/perfetto/test:test_support" ]
+  } else {
     deps += [
       ":extras",
       "//components/sqlite_proto",
