@@ -62,6 +62,8 @@ class UDPSocket : public Socket, public network::mojom::UDPSocketListener {
 
   const std::vector<std::string>& GetJoinedGroups() const;
 
+  bool IsConnectedOrBound() const;
+
  protected:
   int WriteImpl(net::IOBuffer* io_buffer,
                 int io_buffer_size,
@@ -70,8 +72,6 @@ class UDPSocket : public Socket, public network::mojom::UDPSocketListener {
  private:
   // Make net::IPEndPoint can be refcounted
   typedef base::RefCountedData<net::IPEndPoint> IPEndPoint;
-
-  bool IsConnectedOrBound() const;
 
   // network::mojom::UDPSocketListener implementation.
   void OnReceived(int32_t result,
