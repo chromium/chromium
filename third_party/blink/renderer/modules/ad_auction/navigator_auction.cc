@@ -2198,6 +2198,11 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
     const AuctionAdInterestGroup* group,
     double duration_seconds,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
@@ -2289,6 +2294,11 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
     Navigator& navigator,
     const AuctionAdInterestGroupKey* group_key,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
@@ -2314,6 +2324,11 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   ExecutionContext* context = ExecutionContext::From(script_state);
   // According to the spec, implicit leave bypasses permission policy.
   return From(context, navigator)
@@ -2328,6 +2343,11 @@ void NavigatorAuction::updateAdInterestGroups() {
 void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
                                               Navigator& navigator,
                                               ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return;
+  }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
@@ -2395,6 +2415,11 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              Navigator& navigator,
                                              const AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
@@ -2420,10 +2445,15 @@ Vector<String> NavigatorAuction::adAuctionComponents(
     Navigator& navigator,
     uint16_t num_ad_components,
     ExceptionState& exception_state) {
+  Vector<String> out;
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return out;
+  }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const auto& ad_auction_components =
       navigator.DomWindow()->document()->Loader()->AdAuctionComponents();
-  Vector<String> out;
   if (!ad_auction_components) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "This frame was not loaded with the "
@@ -2472,6 +2502,11 @@ ScriptPromise NavigatorAuction::deprecatedURNToURL(
     const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
     bool send_reports,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   String uuid_url_string;
   switch (urn_or_config->GetContentType()) {
     case V8UnionFencedFrameConfigOrUSVString::ContentType::kUSVString:
@@ -2532,6 +2567,11 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
     const V8UnionFencedFrameConfigOrUSVString* urn_or_config,
     const Vector<std::pair<String, String>>& replacements,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   String uuid_url_string;
   switch (urn_or_config->GetContentType()) {
     case V8UnionFencedFrameConfigOrUSVString::ContentType::kUSVString:
@@ -2600,6 +2640,11 @@ ScriptPromise NavigatorAuction::createAdRequest(
     Navigator& navigator,
     const AdRequestConfig* config,
     ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .createAdRequest(script_state, config, exception_state);
 }
@@ -2660,6 +2705,11 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
                                            const Ads* ads,
                                            const AuctionAdConfig* config,
                                            ExceptionState& exception_state) {
+  if (!navigator.DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The document has no window associated.");
+    return ScriptPromise();
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .finalizeAd(script_state, ads, config, exception_state);
 }
@@ -2852,6 +2902,9 @@ bool NavigatorAuction::canLoadAdAuctionFencedFrame(ScriptState* script_state) {
 /* static */
 bool NavigatorAuction::canLoadAdAuctionFencedFrame(ScriptState* script_state,
                                                    Navigator& navigator) {
+  if (!navigator.DomWindow()) {
+    return false;
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .canLoadAdAuctionFencedFrame(script_state);
 }
