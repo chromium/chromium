@@ -256,12 +256,6 @@ bool DOMWindow::IsCurrentlyDisplayedInFrame() const {
 String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
     const LocalDOMWindow* accessing_window,
     CrossDocumentAccessPolicy cross_document_access) const {
-  // Cross-domain accesses should always be allowed when running commands in the
-  // replaying specific script. Make sure we don't try to generate this error
-  // message in such cases.
-  // FIXME Use a separate API for this https://linear.app/replay/issue/RUN-1502
-  CHECK(!recordreplay::IsReplaying() || !recordreplay::AreEventsDisallowed());
-
   if (!accessing_window || !GetFrame())
     return String();
 
