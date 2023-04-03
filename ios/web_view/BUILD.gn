@@ -328,6 +328,7 @@ ios_web_view_deps = [
   "//components/security_state/ios",
   "//components/services/patch:in_process",
   "//components/services/unzip:in_process",
+  "//components/sessions:session_id",
   "//components/signin/core/browser",
   "//components/signin/ios/browser",
   "//components/signin/public/base",

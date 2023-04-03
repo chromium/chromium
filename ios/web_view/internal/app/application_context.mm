@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#import "components/sessions/core/session_id_generator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/update_client/update_client.h"
@@ -83,6 +84,7 @@ void ApplicationContext::SaveState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (local_state_) {
     local_state_->CommitPendingWrite();
+    sessions::SessionIdGenerator::GetInstance()->Shutdown();
   }
 
   if (shared_url_loader_factory_)
@@ -119,6 +121,7 @@ PrefService* ApplicationContext::GetLocalState() {
     component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
         pref_registry.get());
     metrics::RegisterDemographicsLocalStatePrefs(pref_registry.get());
+    sessions::SessionIdGenerator::RegisterPrefs(pref_registry.get());
 
     base::FilePath local_state_path;
     base::PathService::Get(base::DIR_APP_DATA, &local_state_path);
@@ -131,6 +134,8 @@ PrefService* ApplicationContext::GetLocalState() {
     PrefServiceFactory factory;
     factory.set_user_prefs(user_pref_store);
     local_state_ = factory.Create(pref_registry.get());
+
+    sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
     int max_normal_socket_pool_count =
         net::ClientSocketPoolManager::max_sockets_per_group(
