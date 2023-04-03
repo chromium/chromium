@@ -1127,23 +1127,49 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // so that we only notify the initial node data against the final node data,
   // unless the node is a new root.
   std::set<AXNodeID> notified_node_attributes_will_change;
-  for (const auto& new_data : update_state.updated_nodes) {
-    const bool is_new_root =
-        update_state.root_will_be_created && new_data.id == update.root_id;
-    if (is_new_root)
-      continue;
+  if (features::IsUnserializeOptimizationsEnabled()) {
+    std::vector<std::pair<AXNodeData, AXNodeData>> nodes_to_notify;
+    // Iterate over ObserverList as the outer for loop, but to prevent repeated
+    // calls to GetFromId, first construct a list of nodes to notify.
+    for (const auto& new_data : update_state.updated_nodes) {
+      const bool is_new_root =
+          update_state.root_will_be_created && new_data.id == update.root_id;
+      if (is_new_root || new_data.id == kInvalidAXNodeID) {
+        continue;
+      }
 
-    AXNode* node = GetFromId(new_data.id);
-    if (node &&
-        notified_node_attributes_will_change.insert(new_data.id).second) {
-      NotifyNodeAttributesWillChange(
-          node, update_state,
-          update_state.old_tree_data ? &update_state.old_tree_data.value()
-                                     : nullptr,
-          node->data(),
-          update_state.new_tree_data ? &update_state.new_tree_data.value()
-                                     : nullptr,
-          new_data);
+      AXNode* node = GetFromId(new_data.id);
+      if (node &&
+          notified_node_attributes_will_change.insert(new_data.id).second) {
+        nodes_to_notify.emplace_back(node->data(), new_data);
+      }
+    }
+
+    for (AXTreeObserver& observer : observers_) {
+      for (const auto& pair : nodes_to_notify) {
+        observer.OnNodeDataWillChange(this, pair.first, pair.second);
+      }
+    }
+  } else {
+    for (const auto& new_data : update_state.updated_nodes) {
+      const bool is_new_root =
+          update_state.root_will_be_created && new_data.id == update.root_id;
+      if (is_new_root) {
+        continue;
+      }
+
+      AXNode* node = GetFromId(new_data.id);
+      if (node &&
+          notified_node_attributes_will_change.insert(new_data.id).second) {
+        NotifyNodeAttributesWillChange(
+            node, update_state,
+            update_state.old_tree_data ? &update_state.old_tree_data.value()
+                                       : nullptr,
+            node->data(),
+            update_state.new_tree_data ? &update_state.new_tree_data.value()
+                                       : nullptr,
+            new_data);
+      }
     }
   }
 
