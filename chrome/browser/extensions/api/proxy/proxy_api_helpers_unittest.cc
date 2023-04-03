@@ -186,6 +186,28 @@ TEST(ExtensionProxyApiHelpers, GetProxyRulesStringFromExtensionPref) {
   EXPECT_FALSE(bad_message);
 }
 
+TEST(ExtensionProxyApiHelpers, GetProxyRulesStringFromExtensionPrefInvalid) {
+  static constexpr char kSingleProxy[] = "singleProxy";
+  std::string out;
+  std::string error;
+  bool bad_message = false;
+
+  base::Value::Dict proxy_config;
+  proxy_config.Set(keys::kProxyConfigMode, ProxyPrefs::ProxyModeToString(
+                                               ProxyPrefs::MODE_FIXED_SERVERS));
+  base::Value::Dict invalidManualProxy;
+  invalidManualProxy.Set(keys::kProxyConfigRuleHost, std::string());
+  base::Value::Dict singleProxy;
+  singleProxy.Set(kSingleProxy, std::move(invalidManualProxy));
+  proxy_config.Set(keys::kProxyConfigRules, std::move(singleProxy));
+
+  ASSERT_FALSE(GetProxyRulesStringFromExtensionPref(proxy_config, &out, &error,
+                                                    &bad_message));
+  EXPECT_EQ(std::string(), out);
+  EXPECT_EQ("Invalid 'rules.???.host' entry. Hostname cannot be empty.", error);
+  EXPECT_FALSE(bad_message);
+}
+
 TEST(ExtensionProxyApiHelpers, GetBypassListFromExtensionPref) {
   std::string out;
   std::string error;

@@ -223,6 +223,11 @@ bool GetProxyServer(const base::Value::Dict& proxy_server,
   }
   std::string host = base::UTF16ToASCII(host16);
 
+  if (host.empty()) {
+    *error = "Invalid 'rules.???.host' entry. Hostname cannot be empty.";
+    return false;
+  }
+
   // optional.
   int port = proxy_server.FindInt(proxy_api_constants::kProxyConfigRulePort)
                  .value_or(net::ProxyServer::GetDefaultPortForScheme(scheme));
