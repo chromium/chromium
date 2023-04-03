@@ -2381,23 +2381,6 @@
             ]
         }
     ],
-    "ChromeAppsDeprecationNoLaunchWinMacLinux": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221215",
-                    "disable_features": [
-                        "KeepForceInstalledPreinstalledApps"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeCartDomBasedHeuristics": [
         {
             "platforms": [
@@ -8943,35 +8926,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OverrideThrottledFrameRateParams"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PWARemoveServiceWorkerRequirement": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Promotability",
-                    "enable_features": [
-                        "SkipServiceWorkerCheckInstallOnly",
-                        "SkipServiceWorkerForInstallPromot"
-                    ]
-                },
-                {
-                    "name": "Enabled_Installability",
-                    "enable_features": [
-                        "SkipServiceWorkerCheckInstallOnly"
-                    ],
-                    "disable_features": [
-                        "SkipServiceWorkerForInstallPromot"
                     ]
                 }
             ]
