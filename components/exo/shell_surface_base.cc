@@ -829,7 +829,7 @@ void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
                               /*old_value(unused)=*/0);
     }
     if (window->HasFocus())
-      host_window()->Focus();
+      root_surface->window()->Focus();
   }
 
   SetCanMinimize(can_minimize_);
