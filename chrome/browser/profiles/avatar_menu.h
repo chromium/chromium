@@ -140,11 +140,6 @@ class AvatarMenu :
   // active profile.
   absl::optional<size_t> GetActiveProfileIndex() const;
 
-  // Returns information about a supervised user which will be displayed in the
-  // avatar menu. If the profile does not belong to a supervised user, an empty
-  // string will be returned.
-  std::u16string GetSupervisedUserInformation() const;
-
   // This menu is also used for the always-present Mac and Linux system menubar.
   // If the last active browser changes, the menu will need to reference that
   // browser.
