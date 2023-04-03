@@ -290,7 +290,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     // `SendOnRequestResponseReceivedIPC()`.
     dispatcher_->IncrementServiceWorkerActivity(service_worker_version_id_,
                                                 guid);
-    dispatcher_->RequestWorker(std::move(params));
+    dispatcher_->Send(new ExtensionHostMsg_RequestWorker(*params));
   }
 
   void SendOnRequestResponseReceivedIPC(int request_id) override {
