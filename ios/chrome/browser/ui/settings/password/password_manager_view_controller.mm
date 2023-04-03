@@ -184,7 +184,7 @@ constexpr NSInteger kTrailingSymbolSizeWithoutCheckup = 18;
 
 // The size of trailing symbol icons for safe/insecure state. Used when
 // kIOSPasswordCheckup feature is enabled.
-constexpr NSInteger kTrailingSymbolSize = 18;
+constexpr NSInteger kTrailingSymbolSize = 22;
 
 // Returns the correct trailing symbol size depending on whether
 // kIOSPasswordCheckup is enabled or not.
