@@ -268,6 +268,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
                 recordAnimationAction(StackingAnimationAction.REMOVE_BACK, currentBack);
                 recordStackingAnimationType(StackingAnimationType.REMOVE_BACK_ONLY);
                 mBackAnimator = currentBack.handler.hide(Position.BACK, Position.FRONT, animate);
+                candidates.set(1, null); // Show next back in next round if non-null.
             } else {
                 recordAnimationAction(StackingAnimationAction.INSERT_AT_BACK, nextBack);
                 recordStackingAnimationType(StackingAnimationType.SHOW_BACK_ONLY);
