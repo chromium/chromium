@@ -25,6 +25,7 @@ import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
+import {RouteObserver, Router} from './router.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 import {getCategoryNameStringId, isCustomizationDisabled, isSearchEnabled} from './shortcut_utils.js';
@@ -53,7 +54,7 @@ const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
 
 export class ShortcutCustomizationAppElement extends
     ShortcutCustomizationAppElementBase implements
-        AcceleratorsUpdatedObserverInterface {
+        AcceleratorsUpdatedObserverInterface, RouteObserver {
   static get is(): string {
     return 'shortcut-customization-app';
   }
@@ -111,6 +112,8 @@ export class ShortcutCustomizationAppElement extends
     this.addEventListener('edit-dialog-closed', this.onDialogClosed);
     this.addEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+
+    Router.getInstance().addObserver(this);
   }
 
   override disconnectedCallback(): void {
@@ -120,6 +123,8 @@ export class ShortcutCustomizationAppElement extends
     this.removeEventListener('edit-dialog-closed', this.onDialogClosed);
     this.removeEventListener(
         'request-update-accelerator', this.onRequestUpdateAccelerators);
+
+    Router.getInstance().removeObserver(this);
   }
 
   private fetchAccelerators(): void {
@@ -172,7 +177,7 @@ export class ShortcutCustomizationAppElement extends
       const categoryNameStringId = getCategoryNameStringId(category);
       const categoryName = this.i18n(categoryNameStringId);
       return this.$.navigationPanel.createSelectorItem(
-          categoryName, 'shortcuts-page', '', `${categoryNameStringId}-page-id`,
+          categoryName, 'shortcuts-page', '', `category-${category}`,
           {category});
     });
     this.$.navigationPanel.addSelectors(pages);
@@ -190,6 +195,21 @@ export class ShortcutCustomizationAppElement extends
     this.showEditDialog = false;
     this.dialogShortcutTitle = '';
     this.dialogAccelerators = [];
+  }
+
+  onRouteChanged(url: URL): void {
+    const action = url.searchParams.get('action');
+    const category = url.searchParams.get('category');
+    if (!action || !category) {
+      // This route change did not include the params that would cause the page
+      // to be changed.
+      return;
+    }
+
+    // Select the correct page based on the category from the URL.
+    this.$.navigationPanel.selectPageById(`category-${category}`);
+
+    // TODO(cambickel) focus on the shortcut with the action from the URL.
   }
 
   private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {

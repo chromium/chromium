@@ -21,7 +21,7 @@ import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/sear
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {AcceleratorCategory, AcceleratorState, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {getCategoryNameStringId, getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -99,8 +99,7 @@ suite('shortcutCustomizationAppTest', function() {
     const navPanel =
         getPage().shadowRoot!.querySelector('navigation-view-panel');
     const navBody = navPanel!!.shadowRoot!.querySelector('#navigationBody');
-    const categoryNameStringId = getCategoryNameStringId(category);
-    const subPageId = `${categoryNameStringId}-page-id`;
+    const subPageId = `category-${category}`;
     const subPage = navBody!.querySelector(`#${subPageId}`);
     assertTrue(!!subPage, `Expected subpage with id ${subPageId} to exist.`);
     return subPage!.shadowRoot!.querySelectorAll('accelerator-subsection');
@@ -523,5 +522,52 @@ suite('shortcutCustomizationAppTest', function() {
                               '#restoreAllButton') as CrButtonElement;
     await flushTasks();
     assertFalse(isVisible(restoreButton));
+  });
+
+  test('CurrentPageChangesWhenURLIsUpdated', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    page = initShortcutCustomizationAppElement();
+    waitAfterNextRender(getPage());
+    await flushTasks();
+
+    // At first, the selected page should be the first page.
+    // For the fake data, Windows & Desks is the first page.
+    assertEquals(
+        `category-${AcceleratorCategory.kWindowsAndDesks}`,
+        page.$.navigationPanel.selectedItem.id);
+
+    // Notify the app that the route has changed, and the selected page should
+    // change too.
+    let url = new URL('chrome://shortcut-customization');
+    url.searchParams.append('action', '0');
+    url.searchParams.append(
+        'category', AcceleratorCategory.kBrowser.toString());
+    page.onRouteChanged(url);
+    await flushTasks();
+    assertEquals(
+        `category-${AcceleratorCategory.kBrowser}`,
+        page.$.navigationPanel.selectedItem.id);
+
+    // If we notify with a URL that doesn't contain the correct params, the
+    // selected page should not change.
+    url = new URL('chrome://shortcut-customization');
+    page.onRouteChanged(url);
+    await flushTasks();
+    assertEquals(
+        `category-${AcceleratorCategory.kBrowser}`,
+        page.$.navigationPanel.selectedItem.id);
+
+    // If we notify with a URL that contains extra params, the selected page
+    // should change.
+    url = new URL('chrome://shortcut-customization');
+    url.searchParams.append('action', '0');
+    url.searchParams.append(
+        'category', AcceleratorCategory.kWindowsAndDesks.toString());
+    url.searchParams.append('fake-param', 'fake-value');
+    page.onRouteChanged(url);
+    await flushTasks();
+    assertEquals(
+        `category-${AcceleratorCategory.kWindowsAndDesks}`,
+        page.$.navigationPanel.selectedItem.id);
   });
 });

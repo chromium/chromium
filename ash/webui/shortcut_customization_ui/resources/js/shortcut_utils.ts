@@ -7,7 +7,7 @@ import '../strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 
 // Returns true if shortcut customization is disabled via the feature flag.
 export const isCustomizationDisabled = (): boolean => {
@@ -198,3 +198,13 @@ export function getModifiersForAcceleratorInfo(
   }
   return getSortedModifiers(modifierStrings);
 }
+
+export const SHORTCUTS_APP_URL = 'chrome://shortcut-customization';
+
+export const getURLForSearchResult = (searchResult: MojoSearchResult): URL => {
+  const url = new URL(SHORTCUTS_APP_URL);
+  const {action, category} = searchResult.acceleratorLayoutInfo;
+  url.searchParams.append('action', action.toString());
+  url.searchParams.append('category', category.toString());
+  return url;
+};

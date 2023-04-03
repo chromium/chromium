@@ -5,9 +5,10 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
-import {Accelerator, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {Accelerator, AcceleratorCategory, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -175,5 +176,20 @@ suite('shortcutUtilsTest', function() {
             Modifier.ALT | Modifier.CONTROL | Modifier.COMMAND | Modifier.SHIFT,
             /*keyCode=*/ 221,
             /*keyDisplay=*/ ']')));
+  });
+
+  test('getURLForSearchResult', () => {
+    assertEquals(
+        `${SHORTCUTS_APP_URL}/?action=1&category=${
+            AcceleratorCategory.kGeneral}`,
+        getURLForSearchResult(CycleTabsTextSearchResult).href);
+    assertEquals(
+        `${SHORTCUTS_APP_URL}/?action=0&category=${
+            AcceleratorCategory.kWindowsAndDesks}`,
+        getURLForSearchResult(SnapWindowLeftSearchResult).href);
+    assertEquals(
+        `${SHORTCUTS_APP_URL}/?action=2&category=${
+            AcceleratorCategory.kWindowsAndDesks}`,
+        getURLForSearchResult(TakeScreenshotSearchResult).href);
   });
 });
