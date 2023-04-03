@@ -329,11 +329,15 @@ source_set("internal") {
     ]
     deps += [ "//components/policy/android:jni_headers" ]
   }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
+  if (is_chromeos) {
     sources += [
       "default_chrome_apps_migrator.cc",
       "default_chrome_apps_migrator.h",
+    ]
+  }
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/system" ]
+    sources += [
       "policy_scheduler.cc",
       "policy_scheduler.h",
     ]
