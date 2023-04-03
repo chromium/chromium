@@ -79,16 +79,50 @@ std::unique_ptr<QuickStartMessage> QuickStartMessage::ReadMessage(
     return nullptr;
   }
 
-  std::string str_payload_key =
-      GetStringKeyForQuickStartMessageType(message_type);
-  base::Value::Dict& message = data_value.value().GetDict();
-  base::Value::Dict* payload = message.FindDict(str_payload_key);
-  if (payload == nullptr) {
-    LOG(ERROR) << "Message does not have a payload";
-    return nullptr;
-  }
+  std::string payload_key = GetStringKeyForQuickStartMessageType(message_type);
+  bool is_payload_base64_encoded = IsMessagePayloadBase64Encoded(message_type);
 
-  return std::make_unique<QuickStartMessage>(message_type, payload->Clone());
+  base::Value::Dict& message = data_value.value().GetDict();
+  base::Value::Dict* payload;
+
+  if (is_payload_base64_encoded) {
+    std::string* base64_encoded_payload = message.FindString(payload_key);
+    if (base64_encoded_payload == nullptr) {
+      LOG(ERROR) << "Message does not contain any payload";
+      return nullptr;
+    }
+
+    std::string json_payload;
+    bool base64_decoding_succeeded =
+        base::Base64Decode(*base64_encoded_payload, &json_payload);
+    if (!base64_decoding_succeeded) {
+      LOG(ERROR) << "Message does not contain a valid base64 encoded payload";
+      return nullptr;
+    }
+
+    absl::optional<base::Value> json_reader_result =
+        base::JSONReader::Read(json_payload);
+    if (!json_reader_result.has_value()) {
+      LOG(ERROR) << "Unable to decode base64 encoded payload into JSON";
+      return nullptr;
+    }
+
+    payload = json_reader_result->GetIfDict();
+
+    if (payload == nullptr) {
+      LOG(ERROR) << "Payload is not a JSON dictionary";
+      return nullptr;
+    }
+
+    return std::make_unique<QuickStartMessage>(message_type, payload->Clone());
+  } else {
+    payload = message.FindDict(payload_key);
+    if (payload == nullptr) {
+      LOG(ERROR) << "Payload is not present in the message";
+      return nullptr;
+    }
+    return std::make_unique<QuickStartMessage>(message_type, payload->Clone());
+  }
 }
 
 QuickStartMessage::QuickStartMessage(QuickStartMessageType message_type)

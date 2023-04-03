@@ -37,9 +37,9 @@ AuthenticatedConnection::~AuthenticatedConnection() = default;
 void AuthenticatedConnection::RequestAccountTransferAssertion(
     const std::string& challenge_b64url,
     RequestAccountTransferAssertionCallback callback) {
-  auto parse_assertion_response =
-      base::BindOnce(&AuthenticatedConnection::ParseAssertionResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto parse_assertion_response = base::BindOnce(
+      &AuthenticatedConnection::OnRequestAccountTransferAssertionResponse,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   auto request_assertion =
       base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(base::BindOnce(
@@ -73,18 +73,18 @@ void AuthenticatedConnection::RequestWifiCredentials(
   SendMessage(
       requests::BuildRequestWifiCredentialsMessage(session_id,
                                                    shared_secret_str),
-      base::BindOnce(&AuthenticatedConnection::ParseWifiCredentialsResponse,
+      base::BindOnce(&AuthenticatedConnection::OnWifiCredentialsResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AuthenticatedConnection::ParseWifiCredentialsResponse(
+void AuthenticatedConnection::OnWifiCredentialsResponse(
     RequestWifiCredentialsCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
   // TODO (b/234655072): Implement response parsing.
   NOTIMPLEMENTED();
 }
 
-void AuthenticatedConnection::ParseAssertionResponse(
+void AuthenticatedConnection::OnRequestAccountTransferAssertionResponse(
     RequestAccountTransferAssertionCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
   if (!response_bytes.has_value()) {

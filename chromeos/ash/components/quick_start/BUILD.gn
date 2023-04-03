@@ -26,7 +26,10 @@ static_library("quick_start") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "quick_start_requests_unittest.cc" ]
+  sources = [
+    "quick_start_message_unittest.cc",
+    "quick_start_requests_unittest.cc",
+  ]
 
   deps = [
     ":quick_start",

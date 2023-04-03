@@ -52,12 +52,12 @@ class AuthenticatedConnection : public Connection {
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
 
   // Parses a raw response and converts it to a WifiCredentialsResponse
-  void ParseWifiCredentialsResponse(
+  void OnWifiCredentialsResponse(
       RequestWifiCredentialsCallback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
   // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
-  void ParseAssertionResponse(
+  void OnRequestAccountTransferAssertionResponse(
       RequestAccountTransferAssertionCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
@@ -67,7 +67,6 @@ class AuthenticatedConnection : public Connection {
 
   void SendMessage(std::unique_ptr<QuickStartMessage> message,
                    ConnectionResponseCallback callback);
-
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
 
   base::WeakPtrFactory<AuthenticatedConnection> weak_ptr_factory_{this};
