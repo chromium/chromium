@@ -1154,9 +1154,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartTiming.StartToReceivedStartWorker"
-    units="ms" expires_after="2023-04-23">
-  <owner>wanderview@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
+    units="ms" expires_after="2023-10-23">
+  <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken from (a) the start of service worker startup, to (b) the
