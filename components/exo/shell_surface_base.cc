@@ -1295,7 +1295,7 @@ void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
 void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
                                                const void* key,
                                                intptr_t old_value) {
-  if (widget_ && window == widget_->GetNativeWindow()) {
+  if (IsShellSurfaceWindow(window)) {
     if (key == aura::client::kSkipImeProcessing) {
       SetSkipImeProcessingToDescendentSurfaces(
           window, window->GetProperty(aura::client::kSkipImeProcessing));
@@ -1312,11 +1312,17 @@ void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
 }
 
 void ShellSurfaceBase::OnWindowAddedToRootWindow(aura::Window* window) {
+  if (!IsShellSurfaceWindow(window)) {
+    return;
+  }
   UpdateDisplayOnTree();
 }
 
 void ShellSurfaceBase::OnWindowParentChanged(aura::Window* window,
                                              aura::Window* parent) {
+  if (!IsShellSurfaceWindow(window)) {
+    return;
+  }
   root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
 }
 
@@ -1578,6 +1584,10 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   root_surface()->OnFullscreenStateChanged(widget_->IsFullscreen());
 
   WMHelper::GetInstance()->NotifyExoWindowCreated(widget_->GetNativeWindow());
+}
+
+bool ShellSurfaceBase::IsShellSurfaceWindow(const aura::Window* window) const {
+  return widget_ && window == widget_->GetNativeWindow();
 }
 
 ShellSurfaceBase::OverlayParams::OverlayParams(

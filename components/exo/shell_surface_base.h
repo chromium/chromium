@@ -342,6 +342,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // of the widget (e.g. maximized).
   void CreateShellSurfaceWidget(ui::WindowShowState show_state);
 
+  // Returns true if the window is the ShellSurface's widget's window.
+  bool IsShellSurfaceWindow(const aura::Window* window) const;
+
   // Lets subclasses modify Widget parameters immediately before widget
   // creation.
   virtual void OverrideInitParams(views::Widget::InitParams* params) {}
