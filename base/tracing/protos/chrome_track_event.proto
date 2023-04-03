@@ -946,7 +946,7 @@ message AndroidToolbar {
     BLOCKED_BROWSER_CONTROLS_LOCKED = 9;
     BLOCKED_TAB_SWITCHER_MODE = 10;
     BLOCKED_COMPOSITOR_IN_MOTION = 11;
-    // TODO(https://crbug.com/1324678): NATIVE_PAGE.
+    BLOCKED_NTP_Y_TRANSLATION = 12;
   }
   enum AllowCaptureReason {
     ALLOWED_UNKNOWN = 0;
