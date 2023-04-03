@@ -5,11 +5,8 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
-import {AsyncUtil} from '../../common/async_util.js';
 import {BrowserUtil} from '../../common/browser_util.js';
 import {constants} from '../../common/constants.js';
-import {EventGenerator} from '../../common/event_generator.js';
-import {KeyCode} from '../../common/key_code.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
@@ -344,17 +341,7 @@ export class Panel extends PanelInterface {
 
       // Add a menu item that opens the full list of ChromeBook keyboard
       // shortcuts. We want this to be at the top of the ChromeVox menu.
-      let localizedSlash =
-          await AsyncUtil.getLocalizedDomKeyStringForKeyCode(KeyCode.OEM_2);
-      if (!localizedSlash) {
-        localizedSlash = '/';
-      }
-      chromevoxMenu.addMenuItem(
-          Msgs.getMsg('open_keyboard_shortcuts_menu'),
-          `Ctrl+Alt+${localizedSlash}`, '', '', async () => {
-            EventGenerator.sendKeyPress(
-                KeyCode.OEM_2 /* forward slash */, {'ctrl': true, 'alt': true});
-          });
+      await this.menuManager_.addOSKeyboardShortcutsMenuItem(chromevoxMenu);
 
       // Create a mapping between categories from CommandStore, and our
       // top-level menus. Some categories aren't mapped to any menu.
