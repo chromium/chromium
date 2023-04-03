@@ -228,6 +228,9 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Returns true if `path` can be used for the last session.
   bool CanUseFileForLastSession(const base::FilePath& path) const;
 
+  // Logs the state of all session files (if logging is enabled).
+  void LogSessionFiles();
+
   const CommandStorageManager::SessionType type_;
 
   // This is the path supplied to the constructor. See CommandStorageManager

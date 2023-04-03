@@ -1094,6 +1094,10 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
     // DetermineLoggingDestination in logging_chrome.cc.
     argv.push_back("--enable-logging=stderr");
 
+    // TODO(crbug.com/1423163): Remove after root causing the issue.
+    argv.push_back(
+        "--vmodule=command_storage_backend=1,session_service_commands=1");
+
     if (launch_at_login_screen_ &&
         !base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kDisableLoggingRedirect)) {
