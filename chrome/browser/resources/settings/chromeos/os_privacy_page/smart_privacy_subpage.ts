@@ -51,7 +51,8 @@ const secondsFormatter = new Intl.NumberFormat(
 const SettingsSmartPrivacySubpageBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
 
-class SettingsSmartPrivacySubpage extends SettingsSmartPrivacySubpageBase {
+export class SettingsSmartPrivacySubpage extends
+    SettingsSmartPrivacySubpageBase {
   static get is() {
     return 'settings-smart-privacy-subpage' as const;
   }

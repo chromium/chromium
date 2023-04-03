@@ -471,6 +471,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_tests.js'],
+ [
+   'OsPrivacyPageSmartPrivacySubpage',
+   'os_privacy_page/smart_privacy_subpage_tests.js'
+ ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
@@ -521,7 +525,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
  ['SmbPage', 'smb_shares_page_tests.js'],
- ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.js'],
  [
    'SwitchAccessActionAssignmentDialog',
    'switch_access_action_assignment_dialog_test.js',

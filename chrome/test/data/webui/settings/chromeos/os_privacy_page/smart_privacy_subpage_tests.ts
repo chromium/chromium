@@ -4,25 +4,25 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {SettingsSmartPrivacySubpage} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-suite('SmartPrivacySubpageTests', function() {
-  /** @type {SettingsSmartPrivacyPage} */
-  let smartPrivacySubpage = null;
+suite('<settings-smart-privacy-subpage>', () => {
+  let smartPrivacySubpage: SettingsSmartPrivacySubpage;
 
   /**
    * Generate preferences for the smart privacy page that either enable or
    * disable the quick dim or snooping protection feature.
-   * @ param {boolean} quickDimState To enable or disable quick dim.
-   * @ param {boolean} snoopingState To enable or disable snooping protection.
-   * @return {!CrSettingsPrefs} The corresponding pref dictionary.
-   * @private
+   * @param quickDimState To enable or disable quick dim.
+   * @param snoopingState To enable or disable snooping protection.
+   * @return The corresponding pref dictionary.
    */
-  function makePrefs(quickDimState, snoopingState) {
+  function makePrefs(quickDimState: boolean, snoopingState: boolean) {
     return {
       'ash': {
         'privacy': {
@@ -46,10 +46,8 @@ suite('SmartPrivacySubpageTests', function() {
       isSnoopingProtectionEnabled: true,
     });
 
-    PolymerTest.clearBody();
     smartPrivacySubpage =
         document.createElement('settings-smart-privacy-subpage');
-    assertTrue(!!smartPrivacySubpage);
     smartPrivacySubpage.prefs = makePrefs(false, false);
     document.body.appendChild(smartPrivacySubpage);
   });
@@ -61,9 +59,10 @@ suite('SmartPrivacySubpageTests', function() {
 
   test('Snooping radio list visibility tied to pref', async () => {
     // The $ method won't find elements inside templates.
-    /** @type {?HTMLElement} */
-    const collapse = smartPrivacySubpage.shadowRoot.querySelector(
-        '#snoopingProtectionOptions');
+    const collapse =
+        smartPrivacySubpage.shadowRoot!.querySelector<IronCollapseElement>(
+            '#snoopingProtectionOptions');
+    assert(collapse);
 
     // Default pref value is false.
     assertFalse(collapse.opened);
@@ -77,9 +76,10 @@ suite('SmartPrivacySubpageTests', function() {
 
   test('Quick dim slider visibility tied to pref', async () => {
     // The $ method won't find elements inside templates.
-    /** @type {?HTMLElement} */
     const collapse =
-        smartPrivacySubpage.shadowRoot.querySelector('#quickDimOptions');
+        smartPrivacySubpage.shadowRoot!.querySelector<IronCollapseElement>(
+            '#quickDimOptions');
+    assert(collapse);
 
     // Default pref value is false.
     assertFalse(collapse.opened);

@@ -129,6 +129,7 @@ export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_m
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
+export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './os_search_page/google_assistant_subpage.js';
