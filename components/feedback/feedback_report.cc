@@ -11,11 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "components/feedback/features.h"
 #include "components/feedback/proto/extension.pb.h"
 
@@ -56,8 +56,8 @@ FeedbackReport::FeedbackReport(
       reports_task_runner_(task_runner) {
   if (reports_path_.empty())
     return;
-  file_ = reports_path_.AppendASCII(
-      kFeedbackReportFilenamePrefix + base::GenerateGUID());
+  file_ = reports_path_.AppendASCII(kFeedbackReportFilenamePrefix +
+                                    base::GenerateUuid());
 
   reports_task_runner_->PostTask(
       FROM_HERE,
