@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/embedder_support/pref_names.h"
+#include "components/embedder_support/switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
@@ -427,6 +428,48 @@ TEST_F(UserAgentUtilsTest, UserAgentStringOrdering) {
   CheckUserAgentStringOrdering(true);
 #else
   CheckUserAgentStringOrdering(false);
+#endif
+}
+
+TEST_F(UserAgentUtilsTest, CustomUserAgent) {
+  std::string custom_user_agent = "custom chrome user agent";
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(kUserAgent, custom_user_agent);
+  ASSERT_TRUE(command_line->HasSwitch(kUserAgent));
+  // Make sure all the three APIs are identical when user provide custom
+  // user-agent.
+  EXPECT_EQ(GetReducedUserAgent(), custom_user_agent);
+  EXPECT_EQ(GetFullUserAgent(), custom_user_agent);
+  EXPECT_EQ(GetUserAgent(), custom_user_agent);
+}
+
+TEST_F(UserAgentUtilsTest, InvalidCustomUserAgent) {
+  std::string custom_user_agent = "custom \rchrome user agent";
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(kUserAgent, custom_user_agent);
+  ASSERT_TRUE(command_line->HasSwitch(kUserAgent));
+
+  // Make sure all APIs have the correct behavior once user provide invalid
+  // custom user agent.
+  const std::string major_version = version_info::GetMajorVersionNumber();
+  const std::string full_version = version_info::GetVersionNumber();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
+#if BUILDFLAG(IS_ANDROID)
+  std::string device_compat = "";
+  EXPECT_EQ(GetUserAgent(), base::StringPrintf(kAndroid, major_version.c_str(),
+                                               device_compat.c_str()));
+  EXPECT_EQ(GetReducedUserAgent(),
+            base::StringPrintf(kAndroid, major_version.c_str(),
+                               device_compat.c_str()));
+#else
+  EXPECT_EQ(GetUserAgent(),
+            base::StringPrintf(kDesktop, major_version.c_str()));
+  EXPECT_EQ(GetReducedUserAgent(),
+            base::StringPrintf(kDesktop, major_version.c_str()));
 #endif
 }
 
