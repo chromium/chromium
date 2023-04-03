@@ -80950,6 +80950,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Has password field"/>
 </enum>
 
+<enum name="PasswordsAccountStorageNoticeDismissalReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Primary button"/>
+  <int value="2" label="Settings link"/>
+  <int value="3" label="Swipe"/>
+</enum>
+
 <enum name="PasswordsImportDesktopInteractions">
   <int value="0" label="Import dialog opened from the three-dot menu."/>
   <int value="1" label="Import dialog opened from the empty passwords list."/>

@@ -7,11 +7,16 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+enum class PasswordsAccountStorageNoticeEntryPoint;
+
 // See PasswordsAccountStorageNoticeCommands.
 @interface PasswordsAccountStorageNoticeCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                                entryPoint:
+                                    (PasswordsAccountStorageNoticeEntryPoint)
+                                        entryPoint
                           dismissalHandler:(void (^)())dismissalHandler
     NS_DESIGNATED_INITIALIZER;
 
