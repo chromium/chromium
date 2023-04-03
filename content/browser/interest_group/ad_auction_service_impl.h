@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -35,7 +36,6 @@
 
 namespace content {
 
-class FencedFrameURLMapping;
 class InterestGroupManagerImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
@@ -122,7 +122,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
       GURL urn_uuid,
-      const FencedFrameURLMapping* fenced_frame_urls_map,
+      FencedFrameURLMapping::Id fenced_frame_urls_map_id,
       AuctionRunner* auction,
       bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_key,
