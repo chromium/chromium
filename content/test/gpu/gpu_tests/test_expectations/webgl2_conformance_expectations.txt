@@ -151,6 +151,11 @@ crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/misc/origin-
 crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
 crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/clipping.html [ Skip ]
 
+# Unsupported on this config.
+crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
+crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
+crbug.com/1429756 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
+
 # Parallel Shader compile/link is currently slower with Vulkan backend.
 crbug.com/angleproject/6748 [ angle-vulkan passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
@@ -918,10 +923,6 @@ crbug.com/1429731 [ chromeos chromeos-board-kevin ] conformance2/textures/image_
 crbug.com/1429731 [ chromeos chromeos-board-kevin ] conformance2/textures/image_bitmap_from_canvas/tex-3d-rgba4-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1429731 [ chromeos chromeos-board-kevin ] conformance2/textures/image_bitmap_from_image/tex-3d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
 # finder:enable-narrowing
-
-crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Failure ]
-crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
-crbug.com/1429756 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_provoking_vertex [ Failure ]
 
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
