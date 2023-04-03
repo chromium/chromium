@@ -123,8 +123,6 @@ class BasePasswordManagerViewControllerTest
                     syncSetupService:nil
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(browserState)
-                     identityManager:IdentityManagerFactory::GetForBrowserState(
-                                         browserState)
                          syncService:SyncServiceFactory::GetForBrowserState(
                                          browserState)];
     mediator_.encryptionState = OnDeviceEncryptionStateNotShown;

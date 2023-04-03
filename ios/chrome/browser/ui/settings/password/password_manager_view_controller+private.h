@@ -10,9 +10,6 @@
 @interface PasswordManagerViewController () <PasswordsConsumer,
                                              UISearchBarDelegate,
                                              UISearchControllerDelegate>
-
-- (void)updateExportPasswordsButton;
-
 - (BOOL)didReceivePasswords;
 
 @end

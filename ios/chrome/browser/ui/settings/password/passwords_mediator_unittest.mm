@@ -98,16 +98,8 @@ PasswordForm CreatePasswordForm() {
   _blockedSites = blockedSites;
 }
 
-- (void)updatePasswordsInOtherAppsDetailedText {
-  _detailedText = @"On";
-}
-
 - (std::vector<password_manager::CredentialUIEntry>)passwords {
   return _passwords;
-}
-
-- (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
-  self.numberOfCallToChangeOnDeviceEncryption += 1;
 }
 
 @end
@@ -145,8 +137,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(
                                              browser_state_.get())
-                     identityManager:IdentityManagerFactory::GetForBrowserState(
-                                         browser_state_.get())
                          syncService:SyncServiceFactory::GetForBrowserState(
                                          browser_state_.get())];
     mediator_.consumer = consumer_;
@@ -187,29 +177,4 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   store()->RemoveLogin(form);
   RunUntilIdle();
   EXPECT_THAT([consumer() passwords], testing::IsEmpty());
-}
-
-// Mediator should update consumer password autofill state.
-TEST_F(PasswordsMediatorTest, TestPasswordAutoFillDidChangeToStatusMethod) {
-  ASSERT_EQ([consumer() detailedText], nil);
-  [mediator() passwordAutoFillStatusDidChange];
-  EXPECT_NSEQ([consumer() detailedText], @"On");
-}
-
-TEST_F(PasswordsMediatorTest, SyncChangeTriggersChangeOnDeviceEncryption) {
-  DCHECK([mediator() conformsToProtocol:@protocol(SyncObserverModelBridge)]);
-  PasswordsMediator<SyncObserverModelBridge>* syncObserver =
-      static_cast<PasswordsMediator<SyncObserverModelBridge>*>(mediator());
-  [syncObserver onSyncStateChanged];
-  ASSERT_EQ(1, consumer().numberOfCallToChangeOnDeviceEncryption);
-}
-
-TEST_F(PasswordsMediatorTest, IdentityChangeTriggersChangeOnDeviceEncryption) {
-  DCHECK([mediator() conformsToProtocol:@protocol(SyncObserverModelBridge)]);
-  PasswordsMediator<IdentityManagerObserverBridgeDelegate>* syncObserver =
-      static_cast<PasswordsMediator<IdentityManagerObserverBridgeDelegate>*>(
-          mediator());
-  const signin::PrimaryAccountChangeEvent event;
-  [syncObserver onPrimaryAccountChanged:event];
-  ASSERT_EQ(1, consumer().numberOfCallToChangeOnDeviceEncryption);
 }

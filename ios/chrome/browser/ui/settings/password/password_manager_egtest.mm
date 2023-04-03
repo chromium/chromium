@@ -294,52 +294,6 @@ id<GREYMatcher> DuplicateCredentialViewPasswordButton() {
                     nullptr);
 }
 
-// Matcher for the "Set up…"
-GREYElementInteraction* SetUpTrustedVaultLink() {
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kOnDeviceEncryptionSetUpId),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
-}
-
-// Matcher for the link allowing to learn more about
-// on device encryption. Only present when the user has opted-in.
-GREYElementInteraction* OptedInTrustedVaultLink() {
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kOnDeviceEncryptionLearnMoreId),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
-}
-
-// Matcher for the link explaining Trusted Vault.
-// Only present when the user has opted-in.
-GREYElementInteraction* OptedInTrustedVaultText() {
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kOnDeviceEncryptionOptedInTextId),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
-}
-
-// Matcher for the text offering the user to opt-in trusted vault.
-GREYElementInteraction* OptInTrustedVaultLink() {
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kOnDeviceEncryptionOptInId),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
-}
-
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by `label`.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
@@ -602,20 +556,6 @@ id<GREYMatcher> EditDoneButton() {
   }
 
   return config;
-}
-
-// Check that a user which is not logged in any account do not get
-// offered to use trusted vault.
-- (void)testNoOndeviceEncryptionSetupWhenSignedOut {
-  OpenPasswordManager();
-
-  // Check that the menus related to on-device encryptions are not displayed.
-  [OptedInTrustedVaultLink() assertWithMatcher:grey_nil()];
-  [OptedInTrustedVaultText() assertWithMatcher:grey_nil()];
-  [OptInTrustedVaultLink() assertWithMatcher:grey_nil()];
-  [SetUpTrustedVaultLink() assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
 }
 
 // Verifies the UI elements are accessible on the Passwords page.
@@ -1952,11 +1892,6 @@ id<GREYMatcher> EditDoneButton() {
 
   [[EarlGrey selectElementWithMatcher:SearchTextField()]
       performAction:grey_typeText(@"2")];
-
-  // Check that the "Save Passwords" switch is hidden.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSavePasswordSwitchTableViewId, YES)]
-      assertWithMatcher:grey_nil()];
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"
                                             username:@"user1"]

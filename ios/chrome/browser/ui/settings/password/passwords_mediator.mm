@@ -8,7 +8,6 @@
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -39,8 +38,7 @@
 using password_manager::WarningType;
 using password_manager::features::IsPasswordCheckupEnabled;
 
-@interface PasswordsMediator () <IdentityManagerObserverBridgeDelegate,
-                                 PasswordCheckObserver,
+@interface PasswordsMediator () <PasswordCheckObserver,
                                  SavedPasswordsPresenterObserver,
                                  SyncObserverModelBridge> {
   // The service responsible for password check feature.
@@ -63,10 +61,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
   // Current state of password check.
   PasswordCheckState _currentState;
 
-  // IdentityManager observer.
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityManagerObserver;
-
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 
@@ -88,20 +82,17 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 @implementation PasswordsMediator
 
-- (instancetype)
-    initWithPasswordCheckManager:
-        (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
-                syncSetupService:(SyncSetupService*)syncSetupService
-                   faviconLoader:(FaviconLoader*)faviconLoader
-                 identityManager:(signin::IdentityManager*)identityManager
-                     syncService:(syncer::SyncService*)syncService {
+- (instancetype)initWithPasswordCheckManager:
+                    (scoped_refptr<IOSChromePasswordCheckManager>)
+                        passwordCheckManager
+                            syncSetupService:(SyncSetupService*)syncSetupService
+                               faviconLoader:(FaviconLoader*)faviconLoader
+                                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _syncService = syncService;
     _faviconLoader = faviconLoader;
-    _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
-                                                                self);
+
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
 
     _syncSetupService = syncSetupService;
@@ -116,7 +107,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
     _passwordsPresenterObserver =
         std::make_unique<SavedPasswordsPresenterObserverBridge>(
             self, _savedPasswordsPresenter);
-    [[PasswordAutoFillStatusManager sharedManager] addObserver:self];
   }
   return self;
 }
@@ -137,12 +127,9 @@ using password_manager::features::IsPasswordCheckupEnabled;
 }
 
 - (void)disconnect {
-  _identityManagerObserver.reset();
   _syncObserver.reset();
   _passwordsPresenterObserver.reset();
   _passwordCheckObserver.reset();
-  [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
-
   _passwordCheckManager.reset();
   _syncSetupService = nullptr;
   _savedPasswordsPresenter = nullptr;
@@ -283,15 +270,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
   [self updateConsumerPasswordCheckState:_currentState];
 }
 
-#pragma mark - PasswordAutoFillStatusObserver
-
-- (void)passwordAutoFillStatusDidChange {
-  // Since this action is appended to the main queue, at this stage,
-  // self.consumer should have already been setup.
-  DCHECK(self.consumer);
-  [self.consumer updatePasswordsInOtherAppsDetailedText];
-}
-
 #pragma mark - Private Methods
 
 // Provides passwords and blocked forms to the '_consumer'.
@@ -427,17 +405,9 @@ using password_manager::features::IsPasswordCheckupEnabled;
       /*fallback_to_google_server=*/isPasswordSyncEnabled, completion);
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  [self.consumer updateOnDeviceEncryptionSessionAndUpdateTableView];
-}
-
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  [self.consumer updateOnDeviceEncryptionSessionAndUpdateTableView];
   [self.consumer
       setSavingPasswordsToAccount:password_manager_util::GetPasswordSyncState(
                                       _syncService) !=
