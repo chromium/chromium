@@ -123,9 +123,11 @@ void BrowserAppMenuButton::OnThemeChanged() {
 }
 
 void BrowserAppMenuButton::UpdateIcon() {
-  const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
-                                    ? kBrowserToolsTouchIcon
-                                    : kBrowserToolsIcon;
+  const gfx::VectorIcon& icon =
+      ui::TouchUiController::Get()->touch_ui()
+          ? kBrowserToolsTouchIcon
+          : (features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
+                                             : kBrowserToolsIcon);
   for (auto state : kButtonStates) {
     SkColor icon_color =
         toolbar_view_->app_menu_icon_controller()->GetIconColor(

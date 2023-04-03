@@ -15,6 +15,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
@@ -33,7 +34,10 @@ BackForwardButton::BackForwardButton(Direction direction,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   if (direction == Direction::kBack) {
-    SetVectorIcons(vector_icons::kBackArrowIcon, kBackArrowTouchIcon);
+    SetVectorIcons(features::IsChromeRefresh2023()
+                       ? vector_icons::kBackArrowChromeRefreshIcon
+                       : vector_icons::kBackArrowIcon,
+                   kBackArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
     GetViewAccessibility().OverrideDescription(
@@ -41,7 +45,10 @@ BackForwardButton::BackForwardButton(Direction direction,
     SetID(VIEW_ID_BACK_BUTTON);
     SetProperty(views::kElementIdentifierKey, kBackButtonElementId);
   } else {
-    SetVectorIcons(vector_icons::kForwardArrowIcon, kForwardArrowTouchIcon);
+    SetVectorIcons(features::IsChromeRefresh2023()
+                       ? vector_icons::kForwardArrowChromeRefreshIcon
+                       : vector_icons::kForwardArrowIcon,
+                   kForwardArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
     GetViewAccessibility().OverrideDescription(

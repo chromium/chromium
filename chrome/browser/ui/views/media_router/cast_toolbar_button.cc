@@ -168,13 +168,17 @@ void CastToolbarButton::UpdateIcon() {
 
   const auto* const color_provider = GetColorProvider();
   if (severity == Severity::NOTIFICATION && !has_local_route_) {
-    new_icon = &vector_icons::kMediaRouterIdleIcon;
+    new_icon = features::IsChromeRefresh2023()
+                   ? &vector_icons::kMediaRouterIdleChromeRefreshIcon
+                   : &vector_icons::kMediaRouterIdleIcon;
     icon_color = gfx::kPlaceholderColor;
   } else if (severity == Severity::WARNING) {
     new_icon = &vector_icons::kMediaRouterWarningIcon;
     icon_color = color_provider->GetColor(kColorMediaRouterIconWarning);
   } else {
-    new_icon = &vector_icons::kMediaRouterActiveIcon;
+    new_icon = features::IsChromeRefresh2023()
+                   ? &vector_icons::kMediaRouterActiveChromeRefreshIcon
+                   : &vector_icons::kMediaRouterActiveIcon;
     icon_color = color_provider->GetColor(kColorMediaRouterIconActive);
   }
 
@@ -219,7 +223,9 @@ void CastToolbarButton::ButtonPressed() {
 }
 
 void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
-  if (icon_ == &vector_icons::kMediaRouterIdleIcon) {
+  if (icon_ == (features::IsChromeRefresh2023()
+                    ? &vector_icons::kMediaRouterIdleChromeRefreshIcon
+                    : &vector_icons::kMediaRouterIdleIcon)) {
     logger_->LogInfo(
         mojom::LogCategory::kUi, kLoggerComponent,
         "Cast toolbar icon indicates no active session nor issues.", "", "",
@@ -231,7 +237,9 @@ void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a warning issue.", "", "", "");
   } else {
-    CHECK_EQ(icon_, &vector_icons::kMediaRouterActiveIcon);
+    CHECK_EQ(icon_, features::IsChromeRefresh2023()
+                        ? &vector_icons::kMediaRouterActiveChromeRefreshIcon
+                        : &vector_icons::kMediaRouterActiveIcon);
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon is blue, indicating an active session.",
                      "", "", "");

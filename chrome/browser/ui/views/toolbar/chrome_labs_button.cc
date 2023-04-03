@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/dot_indicator.h"
@@ -37,7 +38,9 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
                                         base::Unretained(this))),
       browser_view_(browser_view),
       model_(model) {
-  SetVectorIcons(kChromeLabsIcon, kChromeLabsTouchIcon);
+  SetVectorIcons(features::IsChromeRefresh2023() ? kChromeLabsChromeRefreshIcon
+                                                 : kChromeLabsIcon,
+                 kChromeLabsTouchIcon);
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CHROMELABS_BUTTON));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   button_controller()->set_notify_action(
