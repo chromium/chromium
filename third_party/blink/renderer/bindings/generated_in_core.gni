@@ -1862,6 +1862,8 @@ generated_callback_function_sources_for_testing_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_receiver_object_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ukm_entry_added_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ukm_entry_added_callback.h",
 ]
 
 generated_dictionary_sources_for_testing_in_core = [
