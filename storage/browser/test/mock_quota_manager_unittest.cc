@@ -105,7 +105,7 @@ class MockQuotaManagerTest : public testing::Test {
                                      blink::mojom::StorageType type) {
     QuotaErrorOr<BucketInfo> result;
     base::RunLoop run_loop;
-    manager_->GetBucketForTesting(
+    manager_->GetBucketByNameUnsafe(
         storage_key, bucket_name, type,
         base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
           result = std::move(bucket);
@@ -174,13 +174,9 @@ class MockQuotaManagerTest : public testing::Test {
     EXPECT_EQ(quota, expected_quota);
   }
 
-  int deletion_callback_count() const {
-    return deletion_callback_count_;
-  }
+  int deletion_callback_count() const { return deletion_callback_count_; }
 
-  MockQuotaManager* manager() const {
-    return manager_.get();
-  }
+  MockQuotaManager* manager() const { return manager_.get(); }
 
   const std::set<BucketLocator>& buckets() const { return buckets_; }
 

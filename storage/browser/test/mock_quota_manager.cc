@@ -133,7 +133,7 @@ void MockQuotaManager::GetBucketById(
   std::move(callback).Run(std::move(bucket));
 }
 
-void MockQuotaManager::GetBucketForTesting(
+void MockQuotaManager::GetBucketByNameUnsafe(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type,
@@ -221,8 +221,10 @@ BucketInfo MockQuotaManager::CreateBucket(const BucketInitParams& params,
 bool MockQuotaManager::BucketHasData(const BucketInfo& bucket,
                                      QuotaClientType quota_client) const {
   for (const auto& info : buckets_) {
-    if (info.bucket == bucket && info.quota_client_types.contains(quota_client))
+    if (info.bucket == bucket &&
+        info.quota_client_types.contains(quota_client)) {
       return true;
+    }
   }
   return false;
 }
@@ -241,10 +243,11 @@ void MockQuotaManager::GetBucketsModifiedBetween(StorageType type,
   auto buckets_to_return = std::make_unique<std::set<BucketLocator>>();
   for (const auto& info : buckets_) {
     if (info.bucket.type == type && info.modified >= begin &&
-        info.modified < end)
+        info.modified < end) {
       buckets_to_return->insert(BucketLocator(
           info.bucket.id, info.bucket.storage_key, info.bucket.type,
           info.bucket.name == kDefaultBucketName));
+    }
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -259,10 +262,12 @@ void MockQuotaManager::DeleteBucketData(const BucketLocator& bucket,
   for (auto current = buckets_.begin(); current != buckets_.end(); ++current) {
     if (current->bucket.id == bucket.id) {
       // Modify the mask: if it's 0 after "deletion", remove the storage key.
-      for (QuotaClientType type : quota_client_types)
+      for (QuotaClientType type : quota_client_types) {
         current->quota_client_types.erase(type);
-      if (current->quota_client_types.empty())
+      }
+      if (current->quota_client_types.empty()) {
         buckets_.erase(current);
+      }
       break;
     }
   }
@@ -330,13 +335,12 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type) {
-  auto it = base::ranges::find_if(
-      buckets_,
-      [storage_key, bucket_name, type](const BucketData& bucket_data) {
-        return bucket_data.bucket.storage_key == storage_key &&
-               bucket_data.bucket.name == bucket_name &&
-               bucket_data.bucket.type == type;
-      });
+  auto it = base::ranges::find_if(buckets_, [storage_key, bucket_name, type](
+                                                const BucketData& bucket_data) {
+    return bucket_data.bucket.storage_key == storage_key &&
+           bucket_data.bucket.name == bucket_name &&
+           bucket_data.bucket.type == type;
+  });
   if (it != buckets_.end()) {
     return it->bucket;
   }
@@ -365,10 +369,12 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
                bucket_data.bucket.type == type;
       });
   if (it != buckets_.end()) {
-    if (params.persistent)
+    if (params.persistent) {
       it->bucket.persistent = *params.persistent;
-    if (!params.expiration.is_null())
+    }
+    if (!params.expiration.is_null()) {
       it->bucket.expiration = params.expiration;
+    }
     return it->bucket;
   }
   return base::unexpected(QuotaError::kNotFound);

@@ -186,8 +186,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
   storage::BucketLocator GetBucket(const StorageKey& storage_key,
                                    const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->GetBucketForTesting(storage_key, name, kTemp,
-                                        future.GetCallback());
+    quota_manager_->GetBucketByNameUnsafe(storage_key, name, kTemp,
+                                          future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();

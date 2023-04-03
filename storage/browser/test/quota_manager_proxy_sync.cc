@@ -27,7 +27,7 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxySync::GetBucket(
     blink::mojom::StorageType storage_type) {
   QuotaErrorOr<BucketInfo> result;
   base::RunLoop run_loop;
-  proxy_->GetBucketForTesting(
+  proxy_->GetBucketByNameUnsafe(
       storage_key, bucket_name, storage_type,
       base::SingleThreadTaskRunner::GetCurrentDefault().get(),
       base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket_info) {
