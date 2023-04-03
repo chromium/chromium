@@ -27,6 +27,12 @@ function makeExpectedBitrateAsyncTest(options, testName, expectedBps) {
   }, testName);
 };
 
+// Both values come from YouTube recommended upload encoding settings and are
+// used by other browser vendors. See
+// https://support.google.com/youtube/answer/1722171?hl=en#zippy=%2Cbitrate
+const kDefaultAudioBitRate = 128_000;
+const kDefaultVideoBitRate = 2_500_000;
+
 const kTooSmallBps = 1000;
 const kTooLargeBps = 1000000000;
 
@@ -35,13 +41,13 @@ const kMinVideoBps = 100000;
 // Note that unspecified audio bitrates are not clamped to a minimum.
 makeExpectedBitrateAsyncTest({ videoBitsPerSecond : kOkVideoBps },
                              'Video bitrate OK',
-                             { video : kOkVideoBps, audio : 0 });
+                             { video : kOkVideoBps, audio : kDefaultAudioBitRate });
 makeExpectedBitrateAsyncTest({ videoBitsPerSecond : kTooSmallBps },
                              'Video bitrate clamped to minimum',
-                             { video : kMinVideoBps, audio : 0 });
+                             { video : kMinVideoBps, audio : kDefaultAudioBitRate });
 makeExpectedBitrateAsyncTest({ videoBitsPerSecond : 0 },
                              'Video bitrate explicitly set to 0 is clamped',
-                             { video : kMinVideoBps, audio : 0 });
+                             { video : kMinVideoBps, audio : kDefaultAudioBitRate });
 
 const kOkAudioBps = 10000;
 const kMinAudioBps = 6000;  // https://www.opus-codec.org/
@@ -49,20 +55,20 @@ const kMaxAudioBps = 128000;
 // Note that unspecified video bitrates are not clamped to a minimum.
 makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kOkAudioBps },
                              'Audio bitrate OK',
-                             { audio : kOkAudioBps, video : 0 });
+                             { audio : kOkAudioBps, video : kDefaultVideoBitRate });
 makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kTooSmallBps },
                              'Audio bitrate clamped to minimum',
-                             { audio : kMinAudioBps, video : 0 });
+                             { audio : kMinAudioBps, video : kDefaultVideoBitRate });
 makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kTooLargeBps },
                              'Audio bitrate clamped to maximum',
-                             { audio : kMaxAudioBps , video : 0});
+                             { audio : kMaxAudioBps , video : kDefaultVideoBitRate });
 makeExpectedBitrateAsyncTest({ audioBitsPerSecond : 0 },
                              'Audio bitrate explicitly 0 is clamped',
-                             { audio : kMinAudioBps, video : 0 });
+                             { audio : kMinAudioBps, video : kDefaultVideoBitRate });
 
 makeExpectedBitrateAsyncTest({},
                              'Unspecified bitrates are not clamped',
-                             { video : 0, audio : 0 });
+                             { video : kDefaultVideoBitRate, audio : kDefaultAudioBitRate });
 
 makeExpectedBitrateAsyncTest({ videoBitsPerSecond : kOkVideoBps, audioBitsPerSecond : kOkAudioBps },
                              'Video and audio bitrates OK',

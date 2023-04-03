@@ -35,12 +35,23 @@ namespace blink {
 
 namespace {
 
+struct MediaRecorderBitrates {
+  const absl::optional<uint32_t> audio_bps;
+  const absl::optional<uint32_t> video_bps;
+};
+
 // Boundaries of Opus bitrate from https://www.opus-codec.org/.
 const int kSmallestPossibleOpusBitRate = 6000;
 const int kLargestAutoAllocatedOpusBitRate = 128000;
 
 // Smallest Vpx bitrate that can be requested.
 const int kSmallestPossibleVpxBitRate = 100000;
+
+// Both values come from YouTube recommended upload encoding settings and are
+// used by other browser vendors. See
+// https://support.google.com/youtube/answer/1722171?hl=en#zippy=%2Cbitrate
+const int kDefaultVideoBitRate = 2500e3;  // 2.5Mbps
+const int kDefaultAudioBitRate = 128e3;   // 128kbps
 
 String StateToString(MediaRecorder::State state) {
   switch (state) {
@@ -79,19 +90,18 @@ AudioTrackRecorder::BitrateMode GetBitrateModeFromOptions(
   return AudioTrackRecorder::BitrateMode::kVariable;
 }
 
-// Allocates the requested bit rates from |bitrateOptions| into the respective
-// |{audio,video}BitsPerSecond| (where a value of zero indicates Platform to use
+// Allocates the requested bit rates from |options| into the respective
+// |{audio,video}_bps| (where a value of zero indicates Platform to use
 // whatever it sees fit). If |options.bitsPerSecond()| is specified, it
 // overrides any specific bitrate, and the UA is free to allocate as desired:
 // here a 90%/10% video/audio is used. In all cases where a value is explicited
 // or calculated, values are clamped in sane ranges.
 // This method throws NotSupportedError.
-void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
-                                   ExecutionContext* context,
-                                   const MediaRecorderOptions* options,
-                                   MediaStream* stream,
-                                   uint32_t* audio_bits_per_second,
-                                   uint32_t* video_bits_per_second) {
+MediaRecorderBitrates GetBitratesFromOptions(
+    ExceptionState& exception_state,
+    ExecutionContext* context,
+    const MediaRecorderOptions* options,
+    MediaStream* stream) {
   const bool use_video = !stream->getVideoTracks().empty();
   const bool use_audio = !stream->getAudioTracks().empty();
 
@@ -103,10 +113,10 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
   uint32_t overall_bps = 0;
   if (options->hasBitsPerSecond())
     overall_bps = std::min(options->bitsPerSecond(), kMaxIntAsUnsigned);
-  uint32_t video_bps = 0;
+  absl::optional<uint32_t> video_bps;
   if (options->hasVideoBitsPerSecond() && use_video)
     video_bps = std::min(options->videoBitsPerSecond(), kMaxIntAsUnsigned);
-  uint32_t audio_bps = 0;
+  absl::optional<uint32_t> audio_bps;
   if (options->hasAudioBitsPerSecond() && use_audio)
     audio_bps = std::min(options->audioBitsPerSecond(), kMaxIntAsUnsigned);
 
@@ -120,22 +130,22 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
     }
     // Limit audio bitrate values if set explicitly or calculated.
     if (options->hasAudioBitsPerSecond() || options->hasBitsPerSecond()) {
-      if (audio_bps > kLargestAutoAllocatedOpusBitRate) {
+      if (audio_bps.value() > kLargestAutoAllocatedOpusBitRate) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            "Clamping calculated audio bitrate (" + String::Number(audio_bps) +
-                "bps) to the maximum (" +
+            "Clamping calculated audio bitrate (" +
+                String::Number(audio_bps.value()) + "bps) to the maximum (" +
                 String::Number(kLargestAutoAllocatedOpusBitRate) + "bps)"));
         audio_bps = kLargestAutoAllocatedOpusBitRate;
       }
 
-      if (audio_bps < kSmallestPossibleOpusBitRate) {
+      if (audio_bps.value() < kSmallestPossibleOpusBitRate) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            "Clamping calculated audio bitrate (" + String::Number(audio_bps) +
-                "bps) to the minimum (" +
+            "Clamping calculated audio bitrate (" +
+                String::Number(audio_bps.value()) + "bps) to the minimum (" +
                 String::Number(kSmallestPossibleOpusBitRate) + "bps)"));
         audio_bps = kSmallestPossibleOpusBitRate;
       }
@@ -146,18 +156,21 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
 
   if (use_video) {
     // Allocate the remaining |overallBps|, if any, to video.
-    if (options->hasBitsPerSecond())
-      video_bps = overall_bps >= audio_bps ? overall_bps - audio_bps : 0u;
+    if (options->hasBitsPerSecond()) {
+      video_bps = overall_bps >= audio_bps.value_or(0)
+                      ? overall_bps - audio_bps.value_or(0)
+                      : 0u;
+    }
 
     // Clamp the video bit rate. Avoid clamping if the user has not set it
     // explicitly.
     if (options->hasVideoBitsPerSecond() || options->hasBitsPerSecond()) {
-      if (video_bps < kSmallestPossibleVpxBitRate) {
+      if (video_bps.value() < kSmallestPossibleVpxBitRate) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            "Clamping calculated video bitrate (" + String::Number(video_bps) +
-                "bps) to the minimum (" +
+            "Clamping calculated video bitrate (" +
+                String::Number(video_bps.value()) + "bps) to the minimum (" +
                 String::Number(kSmallestPossibleVpxBitRate) + "bps)"));
         video_bps = kSmallestPossibleVpxBitRate;
       }
@@ -166,9 +179,7 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
     }
   }
 
-  *video_bits_per_second = video_bps;
-  *audio_bits_per_second = audio_bps;
-  return;
+  return {audio_bps, video_bps};
 }
 
 }  // namespace
@@ -208,20 +219,21 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
     return;
   }
 
-  AllocateVideoAndAudioBitrates(exception_state, context, options, stream,
-                                &audio_bits_per_second_,
-                                &video_bits_per_second_);
-
+  const MediaRecorderBitrates bitrates =
+      GetBitratesFromOptions(exception_state, context, options, stream);
   const ContentType content_type(mime_type_);
   if (!recorder_handler_->Initialize(
           this, stream->Descriptor(), content_type.GetType(),
-          content_type.Parameter("codecs"), audio_bits_per_second_,
-          video_bits_per_second_, GetBitrateModeFromOptions(options))) {
+          content_type.Parameter("codecs"), bitrates.audio_bps.value_or(0),
+          bitrates.video_bps.value_or(0), GetBitrateModeFromOptions(options))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Failed to initialize native MediaRecorder the type provided (" +
             mime_type_ + ") is not supported.");
   }
+
+  audio_bits_per_second_ = bitrates.audio_bps.value_or(kDefaultAudioBitRate);
+  video_bits_per_second_ = bitrates.video_bps.value_or(kDefaultVideoBitRate);
 }
 
 MediaRecorder::~MediaRecorder() = default;
