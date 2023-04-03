@@ -43,62 +43,92 @@ bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
   }
 }
 
+// Manages batch migration for the active and inactive browser.
+void PerformBatchMigration(
+    Browser* active_browser,
+    Browser* inactive_browser,
+    base::OnceCallback<void(WebStateList*, WebStateList*)> migration) {
+  __block base::OnceCallback<void(WebStateList*, WebStateList*)>
+      web_state_lists_migrations = std::move(migration);
+  active_browser->GetWebStateList()->PerformBatchOperation(
+      base::BindOnce(^(WebStateList* active_web_state_list) {
+        inactive_browser->GetWebStateList()->PerformBatchOperation(
+            base::BindOnce(^(WebStateList* inactive_web_state_list) {
+              std::move(web_state_lists_migrations)
+                  .Run(active_web_state_list, inactive_web_state_list);
+            }));
+      }));
+}
+
 }  // namespace
 
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
   DCHECK(IsInactiveTabsEnabled());
-  WebStateList* active_web_state_list = active_browser->GetWebStateList();
-  const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
-
-  for (int index = active_web_state_list->GetIndexOfFirstNonPinnedWebState();
-       index < active_web_state_list->count();) {
-    web::WebState* current_web_state =
-        active_web_state_list->GetWebStateAt(index);
-    if (!IsVisibleURLNewTabPage(current_web_state) &&
-        IsInactive(inactivity_threshold, current_web_state)) {
-      MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
-                                  inactive_browser->GetWebStateList()->count());
-    } else {
-      ++index;
-    }
-  }
+  PerformBatchMigration(
+      active_browser, inactive_browser,
+      base::BindOnce(^(WebStateList* active_web_state_list,
+                       WebStateList* inactive_web_state_list) {
+        const base::TimeDelta inactivity_threshold =
+            InactiveTabsTimeThreshold();
+        for (int index =
+                 active_web_state_list->GetIndexOfFirstNonPinnedWebState();
+             index < active_web_state_list->count();) {
+          web::WebState* current_web_state =
+              active_web_state_list->GetWebStateAt(index);
+          if (!IsVisibleURLNewTabPage(current_web_state) &&
+              IsInactive(inactivity_threshold, current_web_state)) {
+            MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
+                                        inactive_web_state_list->count());
+          } else {
+            ++index;
+          }
+        }
+      }));
 }
 
 void MoveTabsFromInactiveToActive(Browser* inactive_browser,
                                   Browser* active_browser) {
   DCHECK(IsInactiveTabsEnabled());
-  WebStateList* active_web_state_list = active_browser->GetWebStateList();
-  WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
-  const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
-  int removed_web_state_number = 0;
-
-  for (int index = 0; index < inactive_web_state_list->count();) {
-    if (!IsInactive(inactivity_threshold,
-                    inactive_web_state_list->GetWebStateAt(index))) {
-      int insertion_index =
-          active_web_state_list->GetIndexOfFirstNonPinnedWebState() +
-          removed_web_state_number++;
-      MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
-                                  insertion_index);
-    } else {
-      ++index;
-    }
-  }
+  PerformBatchMigration(
+      active_browser, inactive_browser,
+      base::BindOnce(^(WebStateList* active_web_state_list,
+                       WebStateList* inactive_web_state_list) {
+        const base::TimeDelta inactivity_threshold =
+            InactiveTabsTimeThreshold();
+        int removed_web_state_number = 0;
+        for (int index = 0; index < inactive_web_state_list->count();) {
+          if (!IsInactive(inactivity_threshold,
+                          inactive_web_state_list->GetWebStateAt(index))) {
+            int insertion_index =
+                active_web_state_list->GetIndexOfFirstNonPinnedWebState() +
+                removed_web_state_number++;
+            MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
+                                        insertion_index);
+          } else {
+            ++index;
+          }
+        }
+      }));
 }
 
 void RestoreAllInactiveTabs(Browser* inactive_browser,
                             Browser* active_browser) {
   DCHECK(!IsInactiveTabsEnabled());
-  WebStateList* active_web_state_list = active_browser->GetWebStateList();
-  WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
   // Record the number of tabs restored from the inactive browser after Inactive
   // Tabs has been disabled.
   base::UmaHistogramCounts100("Tabs.RestoredFromInactiveCount",
-                              inactive_web_state_list->count());
-  for (int index = inactive_web_state_list->count() - 1; index >= 0; index--) {
-    MoveTabFromBrowserToBrowser(
-        inactive_browser, index, active_browser,
-        active_web_state_list->GetIndexOfFirstNonPinnedWebState());
-  }
+                              inactive_browser->GetWebStateList()->count());
+
+  PerformBatchMigration(
+      active_browser, inactive_browser,
+      base::BindOnce(^(WebStateList* active_web_state_list,
+                       WebStateList* inactive_web_state_list) {
+        for (int index = inactive_web_state_list->count() - 1; index >= 0;
+             index--) {
+          MoveTabFromBrowserToBrowser(
+              inactive_browser, index, active_browser,
+              active_web_state_list->GetIndexOfFirstNonPinnedWebState());
+        }
+      }));
 }

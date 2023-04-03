@@ -35,6 +35,7 @@
   _viewController = [[InactiveTabsSettingsTableViewController alloc] init];
   _mediator = [[InactiveTabsSettingsMediator alloc]
       initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
+                           browser:(Browser*)self.browser
                           consumer:_viewController];
   _viewController.delegate = _mediator;
 

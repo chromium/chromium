@@ -94,6 +94,6 @@ BASE_FEATURE(kShowInactiveTabsCount,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsShowInactiveTabsCountEnabled() {
-  DCHECK(IsInactiveTabsEnabled());
+  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
   return base::FeatureList::IsEnabled(kShowInactiveTabsCount);
 }

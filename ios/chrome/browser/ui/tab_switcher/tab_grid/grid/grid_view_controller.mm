@@ -1413,7 +1413,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 #pragma mark - InactiveTabsCountConsumer
 
 - (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
-  DCHECK(IsInactiveTabsEnabled());
+  DCHECK(IsInactiveTabsEnabled() || IsInactiveTabsExplictlyDisabledByUser());
 
   // Update `inactiveTabsCount`.
   NSUInteger oldCount = self.inactiveTabsCount;
