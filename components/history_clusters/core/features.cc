@@ -92,9 +92,11 @@ BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              "HistoryClustersNavigationContextClustering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(manukh): Launched with chromium roll out in m114 3/29/23. Clean feature
+//   code when m114 reaches stable 5/30.
 BASE_FEATURE(kHideVisits,
              "HistoryClustersHideVisits",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 

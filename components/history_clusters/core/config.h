@@ -354,7 +354,7 @@ struct Config {
   bool hide_visits = false;
 
   // Whether to the icon or menu item.
-  bool hide_visits_icon = false;
+  bool hide_visits_icon = true;
 
   // Lonely features without child params.
 
