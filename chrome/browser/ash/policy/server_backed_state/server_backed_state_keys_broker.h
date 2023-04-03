@@ -41,7 +41,7 @@ class ServerBackedStateKeysBroker {
   ServerBackedStateKeysBroker& operator=(const ServerBackedStateKeysBroker&) =
       delete;
 
-  ~ServerBackedStateKeysBroker();
+  virtual ~ServerBackedStateKeysBroker();
 
   // Registers a callback to be invoked whenever the state keys get updated.
   // Note that consuming code needs to hold on to the returned subscription as
@@ -56,7 +56,7 @@ class ServerBackedStateKeysBroker {
   // empty. If |this| gets destroyed before the callback happens or if the time
   // sync fails / the network is not established, then the |callback| is never
   // invoked. See http://crbug.com/649422 for more context.
-  void RequestStateKeys(StateKeysCallback callback);
+  virtual void RequestStateKeys(StateKeysCallback callback);
 
   static base::TimeDelta GetPollIntervalForTesting();
   static base::TimeDelta GetRetryIntervalForTesting();
