@@ -315,14 +315,14 @@ public class AutofillTestHelper {
 
     public static CreditCard createCreditCard(String name, String number, String month, String year,
             boolean isLocal, String nameForAutofillDisplay, String obfuscatedLastFourDigits,
-            int iconId) {
+            int iconId, String network) {
         return new CreditCard(/* guid= */ "",
                 /* origin= */ "",
                 /* isLocal= */ isLocal, /* isCached= */ false, /* isVirtual= */ false,
                 /* name= */ name,
                 /* number= */ number,
                 /* obfuscatedNumber= */ "", /* month= */ month, year,
-                /* basicCardIssuerNetwork =*/"",
+                /* basicCardIssuerNetwork =*/network,
                 /* issuerIconDrawableId= */ iconId, /* billingAddressId= */ "",
                 /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
                 /* cardArtUrl= */ null,

@@ -80,14 +80,16 @@ public class TouchToFillCreditCardTest {
     private static final String CARD_EXP_YEAR = "2050";
     private static final String CARD_EXP_MONTH = "05";
     private static final String MASKED_NUMBER = "• • • • 1111";
+    private static final String NETWORK_NAME = "visa";
+    private static final String CARD_NAME_FOR_AUTOFILL_DISPLAY = "Visa";
     private static final CreditCard VISA = createCreditCard(CARD_NAME, CARD_NUMBER, CARD_EXP_MONTH,
-            CARD_EXP_YEAR, /*isLocal=*/true, CARD_NAME, MASKED_NUMBER, 0);
+            CARD_EXP_YEAR, /*isLocal=*/true, CARD_NAME_FOR_AUTOFILL_DISPLAY, MASKED_NUMBER, 0,
+            NETWORK_NAME);
 
     private BottomSheetController mBottomSheetController;
     private WebContents mWebContents;
     private EmbeddedTestServer mServer;
     TestInputMethodManagerWrapper mInputMethodWrapper;
-
     @Before
     public void setup() throws TimeoutException {
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(
