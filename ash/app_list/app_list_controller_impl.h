@@ -147,6 +147,7 @@ class ASH_EXPORT AppListControllerImpl
   AppListNotifier* GetNotifier() override;
   std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
       override;
+  void OpenSearchBoxIphUrl() override;
   void StartAssistant() override;
   void StartSearch(const std::u16string& raw_query) override;
   void StartZeroStateSearch(base::OnceClosure callback,

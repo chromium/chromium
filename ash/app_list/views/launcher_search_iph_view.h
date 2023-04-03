@@ -9,6 +9,8 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -23,10 +25,13 @@ class LauncherSearchIphView : public views::View {
     virtual void RunLauncherSearchQuery(const std::u16string& query) = 0;
     // Opens Assistant page in the launcher.
     virtual void OpenAssistantPage() = 0;
+    // Opens the IPH url in a browser.
+    virtual void OpenSearchBoxIphUrl() = 0;
   };
 
   enum ViewId {
     kSelf = 1,
+    kDescriptionLabel,
     kAssistant,
     // Do not put a new id after `kChipStart`. Numbers after `kChipStart`
     // will be used for chips.
@@ -37,14 +42,23 @@ class LauncherSearchIphView : public views::View {
                         raw_ptr<Delegate> delegate);
   ~LauncherSearchIphView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   // TODO(b/272370530): Use string id for internationalization.
   void RunLauncherSearchQuery(const std::u16string& query);
+  void OnLinkClicked(const ui::Event& event);
 
   void OpenAssistantPage();
 
   std::unique_ptr<ScopedIphSession> scoped_iph_session_;
   raw_ptr<Delegate> delegate_;
+  raw_ptr<views::StyledLabel> description_label_;
+
+  // Ranges for text part and link part in the text of `description_label_`.
+  gfx::Range text_range_;
+  gfx::Range link_range_;
 
   base::WeakPtrFactory<LauncherSearchIphView> weak_ptr_factory_{this};
 };

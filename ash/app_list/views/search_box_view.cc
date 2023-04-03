@@ -518,6 +518,10 @@ void SearchBoxView::OpenAssistantPage() {
   delegate_->AssistantButtonPressed();
 }
 
+void SearchBoxView::OpenSearchBoxIphUrl() {
+  view_delegate_->OpenSearchBoxIphUrl();
+}
+
 // static
 int SearchBoxView::GetFocusRingSpacing() {
   return kSearchBoxFocusRingWidth + kSearchBoxFocusRingPadding;

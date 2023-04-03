@@ -91,6 +91,8 @@ TestAppListClient::CreateLauncherSearchIphSession() {
   return std::make_unique<ScopedIphSession>();
 }
 
+void TestAppListClient::OpenSearchBoxIphUrl() {}
+
 std::vector<TestAppListClient::SearchResultActionId>
 TestAppListClient::GetAndResetInvokedResultActions() {
   std::vector<SearchResultActionId> result;

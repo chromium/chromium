@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
@@ -28,6 +29,7 @@
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -255,6 +257,19 @@ IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode,
 
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
+}
+
+IN_PROC_BROWSER_TEST_F(AppListIphBrowserTestWithDemoMode, ClickLink) {
+  OpenAppListWithIph();
+  raw_ptr<views::StyledLabel> description_label =
+      static_cast<views::StyledLabel*>(search_box_view()->GetViewByID(
+          ash::LauncherSearchIphView::ViewId::kDescriptionLabel));
+
+  ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
+  description_label->ClickFirstLinkForTesting();
+  tab_added_waiter.Wait();
+  EXPECT_EQ(GURL("https://www.google.com/"),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
 // The bool param indicates if the AssistantLearnMore feature is enabled or not.
