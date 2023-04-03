@@ -317,9 +317,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   ClearOffsetMappingIfNeeded();
 
-  if (!relayout_children && SimplifiedLayout())
-    return;
-
   SubtreeLayoutScope layout_scope(*this);
 
   LayoutUnit previous_height = LogicalHeight();

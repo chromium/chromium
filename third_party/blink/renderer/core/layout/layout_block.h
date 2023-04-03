@@ -468,9 +468,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   bool RespectsCSSOverflow() const override;
 
-  bool SimplifiedLayout();
-  virtual void SimplifiedNormalFlowLayout();
-
  private:
   void AddLayoutOverflowFromPositionedObjects();
   void AddLayoutOverflowFromBlockChildren();
@@ -533,9 +530,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   TrackedLayoutBoxLinkedHashSet* PositionedObjectsInternal() const;
   TrackedLayoutBoxLinkedHashSet* PercentHeightDescendantsInternal() const;
-
-  // Returns true if the positioned movement-only layout succeeded.
-  bool TryLayoutDoingPositionedMovementOnly();
 
   void ComputeBlockPreferredLogicalWidths(LayoutUnit& min_logical_width,
                                           LayoutUnit& max_logical_width) const;
