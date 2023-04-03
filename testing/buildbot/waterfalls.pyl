@@ -4476,29 +4476,6 @@
       'GPU FYI Win x64 Builder (dbg)' : {},
       'GPU FYI Win x64 DX12 Vulkan Builder': {},
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': {},
-      'Lacros FYI Release (octopus)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'os_type': 'chromeos',
-        'browser_config': 'lacros-chrome',
-        'mixins': [
-          'limited_capacity_bot',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'octopus',
-              'pool': 'chromium.tests',
-            },
-          ],
-        },
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fyi_lacros_device_release_telemetry_tests',
-        },
-        'skip_merge_script': True,
-      },
       'Lacros FYI x64 Release (AMD)': {
         'os_type': 'lacros',
         'browser_config': 'release',

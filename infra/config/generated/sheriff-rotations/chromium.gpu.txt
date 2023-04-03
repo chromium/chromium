@@ -28,7 +28,6 @@ ci/GPU Flake Finder
 ci/GPU Linux Builder
 ci/GPU Mac Builder
 ci/GPU Win x64 Builder
-ci/Lacros FYI Release (octopus)
 ci/Lacros FYI x64 Release (AMD)
 ci/Lacros FYI x64 Release (Intel)
 ci/Linux FYI Debug (NVIDIA)

@@ -231,21 +231,6 @@
       "use_remoteexec": true
     }
   },
-  "Lacros FYI Release (octopus)": {
-    "args_file": "//build/args/chromeos/octopus.gni",
-    "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_chromeos_device": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_platform_headless": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_remoteexec": true
-    }
-  },
   "Linux FYI GPU TSAN Release": {
     "gn_args": {
       "dcheck_always_on": true,
