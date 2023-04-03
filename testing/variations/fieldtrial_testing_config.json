@@ -9722,6 +9722,24 @@
             ]
         }
     ],
+    "PinnedTabsIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "overflow_param": "true"
+                    },
+                    "enable_features": [
+                        "EnablePinnedTabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "PolicyLogsPageAndroid": [
         {
             "platforms": [
