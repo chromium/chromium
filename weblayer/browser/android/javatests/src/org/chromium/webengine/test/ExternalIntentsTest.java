@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -77,6 +78,7 @@ public class ExternalIntentsTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "Flaky because this relies on waiting for an activity to launch")
     public void testOpensExternalIntents_shouldLaunch() throws Exception {
         // Awful hack heads up:
         // The problem is that the application is a separate application from the
