@@ -398,7 +398,7 @@ SyncFileSystemSetConflictResolutionPolicyFunction::Run() {
     return RespondNow(Error(base::StringPrintf(
         kUnsupportedConflictResolutionPolicy, policy_string.c_str())));
   }
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction

@@ -164,7 +164,7 @@ void EnterpriseRemoteAppsDeleteAppFunction::OnResult(
     return;
   }
 
-  Respond(WithArguments());
+  Respond(NoArguments());
 }
 
 EnterpriseRemoteAppsSortLauncherFunction::
@@ -207,7 +207,7 @@ void EnterpriseRemoteAppsSortLauncherFunction::OnResult(
     return;
   }
 
-  Respond(WithArguments());
+  Respond(NoArguments());
 }
 
 }  // namespace chrome_apps::api

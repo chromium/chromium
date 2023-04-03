@@ -899,7 +899,7 @@ void MediaGalleriesRemoveGalleryWatchFunction::OnPreferencesInit(
 
   gallery_watch_manager()->RemoveWatch(profile, extension_id(),
                                        gallery_pref_id);
-  Respond(WithArguments());
+  Respond(NoArguments());
 }
 
 }  // namespace api

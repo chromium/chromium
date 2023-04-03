@@ -351,7 +351,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateEnableExternalFileSchemeFunction::Run() {
   ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
       render_frame_host()->GetProcess()->GetID(), content::kExternalFileScheme);
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 FileManagerPrivateGrantAccessFunction::FileManagerPrivateGrantAccessFunction() =
@@ -395,7 +395,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
                                      file_system_url.path());
     }
   }
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 namespace {
@@ -684,7 +684,7 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetMtpAvailableSpace(
   if (error) {
     // If stats couldn't be gotten from MTP volume, result should be left
     // undefined same as we do for Drive.
-    Respond(WithArguments());
+    Respond(NoArguments());
     return;
   }
 
@@ -700,7 +700,7 @@ void FileManagerPrivateGetSizeStatsFunction::
   if (error) {
     // If stats was not successfully retrieved from DocumentsProvider volume,
     // result should be left undefined same as we do for Drive.
-    Respond(WithArguments());
+    Respond(NoArguments());
     return;
   }
   OnGetSizeStats(&capacity_bytes, &available_bytes);
@@ -710,7 +710,7 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetDriveQuotaUsage(
     drive::FileError error,
     drivefs::mojom::QuotaUsagePtr usage) {
   if (error != drive::FileError::FILE_ERROR_OK) {
-    Respond(WithArguments());
+    Respond(NoArguments());
     return;
   }
   OnGetSizeStats(&usage->total_cloud_bytes, &usage->free_cloud_bytes);
@@ -756,7 +756,7 @@ void FileManagerPrivateInternalGetDriveQuotaMetadataFunction::
     OnGetPooledQuotaUsage(drive::FileError error,
                           drivefs::mojom::PooledQuotaUsagePtr usage) {
   if (error != drive::FileError::FILE_ERROR_OK) {
-    Respond(WithArguments());
+    Respond(NoArguments());
     return;
   }
 
@@ -866,7 +866,7 @@ FileManagerPrivateFormatVolumeFunction::Run() {
       volume->mount_path().AsUTF8Unsafe(),
       ApiFormatFileSystemToChromeEnum(params->filesystem),
       params->volume_label);
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -901,7 +901,7 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
       device_disk->device_path(),
       ApiFormatFileSystemToChromeEnum(params->filesystem),
       params->volume_label);
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -924,7 +924,7 @@ FileManagerPrivateRenameVolumeFunction::Run() {
 
   DiskMountManager::GetInstance()->RenameMountedDevice(
       volume->mount_path().AsUTF8Unsafe(), params->new_name);
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 FileManagerPrivateInternalGetDisallowedTransfersFunction::
@@ -1711,7 +1711,7 @@ FileManagerPrivateCancelIOTaskFunction::Run() {
   }
 
   volume_manager->io_task_controller()->Cancel(params->task_id);
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -1741,7 +1741,7 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
   volume_manager->io_task_controller()->Resume(
       params->task_id, std::move(io_task_resume_params));
 
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -1756,7 +1756,7 @@ FileManagerPrivateProgressPausedTasksFunction::Run() {
 
   volume_manager->io_task_controller()->ProgressPausedTasks();
 
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 FileManagerPrivateInternalParseTrashInfoFilesFunction::
@@ -1817,7 +1817,7 @@ void FileManagerPrivateInternalParseTrashInfoFilesFunction::
   if (!render_frame_host() || !browser_context()) {
     LOG(WARNING) << "Parsing trashinfo files finished but no window available "
                     "to respond to";
-    Respond(WithArguments());
+    Respond(NoArguments());
     return;
   }
 

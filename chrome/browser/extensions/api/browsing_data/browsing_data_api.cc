@@ -267,7 +267,7 @@ void BrowsingDataRemoverFunction::OnTaskFinished() {
     return;
   synced_data_deletion_.reset();
   observation_.Reset();
-  Respond(WithArguments());
+  Respond(NoArguments());
   Release();  // Balanced in StartRemoving.
 }
 
