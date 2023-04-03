@@ -550,8 +550,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       header.buttonAction = ^{
         [weakSelf didTapInactiveTabsButton];
       };
-      header.inactivityThresholdDisplayString =
-          InactiveTabsTimeThresholdDisplayString();
+      [header configureWithDaysThreshold:InactiveTabsTimeThreshold().InDays()];
       if (IsShowInactiveTabsCountEnabled()) {
         [header configureWithCount:self.inactiveTabsCount];
       }
@@ -598,6 +597,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       header.settingsLinkAction = ^{
         [weakSelf didTapInactiveTabsSettingsLink];
       };
+      header.daysThreshold = InactiveTabsTimeThreshold().InDays();
       return header;
   }
 }

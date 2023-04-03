@@ -29,7 +29,10 @@ const CGFloat kHorizontalPadding = 16;
 @interface InactiveTabsPreambleHeader () <UITextViewDelegate>
 @end
 
-@implementation InactiveTabsPreambleHeader
+@implementation InactiveTabsPreambleHeader {
+  // The text view displaying the preamble text.
+  UITextView* _textView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -37,34 +40,44 @@ const CGFloat kHorizontalPadding = 16;
     // Use dark mode colors for this header's elements.
     self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 
-    UITextView* textView = CreateUITextViewWithTextKit1();
-    NSString* argument = InactiveTabsTimeThresholdDisplayString();
-    NSString* text =
-        [L10NUtils formatStringForMessageId:IDS_IOS_INACTIVE_TABS_PREAMBLE
-                                   argument:argument];
-    // Opening the link is handled by the delegate, so `NSLinkAttributeName`
-    // can be arbitrary.
-    NSDictionary* linkAttributes = @{NSLinkAttributeName : @""};
-    textView.attributedText =
-        AttributedStringFromStringWithLink(text, @{}, linkAttributes);
-    textView.scrollEnabled = NO;
-    textView.editable = NO;
-    textView.delegate = self;
-    textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    textView.adjustsFontForContentSizeCategory = YES;
-    textView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-    textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    textView.linkTextAttributes =
-        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
-    textView.textContainer.lineFragmentPadding = 0;
-    textView.textContainerInset =
+    _textView = CreateUITextViewWithTextKit1();
+    _textView.scrollEnabled = NO;
+    _textView.editable = NO;
+    _textView.delegate = self;
+    _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _textView.adjustsFontForContentSizeCategory = YES;
+    _textView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+    _textView.textContainer.lineFragmentPadding = 0;
+    _textView.textContainerInset =
         UIEdgeInsets(kVerticalPadding, kHorizontalPadding, kVerticalPadding,
                      kHorizontalPadding);
-    textView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:textView];
-    AddSameConstraints(textView, self);
+    _textView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_textView];
+    AddSameConstraints(_textView, self);
   }
   return self;
+}
+
+- (void)setDaysThreshold:(NSInteger)daysThreshold {
+  DCHECK_NE(daysThreshold, kInactiveTabsDisabledByUser);
+  _daysThreshold = daysThreshold;
+
+  // Update the text view's attributed text.
+  NSString* argument = [NSString stringWithFormat:@"%@", @(daysThreshold)];
+  NSString* text =
+      [L10NUtils formatStringForMessageId:IDS_IOS_INACTIVE_TABS_PREAMBLE
+                                 argument:argument];
+  NSDictionary* attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+  };
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    // Opening the link is handled by the delegate, so `NSLinkAttributeName`
+    // can be arbitrary.
+    NSLinkAttributeName : @"",
+  };
+  _textView.attributedText =
+      AttributedStringFromStringWithLink(text, attributes, linkAttributes);
 }
 
 #pragma mark - UITextViewDelegate
@@ -73,6 +86,7 @@ const CGFloat kHorizontalPadding = 16;
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
+  DCHECK_EQ(textView, _textView);
   if (interaction == UITextItemInteractionInvokeDefaultAction &&
       _settingsLinkAction) {
     _settingsLinkAction();
@@ -81,6 +95,7 @@ const CGFloat kHorizontalPadding = 16;
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
+  DCHECK_EQ(textView, _textView);
   // Always force the `selectedTextRange` to `nil` to prevent users from
   // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.

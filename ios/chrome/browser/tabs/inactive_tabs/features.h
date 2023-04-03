@@ -37,10 +37,6 @@ const base::TimeDelta InactiveTabsTimeThreshold();
 // Returns true if a user disabled the feature manually.
 bool IsInactiveTabsExplictlyDisabledByUser();
 
-// Convenience method for getting a displayable representation of the threshold.
-// This is the number of days as a string.
-NSString* InactiveTabsTimeThresholdDisplayString();
-
 // Feature flag to enable the display of the count of Inactive Tabs in Tab Grid.
 BASE_DECLARE_FEATURE(kShowInactiveTabsCount);
 
