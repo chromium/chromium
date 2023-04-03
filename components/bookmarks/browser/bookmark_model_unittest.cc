@@ -1409,8 +1409,7 @@ TEST_F(BookmarkModelTest, HasBookmarks) {
   EXPECT_TRUE(model_->HasBookmarks());
 }
 
-// http://crbug.com/450464
-TEST_F(BookmarkModelTest, DISABLED_Sort) {
+TEST_F(BookmarkModelTest, Sort) {
   // Populate the bookmark bar node with nodes for 'B', 'a', 'd' and 'C'.
   // 'C' and 'a' are folders.
   TestNode bbn;
