@@ -112,14 +112,17 @@ MediaRecorderBitrates GetBitratesFromOptions(
   constexpr uint32_t kMaxIntAsUnsigned = std::numeric_limits<int>::max();
 
   uint32_t overall_bps = 0;
-  if (options->hasBitsPerSecond())
+  if (options->hasBitsPerSecond()) {
     overall_bps = std::min(options->bitsPerSecond(), kMaxIntAsUnsigned);
+  }
   absl::optional<uint32_t> video_bps;
-  if (options->hasVideoBitsPerSecond() && use_video)
+  if (options->hasVideoBitsPerSecond()) {
     video_bps = std::min(options->videoBitsPerSecond(), kMaxIntAsUnsigned);
+  }
   absl::optional<uint32_t> audio_bps;
-  if (options->hasAudioBitsPerSecond() && use_audio)
+  if (options->hasAudioBitsPerSecond()) {
     audio_bps = std::min(options->audioBitsPerSecond(), kMaxIntAsUnsigned);
+  }
 
   if (use_audio) {
     // |overall_bps| overrides the specific audio and video bit rates.

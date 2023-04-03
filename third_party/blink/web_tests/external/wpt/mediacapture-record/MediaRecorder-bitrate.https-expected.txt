@@ -8,8 +8,8 @@ PASS Passing bitsPerSecond overrides audio/video zero values
 PASS Passing bitsPerSecond sets audio/video bitrate values
 PASS Passing only audioBitsPerSecond results in default for video
 PASS Passing only videoBitsPerSecond results in default for audio
-FAIL Passing videoBitsPerSecond for audio-only stream still results in something for video assert_equals: expected 1000000 but got 2500000
-FAIL Passing audioBitsPerSecond for video-only stream still results in something for audio assert_equals: expected 100000 but got 128000
+PASS Passing videoBitsPerSecond for audio-only stream still results in something for video
+PASS Passing audioBitsPerSecond for video-only stream still results in something for audio
 PASS Passing bitsPerSecond for audio-only stream still results in something for video
 PASS Passing bitsPerSecond for video-only stream still results in something for audio
 PASS Selected default track bitrates are not changed by start()
