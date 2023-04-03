@@ -48,6 +48,10 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
                            VerifyTotalDelayHistograms_Defer);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_DeferFromCache);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_SkipChromeUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_SkipImageUrl);
   FRIEND_TEST_ALL_PREFIXES(
       SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest,
       DefersHttpsImageUrl);
