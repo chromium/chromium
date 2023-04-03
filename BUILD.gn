@@ -133,11 +133,8 @@ group("gn_all") {
         "//chrome",
         "//chrome/browser/ui/color:dump_colors",
         "//chrome/test:browser_tests",
-        "//chrome/test:interactive_ui_tests",
-        "//chrome/test:sync_integration_tests",
         "//components/subresource_filter/tools:subresource_filter_tools",
         "//components/zucchini:zucchini",
-        "//components/zucchini:zucchini_unittests",
         "//gpu/gles2_conform_support:gles2_conform_test",
         "//gpu/khronos_glcts_support:khronos_glcts_test",
         "//net:hpack_example_generator",
@@ -146,9 +143,6 @@ group("gn_all") {
         "//tools/perf/clear_system_cache",
         "//tools/polymer:polymer_tools_python_unittests",
         "//tools/privacy_budget:privacy_budget_tools",
-        "//ui/accessibility:accessibility_perftests",
-        "//ui/accessibility:accessibility_unittests",
-        "//ui/accessibility/extensions:extension_tests",
         "//ui/accessibility/extensions:extensions",
       ]
     }
@@ -176,7 +170,10 @@ group("gn_all") {
     }
 
     if (!is_ios && !is_castos) {
-      deps += [ "//chrome/test:unit_tests" ]
+      deps += [
+        "//chrome/test:unit_tests",
+        "//ui/accessibility:accessibility_unittests",
+      ]
     }
 
     if (use_blink) {

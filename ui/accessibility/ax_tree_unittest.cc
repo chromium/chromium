@@ -5,8 +5,10 @@
 #include "ui/accessibility/ax_tree.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -5231,5 +5233,96 @@ TEST(AXTreeTest, UnserializeErrors) {
       AXTreeUnserializeError::kNotInTree, 1);
 #endif
 }
+
+#if !defined(AX_FAIL_FAST_BUILD) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
+TEST(AXTreeTest, UnserializePerformance) {
+  // Test parameters, tune per platform if needed.
+  const int NUMBER_OF_CHILDREN = 800;
+  const int NUMBER_OF_GRANDCHILDREN = 5;
+  const int NUMBER_OF_RUNS = 10;
+
+  // Setup an initial tree with a single node.
+  AXTreeUpdate initial_tree_update;
+  initial_tree_update.root_id = 1;
+  initial_tree_update.nodes.resize(1);
+  initial_tree_update.nodes[0].id = 1;
+  initial_tree_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  AXTree tree(initial_tree_update);
+
+  // Add some observers to this tree.
+  TestAXTreeObserver test_observer1(&tree);
+  TestAXTreeObserver test_observer2(&tree);
+  TestAXTreeObserver test_observer3(&tree);
+  TestAXTreeObserver test_observer4(&tree);
+  TestAXTreeObserver test_observer5(&tree);
+
+  // Create an arbitrarily large AXTreeUpdate to apply. The root node should
+  // have |NUMBER_OF_CHILDREN| children, and each child node should have
+  // |NUMBER_OF_GRANDCHILDREN| children.
+  int total_nodes =
+      1 + NUMBER_OF_CHILDREN + (NUMBER_OF_CHILDREN * NUMBER_OF_GRANDCHILDREN);
+  int node_id = 1;
+  AXTreeUpdate test_update;
+  test_update.root_id = node_id;
+  test_update.nodes.resize(total_nodes);
+  test_update.nodes[0].id = node_id;
+  test_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  test_update.nodes[0].child_ids.resize(NUMBER_OF_CHILDREN);
+
+  for (int i = 0; i < NUMBER_OF_CHILDREN; i++) {
+    test_update.nodes[0].child_ids[i] = node_id + 1;
+    test_update.nodes[node_id].id = node_id + 1;
+    test_update.nodes[node_id].role = ax::mojom::Role::kGenericContainer;
+    test_update.nodes[node_id].child_ids.resize(NUMBER_OF_GRANDCHILDREN);
+    int this_node = node_id;
+
+    for (int j = 0; j < NUMBER_OF_GRANDCHILDREN; j++) {
+      test_update.nodes[this_node].child_ids[j] = node_id + 2;
+      node_id++;
+      test_update.nodes[node_id].id = node_id + 1;
+      test_update.nodes[node_id].role = ax::mojom::Role::kButton;
+      test_update.nodes[node_id].AddBoolAttribute(
+          ax::mojom::BoolAttribute::kClickable, true);
+      test_update.nodes[node_id].AddStringAttribute(
+          ax::mojom::StringAttribute::kName, base::NumberToString(node_id + 1));
+    }
+    node_id++;
+  }
+  // This makes a structure like:
+  //
+  //                    1
+  //     2              8               14             ...  (1000 total nodes)
+  //  3,4,5,6,7    9,10,11,12,13   15,16,17,18,19      ...  (5000 total nodes)
+  //
+  // This is a relatively flat, wide tree.
+
+  // Unserialize this update |NUMBER_OF_RUNS| times and track duration.
+  base::TimeTicks startTime = base::TimeTicks::Now();
+  for (int k = 0; k < NUMBER_OF_RUNS; k++) {
+    EXPECT_TRUE(tree.Unserialize(test_update));
+    EXPECT_TRUE(tree.Unserialize(initial_tree_update));
+  }
+  int control_time = (base::TimeTicks::Now() - startTime).InMicroseconds();
+
+  // Enable the optimization feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAccessibilityUnserializeOptimizations);
+
+  // Unserialize this update |NUMBER_OF_RUNS| times and track duration.
+  startTime = base::TimeTicks::Now();
+  for (int k = 0; k < NUMBER_OF_RUNS; k++) {
+    EXPECT_TRUE(tree.Unserialize(test_update));
+    EXPECT_TRUE(tree.Unserialize(initial_tree_update));
+  }
+  int experimental_time = (base::TimeTicks::Now() - startTime).InMicroseconds();
+
+  double percentage_gain =
+      (control_time - experimental_time) * 100.0 / (control_time);
+
+  // Assert that there is a net improvement from optimization.
+  EXPECT_GE(percentage_gain, 0);
+}
+#endif
 
 }  // namespace ui

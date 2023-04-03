@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
@@ -1071,15 +1073,50 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   // Notify observers of subtrees and nodes that are about to be destroyed or
   // reparented, this must be done before applying any updates to the tree.
-  for (auto&& pair : update_state.node_id_to_pending_data) {
-    const AXNodeID node_id = pair.first;
-    const std::unique_ptr<PendingStructureChanges>& data = pair.second;
-    if (data->DoesNodeExpectSubtreeOrNodeWillBeDestroyed()) {
-      if (AXNode* node = GetFromId(node_id)) {
-        if (data->DoesNodeExpectSubtreeWillBeDestroyed())
-          NotifySubtreeWillBeReparentedOrDeleted(node, &update_state);
-        if (data->DoesNodeExpectNodeWillBeDestroyed())
-          NotifyNodeWillBeReparentedOrDeleted(node, &update_state);
+  if (features::IsUnserializeOptimizationsEnabled()) {
+    for (AXTreeObserver& observer : observers_) {
+      for (auto&& pair : update_state.node_id_to_pending_data) {
+        AXNode* node = GetFromId(pair.first);
+        if (!node || node->id() == kInvalidAXNodeID) {
+          continue;
+        }
+
+        if (pair.second->DoesNodeExpectSubtreeWillBeDestroyed()) {
+          // Don't fire redundant remove notification in the case where the
+          // parent will become ignored at the same time.
+          if (update_state.IsReparentedNode(node)) {
+            observer.OnSubtreeWillBeReparented(this, node);
+          } else if (node->parent() ||
+                     base::Contains(update_state.ignored_state_changed_ids,
+                                    node->parent()->id()) ||
+                     !node->parent()->IsIgnored()) {
+            observer.OnSubtreeWillBeDeleted(this, node);
+          }
+        }
+        if (pair.second->DoesNodeExpectNodeWillBeDestroyed()) {
+          table_info_map_.erase(node->id());
+
+          if (update_state.IsReparentedNode(node)) {
+            observer.OnNodeWillBeReparented(this, node);
+          } else {
+            observer.OnNodeWillBeDeleted(this, node);
+          }
+        }
+      }
+    }
+  } else {
+    for (auto&& pair : update_state.node_id_to_pending_data) {
+      const AXNodeID node_id = pair.first;
+      const std::unique_ptr<PendingStructureChanges>& data = pair.second;
+      if (data->DoesNodeExpectSubtreeOrNodeWillBeDestroyed()) {
+        if (AXNode* node = GetFromId(node_id)) {
+          if (data->DoesNodeExpectSubtreeWillBeDestroyed()) {
+            NotifySubtreeWillBeReparentedOrDeleted(node, &update_state);
+          }
+          if (data->DoesNodeExpectNodeWillBeDestroyed()) {
+            NotifyNodeWillBeReparentedOrDeleted(node, &update_state);
+          }
+        }
       }
     }
   }
