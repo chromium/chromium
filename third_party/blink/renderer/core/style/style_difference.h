@@ -80,7 +80,7 @@ class StyleDifference {
 
   bool NeedsPaintInvalidation() const { return needs_paint_invalidation_; }
   void SetNeedsPaintInvalidation() {
-    recordreplay::Assert("[RUN-966] StyleDifference::SetNeedsPaintInvalidation");
+    recordreplay::Assert("[RUN-1436] StyleDifference::SetNeedsPaintInvalidation");
     needs_paint_invalidation_ = true;
   }
 

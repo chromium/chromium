@@ -502,8 +502,7 @@ void ChromeClientImpl::InvalidateContainer() {
 
 void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
                                          base::TimeDelta delay) {
-  // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("[RUN-966] ChromeClientImpl::ScheduleAnimation");
+  recordreplay::Assert("[RUN-1641] ChromeClientImpl::ScheduleAnimation");
 
   LocalFrame& frame = frame_view->GetFrame();
   // If the frame is still being created, it might not yet have a WebWidget.

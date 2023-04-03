@@ -188,7 +188,7 @@ void DocumentTimeline::PauseAnimationsForTesting(
 }
 
 void DocumentTimeline::SetPlaybackRate(double playback_rate) {
-  recordreplay::Assert("[RUN-966] DocumentTimeline::SetPlaybackRate");
+  recordreplay::Assert("[RUN-1436] DocumentTimeline::SetPlaybackRate");
 
   if (!IsActive())
     return;

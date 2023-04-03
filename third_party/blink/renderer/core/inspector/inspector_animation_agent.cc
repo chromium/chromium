@@ -103,7 +103,7 @@ Response InspectorAnimationAgent::disable() {
 }
 
 void InspectorAnimationAgent::DidCommitLoadForLocalFrame(LocalFrame* frame) {
-  recordreplay::Assert("[RUN-966] InspectorAnimationAgent::DidCommitLoadForLocalFrame");
+  recordreplay::Assert("[RUN-1641] InspectorAnimationAgent::DidCommitLoadForLocalFrame");
 
   if (frame == inspected_frames_->Root()) {
     id_to_animation_.clear();
@@ -231,7 +231,7 @@ Response InspectorAnimationAgent::getPlaybackRate(double* playback_rate) {
 }
 
 Response InspectorAnimationAgent::setPlaybackRate(double playback_rate) {
-  recordreplay::Assert("[RUN-966] InspectorAnimationAgent::setPlaybackRate");
+  recordreplay::Assert("[RUN-1641] InspectorAnimationAgent::setPlaybackRate");
 
   for (LocalFrame* frame : *inspected_frames_)
     frame->GetDocument()->Timeline().SetPlaybackRate(playback_rate);

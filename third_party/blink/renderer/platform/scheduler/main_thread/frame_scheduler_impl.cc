@@ -265,7 +265,7 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 }
 
 void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
-  recordreplay::Assert("[RUN-966] FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool");
+  recordreplay::Assert("[RUN-1436] FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool");
 
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 

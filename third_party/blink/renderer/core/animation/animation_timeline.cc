@@ -198,13 +198,13 @@ Animation* AnimationTimeline::Play(AnimationEffect* child,
 }
 
 void AnimationTimeline::MarkAnimationsCompositorPending(bool source_changed) {
-  recordreplay::Assert("[RUN-966] AnimationTimeline::MarkAnimationsCompositorPending %d", RecordReplayId());
+  recordreplay::Assert("[RUN-1641] AnimationTimeline::MarkAnimationsCompositorPending %d", RecordReplayId());
 
   for (const auto& animation : animations_) {
     animation->SetCompositorPending(source_changed);
   }
 
-  recordreplay::Assert("[RUN-966] AnimationTimeline::MarkAnimationsCompositorPending Done");
+  recordreplay::Assert("[RUN-1641] AnimationTimeline::MarkAnimationsCompositorPending Done");
 }
 
 void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(

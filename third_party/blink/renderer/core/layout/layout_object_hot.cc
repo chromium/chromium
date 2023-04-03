@@ -136,8 +136,7 @@ void LayoutObject::SetNeedsOverflowRecalc(
 }
 
 void LayoutObject::PropagateStyleToAnonymousChildren() {
-  // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("[RUN-966] LayoutObject::PropagateStyleToAnonymousChildren %d",
+  recordreplay::Assert("[RUN-1436] LayoutObject::PropagateStyleToAnonymousChildren %d",
                        RecordReplayId());
 
   NOT_DESTROYED();
@@ -145,8 +144,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
   // properties.
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
-    // https://linear.app/replay/issue/RUN-966
-    recordreplay::Assert("[RUN-966] LayoutObject::PropagateStyleToAnonymousChildren #1 %d",
+    recordreplay::Assert("[RUN-1436] LayoutObject::PropagateStyleToAnonymousChildren #1 %d",
                          child->RecordReplayId());
 
     if (!child->IsAnonymous() || child->StyleRef().StyleType() != kPseudoIdNone)

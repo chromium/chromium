@@ -1401,7 +1401,7 @@ void ContainerNode::RecalcDescendantStyles(
   StyleRecalcChange local_change = change;
   for (Node* child = firstChild(); child; child = child->nextSibling()) {
     recordreplay::Assert(
-        "[RUN-966] ContainerNode::RecalcDescendantStyles #1 %d",
+        "[RUN-1436] ContainerNode::RecalcDescendantStyles #1 %d",
         child->RecordReplayId());
 
     if (!local_change.TraverseChild(*child))

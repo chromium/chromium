@@ -144,8 +144,7 @@ void PageAnimator::SetHasSharedElementTransition(
 
 DISABLE_CFI_PERF
 void PageAnimator::ScheduleVisualUpdate(LocalFrame* frame) {
-  // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("[RUN-966] PageAnimator::ScheduleVisualUpdate %d %d %d",
+  recordreplay::Assert("[RUN-1641] PageAnimator::ScheduleVisualUpdate %d %d %d",
                        servicing_animations_, updating_layout_and_style_for_painting_,
                        suppress_frame_requests_workaround_for704763_only_);
 

@@ -1284,8 +1284,7 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
 }
 
 void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
-  // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("[RUN-966] CSSAnimations::MaybeApplyPendingUpdate %d",
+  recordreplay::Assert("[RUN-1641] CSSAnimations::MaybeApplyPendingUpdate %d",
                        element->RecordReplayId());
 
   previous_active_interpolations_for_animations_.clear();
@@ -1352,8 +1351,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     Animation& animation =
         *running_animations_[cancelled_indices[i]]->animation;
 
-    // https://linear.app/replay/issue/RUN-966
-    recordreplay::Assert("[RUN-966] CSSAnimations::MaybeApplyPendingUpdate #5 %d",
+    recordreplay::Assert("[RUN-1641] CSSAnimations::MaybeApplyPendingUpdate #5 %d",
                          animation.RecordReplayId());
 
     animation.ClearOwningElement();
@@ -1393,8 +1391,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     Animation* animation = transitions_.Take(property)->animation;
 
-    // https://linear.app/replay/issue/RUN-966
-    recordreplay::Assert("[RUN-966] CSSAnimations::MaybeApplyPendingUpdate #10 %d",
+    recordreplay::Assert("[RUN-1641] CSSAnimations::MaybeApplyPendingUpdate #10 %d",
                          animation->RecordReplayId());
 
     auto* effect = To<KeyframeEffect>(animation->effect());

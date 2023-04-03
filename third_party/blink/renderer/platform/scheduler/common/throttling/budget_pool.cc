@@ -52,7 +52,7 @@ void BudgetPool::UnregisterThrottler(TaskQueueThrottler* throttler) {
 void BudgetPool::RemoveThrottler(base::TimeTicks now,
                                  TaskQueueThrottler* throttler) {
   if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("[RUN-966] BudgetPool::RemoveThrottler %d %d",
+    recordreplay::Assert("[RUN-1436] BudgetPool::RemoveThrottler %d %d",
                          recordreplay::PointerId(this),
                          recordreplay::PointerId(throttler));
   }

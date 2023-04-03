@@ -1269,8 +1269,7 @@ void ResourceLoader::DidStartLoadingResponseBody(
 void ResourceLoader::DidReceiveData(const char* data, int length) {
   CHECK_GE(length, 0);
 
-  // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("ResourceLoader::DidReceiveData %d", length);
+  recordreplay::Assert("[RUN-1436] ResourceLoader::DidReceiveData %d", length);
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;

@@ -2164,7 +2164,7 @@ void Animation::StartAnimationOnCompositor(
 // composited and non-composited animations. The use of 'compositor' in the name
 // is confusing.
 void Animation::SetCompositorPending(bool effect_changed) {
-  recordreplay::Assert("[RUN-966] Animation::SetCompositorPending %d", RecordReplayId());
+  recordreplay::Assert("[RUN-1641] Animation::SetCompositorPending %d", RecordReplayId());
 
   // FIXME: KeyframeEffect could notify this directly?
   if (!HasActiveAnimationsOnCompositor()) {
@@ -2380,8 +2380,7 @@ absl::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
 }
 
 void Animation::cancel() {
-  // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("[RUN-966] Animation::cancel %d", RecordReplayId());
+  recordreplay::Assert("[RUN-1641] Animation::cancel %d", RecordReplayId());
 
   AnimationTimeDelta current_time_before_cancel =
       CurrentTimeInternal().value_or(AnimationTimeDelta());
