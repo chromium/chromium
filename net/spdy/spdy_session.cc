@@ -224,6 +224,7 @@ bool IsSpdySettingAtDefaultInitialValue(spdy::SpdySettingsId setting_id,
   }
 }
 
+// This method always returns false.  TODO(https://crbug.com/1426477): Remove.
 bool IsPushEnabled(const spdy::SettingsMap& initial_settings) {
   const auto it = initial_settings.find(spdy::SETTINGS_ENABLE_PUSH);
 

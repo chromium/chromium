@@ -1239,12 +1239,16 @@ class NET_EXPORT SpdySession
 
   // Limits
   size_t max_concurrent_streams_;
+  // TODO(https://crbug.com/1426477): Remove.
   size_t max_concurrent_pushed_streams_;
 
   // Some statistics counters for the session.
   int streams_initiated_count_ = 0;
+
+  // TODO(https://crbug.com/1426477): Remove.
   int streams_pushed_count_ = 0;
   int streams_pushed_and_claimed_count_ = 0;
+
   int streams_abandoned_count_ = 0;
 
   // True if there has been a ping sent for which we have not received a
@@ -1340,6 +1344,7 @@ class NET_EXPORT SpdySession
   const bool is_http2_enabled_;
   const bool is_quic_enabled_;
 
+  // TODO(https://crbug.com/1426477): Remove.
   // If true, accept pushed streams from server.
   // If false, reset pushed streams immediately.
   const bool enable_push_;

@@ -44,14 +44,20 @@ namespace net {
 const int32_t kSpdySessionMaxRecvWindowSize = 15 * 1024 * 1024;  // 15 MB
 const int32_t kSpdyStreamMaxRecvWindowSize = 6 * 1024 * 1024;    //  6 MB
 
+// Value of SETTINGS_ENABLE_PUSH reflecting that server push is not supported.
+const uint32_t kSpdyDisablePush = 0;
+
 namespace {
 
 // Keep all HTTP2 parameters in |http2_settings|, even the ones that are not
 // implemented, to be sent to the server.
 // Set default values for settings that |http2_settings| does not specify.
 spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
-  // Set default values only if |http2_settings| does not have
-  // a value set for given setting.
+  // Server push is not supported.
+  http2_settings[spdy::SETTINGS_ENABLE_PUSH] = kSpdyDisablePush;
+
+  // For other setting parameters, set default values only if |http2_settings|
+  // does not have a value set for given setting.
   auto it = http2_settings.find(spdy::SETTINGS_HEADER_TABLE_SIZE);
   if (it == http2_settings.end())
     http2_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
@@ -70,10 +76,6 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
   if (it == http2_settings.end())
     http2_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
         kSpdyMaxHeaderListSize;
-
-  it = http2_settings.find(spdy::SETTINGS_ENABLE_PUSH);
-  if (it == http2_settings.end())
-    http2_settings[spdy::SETTINGS_ENABLE_PUSH] = kSpdyDisablePush;
 
   return http2_settings;
 }
