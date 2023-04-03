@@ -3,6 +3,6 @@ PASS Shared worker
 FAIL Nested worker in shared worker assert_true: expected true got "Nested workers not supported."
 PASS Shared worker from https subframe
 FAIL Nested worker from shared worker from https subframe assert_true: expected true got "Nested workers not supported."
-FAIL Shared worker from data URL assert_true: expected true got false
+PASS Shared worker from data URL
 Harness: the test ran to completion.
 

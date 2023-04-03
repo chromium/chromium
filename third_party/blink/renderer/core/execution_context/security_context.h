@@ -172,6 +172,10 @@ class CORE_EXPORT SecurityContext {
     return secure_context_explanation_;
   }
 
+  void SetIsWorkerLoadedFromDataURL(bool is_worker_loaded_from_data_url) {
+    is_worker_loaded_from_data_url_ = is_worker_loaded_from_data_url;
+  }
+
  protected:
   network::mojom::blink::WebSandboxFlags sandbox_flags_;
   scoped_refptr<SecurityOrigin> security_origin_;
@@ -188,6 +192,7 @@ class CORE_EXPORT SecurityContext {
   SecureContextMode secure_context_mode_ = SecureContextMode::kInsecureContext;
   SecureContextModeExplanation secure_context_explanation_ =
       SecureContextModeExplanation::kInsecureScheme;
+  bool is_worker_loaded_from_data_url_ = false;
 };
 
 }  // namespace blink

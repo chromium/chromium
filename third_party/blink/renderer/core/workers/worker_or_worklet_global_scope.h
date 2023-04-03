@@ -64,7 +64,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
       WorkerClients*,
       std::unique_ptr<WebContentSettingsClient>,
       scoped_refptr<WebWorkerFetchContext>,
-      WorkerReportingProxy&);
+      WorkerReportingProxy&,
+      bool is_worker_loaded_from_data_url);
   ~WorkerOrWorkletGlobalScope() override;
 
   // EventTarget
