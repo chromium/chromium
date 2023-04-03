@@ -60733,6 +60733,7 @@ from previous Chrome versions.
   <int value="-588163454"
       label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
   <int value="-587318376" label="FilesConflictDialog:disabled"/>
+  <int value="-587025390" label="GetAllScreensMedia:enabled"/>
   <int value="-585508682" label="DownloadRange:enabled"/>
   <int value="-584866456" label="LacrosProfileMigrationForceOff:disabled"/>
   <int value="-583842972"
@@ -62538,6 +62539,7 @@ from previous Chrome versions.
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>
   <int value="409566604" label="IntentPickerPWAPersistence:enabled"/>
   <int value="409622437" label="disable-buffer-bw-compression"/>
+  <int value="409978710" label="GetAllScreensMedia:disabled"/>
   <int value="410400234" label="WebAppEnableProtocolHandlers:disabled"/>
   <int value="411250226" label="AutoplayMutedVideos:disabled"/>
   <int value="411536809" label="AutofillAcrossIframes:enabled"/>

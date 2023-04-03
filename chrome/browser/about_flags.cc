@@ -8137,6 +8137,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    {"enable-get-all-screens-media", flag_descriptions::kGetAllScreensMediaName,
+     flag_descriptions::kGetAllScreensMediaDescription,
+     kOsCrOS | kOsLacros | kOsLinux,
+     FEATURE_VALUE_TYPE(blink::features::kGetAllScreensMedia)},
     {"enable-get-display-media-set", flag_descriptions::kGetDisplayMediaSetName,
      flag_descriptions::kGetDisplayMediaSetDescription,
      kOsCrOS | kOsLacros | kOsLinux,

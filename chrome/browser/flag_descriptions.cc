@@ -6365,6 +6365,11 @@ const char kLibAssistantV2MigrationDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+const char kGetAllScreensMediaName[] = "GetAllScreensMedia API";
+const char kGetAllScreensMediaDescription[] =
+    "When enabled, the getAllScreensMedia API for capturing multiple screens "
+    "at once, is available.";
+
 const char kGetDisplayMediaSetName[] = "GetDisplayMediaSet API";
 const char kGetDisplayMediaSetDescription[] =
     "When enabled, the getDisplayMediaSet API for capturing multiple surfaces "

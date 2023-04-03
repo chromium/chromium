@@ -516,6 +516,33 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   return promise;
 }
 
+ScriptPromise MediaDevices::getAllScreensMedia(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  // This timeout of base::Seconds(6) is an initial value and based on the data
+  // in Media.MediaDevices.GetAllScreensMedia.Latency, it should be iterated
+  // upon.
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
+      script_state, "Media.MediaDevices.GetAllScreensMedia", base::Seconds(6));
+
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kInvalidStateError,
+        "No media device client available; is this a detached window?",
+        UserMediaRequestResult::kContextDestroyed);
+    return ScriptPromise();
+  }
+
+  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
+  constraints->setVideo(
+      MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true));
+  constraints->setAutoSelectAllScreens(true);
+  return SendUserMediaRequest(UserMediaRequestType::kDisplayMediaSet, resolver,
+                              constraints, exception_state);
+}
+
 ScriptPromise MediaDevices::getDisplayMediaSet(
     ScriptState* script_state,
     const DisplayMediaStreamOptions* options,

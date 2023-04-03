@@ -4,7 +4,7 @@
 
 // TODO(crbug.com/1360242): Find a finalized and better suited naming for this
 // interface.
-[Exposed=Window, RuntimeEnabled=GetDisplayMediaSet]
+[Exposed=Window, RuntimeEnabled=GetAllScreensMedia]
 interface ScreenCaptureMediaStreamTrack : MediaStreamTrack {
     [
       ImplementedAs=screenDetailed,

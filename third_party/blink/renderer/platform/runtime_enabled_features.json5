@@ -1776,6 +1776,12 @@
       base_feature: "none",
     },
     {
+      name: "GetAllScreensMedia",
+      depends_on: ["GetDisplayMedia"],
+      public: true,
+      status: "test",
+    },
+    {
       name: "GetDisplayMedia",
       public: true,
       status: {
