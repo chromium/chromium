@@ -544,28 +544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="OfflinePages.MhtmlLoadResult"
-    enum="MhtmlLoadResult" expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Result of an attempt to load an MHTML archive to display a trusted offline
-    page, recorded per offline namespace by OfflinePageTabHelper after renderer
-    attempts to load the archive.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.MhtmlLoadResultUntrusted" enum="MhtmlLoadResult"
-    expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Result of an attempt to load an MHTML archive to display an untrusted
-    offline page, recorded by OfflinePageTabHelper after the renderer attempts
-    to load the archive.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.OfflineUsage" enum="OfflinePagesOfflineUsage"
     expires_after="2023-08-13">
   <owner>dimich@chromium.org</owner>
