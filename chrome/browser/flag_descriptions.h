@@ -1172,6 +1172,9 @@ extern const char kOmniboxCR23ExpandedStateHeightDescription[];
 extern const char kOmniboxCR23ExpandedStateShapeName[];
 extern const char kOmniboxCR23ExpandedStateShapeDescription[];
 
+extern const char kOmniboxCR23SteadyStateIconsName[];
+extern const char kOmniboxCR23SteadyStateIconsDescription[];
+
 extern const char kOmniboxDefaultBrowserPedalName[];
 extern const char kOmniboxDefaultBrowserPedalDescription[];
 

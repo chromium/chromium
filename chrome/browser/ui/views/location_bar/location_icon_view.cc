@@ -32,6 +32,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/platform_style.h"
@@ -269,12 +270,12 @@ void LocationIconView::OnIconFetched(const gfx::Image& image) {
 void LocationIconView::Update(bool suppress_animations) {
   UpdateTextVisibility(suppress_animations);
   UpdateIcon();
+  UpdateBorder();
   SetAccessibleProperties(/*is_initialization*/ false);
 
   if (features::IsChromeRefresh2023()) {
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
-        height() / 2));
+        GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
   }
   // The label text color may have changed in response to changes in security
   // level.
@@ -333,9 +334,17 @@ void LocationIconView::UpdateBorder() {
   // the bubble should be smaller, so use an empty border to shrink down the
   // content bounds so the background gets painted correctly.
   if (features::IsChromeRefresh2023()) {
-    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-        GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).top(),
-        GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).left())));
+    if (ShouldShowLabel() && !ShouldShowSeparator()) {
+      // An extra space between chip's label and right edge.
+      const int kExtraRightPadding = 4;
+      gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+      insets.set_right(insets.right() + kExtraRightPadding);
+      SetBorder(views::CreateEmptyBorder(insets));
+    } else {
+      SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+          GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).top(),
+          GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING).left())));
+    }
   } else {
     IconLabelBubbleView::UpdateBorder();
   }

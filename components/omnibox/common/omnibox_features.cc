@@ -459,6 +459,12 @@ BASE_FEATURE(kCr2023Umbrella,
              "OmniboxCr2023Umbrella",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox LHS and RHS icons are updated to match GM3
+// guidelines.
+BASE_FEATURE(kOmniboxCR23SteadyStateIcons,
+             "kOmniboxCR23SteadyStateIcons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Omnibox "steady state" background color is updated to match GM3
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,

@@ -62019,6 +62019,7 @@ from previous Chrome versions.
   <int value="121684313" label="QuickUnlockPin:enabled"/>
   <int value="121858954" label="enable-supervised-user-safesites"/>
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
+  <int value="121994167" label="kOmniboxCR23SteadyStateIcons:disabled"/>
   <int value="122959683" label="WebViewJavaJsBridgeMojo:enabled"/>
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="124590378" label="LensStandalone:disabled"/>
@@ -64064,6 +64065,7 @@ from previous Chrome versions.
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
   <int value="1262469513" label="GesturePropertiesDBusService:disabled"/>
+  <int value="1264183726" label="kOmniboxCR23SteadyStateIcons:enabled"/>
   <int value="1265457230" label="MultiZoneRgbKeyboard:disabled"/>
   <int value="1265587614" label="AppDiscoveryForOobe:disabled"/>
   <int value="1265666387" label="DesktopPWAsAppIconShortcutsMenu:disabled"/>
