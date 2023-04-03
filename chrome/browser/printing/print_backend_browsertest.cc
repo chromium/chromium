@@ -87,7 +87,7 @@ constexpr int kPrintSettingsCopies = 42;
 constexpr int kPrintSettingsDefaultDpi = 300;
 constexpr int kPrintSettingsOverrideDpi = 150;
 
-constexpr int32_t kTestDocumentCookie = 1;
+const int32_t kTestDocumentCookie = PrintSettings::NewCookie();
 
 bool LoadMetafileDataFromFile(const std::string& file_name,
                               Metafile& metafile) {
