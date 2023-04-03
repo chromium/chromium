@@ -200,9 +200,18 @@ bool ScreenAILibraryWrapper::PerformOcr(
       library_buffer(perform_ocr_(image, annotation_proto_length),
                      free_library_allocated_char_array_);
 
-  return library_buffer ? annotation_proto.ParseFromArray(
-                              library_buffer.get(), annotation_proto_length)
-                        : false;
+  bool result = library_buffer
+                    ? annotation_proto.ParseFromArray(library_buffer.get(),
+                                                      annotation_proto_length)
+                    : false;
+
+  // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
+  // official.
+#if BUILDFLAG(IS_LINUX)
+  free_library_allocated_char_array_(library_buffer.release());
+#endif
+
+  return result;
 }
 
 NO_SANITIZE("cfi-icall")
@@ -217,9 +226,18 @@ bool ScreenAILibraryWrapper::ExtractLayout(
       library_buffer(extract_layout_(image, annotation_proto_length),
                      free_library_allocated_char_array_);
 
-  return library_buffer ? annotation_proto.ParseFromArray(
-                              library_buffer.get(), annotation_proto_length)
-                        : false;
+  bool result = library_buffer
+                    ? annotation_proto.ParseFromArray(library_buffer.get(),
+                                                      annotation_proto_length)
+                    : false;
+
+  // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
+  // official.
+#if BUILDFLAG(IS_LINUX)
+  free_library_allocated_char_array_(library_buffer.release());
+#endif
+
+  return result;
 }
 
 NO_SANITIZE("cfi-icall")
@@ -241,12 +259,17 @@ bool ScreenAILibraryWrapper::ExtractMainContent(
   }
 
   node_ids.resize(nodes_count);
-  if (nodes_count == 0) {
-    return true;
+  if (nodes_count != 0) {
+    memcpy(node_ids.data(), library_buffer.get(),
+           nodes_count * sizeof(int32_t));
   }
 
-  node_ids.resize(nodes_count);
-  memcpy(node_ids.data(), library_buffer.get(), nodes_count * sizeof(int32_t));
+  // TODO(crbug.com/1278245): Remove this after fixing the crash issue on Linux
+  // official.
+#if BUILDFLAG(IS_LINUX)
+  free_library_allocated_int32_array_(library_buffer.release());
+#endif
+
   return true;
 }
 
