@@ -160,13 +160,8 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
   EXPECT_FALSE(rect->GetLayoutObject()->NeedsLayout());
 }
 
-TEST_F(CSSComputedStyleDeclarationTest, UseCountComputedAnimationDelayZero) {
-  // Disable CSSScrollTimeline, because kAnimationDelay is not supposed to be
-  // reachable when this feature is enabled, and we have DCHECKs which enforce
-  // this. (We expect kAlternativeAnimationDelay if CSSScrollTimeline
-  // enabled).
+TEST_F(CSSComputedStyleDeclarationTest, UseCountDurationZero) {
   ScopedCSSScrollTimelineForTest scroll_timeline_feature(false);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -184,82 +179,31 @@ TEST_F(CSSComputedStyleDeclarationTest, UseCountComputedAnimationDelayZero) {
 
   // There is no animation property specified at all, so getting the computed
   // value should not trigger the counter.
-  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAnimationDelay));
+  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAnimationDuration));
   EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
+      WebFeature::kCSSGetComputedAnimationDurationZero));
+  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kWebkitFontSmoothing));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSGetComputedWebkitFontSmoothingAnimationDurationZero));
 
-  // Set some animation (without an explicit delay).
-  div->SetInlineStyleProperty(CSSPropertyID::kAnimation, "anim linear");
+  // Set some animation with zero duration.
+  div->SetInlineStyleProperty(CSSPropertyID::kAnimation, "anim 0s linear");
   UpdateAllLifecyclePhasesForTest();
-  // It should remain uncounted until we retrieve the computed value.
+
+  // Duration should remain uncounted until we retrieve the computed value.
   EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAnimationDelay));
+      WebFeature::kCSSGetComputedAnimationDurationZero));
+  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAnimationDuration));
   EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-  // Accessing kAnimation should also set the counter.
-  GetDocument().ClearUseCounterForTesting(
-      WebFeature::kCSSGetComputedAnimationDelayZero);
-  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAnimation));
+      WebFeature::kCSSGetComputedAnimationDurationZero));
+
+  // Font smoothing count should remain uncounted until we retrieve the computed
+  // value.
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSGetComputedWebkitFontSmoothingAnimationDurationZero));
+  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kWebkitFontSmoothing));
   EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-
-  // Use-counter should not trigger when there's a non-zero duration.
-  GetDocument().ClearUseCounterForTesting(
-      WebFeature::kCSSGetComputedAnimationDelayZero);
-  div->SetInlineStyleProperty(CSSPropertyID::kAnimation, "anim linear 1s");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-  EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kAnimationDelay));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-}
-
-TEST_F(CSSComputedStyleDeclarationTest,
-       UseCountComputedAlternativeAnimationDelayZero) {
-  ScopedCSSScrollTimelineForTest scroll_timeline_feature(true);
-  ScopedCSSAnimationDelayStartEndForTest delay_start_end_feature(false);
-
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <style>
-      div {
-        color: green;
-        /* No animation here. */
-      }
-    </style>
-    <div id=div></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* div = GetDocument().getElementById("div");
-  ASSERT_TRUE(div);
-  auto* style = MakeGarbageCollected<CSSComputedStyleDeclaration>(div);
-
-  // There is no animation property specified at all, so getting the computed
-  // value should not trigger the counter.
-  EXPECT_TRUE(style->GetPropertyCSSValue(
-      CSSPropertyID::kAlternativeAnimationWithTimeline));
-  EXPECT_TRUE(
-      style->GetPropertyCSSValue(CSSPropertyID::kAlternativeAnimationDelay));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-
-  // Set some animation (without an explicit delay). We should not count for
-  // -alternative-animation[-delay], because those properties are only in
-  // use when 'CSSScrollTimeline' is enabled (which is the feature that would
-  // ship the change that this use-counter is for in the first place).
-  div->SetInlineStyleProperty(CSSPropertyID::kAlternativeAnimationWithTimeline,
-                              "anim linear");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
-  EXPECT_TRUE(style->GetPropertyCSSValue(
-      CSSPropertyID::kAlternativeAnimationWithTimeline));
-  EXPECT_TRUE(
-      style->GetPropertyCSSValue(CSSPropertyID::kAlternativeAnimationDelay));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kCSSGetComputedAnimationDelayZero));
+      WebFeature::kCSSGetComputedWebkitFontSmoothingAnimationDurationZero));
 }
 
 }  // namespace blink

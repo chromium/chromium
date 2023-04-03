@@ -41861,7 +41861,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4414" label="WindowCloseHistoryLengthOne"/>
   <int value="4415" label="OBSOLETE_CreateNSResolverWithNonElements"/>
   <int value="4416" label="CSSValueAppearanceNonStandard"/>
-  <int value="4417" label="CSSGetComputedAnimationDelayZero"/>
+  <int value="4417" label="OBSOLETE_CSSGetComputedAnimationDelayZero"/>
   <int value="4418" label="GetEffectTimingDelayZero"/>
   <int value="4419" label="Scrollend"/>
   <int value="4420" label="DOMWindowOpenCrossOriginIframe"/>
@@ -41983,6 +41983,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4530" label="PrivateNetworkAccessPreflightError"/>
   <int value="4531" label="PrivateNetworkAccessPreflightSuccess"/>
   <int value="4532" label="PrivateNetworkAccessPreflightWarning"/>
+  <int value="4533" label="CSSGetComputedAnimationDurationZero"/>
+  <int value="4534"
+      label="CSSGetComputedWebkitFontSmoothingAnimationDurationZero"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

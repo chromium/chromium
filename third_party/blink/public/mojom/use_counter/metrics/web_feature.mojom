@@ -3755,7 +3755,7 @@ enum WebFeature {
   kWindowCloseHistoryLengthOne = 4414,
   kOBSOLETE_CreateNSResolverWithNonElements = 4415,
   kCSSValueAppearanceNonStandard = 4416,
-  kCSSGetComputedAnimationDelayZero = 4417,
+  kOBSOLETE_CSSGetComputedAnimationDelayZero = 4417,
   kGetEffectTimingDelayZero = 4418,
   kScrollend = 4419,
   kDOMWindowOpenCrossOriginIframe = 4420,
@@ -3871,6 +3871,8 @@ enum WebFeature {
   kPrivateNetworkAccessPreflightError = 4530,
   kPrivateNetworkAccessPreflightSuccess = 4531,
   kPrivateNetworkAccessPreflightWarning = 4532,
+  kCSSGetComputedAnimationDurationZero = 4533,
+  kCSSGetComputedWebkitFontSmoothingAnimationDurationZero = 4534,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
