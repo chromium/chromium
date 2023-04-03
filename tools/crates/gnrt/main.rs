@@ -17,24 +17,28 @@ use clap::arg;
 
 fn main() -> ExitCode {
     let args = clap::Command::new("gnrt")
-        .subcommand(clap::Command::new("gen")
-            .about("Generate GN build rules from third_party/rust crates")
-            .arg(arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit \
+        .subcommand(
+            clap::Command::new("gen")
+                .about("Generate GN build rules from third_party/rust crates")
+                .arg(arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit \
                 immediately"))
-            .arg(arg!(--"skip-patch" "Don't apply gnrt_build_patch after generating build files. \
-                Useful when updating the patch."))
-            .arg(arg!(--"for-std" "(WIP) Generate build files for Rust std library instead of \
-                third_party/rust"))
+                .arg(
+                    arg!(--"for-std" "(WIP) Generate build files for Rust std library instead of \
+                third_party/rust"),
+                ),
         )
-        .subcommand(clap::Command::new("download")
-            .about("Download the crate with the given name and version to third_party/rust.")
-            .arg(arg!([NAME] "Name of the crate to download").required(true))
-            .arg(arg!([VERSION] "Version of the crate to download").required(true))
-            .arg(
-                arg!(--"security-critical" <YESNO> "Whether the crate is considered to be \
-                    security critical."
-                ).possible_values(["yes", "no"]).required(true)
-            )
+        .subcommand(
+            clap::Command::new("download")
+                .about("Download the crate with the given name and version to third_party/rust.")
+                .arg(arg!([NAME] "Name of the crate to download").required(true))
+                .arg(arg!([VERSION] "Version of the crate to download").required(true))
+                .arg(
+                    arg!(--"security-critical" <YESNO> "Whether the crate is considered to be \
+                        security critical."
+                    )
+                    .possible_values(["yes", "no"])
+                    .required(true),
+                ),
         )
         .get_matches();
 
@@ -279,18 +283,6 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
         };
 
         write_build_file(&build_file_path, build_file_data).unwrap();
-    }
-
-    // Apply patch for BUILD.gn files.
-    let build_patch = paths.root.join(paths.third_party.join("gnrt_build_patch"));
-    if !args.is_present("skip-patch") && build_patch.exists() {
-        let status = process::Command::new("git")
-            .arg("apply")
-            .arg(build_patch)
-            .current_dir(&paths.root)
-            .status()
-            .unwrap();
-        check_exit_status(status, "applying build patch").unwrap();
     }
 
     ExitCode::SUCCESS

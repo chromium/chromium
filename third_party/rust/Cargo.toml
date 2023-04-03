@@ -27,11 +27,6 @@ small_ctor = "0.1"
 static_assertions = "1"
 tempfile = "3"
 
-[dependencies.bindgen]
-version = "0.60"
-features = ["static"]
-build-script-outputs = ["host-target.txt"]
-
 [dependencies.memoffset]
 version = "0.6"
 features = ["unstable_const"]

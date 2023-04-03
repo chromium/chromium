@@ -244,6 +244,7 @@
 /robolectric/lib/
 /robolectric/robolectric
 /rust-toolchain
+/rust-toolchain-intermediate
 /rust_src/src
 /ruy/src
 /scan-build/src

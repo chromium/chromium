@@ -31,14 +31,8 @@ transitive dependencies to download, use the `gnrt` tool:
 1. Change directory to the root src/ dir of Chromium.
 2. Run `gnrt` with the `gen` action: e.g. `out/Default/gnrt gen`.
 
-This will generate a `BUILD.gn` file for each third-party crate and apply the
-patch at `//third_party/rust/gnrt_build_patch`. The `BUILD.gn` file changes
-will be visible in `git status` and can be added with `git add`.
-
-The `gnrt_build_patch` file allows fixing generated build rules as well as
-adding missing `BUILD.gn` files which result from bugs. The patch should *only*
-contain `BUILD.gn` file changes. [Other patches](#patching-third-party-crates)
-should be placed in a crate's `patches` subdirectory.
+This will generate a `BUILD.gn` file for each third-party crate. The `BUILD.gn`
+file changes will be visible in `git status` and can be added with `git add`.
 
 # Downloading missing third-party crates
 
