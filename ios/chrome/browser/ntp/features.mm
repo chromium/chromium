@@ -34,6 +34,16 @@ bool IsFeedAppCloseBackgroundRefreshEnabledOnly() {
       /*default=*/false);
 }
 
+// Returns the override value from the Foreground Refresh section of Feed
+// Refresh Settings in Experimental Settings in the Settings App.
+bool IsFeedOverrideForegroundDefaultsEnabled() {
+  if (GetChannel() == version_info::Channel::STABLE) {
+    return false;
+  }
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"FeedOverrideForegroundDefaultsEnabled"];
+}
+
 }  // namespace
 
 BASE_FEATURE(kEnableWebChannels,
@@ -105,6 +115,8 @@ const char kFeedSeenRefreshThresholdInSeconds[] =
     "FeedSeenRefreshThresholdInSeconds";
 const char kFeedUnseenRefreshThresholdInSeconds[] =
     "FeedUnseenRefreshThresholdInSeconds";
+const char kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[] =
+    "EnableFeedUseInteractivityInvalidationForForegroundRefreshes";
 
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -298,6 +310,18 @@ double GetFeedUnseenRefreshThresholdInSeconds() {
       kEnableFeedInvisibleForegroundRefresh,
       kFeedUnseenRefreshThresholdInSeconds,
       /*default=*/base::Hours(6).InSecondsF());
+}
+
+bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled() {
+  if (IsFeedOverrideForegroundDefaultsEnabled()) {
+    return [[NSUserDefaults standardUserDefaults]
+        doubleForKey:
+            @"FeedUseInteractivityInvalidationForForegroundRefreshesEnabled"];
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedInvisibleForegroundRefresh,
+      kEnableFeedUseInteractivityInvalidationForForegroundRefreshes,
+      /*default=*/false);
 }
 
 bool IsFeedBottomSignInPromoEnabled() {
