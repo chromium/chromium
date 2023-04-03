@@ -2328,7 +2328,10 @@
     "CertDualVerificationTrial": [
         {
             "platforms": [
-                "android"
+                "android",
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
