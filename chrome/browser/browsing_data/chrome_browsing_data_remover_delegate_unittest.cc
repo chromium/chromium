@@ -1300,6 +1300,12 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // the profile should fix the race.
     content::RunAllTasksUntilIdle();
 
+    // Drop unowned references before profile destroys owned references.
+    remover_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    web_app_provider_ = nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
     // TestingProfile contains a DOMStorageContext.  BrowserContext's destructor
     // posts a message to the WEBKIT thread to delete some of its member
     // variables. We need to ensure that the profile is destroyed, and that
