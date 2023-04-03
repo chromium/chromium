@@ -109,7 +109,6 @@ TEST_F(NavigationContextImplTest, Setters) {
   EXPECT_FALSE(context->IsRendererInitiated());
   EXPECT_NE(response_headers_.get(), context->GetResponseHeaders());
   EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
-  EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
   EXPECT_FALSE(context->GetMimeType());
   EXPECT_FALSE(context->GetItem());
 
@@ -123,7 +122,6 @@ TEST_F(NavigationContextImplTest, Setters) {
   EXPECT_FALSE(context->GetError());
   EXPECT_FALSE(context->IsRendererInitiated());
   EXPECT_NE(response_headers_.get(), context->GetResponseHeaders());
-  EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
   EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
   EXPECT_FALSE(context->GetMimeType());
   EXPECT_FALSE(context->GetItem());
@@ -139,7 +137,6 @@ TEST_F(NavigationContextImplTest, Setters) {
   EXPECT_FALSE(context->IsRendererInitiated());
   EXPECT_NE(response_headers_.get(), context->GetResponseHeaders());
   EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
-  EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
   EXPECT_FALSE(context->GetMimeType());
   EXPECT_FALSE(context->GetItem());
 
@@ -153,7 +150,6 @@ TEST_F(NavigationContextImplTest, Setters) {
   EXPECT_FALSE(context->GetError());
   EXPECT_FALSE(context->IsRendererInitiated());
   EXPECT_NE(response_headers_.get(), context->GetResponseHeaders());
-  EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
   EXPECT_EQ(WKNavigationTypeOther, context->GetWKNavigationType());
   EXPECT_FALSE(context->GetMimeType());
   EXPECT_FALSE(context->GetItem());
