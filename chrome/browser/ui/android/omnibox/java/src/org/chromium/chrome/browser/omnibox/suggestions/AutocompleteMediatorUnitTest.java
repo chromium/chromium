@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -35,10 +36,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowPausedSystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -67,6 +70,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.ShadowGURL;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +108,7 @@ public class AutocompleteMediatorUnitTest {
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
+    private AutocompleteResult mAutocompleteResult;
     private ModelList mSuggestionModels;
     private ObservableSupplierImpl<TabWindowManager> mTabWindowManagerSupplier;
 
@@ -151,6 +156,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(OmniboxSuggestionUiType.HEADER).when(mMockHeaderProcessor).getViewTypeId();
 
         mSuggestionsList = buildDummySuggestionsList(10, "Suggestion");
+        mAutocompleteResult = AutocompleteResult.fromCache(mSuggestionsList, null);
         doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
         setUpLocationBarDataProvider(
                 "chrome-native://newtab", "New Tab Page", PageClassification.NTP_VALUE);
@@ -680,5 +686,189 @@ public class AutocompleteMediatorUnitTest {
         doReturn(1).when(mTabModel).getCount();
         doReturn(mTab).when(mTabModel).getTabAt(anyInt());
         Assert.assertTrue(mMediator.maybeSwitchToTab(0));
+    }
+
+    /**
+     * Verify the values recorded by SuggestionList.RequestToUiModel.* histograms.
+     * @param firstHistogramTotalCount total number of recorded values for the
+     *         RequestToUiModel.First histogram
+     * @param firstHistogramTime the value to expect to be recorded as RequestToUiModel.First, or
+     *         null if this histogram should not be recorded
+     * @param lastHistogramTotalCount total number of recorded values for the
+     *         RequestToUiModel.Last histogram
+     * @param lastHistogramTime the value to expect to be recorded as RequestToUiModel.Last, or
+     *         null if this histogram should not be recorded
+     */
+    private void verifySuggestionRequestToUiModelHistograms(int firstHistogramTotalCount,
+            @Nullable Integer firstHistogramTime, int lastHistogramTotalCount,
+            @Nullable Integer lastHistogramTime) {
+        Assert.assertEquals(firstHistogramTotalCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST));
+        Assert.assertEquals(lastHistogramTotalCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST));
+
+        if (firstHistogramTime != null) {
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST,
+                            firstHistogramTime));
+        }
+
+        if (lastHistogramTime != null) {
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            SuggestionsMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
+                            lastHistogramTime));
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void requestToUiModelTime_recordedForZps() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+        mMediator.onNativeInitialized();
+
+        mMediator.onUrlFocusChange(true);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+
+        // Report first results. Observe first results histogram reported.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        verifySuggestionRequestToUiModelHistograms(1, 100, 0, null);
+
+        // Report next results. Observe first results histogram not reported.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(300));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        verifySuggestionRequestToUiModelHistograms(1, 100, 0, null);
+
+        // Report last results. Observe two histograms reported.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        verifySuggestionRequestToUiModelHistograms(1, 100, 1, 500);
+    }
+
+    @Test
+    @SmallTest
+    public void requestToUiModelTime_notRecordedWhenCanceled_LastResult() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+        mMediator.onNativeInitialized();
+
+        mMediator.onUrlFocusChange(true);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+
+        // Report first results. Observe first results histogram reported.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(10));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
+
+        // Cancel the interaction.
+        mMediator.onUrlFocusChange(false);
+
+        // Report last results. Observe no final report.
+        verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
+    }
+
+    @Test
+    @SmallTest
+    public void requestToUiModelTime_notRecordedWhenCanceled_FirstResult() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+        mMediator.onNativeInitialized();
+
+        mMediator.onUrlFocusChange(true);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+
+        // Cancel the interaction.
+        mMediator.onUrlFocusChange(false);
+
+        // Report first results. Observe no report (no focus).
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+
+        // Report last results. Observe no final report (no focus).
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+    }
+
+    @Test
+    @SmallTest
+    public void requestToUiModelTime_recordsBothHistogramsWhenFirstResponseIsFinal() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+        mMediator.onNativeInitialized();
+
+        mMediator.onUrlFocusChange(true);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+
+        // Report first result as final. Observe both metrics reported.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(150));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        verifySuggestionRequestToUiModelHistograms(1, 150, 1, 150);
+    }
+
+    @Test
+    @SmallTest
+    public void requestToUiModelTime_subsequentKeyStrokesReportTimeSinceLastKeystroke() {
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        String url = "http://www.example.com";
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+        mMediator.onNativeInitialized();
+
+        mMediator.onUrlFocusChange(true);
+        verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
+        verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
+
+        // Report first result as final. Observe both metrics reported.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(150));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
+
+        // No change on key press. No unexpected recordings.
+        // Need to run looper here to flush the pending operation.
+        mMediator.onTextChanged("a", "a");
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
+
+        // No change on key press. No unexpected recordings.
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        verifySuggestionRequestToUiModelHistograms(2, 100, 1, 100);
     }
 }
