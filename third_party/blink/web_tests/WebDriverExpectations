@@ -168,6 +168,8 @@ crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/take_element_screenshot/
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/take_element_screenshot/screenshot.py>>test_no_such_element_from_other_window_handle[closed] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/take_element_screenshot/screenshot.py>>test_no_such_element_from_other_window_handle[open] [ Failure ]
 
+crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/maximize_window/maximize.py>>test_no_top_browsing_context [ Failure Pass ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/orientation.py>>test_orientation[default] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/orientation.py>>test_orientation[landscape] [ Failure ]
