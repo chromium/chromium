@@ -1825,7 +1825,7 @@ class PageInfoToggleStatesUnitTest : public ::testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kOneTimeGeolocationPermission);
+        permissions::features::kOneTimePermission);
     ::testing::Test::SetUp();
   }
 

@@ -7698,6 +7698,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChipLocationBarIconOverrideDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kChipLocationBarIconOverride)},
 
+    {"one-time-permission", flag_descriptions::kOneTimePermissionName,
+     flag_descriptions::kOneTimePermissionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
+
     {"enable-translate-sub-frames",
      flag_descriptions::kEnableTranslateSubFramesName,
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,

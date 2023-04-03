@@ -973,7 +973,7 @@ class PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest
  public:
   PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        permissions::features::kOneTimeGeolocationPermission);
+        permissions::features::kOneTimePermission);
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
   }

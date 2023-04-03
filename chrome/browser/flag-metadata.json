@@ -5683,6 +5683,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "one-time-permission",
+    "owners": ["fjacky", "permissions-core@google.com"],
+    "expiry_milestone": 118
+  },
+  {
     "name": "oobe-hid-detection-revamp",
     "owners": [ "gordonseto", "cros-connectivity@google.com"],
     "expiry_milestone": 117

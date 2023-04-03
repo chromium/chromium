@@ -60814,6 +60814,7 @@ from previous Chrome versions.
   <int value="-538728016" label="ChromeCartDomBasedHeuristics:disabled"/>
   <int value="-538448229" label="MaxUnthrottledTimeoutNestingLevel:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>
+  <int value="-538003236" label="OneTimePermission:disabled"/>
   <int value="-536289234" label="ssl-interstitial-v2-colorful"/>
   <int value="-536230323" label="SingleClickAutofill:disabled"/>
   <int value="-536003711"
@@ -61687,6 +61688,7 @@ from previous Chrome versions.
   <int value="-49441721" label="NtpModulesRedesigned:enabled"/>
   <int value="-49124128" label="CastEnableStreamingWithHiDPI:enabled"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
+  <int value="-48187847" label="OneTimePermission:enabled"/>
   <int value="-47034052" label="StoreHoursAndroid:enabled"/>
   <int value="-46847847" label="EstablishGpuChannelAsync:disabled"/>
   <int value="-46622176" label="NtpModulesHeaderIcon:enabled"/>

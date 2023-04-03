@@ -1340,6 +1340,9 @@ extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 extern const char kOnlyShowNewShortcutsAppName[];
 extern const char kOnlyShowNewShortcutsAppDescription[];
 
+extern const char kOneTimePermissionName[];
+extern const char kOneTimePermissionDescription[];
+
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 

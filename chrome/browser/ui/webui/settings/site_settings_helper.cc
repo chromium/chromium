@@ -802,7 +802,8 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   *display_name = GetDisplayNameForGURL(profile, origin);
 
   if (info.metadata.session_model == content_settings::SessionModel::OneTime) {
-    DCHECK_EQ(content_type, ContentSettingsType::GEOLOCATION);
+    DCHECK(
+        permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type));
     DCHECK_EQ(result.content_setting, CONTENT_SETTING_ALLOW);
     return CONTENT_SETTING_DEFAULT;
   }

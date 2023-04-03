@@ -24,6 +24,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -220,7 +221,9 @@ bool PrefProvider::SetWebsiteSetting(
   // has been set by the One Time Provider, therefore we reset a potentially
   // existing Allow Always setting.
   if (constraints.session_model == SessionModel::OneTime) {
-    DCHECK_EQ(content_type, ContentSettingsType::GEOLOCATION);
+    DCHECK(content_type == ContentSettingsType::GEOLOCATION ||
+           content_type == ContentSettingsType::MEDIASTREAM_MIC ||
+           content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
     in_value = base::Value();
   }
 

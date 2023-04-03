@@ -23,6 +23,8 @@ enum class RequestType;
 
 class Browser;
 
+constexpr int DISTANCE_BUTTON_VERTICAL = 12;
+
 // Bubble that prompts the user to grant or deny a permission request from a
 // website.
 class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {

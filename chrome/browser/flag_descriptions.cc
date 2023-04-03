@@ -2388,6 +2388,11 @@ const char kOnlyShowNewShortcutsAppDescription[] =
     "If enabled, the existing Shortcut Viewer app will be hidden and only the "
     "new Shortcut Customization app will be discoverable.";
 
+const char kOneTimePermissionName[] = "One time permission";
+const char kOneTimePermissionDescription[] =
+    "Enables experimental one time permissions for Geolocation, Microphone and "
+    "Camera.";
+
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

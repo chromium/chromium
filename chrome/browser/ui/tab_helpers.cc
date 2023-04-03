@@ -52,7 +52,7 @@
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/permissions/last_tab_standing_tracker_tab_helper.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
@@ -478,9 +478,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           web_contents));
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kOneTimeGeolocationPermission)) {
-    LastTabStandingTrackerTabHelper::CreateForWebContents(web_contents);
+  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
+    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
   }
   ManagePasswordsUIController::CreateForWebContents(web_contents);
   if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile))
