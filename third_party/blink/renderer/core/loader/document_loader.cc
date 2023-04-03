@@ -249,7 +249,8 @@ struct SameSizeAsDocumentLoader
   bool replaces_current_history_item;
   bool data_received;
   bool is_error_page_for_failed_navigation;
-  mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
+  HeapMojoRemote<mojom::blink::ContentSecurityNotifier>
+      content_security_notifier_;
   scoped_refptr<SecurityOrigin> origin_to_commit;
   AtomicString origin_calculation_debug_info;
   BlinkStorageKey storage_key;
@@ -469,6 +470,7 @@ DocumentLoader::DocumentLoader(
       is_error_page_for_failed_navigation_(
           SchemeRegistry::ShouldTreatURLSchemeAsError(
               response_.ResponseUrl().Protocol())),
+      content_security_notifier_(nullptr),
       origin_to_commit_(params_->origin_to_commit.IsNull()
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
@@ -685,6 +687,7 @@ void DocumentLoader::Trace(Visitor* visitor) const {
   visitor->Trace(history_item_);
   visitor->Trace(parser_);
   visitor->Trace(subresource_filter_);
+  visitor->Trace(content_security_notifier_);
   visitor->Trace(document_load_timing_);
   visitor->Trace(prefetched_signed_exchange_manager_);
   visitor->Trace(use_counter_);
@@ -2332,6 +2335,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // above.
     DCHECK(did_have_policy_container || WillLoadUrlAsEmpty(Url()));
   }
+  content_security_notifier_ =
+      HeapMojoRemote<mojom::blink::ContentSecurityNotifier>(
+          frame_->DomWindow());
+
   base::UmaHistogramBoolean("API.StorageAccess.DocumentLoadedWithStorageAccess",
                             frame_->DomWindow()->HasStorageAccess());
   base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
@@ -3060,11 +3067,14 @@ DocumentLoader::RemainingTimeToRenderBlockingFontMaxBlockingTime() const {
 
 mojom::blink::ContentSecurityNotifier&
 DocumentLoader::GetContentSecurityNotifier() {
+  CHECK(frame_);
+
   if (!content_security_notifier_.is_bound()) {
     GetFrame()->Client()->GetBrowserInterfaceBroker().GetInterface(
-        content_security_notifier_.BindNewPipeAndPassReceiver());
+        content_security_notifier_.BindNewPipeAndPassReceiver(
+            frame_->GetTaskRunner(TaskType::kInternalLoading)));
   }
-  return *content_security_notifier_;
+  return *content_security_notifier_.get();
 }
 
 bool DocumentLoader::ConsumeTextFragmentToken() {
