@@ -131,6 +131,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
 
   // chromeos::FloatControllerBase:
   void ToggleFloat(aura::Window* window) override;
