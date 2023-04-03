@@ -27,6 +27,12 @@ source_set("browser_tests") {
   ]
 }
 
+source_set("extensions_unittests") {
+  testonly = true
+
+  deps = [ "events:extensions_unittests" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

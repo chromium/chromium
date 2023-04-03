@@ -291,6 +291,12 @@ test("extensions_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/chromeos/extensions/telemetry/api:extensions_unittests",
+    ]
+  }
 }
 
 test("extensions_browsertests") {
