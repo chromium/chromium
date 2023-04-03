@@ -61266,6 +61266,7 @@ from previous Chrome versions.
   <int value="-282770689"
       label="ExperimentalWebAppStoragePartitionIsolation:disabled"/>
   <int value="-281844827" label="AutofillCreditCardAblationExperiment:enabled"/>
+  <int value="-280064896" label="HelpAppAppsDiscovery:disabled"/>
   <int value="-279920685" label="affiliation-based-matching:enabled"/>
   <int value="-279493876" label="WebVRExperimentalRendering:enabled"/>
   <int value="-279208712" label="isolated-prerender-nsp-enabled"/>
@@ -64729,6 +64730,7 @@ from previous Chrome versions.
   <int value="1638927687" label="AutofillRichMetadataQueries:disabled"/>
   <int value="1639190590" label="UseMessagesGoogleComDomain:enabled"/>
   <int value="1639314588" label="LookalikeUrlNavigationSuggestions:disabled"/>
+  <int value="1639681180" label="HelpAppAppsDiscovery:enabled"/>
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
   <int value="1641671651" label="ContextualPageActionShareModel:disabled"/>

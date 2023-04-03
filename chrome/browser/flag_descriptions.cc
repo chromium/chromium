@@ -5743,6 +5743,10 @@ const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
 
+const char kHelpAppAppsDiscoveryName[] = "Help App Apps Discovery";
+const char kHelpAppAppsDiscoveryDescription[] =
+    "Enables the ChromeOS Apps Discovery experience in the Help App.";
+
 const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";
