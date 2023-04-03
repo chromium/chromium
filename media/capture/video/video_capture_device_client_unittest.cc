@@ -104,7 +104,7 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
     EXPECT_CALL(*receiver_, MockOnNewBufferHandle(expected_buffer_id));
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(expected_buffer_id, _, _));
   }
-  device_client_->OnIncomingCapturedData(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
       data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
       0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
       base::TimeDelta());
@@ -124,7 +124,7 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(expected_buffer_id, _, _));
     EXPECT_CALL(*receiver_, OnBufferRetired(expected_buffer_id));
   }
-  device_client_->OnIncomingCapturedGfxBuffer(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
       buffer.get(), kFrameFormatNV12, 0 /*clockwise rotation*/,
       base::TimeTicks(), base::TimeDelta());
 
@@ -146,7 +146,7 @@ TEST_F(VideoCaptureDeviceClientTest, FailsSilentlyGivenInvalidFrameFormat) {
   // Expect the the call to fail silently inside the VideoCaptureDeviceClient.
   EXPECT_CALL(*receiver_, OnLog(_)).Times(AtLeast(1));
   EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(0);
-  device_client_->OnIncomingCapturedData(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
       data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
       0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
       base::TimeDelta());
@@ -160,7 +160,7 @@ TEST_F(VideoCaptureDeviceClientTest, FailsSilentlyGivenInvalidFrameFormat) {
           gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, gpu::kNullSurfaceHandle,
           nullptr);
   EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(0);
-  device_client_->OnIncomingCapturedGfxBuffer(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
       buffer.get(), kFrameFormat, 0 /*clockwise rotation*/, base::TimeTicks(),
       base::TimeDelta());
 
@@ -194,15 +194,15 @@ TEST_F(VideoCaptureDeviceClientTest, DropsFrameIfNoBuffer) {
             read_permission.push_back(std::move(*buffer_read_permission));
           }));
   // Pass three frames. The third will be dropped.
-  device_client_->OnIncomingCapturedData(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
       data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
       0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
       base::TimeDelta());
-  device_client_->OnIncomingCapturedData(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
       data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
       0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
       base::TimeDelta());
-  device_client_->OnIncomingCapturedData(
+  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
       data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
       0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
       base::TimeDelta());
@@ -247,7 +247,7 @@ TEST_F(VideoCaptureDeviceClientTest, DataCaptureGoodPixelFormats) {
 
     EXPECT_CALL(*receiver_, OnLog(_)).Times(1);
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(1);
-    device_client_->OnIncomingCapturedData(
+    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
         data,
         media::VideoFrame::AllocationSize(params.requested_format.pixel_format,
                                           params.requested_format.frame_size),
@@ -289,7 +289,7 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _))
         .Times(1)
         .WillOnce(SaveArg<2>(&coded_size));
-    device_client_->OnIncomingCapturedData(
+    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
         data,
         media::VideoFrame::AllocationSize(params.requested_format.pixel_format,
                                           params.requested_format.frame_size),
@@ -323,7 +323,7 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
     EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _))
         .Times(1)
         .WillOnce(SaveArg<2>(&coded_size));
-    device_client_->OnIncomingCapturedGfxBuffer(
+    device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
         buffer.get(), params.requested_format, size_and_rotation.rotation,
         base::TimeTicks(), base::TimeDelta());
 
