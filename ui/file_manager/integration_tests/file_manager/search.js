@@ -10,16 +10,6 @@ import {mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilR
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
- * Expected files shown in the search results for 'hello'
- *
- * @type {!Array<!TestEntryInfo>}
- * @const
- */
-const SEARCH_RESULTS_ENTRY_SET = [
-  ENTRIES.hello,
-];
-
-/**
  * @param {string} appId The ID that identifies the files app.
  * @param {string} type The search option type (location, recency, type).
  * @return {Promise<string>} The text of the element with 'selected-option' ID.
@@ -48,23 +38,12 @@ testcase.searchDownloadsWithResults = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  // Click on the search button to display the search box.
-  await remoteCall.waitAndClickElement(appId, '#search-button');
-
-  // Focus the search box.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box [type="search"]', 'focus']));
-
-  // Input a text.
-  await remoteCall.inputText(appId, '#search-box [type="search"]', 'hello');
-
-  // Notify the element of the input.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box [type="search"]', 'input']));
+  // Search for all files with "hello" in their name.
+  await remoteCall.typeSearchText(appId, 'hello');
 
   // Wait file list to display the search result.
   await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows(SEARCH_RESULTS_ENTRY_SET));
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
 
   // Check that a11y message for results has been issued.
   const a11yMessages =
@@ -82,17 +61,8 @@ testcase.searchDownloadsWithNoResults = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  // Focus the search box.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box [type="search"]', 'focus']));
-
-  // Input a text.
-  await remoteCall.inputText(
-      appId, '#search-box [type="search"]', 'INVALID TERM');
-
-  // Notify the element of the input.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#search-box [type="search"]', 'input']));
+  // Search for name not present among basic entry set.
+  await remoteCall.typeSearchText(appId, 'INVALID TERM');
 
   // Wait file list to display no results.
   await remoteCall.waitForFiles(appId, []);
