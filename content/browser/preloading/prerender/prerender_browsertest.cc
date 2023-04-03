@@ -9350,7 +9350,8 @@ class PrerenderFencedFrameBrowserTest : public PrerenderBrowserTest {
   PrerenderFencedFrameBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}},
+         {blink::features::kFencedFramesAPIChanges, {}}},
         {/* disabled_features */});
   }
   ~PrerenderFencedFrameBrowserTest() override = default;
@@ -9366,7 +9367,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
   const GURL kFencedFrameUrl = GetUrl("/title1.html");
   constexpr char kAddFencedFrameScript[] = R"({
     const fenced_frame = document.createElement('fencedframe');
-    fenced_frame.src = $1;
+    fenced_frame.config = new FencedFrameConfig($1);
     document.body.appendChild(fenced_frame);
   })";
 

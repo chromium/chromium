@@ -28,15 +28,16 @@ constexpr char kAddFencedFrameScript[] = R"({
 
 constexpr char kAddAndNavigateFencedFrameScript[] = R"({
     const fenced_frame = document.createElement('fencedframe');
-    fenced_frame.src = $1;
+    fenced_frame.config = new FencedFrameConfig($1);
     document.body.appendChild(fenced_frame);
   })";
 
 constexpr char kNavigateFrameScript[] = R"({location.href = $1;})";
 
-constexpr char kEmbedderNavigateFencedFrameScript[] =
-    R"({document.getElementById('fencedframe'+$1).src = $2;})";
-
+constexpr char kEmbedderNavigateFencedFrameScript[] = R"({
+  document.getElementById('fencedframe'+$1).config =
+      new FencedFrameConfig($2);}
+)";
 }  // namespace
 
 FencedFrameTestHelper::FencedFrameTestHelper() {
@@ -104,11 +105,11 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
 
   FrameTreeNode* target_node = fenced_frame_rfh->frame_tree_node();
   TestFrameNavigationObserver fenced_frame_observer(fenced_frame_rfh);
-  EXPECT_EQ(potentially_urn_url.spec(),
-            EvalJs(fenced_frame_parent_rfh,
-                   JsReplace(kEmbedderNavigateFencedFrameScript,
-                             base::NumberToString(previous_fenced_frame_count),
-                             potentially_urn_url)));
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_parent_rfh,
+             JsReplace(kEmbedderNavigateFencedFrameScript,
+                       base::NumberToString(previous_fenced_frame_count),
+                       potentially_urn_url)));
 
   if (!wait_for_load) {
     return nullptr;
@@ -120,6 +121,50 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
             expected_error_code != net::OK);
 
   return target_node->current_frame_host();
+}
+
+void FencedFrameTestHelper::NavigateFencedFrameUsingFledge(
+    RenderFrameHost* fenced_frame_parent,
+    const GURL& url,
+    const std::string fenced_frame_id) {
+  // Run an ad auction using FLEDGE and load the result into the fenced frame
+  // with id `fenced_frame_id`.
+  EXPECT_TRUE(ExecJs(fenced_frame_parent, JsReplace(R"(
+    (async() => {
+      const FLEDGE_BIDDING_URL = "/interest_group/bidding_logic.js";
+      const FLEDGE_DECISION_URL = "/interest_group/decision_logic.js";
+
+      const page_origin = new URL($1).origin;
+      const bidding_url = new URL(FLEDGE_BIDDING_URL, page_origin)
+      const interest_group = {
+        name: 'testAd1',
+        owner: page_origin,
+        biddingLogicUrl: bidding_url,
+        ads: [{renderUrl: $1, bid: 1}],
+      };
+
+      // Pick an arbitrarily high duration to guarantee that we never leave the
+      // ad interest group while the test runs.
+      navigator.joinAdInterestGroup(
+          interest_group, /*durationSeconds=*/3000000);
+
+      const url_to_navigate = new URL(FLEDGE_DECISION_URL, page_origin);
+
+      const auction_config = {
+        seller: page_origin,
+        interestGroupBuyers: [page_origin],
+        decisionLogicUrl: new URL(FLEDGE_DECISION_URL, page_origin),
+      };
+      auction_config.resolveToConfig = true;
+
+      const fenced_frame_config = await navigator.runAdAuction(auction_config);
+      if (!(fenced_frame_config instanceof FencedFrameConfig)) {
+        throw new Error('runAdAuction() did not return a FencedFrameConfig');
+      }
+
+      document.getElementById($2).config = fenced_frame_config;
+    })())",
+                                                    url, fenced_frame_id)));
 }
 
 void FencedFrameTestHelper::CreateFencedFrameAsync(

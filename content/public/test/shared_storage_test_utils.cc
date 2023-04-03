@@ -80,22 +80,21 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
       fenced_frame_root_node->current_frame_host());
 
   EvalJsResult result = EvalJs(
-      root,
-      absl::visit(
-          base::Overloaded{
-              [](const GURL& url) { return JsReplace("f.src = $1;", url); },
-              [](const std::string& config) {
-                return JsReplace("f.config =  window[$1]", config);
-              },
-          },
-          target));
+      root, absl::visit(base::Overloaded{
+                            [](const GURL& url) {
+                              return JsReplace(
+                                  "f.config = new FencedFrameConfig($1);", url);
+                            },
+                            [](const std::string& config) {
+                              return JsReplace("f.config =  window[$1]",
+                                               config);
+                            },
+                        },
+                        target));
 
   observer.Wait();
 
   EXPECT_TRUE(result.error.empty());
-  if (absl::holds_alternative<GURL>(target)) {
-    EXPECT_EQ(result, absl::get<GURL>(target).spec());
-  }
 
   return fenced_frame_root_node->current_frame_host();
 }

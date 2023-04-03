@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <fencedframe src="title1.html"></fencedframe>
+  <fencedframe></fencedframe>
+  <script>
+    const url = new URL("title1.html", location.href);
+    document.querySelector("fencedframe").config = new FencedFrameConfig(url);
+  </script>
 </body>
 </html>

@@ -2035,7 +2035,8 @@ class DumpAccessibilityTreeFencedFrameTest : public DumpAccessibilityTreeTest {
  protected:
   DumpAccessibilityTreeFencedFrameTest() {
     feature_list_.InitWithFeatures({{blink::features::kFencedFrames},
-                                    {features::kPrivacySandboxAdsAPIsOverride}},
+                                    {features::kPrivacySandboxAdsAPIsOverride},
+                                    {blink::features::kFencedFramesAPIChanges}},
                                    {/* disabled_features */});
 
     UseHttpsTestServer();

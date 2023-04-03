@@ -107,7 +107,8 @@ class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
   SnapshotAXTreeFencedFrameBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}},
+         {blink::features::kFencedFramesAPIChanges, {}}},
         {/* disabled_features */});
   }
 
@@ -142,9 +143,10 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
 
   const GURL fenced_frame_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
-  EXPECT_TRUE(ExecJs(
-      primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
-                             fenced_frame_url.spec())));
+  EXPECT_TRUE(
+      ExecJs(primary_rfh, JsReplace("document.querySelector('fencedframe')."
+                                    "config = new FencedFrameConfig($1);",
+                                    fenced_frame_url.spec())));
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   AXTreeSnapshotWaiter waiter;

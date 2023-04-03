@@ -159,6 +159,8 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
   config.fenced_frame_reporter_ = std::move(fenced_frame_reporter);
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+  config.deprecated_should_freeze_initial_size_.emplace(
+      true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
   return urn;
 }
 

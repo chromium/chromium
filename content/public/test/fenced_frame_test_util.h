@@ -48,6 +48,10 @@ class FencedFrameTestHelper {
   void CreateFencedFrameAsync(RenderFrameHost* fenced_frame_parent_rfh,
                               const GURL& url);
 
+  void NavigateFencedFrameUsingFledge(RenderFrameHost* fenced_frame_parent,
+                                      const GURL& url,
+                                      const std::string fenced_frame_id);
+
   // This method provides a way to navigate frames within a fenced frame's tree,
   // and synchronously wait for the load to finish. This method returns the
   // `RenderFrameHost` that the navigation committed to if it was successful
