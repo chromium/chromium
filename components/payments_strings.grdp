@@ -25,9 +25,6 @@
     <message name="IDS_PAYMENTS_EDIT_CONTACT_DETAILS_LABEL" desc="The title of the dialog for user to edit their contact information, such as the user's full name, an email address or a phone number. Sentence-cased." formatter_data="android_java">
       Edit contact info
     </message>
-    <message name="IDS_PAYMENTS_ADD_CARD_LABEL" desc="The title of the dialog for user to add new payment card. Sentence-cased.">
-      Add card
-    </message>
     <message name="IDS_PAYMENTS_ADD_MORE_INFORMATION" desc="The title in the Android app title bar for user to add more information to payment card or shipping address or contact info. Sentence-cased." formatter_data="android_java">
       Add more information
     </message>
@@ -78,9 +75,6 @@
     </message>
     <message name="IDS_PAYMENTS_EDIT_CONTACT_DETAILS_LABEL" desc="The title of the dialog for user to edit their contact information, such as the user's full name, an email address or a phone number. Title-Cased.">
       Edit Contact Info
-    </message>
-    <message name="IDS_PAYMENTS_ADD_CARD_LABEL" desc="The title of the dialog for user to add new payment card. Title-Cased.">
-      Add Card
     </message>
     <message name="IDS_PAYMENTS_ADD_MORE_INFORMATION" desc="The title in the Android app title bar for user to add more information to payment card or shipping address or contact info. Title-Cased.">
       Add More Information
@@ -260,9 +254,6 @@
     <message name="IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing an email address. Title-Cased. [CHAR_LIMIT=32]">
       Email
     </message>
-    <message name="IDS_PAYMENTS_ACCEPTED_CREDIT_CARDS_LABEL" desc="The title for the section that displays the credit card networks that the merchant accepts. Below the title, we show a row of icons indicating the accepted credit card networks (Visa icon, Mastercard icon, etc.). Title-Cased.">
-      Accepted Credit Cards
-    </message>
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Title-Cased.">
       Loading
     </message>
@@ -301,68 +292,6 @@
     Allow sites to check if you have payment methods saved
   </message>
 
-  <!-- iOS Credit Card form -->
-  <if expr="is_ios">
-    <message name="IDS_PAYMENTS_CARD_NUMBER" desc="Title of the field representing the number (PAN) on a credit card.">
-      Card Number
-    </message>
-    <message name="IDS_PAYMENTS_NAME_ON_CARD" desc="Title of the field representing the full name of a credit card holder.">
-      Cardholder Name
-    </message>
-      <message name="IDS_PAYMENTS_EXP_DATE" desc="Title of the field representing the expiration date of a credit card.">
-      Expiration Date
-    </message>
-    <message name="IDS_PAYMENTS_BILLING_ADDRESS" desc="Title of the field representing the billing address of a credit card.">
-      Billing Address
-    </message>
-  </if>
-
-  <!-- iOS call-to-action button labels -->
-  <if expr="is_ios">
-    <message name="IDS_CHOOSE_PAYMENT_METHOD" desc="The title for the button that lets the user select the method of payment. Title-Cased.">
-      Choose Payment Method
-    </message>
-    <message name="IDS_ADD_PAYMENT_METHOD" desc="The title for the button that lets the user add a payment card. Title-Cased.">
-      Add Card
-    </message>
-    <message name="IDS_PAYMENT_REQUEST_CHOOSE_CONTACT_INFO" desc="The name of the Choose Contact Info button in the Payment Sheet of the Payment Request dialog. Title-Cased.">
-      Choose Contact Info
-    </message>
-    <message name="IDS_PAYMENT_REQUEST_ADD_CONTACT_INFO" desc="The name of the Add Contact Info button in the Payment Sheet of the Payment Request dialog. Title-Cased.">
-      Add Contact Info
-    </message>
-    <message name="IDS_PAYMENTS_ADD_BILLING_ADDRESS_LABEL" desc="The title for the button that lets the user add a billing address. Title-Cased.">
-      Add Billing Address
-    </message>
-    <message name="IDS_PAYMENTS_CHOOSE_SHIPPING_ADDRESS_LABEL" desc="The title for the button that lets the user select the address where the product should be shipped. Shipping is typically used for packages. Title-Cased.">
-      Choose Shipping Address
-    </message>
-    <message name="IDS_PAYMENTS_ADD_SHIPPING_ADDRESS_LABEL" desc="The title for the button that lets the user add the address where the product should be shipped. Shipping is typically used for packages. Title-Cased.">
-      Add Shipping Address
-    </message>
-    <message name="IDS_PAYMENTS_CHOOSE_SHIPPING_OPTION_LABEL" desc="The title for the button that lets the user select how the product should be shipped. Shipping is typically used for packages. Title-Cased.">
-      Choose Shipping Method
-    </message>
-    <message name="IDS_PAYMENTS_CHOOSE_DELIVERY_ADDRESS_LABEL" desc="The title for the button that lets the user select the address where the product should be delivered. In English, 'delivery' is differentiated from 'shipping.'  For example, 'delivery' might be used for meals or meal items or items that need to be immediately sent to a recipient. Title-Cased.">
-      Choose Delivery Address
-    </message>
-    <message name="IDS_PAYMENTS_ADD_DELIVERY_ADDRESS_LABEL" desc="The title for the button that lets the user add the address where the product should be delivered. In English, 'delivery' is differentiated from 'shipping.'  For example, 'delivery' might be used for meals or meal items or items that need to be immediately sent to a recipient. Title-Cased.">
-      Add Delivery Address
-    </message>
-    <message name="IDS_PAYMENTS_CHOOSE_DELIVERY_OPTION_LABEL" desc="The title for the button that lets the user select how the product should be delivered. Delivery is commonly faster than shipping. For example, it might be used for food delivery. Title-Cased.">
-      Choose Delivery Method
-    </message>
-    <message name="IDS_PAYMENTS_CHOOSE_PICKUP_ADDRESS_LABEL" desc="The title for the button that lets the user select the address where a service item should be picked up. For example, the pickup address is where a laundry service picks up a customer’s items to be laundered. 'Pickup' functions as an adjective. Title-Cased.">
-      Choose Pickup Address
-    </message>
-    <message name="IDS_PAYMENTS_ADD_PICKUP_ADDRESS_LABEL" desc="The title for the button that lets the user add the address where a service item should be picked up. For example, the pickup address is where a laundry service picks up a customer’s items to be laundered. 'Pickup' functions as an adjective. Title-Cased.">
-      Add Pickup Address
-    </message>
-    <message name="IDS_PAYMENTS_CHOOSE_PICKUP_OPTION_LABEL" desc="The title for the button that lets the user select how their service item should be picked up. This item can be laundry to be cleaned, for example. 'Pickup' functions as an adjective. Title-Cased.">
-      Choose Pickup Method
-    </message>
-  </if>
-
   <!-- Validation strings which are never title-cased. -->
   <message name="IDS_PAYMENTS_REQUIRED_FIELD_MESSAGE" desc="The text that informs the user that '*' character indicates an input field that is required. The '*' character should not be changed." formatter_data="android_java">
      * Field is required
@@ -399,9 +328,6 @@
   </message>
   <message name="IDS_PAYMENTS_BILLING_ADDRESS_REQUIRED" desc="The label to indicate billing address is required for payment card.">
     Billing address required
-  </message>
-  <message name="IDS_PAYMENTS_CARD_BILLING_ADDRESS_REQUIRED" desc="The label to indicate the billing address of the credit card  must be entered.">
-    Card billing address required
   </message>
   <message name="IDS_PAYMENTS_MORE_INFORMATION_REQUIRED" desc="The label to indicate more information is required for payment card or shipping address or contact info." formatter_data="android_java">
     More information required
@@ -466,9 +392,6 @@
   <message name="IDS_PAYMENTS_UNSUPPORTED_DELIVERY_ADDRESS" desc="Text implying that a user needs to pick a different delivery address, because the currently selected address is not supported. Delivery is commonly faster than shipping. For example, it might be used for food delivery." formatter_data="android_java">
     Can’t deliver to this address. Select a different address.
   </message>
-  <message name="IDS_PAYMENTS_UNSUPPORTED_DELIVERY_OPTION" desc="Text implying that a user needs to pick a different delivery option, because the currently selected option is not supported. Delivery is commonly faster than shipping. For example, it might be used for food delivery.">
-    This delivery method isn’t available. Try a different method.
-  </message>
 
   <!-- Pickup address descriptive strings-->
   <message name="IDS_PAYMENTS_SELECT_PICKUP_ADDRESS_FOR_PICKUP_METHODS" desc="Text implying that a user needs to choose a pickup address to see the pickup methods. For example, this could be the address for laundry pickup. 'Pickup' functions as an adjective." formatter_data="android_java">
@@ -477,16 +400,10 @@
   <message name="IDS_PAYMENTS_UNSUPPORTED_PICKUP_ADDRESS" desc="Text implying that a user needs to choose a different pickup address, because the service can’t pick up items from that address. This address can be used, for example, for laundry pickup. Note that here, 'pick up' is a verb." formatter_data="android_java">
     Can’t pick up from this address. Select a different address.
   </message>
-  <message name="IDS_PAYMENTS_UNSUPPORTED_PICKUP_OPTION" desc="Text implying that a user needs to choose a different pickup option, because the currently selected option is not supported. This option can be used, for example, for laundry pickup.">
-    This pickup method isn’t available. Try a different method.
-  </message>
 
   <!-- Payment Apps -->
   <message name="IDS_PAYMENTS_ANDROID_APP_ERROR" desc="Error message that is shown when an Android payment application fails to start." formatter_data="android_java">
     Can’t open payment app
-  </message>
-  <message name="IDS_UTILITY_PROCESS_PAYMENT_MANIFEST_PARSER_NAME" desc="The name of the utility process used for parsing payment manifest files.">
-    Payment Manifest Parser
   </message>
   <if expr="is_android">
     <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user that Incognito mode does not continue into external payment apps." formatter_data="android_java">
