@@ -1576,23 +1576,9 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
-void RenderThreadImpl::OnSystemColorsChanged(
-    int32_t aqua_color_variant,
-    const std::string& highlight_text_color,
-    const std::string& highlight_color) {
+void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
 #if BUILDFLAG(IS_MAC)
-  if (!IsSingleProcess()) {
-    // The purpose of this function is to send an IPC to the renderer notifying
-    // it that the browser received an NSNotificationCenter notification, which
-    // the renderer needs to repost in its own process so that AppKit-side state
-    // in its process can be updated. This makes no sense in single-process
-    // mode, since that state is already updated, and in fact is actively
-    // harmful: that IPC is received on a different thread, then the
-    // notification is reposted (again) from a different thread.
-    // See https://crbug.com/1162066
-    SystemColorsDidChange(aqua_color_variant, highlight_text_color,
-                          highlight_color);
-  }
+  SystemColorsDidChange(aqua_color_variant);
 
   // Let blink know it should invalidate and recalculate styles for elements
   // that rely on system colors, such as the accent and highlight colors.

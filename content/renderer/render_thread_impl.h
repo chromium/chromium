@@ -437,9 +437,7 @@ class CONTENT_EXPORT RenderThreadImpl
       attribution_reporting::mojom::OsSupport attribution_os_support) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
-  void OnSystemColorsChanged(int32_t aqua_color_variant,
-                             const std::string& highlight_text_color,
-                             const std::string& highlight_color) override;
+  void OnSystemColorsChanged(int32_t aqua_color_variant) override;
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;
   void PurgePluginListCache(bool reload_pages) override;
