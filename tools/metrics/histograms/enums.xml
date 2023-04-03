@@ -58666,6 +58666,7 @@ from previous Chrome versions.
   <int value="-1685173786" label="HandwritingLegacyRecognition:enabled"/>
   <int value="-1684773837" label="TabEngagementReportingAndroid:disabled"/>
   <int value="-1684123448" label="disable-best-effort-tasks"/>
+  <int value="-1683976057" label="ArcOnDemand:disabled"/>
   <int value="-1682843294" label="DataReductionProxyDecidesTransform:enabled"/>
   <int value="-1681777841" label="TabGroupsForTablets:enabled"/>
   <int value="-1679849626" label="AuraWindowSubtreeCapture:disabled"/>
@@ -59889,6 +59890,7 @@ from previous Chrome versions.
   <int value="-1041650038" label="enable-forced-migration-to-tabbed-mode"/>
   <int value="-1041643783" label="SingleTouchSelect:enabled"/>
   <int value="-1041150041" label="ContextualSearchLiteralSearchTap:disabled"/>
+  <int value="-1040641773" label="ArcOnDemand:enabled"/>
   <int value="-1040000888" label="ContextMenuSearchWithGoogleLens:disabled"/>
   <int value="-1039889738" label="NativeNotifications:enabled"/>
   <int value="-1039555838" label="GamepadExtensions:enabled"/>

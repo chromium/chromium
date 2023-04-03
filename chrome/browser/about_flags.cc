@@ -9939,6 +9939,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kAccessibilityUnserializeOptimizations)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"arc-arc-on-demand", flag_descriptions::kArcArcOnDemandExperimentName,
+     flag_descriptions::kArcArcOnDemandExperimentDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(arc::kArcOnDemandFeature)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -4877,6 +4877,10 @@ const char kAppLaunchAutomationName[] = "Enable app launch automation";
 const char kAppLaunchAutomationDescription[] =
     "Allows groups of apps to be launched.";
 
+const char kArcArcOnDemandExperimentName[] = "Enable ARC on Demand";
+const char kArcArcOnDemandExperimentDescription[] =
+    "Delay ARC activation if no apps is installed.";
+
 const char kArcCustomTabsExperimentName[] =
     "Enable Custom Tabs experiment for ARC";
 const char kArcCustomTabsExperimentDescription[] =

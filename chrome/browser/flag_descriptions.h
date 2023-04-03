@@ -2802,6 +2802,9 @@ extern const char kApnRevampDescription[];
 extern const char kAppLaunchAutomationName[];
 extern const char kAppLaunchAutomationDescription[];
 
+extern const char kArcArcOnDemandExperimentName[];
+extern const char kArcArcOnDemandExperimentDescription[];
+
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 

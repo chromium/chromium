@@ -212,6 +212,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "arc-arc-on-demand",
+    "owners": [ "yuholong" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "arc-custom-tabs-experiment",
     "owners": [ "hashimoto", "dominickn" ],
     "expiry_milestone": 95
