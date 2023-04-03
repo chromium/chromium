@@ -7723,11 +7723,10 @@ bool Document::AllowedToUseDynamicMarkUpInsertion(
 
 ukm::UkmRecorder* Document::UkmRecorder() {
   if (!ukm_recorder_) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+    mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        recorder.InitWithNewPipeAndPassReceiver());
-    std::unique_ptr<ukm::MojoUkmRecorder> mojo_recorder =
-        std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+        factory.BindNewPipeAndPassReceiver());
+    auto mojo_recorder = ukm::MojoUkmRecorder::Create(*factory);
     if (WebTestSupport::IsRunningWebTest()) {
       ukm::DelegatingUkmRecorder::Get()->AddDelegate(
           mojo_recorder->GetWeakPtr());

@@ -98,7 +98,7 @@
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
-#include "services/metrics/ukm_recorder_interface.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -273,10 +273,10 @@ void BindTextInputHost(
 }
 #endif
 
-void BindUkmRecorderInterface(
-    mojo::PendingReceiver<ukm::mojom::UkmRecorderInterface> receiver) {
-  metrics::UkmRecorderInterface::Create(ukm::UkmRecorder::Get(),
-                                        std::move(receiver));
+void BindUkmRecorderFactory(
+    mojo::PendingReceiver<ukm::mojom::UkmRecorderFactory> receiver) {
+  metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
+                                          std::move(receiver));
 }
 
 void BindColorChooserFactoryForFrame(
@@ -1213,8 +1213,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       base::BindRepeating(&BindFaceDetectionProvider));
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
-  map->Add<ukm::mojom::UkmRecorderInterface>(
-      base::BindRepeating(&BindUkmRecorderInterface));
+  map->Add<ukm::mojom::UkmRecorderFactory>(
+      base::BindRepeating(&BindUkmRecorderFactory));
 
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
@@ -1337,8 +1337,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       base::BindRepeating(&BindFaceDetectionProvider));
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
-  map->Add<ukm::mojom::UkmRecorderInterface>(
-      base::BindRepeating(&BindUkmRecorderInterface));
+  map->Add<ukm::mojom::UkmRecorderFactory>(
+      base::BindRepeating(&BindUkmRecorderFactory));
 
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
@@ -1443,8 +1443,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       base::BindRepeating(&BindFaceDetectionProvider));
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
-  map->Add<ukm::mojom::UkmRecorderInterface>(
-      base::BindRepeating(&BindUkmRecorderInterface));
+  map->Add<ukm::mojom::UkmRecorderFactory>(
+      base::BindRepeating(&BindUkmRecorderFactory));
 
   // worker host binders
   map->Add<blink::mojom::WebTransportConnector>(base::BindRepeating(

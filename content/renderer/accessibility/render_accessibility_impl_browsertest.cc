@@ -31,6 +31,8 @@
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -1217,10 +1219,8 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
 // of times it's been called.
 class MockUkmRecorder : public ukm::MojoUkmRecorder {
  public:
-  MockUkmRecorder()
-      : ukm::MojoUkmRecorder(
-            mojo::PendingRemote<ukm::mojom::UkmRecorderInterface>()) {}
-
+  MockUkmRecorder(ukm::mojom::UkmRecorderFactory& factory)
+      : MojoUkmRecorder(factory) {}
   void AddEntry(ukm::mojom::UkmEntryPtr entry) override { calls_++; }
 
   int calls() const { return calls_; }
@@ -1234,8 +1234,10 @@ class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
  public:
   void SetUp() override {
     RenderAccessibilityImplTest::SetUp();
+    mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+    std::ignore = factory.BindNewPipeAndPassReceiver();
     GetRenderAccessibilityImpl()->ukm_recorder_ =
-        std::make_unique<MockUkmRecorder>();
+        std::make_unique<MockUkmRecorder>(*factory);
   }
 
   void TearDown() override { RenderAccessibilityImplTest::TearDown(); }

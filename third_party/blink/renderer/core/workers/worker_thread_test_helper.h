@@ -57,7 +57,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
                           false) {
     ReadyToRunWorkerScript();
     GetBrowserInterfaceBroker().SetBinderForTesting(
-        ukm::mojom::UkmRecorderInterface::Name_,
+        ukm::mojom::UkmRecorderFactory::Name_,
         WTF::BindRepeating(
             [](ScopedFakeUkmRecorder* interface,
                mojo::ScopedMessagePipeHandle handle) {

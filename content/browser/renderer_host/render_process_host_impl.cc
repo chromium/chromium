@@ -183,7 +183,7 @@
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
-#include "services/metrics/ukm_recorder_interface.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -1298,9 +1298,9 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
       return;
     }
 
-    if (auto r = receiver.As<ukm::mojom::UkmRecorderInterface>()) {
-      metrics::UkmRecorderInterface::Create(ukm::UkmRecorder::Get(),
-                                            std::move(r));
+    if (auto r = receiver.As<ukm::mojom::UkmRecorderFactory>()) {
+      metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
+                                              std::move(r));
       return;
     }
 

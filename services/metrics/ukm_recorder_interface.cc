@@ -36,11 +36,4 @@ void UkmRecorderInterface::UpdateSourceURL(int64_t source_id,
   ukm_recorder_->UpdateSourceURL(source_id, GURL(url));
 }
 
-void UkmRecorderInterface::BindClient(
-    mojo::PendingRemote<ukm::mojom::UkmRecorderClientInterface>
-        pending_remote) {
-  metrics::UkmRecorderClientInterfaceRegistry::AddClientToCurrentRegistry(
-      std::move(pending_remote));
-}
-
 }  // namespace metrics

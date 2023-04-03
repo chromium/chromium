@@ -39,7 +39,15 @@ interface UkmRecorderClientInterface {
 interface UkmRecorderInterface {
   AddEntry(UkmEntry entry);
   UpdateSourceURL(int64 source_id, string url);
-  // Tells the browser process to bind remote end of UkmRecorderClientInterface,
-  // and send parameters through the same interface.
-  BindClient(pending_remote<UkmRecorderClientInterface> remote);
+};
+
+// This interface is used for building bidirectional communication between
+// browser & renderer/GPU process, i.e., between UkmRecorder <-> MojoUkmRecorder.
+interface UkmRecorderFactory{
+  // MojoUkmRecorder calls this method when it's first initialized. |client_remote|
+  // is optional, since it is null when feature |ukm::kUkmReduceAddEntryIPC| is
+  // disabled as we don't allow any updates in UkmRecorderParameters coming from
+  // browser process to reach MojoUkmRecorders.
+  CreateUkmRecorder(pending_receiver<UkmRecorderInterface> receiver,
+                    pending_remote<UkmRecorderClientInterface>? client_remote);
 };

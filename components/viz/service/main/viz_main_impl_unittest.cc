@@ -39,9 +39,8 @@ class MockDelegate : public VizMainImpl::Delegate {
 // that the dependency-injected UKM recorder actually gets used.
 class MockUkmRecorder : public ukm::MojoUkmRecorder {
  public:
-  MockUkmRecorder()
-      : ukm::MojoUkmRecorder(
-            mojo::PendingRemote<ukm::mojom::UkmRecorderInterface>()) {}
+  MockUkmRecorder(ukm::mojom::UkmRecorderFactory& factory)
+      : MojoUkmRecorder(factory) {}
 
   MOCK_METHOD1(AddEntry, void(ukm::mojom::UkmEntryPtr));
 };
@@ -89,8 +88,12 @@ TEST(VizMainImplTest, OopVizDependencyInjection) {
 
   // |VizMainImpl| is supposed to use the |UkmRecorder| injected through
   // |ExternalDependencies|.
+
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  std::ignore = factory.BindNewPipeAndPassReceiver();
   std::unique_ptr<MockUkmRecorder> mock_ukm_recorder =
-      std::make_unique<MockUkmRecorder>();
+      std::make_unique<MockUkmRecorder>(*factory);
+
   EXPECT_CALL(*mock_ukm_recorder, AddEntry);
   external_deps.ukm_recorder = std::move(mock_ukm_recorder);
 

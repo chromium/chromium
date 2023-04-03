@@ -32,8 +32,6 @@ class UkmRecorderInterface : public ukm::mojom::UkmRecorderInterface {
   // ukm::mojom::UkmRecorderInterface:
   void AddEntry(ukm::mojom::UkmEntryPtr entry) override;
   void UpdateSourceURL(int64_t source_id, const std::string& url) override;
-  void BindClient(mojo::PendingRemote<ukm::mojom::UkmRecorderClientInterface>
-                      remote) override;
 
   raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 };

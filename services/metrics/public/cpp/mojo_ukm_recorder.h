@@ -20,18 +20,19 @@ namespace ukm {
 
 /**
  * A helper wrapper that lets UKM data be recorded on other processes with the
- * same interface that is used in the browser process.
+ * same interface that is used in the browser process. When feature
+ * |kUkmReduceAddEntryIPC| is enabled, MojoUkmRecorder is able to decide whether
+ * to send the UKM data to browser process or not.
  *
  * Usage Example:
  *
- *  mojo::PendingRemote<mojom::UkmRecorderInterface> recorder;
+ *  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
  *
  *  // This step depends on how the Metrics service is embedded in the
  *  // application.
- *  BindUkmRecorderSomewhere(recorder.InitWithNewPipeAndPassReceiver());
+ *  BindUkmRecorderFactorySomewhere(factory.BindNewPipeAndPassReceiver());
  *
- *  auto ukm_recorder =
- *      std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+ *  auto ukm_recorder = ukm::MojoUkmRecorder::Create(*factory);
  *  ukm::builders::MyEvent(source_id)
  *      .SetMyMetric(metric_value)
  *      .Record(ukm_recorder.get());
@@ -40,8 +41,8 @@ class METRICS_EXPORT MojoUkmRecorder
     : public UkmRecorder,
       public ukm::mojom::UkmRecorderClientInterface {
  public:
-  explicit MojoUkmRecorder(
-      mojo::PendingRemote<mojom::UkmRecorderInterface> recorder_interface);
+  static std::unique_ptr<MojoUkmRecorder> Create(
+      mojom::UkmRecorderFactory& factory);
 
   MojoUkmRecorder(const MojoUkmRecorder&) = delete;
   MojoUkmRecorder& operator=(const MojoUkmRecorder&) = delete;
@@ -49,6 +50,9 @@ class METRICS_EXPORT MojoUkmRecorder
   ~MojoUkmRecorder() override;
 
   base::WeakPtr<MojoUkmRecorder> GetWeakPtr();
+
+ protected:
+  explicit MojoUkmRecorder(mojom::UkmRecorderFactory& factory);
 
  private:
   bool ShouldDropEntry(const mojom::UkmEntry& entry);
@@ -69,7 +73,7 @@ class METRICS_EXPORT MojoUkmRecorder
   void SetParameters(ukm::mojom::UkmRecorderParametersPtr params) override;
 
   mojo::Remote<mojom::UkmRecorderInterface> interface_;
-  mojo::Receiver<ukm::mojom::UkmRecorderClientInterface> receiver_;
+  mojo::Receiver<ukm::mojom::UkmRecorderClientInterface> receiver_{this};
   // params_->event_hash_bypass_list needs to be sorted for ShouldDropEntry to
   // work correctly, since a binary search is done for finding event hash of
   // UkmEntry in event_hash_bypass_list.

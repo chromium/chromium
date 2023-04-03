@@ -9,21 +9,27 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
 namespace ukm {
 
-MojoUkmRecorder::MojoUkmRecorder(
-    mojo::PendingRemote<mojom::UkmRecorderInterface> interface)
-    : interface_(std::move(interface)), receiver_(this) {
-  if (!interface_.is_bound()) {
-    // Interface might not be bound in tests.
-    return;
-  }
+std::unique_ptr<ukm::MojoUkmRecorder> MojoUkmRecorder::Create(
+    mojom::UkmRecorderFactory& factory) {
+  return absl::WrapUnique(new MojoUkmRecorder(factory));
+}
+
+MojoUkmRecorder::MojoUkmRecorder(mojom::UkmRecorderFactory& factory) {
   if (base::FeatureList::IsEnabled(kUkmReduceAddEntryIPC)) {
-    interface_->BindClient(receiver_.BindNewPipeAndPassRemote());
+    factory.CreateUkmRecorder(interface_.BindNewPipeAndPassReceiver(),
+                              receiver_.BindNewPipeAndPassRemote());
+
     receiver_.set_disconnect_handler(base::BindOnce(
         &MojoUkmRecorder::ClientDisconnected, weak_factory_.GetWeakPtr()));
+  } else {
+    factory.CreateUkmRecorder(interface_.BindNewPipeAndPassReceiver(),
+                              mojo::NullRemote());
   }
 }
 

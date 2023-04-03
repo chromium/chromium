@@ -97,11 +97,9 @@ viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
   deps.shutdown_event = process->GetShutDownEvent();
   deps.io_thread_task_runner = process->io_task_runner();
 
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> ukm_recorder;
-  ChildThread::Get()->BindHostReceiver(
-      ukm_recorder.InitWithNewPipeAndPassReceiver());
-  deps.ukm_recorder =
-      std::make_unique<ukm::MojoUkmRecorder>(std::move(ukm_recorder));
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  ChildThread::Get()->BindHostReceiver(factory.BindNewPipeAndPassReceiver());
+  deps.ukm_recorder = ukm::MojoUkmRecorder::Create(*factory);
   return deps;
 }
 

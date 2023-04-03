@@ -50,8 +50,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
-#include "services/metrics/ukm_recorder_interface.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
@@ -2206,11 +2205,12 @@ TEST_F(UkmReduceAddEntryIpcTest, RecordingEnabled) {
 
   // Custom UkmRecorder to intercept messages to and from UkmService to clients.
   MockUkmRecorder mock_recorder;
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
-  metrics::UkmRecorderInterface::Create(
-      &mock_recorder, (recorder.InitWithNewPipeAndPassReceiver()));
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
+
   // MojoUkmRecorder (client).
-  MojoUkmRecorder mojo_recorder(std::move(recorder));
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
 
   service.EnableRecording();
   run_loop.RunUntilIdle();
@@ -2220,7 +2220,7 @@ TEST_F(UkmReduceAddEntryIpcTest, RecordingEnabled) {
   // enabled/disabled.
   EXPECT_CALL(mock_recorder, AddEntry).Times(1);
 
-  builder.Record(&mojo_recorder);
+  builder.Record(mojo_recorder.get());
   run_loop.RunUntilIdle();
 }
 
@@ -2239,12 +2239,12 @@ TEST_F(UkmReduceAddEntryIpcTest, RecordingDisabled) {
 
   // Custom UkmRecorder to intercept messages to and from UkmService to clients.
   MockUkmRecorder mock_recorder;
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
 
-  metrics::UkmRecorderInterface::Create(
-      &mock_recorder, (recorder.InitWithNewPipeAndPassReceiver()));
   // MojoUkmRecorder (client).
-  MojoUkmRecorder mojo_recorder(std::move(recorder));
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
 
   service.DisableRecording();
   run_loop.RunUntilIdle();
@@ -2254,7 +2254,7 @@ TEST_F(UkmReduceAddEntryIpcTest, RecordingDisabled) {
   // enabled/disabled.
   EXPECT_CALL(mock_recorder, AddEntry).Times(0);
 
-  builder.Record(&mojo_recorder);
+  builder.Record(mojo_recorder.get());
   run_loop.RunUntilIdle();
 }
 
@@ -2269,10 +2269,12 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
 
   // Custom UkmRecorder to intercept messages to and from UkmService to clients.
   MockUkmRecorder mock_recorder;
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
-  metrics::UkmRecorderInterface::Create(
-      &mock_recorder, (recorder.InitWithNewPipeAndPassReceiver()));
-  MojoUkmRecorder mojo_recorder(std::move(recorder));
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
+
+  // MojoUkmRecorder (client).
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
 
   // Recording Disabled.
   service.DisableRecording();
@@ -2309,7 +2311,7 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
           observed_ukm_entry = std::move(entry);
         }));
 
-    builder.Record(&mojo_recorder);
+    builder.Record(mojo_recorder.get());
     run_loop.RunUntilIdle();
     // Expects the UkmEntry seen at both sent(MojoUkmRecorder) and
     // receive(MockUkmRecorder) to be same.
@@ -2324,7 +2326,7 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
     // Expect 0 calls to MockUkmRecorer::AddEntry since the UKM event will be
     // filtered out at the client.
     EXPECT_CALL(mock_recorder, AddEntry).Times(0);
-    builder2.Record(&mojo_recorder);
+    builder2.Record(mojo_recorder.get());
     run_loop.RunUntilIdle();
   }
   {
@@ -2341,7 +2343,7 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
         .WillOnce(testing::Invoke([&](mojom::UkmEntryPtr entry) {
           observed_ukm_entry = std::move(entry);
         }));
-    builder3.Record(&mojo_recorder);
+    builder3.Record(mojo_recorder.get());
     run_loop.RunUntilIdle();
     EXPECT_EQ(expected_ukm_entry, observed_ukm_entry);
   }
@@ -2357,7 +2359,7 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
     // Expect 0 calls to MockUkmRecorer::AddEntry since the UKM event will be
     // filtered out at the client, because of UKM recording being disabled.
     EXPECT_CALL(mock_recorder, AddEntry).Times(0);
-    builder4.Record(&mojo_recorder);
+    builder4.Record(mojo_recorder.get());
     run_loop.RunUntilIdle();
   }
 }
@@ -2375,11 +2377,12 @@ TEST_F(UkmReduceAddEntryIpcTest, MultipleDelegates) {
   // Initialize UkmService.
   service.Initialize();
   MockUkmRecorder mock_recorder;
-  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  metrics::UkmRecorderFactoryImpl::Create(&mock_recorder,
+                                          factory.BindNewPipeAndPassReceiver());
 
-  metrics::UkmRecorderInterface::Create(
-      &mock_recorder, (recorder.InitWithNewPipeAndPassReceiver()));
-  MojoUkmRecorder mojo_recorder(std::move(recorder));
+  // MojoUkmRecorder (client).
+  auto mojo_recorder = MojoUkmRecorder::Create(*factory);
 
   // Disabled recording but having multiple delegates will default clients
   // sending all AddEntry IPCs to the browser.
@@ -2391,7 +2394,7 @@ TEST_F(UkmReduceAddEntryIpcTest, MultipleDelegates) {
 
   EXPECT_CALL(mock_recorder, AddEntry).Times(1);
 
-  builder.Record(&mojo_recorder);
+  builder.Record(mojo_recorder.get());
   run_loop.RunUntilIdle();
 }
 }  // namespace ukm

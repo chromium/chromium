@@ -278,11 +278,10 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   if (url.ProtocolIs(extensions::kExtensionScheme) &&
       request_url.host_piece() == extension_misc::kDocsOfflineExtensionId) {
     if (!ukm_recorder_) {
-      mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+      mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
       content::RenderThread::Get()->BindHostReceiver(
-          recorder.InitWithNewPipeAndPassReceiver());
-      ukm_recorder_ =
-          std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+          factory.BindNewPipeAndPassReceiver());
+      ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
     }
 
     const ukm::SourceId source_id = frame->GetDocument().GetUkmSourceId();

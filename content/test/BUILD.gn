@@ -1679,6 +1679,7 @@ test("content_browsertests") {
     "//services/device/public/mojom:generic_sensor",
     "//services/image_annotation/public/cpp:cpp",
     "//services/image_annotation/public/mojom:mojom",
+    "//services/metrics",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
     "//services/network/public/mojom",

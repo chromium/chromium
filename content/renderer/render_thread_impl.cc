@@ -717,9 +717,9 @@ void RenderThreadImpl::Init() {
            ->FontFamiliesToActivelySample()
            .empty();
   if (should_actively_sample_fonts) {
-    mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
+    mojo::PendingRemote<ukm::mojom::UkmRecorderFactory> pending_factory;
     RenderThread::Get()->BindHostReceiver(
-        recorder.InitWithNewPipeAndPassReceiver());
+        pending_factory.InitWithNewPipeAndPassReceiver());
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -727,13 +727,15 @@ void RenderThreadImpl::Init() {
     sequenced_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder) {
-              auto ukm_recorder =
-                  std::make_unique<ukm::MojoUkmRecorder>(std::move(recorder));
+            [](mojo::PendingRemote<ukm::mojom::UkmRecorderFactory>
+                   pending_factory) {
+              mojo::Remote<ukm::mojom::UkmRecorderFactory> factory(
+                  std::move(pending_factory));
+              auto ukm_recorder = ukm::MojoUkmRecorder::Create(*factory);
               blink::IdentifiabilityActiveSampler::ActivelySampleAvailableFonts(
                   ukm_recorder.get());
             },
-            std::move(recorder)));
+            std::move(pending_factory)));
   }
   UpdateForegroundCrashKey(
       /*foreground=*/!blink::kLaunchingProcessIsBackgrounded);
