@@ -255,7 +255,7 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
       // range if it is non-ideal for real world data.
       const AttributionInfo& attribution_info = report.attribution_info();
       base::TimeDelta time_since_original_report_time =
-          now - report.OriginalReportTime();
+          now - report.initial_report_time();
       base::UmaHistogramCustomTimes(
           "Conversions.ExtraReportDelay2", time_since_original_report_time,
           base::Seconds(1), base::Days(24), /*buckets=*/100);
@@ -280,7 +280,7 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
 
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Conversions.AggregatableReport.ExtraReportDelay",
-          now - report.OriginalReportTime(), base::Seconds(1), base::Days(24),
+          now - report.initial_report_time(), base::Seconds(1), base::Days(24),
           50);
 
       UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -314,7 +314,7 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
   base::TimeDelta time_from_conversion_to_report_sent =
       now - report.attribution_info().time;
   base::TimeDelta time_since_original_report_time =
-      now - report.OriginalReportTime();
+      now - report.initial_report_time();
 
   switch (report.GetReportType()) {
     case AttributionReport::Type::kEventLevel:

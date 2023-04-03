@@ -1202,12 +1202,12 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   // TODO(apaseltiner): Consider informing the manager if the trigger
   // data was out of range for DevTools issue reporting.
   report = AttributionReport(
-      attribution_info, report_time, delegate_->NewReportID(),
-      /*failed_send_attempts=*/0,
+      attribution_info, report_time, /*initial_report_time=*/report_time,
+      delegate_->NewReportID(), /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(
           delegate_->SanitizeTriggerData(event_trigger->data, source_type),
           event_trigger->priority, randomized_response_rate,
-          AttributionReport::EventLevelData::Id(kUnsetReportId), report_time));
+          AttributionReport::EventLevelData::Id(kUnsetReportId)));
 
   dedup_key = event_trigger->dedup_key;
 
@@ -1398,10 +1398,10 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   return AttributionReport(
       AttributionInfo(std::move(source_data->source), trigger_time,
                       trigger_debug_key, std::move(*context_origin)),
-      report_time, std::move(external_report_id), failed_send_attempts,
+      report_time, initial_report_time, std::move(external_report_id),
+      failed_send_attempts,
       AttributionReport::EventLevelData(trigger_data, conversion_priority,
-                                        randomized_response_rate, report_id,
-                                        initial_report_time));
+                                        randomized_response_rate, report_id));
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -2823,12 +2823,12 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
           ? trigger.attestation()->aggregatable_report_id()
           : delegate_->NewReportID();
   report = AttributionReport(
-      attribution_info, report_time, std::move(external_report_id),
-      /*failed_send_attempts=*/0,
+      attribution_info, report_time, /*initial_report_time=*/report_time,
+      std::move(external_report_id), /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           std::move(contributions),
           AttributionReport::AggregatableAttributionData::Id(kUnsetReportId),
-          report_time, trigger_registration.aggregation_coordinator,
+          trigger_registration.aggregation_coordinator,
           std::move(attestation_token)));
 
   return AggregatableResult::kSuccess;
@@ -2862,8 +2862,7 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   insert_metadata_statement.BindString(
       3, report.external_report_id().AsLowercaseString());
   insert_metadata_statement.BindTime(4, report.report_time());
-  insert_metadata_statement.BindTime(
-      5, aggregatable_attribution->initial_report_time);
+  insert_metadata_statement.BindTime(5, report.initial_report_time());
   insert_metadata_statement.BindInt(
       6, SerializeAggregationCoordinator(
              aggregatable_attribution->aggregation_coordinator));
@@ -3013,10 +3012,11 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
       AttributionInfo(std::move(source_data->source), trigger_time,
                       trigger_debug_key,
                       /*context_origin=*/std::move(*destination_origin)),
-      report_time, std::move(external_report_id), failed_send_attempts,
+      report_time, initial_report_time, std::move(external_report_id),
+      failed_send_attempts,
       AttributionReport::AggregatableAttributionData(
-          std::move(contributions), report_id, initial_report_time,
-          *aggregation_coordinator, std::move(attestation_token)));
+          std::move(contributions), report_id, *aggregation_coordinator,
+          std::move(attestation_token)));
 }
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(

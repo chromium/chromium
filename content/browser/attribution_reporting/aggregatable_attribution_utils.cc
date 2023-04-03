@@ -157,7 +157,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           blink::mojom::AggregationServiceMode::kDefault,
           data->aggregation_coordinator),
       AggregatableReportSharedInfo(
-          data->initial_report_time, report.external_report_id(),
+          report.initial_report_time(), report.external_report_id(),
           attribution_info.source.common_info().reporting_origin(), debug_mode,
           std::move(additional_fields),
           AttributionReport::AggregatableAttributionData::kVersion,
