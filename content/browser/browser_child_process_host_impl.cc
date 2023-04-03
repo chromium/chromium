@@ -363,12 +363,6 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     OnProcessConnected();
 }
 
-void BrowserChildProcessHostImpl::HistogramBadMessageTerminated(
-    ProcessType process_type) {
-  UMA_HISTOGRAM_ENUMERATION("ChildProcess.BadMessgeTerminated", process_type,
-                            PROCESS_TYPE_MAX);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserChildProcessHostImpl::SetProcessBackgrounded(bool is_background) {
   DCHECK(child_process_);
@@ -772,8 +766,6 @@ void BrowserChildProcessHostImpl::TerminateProcessForBadMessage(
     const std::string& error) {
   if (!process)
     return;
-  HistogramBadMessageTerminated(
-      static_cast<ProcessType>(process->data_.process_type));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableKillAfterBadIPC)) {
     return;
