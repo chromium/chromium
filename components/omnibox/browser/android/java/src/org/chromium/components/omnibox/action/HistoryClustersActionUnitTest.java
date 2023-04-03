@@ -23,10 +23,30 @@ import org.chromium.components.browser_ui.styles.R;
 @Config(manifest = Config.NONE)
 public class HistoryClustersActionUnitTest {
     @Test
-    public void verifyDecorations_supportedPedalTypes() {
+    public void getIcon_returnsExpectedIcon() {
         var action = new HistoryClustersAction("hint", "query");
         assertEquals(R.drawable.ic_journeys, action.getIcon().iconRes);
         assertTrue(action.getIcon().tintWithTextColor);
+    }
+
+    @Test
+    public void creation_failsWithNullHint() {
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction(null, "query"));
+    }
+
+    @Test
+    public void creation_failsWithEmptyHint() {
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction("", "query"));
+    }
+
+    @Test
+    public void creation_failsWithNullQuery() {
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction("hint", null));
+    }
+
+    @Test
+    public void creation_failsWithEmptyQuery() {
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction("hint", ""));
     }
 
     @Test

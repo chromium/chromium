@@ -53,6 +53,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                  int id_suggestion_contents,
                  int id_accessibility_suffix,
                  int id_accessibility_hint);
+    LabelStrings(std::u16string hint,
+                 std::u16string suggestion_contents,
+                 std::u16string accessibility_suffix,
+                 std::u16string accessibility_hint);
     LabelStrings();
     LabelStrings(const LabelStrings&);
     ~LabelStrings();

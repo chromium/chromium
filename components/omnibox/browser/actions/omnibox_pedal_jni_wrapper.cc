@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/omnibox/browser/jni_headers/HistoryClustersAction_jni.h"
+#include "components/omnibox/browser/jni_headers/OmniboxActionInSuggest_jni.h"
 #include "components/omnibox/browser/jni_headers/OmniboxPedal_jni.h"
 #include "omnibox_action.h"
 #include "url/android/gurl_android.h"
@@ -29,7 +31,7 @@ inline jclass org_chromium_components_omnibox_action_OmniboxAction_clazz(
 }  // namespace
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
-    std::u16string hint,
+    const std::u16string& hint,
     OmniboxPedalId pedal_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(Java_OmniboxPedal_Constructor(
@@ -38,13 +40,22 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
-    std::u16string hint,
-    std::string query) {
+    const std::u16string& hint,
+    const std::string& query) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ScopedJavaGlobalRef(
       Java_HistoryClustersAction_Constructor(
           env, base::android::ConvertUTF16ToJavaString(env, hint),
           base::android::ConvertUTF8ToJavaString(env, query)));
+}
+
+base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
+    const std::u16string& hint,
+    const std::string& serialized_action) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return base::android::ScopedJavaGlobalRef(Java_OmniboxActionInSuggest_build(
+      env, base::android::ConvertUTF16ToJavaString(env, hint),
+      base::android::ToJavaByteArray(env, serialized_action)));
 }
 
 // Convert a vector of OmniboxActions to Java counterpart.

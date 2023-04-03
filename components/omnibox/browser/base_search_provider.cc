@@ -16,6 +16,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -37,6 +38,7 @@
 #include "url/origin.h"
 
 namespace {
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 bool MatchTypeAndContentsAreEqual(const AutocompleteMatch& lhs,
                                   const AutocompleteMatch& rhs) {
@@ -114,6 +116,16 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.image_dominant_color = suggestion.entity_info().dominant_color();
   match.image_url = GURL(suggestion.entity_info().image_url());
   match.entity_id = suggestion.entity_info().entity_id();
+
+  // Attach Actions in Suggest to the newly created match.
+  if constexpr (is_android) {
+    for (const omnibox::ActionInfo& action_info :
+         suggestion.entity_info().action_suggestions()) {
+      match.actions.emplace_back(
+          base::MakeRefCounted<OmniboxActionInSuggest>(action_info));
+    }
+  }
+
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();

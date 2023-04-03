@@ -1,0 +1,77 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_jni_wrapper.h"
+#include "url/android/gurl_android.h"
+#endif
+
+// TODO(crbug/1418077) export this from upstream.
+// See entity_info.proto, ActionType.
+constexpr int kActionTypeCount = 20;
+
+OmniboxActionInSuggest::OmniboxActionInSuggest(omnibox::ActionInfo action_info)
+    : OmniboxAction(
+          OmniboxAction::LabelStrings(
+              base::UTF8ToUTF16(action_info.displayed_text()),
+              base::UTF8ToUTF16(action_info.displayed_text()),
+              l10n_util::GetStringUTF16(
+                  IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX),
+              l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST)),
+          {},
+          false),
+      action_info_{std::move(action_info)} {
+#if BUILDFLAG(IS_ANDROID)
+  std::string serialized_action;
+  if (!action_info_.SerializeToString(&serialized_action)) {
+    serialized_action.clear();
+  }
+  j_omnibox_action_.Reset(
+      BuildOmniboxActionInSuggest(strings_.hint, serialized_action));
+#endif
+}
+
+OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaGlobalRef<jobject>
+OmniboxActionInSuggest::GetJavaObject() const {
+  return j_omnibox_action_;
+}
+#endif
+
+void OmniboxActionInSuggest::RecordActionShown(size_t position,
+                                               bool executed) const {
+  // TODO(crbug/1418077): propagate count value from upstream and drop casting.
+  base::UmaHistogramEnumeration(
+      "Omnibox.ActionInSuggest.Shown", action_info_.action_type(),
+      static_cast<omnibox::ActionInfo_ActionType>(kActionTypeCount));
+
+  if (executed) {
+    base::UmaHistogramExactLinear(
+        "Omnibox.SuggestionUsed.ActionInSuggest", action_info_.action_type(),
+        static_cast<omnibox::ActionInfo_ActionType>(kActionTypeCount));
+  }
+}
+
+void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
+  // Note: this is platform-dependent.
+  // There's currently no code wiring ActionInSuggest on the Desktop and iOS.
+  // TODO(crbug/1418077): log searchboxstats metrics.
+  NOTREACHED() << "Not implemented";
+}
+
+OmniboxActionId OmniboxActionInSuggest::ActionId() const {
+  return OmniboxActionId::ACTION_IN_SUGGEST;
+}

@@ -380,6 +380,8 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "actions/omnibox_action_in_suggest.cc",
+      "actions/omnibox_action_in_suggest.h",
       "actions/omnibox_pedal_jni_wrapper.cc",
       "actions/omnibox_pedal_jni_wrapper.h",
       "autocomplete_match_android.cc",
@@ -490,6 +492,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxActionInSuggest.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
 
@@ -521,6 +524,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersActionUnitTest.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxActionInSuggestUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedalUnitTest.java",
     ]
     deps = [
@@ -570,6 +574,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersAction.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxActionInSuggest.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
   }

@@ -28,13 +28,13 @@ import java.util.Map;
 @Config(manifest = Config.NONE)
 public class OmniboxPedalUnitTest {
     @Test
-    public void verifyDecorations() {
+    public void getIcon_returnsExpectedIcon() {
         ChipIcon defaultIcon = new ChipIcon(R.drawable.fre_product_logo, false);
         Map<Integer, ChipIcon> customResourceMap = ImmutableMap.of(
                 OmniboxPedalType.PLAY_CHROME_DINO_GAME, new ChipIcon(R.drawable.ic_dino, true));
 
         for (int type = OmniboxPedalType.NONE; type < OmniboxPedalType.TOTAL_COUNT; type++) {
-            var icon = new OmniboxPedal("", type).getIcon();
+            var icon = new OmniboxPedal("hint", type).getIcon();
             var expectedIcon = customResourceMap.getOrDefault(type, defaultIcon);
             assertEquals(
                     String.format(
@@ -44,6 +44,18 @@ public class OmniboxPedalUnitTest {
                                  type),
                     expectedIcon.tintWithTextColor, icon.tintWithTextColor);
         }
+    }
+
+    @Test
+    public void creation_failsWithNullHint() {
+        assertThrows(AssertionError.class,
+                () -> new OmniboxPedal(null, OmniboxPedalType.CLEAR_BROWSING_DATA));
+    }
+
+    @Test
+    public void creation_failsWithEmptyHint() {
+        assertThrows(AssertionError.class,
+                () -> new OmniboxPedal("", OmniboxPedalType.CLEAR_BROWSING_DATA));
     }
 
     @Test
@@ -64,6 +76,6 @@ public class OmniboxPedalUnitTest {
 
     @Test
     public void safeCasting_successWithPedal() {
-        OmniboxPedal.from(new OmniboxPedal("", OmniboxPedalType.NONE));
+        OmniboxPedal.from(new OmniboxPedal("hint", OmniboxPedalType.NONE));
     }
 }

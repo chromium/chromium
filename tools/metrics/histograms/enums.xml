@@ -1352,6 +1352,14 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="No Action"/>
 </enum>
 
+<enum name="ActionInSuggestType">
+  <summary>The type of Omnibox Action in Suggest.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="2" label="Directions"/>
+  <int value="3" label="Call"/>
+  <int value="6" label="Website"/>
+</enum>
+
 <enum name="ActionUponResourceRequest">
   <int value="0" label="Load resource"/>
   <int value="1" label="Revalidate resource"/>

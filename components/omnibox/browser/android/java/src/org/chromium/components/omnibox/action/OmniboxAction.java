@@ -4,6 +4,8 @@
 
 package org.chromium.components.omnibox.action;
 
+import android.text.TextUtils;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
@@ -35,6 +37,7 @@ public abstract class OmniboxAction {
     public final @NonNull String hint;
 
     public OmniboxAction(@OmniboxActionType int type, @NonNull String hint) {
+        assert !TextUtils.isEmpty(hint);
         this.actionId = type;
         this.hint = hint;
     }

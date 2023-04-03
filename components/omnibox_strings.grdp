@@ -129,6 +129,14 @@
     Resume your journey button, press Enter to resume your journey and see relevant activity in your Chrome history
   </message>
 
+  <!-- Omnibox Actions in Suggest. -->
+  <message name="IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX" desc="Suffix for spoken suggestion description with actions in suggest button(s) explaining that additional actions are available. Unlike Pedals or History Clusters, Actions come from the server and may encompass things like `Website` or `Call`, but are otherwise no different than, say, `Switch To Tab` on the attached screenshot.">
+    <ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Call</ex></ph>, press Tab to browse available actions, then Enter to execute selected action.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST" desc="Announcement when the Action in Suggest button is focused. Unlike Pedals or History Clusters, Actions come from the server and may encompass things like `Website` or `Call`, but are otherwise no different than, say, `Switch To Tab` on the attached screenshot.">
+    Press Enter to activate this action.
+  </message>
+
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
   -->
