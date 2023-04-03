@@ -342,8 +342,7 @@
                         "AndroidBatteryMetricsReportOnUIThread"
                     ],
                     "disable_features": [
-                        "AndroidScrollOptimizations",
-                        "UseGetrandomForRandBytes"
+                        "AndroidScrollOptimizations"
                     ]
                 }
             ]
