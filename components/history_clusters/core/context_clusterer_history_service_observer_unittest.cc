@@ -195,6 +195,13 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         history_service_.get(), template_url_service_.get(),
         optimization_guide_decider_.get(), engagement_score_provider_.get());
     observer_->OverrideClockForTesting(task_environment_.GetMockClock());
+
+    // TODO(b/276488340): Update this test when non context clusterer code gets
+    //   cleaned up.
+    Config config;
+    config.persist_clusters_in_history_db = false;
+    config.use_navigation_context_clusters = false;
+    SetConfigForTesting(config);
   }
 
   void TearDown() override {
