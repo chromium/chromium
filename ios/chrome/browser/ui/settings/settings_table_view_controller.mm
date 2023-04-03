@@ -900,6 +900,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       kColorfulBackgroundSymbolCornerRadius;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
+    // TODO(crbug.com/1406540): Incorporate the new insecure types.
     UIImage* unSafeIconImage = DefaultSymbolTemplateWithPointSize(
         kWarningFillSymbol, kTrailingSymbolImagePointSize);
     _safetyCheckItem.trailingImage = unSafeIconImage;

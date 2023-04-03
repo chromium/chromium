@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+private.h"
@@ -65,6 +66,7 @@
 #endif
 
 using l10n_util::GetNSString;
+using password_manager::WarningType;
 using password_manager::features::IsPasswordCheckupEnabled;
 
 namespace {
@@ -103,6 +105,23 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
 constexpr double kUpdateRowMinDelay = 2.0;
 constexpr double kPasswordRowMinDelay = 1.5;
 constexpr double kSafeBrowsingRowMinDelay = 3.0;
+
+// Returns true if any of the save passwords are insecure.
+bool FoundInsecurePasswords(PasswordCheckRowStates passwordCheckRowState) {
+  switch (passwordCheckRowState) {
+    case PasswordCheckRowStateSafe:
+    case PasswordCheckRowStateDefault:
+    case PasswordCheckRowStateRunning:
+    case PasswordCheckRowStateDisabled:
+    case PasswordCheckRowStateError:
+      return false;
+    case PasswordCheckRowStateUnmutedCompromisedPasswords:
+    case PasswordCheckRowStateReusedPasswords:
+    case PasswordCheckRowStateWeakPasswords:
+    case PasswordCheckRowStateDismissedWarnings:
+      return true;
+  }
+}
 
 }  // namespace
 
@@ -227,7 +246,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     // credentials.
     if (!_passwordCheckManager->GetInsecureCredentials().empty() &&
         PreviousSafetyCheckIssueFound()) {
-      _passwordCheckRowState = PasswordCheckRowStateUnSafe;
+      _passwordCheckRowState = PasswordCheckRowStateUnmutedCompromisedPasswords;
     }
 
     _previousPasswordCheckRowState = _passwordCheckRowState;
@@ -297,7 +316,6 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
   if (state == PasswordCheckState::kOffline) {
     [self handleUpdateCheckOffline];
   }
-
   self.passwordCheckRowState = [self computePasswordCheckRowState:state];
   // Push update to the display.
   [self reconfigurePasswordCheckItem];
@@ -351,7 +369,14 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
         case PasswordCheckRowStateDisabled:  // i tap: Show error popover.
         case PasswordCheckRowStateError:     // i tap: Show error popover.
           break;
-        case PasswordCheckRowStateUnSafe:  // Go to password issues page.
+        // TODO(crbug.com/1406540): Handle the new states (reused, weak and
+        // dismissed).
+        case PasswordCheckRowStateReusedPasswords:
+        case PasswordCheckRowStateWeakPasswords:
+        case PasswordCheckRowStateDismissedWarnings:
+        case PasswordCheckRowStateUnmutedCompromisedPasswords:  // Go to
+                                                                // password
+                                                                // issues page.
           base::RecordAction(
               base::UserMetricsAction("Settings.SafetyCheck.ManagePasswords"));
           base::UmaHistogramEnumeration(
@@ -393,7 +418,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     case UpdateItemType:
       return self.updateCheckRowState == UpdateCheckRowStateOutOfDate;
     case PasswordItemType:
-      return self.passwordCheckRowState == PasswordCheckRowStateUnSafe;
+      return FoundInsecurePasswords(self.passwordCheckRowState);
     case CheckStartItemType:
       return YES;
     case SafeBrowsingItemType:
@@ -475,54 +500,91 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       self.currentPasswordCheckState == PasswordCheckState::kRunning;
   self.currentPasswordCheckState = newState;
 
-  BOOL noInsecurePasswords =
-      self.passwordCheckManager->GetInsecureCredentials().empty();
+  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+      _passwordCheckManager->GetInsecureCredentials();
+  BOOL noInsecurePasswords = insecureCredentials.empty();
 
   switch (self.currentPasswordCheckState) {
     case PasswordCheckState::kRunning:
       return PasswordCheckRowStateRunning;
     case PasswordCheckState::kNoPasswords:
-      return PasswordCheckRowStateDefault;
+      return PasswordCheckRowStateDisabled;
     case PasswordCheckState::kSignedOut:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kSignedOut);
-      return noInsecurePasswords ? PasswordCheckRowStateError
-                                 : PasswordCheckRowStateUnSafe;
+      if (!IsPasswordCheckupEnabled() && !noInsecurePasswords) {
+        return PasswordCheckRowStateUnmutedCompromisedPasswords;
+      }
+      return PasswordCheckRowStateError;
     case PasswordCheckState::kOffline:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kOffline);
-      return noInsecurePasswords ? PasswordCheckRowStateError
-                                 : PasswordCheckRowStateUnSafe;
+      if (!IsPasswordCheckupEnabled() && !noInsecurePasswords) {
+        return PasswordCheckRowStateUnmutedCompromisedPasswords;
+      }
+      return PasswordCheckRowStateError;
     case PasswordCheckState::kQuotaLimit:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kQuotaLimit);
-      return noInsecurePasswords ? PasswordCheckRowStateError
-                                 : PasswordCheckRowStateUnSafe;
+      if (!IsPasswordCheckupEnabled() && !noInsecurePasswords) {
+        return PasswordCheckRowStateUnmutedCompromisedPasswords;
+      }
+      return PasswordCheckRowStateError;
     case PasswordCheckState::kOther:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kError);
-      return noInsecurePasswords ? PasswordCheckRowStateError
-                                 : PasswordCheckRowStateUnSafe;
+      if (!IsPasswordCheckupEnabled() && !noInsecurePasswords) {
+        return PasswordCheckRowStateUnmutedCompromisedPasswords;
+      }
+      return PasswordCheckRowStateError;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!noInsecurePasswords) {
+      if (!IsPasswordCheckupEnabled() && !noInsecurePasswords) {
         base::UmaHistogramEnumeration(
             kSafetyCheckMetricsPasswords,
             safety_check::PasswordsStatus::kCompromisedExist);
-        return PasswordCheckRowStateUnSafe;
+        return PasswordCheckRowStateUnmutedCompromisedPasswords;
       } else if (self.currentPasswordCheckState == PasswordCheckState::kIdle) {
         // Safe state is only possible after the state transitioned from
         // kRunning to kIdle.
         if (wasRunning) {
-          base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
-                                        safety_check::PasswordsStatus::kSafe);
-          return PasswordCheckRowStateSafe;
-        } else {
-          return PasswordCheckRowStateDefault;
+          if (noInsecurePasswords) {
+            base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
+                                          safety_check::PasswordsStatus::kSafe);
+            return PasswordCheckRowStateSafe;
+          }
+          // Reaching this point means that the kIOSPasswordCheckup feature is
+          // enabled and that there are insecure passwords.
+          return [self passwordCheckRowStateFromHighestPriorityWarningType:
+                           insecureCredentials];
         }
       }
       return PasswordCheckRowStateDefault;
     }
+  }
+}
+
+// Returns the right PasswordCheckRowState depending on the highest priority
+// warning type.
+- (PasswordCheckRowStates)passwordCheckRowStateFromHighestPriorityWarningType:
+    (const std::vector<password_manager::CredentialUIEntry>&)
+        insecureCredentials {
+  switch (GetWarningOfHighestPriority(insecureCredentials)) {
+    case WarningType::kCompromisedPasswordsWarning:
+      base::UmaHistogramEnumeration(
+          kSafetyCheckMetricsPasswords,
+          safety_check::PasswordsStatus::kCompromisedExist);
+      return PasswordCheckRowStateUnmutedCompromisedPasswords;
+    case WarningType::kReusedPasswordsWarning:
+      return PasswordCheckRowStateReusedPasswords;
+    case WarningType::kWeakPasswordsWarning:
+      return PasswordCheckRowStateWeakPasswords;
+    case WarningType::kDismissedWarningsWarning:
+      return PasswordCheckRowStateDismissedWarnings;
+    case WarningType::kNoInsecurePasswordsWarning:
+      base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
+                                    safety_check::PasswordsStatus::kSafe);
+      return PasswordCheckRowStateSafe;
   }
 }
 
@@ -775,7 +837,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
   // If a check has finished and issues were found, update the timestamp.
   BOOL issuesFound =
       (self.updateCheckRowState == UpdateCheckRowStateOutOfDate) ||
-      (self.passwordCheckRowState == PasswordCheckRowStateUnSafe);
+      (FoundInsecurePasswords(self.passwordCheckRowState));
   if (self.checkDidRun && issuesFound) {
     [self updateTimestampOfLastCheck];
     self.checkDidRun = NO;
@@ -1076,7 +1138,12 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
           [UIColor colorNamed:kGreenColor];
       break;
     }
-    case PasswordCheckRowStateUnSafe: {
+    // TODO(crbug.com/1406540): Handle the new states (reused, weak and
+    // dismissed).
+    case PasswordCheckRowStateReusedPasswords:
+    case PasswordCheckRowStateWeakPasswords:
+    case PasswordCheckRowStateDismissedWarnings:
+    case PasswordCheckRowStateUnmutedCompromisedPasswords: {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,

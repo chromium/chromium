@@ -53,8 +53,14 @@ typedef NS_ENUM(NSInteger, UpdateCheckRowStates) {
 typedef NS_ENUM(NSInteger, PasswordCheckRowStates) {
   // When no compromised passwords were detected.
   PasswordCheckRowStateSafe,
-  // When user has compromised passwords.
-  PasswordCheckRowStateUnSafe,
+  // When user has unmuted compromised passwords.
+  PasswordCheckRowStateUnmutedCompromisedPasswords,
+  // When user has reused passwords.
+  PasswordCheckRowStateReusedPasswords,
+  // When user has weak passwords.
+  PasswordCheckRowStateWeakPasswords,
+  // When user has dismissed warnings.
+  PasswordCheckRowStateDismissedWarnings,
   // When check has not been run yet.
   PasswordCheckRowStateDefault,
   // When password check is running.
