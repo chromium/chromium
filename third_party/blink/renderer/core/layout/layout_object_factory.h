@@ -19,7 +19,6 @@ class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
 enum class LegacyLayout;
-class LayoutProgress;
 class LayoutText;
 class LayoutTextFragment;
 class Node;
@@ -54,9 +53,6 @@ class LayoutObjectFactory {
                                                 int start_offset,
                                                 int length,
                                                 LegacyLayout);
-  static LayoutProgress* CreateProgress(Node* node,
-                                        const ComputedStyle& style,
-                                        LegacyLayout legacy);
 
   static LayoutObject* CreateBR(Node*, LegacyLayout);
   static LayoutObject* CreateWordBreak(HTMLElement*, LegacyLayout);

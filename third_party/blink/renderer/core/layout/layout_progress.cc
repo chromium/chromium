@@ -34,16 +34,14 @@ constexpr base::TimeDelta kAnimationDuration = kAnimationInterval * 20;
 
 }  // namespace
 
-LayoutProgress::LayoutProgress(ContainerNode* node)
-    : LayoutBlockFlow(node),
+LayoutProgress::LayoutProgress(HTMLProgressElement& node)
+    : LayoutNGBlockFlow(&node),
       position_(HTMLProgressElement::kInvalidPosition),
       animating_(false),
       animation_timer_(
-          node->GetDocument().GetTaskRunner(TaskType::kInternalDefault),
+          node.GetDocument().GetTaskRunner(TaskType::kInternalDefault),
           this,
-          &LayoutProgress::AnimationTimerFired) {
-  DCHECK(IsA<HTMLProgressElement>(node));
-}
+          &LayoutProgress::AnimationTimerFired) {}
 
 LayoutProgress::~LayoutProgress() = default;
 

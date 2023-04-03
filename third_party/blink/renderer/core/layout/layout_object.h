@@ -911,10 +911,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGOutsideListMarker);
   }
-  bool IsLayoutNGProgress() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGProgress);
-  }
   bool IsLayoutNGText() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGText);
@@ -3616,7 +3612,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGInsideListMarker,
     kLayoutObjectNGListItem,
     kLayoutObjectNGOutsideListMarker,
-    kLayoutObjectNGProgress,
     kLayoutObjectNGText,
     kLayoutObjectNGTextCombine,
     kLayoutObjectNGTextControlMultiLine,

@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_word_break.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_progress.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
@@ -184,12 +183,6 @@ LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
   if (force_legacy)
     layout_text_fragment->SetForceLegacyLayout();
   return layout_text_fragment;
-}
-
-LayoutProgress* LayoutObjectFactory::CreateProgress(Node* node,
-                                                    const ComputedStyle& style,
-                                                    LegacyLayout legacy) {
-  return CreateObject<LayoutProgress, LayoutNGProgress>(*node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateBR(Node* node, LegacyLayout legacy) {

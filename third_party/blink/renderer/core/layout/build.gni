@@ -410,8 +410,6 @@ blink_core_sources_layout = [
   "ng/layout_ng_frame_set.h",
   "ng/layout_ng_mixin.cc",
   "ng/layout_ng_mixin.h",
-  "ng/layout_ng_progress.cc",
-  "ng/layout_ng_progress.h",
   "ng/layout_ng_ruby_as_block.cc",
   "ng/layout_ng_ruby_as_block.h",
   "ng/layout_ng_ruby_base.cc",
