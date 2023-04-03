@@ -7,6 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("features.gni")
 
+import("//build/config/cronet/config.gni")
+
 if (is_android || is_robolectric) {
   import("//build/config/android/rules.gni")
 }
@@ -151,7 +153,9 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
     deps = [ "//base:jni_java" ]
   }
+}
 
+if (is_android && !is_cronet_build) {
   android_library("gurl_java") {
     sources = [
       "android/java/src/org/chromium/url/GURL.java",
@@ -246,7 +250,7 @@ test("url_unittests") {
     deps += [ "//third_party/icu:icuuc" ]
   }
 
-  if (!is_ios) {
+  if (!is_ios && !is_cronet_build) {
     sources += [
       "mojom/scheme_host_port_mojom_traits_unittest.cc",
       "mojom/url_gurl_mojom_traits_unittest.cc",
@@ -285,7 +289,7 @@ fuzzer_test("gurl_fuzzer") {
   dict = "gurl_fuzzer.dict"
 }
 
-if (is_android) {
+if (is_android && !is_cronet_build) {
   source_set("android_test_helper") {
     testonly = true
     sources = [

@@ -3169,7 +3169,6 @@ test("base_unittests") {
     "json/string_escape_unittest.cc",
     "json/values_util_unittest.cc",
     "lazy_instance_unittest.cc",
-    "location_unittest.cc",
     "logging_unittest.cc",
     "memory/aligned_memory_unittest.cc",
     "memory/discardable_memory_backing_field_trial_unittest.cc",
@@ -3418,6 +3417,13 @@ test("base_unittests") {
     "version_unittest.cc",
     "vlog_unittest.cc",
   ]
+
+  if (!is_cronet_build) {
+    # location_unittest.cc fails gn check for tracing-shimmed Cronet builds.
+    # Cronet buildbot do not run base_unittests, so exclusing this test
+    # instead of adding a nogncheck is preferred (crbug.com/1400235).
+    sources += [ "location_unittest.cc" ]
+  }
 
   if (build_rust_base_conversions) {
     sources += [

@@ -6,6 +6,7 @@ import("//build/android/resource_sizes.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/android/system_image.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
@@ -42,6 +43,8 @@ import("channel.gni")
 import("java_sources.gni")
 import("static_initializers.gni")
 import("trichrome.gni")
+
+assert(!is_cronet_build)
 
 if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   assert(current_toolchain != android_secondary_abi_toolchain)
