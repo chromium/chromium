@@ -44,8 +44,9 @@ namespace {
 
 using RoundedCorner = RoundedDisplayGutter::RoundedCorner;
 
-constexpr viz::ResourceFormat kResourceFormat =
-    SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
+constexpr viz::SharedImageFormat kSharedImageFormat =
+    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                 : viz::SinglePlaneFormat::kBGRA_8888;
 
 gfx::Transform GetRootRotationTransform(const aura::Window& host_window) {
   // Root transform has both the rotation and scaling of the whole UI, therefore
@@ -114,7 +115,7 @@ RoundedDisplayUiResource::~RoundedDisplayUiResource() = default;
 // static
 std::unique_ptr<RoundedDisplayUiResource>
 RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
-                                             viz::ResourceFormat format,
+                                             viz::SharedImageFormat format,
                                              UiSourceId ui_source_id,
                                              bool is_overlay) {
   DCHECK(!size.IsEmpty());
@@ -126,9 +127,10 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
       aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
-          ->CreateGpuMemoryBuffer(size, viz::BufferFormat(kResourceFormat),
-                                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                                  gpu::kNullSurfaceHandle, nullptr);
+          ->CreateGpuMemoryBuffer(
+              size, viz::BufferFormat(kSharedImageFormat.resource_format()),
+              gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
+              nullptr);
 
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Failed to create GPU memory buffer";
@@ -164,7 +166,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   resource->damaged = true;
   resource->ui_source_id = ui_source_id;
   resource->is_overlay_candidate = is_overlay;
-  resource->format = viz::SharedImageFormat::SinglePlane(format);
+  resource->format = format;
   resource->resource_size = size;
   resource->gpu_memory_buffer = std::move(gpu_memory_buffer);
 
@@ -178,7 +180,7 @@ RoundedDisplayFrameFactory::AcquireUiResource(
   gfx::Size resource_size = gutter.bounds().size();
 
   viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
-      resource_size, kResourceFormat, gutter.ui_source_id());
+      resource_size, kSharedImageFormat, gutter.ui_source_id());
 
   std::unique_ptr<RoundedDisplayUiResource> resource;
 
@@ -187,7 +189,7 @@ RoundedDisplayFrameFactory::AcquireUiResource(
         resource_manager.ReleaseAvailableResource(reusable_resource_id)
             .release()));
   } else {
-    resource = CreateUiResource(resource_size, kResourceFormat,
+    resource = CreateUiResource(resource_size, kSharedImageFormat,
                                 gutter.ui_source_id(), gutter.NeedsOverlays());
   }
 

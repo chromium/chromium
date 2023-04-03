@@ -25,8 +25,9 @@
 namespace ash {
 namespace {
 
-constexpr viz::ResourceFormat kTestResourceFormat =
-    SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
+constexpr viz::SharedImageFormat kTestSharedImageFormat =
+    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                 : viz::SinglePlaneFormat::kBGRA_8888;
 constexpr gfx::Size kTestDisplaySize(1920, 1080);
 constexpr gfx::RoundedCornersF kTestPanelRadii(10);
 
@@ -242,7 +243,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
   for (const auto* gutter : gutters) {
     resource_manager_.OfferResource(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
-                                                     kTestResourceFormat,
+                                                     kTestSharedImageFormat,
                                                      gutter->ui_source_id(),
                                                      /*is_overlay=*/false));
   }
@@ -265,7 +266,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
     const auto* gutter = gutters.at(index);
     resource_manager_.OfferResource(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
-                                                     kTestResourceFormat,
+                                                     kTestSharedImageFormat,
                                                      gutter->ui_source_id(),
                                                      /*is_overlay=*/false));
   }

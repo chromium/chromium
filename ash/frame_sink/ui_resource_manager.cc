@@ -27,7 +27,7 @@ UiResourceManager::~UiResourceManager() {
 
 viz::ResourceId UiResourceManager::FindResourceToReuse(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     UiSourceId ui_source_id) const {
   // UiResourceManager is expected to handle a few resources at a given time (
   // less than 30), therefore just using a simple linear search to find the
@@ -36,8 +36,7 @@ viz::ResourceId UiResourceManager::FindResourceToReuse(
     const auto& resource = iter.second;
 
     if (resource->ui_source_id == ui_source_id &&
-        resource->resource_size == size &&
-        resource->format.resource_format() == format) {
+        resource->resource_size == size && resource->format == format) {
       return iter.first;
     }
   }

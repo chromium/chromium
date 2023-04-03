@@ -51,7 +51,8 @@ class UiResourceManagerTest : public testing::Test {
 
 TEST_F(UiResourceManagerTest, ReuseResource_NoResources) {
   viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(100, 100), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1);
+      gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
+      kTestUiSourceId_1);
 
   EXPECT_EQ(resource_id, viz::kInvalidResourceId);
 }
@@ -77,13 +78,14 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
 
   // When we have no match in the currently available resources.
   viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(100, 100), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1);
+      gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
+      kTestUiSourceId_1);
 
   EXPECT_EQ(resource_id, viz::kInvalidResourceId);
 
   // When we have the requested resource.
   resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(10, 10), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_1);
+      gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1);
 
   EXPECT_NE(resource_id, viz::kInvalidResourceId);
 
@@ -94,7 +96,7 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
 
   // When we have multiple matching resources, return any matching resource.
   resource_id = resource_manager_->FindResourceToReuse(
-      gfx::Size(10, 20), viz::ResourceFormat::BGRA_8888, kTestUiSourceId_2);
+      gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_2);
 
   EXPECT_NE(resource_id, viz::kInvalidResourceId);
   found_resource = resource_manager_->PeekAvailableResource(resource_id);

@@ -32,8 +32,9 @@ class UiResourceManager;
 
 namespace fast_ink_internal {
 
-inline constexpr viz::ResourceFormat kFastInkResourceFormat =
-    SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
+inline constexpr viz::SharedImageFormat kFastInkSharedImageFormat =
+    SK_B32_SHIFT ? viz::SinglePlaneFormat::kRGBA_8888
+                 : viz::SinglePlaneFormat::kBGRA_8888;
 inline constexpr UiSourceId kFastInkUiSourceId = 1u;
 
 // Converts the rect in window's coordinate to the buffer's coordinate.  If the
@@ -54,7 +55,7 @@ ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
 // Creates a UiResource of a given `size` and `format`.
 ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
     gfx::GpuMemoryBuffer* gpu_memory_buffer);

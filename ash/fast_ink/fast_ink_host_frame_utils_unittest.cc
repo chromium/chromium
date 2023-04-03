@@ -91,7 +91,8 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
         buffer_size,
         gfx::BufferUsageAndFormat(
             gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-            viz::BufferFormat(fast_ink_internal::kFastInkResourceFormat)));
+            viz::BufferFormat(fast_ink_internal::kFastInkSharedImageFormat
+                                  .resource_format())));
   }
 
   UiResourceManager resource_manager_;
@@ -177,7 +178,7 @@ TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
       {1000, 404}, {1000, 404}, {250, 150}, {50, 25}};
   for (const auto& size : kResourceSizes) {
     resource_manager_.OfferResource(fast_ink_internal::CreateUiResource(
-        size, fast_ink_internal::kFastInkResourceFormat,
+        size, fast_ink_internal::kFastInkSharedImageFormat,
         fast_ink_internal::kFastInkUiSourceId,
         /*is_overlay_candidate=*/false, gpu_memory_buffer_.get()));
   }
