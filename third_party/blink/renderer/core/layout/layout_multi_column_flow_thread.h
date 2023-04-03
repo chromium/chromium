@@ -150,8 +150,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   static LayoutMultiColumnFlowThread* CreateAnonymous(
       Document&,
-      const ComputedStyle& parent_style,
-      bool needs_paint_layer);
+      const ComputedStyle& parent_style);
 
   bool IsLayoutMultiColumnFlowThread() const final {
     NOT_DESTROYED();
@@ -161,11 +160,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   LayoutBlockFlow* MultiColumnBlockFlow() const {
     NOT_DESTROYED();
     return To<LayoutBlockFlow>(Parent());
-  }
-
-  bool IsNGMulticol() const {
-    NOT_DESTROYED();
-    return MultiColumnBlockFlow()->IsLayoutNGObject();
   }
 
   LayoutMultiColumnSet* FirstMultiColumnSet() const;
@@ -210,35 +204,9 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
     return column_count_;
   }
 
-  // Total height available to columns and spanners. This is the multicol
-  // container's content box logical height, or 0 if auto.
-  LayoutUnit ColumnHeightAvailable() const {
-    NOT_DESTROYED();
-    return column_height_available_;
-  }
-  void SetColumnHeightAvailable(LayoutUnit available) {
-    NOT_DESTROYED();
-    column_height_available_ = available;
-  }
-
-  // Maximum content box logical height for the multicol container. This takes
-  // CSS logical 'height' and 'max-height' into account. LayoutUnit::max() is
-  // returned if nothing constrains the height of the multicol container. This
-  // method only deals with used values of CSS properties, and it does not
-  // consider enclosing fragmentation contexts -- that's something that needs to
-  // be calculated per fragmentainer group.
-  LayoutUnit MaxColumnLogicalHeight() const;
-
-  LayoutUnit TallestUnbreakableLogicalHeight(
-      LayoutUnit offset_in_flow_thread) const;
-
   LayoutSize ColumnOffset(const LayoutPoint&) const final;
 
-  // Do we need to set a new width and lay out?
-  bool NeedsNewWidth() const;
-
   bool IsPageLogicalHeightKnown() const final;
-  bool MayHaveNonUniformPageLogicalHeight() const final;
 
   LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,
                                            PageBoundaryRule,
@@ -256,36 +224,12 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   LayoutMultiColumnSet* ColumnSetAtBlockOffset(LayoutUnit,
                                                PageBoundaryRule) const final;
 
-  void LayoutColumns(SubtreeLayoutScope&);
-
   // Skip past a column spanner during flow thread layout. Spanners are not laid
   // out inside the flow thread, since the flow thread is not in a spanner's
   // containing block chain (since the containing block is the multicol
   // container).
   void SkipColumnSpanner(const LayoutBox*,
                          LayoutUnit logical_top_in_flow_thread);
-
-  // Returns true if at least one column got a new height after flow thread
-  // layout (during column set layout), in which case we need another layout
-  // pass. Column heights may change after flow thread layout because of
-  // balancing. We may have to do multiple layout passes, depending on how the
-  // contents is fitted to the changed column heights. In most cases, laying out
-  // again twice or even just once will suffice. Sometimes we need more passes
-  // than that, though, but the number of retries should not exceed the number
-  // of columns, unless we have a bug.
-  bool ColumnHeightsChanged() const {
-    NOT_DESTROYED();
-    return column_heights_changed_;
-  }
-  void SetColumnHeightsChanged() {
-    NOT_DESTROYED();
-    column_heights_changed_ = true;
-  }
-
-  // Finish multicol layout. Returns true if we're really done, or false if we
-  // need another layout pass (typically because columns got new heights in the
-  // previous pass, so that we need to refragment).
-  bool FinishLayout();
 
   void ColumnRuleStyleDidChange();
 
@@ -304,13 +248,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
     return block_offset_in_enclosing_fragmentation_context_;
   }
 
-  // If we've run out of columns in the last fragmentainer group (column row),
-  // we have to insert another fragmentainer group in order to hold more
-  // columns. This means that we're moving to the next outer column (in the
-  // enclosing fragmentation context).
-  void AppendNewFragmentainerGroupIfNeeded(LayoutUnit offset_in_flow_thread,
-                                           PageBoundaryRule);
-
   void SetColumnCountFromNG(unsigned column_count);
   void StartLayoutFromNG();
   LayoutMultiColumnSet* PendingColumnSetForNG() const;
@@ -319,9 +256,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   void FinishLayoutFromNG(LayoutUnit flow_thread_offset);
 
   // Implementing FragmentationContext:
-  bool IsFragmentainerLogicalHeightKnown() final;
-  LayoutUnit FragmentainerLogicalHeightAt(LayoutUnit block_offset) final;
-  LayoutUnit RemainingLogicalHeightAt(LayoutUnit block_offset) final;
   LayoutMultiColumnFlowThread* AssociatedFlowThread() final {
     NOT_DESTROYED();
     return this;
@@ -334,15 +268,12 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   // Note: We call this constructor only in |CreateAnonymous()|, but mark this
   // "public" for |MakeGarbageCollected<T>|.
-  explicit LayoutMultiColumnFlowThread(bool needs_paint_layer);
+  explicit LayoutMultiColumnFlowThread();
 
   LayoutPoint Location() const override;
   LayoutSize Size() const override;
 
  private:
-  void UpdateLayout() override;
-
-  void CalculateColumnHeightAvailable();
   void CalculateColumnCountAndWidth(LayoutUnit& width, unsigned& count) const;
   static LayoutUnit ColumnGap(const ComputedStyle&, LayoutUnit available_width);
   void CreateAndInsertMultiColumnSet(LayoutBox* insert_before = nullptr);
@@ -371,11 +302,6 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
                             LayoutUnit logical_top,
                             LogicalExtentComputedValues&) const final;
   void UpdateLogicalWidth() override;
-  void ContentWasLaidOut(
-      LayoutUnit logical_bottom_in_flow_thread_after_pagination) final;
-  bool CanSkipLayout(const LayoutBox&) const final;
-  MultiColumnLayoutState GetMultiColumnLayoutState() const final;
-  void RestoreMultiColumnLayoutState(const MultiColumnLayoutState&) final;
   void UpdateGeometry();
 
   // The last set we worked on. It's not to be used as the "current set". The
@@ -393,16 +319,11 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
 
   // The used value of column-count
   unsigned column_count_;
-  // Total height available to columns, or 0 if auto.
-  LayoutUnit column_height_available_;
 
   // Cached block offset from this flow thread to the enclosing fragmentation
   // context, if any. In
   // the coordinate space of the enclosing fragmentation context.
   LayoutUnit block_offset_in_enclosing_fragmentation_context_;
-
-  // Set when column heights are out of sync with actual layout.
-  bool column_heights_changed_;
 
   bool all_columns_have_known_height_ = false;
 

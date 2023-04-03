@@ -18,9 +18,6 @@ class ViewFragmentationContext final
       public FragmentationContext {
  public:
   explicit ViewFragmentationContext(LayoutView& view) : view_(&view) {}
-  bool IsFragmentainerLogicalHeightKnown() final;
-  LayoutUnit FragmentainerLogicalHeightAt(LayoutUnit block_offset) final;
-  LayoutUnit RemainingLogicalHeightAt(LayoutUnit block_offset) final;
   void Trace(Visitor*) const override;
 
  private:

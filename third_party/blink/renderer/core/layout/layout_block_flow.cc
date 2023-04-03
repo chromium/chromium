@@ -95,40 +95,14 @@ class BlockChildrenLayoutInfo {
  public:
   BlockChildrenLayoutInfo(LayoutBlockFlow* block_flow,
                           LayoutUnit before_edge,
-                          LayoutUnit after_edge)
-      : previous_break_after_value_(EBreakBetween::kAuto),
-        is_at_first_in_flow_child_(true) {}
-
-  // Store multicol layout state before first layout of a block child. The child
-  // may contain a column spanner. If we need to re-lay out the block child
-  // because our initial logical top estimate was wrong, we need to roll back to
-  // how things were before laying out the child.
-  void StoreMultiColumnLayoutState(const LayoutFlowThread& flow_thread) {
-    multi_column_layout_state_ = flow_thread.GetMultiColumnLayoutState();
-  }
-  void RollBackToInitialMultiColumnLayoutState(LayoutFlowThread& flow_thread) {
-    flow_thread.RestoreMultiColumnLayoutState(multi_column_layout_state_);
-  }
+                          LayoutUnit after_edge) {}
 
   LayoutUnit& PreviousFloatLogicalBottom() {
     return previous_float_logical_bottom_;
   }
 
-  EBreakBetween PreviousBreakAfterValue() const {
-    return previous_break_after_value_;
-  }
-  void SetPreviousBreakAfterValue(EBreakBetween value) {
-    previous_break_after_value_ = value;
-  }
-
-  bool IsAtFirstInFlowChild() const { return is_at_first_in_flow_child_; }
-  void ClearIsAtFirstInFlowChild() { is_at_first_in_flow_child_ = false; }
-
  private:
-  MultiColumnLayoutState multi_column_layout_state_;
   LayoutUnit previous_float_logical_bottom_;
-  EBreakBetween previous_break_after_value_;
-  bool is_at_first_in_flow_child_;
 };
 
 LayoutBlockFlow::LayoutBlockFlow(ContainerNode* node) : LayoutBlock(node) {
@@ -152,65 +126,6 @@ LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
   layout_block_flow->SetDocumentForAnonymous(document);
   layout_block_flow->SetStyle(style);
   return layout_block_flow;
-}
-
-LayoutObject* LayoutBlockFlow::LayoutSpecialExcludedChild(
-    bool relayout_children,
-    SubtreeLayoutScope& layout_scope) {
-  NOT_DESTROYED();
-  LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread();
-  if (!flow_thread)
-    return nullptr;
-  SetLogicalTopForChild(*flow_thread, BorderBefore() + PaddingBefore());
-  flow_thread->LayoutColumns(layout_scope);
-  DetermineLogicalLeftPositionForChild(*flow_thread);
-  return flow_thread;
-}
-
-bool LayoutBlockFlow::UpdateLogicalWidthAndColumnWidth() {
-  NOT_DESTROYED();
-  bool relayout_children = LayoutBlock::UpdateLogicalWidthAndColumnWidth();
-  if (LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread()) {
-    if (flow_thread->NeedsNewWidth())
-      return true;
-  }
-  return relayout_children;
-}
-
-void LayoutBlockFlow::SetBreakAtLineToAvoidWidow(int line_to_break) {
-  NOT_DESTROYED();
-  DCHECK_GE(line_to_break, 0);
-  EnsureRareData();
-  DCHECK(!rare_data_->did_break_at_line_to_avoid_widow_);
-  rare_data_->line_break_to_avoid_widow_ = line_to_break;
-}
-
-void LayoutBlockFlow::SetDidBreakAtLineToAvoidWidow() {
-  NOT_DESTROYED();
-  DCHECK(!ShouldBreakAtLineToAvoidWidow());
-
-  // This function should be called only after a break was applied to avoid
-  // widows so assert |m_rareData| exists.
-  DCHECK(rare_data_);
-
-  rare_data_->did_break_at_line_to_avoid_widow_ = true;
-}
-
-void LayoutBlockFlow::ClearDidBreakAtLineToAvoidWidow() {
-  NOT_DESTROYED();
-  if (!rare_data_)
-    return;
-
-  rare_data_->did_break_at_line_to_avoid_widow_ = false;
-}
-
-void LayoutBlockFlow::ClearShouldBreakAtLineToAvoidWidow() const {
-  NOT_DESTROYED();
-  DCHECK(ShouldBreakAtLineToAvoidWidow());
-  if (!rare_data_)
-    return;
-
-  rare_data_->line_break_to_avoid_widow_ = -1;
 }
 
 bool LayoutBlockFlow::IsInitialLetterBox() const {
@@ -326,22 +241,9 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   TextAutosizer::LayoutScope text_autosizer_layout_scope(this, &layout_scope);
 
-  bool pagination_state_changed = pagination_state_changed_;
   bool intrinsic_logical_widths_were_dirty = IntrinsicLogicalWidthsDirty();
 
-  // Multiple passes might be required for column based layout.
-  // The number of passes could be as high as the number of columns.
-  LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread();
   do {
-    LayoutState state(*this, logical_width_changed);
-    if (pagination_state_changed_) {
-      // We now need a deep layout to clean up struts after pagination, if we
-      // just ceased to be paginated, or, if we just became paginated on the
-      // other hand, we now need the deep layout, to insert pagination struts.
-      pagination_state_changed_ = false;
-      state.SetPaginationStateChanged();
-    }
-
     LayoutChildren(relayout_children, layout_scope);
 
     if (!intrinsic_logical_widths_were_dirty && IntrinsicLogicalWidthsDirty()) {
@@ -354,24 +256,8 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
       LayoutChildren(relayout_children, layout_scope);
     }
 
-    if (flow_thread && !flow_thread->FinishLayout()) {
-      SetChildNeedsLayout(kMarkOnlyThis);
-      continue;
-    }
-
-    if (ShouldBreakAtLineToAvoidWidow()) {
-      SetEverHadLayout();
-      continue;
-    }
     break;
   } while (true);
-
-  LayoutState state(*this, logical_width_changed);
-  if (pagination_state_changed) {
-    // We still haven't laid out positioned descendants, and we need to perform
-    // a deep layout on those too if pagination state changed.
-    state.SetPaginationStateChanged();
-  }
 
   // Remember the automatic logical height we got from laying out the children.
   LayoutUnit unconstrained_client_after_edge = ClientLogicalBottom();
@@ -414,23 +300,6 @@ void LayoutBlockFlow::ResetLayout() {
   // Walk all the lines and delete our ellipsis line boxes if they exist.
   if (ChildrenInline() && ShouldTruncateOverflowingText())
     DeleteEllipsisLineBoxes();
-
-  if (View()->GetLayoutState()->IsPaginated()) {
-    SetPaginationStrutPropagatedFromChild(LayoutUnit());
-    SetFirstForcedBreakOffset(LayoutUnit());
-
-    // Start with any applicable computed break-after and break-before values
-    // for this object. During child layout, breakBefore will be joined with the
-    // breakBefore value of the first in-flow child, and breakAfter will be
-    // joined with the breakAfter value of the last in-flow child. This is done
-    // in order to honor the requirement that a class A break point [1] may only
-    // exists *between* in-flow siblings (i.e. not before the first child and
-    // not after the last child).
-    //
-    // [1] https://drafts.csswg.org/css-break/#possible-breaks
-    SetBreakBefore(LayoutBlock::BreakBefore());
-    SetBreakAfter(LayoutBlock::BreakAfter());
-  }
 }
 
 DISABLE_CFI_PERF
@@ -509,9 +378,6 @@ bool LayoutBlockFlow::PositionAndLayoutOnceIfNeeded(
     LayoutUnit new_logical_top,
     BlockChildrenLayoutInfo& layout_info) {
   NOT_DESTROYED();
-  if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
-    layout_info.RollBackToInitialMultiColumnLayoutState(*flow_thread);
-
   LayoutUnit& previous_float_logical_bottom =
       layout_info.PreviousFloatLogicalBottom();
   LayoutUnit lowest_float =
@@ -536,53 +402,18 @@ bool LayoutBlockFlow::PositionAndLayoutOnceIfNeeded(
       // to clear an item, its width can change (because it has more available
       // width).
       layout_scope.SetChildNeedsLayout(&child);
-    } else {
-      MarkChildForPaginationRelayoutIfNeeded(child, layout_scope);
     }
   }
 
   bool needed_layout = child_needs_layout();
   if (needed_layout)
     child.UpdateLayout();
-  if (View()->GetLayoutState()->IsPaginated())
-    UpdateFragmentationInfoForChild(child);
   return needed_layout;
-}
-
-void LayoutBlockFlow::InsertForcedBreakBeforeChildIfNeeded(
-    LayoutBox& child,
-    BlockChildrenLayoutInfo& layout_info) {
-  NOT_DESTROYED();
-  if (layout_info.IsAtFirstInFlowChild()) {
-    // There's no class A break point before the first child (only *between*
-    // siblings), so steal its break value and join it with what we already have
-    // here.
-    SetBreakBefore(
-        JoinFragmentainerBreakValues(BreakBefore(), child.BreakBefore()));
-
-    return;
-  }
-
-  // Figure out if a forced break should be inserted in front of the child. If
-  // we insert a forced break, the margins on this child may not collapse with
-  // those preceding the break.
-  EBreakBetween class_a_break_point_value =
-      child.ClassABreakPointValue(layout_info.PreviousBreakAfterValue());
-
-  if (IsForcedFragmentainerBreakValue(class_a_break_point_value)) {
-    LayoutUnit old_logical_top = LogicalHeight();
-    LayoutUnit new_logical_top =
-        ApplyForcedBreak(old_logical_top, class_a_break_point_value);
-    SetLogicalHeight(new_logical_top);
-    LayoutUnit pagination_strut = new_logical_top - old_logical_top;
-    child.SetPaginationStrut(pagination_strut);
-  }
 }
 
 void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
                                        BlockChildrenLayoutInfo& layout_info) {
   NOT_DESTROYED();
-  auto* child_layout_block_flow = DynamicTo<LayoutBlockFlow>(&child);
 
   // The child is a normal flow object. Compute the margins we will use for
   // collapsing now.
@@ -591,65 +422,23 @@ void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
   // Try to guess our correct logical top position. In most cases this guess
   // will be correct. Only if we're wrong (when we compute the real logical top
   // position) will we have to potentially relayout.
-  LayoutUnit estimate_without_pagination;
   LayoutUnit logical_top_estimate = LogicalHeight();
-
-  if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
-    layout_info.StoreMultiColumnLayoutState(*flow_thread);
 
   // Use the estimated block position and lay out the child if needed. After
   // child layout, when we have enough information to perform proper margin
-  // collapsing, float clearing and pagination, we may have to reposition and
-  // lay out again if the estimate was wrong.
+  // collapsing and float clearing, we may have to reposition and lay out again
+  // if the estimate was wrong.
   PositionAndLayoutOnceIfNeeded(child, logical_top_estimate, layout_info);
-
-  // Cache if we are at the top of the block right now.
-  bool paginated = View()->GetLayoutState()->IsPaginated();
-
-  // If there should be a forced break before the child, we need to insert it
-  // before attempting to collapse margins or apply clearance.
-  if (paginated) {
-    // We will now insert the strut needed by any forced break. After this
-    // operation, we will have calculated the offset where we can apply margin
-    // collapsing and clearance. After having applied those things, we'll be at
-    // the position where we can honor requirements of unbreakable content,
-    // which may extend the strut further.
-    child.ResetPaginationStrut();
-    InsertForcedBreakBeforeChildIfNeeded(child, layout_info);
-  }
 
   // Now determine the correct ypos based off examination of collapsing margin
   // values.
   LayoutUnit new_logical_top = LogicalHeight();
 
-  // If there's a forced break in front of this child, its final position has
-  // already been determined. Otherwise, see if there are other reasons for
-  // breaking before it (break-inside:avoid, or not enough space for the first
-  // piece of child content to fit in the current fragmentainer), and adjust the
-  // position accordingly.
-  if (paginated) {
-    if (estimate_without_pagination != new_logical_top) {
-      // We got a new position due to clearance or margin collapsing. Before we
-      // attempt to paginate (which may result in the position changing again),
-      // let's try again at the new position (since a new position may result in
-      // a new logical height).
-      PositionAndLayoutOnceIfNeeded(child, new_logical_top, layout_info);
-    }
-
-    // We have now applied forced breaks, margin collapsing and clearance, and
-    // we're at the position where we can honor requirements of unbreakable
-    // content.
-    new_logical_top = AdjustBlockChildForPagination(new_logical_top, child,
-                                                    layout_info, false);
-  }
-
-  // Clearance, margin collapsing or pagination may have given us a new logical
-  // top, in which case we may have to reposition and possibly relayout as well.
-  // If we determined during child layout that we need to insert a break to
-  // honor widows, we also need to relayout.
-  if (new_logical_top != logical_top_estimate || child.NeedsLayout() ||
-      (paginated && child_layout_block_flow &&
-       child_layout_block_flow->ShouldBreakAtLineToAvoidWidow())) {
+  // Clearance or margin collapsing may have given us a new logical top, in
+  // which case we may have to reposition and possibly relayout as well.  If we
+  // determined during child layout that we need to insert a break to honor
+  // widows, we also need to relayout.
+  if (new_logical_top != logical_top_estimate || child.NeedsLayout()) {
     PositionAndLayoutOnceIfNeeded(child, new_logical_top, layout_info);
   }
 
@@ -659,366 +448,6 @@ void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
   // Update our height now that the child has been placed in the correct
   // position.
   SetLogicalHeight(LogicalHeight() + LogicalHeightForChild(child));
-
-  if (paginated) {
-    // Keep track of the break-after value of the child, so that it can be
-    // joined with the break-before value of the next in-flow object at the next
-    // class A break point.
-    layout_info.SetPreviousBreakAfterValue(child.BreakAfter());
-
-    PaginatedContentWasLaidOut(child.LogicalBottom());
-
-    if (child_layout_block_flow) {
-      // If a forced break was inserted inside the child, translate and
-      // propagate the offset to this object.
-      if (LayoutUnit offset = child_layout_block_flow->FirstForcedBreakOffset())
-        SetFirstForcedBreakOffset(offset + new_logical_top);
-    }
-  }
-
-  if (child.IsLayoutMultiColumnSpannerPlaceholder()) {
-    // The actual column-span:all element is positioned by this placeholder
-    // child.
-    PositionSpannerDescendant(To<LayoutMultiColumnSpannerPlaceholder>(child));
-  }
-}
-
-LayoutUnit LayoutBlockFlow::AdjustBlockChildForPagination(
-    LayoutUnit logical_top,
-    LayoutBox& child,
-    BlockChildrenLayoutInfo& layout_info,
-    bool at_before_side_of_block) {
-  NOT_DESTROYED();
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(&child);
-
-  // See if we need a soft (unforced) break in front of this child, and set the
-  // pagination strut in that case. An unforced break may come from two sources:
-  // 1. The first piece of content inside the child doesn't fit in the current
-  //    page or column
-  // 2. The child itself has breaking restrictions (break-inside:avoid, replaced
-  //    content, etc.) and doesn't fully fit in the current page or column.
-  //
-  // No matter which source, if we need to insert a strut, it should always take
-  // us to the exact top of a page or column further ahead, or be zero.
-
-  // The first piece of content inside the child may have set a strut during
-  // layout. Currently, only block flows support strut propagation, but this may
-  // (and should) change in the future. See crbug.com/539873
-  LayoutUnit strut_from_content =
-      child_block_flow ? child_block_flow->PaginationStrutPropagatedFromChild()
-                       : LayoutUnit();
-  LayoutUnit logical_top_with_content_strut = logical_top + strut_from_content;
-
-  LayoutUnit logical_top_after_unsplittable =
-      AdjustForUnsplittableChild(child, logical_top);
-
-  // Pick the largest offset. Tall unsplittable content may take us to a page or
-  // column further ahead than the next one.
-  LayoutUnit logical_top_after_pagination =
-      std::max(logical_top_with_content_strut, logical_top_after_unsplittable);
-  LayoutUnit new_logical_top = logical_top;
-
-  // Forced breaks may already have caused a strut, and this needs to be added
-  // together with any strut detected here in this method.
-  LayoutUnit previous_strut = child.PaginationStrut();
-
-  if (LayoutUnit pagination_strut =
-          logical_top_after_pagination - logical_top + previous_strut) {
-    DCHECK_GT(pagination_strut, 0);
-    // If we're not at the first in-flow child, there's a class A break point
-    // before the child. If we *are* at the first in-flow child, but the child
-    // isn't flush with the content edge of its container, due to e.g.
-    // clearance, there's a class C break point before the child. Otherwise we
-    // should propagate the strut to our parent block, and attempt to break
-    // there instead. See https://drafts.csswg.org/css-break/#possible-breaks
-    bool can_break =
-        !layout_info.IsAtFirstInFlowChild() || !at_before_side_of_block;
-    if (!can_break && child.IsMonolithic() && !AllowsPaginationStrut()) {
-      // The child is monolithic content, e.g. an image. It is truly
-      // unsplittable. Breaking inside it would be bad. Since this block doesn't
-      // allow pagination struts to be propagated to it, we're left to handle it
-      // on our own right here. Break before the child, even if we're currently
-      // at the block start (i.e. there's no class A or C break point here).
-      can_break = true;
-    }
-    if (can_break) {
-      child.SetPaginationStrut(pagination_strut);
-      // |previousStrut| was already baked into the logical top, so don't add
-      // it again.
-      new_logical_top += pagination_strut - previous_strut;
-    } else {
-      // No valid break point here. Propagate the strut from the child to this
-      // block, but only if the block allows it. If the block doesn't allow it,
-      // we'll just ignore the strut and carry on, without breaking. This
-      // happens e.g. when a tall break-inside:avoid object with a top margin is
-      // the first in-flow child in the fragmentation context.
-      if (AllowsPaginationStrut()) {
-        pagination_strut += logical_top;
-        SetPaginationStrutPropagatedFromChild(pagination_strut);
-        if (child_block_flow)
-          child_block_flow->SetPaginationStrutPropagatedFromChild(LayoutUnit());
-      }
-      child.ResetPaginationStrut();
-    }
-  }
-
-  // Similar to how we apply clearance. Go ahead and boost height() to be the
-  // place where we're going to position the child.
-  SetLogicalHeight(LogicalHeight() + (new_logical_top - logical_top));
-
-  // Return the final adjusted logical top.
-  return new_logical_top;
-}
-
-LayoutUnit LayoutBlockFlow::AdjustFloatLogicalTopForPagination(
-    LayoutBox& child,
-    LayoutUnit logical_top_margin_edge) {
-  NOT_DESTROYED();
-  // The first piece of content inside the child may have set a strut during
-  // layout.
-  LayoutUnit strut;
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-  if (child_block_flow)
-    strut = child_block_flow->PaginationStrutPropagatedFromChild();
-
-  LayoutUnit margin_before = MarginBeforeForChild(child);
-  if (margin_before > LayoutUnit()) {
-    // Avoid breaking inside the top margin of a float.
-    if (strut) {
-      // If we already had decided to break, just add the margin. The strut so
-      // far only accounts for pushing the top border edge to the next
-      // fragmentainer. We need to push the margin over as well, because
-      // there's no break opportunity between margin and border.
-      strut += margin_before;
-    } else {
-      // Even if we didn't break before the border box to the next
-      // fragmentainer, we need to check if we can fit the margin before it.
-      if (IsPageLogicalHeightKnown()) {
-        LayoutUnit remaining_space = PageRemainingLogicalHeightForOffset(
-            logical_top_margin_edge, kAssociateWithLatterPage);
-        if (remaining_space <= margin_before) {
-          strut += CalculatePaginationStrutToFitContent(logical_top_margin_edge,
-                                                        margin_before);
-        }
-      }
-    }
-  }
-  if (!strut) {
-    // If we are unsplittable and don't fit, move to the next page or column
-    // if that helps the situation.
-    LayoutUnit new_logical_top_margin_edge =
-        AdjustForUnsplittableChild(child, logical_top_margin_edge);
-    strut = new_logical_top_margin_edge - logical_top_margin_edge;
-  }
-
-  child.SetPaginationStrut(strut);
-  return logical_top_margin_edge + strut;
-}
-
-static bool ShouldSetStrutOnBlock(const LayoutBlockFlow& block,
-                                  const RootInlineBox& line_box,
-                                  LayoutUnit line_logical_offset,
-                                  int line_index,
-                                  LayoutUnit page_logical_height) {
-  if (line_box == block.FirstRootBox()) {
-    // This is the first line in the block. We can take the whole block with us
-    // to the next page or column, rather than keeping a content-less portion of
-    // it in the previous one. Only do this if the line is flush with the
-    // content edge of the block, though. If it isn't, it means that the line
-    // was pushed downwards by preceding floats that didn't fit beside the line,
-    // and we don't want to move all that, since it has already been established
-    // that it fits nicely where it is. In this case we have a class "C" break
-    // point [1] in front of this line.
-    //
-    // [1] https://drafts.csswg.org/css-break/#possible-breaks
-    if (line_logical_offset > block.BorderAndPaddingBefore())
-      return false;
-
-    LayoutUnit line_height =
-        line_box.LineBottomWithLeading() - line_box.LineTopWithLeading();
-    LayoutUnit total_logical_height =
-        line_height + line_logical_offset.ClampNegativeToZero();
-    // It's rather pointless to break before the block if the current line isn't
-    // going to fit in the same column or page, so check that as well.
-    if (total_logical_height > page_logical_height)
-      return false;
-  } else {
-    if (line_index > block.StyleRef().Orphans())
-      return false;
-
-    // Not enough orphans here. Push the entire block to the next column / page
-    // as an attempt to better satisfy the orphans requirement.
-    //
-    // Note that we should ideally check if the first line in the block is flush
-    // with the content edge of the block here, because if it isn't, we should
-    // break at the class "C" break point in front of the first line, rather
-    // than before the entire block.
-  }
-  return block.AllowsPaginationStrut();
-}
-
-void LayoutBlockFlow::AdjustLinePositionForPagination(RootInlineBox& line_box,
-                                                      LayoutUnit& delta) {
-  NOT_DESTROYED();
-  LayoutUnit logical_offset = line_box.LineTopWithLeading();
-  LayoutUnit line_height = line_box.LineBottomWithLeading() - logical_offset;
-  logical_offset += delta;
-  line_box.SetPaginationStrut(LayoutUnit());
-  line_box.SetIsFirstAfterPageBreak(false);
-  LayoutState* layout_state = View()->GetLayoutState();
-  if (!layout_state->IsPaginated())
-    return;
-  if (!IsPageLogicalHeightKnown())
-    return;
-  // Ruby annotations do not affect the size of the line box. Instead,
-  // before-annotations are placed above the line's logical top, and
-  // after-annotations are placed below the line's logical bottom. We need to
-  // take this into consideration when block-fragmenting, so that we don't allow
-  // breaking in the middle of an annotation.
-  LayoutUnit logical_offset_with_annotations = logical_offset;
-  LayoutUnit line_height_with_annotations = line_height;
-  if (line_box.HasAnnotationsBefore()) {
-    LayoutUnit adjustment =
-        line_box.ComputeOverAnnotationAdjustment(logical_offset);
-    logical_offset_with_annotations -= adjustment;
-    line_height_with_annotations += adjustment;
-  }
-  if (line_box.HasAnnotationsAfter()) {
-    line_height_with_annotations +=
-        line_box.ComputeUnderAnnotationAdjustment(logical_offset + line_height);
-  }
-  LayoutUnit page_logical_height =
-      PageLogicalHeightForOffset(logical_offset_with_annotations);
-  LayoutUnit remaining_logical_height = PageRemainingLogicalHeightForOffset(
-      logical_offset_with_annotations, kAssociateWithLatterPage);
-  int line_index = LineCount(&line_box);
-  if (remaining_logical_height < line_height_with_annotations ||
-      (ShouldBreakAtLineToAvoidWidow() &&
-       LineBreakToAvoidWidow() == line_index)) {
-    LayoutUnit pagination_strut = CalculatePaginationStrutToFitContent(
-        logical_offset_with_annotations, line_height_with_annotations);
-    LayoutUnit new_logical_offset = logical_offset + pagination_strut;
-    // Moving to a different page or column may mean that its height is
-    // different.
-    page_logical_height = PageLogicalHeightForOffset(new_logical_offset);
-    // We need to insert a break now, either because there's no room for the
-    // line in the current column / page, or because we have determined that we
-    // need a break to satisfy widow requirements.
-    if (ShouldBreakAtLineToAvoidWidow() &&
-        LineBreakToAvoidWidow() == line_index) {
-      ClearShouldBreakAtLineToAvoidWidow();
-      SetDidBreakAtLineToAvoidWidow();
-    } else if (line_height > page_logical_height) {
-      // Too tall to fit in one page / column. Give up. Don't push to the next
-      // page / column.
-      PaginatedContentWasLaidOut(logical_offset + line_height);
-      return;
-    }
-
-    if (ShouldSetStrutOnBlock(*this, line_box, logical_offset, line_index,
-                              page_logical_height)) {
-      // Note that when setting the strut on a block, it may be propagated to
-      // parent blocks later on, if a block's logical top is flush with that of
-      // its parent. We don't want content-less portions (struts) at the
-      // beginning of a block before a break, if it can be avoided. After all,
-      // that's the reason for setting struts on blocks and not lines in the
-      // first place.
-      SetPaginationStrutPropagatedFromChild(pagination_strut + logical_offset);
-    } else {
-      delta += pagination_strut;
-      line_box.SetPaginationStrut(pagination_strut);
-      line_box.SetIsFirstAfterPageBreak(true);
-    }
-    PaginatedContentWasLaidOut(new_logical_offset + line_height);
-    return;
-  }
-
-  LayoutUnit strut_to_propagate;
-  if (remaining_logical_height == page_logical_height) {
-    // We're at the very top of a page or column.
-    if (line_box != FirstRootBox())
-      line_box.SetIsFirstAfterPageBreak(true);
-    // If this is the first line in the block, and the block has a top border or
-    // padding, we may want to set a strut on the block, so that everything ends
-    // up in the next column or page. Setting a strut on the block is also
-    // important when it comes to satisfying orphan requirements.
-    if (ShouldSetStrutOnBlock(*this, line_box, logical_offset, line_index,
-                              page_logical_height)) {
-      DCHECK(!IsTableCell());
-      strut_to_propagate =
-          logical_offset + layout_state->HeightOffsetForTableHeaders();
-    } else if (LayoutUnit pagination_strut =
-                   layout_state->HeightOffsetForTableHeaders()) {
-      delta += pagination_strut;
-      line_box.SetPaginationStrut(pagination_strut);
-    }
-  } else if (line_box == FirstRootBox() && AllowsPaginationStrut()) {
-    // This is the first line in the block. The block may still start in the
-    // previous column or page, and if that's the case, attempt to pull it over
-    // to where this line is, so that we don't split the top border or padding.
-    LayoutUnit strut = remaining_logical_height + logical_offset +
-                       layout_state->HeightOffsetForTableHeaders() -
-                       page_logical_height;
-    if (strut > LayoutUnit()) {
-      // The block starts in a previous column or page. Set a strut on the block
-      // if there's room for the top border, padding and the line in one column
-      // or page.
-      if (logical_offset + line_height <= page_logical_height)
-        strut_to_propagate = strut;
-    }
-  }
-
-  // If we found that some preceding content (lines, border and padding) belongs
-  // together with this line, we should pull the entire block with us to the
-  // fragmentainer we're currently in. We need to avoid this when the block
-  // precedes the first fragmentainer, though. We shouldn't fragment content
-  // there, but rather let it appear in the overflow area before the first
-  // fragmentainer.
-  if (strut_to_propagate && OffsetFromLogicalTopOfFirstPage() > LayoutUnit())
-    SetPaginationStrutPropagatedFromChild(strut_to_propagate);
-
-  PaginatedContentWasLaidOut(logical_offset + line_height);
-}
-
-LayoutUnit LayoutBlockFlow::AdjustForUnsplittableChild(
-    LayoutBox& child,
-    LayoutUnit logical_offset) const {
-  NOT_DESTROYED();
-  if (!child.IsMonolithic()) {
-    return logical_offset;
-  }
-  LayoutUnit child_logical_height = LogicalHeightForChild(child);
-  // Floats' margins do not collapse with page or column boundaries.
-  if (child.IsFloating())
-    child_logical_height +=
-        MarginBeforeForChild(child) + MarginAfterForChild(child);
-  if (!IsPageLogicalHeightKnown())
-    return logical_offset;
-  LayoutUnit remaining_logical_height = PageRemainingLogicalHeightForOffset(
-      logical_offset, kAssociateWithLatterPage);
-  if (remaining_logical_height >= child_logical_height)
-    return logical_offset;  // It fits fine where it is. No need to break.
-  LayoutUnit pagination_strut = CalculatePaginationStrutToFitContent(
-      logical_offset, child_logical_height);
-  if (pagination_strut == remaining_logical_height &&
-      remaining_logical_height == PageLogicalHeightForOffset(logical_offset)) {
-    // Don't break if we were at the top of a page, and we failed to fit the
-    // content completely. No point in leaving a page completely blank.
-    return logical_offset;
-  }
-
-  const auto* block_child = DynamicTo<LayoutBlockFlow>(child);
-  if (block_child) {
-    // If there's a forced break inside this object, figure out if we can fit
-    // everything before that forced break in the current fragmentainer. If it
-    // fits, we don't need to insert a break before the child.
-    if (LayoutUnit first_break_offset = block_child->FirstForcedBreakOffset()) {
-      if (remaining_logical_height >= first_break_offset)
-        return logical_offset;
-    }
-  }
-
-  return logical_offset + pagination_strut;
 }
 
 void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
@@ -1029,20 +458,8 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
 
   BlockChildrenLayoutInfo layout_info(this, before_edge, after_edge);
 
-  // Fieldsets need to find their legend and position it inside the border of
-  // the object.
-  // The legend then gets skipped during normal layout. The same is true for
-  // ruby text.
-  // It doesn't get included in the normal layout process but is instead skipped
-  LayoutObject* child_to_exclude =
-      LayoutSpecialExcludedChild(relayout_children, layout_scope);
-
   for (auto* child = FirstChild(); child; child = child->NextSibling()) {
     child->SetShouldCheckForPaintInvalidation();
-
-    if (child_to_exclude == child)
-      continue;  // Skip this child, since it will be positioned by the
-                 // specialized subclass (fieldsets and ruby runs).
 
     LayoutBox* box = To<LayoutBox>(child);
     UpdateBlockChildDirtyBitsBeforeLayout(relayout_children, *box);
@@ -1056,15 +473,9 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
       NOTREACHED();
       continue;
     }
-    if (box->IsColumnSpanAll()) {
-      box->SpannerPlaceholder()->FlowThread()->SkipColumnSpanner(
-          box, OffsetFromLogicalTopOfFirstPage() + LogicalHeight());
-      continue;
-    }
 
     // Lay out the child.
     LayoutBlockChild(*box, layout_info);
-    layout_info.ClearIsAtFirstInFlowChild();
   }
 }
 
@@ -1074,76 +485,11 @@ void LayoutBlockFlow::AdjustPositionedBlock(
   NOT_DESTROYED();
   LayoutUnit logical_top = LogicalHeight();
 
-  // Forced breaks are only specified on in-flow objects, but auto-positioned
-  // out-of-flow objects may be affected by a break-after value of the previous
-  // in-flow object.
-  if (View()->GetLayoutState()->IsPaginated())
-    logical_top =
-        ApplyForcedBreak(logical_top, layout_info.PreviousBreakAfterValue());
-
   UpdateStaticInlinePositionForChild(child, logical_top);
 
   PaintLayer* child_layer = child.Layer();
   if (child_layer->StaticBlockPosition() != logical_top)
     child_layer->SetStaticBlockPosition(logical_top);
-}
-
-LayoutUnit LayoutBlockFlow::ApplyForcedBreak(LayoutUnit logical_offset,
-                                             EBreakBetween break_value) {
-  NOT_DESTROYED();
-  if (!IsForcedFragmentainerBreakValue(break_value))
-    return logical_offset;
-  if (!IsPageLogicalHeightKnown()) {
-    // Page height is still unknown, so we cannot insert forced breaks.
-    return logical_offset;
-  }
-  LayoutUnit remaining_logical_height = PageRemainingLogicalHeightForOffset(
-      logical_offset, kAssociateWithLatterPage);
-  if (remaining_logical_height == PageLogicalHeightForOffset(logical_offset))
-    return logical_offset;  // Don't break if we're already at the block start
-                            // of a fragmentainer.
-
-  // If this is the first forced break inside this object, store the
-  // location. We need this information later if there's a break-inside:avoid
-  // object further up. We need to know if there are any forced breaks inside
-  // such objects, in order to determine whether we need to push it to the next
-  // fragmentainer or not.
-  if (!FirstForcedBreakOffset())
-    SetFirstForcedBreakOffset(logical_offset);
-
-  return logical_offset + remaining_logical_height;
-}
-
-void LayoutBlockFlow::SetBreakBefore(EBreakBetween break_value) {
-  NOT_DESTROYED();
-  if (break_value != EBreakBetween::kAuto &&
-      !IsBreakBetweenControllable(break_value))
-    break_value = EBreakBetween::kAuto;
-  if (break_value == EBreakBetween::kAuto && !rare_data_)
-    return;
-  EnsureRareData().break_before_ = static_cast<unsigned>(break_value);
-}
-
-void LayoutBlockFlow::SetBreakAfter(EBreakBetween break_value) {
-  NOT_DESTROYED();
-  if (break_value != EBreakBetween::kAuto &&
-      !IsBreakBetweenControllable(break_value))
-    break_value = EBreakBetween::kAuto;
-  if (break_value == EBreakBetween::kAuto && !rare_data_)
-    return;
-  EnsureRareData().break_after_ = static_cast<unsigned>(break_value);
-}
-
-EBreakBetween LayoutBlockFlow::BreakBefore() const {
-  NOT_DESTROYED();
-  return rare_data_ ? static_cast<EBreakBetween>(rare_data_->break_before_)
-                    : EBreakBetween::kAuto;
-}
-
-EBreakBetween LayoutBlockFlow::BreakAfter() const {
-  NOT_DESTROYED();
-  return rare_data_ ? static_cast<EBreakBetween>(rare_data_->break_after_)
-                    : EBreakBetween::kAuto;
 }
 
 void LayoutBlockFlow::AddVisualOverflowFromFloats(
@@ -1883,78 +1229,6 @@ bool LayoutBlockFlow::AllowsColumns() const {
   return true;
 }
 
-bool LayoutBlockFlow::AllowsPaginationStrut() const {
-  NOT_DESTROYED();
-  // The block needs to be contained by a LayoutBlockFlow (and not by e.g. a
-  // flexbox, grid, or a table (the latter being the case for table cell or
-  // table caption)). The reason for this limitation is simply that
-  // LayoutBlockFlow child layout code is the only place where we pick up the
-  // struts and handle them. We handle floats and regular in-flow children, and
-  // that's all. We could handle this in other layout modes as well (and even
-  // for out-of-flow children), but currently we don't.
-  if (IsOutOfFlowPositioned())
-    return false;
-  if (IsLayoutFlowThread()) {
-    // Don't let the strut escape the fragmentation context and get lost.
-    return false;
-  }
-  const auto* containing_block_flow =
-      DynamicTo<LayoutBlockFlow>(ContainingBlock());
-  if (!containing_block_flow)
-    return false;
-  // If children are inline, allow the strut. We are probably a float.
-  if (containing_block_flow->ChildrenInline())
-    return true;
-  for (LayoutBox* sibling = PreviousSiblingBox(); sibling;
-       sibling = sibling->PreviousSiblingBox()) {
-    // What happens on the other side of a spanner is none of our concern, so
-    // stop here. Since there's no in-flow box between the previous spanner and
-    // us, there's no class A break point in front of us. We cannot even
-    // re-propagate pagination struts to our containing block, since the
-    // containing block starts in a different column row.
-    if (sibling->IsColumnSpanAll())
-      return false;
-    // If this isn't the first in-flow object, there's a break opportunity
-    // before us, which means that we can allow the strut.
-    if (!sibling->IsFloatingOrOutOfFlowPositioned())
-      return true;
-  }
-  // This is a first in-flow child. We'll still allow the strut if it can be
-  // re-propagated to our containing block.
-  return containing_block_flow->AllowsPaginationStrut();
-}
-
-void LayoutBlockFlow::SetPaginationStrutPropagatedFromChild(LayoutUnit strut) {
-  NOT_DESTROYED();
-  strut = std::max(strut, LayoutUnit());
-  if (!rare_data_) {
-    if (!strut)
-      return;
-    rare_data_ = MakeGarbageCollected<LayoutBlockFlowRareData>(this);
-  }
-  rare_data_->pagination_strut_propagated_from_child_ = strut;
-}
-
-void LayoutBlockFlow::SetFirstForcedBreakOffset(LayoutUnit block_offset) {
-  NOT_DESTROYED();
-  if (!rare_data_) {
-    if (!block_offset)
-      return;
-    rare_data_ = MakeGarbageCollected<LayoutBlockFlowRareData>(this);
-  }
-  rare_data_->first_forced_break_offset_ = block_offset;
-}
-
-void LayoutBlockFlow::PositionSpannerDescendant(
-    LayoutMultiColumnSpannerPlaceholder& child) {
-  NOT_DESTROYED();
-  LayoutBox& spanner = *child.LayoutObjectInFlowThread();
-  // FIXME: |spanner| is a descendant, but never a direct child, so the names
-  // here are bad, if nothing else.
-  SetLogicalTopForChild(spanner, child.LogicalTop());
-  DetermineLogicalLeftPositionForChild(spanner);
-}
-
 void LayoutBlockFlow::MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
                                      LayoutObject* start_child,
                                      LayoutObject* end_child,
@@ -1987,7 +1261,6 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
       // spanners, paged containers may not).
       MultiColumnFlowThread()->EvacuateAndDestroy();
       DCHECK(!MultiColumnFlowThread());
-      pagination_state_changed_ = true;
     }
     return;
   }
@@ -2017,10 +1290,9 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   if (element && element->IsFormControlElement())
     return;
 
-  auto* flow_thread = LayoutMultiColumnFlowThread::CreateAnonymous(
-      GetDocument(), StyleRef(), !IsLayoutNGObject());
+  auto* flow_thread =
+      LayoutMultiColumnFlowThread::CreateAnonymous(GetDocument(), StyleRef());
   AddChild(flow_thread);
-  pagination_state_changed_ = true;
   if (IsLayoutNGObject()) {
     // For simplicity of layout algorithm, we assume flow thread having block
     // level children only.
@@ -2388,11 +1660,7 @@ void LayoutBlockFlow::InvalidateDisplayItemClients(
 }
 
 LayoutBlockFlow::LayoutBlockFlowRareData::LayoutBlockFlowRareData(
-    const LayoutBlockFlow* block)
-    : break_before_(static_cast<unsigned>(EBreakBetween::kAuto)),
-      break_after_(static_cast<unsigned>(EBreakBetween::kAuto)),
-      line_break_to_avoid_widow_(-1),
-      did_break_at_line_to_avoid_widow_(false) {}
+    const LayoutBlockFlow* block) {}
 
 LayoutBlockFlow::LayoutBlockFlowRareData::~LayoutBlockFlowRareData() = default;
 

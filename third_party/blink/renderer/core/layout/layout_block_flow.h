@@ -53,7 +53,6 @@ class LineInfo;
 class LineLayoutState;
 class LineWidth;
 class LayoutMultiColumnFlowThread;
-class LayoutMultiColumnSpannerPlaceholder;
 class MarginInfo;
 class NGOffsetMapping;
 class NGPhysicalFragment;
@@ -282,39 +281,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // Return true if this object is allowed to establish a multicol container.
   virtual bool AllowsColumns() const;
 
-  bool AllowsPaginationStrut() const;
-  // Pagination strut caused by the first line or child block inside this
-  // block-level object.
-  //
-  // When the first piece of content (first child block or line) inside an
-  // object wants to insert a soft page or column break, rather than setting a
-  // pagination strut on itself it normally propagates the strut to its
-  // containing block (|this|), as long as our implementation can handle it.
-  // The idea is that we want to push the entire object to the next page or
-  // column along with the child content that caused the break, instead of
-  // leaving unusable space at the beginning of the object at the end of one
-  // column or page and just push the first line or block to the next column or
-  // page. That would waste space in the container for no good reason, and it
-  // would also be a spec violation, since there is no break opportunity defined
-  // between the content logical top of an object and its first child or line
-  // (only *between* blocks or lines).
-  LayoutUnit PaginationStrutPropagatedFromChild() const {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->pagination_strut_propagated_from_child_
-                      : LayoutUnit();
-  }
-  void SetPaginationStrutPropagatedFromChild(LayoutUnit);
-
-  LayoutUnit FirstForcedBreakOffset() const {
-    NOT_DESTROYED();
-    if (!rare_data_)
-      return LayoutUnit();
-    return rare_data_->first_forced_break_offset_;
-  }
-  void SetFirstForcedBreakOffset(LayoutUnit);
-
-  void PositionSpannerDescendant(LayoutMultiColumnSpannerPlaceholder& child);
-
   bool CreatesNewFormattingContext() const override;
 
   using LayoutBoxModelObject::MoveChildrenTo;
@@ -398,10 +364,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return AdjustLogicalLeftOffsetForLine(fixed_offset, apply_text_indent);
   }
 
-  virtual LayoutObject* LayoutSpecialExcludedChild(bool /*relayout_children*/,
-                                                   SubtreeLayoutScope&);
-  bool UpdateLogicalWidthAndColumnWidth() override;
-
   void SetLogicalLeftForChild(LayoutBox& child, LayoutUnit logical_left);
   void SetLogicalTopForChild(LayoutBox& child, LayoutUnit logical_top);
   void DetermineLogicalLeftPositionForChild(LayoutBox& child);
@@ -430,11 +392,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool PositionAndLayoutOnceIfNeeded(LayoutBox& child,
                                      LayoutUnit new_logical_top,
                                      BlockChildrenLayoutInfo&);
-
-  // Handle breaking policy before the child, and insert a forced break in front
-  // of it if needed.
-  void InsertForcedBreakBeforeChildIfNeeded(LayoutBox& child,
-                                            BlockChildrenLayoutInfo&);
 
   void LayoutBlockChild(LayoutBox& child, BlockChildrenLayoutInfo&);
   void AdjustPositionedBlock(LayoutBox& child, const BlockChildrenLayoutInfo&);
@@ -494,23 +451,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                       LayoutUnit& available_logical_width,
                                       unsigned expansion_opportunity_count);
 
-  bool ShouldBreakAtLineToAvoidWidow() const {
-    NOT_DESTROYED();
-    return rare_data_ && rare_data_->line_break_to_avoid_widow_ >= 0;
-  }
-  void ClearShouldBreakAtLineToAvoidWidow() const;
-  int LineBreakToAvoidWidow() const {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->line_break_to_avoid_widow_ : -1;
-  }
-  void SetBreakAtLineToAvoidWidow(int);
-  void ClearDidBreakAtLineToAvoidWidow();
-  void SetDidBreakAtLineToAvoidWidow();
-  bool DidBreakAtLineToAvoidWidow() const {
-    NOT_DESTROYED();
-    return rare_data_ && rare_data_->did_break_at_line_to_avoid_widow_;
-  }
-
  public:
   struct FloatWithRect {
     DISALLOW_NEW();
@@ -537,10 +477,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
     void Trace(Visitor*) const;
 
-    LayoutUnit pagination_strut_propagated_from_child_;
-
-    LayoutUnit first_forced_break_offset_;
-
     Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 
     // |offset_mapping_| is used only for legacy layout tree for caching offset
@@ -548,11 +484,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     // TODO(yosin): Once we have no legacy support, we should get rid of
     // |offset_mapping_| here.
     Member<NGOffsetMapping> offset_mapping_;
-
-    unsigned break_before_ : 4;
-    unsigned break_after_ : 4;
-    int line_break_to_avoid_widow_;
-    bool did_break_at_line_to_avoid_widow_ : 1;
   };
 
   void ClearOffsetMappingIfNeeded();
@@ -567,37 +498,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  private:
   static void RecalcFloatingDescendantsVisualOverflow(
       const NGPhysicalFragment& fragment);
-
-  // Apply any forced fragmentainer break that's set on the current class A
-  // break point.
-  LayoutUnit ApplyForcedBreak(LayoutUnit logical_offset, EBreakBetween);
-
-  void SetBreakBefore(EBreakBetween);
-  void SetBreakAfter(EBreakBetween);
-  EBreakBetween BreakBefore() const override;
-  EBreakBetween BreakAfter() const override;
-
-  LayoutUnit AdjustBlockChildForPagination(LayoutUnit logical_top,
-                                           LayoutBox& child,
-                                           BlockChildrenLayoutInfo&,
-                                           bool at_before_side_of_block);
-
-  // If a float cannot fit in the current fragmentainer, return the logical top
-  // margin edge that the float needs to have in order to be pushed to the top
-  // of the next fragmentainer. Otherwise, just return |logicalTopMarginEdge|.
-  LayoutUnit AdjustFloatLogicalTopForPagination(
-      LayoutBox&,
-      LayoutUnit logical_top_margin_edge);
-
-  // Computes a deltaOffset value that put a line at the top of the next page if
-  // it doesn't fit on the current page.
-  void AdjustLinePositionForPagination(RootInlineBox&,
-                                       LayoutUnit& delta_offset);
-
-  // If the child is unsplittable and can't fit on the current page, return the
-  // top of the next page/column.
-  LayoutUnit AdjustForUnsplittableChild(LayoutBox&,
-                                        LayoutUnit logical_offset) const;
 
   LineBoxList line_boxes_;  // All of the root line boxes created for this block
                             // flow.  For example, <div>Hello<br>world.</div>
@@ -668,7 +568,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                             InlineIterator& clean_line_start,
                             BidiStatus& clean_line_bidi_status);
   bool LineBoxHasBRWithClearance(RootInlineBox*);
-  bool CheckPaginationAndFloatsAtEndLine(LineLayoutState&);
   bool MatchedEndLine(LineLayoutState&,
                       const InlineBidiResolver&,
                       const InlineIterator& end_line_start,

@@ -1223,16 +1223,6 @@ bool LayoutObject::IsFirstInlineFragmentSafe() const {
 LayoutFlowThread* LayoutObject::LocateFlowThreadContainingBlock() const {
   NOT_DESTROYED();
   DCHECK(IsInsideFlowThread());
-
-  // See if we have the thread cached because we're in the middle of layout.
-  if (LayoutView* view = View()) {
-    if (LayoutState* layout_state = view->GetLayoutState()) {
-      if (LayoutFlowThread* flow_thread = layout_state->FlowThread())
-        return flow_thread;
-    }
-  }
-
-  // Not in the middle of layout so have to find the thread the slow way.
   return LayoutFlowThread::LocateFlowThreadContainingBlockOf(
       *this, LayoutFlowThread::kAnyAncestor);
 }

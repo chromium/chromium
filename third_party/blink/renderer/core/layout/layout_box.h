@@ -110,10 +110,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   LayoutUnit override_containing_block_content_logical_height_;
   LayoutUnit override_percentage_resolution_block_size_;
 
-  LayoutUnit offset_to_next_page_;
-
-  LayoutUnit pagination_strut_;
-
   // For snap area, the owning snap container.
   Member<LayoutBox> snap_container_;
   // For snap container, the descendant snap areas that contribute snap
@@ -1122,38 +1118,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Used to resolve margins in the containing block's block-flow direction.
   void ComputeAndSetBlockDirectionMargins(const LayoutBlock* containing_block);
 
-  LayoutUnit OffsetFromLogicalTopOfFirstPage() const;
-
-  // The block offset from the logical top of this object to the end of the
-  // first fragmentainer it lives in. If it only lives in one fragmentainer, 0
-  // is returned.
-  LayoutUnit OffsetToNextPage() const {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->offset_to_next_page_ : LayoutUnit();
-  }
-  void SetOffsetToNextPage(LayoutUnit);
-
-  // Specify which page or column to associate with an offset, if said offset is
-  // exactly at a page or column boundary.
   enum PageBoundaryRule { kAssociateWithFormerPage, kAssociateWithLatterPage };
-  LayoutUnit PageLogicalHeightForOffset(LayoutUnit) const;
-  bool IsPageLogicalHeightKnown() const;
-  LayoutUnit PageRemainingLogicalHeightForOffset(LayoutUnit,
-                                                 PageBoundaryRule) const;
-
-  int CurrentPageNumber(LayoutUnit child_logical_top) const;
-
-  bool CrossesPageBoundary(LayoutUnit offset, LayoutUnit logical_height) const;
-
-  // Calculate the strut to insert in order fit content of size
-  // |content_logical_height|. Usually this will merely return the distance to
-  // the next fragmentainer. However, in cases where the next fragmentainer
-  // isn't tall enough to fit the content, and there's a likelihood of taller
-  // fragmentainers further ahead, we'll search for one and return the distance
-  // to the first fragmentainer that can fit this piece of content.
-  LayoutUnit CalculatePaginationStrutToFitContent(
-      LayoutUnit offset,
-      LayoutUnit content_logical_height) const;
 
   void PositionLineBox(InlineBox*);
   void MoveWithEdgeOfInlineContainerIfNecessary(bool is_horizontal);
@@ -1340,51 +1305,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return rare_data_ ? rare_data_->spanner_placeholder_ : nullptr;
   }
-
-  // A pagination strut is the amount of space needed to push an in-flow block-
-  // level object (or float) to the logical top of the next page or column. It
-  // will be set both for forced breaks (e.g. page-break-before:always) and soft
-  // breaks (when there's not enough space in the current page / column for the
-  // object). The strut is baked into the logicalTop() of the object, so that
-  // logicalTop() - paginationStrut() == the original position in the previous
-  // column before deciding to break.
-  //
-  // Pagination struts are either set in front of a block-level box (here) or
-  // before a line (RootInlineBox::paginationStrut()).
-  LayoutUnit PaginationStrut() const {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->pagination_strut_ : LayoutUnit();
-  }
-  void SetPaginationStrut(LayoutUnit);
-  void ResetPaginationStrut() {
-    NOT_DESTROYED();
-    if (rare_data_)
-      rare_data_->pagination_strut_ = LayoutUnit();
-  }
-
-  // Is the specified break-before or break-after value supported on this
-  // object? It needs to be in-flow all the way up to a fragmentation context
-  // that supports the specified value.
-  bool IsBreakBetweenControllable(EBreakBetween) const;
-
-  // Is the specified break-inside value supported on this object? It needs to
-  // be contained by a fragmentation context that supports the specified value.
-  bool IsBreakInsideControllable(EBreakInside) const;
-
-  virtual EBreakBetween BreakAfter() const;
-  virtual EBreakBetween BreakBefore() const;
-  EBreakInside BreakInside() const;
-
-  static bool IsForcedFragmentainerBreakValue(EBreakBetween);
-
-  EBreakBetween ClassABreakPointValue(
-      EBreakBetween previous_break_after_value) const;
-
-  // Return true if we should insert a break in front of this box. The box needs
-  // to start at a valid class A break point in order to allow a forced break.
-  // To determine whether or not to break, we also need to know the break-after
-  // value of the previous in-flow sibling.
-  bool NeedsForcedBreakBefore(EBreakBetween previous_break_after_value) const;
 
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
@@ -1677,9 +1597,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return false;
   }
-  void UpdateFragmentationInfoForChild(LayoutBox&);
-  bool ChildNeedsRelayoutForPagination(const LayoutBox&) const;
-  void MarkChildForPaginationRelayoutIfNeeded(LayoutBox&, SubtreeLayoutScope&);
 
   bool IsWritingModeRoot() const {
     NOT_DESTROYED();
@@ -2498,16 +2415,6 @@ inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;
-}
-
-inline bool LayoutBox::IsForcedFragmentainerBreakValue(
-    EBreakBetween break_value) {
-  return break_value == EBreakBetween::kColumn ||
-         break_value == EBreakBetween::kLeft ||
-         break_value == EBreakBetween::kPage ||
-         break_value == EBreakBetween::kRecto ||
-         break_value == EBreakBetween::kRight ||
-         break_value == EBreakBetween::kVerso;
 }
 
 }  // namespace blink

@@ -354,11 +354,9 @@ void LayoutView::UpdateLayout() {
     if (!fragmentation_context_) {
       fragmentation_context_ =
           MakeGarbageCollected<ViewFragmentationContext>(*this);
-      pagination_state_changed_ = true;
     }
   } else if (fragmentation_context_) {
     fragmentation_context_.Clear();
-    pagination_state_changed_ = true;
   }
 
   DCHECK(!layout_state_);

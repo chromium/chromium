@@ -43,11 +43,9 @@ const LayoutBox* LayoutMultiColumnFlowThread::style_changed_box_;
 bool LayoutMultiColumnFlowThread::could_contain_spanners_;
 bool LayoutMultiColumnFlowThread::toggle_spanners_if_needed_;
 
-LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread(bool needs_paint_layer)
-    : LayoutFlowThread(needs_paint_layer),
-      last_set_worked_on_(nullptr),
+LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread()
+    : last_set_worked_on_(nullptr),
       column_count_(1),
-      column_heights_changed_(false),
       is_being_evacuated_(false) {
   SetIsInsideFlowThread(true);
 }
@@ -62,10 +60,9 @@ void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
 
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
     Document& document,
-    const ComputedStyle& parent_style,
-    bool needs_paint_layer) {
+    const ComputedStyle& parent_style) {
   LayoutMultiColumnFlowThread* layout_object =
-      MakeGarbageCollected<LayoutMultiColumnFlowThread>(needs_paint_layer);
+      MakeGarbageCollected<LayoutMultiColumnFlowThread>();
   layout_object->SetDocumentForAnonymous(&document);
   layout_object->SetStyle(
       document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
@@ -351,35 +348,6 @@ void LayoutMultiColumnFlowThread::EvacuateAndDestroy() {
   Destroy();
 }
 
-LayoutUnit LayoutMultiColumnFlowThread::MaxColumnLogicalHeight() const {
-  NOT_DESTROYED();
-  if (column_height_available_) {
-    // If height is non-auto, it's already constrained against max-height as
-    // well. Just return it.
-    return column_height_available_;
-  }
-  const LayoutBlockFlow* multicol_block = MultiColumnBlockFlow();
-  const Length& logical_max_height =
-      multicol_block->StyleRef().LogicalMaxHeight();
-  if (!logical_max_height.IsNone()) {
-    LayoutUnit resolved_logical_max_height =
-        multicol_block->ComputeContentLogicalHeight(
-            kMaxSize, logical_max_height, LayoutUnit(-1));
-    if (resolved_logical_max_height != -1)
-      return resolved_logical_max_height;
-  }
-  return LayoutUnit::Max();
-}
-
-LayoutUnit LayoutMultiColumnFlowThread::TallestUnbreakableLogicalHeight(
-    LayoutUnit offset_in_flow_thread) const {
-  NOT_DESTROYED();
-  if (LayoutMultiColumnSet* multicol_set = ColumnSetAtBlockOffset(
-          offset_in_flow_thread, kAssociateWithLatterPage))
-    return multicol_set->TallestUnbreakableLogicalHeight();
-  return LayoutUnit();
-}
-
 LayoutSize LayoutMultiColumnFlowThread::ColumnOffset(
     const LayoutPoint& point) const {
   NOT_DESTROYED();
@@ -387,27 +355,9 @@ LayoutSize LayoutMultiColumnFlowThread::ColumnOffset(
                                       CoordinateSpaceConversion::kContaining);
 }
 
-bool LayoutMultiColumnFlowThread::NeedsNewWidth() const {
-  NOT_DESTROYED();
-  LayoutUnit new_width;
-  unsigned dummy_column_count;  // We only care if used column-width changes.
-  CalculateColumnCountAndWidth(new_width, dummy_column_count);
-  return new_width != LogicalWidth();
-}
-
 bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {
   NOT_DESTROYED();
   return all_columns_have_known_height_;
-}
-
-bool LayoutMultiColumnFlowThread::MayHaveNonUniformPageLogicalHeight() const {
-  NOT_DESTROYED();
-  const LayoutMultiColumnSet* column_set = FirstMultiColumnSet();
-  if (!column_set)
-    return false;
-  if (column_set->NextSiblingMultiColumnSet())
-    return true;
-  return EnclosingFragmentationContext();
 }
 
 LayoutSize LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
@@ -557,79 +507,6 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
   return column_set;
 }
 
-void LayoutMultiColumnFlowThread::LayoutColumns(
-    SubtreeLayoutScope& layout_scope) {
-  NOT_DESTROYED();
-  // Since we ended up here, it means that the multicol container (our parent)
-  // needed layout. Since contents of the multicol container are diverted to the
-  // flow thread, the flow thread needs layout as well.
-  layout_scope.SetChildNeedsLayout(this);
-
-  CalculateColumnHeightAvailable();
-
-  if (FragmentationContext* enclosing_fragmentation_context =
-          EnclosingFragmentationContext()) {
-    block_offset_in_enclosing_fragmentation_context_ =
-        MultiColumnBlockFlow()->OffsetFromLogicalTopOfFirstPage();
-    block_offset_in_enclosing_fragmentation_context_ +=
-        MultiColumnBlockFlow()->BorderAndPaddingBefore();
-
-    if (LayoutMultiColumnFlowThread* enclosing_flow_thread =
-            enclosing_fragmentation_context->AssociatedFlowThread()) {
-      if (LayoutMultiColumnSet* first_set = FirstMultiColumnSet()) {
-        // Before we can start to lay out the contents of this multicol
-        // container, we need to make sure that all ancestor multicol containers
-        // have established a row to hold the first column contents of this
-        // container (this multicol container may start at the beginning of a
-        // new outer row). Without sufficient rows in all ancestor multicol
-        // containers, we may use the wrong column height.
-        LayoutUnit offset = block_offset_in_enclosing_fragmentation_context_ +
-                            first_set->LogicalTopFromMulticolContentEdge();
-        enclosing_flow_thread->AppendNewFragmentainerGroupIfNeeded(
-            offset, kAssociateWithLatterPage);
-      }
-    }
-  }
-
-  // We'll start by assuming that all columns have some known height, and flip
-  // it to false if we discover that this isn't the case.
-  all_columns_have_known_height_ = true;
-
-  for (LayoutBox* column_box = FirstMultiColumnBox(); column_box;
-       column_box = column_box->NextSiblingMultiColumnBox()) {
-    if (!column_box->IsLayoutMultiColumnSet()) {
-      // No other type is expected.
-      DCHECK(column_box->IsLayoutMultiColumnSpannerPlaceholder());
-      continue;
-    }
-    auto* column_set = To<LayoutMultiColumnSet>(column_box);
-    layout_scope.SetChildNeedsLayout(column_set);
-    if (!column_heights_changed_) {
-      // This is the initial layout pass. We need to reset the column height,
-      // because contents typically have changed.
-      column_set->ResetColumnHeight();
-    }
-    if (all_columns_have_known_height_ &&
-        !column_set->IsPageLogicalHeightKnown()) {
-      // If any of the column sets requires a layout pass before it has any
-      // clue about its height, we cannot fragment in this pass, just measure
-      // the block sizes.
-      all_columns_have_known_height_ = false;
-    }
-    // Since column sets are regular block flow objects, and their position is
-    // changed in regular block layout code (with no means for the multicol code
-    // to notice unless we add hooks there), store the previous position now. If
-    // it changes in the imminent layout pass, we may have to rebalance its
-    // columns.
-    column_set->StoreOldPosition();
-  }
-
-  column_heights_changed_ = false;
-  InvalidateColumnSets();
-  UpdateLayout();
-  ValidateColumnSets();
-}
-
 void LayoutMultiColumnFlowThread::ColumnRuleStyleDidChange() {
   NOT_DESTROYED();
   for (LayoutMultiColumnSet* column_set = FirstMultiColumnSet(); column_set;
@@ -687,51 +564,6 @@ LayoutMultiColumnFlowThread::EnclosingFragmentationContext(
   if (auto* enclosing_flow_thread = EnclosingFlowThread(constraint))
     return enclosing_flow_thread;
   return View()->FragmentationContext();
-}
-
-void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupIfNeeded(
-    LayoutUnit offset_in_flow_thread,
-    PageBoundaryRule page_boundary_rule) {
-  NOT_DESTROYED();
-  LayoutMultiColumnSet* column_set =
-      ColumnSetAtBlockOffset(offset_in_flow_thread, page_boundary_rule);
-  if (!column_set->NewFragmentainerGroupsAllowed())
-    return;
-
-  if (column_set->NeedsNewFragmentainerGroupAt(offset_in_flow_thread,
-                                               page_boundary_rule)) {
-    // We should never create additional fragmentainer groups unless we're in a
-    // nested fragmentation context.
-    DCHECK(EnclosingFragmentationContext());
-
-    // We have run out of columns here, so we need to add at least one more row
-    // to hold more columns.
-    LayoutMultiColumnFlowThread* enclosing_flow_thread =
-        EnclosingFragmentationContext()->AssociatedFlowThread();
-    do {
-      if (enclosing_flow_thread) {
-        // When we add a new row here, it implicitly means that we're inserting
-        // another column in our enclosing multicol container. That in turn may
-        // mean that we've run out of columns there too. Need to insert
-        // additional rows in ancestral multicol containers before doing it in
-        // the descendants, in order to get the height constraints right down
-        // there.
-        const MultiColumnFragmentainerGroup& last_row =
-            column_set->LastFragmentainerGroup();
-        // The top offset where where the new fragmentainer group will start in
-        // this column set, converted to the coordinate space of the enclosing
-        // multicol container.
-        LayoutUnit logical_offset_in_outer =
-            last_row.BlockOffsetInEnclosingFragmentationContext() +
-            last_row.GroupLogicalHeight();
-        enclosing_flow_thread->AppendNewFragmentainerGroupIfNeeded(
-            logical_offset_in_outer, kAssociateWithLatterPage);
-      }
-
-      column_set->AppendNewFragmentainerGroup();
-    } while (column_set->NeedsNewFragmentainerGroupAt(offset_in_flow_thread,
-                                                      page_boundary_rule));
-  }
 }
 
 void LayoutMultiColumnFlowThread::SetColumnCountFromNG(unsigned column_count) {
@@ -809,51 +641,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
   }
   ClearNeedsLayout();
   last_set_worked_on_ = nullptr;
-}
-
-bool LayoutMultiColumnFlowThread::IsFragmentainerLogicalHeightKnown() {
-  NOT_DESTROYED();
-  return IsPageLogicalHeightKnown();
-}
-
-LayoutUnit LayoutMultiColumnFlowThread::FragmentainerLogicalHeightAt(
-    LayoutUnit block_offset) {
-  NOT_DESTROYED();
-  DCHECK(IsPageLogicalHeightKnown());
-  return PageLogicalHeightForOffset(block_offset);
-}
-
-LayoutUnit LayoutMultiColumnFlowThread::RemainingLogicalHeightAt(
-    LayoutUnit block_offset) {
-  NOT_DESTROYED();
-  DCHECK(IsPageLogicalHeightKnown());
-  return PageRemainingLogicalHeightForOffset(block_offset,
-                                             kAssociateWithLatterPage);
-}
-
-void LayoutMultiColumnFlowThread::CalculateColumnHeightAvailable() {
-  NOT_DESTROYED();
-  // Calculate the non-auto content box height, or set it to 0 if it's auto. We
-  // need to know this before layout, so that we can figure out where to insert
-  // column breaks. We also treat LayoutView (which may be paginated, which uses
-  // the multicol implementation) as having a fixed height, since its height is
-  // deduced from the viewport height. We use computeLogicalHeight() to
-  // calculate the content box height. That method will clamp against max-height
-  // and min-height. Since we're now at the beginning of layout, and we don't
-  // know the actual height of the content yet, only call that method when
-  // height is definite, or we might fool ourselves into believing that columns
-  // have a definite height when they in fact don't.
-  LayoutBlockFlow* container = MultiColumnBlockFlow();
-  LayoutUnit column_height;
-  if (container->HasDefiniteLogicalHeight() || IsA<LayoutView>(container)) {
-    LogicalExtentComputedValues computed_values;
-    container->ComputeLogicalHeight(LayoutUnit(), container->LogicalTop(),
-                                    computed_values);
-    column_height = computed_values.extent_ -
-                    container->BorderAndPaddingLogicalHeight() -
-                    container->ComputeLogicalScrollbars().BlockSum();
-  }
-  SetColumnHeightAvailable(std::max(column_height, LayoutUnit()));
 }
 
 void LayoutMultiColumnFlowThread::CalculateColumnCountAndWidth(
@@ -1070,13 +857,7 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
   DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   DCHECK(layout_object->IsColumnSpanAll());
 
-  // In legacy layout, |last_set_worked_on_| is only updated if we find a column
-  // set after the spanner. We don't want this in NG, since NG may have created
-  // empty columns after the spanner, without a column set being created, and
-  // then we want to leave the column set alone.
-  bool is_ng_layout = MultiColumnBlockFlow()->IsLayoutNGObject();
-  if (is_ng_layout)
-    last_set_worked_on_ = nullptr;
+  last_set_worked_on_ = nullptr;
 
   LayoutMultiColumnSpannerPlaceholder* placeholder =
       layout_object->SpannerPlaceholder();
@@ -1088,39 +869,6 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
     last_set_worked_on_ = next_set;
     next_set->BeginFlow(logical_top_in_flow_thread);
   }
-
-  if (is_ng_layout)
-    return;
-
-  // We'll lay out of spanners after flow thread layout has finished (during
-  // layout of the spanner placeholders). There may be containing blocks for
-  // out-of-flow positioned descendants of the spanner in the flow thread, so
-  // that out-of-flow objects inside the spanner will be laid out as part of
-  // flow thread layout (even if the spanner itself won't). We need to add such
-  // out-of-flow positioned objects to their containing blocks now, or they'll
-  // never get laid out. Since it's non-trivial to determine if we need this,
-  // and where such out-of-flow objects might be, just go through the whole
-  // subtree.
-  for (LayoutObject* descendant = layout_object->SlowFirstChild(); descendant;
-       descendant = descendant->NextInPreOrder(layout_object)) {
-    if (descendant->IsBox() && descendant->IsOutOfFlowPositioned()) {
-      descendant->ContainingBlock()->InsertPositionedObject(
-          To<LayoutBox>(descendant));
-    }
-  }
-}
-
-bool LayoutMultiColumnFlowThread::FinishLayout() {
-  NOT_DESTROYED();
-  all_columns_have_known_height_ = true;
-  for (const auto* column_set = FirstMultiColumnSet(); column_set;
-       column_set = column_set->NextSiblingMultiColumnSet()) {
-    if (!column_set->IsPageLogicalHeightKnown()) {
-      all_columns_have_known_height_ = false;
-      break;
-    }
-  }
-  return !ColumnHeightsChanged();
 }
 
 // When processing layout objects to remove or when processing layout objects
@@ -1493,42 +1241,7 @@ void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
 
 MinMaxSizes LayoutMultiColumnFlowThread::PreferredLogicalWidths() const {
   NOT_DESTROYED();
-  // The min/max intrinsic widths calculated really tell how much space elements
-  // need when laid out inside the columns. In order to eventually end up with
-  // the desired column width, we need to convert them to values pertaining to
-  // the multicol container.
-  auto* flow = MultiColumnBlockFlow();
-  const ComputedStyle* multicol_style = flow->Style();
-  LayoutUnit column_count(
-      multicol_style->HasAutoColumnCount() ? 1 : multicol_style->ColumnCount());
-  LayoutUnit gap_extra((column_count - 1) *
-                       ColumnGap(*multicol_style, LayoutUnit()));
-  MinMaxSizes sizes;
-
-  if (flow->HasOverrideIntrinsicContentLogicalWidth()) {
-    sizes = flow->OverrideIntrinsicContentLogicalWidth();
-  } else if (flow->ShouldApplySizeContainment()) {
-    sizes = LayoutUnit();
-  } else {
-    sizes = LayoutFlowThread::PreferredLogicalWidths();
-  }
-
-  LayoutUnit column_width;
-  if (multicol_style->HasAutoColumnWidth()) {
-    sizes.min_size = sizes.min_size * column_count + gap_extra;
-  } else {
-    column_width = LayoutUnit(multicol_style->ColumnWidth());
-    sizes.min_size = std::min(sizes.min_size, column_width);
-  }
-  // Note that if column-count is auto here, we should resolve it to calculate
-  // the maximum intrinsic width, instead of pretending that it's 1. The only
-  // way to do that is by performing a layout pass, but this is not an
-  // appropriate time or place for layout. The good news is that if height is
-  // unconstrained and there are no explicit breaks, the resolved column-count
-  // really should be 1.
-  sizes.max_size =
-      std::max(sizes.max_size, column_width) * column_count + gap_extra;
-  return sizes;
+  NOTREACHED_NORETURN();
 }
 
 void LayoutMultiColumnFlowThread::ComputeLogicalHeight(
@@ -1536,9 +1249,7 @@ void LayoutMultiColumnFlowThread::ComputeLogicalHeight(
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
   NOT_DESTROYED();
-  // We simply remain at our intrinsic height.
-  computed_values.extent_ = logical_height;
-  computed_values.position_ = logical_top;
+  NOTREACHED_NORETURN();
 }
 
 void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
@@ -1547,91 +1258,6 @@ void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
   LayoutUnit column_width;
   CalculateColumnCountAndWidth(column_width, column_count_);
   SetLogicalWidth(column_width);
-}
-
-void LayoutMultiColumnFlowThread::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(!last_set_worked_on_);
-  last_set_worked_on_ = FirstMultiColumnSet();
-  if (last_set_worked_on_)
-    last_set_worked_on_->BeginFlow(LayoutUnit());
-  LayoutFlowThread::UpdateLayout();
-  if (LayoutMultiColumnSet* last_set = LastMultiColumnSet()) {
-    DCHECK_EQ(last_set, last_set_worked_on_);
-    if (!last_set->NextSiblingMultiColumnSet()) {
-      // Include trailing overflow in the last column set (also if the last set
-      // is followed by one or more spanner placeholders). The idea is that we
-      // will generate additional columns and pages to hold that overflow,
-      // since people do write bad content like <body style="height:0px"> in
-      // multi-column layouts.
-      LayoutRect layout_rect = LayoutOverflowRect();
-      LayoutUnit logical_bottom_in_flow_thread =
-          IsHorizontalWritingMode() ? layout_rect.MaxY() : layout_rect.MaxX();
-      DCHECK_GE(logical_bottom_in_flow_thread, LogicalHeight());
-      last_set->EndFlow(logical_bottom_in_flow_thread);
-    }
-  }
-  last_set_worked_on_ = nullptr;
-}
-
-void LayoutMultiColumnFlowThread::ContentWasLaidOut(
-    LayoutUnit logical_bottom_in_flow_thread_after_pagination) {
-  NOT_DESTROYED();
-  // Check if we need another fragmentainer group. If we've run out of columns
-  // in the last fragmentainer group (column row), we need to insert another
-  // fragmentainer group to hold more columns.
-
-  // First figure out if there's any chance that we're nested at all. If we can
-  // be sure that we're not, bail early. This code is run very often, and since
-  // locating a containing flow thread has some cost (depending on tree depth),
-  // avoid calling enclosingFragmentationContext() right away. This test may
-  // give some false positives (hence the "mayBe"), if we're in an out-of-flow
-  // subtree and have an outer multicol container that doesn't affect us, but
-  // that's okay. We'll discover that further down the road when trying to
-  // locate our enclosing flow thread for real.
-  bool may_be_nested = MultiColumnBlockFlow()->IsInsideFlowThread() ||
-                       View()->FragmentationContext();
-  if (!may_be_nested)
-    return;
-  AppendNewFragmentainerGroupIfNeeded(
-      logical_bottom_in_flow_thread_after_pagination, kAssociateWithFormerPage);
-}
-
-bool LayoutMultiColumnFlowThread::CanSkipLayout(const LayoutBox& root) const {
-  NOT_DESTROYED();
-  // Objects containing spanners is all we need to worry about, so if there are
-  // no spanners at all in this multicol container, we can just return the good
-  // news right away.
-  if (!HasAnyColumnSpanners(*this))
-    return true;
-
-  LayoutObject* next;
-  for (const LayoutObject* object = &root; object; object = next) {
-    if (object->IsColumnSpanAll()) {
-      // A spanner potentially ends one fragmentainer group and begins a new
-      // one, and thus determines the flow thread portion bottom and top of
-      // adjacent fragmentainer groups. It's just too hard to guess these values
-      // without laying out.
-      return false;
-    }
-    if (CanContainSpannerInParentFragmentationContext(*object))
-      next = object->NextInPreOrder(&root);
-    else
-      next = object->NextInPreOrderAfterChildren(&root);
-  }
-  return true;
-}
-
-MultiColumnLayoutState LayoutMultiColumnFlowThread::GetMultiColumnLayoutState()
-    const {
-  NOT_DESTROYED();
-  return MultiColumnLayoutState(last_set_worked_on_);
-}
-
-void LayoutMultiColumnFlowThread::RestoreMultiColumnLayoutState(
-    const MultiColumnLayoutState& state) {
-  NOT_DESTROYED();
-  last_set_worked_on_ = state.ColumnSet();
 }
 
 LayoutPoint LayoutMultiColumnFlowThread::Location() const {

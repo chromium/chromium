@@ -958,19 +958,10 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
     const BidiStatus& clean_line_bidi_status) {
   NOT_DESTROYED();
   const ComputedStyle& style_to_use = StyleRef();
-  bool paginated =
-      View()->GetLayoutState() && View()->GetLayoutState()->IsPaginated();
-  bool recalculate_struts = layout_state.NeedsPaginationStrutRecalculation();
   LineMidpointState& line_midpoint_state = resolver.GetMidpointState();
   InlineIterator end_of_line = resolver.GetPosition();
   LayoutTextInfo layout_text_info;
   VerticalPositionCache vertical_position_cache;
-
-  // Pagination may require us to delete and re-create a line due to floats.
-  // When this happens, we need to know the old offset of the line, to calculate
-  // the correct pagination strut.
-  LayoutUnit deleted_line_old_offset = LayoutUnit::Min();
-
   LineBreaker line_breaker(LineLayoutBlockFlow(this));
 
   while (!end_of_line.AtEnd()) {
@@ -1022,7 +1013,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
 
     // This is a short-cut for empty lines.
     if (layout_state.GetLineInfo().IsEmpty()) {
-      DCHECK_EQ(deleted_line_old_offset, LayoutUnit::Min());
       if (LastRootBox())
         LastRootBox()->SetLineBreakInfo(end_of_line.GetLineLayoutItem(),
                                         end_of_line.Offset(),
@@ -1078,7 +1068,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
       // applied for
       // inline flow boxes.
 
-      LayoutUnit old_logical_height = LogicalHeight();
       line_box = CreateLineBoxesFromBidiRuns(
           resolver.Status().context->Level(), bidi_runs, end_of_line,
           layout_state.GetLineInfo(), vertical_position_cache,
@@ -1088,91 +1077,22 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
       resolver.MarkCurrentRunEmpty();  // FIXME: This can probably be replaced
                                        // by an ASSERT (or just removed).
 
-      // If we decided to re-create the line due to pagination, we better have a
-      // new line now.
-      DCHECK(line_box || deleted_line_old_offset == LayoutUnit::Min());
-
       if (line_box) {
         line_box->SetLineBreakInfo(end_of_line.GetLineLayoutItem(),
                                    end_of_line.Offset(), resolver.Status());
-        if (recalculate_struts) {
-          LayoutUnit adjustment;
-          AdjustLinePositionForPagination(*line_box, adjustment);
-          if (adjustment) {
-            DCHECK_GT(adjustment, LayoutUnit());
-            IndentTextOrNot indent = layout_state.GetLineInfo().IsFirstLine()
-                                         ? kIndentText
-                                         : kDoNotIndentText;
-            LayoutUnit old_line_width =
-                AvailableLogicalWidthForLine(old_logical_height, indent);
-            LayoutUnit old_logical_top = line_box->LogicalTop();
-            line_box->MoveInBlockDirection(adjustment);
-            if (AvailableLogicalWidthForLine(old_logical_height + adjustment,
-                                             indent) != old_line_width) {
-              // We have to delete this line, remove all floats that got added,
-              // and let line layout re-run. Store the offset, so that when we
-              // eventually get to a location where the line can fit, we
-              // calculate the correct pagination strut. Store the offset the
-              // first time this happens for a line; it may happen several
-              // times. Example: a line is too tall to fit in the current
-              // fragmentainer, so we attempt to lay it out into the next
-              // one. In the next fragmentainer there may be a float that's too
-              // wide to fit anything beside it, so the line will have to go
-              // below it. But there may not be enough space to fit the line
-              // below the float, so we'll have to skip to the fragmentainer
-              // after that, and retry *again* there. And so on.
-              if (deleted_line_old_offset == LayoutUnit::Min())
-                deleted_line_old_offset = old_logical_top;
-              DCHECK_NE(deleted_line_old_offset, LayoutUnit::Min());
-              // We're also going to assume that we're right after a page
-              // break when re-creating this line, so it better be so.
-              DCHECK(line_box->IsFirstAfterPageBreak());
-              line_box->DeleteLine();
-              line_box = nullptr;
-            }
-          }
-          if (line_box &&
-              (adjustment || deleted_line_old_offset != LayoutUnit::Min())) {
-            if (deleted_line_old_offset != LayoutUnit::Min()) {
-              // This is a line that got re-created because it got pushed to the
-              // next fragmentainer, and there were floats in the vicinity that
-              // affected the available width, so we had to re-lay out and
-              // re-paginate. We've finally got to a place where the line
-              // fits. Calculate a new pagination strut.
-              LayoutUnit strut =
-                  line_box->LogicalTop() - deleted_line_old_offset;
-              line_box->SetIsFirstAfterPageBreak(true);
-              line_box->SetPaginationStrut(strut);
-              deleted_line_old_offset = LayoutUnit::Min();
-            }
-            // If the line got adjusted (just now, or in a previous run), we
-            // need to encompass its logical bottom in the logical height of the
-            // block.
-            SetLogicalHeight(line_box->LineBottomWithLeading());
-          }
-        }
       }
     }
 
-    if (deleted_line_old_offset == LayoutUnit::Min()) {
-      for (const auto& positioned_object : line_breaker.PositionedObjects()) {
-        if (positioned_object.StyleRef().IsOriginalDisplayInlineType()) {
-          // Auto-positioned "inline" out-of-flow objects have already been
-          // positioned, but if we're paginated, or just ceased to be so, we
-          // need to update their position now, since the line they "belong" to
-          // may have been pushed by a pagination strut, or pulled back because
-          // a pagination strut was removed.
-          if (recalculate_struts && line_box)
-            positioned_object.Layer()->SetStaticBlockPosition(
-                line_box->LineTopWithLeading());
-          continue;
-        }
-        SetStaticPositions(LineLayoutBlockFlow(this), positioned_object,
-                           kDoNotIndentText);
+    for (const auto& positioned_object : line_breaker.PositionedObjects()) {
+      if (positioned_object.StyleRef().IsOriginalDisplayInlineType()) {
+        continue;
       }
+      SetStaticPositions(LineLayoutBlockFlow(this), positioned_object,
+                         kDoNotIndentText);
+    }
 
-      if (!layout_state.GetLineInfo().IsEmpty())
-        layout_state.GetLineInfo().SetFirstLine(false);
+    if (!layout_state.GetLineInfo().IsEmpty()) {
+      layout_state.GetLineInfo().SetFirstLine(false);
     }
 
     line_midpoint_state.Reset();
@@ -1181,93 +1101,18 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
 
   // The resolver runs should have been cleared, otherwise they're leaking.
   DCHECK(!resolver.Runs().RunCount());
-
-  // In case we already adjusted the line positions during this layout to avoid
-  // widows then we need to ignore the possibility of having a new widows
-  // situation. Otherwise, we risk leaving empty containers which is against the
-  // block fragmentation principles.
-  if (paginated && StyleRef().Widows() > 1 && !DidBreakAtLineToAvoidWidow()) {
-    // Check the line boxes to make sure we didn't create unacceptable widows.
-    // However, we'll prioritize orphans - so nothing we do here should create
-    // a new orphan.
-
-    RootInlineBox* line_box = LastRootBox();
-
-    // Count from the end of the block backwards, to see how many hanging
-    // lines we have.
-    RootInlineBox* first_line_in_block = FirstRootBox();
-    int num_lines_hanging = 1;
-    while (line_box && line_box != first_line_in_block &&
-           !line_box->IsFirstAfterPageBreak()) {
-      ++num_lines_hanging;
-      line_box = line_box->PrevRootBox();
-    }
-
-    // If there were no breaks in the block, we didn't create any widows.
-    if (!line_box || !line_box->IsFirstAfterPageBreak() ||
-        line_box == first_line_in_block)
-      return;
-
-    if (num_lines_hanging < StyleRef().Widows()) {
-      // We have detected a widow. Now we need to work out how many
-      // lines there are on the previous page, and how many we need
-      // to steal.
-      int num_lines_needed = StyleRef().Widows() - num_lines_hanging;
-      RootInlineBox* current_first_line_of_new_page = line_box;
-
-      // Count the number of lines in the previous page.
-      line_box = line_box->PrevRootBox();
-      int num_lines_in_previous_page = 1;
-      while (line_box && line_box != first_line_in_block &&
-             !line_box->IsFirstAfterPageBreak()) {
-        ++num_lines_in_previous_page;
-        line_box = line_box->PrevRootBox();
-      }
-
-      // If there was an explicit value for orphans, respect that. If not, we
-      // still shouldn't create a situation where we make an orphan bigger than
-      // the initial value. This means that setting widows implies we also care
-      // about orphans, but given the specification says the initial orphan
-      // value is non-zero, this is ok. The author is always free to set orphans
-      // explicitly as well.
-      int orphans = StyleRef().Orphans();
-      int num_lines_available = num_lines_in_previous_page - orphans;
-      if (num_lines_available <= 0)
-        return;
-
-      int num_lines_to_take = std::min(num_lines_available, num_lines_needed);
-      // Wind back from our first widowed line.
-      line_box = current_first_line_of_new_page;
-      for (int i = 0; i < num_lines_to_take; ++i)
-        line_box = line_box->PrevRootBox();
-
-      // We now want to break at this line. Remember for next layout and trigger
-      // relayout.
-      SetBreakAtLineToAvoidWidow(LineCount(line_box));
-      MarkLinesDirtyInBlockRange(LastRootBox()->LineBottomWithLeading(),
-                                 line_box->LineBottomWithLeading(), line_box);
-    }
-  }
-
-  ClearDidBreakAtLineToAvoidWidow();
 }
 
 void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
   NOT_DESTROYED();
   if (layout_state.EndLine()) {
     if (layout_state.EndLineMatched()) {
-      bool recalculate_struts =
-          layout_state.NeedsPaginationStrutRecalculation();
       // Attach all the remaining lines, and then adjust their y-positions as
       // needed.
       LayoutUnit delta = LogicalHeight() - layout_state.EndLineLogicalTop();
       for (RootInlineBox* line = layout_state.EndLine(); line;
            line = line->NextRootBox()) {
         line->AttachLine();
-        if (recalculate_struts) {
-          delta -= line->PaginationStrut();
-          AdjustLinePositionForPagination(*line, delta);
-        }
         if (delta)
           line->MoveInBlockDirection(delta);
       }
@@ -1795,11 +1640,6 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
     if (FirstLineBox())
       SetShouldDoFullPaintInvalidation();
     LineBoxes()->DeleteLineBoxes();
-  } else if (const LayoutState* box_state = View()->GetLayoutState()) {
-    // We'll attempt to keep the line boxes that we have, but we may need to
-    // add, change or remove pagination struts in front of them.
-    if (box_state->IsPaginated() || box_state->PaginationStateChanged())
-      layout_state.SetNeedsPaginationStrutRecalculation();
   }
 
   if (FirstChild()) {
@@ -1928,19 +1768,8 @@ RootInlineBox* LayoutBlockFlow::DetermineStartPosition(
   // FIXME: This entire float-checking block needs to be broken into a new
   // function.
   if (!layout_state.IsFullLayout()) {
-    // Paginate all of the clean lines.
-    bool recalculate_struts = layout_state.NeedsPaginationStrutRecalculation();
-    LayoutUnit pagination_delta;
     for (curr = FirstRootBox(); curr && !curr->IsDirty();
          curr = curr->NextRootBox()) {
-      if (recalculate_struts) {
-        pagination_delta -= curr->PaginationStrut();
-        AdjustLinePositionForPagination(*curr, pagination_delta);
-        if (pagination_delta) {
-          curr->MoveInBlockDirection(pagination_delta);
-        }
-      }
-
       // If the linebox breaks cleanly and with clearance then dirty from at
       // least this point onwards so that we can clear the correct floats
       // without difficulty.
@@ -2083,43 +1912,13 @@ void LayoutBlockFlow::DetermineEndPosition(LineLayoutState& layout_state,
   layout_state.SetEndLine(last);
 }
 
-bool LayoutBlockFlow::CheckPaginationAndFloatsAtEndLine(
-    LineLayoutState& layout_state) {
-  NOT_DESTROYED();
-  if (!layout_state.EndLine()) {
-    return true;
-  }
-
-  LayoutUnit line_delta = LogicalHeight() - layout_state.EndLineLogicalTop();
-
-  if (layout_state.NeedsPaginationStrutRecalculation()) {
-    // Check all lines from here to the end, and see if the hypothetical new
-    // position for the lines will result
-    // in a different available line width.
-    for (RootInlineBox* line_box = layout_state.EndLine(); line_box;
-         line_box = line_box->NextRootBox()) {
-      // This isn't the real move we're going to do, so don't update the line
-      // box's pagination strut yet.
-      LayoutUnit old_pagination_strut = line_box->PaginationStrut();
-      line_delta -= old_pagination_strut;
-      AdjustLinePositionForPagination(*line_box, line_delta);
-      line_box->SetPaginationStrut(old_pagination_strut);
-    }
-  }
-
-  return true;
-}
-
 bool LayoutBlockFlow::MatchedEndLine(LineLayoutState& layout_state,
                                      const InlineBidiResolver& resolver,
                                      const InlineIterator& end_line_start,
                                      const BidiStatus& end_line_status) {
   NOT_DESTROYED();
   if (resolver.GetPosition() == end_line_start) {
-    if (resolver.Status() != end_line_status)
-      return false;
-
-    return CheckPaginationAndFloatsAtEndLine(layout_state);
+    return resolver.Status() == end_line_status;
   }
 
   // The first clean line doesn't match, but we can check a handful of following
@@ -2135,17 +1934,15 @@ bool LayoutBlockFlow::MatchedEndLine(LineLayoutState& layout_state,
       if (line->LineBreakBidiStatus() != resolver.Status())
         return false;  // ...but the bidi state doesn't match.
 
-      bool matched = false;
       RootInlineBox* result = line->NextRootBox();
       layout_state.SetEndLine(result);
       if (result) {
         layout_state.SetEndLineLogicalTop(line->LineBottomWithLeading());
-        matched = CheckPaginationAndFloatsAtEndLine(layout_state);
       }
 
       // Now delete the lines that we failed to sync.
       DeleteLineRange(layout_state, original_end_line, result);
-      return matched;
+      return true;
     }
   }
 

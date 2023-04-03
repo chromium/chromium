@@ -529,12 +529,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool WidthAvailableToChildrenHasChanged();
 
  protected:
-  // Paginated content inside this block was laid out.
-  // |logical_bottom_offset_after_pagination| is the logical bottom offset of
-  // the child content after applying any forced or unforced breaks as needed.
-  void PaginatedContentWasLaidOut(
-      LayoutUnit logical_bottom_offset_after_pagination);
-
   // Adjust from painting offsets to the local coords of this layoutObject
   void OffsetForContents(LayoutPoint&) const;
   void OffsetForContents(PhysicalOffset&) const;
@@ -560,14 +554,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   unsigned has_positioned_objects_ : 1;
   unsigned has_svg_text_descendants_ : 1;
-
-  // When an object ceases to establish a fragmentation context (e.g. the
-  // LayoutView when we're no longer printing), we need a deep layout
-  // afterwards, to clear all pagination struts. Likewise, when an object
-  // becomes fragmented, we need to re-lay out the entire subtree. There might
-  // be forced breaks somewhere in there that we suddenly have to pay attention
-  // to, for all we know.
-  unsigned pagination_state_changed_ : 1;
 
   // LayoutNG-only: This flag is true if an NG out of flow layout was
   // initiated by Legacy positioning code.

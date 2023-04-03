@@ -25,17 +25,13 @@
 
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 
-#include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
 namespace blink {
 
 LayoutState::LayoutState(LayoutView& view)
-    : is_paginated_(view.PageLogicalHeight()),
-      containing_block_logical_width_changed_(false),
-      pagination_state_changed_(false),
-      flow_thread_(nullptr),
+    : containing_block_logical_width_changed_(false),
       next_(nullptr),
       layout_object_(&view) {
   DCHECK(!view.GetLayoutState());
@@ -48,55 +44,11 @@ LayoutState::LayoutState(LayoutBox& layout_object,
           containing_block_logical_width_changed),
       next_(layout_object.View()->GetLayoutState()),
       layout_object_(&layout_object) {
-  if (layout_object.IsLayoutFlowThread())
-    flow_thread_ = To<LayoutFlowThread>(&layout_object);
-  else
-    flow_thread_ = next_->FlowThread();
-  pagination_state_changed_ = next_->pagination_state_changed_;
-  height_offset_for_table_headers_ = next_->HeightOffsetForTableHeaders();
-  height_offset_for_table_footers_ = next_->HeightOffsetForTableFooters();
   layout_object.View()->PushLayoutState(*this);
-
-  if (const AtomicString& page_name = layout_object.StyleRef().Page())
-    input_page_name_ = page_name;
-  else
-    input_page_name_ = next_->input_page_name_;
-
-  if (layout_object.IsLayoutFlowThread()) {
-    // Entering a new pagination context.
-    pagination_offset_ = LayoutSize();
-    is_paginated_ = true;
-    return;
-  }
-
-  // Disable pagination for objects we don't support. For now this includes
-  // overflow:scroll/auto, inline blocks and writing mode roots. Additionally,
-  // pagination inside SVG is not allowed.
-  if (layout_object.IsMonolithic() || layout_object_->IsSVGChild()) {
-    flow_thread_ = nullptr;
-    is_paginated_ = false;
-    return;
-  }
-
-  is_paginated_ = next_->is_paginated_;
-  if (!is_paginated_)
-    return;
-
-  // Now adjust the pagination offset, so that we can easily figure out how far
-  // away we are from the start of the pagination context.
-  pagination_offset_ =
-      next_->pagination_offset_ + layout_object.LocationOffset();
-  if (!layout_object.IsOutOfFlowPositioned())
-    return;
-  // FIXME: <http://bugs.webkit.org/show_bug.cgi?id=13443> Apply control clip if
-  // present.
 }
 
 LayoutState::LayoutState(LayoutObject& root)
-    : is_paginated_(false),
-      containing_block_logical_width_changed_(false),
-      pagination_state_changed_(false),
-      flow_thread_(nullptr),
+    : containing_block_logical_width_changed_(false),
       next_(root.View()->GetLayoutState()),
       layout_object_(&root) {
   DCHECK(!next_);
@@ -112,7 +64,6 @@ LayoutState::~LayoutState() {
 }
 
 void LayoutState::Trace(Visitor* visitor) const {
-  visitor->Trace(flow_thread_);
   visitor->Trace(layout_object_);
 }
 

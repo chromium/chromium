@@ -192,9 +192,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   // 0, the height of a column must be >= 1px.
   LayoutUnit logical_height_;
 
-  // Maximum logical height allowed.
-  LayoutUnit max_logical_height_;
-
   bool is_logical_height_known_ = false;
 };
 

@@ -35,7 +35,6 @@
 namespace blink {
 
 class LayoutBox;
-class LayoutFlowThread;
 class LayoutObject;
 class LayoutView;
 
@@ -77,69 +76,20 @@ class LayoutState {
 
   ~LayoutState();
 
-  bool IsPaginated() const { return is_paginated_; }
-
-  LayoutUnit HeightOffsetForTableHeaders() const {
-    return height_offset_for_table_headers_;
-  }
-  void SetHeightOffsetForTableHeaders(LayoutUnit offset) {
-    height_offset_for_table_headers_ = offset;
-  }
-
-  LayoutUnit HeightOffsetForTableFooters() const {
-    return height_offset_for_table_footers_;
-  }
-  void SetHeightOffsetForTableFooters(LayoutUnit offset) {
-    height_offset_for_table_footers_ = offset;
-  }
-
-  // The input page name is the name specified by the element itself, if any. If
-  // the element doesn't specify one, but an ancestor does, return that.
-  // Otherwise it's an empty string. This is the page name that will be used on
-  // all descendants if none of them override it.
-  const AtomicString& InputPageName() const { return input_page_name_; }
-
-  const LayoutSize& PaginationOffset() const { return pagination_offset_; }
   bool ContainingBlockLogicalWidthChanged() const {
     return containing_block_logical_width_changed_;
   }
 
-  bool PaginationStateChanged() const { return pagination_state_changed_; }
-  void SetPaginationStateChanged() { pagination_state_changed_ = true; }
-
   LayoutState* Next() const { return next_; }
-
-  LayoutFlowThread* FlowThread() const { return flow_thread_; }
 
   LayoutObject& GetLayoutObject() const { return *layout_object_; }
 
   void Trace(Visitor*) const;
 
  private:
-  // Do not add anything apart from bitfields until after m_flowThread. See
-  // https://bugs.webkit.org/show_bug.cgi?id=100173
-  bool is_paginated_ : 1;
-
   bool containing_block_logical_width_changed_ : 1;
-  bool pagination_state_changed_ : 1;
-
-  WeakMember<LayoutFlowThread> flow_thread_;
 
   LayoutState* next_;
-
-  // x/y offset from the logical top / start of the first page. Does not include
-  // relative positioning or scroll offsets.
-  LayoutSize pagination_offset_;
-
-  // The height we need to make available for repeating table headers in
-  // paginated layout.
-  LayoutUnit height_offset_for_table_headers_;
-
-  // The height we need to make available for repeating table footers in
-  // paginated layout.
-  LayoutUnit height_offset_for_table_footers_;
-
-  AtomicString input_page_name_;
 
   const Member<LayoutObject> layout_object_;
 };

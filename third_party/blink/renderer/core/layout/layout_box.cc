@@ -3655,125 +3655,6 @@ void LayoutBox::ClearSpannerPlaceholder() {
   rare_data_->spanner_placeholder_ = nullptr;
 }
 
-void LayoutBox::SetPaginationStrut(LayoutUnit strut) {
-  NOT_DESTROYED();
-  if (!strut && !rare_data_)
-    return;
-  EnsureRareData().pagination_strut_ = strut;
-}
-
-bool LayoutBox::IsBreakBetweenControllable(EBreakBetween break_value) const {
-  NOT_DESTROYED();
-  if (break_value == EBreakBetween::kAuto)
-    return true;
-  // We currently only support non-auto break-before and break-after values on
-  // in-flow block level elements, which is the minimum requirement according to
-  // the spec.
-  if (IsInline() || IsFloatingOrOutOfFlowPositioned())
-    return false;
-  const LayoutBlock* curr = ContainingBlock();
-  if (!curr || !curr->IsLayoutBlockFlow())
-    return false;
-  const LayoutView* layout_view = View();
-  bool view_is_paginated = layout_view->FragmentationContext();
-  if (!view_is_paginated && !FlowThreadContainingBlock())
-    return false;
-  while (curr) {
-    if (curr == layout_view) {
-      return view_is_paginated && break_value != EBreakBetween::kColumn &&
-             break_value != EBreakBetween::kAvoidColumn;
-    }
-    if (curr->IsLayoutFlowThread()) {
-      if (break_value ==
-          EBreakBetween::kAvoid)  // Valid in any kind of fragmentation context.
-        return true;
-      bool is_multicol_value = break_value == EBreakBetween::kColumn ||
-                               break_value == EBreakBetween::kAvoidColumn;
-      if (is_multicol_value)
-        return true;
-      // If this is a flow thread for a multicol container, and we have a break
-      // value for paged, we need to keep looking.
-    }
-    if (curr->IsOutOfFlowPositioned())
-      return false;
-    curr = curr->ContainingBlock();
-  }
-  NOTREACHED();
-  return false;
-}
-
-bool LayoutBox::IsBreakInsideControllable(EBreakInside break_value) const {
-  NOT_DESTROYED();
-  if (break_value == EBreakInside::kAuto)
-    return true;
-  // First check multicol.
-  const LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
-  // 'avoid-column' is only valid in a multicol context.
-  if (break_value == EBreakInside::kAvoidColumn)
-    return flow_thread;
-  // 'avoid' is valid in any kind of fragmentation context.
-  if (break_value == EBreakInside::kAvoid && flow_thread)
-    return true;
-  DCHECK(break_value == EBreakInside::kAvoidPage ||
-         break_value == EBreakInside::kAvoid);
-  if (View()->FragmentationContext())
-    return true;  // The view is paginated, probably because we're printing.
-  if (!flow_thread)
-    return false;  // We're not inside any pagination context
-  return false;
-}
-
-EBreakBetween LayoutBox::BreakAfter() const {
-  NOT_DESTROYED();
-  EBreakBetween break_value = StyleRef().BreakAfter();
-  if (break_value == EBreakBetween::kAuto ||
-      IsBreakBetweenControllable(break_value))
-    return break_value;
-  return EBreakBetween::kAuto;
-}
-
-EBreakBetween LayoutBox::BreakBefore() const {
-  NOT_DESTROYED();
-  EBreakBetween break_value = StyleRef().BreakBefore();
-  if (break_value == EBreakBetween::kAuto ||
-      IsBreakBetweenControllable(break_value))
-    return break_value;
-  return EBreakBetween::kAuto;
-}
-
-EBreakInside LayoutBox::BreakInside() const {
-  NOT_DESTROYED();
-  EBreakInside break_value = StyleRef().BreakInside();
-  if (break_value == EBreakInside::kAuto ||
-      IsBreakInsideControllable(break_value))
-    return break_value;
-  return EBreakInside::kAuto;
-}
-
-EBreakBetween LayoutBox::ClassABreakPointValue(
-    EBreakBetween previous_break_after_value) const {
-  NOT_DESTROYED();
-  // First assert that we're at a class A break point.
-  DCHECK(IsBreakBetweenControllable(previous_break_after_value));
-
-  return JoinFragmentainerBreakValues(previous_break_after_value,
-                                      BreakBefore());
-}
-
-bool LayoutBox::NeedsForcedBreakBefore(
-    EBreakBetween previous_break_after_value) const {
-  NOT_DESTROYED();
-  // Forced break values are only honored when specified on in-flow objects, but
-  // floats and out-of-flow positioned objects may be affected by a break-after
-  // value of the previous in-flow object, even though we're not at a class A
-  // break point.
-  EBreakBetween break_value =
-      IsFloatingOrOutOfFlowPositioned()
-          ? previous_break_after_value
-          : ClassABreakPointValue(previous_break_after_value);
-  return IsForcedFragmentainerBreakValue(break_value);
-}
-
 PhysicalRect LayoutBox::LocalVisualRectIgnoringVisibility() const {
   NOT_DESTROYED();
   return PhysicalSelfVisualOverflowRect();
@@ -4503,13 +4384,6 @@ void LayoutBox::UpdateLogicalHeight() {
   SetMarginAfter(computed_values.margins_.after_);
 }
 
-static inline const Length& HeightForDocumentElement(const Document& document) {
-  return document.documentElement()
-      ->GetLayoutObject()
-      ->StyleRef()
-      .LogicalHeight();
-}
-
 void LayoutBox::ComputeLogicalHeight(
     LogicalExtentComputedValues& computed_values) const {
   NOT_DESTROYED();
@@ -4634,20 +4508,7 @@ void LayoutBox::ComputeLogicalHeight(
         StyleRef().MarginAfter());
   }
 
-  // WinIE quirk: The <html> block always fills the entire canvas in quirks
-  // mode. The <body> always fills the <html> block in quirks mode. Only apply
-  // this quirk if the block is normal flow and no height is specified. When
-  // we're printing, we also need this quirk if the body or root has a
-  // percentage height since we don't set a height in LayoutView when we're
-  // printing. So without this quirk, the height has nothing to be a percentage
-  // of, and it ends up being 0. That is bad.
-  bool paginated_content_needs_base_height =
-      GetDocument().Printing() && h.IsPercentOrCalc() &&
-      (IsDocumentElement() ||
-       (IsBody() &&
-        HeightForDocumentElement(GetDocument()).IsPercentOrCalc())) &&
-      !IsInline();
-  if (StretchesToViewport() || paginated_content_needs_base_height) {
+  if (StretchesToViewport()) {
     LayoutUnit margins = CollapsedMarginBefore() + CollapsedMarginAfter();
     LayoutUnit visible_height = View()->ViewLogicalHeightForPercentages();
     if (IsDocumentElement()) {
@@ -6541,73 +6402,6 @@ bool LayoutBox::ShouldBeConsideredAsReplaced() const {
   return IsA<HTMLImageElement>(element);
 }
 
-void LayoutBox::UpdateFragmentationInfoForChild(LayoutBox& child) {
-  NOT_DESTROYED();
-  LayoutState* layout_state = View()->GetLayoutState();
-  DCHECK(layout_state->IsPaginated());
-  child.SetOffsetToNextPage(LayoutUnit());
-  if (!IsPageLogicalHeightKnown())
-    return;
-
-  LayoutUnit logical_top = child.LogicalTop();
-  LayoutUnit logical_height = child.LogicalHeightWithVisibleOverflow();
-  LayoutUnit space_left = PageRemainingLogicalHeightForOffset(
-      logical_top, kAssociateWithLatterPage);
-  if (space_left < logical_height)
-    child.SetOffsetToNextPage(space_left);
-}
-
-bool LayoutBox::ChildNeedsRelayoutForPagination(const LayoutBox& child) const {
-  NOT_DESTROYED();
-  if (child.IsFloating())
-    return true;
-  const LayoutFlowThread* flow_thread = child.FlowThreadContainingBlock();
-  // Figure out if we really need to force re-layout of the child. We only need
-  // to do this if there's a chance that we need to recalculate pagination
-  // struts inside.
-  if (IsPageLogicalHeightKnown()) {
-    LayoutUnit logical_top = child.LogicalTop();
-    LayoutUnit logical_height = child.LogicalHeightWithVisibleOverflow();
-    LayoutUnit remaining_space = PageRemainingLogicalHeightForOffset(
-        logical_top, kAssociateWithLatterPage);
-    if (child.OffsetToNextPage()) {
-      // We need to relayout unless we're going to break at the exact same
-      // location as before.
-      if (child.OffsetToNextPage() != remaining_space)
-        return true;
-      // If column height isn't guaranteed to be uniform, we have no way of
-      // telling what has happened after the first break.
-      if (flow_thread && flow_thread->MayHaveNonUniformPageLogicalHeight())
-        return true;
-    } else if (logical_height > remaining_space) {
-      // Last time we laid out this child, we didn't need to break, but now we
-      // have to. So we need to relayout.
-      return true;
-    }
-  } else if (child.OffsetToNextPage()) {
-    // This child did previously break, but it won't anymore, because we no
-    // longer have a known fragmentainer height.
-    return true;
-  }
-
-  // It seems that we can skip layout of this child, but we need to ask the flow
-  // thread for permission first. We currently cannot skip over objects
-  // containing column spanners.
-  return flow_thread && !flow_thread->CanSkipLayout(child);
-}
-
-void LayoutBox::MarkChildForPaginationRelayoutIfNeeded(
-    LayoutBox& child,
-    SubtreeLayoutScope& layout_scope) {
-  NOT_DESTROYED();
-  DCHECK(!child.NeedsLayout() || child.ChildLayoutBlockedByDisplayLock());
-  LayoutState* layout_state = View()->GetLayoutState();
-
-  if (layout_state->PaginationStateChanged() ||
-      (layout_state->IsPaginated() && ChildNeedsRelayoutForPagination(child)))
-    layout_scope.SetChildNeedsLayout(&child);
-}
-
 void LayoutBox::MarkOrthogonalWritingModeRoot() {
   NOT_DESTROYED();
   DCHECK(GetFrameView());
@@ -7533,35 +7327,6 @@ bool LayoutBox::HasRelativeLogicalHeight() const {
          StyleRef().LogicalMaxHeight().IsPercentOrCalc();
 }
 
-LayoutUnit LayoutBox::OffsetFromLogicalTopOfFirstPage() const {
-  NOT_DESTROYED();
-  LayoutState* layout_state = View()->GetLayoutState();
-  if (!layout_state || !layout_state->IsPaginated())
-    return LayoutUnit();
-
-  if (layout_state->GetLayoutObject() == this) {
-    LayoutSize offset = layout_state->PaginationOffset();
-    return IsHorizontalWritingMode() ? offset.Height() : offset.Width();
-  }
-
-  // A LayoutBlock always establishes a layout state, and this method is only
-  // meant to be called on the object currently being laid out.
-  DCHECK(!IsLayoutBlock());
-
-  // In case this box doesn't establish a layout state, try the containing
-  // block.
-  LayoutBlock* container_block = ContainingBlock();
-  DCHECK(layout_state->GetLayoutObject() == container_block);
-  return container_block->OffsetFromLogicalTopOfFirstPage() + LogicalTop();
-}
-
-void LayoutBox::SetOffsetToNextPage(LayoutUnit offset) {
-  NOT_DESTROYED();
-  if (!rare_data_ && !offset)
-    return;
-  EnsureRareData().offset_to_next_page_ = offset;
-}
-
 void LayoutBox::LogicalExtentAfterUpdatingLogicalWidth(
     const LayoutUnit& new_logical_top,
     LayoutBox::LogicalExtentComputedValues& computed_values) {
@@ -7591,119 +7356,6 @@ void LayoutBox::LogicalExtentAfterUpdatingLogicalWidth(
 ShapeOutsideInfo* LayoutBox::GetShapeOutsideInfo() const {
   NOT_DESTROYED();
   return ShapeOutsideInfo::Info(*this);
-}
-
-LayoutUnit LayoutBox::PageLogicalHeightForOffset(LayoutUnit offset) const {
-  NOT_DESTROYED();
-  // We need to have calculated some fragmentainer logical height (even a
-  // tentative one will do, though) in order to tell how tall one fragmentainer
-  // is.
-  DCHECK(IsPageLogicalHeightKnown());
-
-  LayoutView* layout_view = View();
-  LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
-  LayoutUnit page_logical_height;
-  if (!flow_thread) {
-    page_logical_height = layout_view->PageLogicalHeight();
-  } else {
-    page_logical_height = flow_thread->PageLogicalHeightForOffset(
-        offset + OffsetFromLogicalTopOfFirstPage());
-  }
-  DCHECK_GT(page_logical_height, LayoutUnit());
-  return page_logical_height;
-}
-
-bool LayoutBox::IsPageLogicalHeightKnown() const {
-  NOT_DESTROYED();
-  if (const LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
-    return flow_thread->IsPageLogicalHeightKnown();
-  return View()->PageLogicalHeight();
-}
-
-LayoutUnit LayoutBox::PageRemainingLogicalHeightForOffset(
-    LayoutUnit offset,
-    PageBoundaryRule page_boundary_rule) const {
-  NOT_DESTROYED();
-  DCHECK(IsPageLogicalHeightKnown());
-  LayoutView* layout_view = View();
-  offset += OffsetFromLogicalTopOfFirstPage();
-
-  LayoutUnit footer_height =
-      View()->GetLayoutState()->HeightOffsetForTableFooters();
-  LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
-  LayoutUnit remaining_height;
-  if (!flow_thread) {
-    LayoutUnit page_logical_height = layout_view->PageLogicalHeight();
-    remaining_height =
-        page_logical_height - IntMod(offset, page_logical_height);
-    if (page_boundary_rule == kAssociateWithFormerPage) {
-      // An offset exactly at a page boundary will act as being part of the
-      // former page in question (i.e. no remaining space), rather than being
-      // part of the latter (i.e. one whole page length of remaining space).
-      remaining_height = IntMod(remaining_height, page_logical_height);
-    }
-  } else {
-    remaining_height = flow_thread->PageRemainingLogicalHeightForOffset(
-        offset, page_boundary_rule);
-  }
-  return remaining_height - footer_height;
-}
-
-int LayoutBox::CurrentPageNumber(LayoutUnit child_logical_top) const {
-  NOT_DESTROYED();
-  LayoutUnit offset = OffsetFromLogicalTopOfFirstPage() + child_logical_top;
-  return (offset / View()->PageLogicalHeight()).Floor();
-}
-
-bool LayoutBox::CrossesPageBoundary(LayoutUnit offset,
-                                    LayoutUnit logical_height) const {
-  NOT_DESTROYED();
-  if (!IsPageLogicalHeightKnown())
-    return false;
-  return PageRemainingLogicalHeightForOffset(offset, kAssociateWithLatterPage) <
-         logical_height;
-}
-
-LayoutUnit LayoutBox::CalculatePaginationStrutToFitContent(
-    LayoutUnit offset,
-    LayoutUnit content_logical_height) const {
-  NOT_DESTROYED();
-  LayoutUnit strut_to_next_page =
-      PageRemainingLogicalHeightForOffset(offset, kAssociateWithLatterPage);
-
-  LayoutState* layout_state = View()->GetLayoutState();
-  strut_to_next_page += layout_state->HeightOffsetForTableFooters();
-  // If we're inside a cell in a row that straddles a page then avoid the
-  // repeating header group if necessary. If we're a table section we're
-  // already accounting for it.
-  if (!IsTableSection()) {
-    strut_to_next_page += layout_state->HeightOffsetForTableHeaders();
-  }
-
-  LayoutUnit next_page_logical_top = offset + strut_to_next_page;
-  if (PageLogicalHeightForOffset(next_page_logical_top) >=
-      content_logical_height)
-    return strut_to_next_page;  // Content fits just fine in the next page or
-                                // column.
-
-  // Moving to the top of the next page or column doesn't result in enough space
-  // for the content that we're trying to fit. If we're in a nested
-  // fragmentation context, we may find enough space if we move to a column
-  // further ahead, by effectively breaking to the next outer fragmentainer.
-  LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
-  if (!flow_thread) {
-    // If there's no flow thread, we're not nested. All pages have the same
-    // height. Give up.
-    return strut_to_next_page;
-  }
-  // Start searching for a suitable offset at the top of the next page or
-  // column.
-  LayoutUnit flow_thread_offset =
-      OffsetFromLogicalTopOfFirstPage() + next_page_logical_top;
-  return strut_to_next_page +
-         flow_thread->NextLogicalTopForUnbreakableContent(
-             flow_thread_offset, content_logical_height) -
-         flow_thread_offset;
 }
 
 LayoutBox* LayoutBox::SnapContainer() const {

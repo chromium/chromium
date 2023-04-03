@@ -49,10 +49,7 @@
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -119,7 +116,6 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
       descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
       has_svg_text_descendants_(false),
-      pagination_state_changed_(false),
       is_legacy_initiated_out_of_flow_layout_(false) {
   // LayoutBlockFlow calls setChildrenInline(true).
   // By default, subclasses do not have inline children.
@@ -761,48 +757,6 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
       layout_scope.SetChildNeedsLayout(positioned_object);
   }
 
-  LayoutUnit logical_top_estimate;
-  bool is_paginated = View()->GetLayoutState()->IsPaginated();
-  bool needs_block_direction_location_set_before_layout =
-      is_paginated && !positioned_object->IsMonolithic();
-  bool bogus_logical_top_estimate = false;
-  if (needs_block_direction_location_set_before_layout) {
-    // Out-of-flow objects are normally positioned after layout (while in-flow
-    // objects are positioned before layout). If the child object is paginated
-    // in the same context as we are, estimate its logical top now. We need to
-    // know this up-front, to correctly evaluate if we need to mark for
-    // relayout, and, if our estimate is correct, we'll even be able to insert
-    // correct pagination struts on the first attempt.
-    const ComputedStyle& style = positioned_object->StyleRef();
-    if (!style.LogicalBottom().IsAuto() && style.LogicalTop().IsAuto() &&
-        style.LogicalHeight().IsAuto()) {
-      // This child is bottom-aligned with auto block size. We cannot make a
-      // decent estimate before layout. Just estimate something as far above a
-      // fragmentainer break as possible. This is a way to try our best to avoid
-      // hitting fragmentainer breaks, as that could impact the block size of
-      // the child (increase it if contents need to be pushed to the next
-      // fragmentainer, or decrease it if a descendant margin collides into a
-      // fragmentainer boundary), and thus give us a bad block-start offset.
-      logical_top_estimate = -OffsetFromLogicalTopOfFirstPage();
-      bogus_logical_top_estimate = true;
-    } else {
-      LogicalExtentComputedValues computed_values;
-      positioned_object->ComputeLogicalHeight(
-          positioned_object->LogicalHeight(), positioned_object->LogicalTop(),
-          computed_values);
-      logical_top_estimate = computed_values.position_;
-    }
-    positioned_object->SetLogicalTop(logical_top_estimate);
-  }
-
-  if (!positioned_object->NeedsLayout()) {
-    MarkChildForPaginationRelayoutIfNeeded(*positioned_object, layout_scope);
-    // If we're not able to set a decent block start estimate, we need to force
-    // layout to figure it out.
-    if (bogus_logical_top_estimate)
-      layout_scope.SetChildNeedsLayout(positioned_object);
-  }
-
   // FIXME: We should be able to do a r->setNeedsPositionedMovementLayout()
   // here instead of a full layout. Need to investigate why it does not
   // trigger the correct invalidations in that case. crbug.com/350756
@@ -813,9 +767,6 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
 
   if (positioned_object->NeedsLayout())
     positioned_object->UpdateLayout();
-
-  if (is_paginated)
-    UpdateFragmentationInfoForChild(*positioned_object);
 }
 
 void LayoutBlock::MarkPositionedObjectsForLayout() {
@@ -1863,14 +1814,6 @@ LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   NOT_DESTROYED();
   return CreateAnonymousWithParentAndDisplay(parent, StyleRef().Display());
-}
-
-void LayoutBlock::PaginatedContentWasLaidOut(
-    LayoutUnit logical_bottom_offset_after_pagination) {
-  NOT_DESTROYED();
-  if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
-    flow_thread->ContentWasLaidOut(OffsetFromLogicalTopOfFirstPage() +
-                                   logical_bottom_offset_after_pagination);
 }
 
 const char* LayoutBlock::GetName() const {

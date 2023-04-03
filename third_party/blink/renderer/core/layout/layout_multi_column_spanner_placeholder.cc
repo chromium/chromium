@@ -119,46 +119,12 @@ void LayoutMultiColumnSpannerPlaceholder::RecalcVisualOverflow() {
 MinMaxSizes LayoutMultiColumnSpannerPlaceholder::PreferredLogicalWidths()
     const {
   NOT_DESTROYED();
-  // There should be no contribution from a spanner if the multicol container is
-  // size-contained. Normally we'd stop at the object that has contain:size
-  // applied, but for multicol, we descend into the children, in order to get
-  // the flow thread to calculate the correct preferred width (to honor
-  // column-count, column-width and column-gap). Since spanner placeholders are
-  // siblings of the flow thread, we need this check.
-  // TODO(crbug.com/953919): What should we return for display-locked content?
-  if (MultiColumnBlockFlow()->ShouldApplySizeContainment())
-    return MinMaxSizes();
-  return layout_object_in_flow_thread_->PreferredLogicalWidths();
+  NOTREACHED_NORETURN();
 }
 
 void LayoutMultiColumnSpannerPlaceholder::UpdateLayout() {
   NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-
-  // The placeholder, like any other block level object, has its logical top
-  // calculated and set before layout. Copy this to the actual column-span:all
-  // object before laying it out, so that it gets paginated correctly, in case
-  // we have an enclosing fragmentation context.
-  if (layout_object_in_flow_thread_->LogicalTop() != LogicalTop()) {
-    layout_object_in_flow_thread_->SetLogicalTop(LogicalTop());
-    if (FlowThread()->EnclosingFragmentationContext())
-      layout_object_in_flow_thread_->SetChildNeedsLayout(kMarkOnlyThis);
-  }
-
-  // Lay out the actual column-span:all element.
-  layout_object_in_flow_thread_->LayoutIfNeeded();
-
-  // The spanner has now been laid out, so its height is known. Time to update
-  // the placeholder's height as well, so that we take up the correct amount of
-  // space in the multicol container.
-  UpdateLogicalHeight();
-
-  // Take the overflow from the spanner, so that it gets propagated to the
-  // multicol container and beyond.
-  ClearLayoutOverflow();
-  AddLayoutOverflow(layout_object_in_flow_thread_->LayoutOverflowRect());
-
-  ClearNeedsLayout();
+  NOTREACHED_NORETURN();
 }
 
 void LayoutMultiColumnSpannerPlaceholder::ComputeLogicalHeight(
@@ -166,10 +132,7 @@ void LayoutMultiColumnSpannerPlaceholder::ComputeLogicalHeight(
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
   NOT_DESTROYED();
-  computed_values.extent_ = layout_object_in_flow_thread_->LogicalHeight();
-  computed_values.position_ = logical_top;
-  computed_values.margins_.before_ = MarginBefore();
-  computed_values.margins_.after_ = MarginAfter();
+  NOTREACHED_NORETURN();
 }
 
 void LayoutMultiColumnSpannerPlaceholder::Paint(

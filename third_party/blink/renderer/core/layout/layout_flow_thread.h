@@ -43,25 +43,6 @@ class LayoutMultiColumnSet;
 typedef HeapLinkedHashSet<Member<LayoutMultiColumnSet>>
     LayoutMultiColumnSetList;
 
-// Layout state for multicol. To be stored when laying out a block child, so
-// that we can roll back to the initial state if we need to re-lay out said
-// block child.
-class MultiColumnLayoutState {
-  DISALLOW_NEW();
-  friend class LayoutMultiColumnFlowThread;
-
- public:
-  MultiColumnLayoutState() = default;
-  void Trace(Visitor*) const;
-
- private:
-  explicit MultiColumnLayoutState(LayoutMultiColumnSet* column_set)
-      : column_set_(column_set) {}
-  LayoutMultiColumnSet* ColumnSet() const { return column_set_; }
-
-  Member<LayoutMultiColumnSet> column_set_;
-};
-
 // LayoutFlowThread is used to collect all the layout objects that participate
 // in a flow thread. It will also help in doing the layout. However, it will not
 // layout directly to screen. Instead, LayoutMultiColumnSet objects will
@@ -69,7 +50,7 @@ class MultiColumnLayoutState {
 // LayoutMultiColumnSet will actually be a viewPort of the LayoutFlowThread.
 class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
  public:
-  explicit LayoutFlowThread(bool needs_paint_layer);
+  explicit LayoutFlowThread();
   ~LayoutFlowThread() override = default;
   void Trace(Visitor*) const override;
 
@@ -111,7 +92,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
       const LayoutObject&,
       AncestorSearchConstraint);
 
-  void UpdateLayout() override;
+  void UpdateLayout() final;
 
   PaintLayerType LayerTypeRequired() const final;
 
@@ -180,38 +161,10 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
       TransformState&,
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
-  LayoutUnit PageLogicalHeightForOffset(LayoutUnit) const;
-  LayoutUnit PageRemainingLogicalHeightForOffset(LayoutUnit,
-                                                 PageBoundaryRule) const;
-
-  virtual void ContentWasLaidOut(
-      LayoutUnit logical_bottom_in_flow_thread_after_pagination) = 0;
-  virtual bool CanSkipLayout(const LayoutBox&) const = 0;
-
-  virtual MultiColumnLayoutState GetMultiColumnLayoutState() const = 0;
-  virtual void RestoreMultiColumnLayoutState(const MultiColumnLayoutState&) = 0;
-
-  // Find and return the next logical top after |flowThreadOffset| that can fit
-  // unbreakable content as tall as |contentLogicalHeight|. |flowThreadOffset|
-  // is expected to be at the exact top of a column that's known to not have
-  // enough space for |contentLogicalHeight|. This method is called when the
-  // current column is too short to fit the content, in the hope that there
-  // exists one that's tall enough further ahead. If no such column can be
-  // found, |flowThreadOffset| will be returned.
-  LayoutUnit NextLogicalTopForUnbreakableContent(
-      LayoutUnit flow_thread_offset,
-      LayoutUnit content_logical_height) const;
-
   virtual bool IsPageLogicalHeightKnown() const {
     NOT_DESTROYED();
     return true;
   }
-  virtual bool MayHaveNonUniformPageLogicalHeight() const = 0;
-  bool PageLogicalSizeChanged() const {
-    NOT_DESTROYED();
-    return page_logical_size_changed_;
-  }
-
   // Return the visual bounding box based on the supplied flow-thread bounding
   // box. Both rectangles are completely physical in terms of writing mode.
   LayoutRect FragmentsBoundingBox(const LayoutRect& layer_bounding_box) const;
@@ -263,8 +216,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   MultiColumnSetIntervalTree multi_column_set_interval_tree_;
 
   bool column_sets_invalidated_ : 1;
-  bool page_logical_size_changed_ : 1;
-  bool needs_paint_layer_ : 1;
 };
 
 template <>
