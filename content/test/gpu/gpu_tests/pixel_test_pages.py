@@ -630,6 +630,10 @@ class PixelTestPages():
         cba.DISABLE_ACCELERATED_2D_CANVAS,
         cba.DISABLE_GPU_COMPOSITING,
     ]
+    unaccelerated_canvas_accelerated_compositing_args = [
+        cba.DISABLE_ACCELERATED_2D_CANVAS,
+        cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
+    ]
 
     return [
         PixelTestPage('pixel_offscreenCanvas_transfer_after_style_resize.html',
@@ -692,16 +696,18 @@ class PixelTestPages():
                       base_name + '_OffscreenCanvasUnaccelerated2DWorker',
                       test_rect=[0, 0, 360, 200],
                       browser_args=browser_args + unaccelerated_args),
-        PixelTestPage(
-            'pixel_offscreenCanvas_2d_commit_main.html',
-            base_name + '_OffscreenCanvasUnaccelerated2DGPUCompositing',
-            test_rect=[0, 0, 360, 200],
-            browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-        PixelTestPage(
-            'pixel_offscreenCanvas_2d_commit_worker.html',
-            base_name + '_OffscreenCanvasUnaccelerated2DGPUCompositingWorker',
-            test_rect=[0, 0, 360, 200],
-            browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+        PixelTestPage('pixel_offscreenCanvas_2d_commit_main.html',
+                      base_name +
+                      '_OffscreenCanvasUnaccelerated2DGPUCompositing',
+                      test_rect=[0, 0, 360, 200],
+                      browser_args=browser_args +
+                      unaccelerated_canvas_accelerated_compositing_args),
+        PixelTestPage('pixel_offscreenCanvas_2d_commit_worker.html',
+                      base_name +
+                      '_OffscreenCanvasUnaccelerated2DGPUCompositingWorker',
+                      test_rect=[0, 0, 360, 200],
+                      browser_args=browser_args +
+                      unaccelerated_canvas_accelerated_compositing_args),
         PixelTestPage('pixel_offscreenCanvas_2d_resize_on_worker.html',
                       base_name + '_OffscreenCanvas2DResizeOnWorker',
                       test_rect=[0, 0, 200, 200],

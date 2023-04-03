@@ -989,7 +989,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
   const bool is_gpu_memory_buffer_image_allowed =
       is_gpu_compositing_enabled && IsGMBAllowed(adjusted_info, capabilities) &&
-      Platform::Current()->GetGpuMemoryBufferManager();
+      SharedGpuContext::GetGpuMemoryBufferManager();
 
   if (raster_mode == RasterMode::kCPU && !is_gpu_memory_buffer_image_allowed)
     return nullptr;

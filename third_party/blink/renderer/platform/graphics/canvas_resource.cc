@@ -411,7 +411,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
                                  ->GetCapabilities()
                                  .supports_oop_raster) {
   auto* gpu_memory_buffer_manager =
-      Platform::Current()->GetGpuMemoryBufferManager();
+      SharedGpuContext::GetGpuMemoryBufferManager();
   if (!is_accelerated_) {
     DCHECK(gpu_memory_buffer_manager);
     DCHECK(shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
@@ -710,7 +710,6 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   auto surface = SkSurface::MakeRasterDirect(CreateSkImageInfo(),
                                              gpu_memory_buffer_->memory(0),
                                              gpu_memory_buffer_->stride(0));
-
   SkPixmap pixmap;
   image->peekPixels(&pixmap);
   surface->writePixels(pixmap, 0, 0);
