@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
@@ -31,7 +32,8 @@ namespace web_app {
 // These calls would normally go from lacros to ash in production, but there is
 // no ash to connect to in lacros-only tests, so most calls are dropped. This
 // instead makes a best effort at emulating what the ash app service might do in
-// response to calls so that listeners in lacros get notified of changes.
+// response to calls so that listeners in lacros get notified of changes. Calls
+// via this class are async to better simulate an interprocess communication.
 class LoopbackCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy,
                                        public crosapi::mojom::AppPublisher {
  public:
@@ -71,7 +73,15 @@ class LoopbackCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy,
   void OnCapabilityAccesses(
       std::vector<apps::CapabilityAccessPtr> deltas) override;
 
+  // Internal methods for enabling async calls.
+  void PostTask(base::OnceClosure closure);
+  void RemoveSupportedLinksPreferenceInternal(const std::string& app_id);
+  void SetSupportedLinksPreferenceInternal(const std::string& app_id);
+  void OnAppsInternal(std::vector<apps::AppPtr> deltas);
+
   base::WeakPtr<apps::AppServiceProxyLacros> app_service_;
+
+  base::WeakPtrFactory<LoopbackCrosapiAppServiceProxy> weak_ptr_factory_{this};
 };
 }  // namespace web_app
 

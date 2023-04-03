@@ -119,6 +119,7 @@ source_set("test_support") {
       "//components/services/app_service/public/cpp:icon_types",
       "//components/services/app_service/public/cpp:intents",
       "//components/services/app_service/public/cpp:preferred_app",
+      "//components/services/app_service/public/cpp:preferred_apps",
       "//mojo/public/cpp/bindings",
     ]
   }
