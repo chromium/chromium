@@ -141,60 +141,50 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest('getContentMimeType',
-      function(fileEntry, callback) {
+      function(fileEntry, successCallback, failureCallback) {
     fileEntry.file(blob => {
       var blobUUID = blobNatives.GetBlobUuid(blob);
 
       if (!blob || !blob.size) {
-        callback(undefined);
+        successCallback(undefined);
         return;
       }
 
       var onGetContentMimeType = function(blob, mimeType) {
-        callback(mimeType ? mimeType : undefined);
+        // TODO(tjudkins): This should be triggering the failureCallback if
+        // there is an error while calling the Internal API in order to properly
+        // support promise rejection on the API.
+        successCallback(mimeType ? mimeType : undefined);
       }.bind(this, blob);  // Bind a blob reference: crbug.com/415792#c12
 
       fileManagerPrivateInternal.getContentMimeType(
           blobUUID, onGetContentMimeType);
     }, (error) => {
-      var errorUUID = '';
-
-      var onGetContentMimeType = function() {
-        chrome.runtime.lastError.DOMError = /** @type {!DOMError} */ (error);
-        callback(undefined);
-      }.bind(this);
-
-      fileManagerPrivateInternal.getContentMimeType(
-          errorUUID, onGetContentMimeType);
+      failureCallback(`fileEntry.file() blob error: ${error.message}`);
     });
   });
 
-  apiFunctions.setHandleRequest('getContentMetadata',
-      function(fileEntry, mimeType, includeImages, callback) {
+  apiFunctions.setHandleRequest('getContentMetadata', function(
+      fileEntry, mimeType, includeImages, successCallback, failureCallback) {
     fileEntry.file(blob => {
       var blobUUID = blobNatives.GetBlobUuid(blob);
 
       if (!blob || !blob.size) {
-        callback(undefined);
+        successCallback(undefined);
         return;
       }
 
       var onGetContentMetadata = function(blob, metadata) {
-        callback(metadata ? metadata : undefined);
+        // TODO(tjudkins): This should be triggering the failureCallback if
+        // there is an error while calling the Internal API in order to properly
+        // support promise rejection on the API.
+        successCallback(metadata ? metadata : undefined);
       }.bind(this, blob);  // Bind a blob reference: crbug.com/415792#c12
 
       fileManagerPrivateInternal.getContentMetadata(
           blobUUID, mimeType, !!includeImages, onGetContentMetadata);
     }, (error) => {
-      var errorUUID = '';
-
-      var onGetContentMetadata = function() {
-        chrome.runtime.lastError.DOMError = /** @type {!DOMError} */ (error);
-        callback(undefined);
-      }.bind(this);
-
-      fileManagerPrivateInternal.getContentMetadata(
-          errorUUID, mimeType, false, onGetContentMetadata);
+      failureCallback(`fileEntry.file() blob error: ${error.message}`);
     });
   });
 

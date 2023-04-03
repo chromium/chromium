@@ -37,7 +37,7 @@ FileManagerPrivateInternalGetContentMimeTypeFunction::Run() {
   const std::string& blob_uuid = args()[0].GetString();
 
   if (blob_uuid.empty()) {
-    return RespondNow(Error("fileEntry.file() blob error."));
+    return RespondNow(Error("Blob UUID must not be empty."));
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -89,7 +89,7 @@ FileManagerPrivateInternalGetContentMetadataFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->blob_uuid.empty()) {
-    return RespondNow(Error("fileEntry.file() blob error."));
+    return RespondNow(Error("Blob UUID must not be empty"));
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
