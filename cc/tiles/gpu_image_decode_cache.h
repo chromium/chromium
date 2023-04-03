@@ -598,7 +598,8 @@ class CC_EXPORT GpuImageDecodeCache
   // Calculate the mip level to upload-scale the image to before uploading. We
   // use mip levels rather than exact scales to increase re-use of scaled
   // images.
-  int CalculateUploadScaleMipLevel(const DrawImage& draw_image) const;
+  int CalculateUploadScaleMipLevel(const DrawImage& draw_image,
+                                   AuxImage aux_image) const;
 
   InUseCacheKey InUseCacheKeyFromDrawImage(const DrawImage& draw_image) const;
 
@@ -669,6 +670,7 @@ class CC_EXPORT GpuImageDecodeCache
       bool allow_hardware_decode);
   void WillAddCacheEntry(const DrawImage& draw_image);
   SkImageInfo CreateImageInfoForDrawImage(const DrawImage& draw_image,
+                                          AuxImage aux_image,
                                           int upload_scale_mip_level) const;
 
   // Finds the ImageData that should be used for the given DrawImage. Looks

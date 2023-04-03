@@ -75,6 +75,11 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.animation_type_ = type;
     return std::move(*this);
   }
+  PaintImageBuilder&& set_gainmap_paint_image_generator(
+      sk_sp<PaintImageGenerator> generator) {
+    paint_image_.gainmap_paint_image_generator_ = std::move(generator);
+    return std::move(*this);
+  }
   PaintImageBuilder&& set_completion_state(PaintImage::CompletionState state) {
     paint_image_.completion_state_ = state;
     return std::move(*this);

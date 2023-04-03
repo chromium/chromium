@@ -35,7 +35,8 @@ TEST(PaintImageTest, DecodesCorrectFrames) {
   SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
   std::vector<size_t> memory(info.computeMinByteSize());
   SkPixmap pixmap(info, memory.data(), info.minRowBytes());
-  image.Decode(pixmap, 1u, PaintImage::GetNextGeneratorClientId());
+  image.Decode(pixmap, 1u, AuxImage::kDefault,
+               PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_EQ(generator->frames_decoded().count(1u), 1u);
   generator->reset_frames_decoded();
@@ -44,7 +45,8 @@ TEST(PaintImageTest, DecodesCorrectFrames) {
   info.makeColorType(kRGB_565_SkColorType);
   memory = std::vector<size_t>(info.computeMinByteSize());
   pixmap = SkPixmap(info, memory.data(), info.minRowBytes());
-  image.Decode(pixmap, 1u, PaintImage::GetNextGeneratorClientId());
+  image.Decode(pixmap, 1u, AuxImage::kDefault,
+               PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_EQ(generator->frames_decoded().count(1u), 1u);
   generator->reset_frames_decoded();
@@ -95,10 +97,10 @@ TEST(PaintImageTest, DecodeToYuv420NoAlpha) {
 
   SkYUVAPixmapInfo image_yuva_pixmap_info;
   ASSERT_TRUE(image.IsYuv(SkYUVAPixmapInfo::SupportedDataTypes::All(),
-                          &image_yuva_pixmap_info));
+                          AuxImage::kDefault, &image_yuva_pixmap_info));
   ASSERT_EQ(yuva_pixmap_info, image_yuva_pixmap_info);
 
-  image.DecodeYuv(pixmaps, 1u /* frame_index */,
+  image.DecodeYuv(pixmaps, 1u /* frame_index */, AuxImage::kDefault,
                   PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(yuv_generator->frames_decoded().size(), 1u);
   EXPECT_EQ(yuv_generator->frames_decoded().count(1u), 1u);

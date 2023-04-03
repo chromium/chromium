@@ -126,8 +126,8 @@ enum ImageUsageState : int {
 bool SkipImage(const DrawImage& draw_image) {
   if (!SkIRect::Intersects(
           draw_image.src_rect(),
-          SkIRect::MakeWH(draw_image.paint_image().width(),
-                          draw_image.paint_image().height()))) {
+          SkIRect::MakeSize(
+              draw_image.paint_image().GetSkISize(AuxImage::kDefault)))) {
     return true;
   }
   if (std::abs(draw_image.scale().width()) <
@@ -151,30 +151,30 @@ PaintFlags::FilterQuality CalculateDesiredFilterQuality(
 // Calculates the scale factor which can be used to scale an image to a given
 // mip level.
 SkSize CalculateScaleFactorForMipLevel(const DrawImage& draw_image,
+                                       AuxImage aux_image,
                                        int upload_scale_mip_level) {
-  gfx::Size base_size(draw_image.paint_image().width(),
-                      draw_image.paint_image().height());
+  gfx::Size base_size = draw_image.paint_image().GetSize(aux_image);
   return MipMapUtil::GetScaleAdjustmentForLevel(base_size,
                                                 upload_scale_mip_level);
 }
 
 // Calculates the size of a given mip level.
 gfx::Size CalculateSizeForMipLevel(const DrawImage& draw_image,
+                                   AuxImage aux_image,
                                    int upload_scale_mip_level) {
-  gfx::Size base_size(draw_image.paint_image().width(),
-                      draw_image.paint_image().height());
+  gfx::Size base_size = draw_image.paint_image().GetSize(aux_image);
   return MipMapUtil::GetSizeForLevel(base_size, upload_scale_mip_level);
 }
 
 // Determines whether a draw image requires mips.
 bool ShouldGenerateMips(const DrawImage& draw_image,
+                        AuxImage aux_image,
                         int upload_scale_mip_level) {
   // If filter quality is less than medium, don't generate mips.
   if (draw_image.filter_quality() < PaintFlags::FilterQuality::kMedium)
     return false;
 
-  gfx::Size base_size(draw_image.paint_image().width(),
-                      draw_image.paint_image().height());
+  gfx::Size base_size = draw_image.paint_image().GetSize(aux_image);
   // Take the abs of the scale, as mipmap functions don't handle (and aren't
   // impacted by) negative image dimensions.
   gfx::SizeF scaled_size = gfx::ScaleSize(
@@ -183,8 +183,8 @@ bool ShouldGenerateMips(const DrawImage& draw_image,
 
   // If our target size is smaller than our scaled size in both dimension, we
   // need to generate mips.
-  gfx::SizeF target_size =
-      gfx::SizeF(CalculateSizeForMipLevel(draw_image, upload_scale_mip_level));
+  gfx::SizeF target_size = gfx::SizeF(
+      CalculateSizeForMipLevel(draw_image, aux_image, upload_scale_mip_level));
   if (scaled_size.width() < target_size.width() &&
       scaled_size.height() < target_size.height()) {
     return true;
@@ -240,24 +240,24 @@ size_t EstimateHardwareDecodedDataSize(
 // if not, decodes to a compatible temporary pixmap and then converts that into
 // the |target_pixmap|.
 bool DrawAndScaleImageRGB(const DrawImage& draw_image,
+                          AuxImage aux_image,
                           SkPixmap& target_pixmap,
                           PaintImage::GeneratorClientId client_id) {
   const PaintImage& paint_image = draw_image.paint_image();
   const bool is_original_size_decode =
-      SkISize::Make(paint_image.width(), paint_image.height()) ==
-      target_pixmap.dimensions();
+      paint_image.GetSkISize(aux_image) == target_pixmap.dimensions();
   const bool is_nearest_neighbor =
       draw_image.filter_quality() == PaintFlags::FilterQuality::kNone;
 
   SkISize supported_size =
-      paint_image.GetSupportedDecodeSize(target_pixmap.dimensions());
+      paint_image.GetSupportedDecodeSize(target_pixmap.dimensions(), aux_image);
 
   // We can directly decode into target pixmap if we are doing an original
   // decode or we are decoding to scale without nearest neighbor filtering.
   const bool can_directly_decode =
       is_original_size_decode || !is_nearest_neighbor;
   if (supported_size == target_pixmap.dimensions() && can_directly_decode) {
-    if (!paint_image.Decode(target_pixmap, draw_image.frame_index(),
+    if (!paint_image.Decode(target_pixmap, draw_image.frame_index(), aux_image,
                             client_id)) {
       DLOG(ERROR) << "Failed to decode image.";
       return false;
@@ -269,9 +269,7 @@ bool DrawAndScaleImageRGB(const DrawImage& draw_image,
   // Step 1: Decode at the nearest (larger) directly supported size or the
   // original size if nearest neighbor quality is requested.
   const SkISize decode_size =
-      is_nearest_neighbor
-          ? SkISize::Make(paint_image.width(), paint_image.height())
-          : supported_size;
+      is_nearest_neighbor ? paint_image.GetSkISize(aux_image) : supported_size;
   SkImageInfo decode_info = target_pixmap.info().makeDimensions(decode_size);
   SkBitmap decode_bitmap;
   if (!decode_bitmap.tryAllocPixels(decode_info)) {
@@ -279,7 +277,8 @@ bool DrawAndScaleImageRGB(const DrawImage& draw_image,
     return false;
   }
   SkPixmap decode_pixmap = decode_bitmap.pixmap();
-  if (!paint_image.Decode(decode_pixmap, draw_image.frame_index(), client_id)) {
+  if (!paint_image.Decode(decode_pixmap, draw_image.frame_index(), aux_image,
+                          client_id)) {
     DLOG(ERROR) << "Failed to decode unscaled image.";
     return false;
   }
@@ -306,6 +305,7 @@ bool DrawAndScaleImageRGB(const DrawImage& draw_image,
 // used for Y, U, and V values.
 bool DrawAndScaleImageYUV(
     const DrawImage& draw_image,
+    AuxImage aux_image,
     const SkISize& target_size,
     void* buffer,
     PaintImage::GeneratorClientId client_id,
@@ -316,11 +316,11 @@ bool DrawAndScaleImageYUV(
     SkPixmap& pixmap_v) {
   const PaintImage& paint_image = draw_image.paint_image();
   const bool is_original_size_decode =
-      SkISize::Make(paint_image.width(), paint_image.height()) == target_size;
+      paint_image.GetSkISize(aux_image) == target_size;
   SkYUVAPixmapInfo yuva_pixmap_info;
 
-  const bool yuva_info_initialized =
-      paint_image.IsYuv(yuva_supported_data_types, &yuva_pixmap_info);
+  const bool yuva_info_initialized = paint_image.IsYuv(
+      yuva_supported_data_types, aux_image, &yuva_pixmap_info);
   DCHECK(yuva_info_initialized);
   DCHECK_EQ(yuva_pixmap_info.dataType(), yuva_data_type);
   // Only tri-planar YUV with no alpha is currently supported.
@@ -331,7 +331,8 @@ bool DrawAndScaleImageYUV(
     return false;
   }
 
-  SkISize supported_size = paint_image.GetSupportedDecodeSize(target_size);
+  SkISize supported_size =
+      paint_image.GetSupportedDecodeSize(target_size, aux_image);
   // We can directly decode into target pixmap if we are doing an original
   // decode.
   // TODO(crbug.com/927437): Although the JPEG decoder supports decoding to
@@ -346,7 +347,7 @@ bool DrawAndScaleImageYUV(
     pixmap_u = yuva_pixmaps.plane(1);
     pixmap_v = yuva_pixmaps.plane(2);
     if (!paint_image.DecodeYuv(yuva_pixmaps, draw_image.frame_index(),
-                               client_id)) {
+                               aux_image, client_id)) {
       DLOG(ERROR) << "Failed to decode image as YUV.";
       return false;
     }
@@ -369,7 +370,7 @@ bool DrawAndScaleImageYUV(
   unscaled_yuva_pixmaps = SkYUVAPixmaps::FromExternalMemory(
       yuva_pixmap_info, decode_bitmap.getPixels());
   if (!paint_image.DecodeYuv(unscaled_yuva_pixmaps, draw_image.frame_index(),
-                             client_id)) {
+                             aux_image, client_id)) {
     DLOG(ERROR) << "Failed to decode unscaled image as YUV.";
     return false;
   }
@@ -1341,7 +1342,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
     DCHECK(id || image_data->decode.decode_failure);
 
     SkSize scale_factor = CalculateScaleFactorForMipLevel(
-        draw_image, image_data->upload_scale_mip_level);
+        draw_image, AuxImage::kDefault, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
         id, std::move(dark_mode_color_filter), SkSize(), scale_factor,
         CalculateDesiredFilterQuality(draw_image), image_data->needs_mips,
@@ -1355,7 +1356,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
     DCHECK(image || image_data->decode.decode_failure);
 
     SkSize scale_factor = CalculateScaleFactorForMipLevel(
-        draw_image, image_data->upload_scale_mip_level);
+        draw_image, AuxImage::kDefault, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
         std::move(image), std::move(dark_mode_color_filter), SkSize(),
         scale_factor, CalculateDesiredFilterQuality(draw_image),
@@ -1756,20 +1757,20 @@ void GpuImageDecodeCache::OnImageUploadTaskCompleted(
 }
 
 int GpuImageDecodeCache::CalculateUploadScaleMipLevel(
-    const DrawImage& draw_image) const {
+    const DrawImage& draw_image,
+    AuxImage aux_image) const {
   // Images which are being clipped will have color-bleeding if scaled.
   // TODO(ericrk): Investigate uploading clipped images to handle this case and
   // provide further optimization. crbug.com/620899
   if (!enable_clipped_image_scaling_) {
-    const bool is_clipped = draw_image.src_rect() !=
-                            SkIRect::MakeWH(draw_image.paint_image().width(),
-                                            draw_image.paint_image().height());
+    const bool is_clipped =
+        draw_image.src_rect() !=
+        SkIRect::MakeSize(draw_image.paint_image().GetSkISize(aux_image));
     if (is_clipped)
       return 0;
   }
 
-  gfx::Size base_size(draw_image.paint_image().width(),
-                      draw_image.paint_image().height());
+  gfx::Size base_size = draw_image.paint_image().GetSize(aux_image);
   // Ceil our scaled size so that the mip map generated is guaranteed to be
   // larger. Take the abs of the scale, as mipmap functions don't handle
   // (and aren't impacted by) negative image dimensions.
@@ -1783,7 +1784,8 @@ int GpuImageDecodeCache::CalculateUploadScaleMipLevel(
 GpuImageDecodeCache::InUseCacheKey
 GpuImageDecodeCache::InUseCacheKeyFromDrawImage(
     const DrawImage& draw_image) const {
-  return InUseCacheKey(draw_image, CalculateUploadScaleMipLevel(draw_image));
+  return InUseCacheKey(
+      draw_image, CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault));
 }
 
 // Checks if an image decode needs a decode task and returns it.
@@ -2184,7 +2186,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     }
 
     SkImageInfo image_info = CreateImageInfoForDrawImage(
-        draw_image, image_data->upload_scale_mip_level);
+        draw_image, AuxImage::kDefault, image_data->upload_scale_mip_level);
     image_info = image_info.makeColorSpace(
         ColorSpaceForImageDecode(draw_image, image_data->mode));
     auto release_proc = [](const void*, void*) {};
@@ -2194,8 +2196,9 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
       SkPixmap pixmap_y;
       SkPixmap pixmap_u;
       SkPixmap pixmap_v;
-      if (!DrawAndScaleImageYUV(draw_image, image_info.dimensions(),
-                                backing_memory->data(), generator_client_id_,
+      if (!DrawAndScaleImageYUV(draw_image, AuxImage::kDefault,
+                                image_info.dimensions(), backing_memory->data(),
+                                generator_client_id_,
                                 yuva_supported_data_types_,
                                 image_data->yuva_pixmap_info->dataType(),
                                 pixmap_y, pixmap_u, pixmap_v)) {
@@ -2210,7 +2213,8 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     } else {  // RGBX decoding is the default path.
       SkPixmap pixmap(image_info, backing_memory->data(),
                       image_info.minRowBytes());
-      if (!DrawAndScaleImageRGB(draw_image, pixmap, generator_client_id_)) {
+      if (!DrawAndScaleImageRGB(draw_image, AuxImage::kDefault, pixmap,
+                                generator_client_id_)) {
         DLOG(ERROR) << "DrawAndScaleImageRGB failed.";
         backing_memory->Unlock();
         backing_memory.reset();
@@ -2388,8 +2392,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
   // The assumption is that scaling is not currently supported for
   // hardware-accelerated decodes.
   DCHECK_EQ(0, image_data->upload_scale_mip_level);
-  const gfx::Size output_size(draw_image.paint_image().width(),
-                              draw_image.paint_image().height());
+  const gfx::Size output_size =
+      draw_image.paint_image().GetSize(AuxImage::kDefault);
 
   // Get the encoded data in a contiguous form.
   sk_sp<SkData> encoded_data =
@@ -2625,10 +2629,12 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                "GpuImageDecodeCache::CreateImageData");
   lock_.AssertAcquired();
 
-  int upload_scale_mip_level = CalculateUploadScaleMipLevel(draw_image);
-  bool needs_mips = ShouldGenerateMips(draw_image, upload_scale_mip_level);
-  SkImageInfo image_info =
-      CreateImageInfoForDrawImage(draw_image, upload_scale_mip_level);
+  int upload_scale_mip_level =
+      CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault);
+  bool needs_mips = ShouldGenerateMips(draw_image, AuxImage::kDefault,
+                                       upload_scale_mip_level);
+  const SkImageInfo image_info = CreateImageInfoForDrawImage(
+      draw_image, AuxImage::kDefault, upload_scale_mip_level);
   const bool image_larger_than_max_texture =
       image_info.width() > max_texture_size_ ||
       image_info.height() > max_texture_size_;
@@ -2701,11 +2707,11 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   }
 
   SkYUVAPixmapInfo yuva_pixmap_info;
-  const bool is_yuv = !do_hardware_accelerated_decode &&
-                      draw_image.paint_image().IsYuv(yuva_supported_data_types_,
-                                                     &yuva_pixmap_info) &&
-                      mode != DecodedDataMode::kCpu &&
-                      !image_larger_than_max_texture;
+  const bool is_yuv =
+      !do_hardware_accelerated_decode &&
+      draw_image.paint_image().IsYuv(yuva_supported_data_types_,
+                                     AuxImage::kDefault, &yuva_pixmap_info) &&
+      mode != DecodedDataMode::kCpu && !image_larger_than_max_texture;
 
   absl::optional<SkYUVAPixmapInfo> optional_yuva_pixmap_info;
   if (is_yuv) {
@@ -2921,9 +2927,10 @@ void GpuImageDecodeCache::RunPendingContextThreadOperations() {
 
 SkImageInfo GpuImageDecodeCache::CreateImageInfoForDrawImage(
     const DrawImage& draw_image,
+    AuxImage aux_image,
     int upload_scale_mip_level) const {
   gfx::Size mip_size =
-      CalculateSizeForMipLevel(draw_image, upload_scale_mip_level);
+      CalculateSizeForMipLevel(draw_image, aux_image, upload_scale_mip_level);
 
   // Decide the SkColorType for the buffer for the PaintImage to draw or
   // decode into. Default to using the cache's color type.
@@ -2933,7 +2940,8 @@ SkImageInfo GpuImageDecodeCache::CreateImageInfoForDrawImage(
   // its SkColorType to kRGBA_F16_SkColorType. Only set the target SkColorType
   // to this value if the PaintImage itself reports it. Otherwise, the content
   // may not appear, see https://crbug.com/1266456.
-  const auto image_color_type = draw_image.paint_image().GetColorType();
+  const auto image_color_type =
+      draw_image.paint_image().GetSkImageInfo(aux_image).colorType();
   if (image_color_type == kRGBA_F16_SkColorType) {
     // Only set the target SkColorType to kRGBA_F16_SkColorType if the content
     // is HDR and the target display is HDR capable. This is done to preserve
@@ -3064,8 +3072,9 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
 bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
                                        const DrawImage& draw_image) const {
   bool is_scaled = image_data->upload_scale_mip_level != 0;
-  bool scale_is_compatible = CalculateUploadScaleMipLevel(draw_image) >=
-                             image_data->upload_scale_mip_level;
+  bool scale_is_compatible =
+      CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault) >=
+      image_data->upload_scale_mip_level;
   bool quality_is_compatible =
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
   sk_sp<SkColorSpace> decoded_target_colorspace =
@@ -3258,8 +3267,8 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
   if (image_data->needs_mips)
     return;
 
-  bool needs_mips =
-      ShouldGenerateMips(draw_image, image_data->upload_scale_mip_level);
+  bool needs_mips = ShouldGenerateMips(draw_image, AuxImage::kDefault,
+                                       image_data->upload_scale_mip_level);
   if (!needs_mips)
     return;
 
