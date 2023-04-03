@@ -1173,20 +1173,45 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     }
   }
 
-  for (AXNodeID id : update_state.ignored_state_changed_ids) {
-    AXNode* node = GetFromId(id);
-    if (node) {
-      bool will_be_ignored = !node->IsIgnored();
-      // Don't fire ignored state change when the parent is also changing to the
-      // same ignored state.
-      bool is_root_of_ignored_change =
-          !node->parent() ||
-          !base::Contains(update_state.ignored_state_changed_ids,
-                          node->parent()->id()) ||
-          node->IsIgnored() != node->parent()->IsIgnored();
-      for (AXTreeObserver& observer : observers_) {
+  // Notify observers of nodes about to change their ignored state.
+  if (features::IsUnserializeOptimizationsEnabled()) {
+    std::vector<AXNode*> nodes_to_notify;
+    for (AXNodeID id : update_state.ignored_state_changed_ids) {
+      AXNode* node = GetFromId(id);
+      if (node) {
+        nodes_to_notify.push_back(node);
+      }
+    }
+    for (AXTreeObserver& observer : observers_) {
+      for (AXNode* node : nodes_to_notify) {
+        bool will_be_ignored = !node->IsIgnored();
+        // Don't fire ignored state change when the parent is also changing to
+        // the same ignored state.
+        bool is_root_of_ignored_change =
+            !node->parent() ||
+            node->IsIgnored() != node->parent()->IsIgnored() ||
+            !base::Contains(update_state.ignored_state_changed_ids,
+                            node->parent()->id());
         observer.OnIgnoredWillChange(this, node, will_be_ignored,
                                      is_root_of_ignored_change);
+      }
+    }
+  } else {
+    for (AXNodeID id : update_state.ignored_state_changed_ids) {
+      AXNode* node = GetFromId(id);
+      if (node) {
+        bool will_be_ignored = !node->IsIgnored();
+        // Don't fire ignored state change when the parent is also changing to
+        // the same ignored state.
+        bool is_root_of_ignored_change =
+            !node->parent() ||
+            !base::Contains(update_state.ignored_state_changed_ids,
+                            node->parent()->id()) ||
+            node->IsIgnored() != node->parent()->IsIgnored();
+        for (AXTreeObserver& observer : observers_) {
+          observer.OnIgnoredWillChange(this, node, will_be_ignored,
+                                       is_root_of_ignored_change);
+        }
       }
     }
   }
