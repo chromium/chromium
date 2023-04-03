@@ -9223,8 +9223,8 @@ TEST_P(BentoButtonTest, DeskTextfieldOutsideOverview) {
           .SetShow(true)
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .BuildOwnsNativeWidget();
-  auto* desk_text_view =
-      widget->SetContentsView(std::make_unique<DeskTextfield>());
+  auto* desk_text_view = widget->SetContentsView(
+      std::make_unique<DeskTextfield>(SystemTextfield::Type::kSmall));
 
   // There is no crash for committing name changes for `DeskTextfield` outside
   // overview.

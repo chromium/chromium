@@ -24,7 +24,8 @@ constexpr int kDeskNameViewHorizontalPadding = 6;
 
 }  // namespace
 
-DeskNameView::DeskNameView(DeskMiniView* mini_view) : mini_view_(mini_view) {
+DeskNameView::DeskNameView(DeskMiniView* mini_view)
+    : DeskTextfield(SystemTextfield::Type::kSmall), mini_view_(mini_view) {
   views::Builder<DeskNameView>(this)
       .SetBorder(views::CreateEmptyBorder(
           gfx::Insets::VH(0, kDeskNameViewHorizontalPadding)))
