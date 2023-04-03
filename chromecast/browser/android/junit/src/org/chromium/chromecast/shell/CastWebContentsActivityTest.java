@@ -440,7 +440,7 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class}, sdk = {Build.VERSION_CODES.O})
-    public void testStopWhileInPipModeClosesActivity() {
+    public void testStopWhileInPipModeDoesNotClosesActivity() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
         mActivityLifecycle.create().start().resume();
@@ -449,8 +449,8 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertTrue(mActivity.isFinishing());
-                }, true);
+                    assertFalse(mActivity.isFinishing());
+                }, false);
     }
 
     @Test
