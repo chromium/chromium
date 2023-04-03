@@ -14,6 +14,10 @@ COMPONENT_EXPORT(CROSAPI)
 inline constexpr base::StringPiece kInputMethodTestCapabilitySendKeyModifiers =
     "SendKeyEventModifiers";
 
+COMPONENT_EXPORT(CROSAPI)
+inline constexpr base::StringPiece
+    kInputMethodTestCapabilityConfirmComposition = "ConfirmComposition";
+
 }  // namespace crosapi
 
 #endif  // CHROMEOS_CROSAPI_CPP_INPUT_METHOD_TEST_INTERFACE_CONSTANTS_H_

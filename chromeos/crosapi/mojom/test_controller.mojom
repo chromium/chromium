@@ -170,8 +170,8 @@ struct KeyEvent {
 
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 6
-// Next method id: 7
+// Next version: 7
+// Next method id: 8
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -229,6 +229,9 @@ interface InputMethodTestInterface {
   // //chromeos/crosapi/cpp/input_method_test_interface_constants.h
   [MinVersion=5] HasCapabilities@6(array<string> capabilities)
       => (bool has_capabilities);
+
+  // Calls `ash::InputMethodAsh::ConfirmCompositionText`.
+  [MinVersion=6] ConfirmComposition@7() => ();
 };
 
 // This interface is implemented by Ash-Chrome.
