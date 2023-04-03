@@ -111,14 +111,9 @@ class BrowserLauncherTest : public InProcessBrowserTest {
 
     // Create two profiles.
     base::FilePath dest_path = profile_manager->user_data_dir();
-
-    Profile* profile = nullptr;
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      profile = profile_manager->GetProfile(
-          dest_path.Append(FILE_PATH_LITERAL("New Profile")));
-      ASSERT_TRUE(profile);
-    }
+    Profile* profile = profiles::testing::CreateProfileSync(
+        profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile")));
+    ASSERT_TRUE(profile);
     DisableWelcomePages({profile});
 
     // Don't delete Profile too early.
@@ -167,8 +162,9 @@ class BrowserLauncherTest : public InProcessBrowserTest {
  private:
   void UninstallWebApps() {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
-    auto* profile = profile_manager->GetProfile(
+    auto* profile = profile_manager->GetProfileByPath(
         profile_manager->GetPrimaryUserProfilePath());
+    ASSERT_TRUE(profile);
 
     web_app::WebAppRegistrar& registrar =
         web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
@@ -189,19 +185,13 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, PRE_FullRestoreWithTwoProfiles) {
 
   // Create two profiles.
   base::FilePath dest_path = profile_manager->user_data_dir();
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  ASSERT_TRUE(profile1);
 
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+  ASSERT_TRUE(profile2);
   DisableWelcomePages({profile1, profile2});
 
   // Don't delete Profiles too early.
@@ -260,19 +250,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreWithTwoProfiles) {
 
   // Open the two profiles.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  ASSERT_TRUE(profile1);
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+  ASSERT_TRUE(profile2);
 
   // The profiles to be restored should match those setup in the PRE_ test.
   auto last_opened_profiles =
@@ -319,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  auto* profile =
-      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+  auto* profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
 
   // Don't delete the profile too early.
   ScopedProfileKeepAlive profile_keep_alive(
@@ -367,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  auto* profile =
-      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+  auto* profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
 
   // The profile should match the one set up in the PRE_ test.
   auto last_opened_profiles =
@@ -420,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  auto* profile =
-      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+  auto* profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
 
   // Keep the browser process running while the browsers are closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
@@ -487,14 +470,9 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreDoNotSkipCrashRestore) {
 
   // Open the profile.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile")));
-    ASSERT_TRUE(profile);
-  }
+  Profile* profile = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile")));
+  ASSERT_TRUE(profile);
 
   // The profile to be restored should match the one in the PRE_ test.
   auto last_opened_profiles =
@@ -541,14 +519,9 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreSkipCrashRestore) {
 
   // Open the profile.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile")));
-    ASSERT_TRUE(profile);
-  }
+  Profile* profile = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile")));
+  ASSERT_TRUE(profile);
 
   // The profile to be restored should match the one in the PRE_ test.
   auto last_opened_profiles =
@@ -592,19 +565,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
 
   // Load the main profile and create one additional profile.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        profile_manager->GetPrimaryUserProfilePath());
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
+  ASSERT_TRUE(profile1);
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+  ASSERT_TRUE(profile2);
   DisableWelcomePages({profile1, profile2});
 
   // Don't delete Profiles too early.
@@ -664,19 +630,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
 
   // Open the two profiles.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        profile_manager->GetPrimaryUserProfilePath());
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GetPrimaryUserProfilePath());
+  ASSERT_TRUE(profile1);
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+  ASSERT_TRUE(profile2);
 
   // The profiles to be restored should match those setup in the PRE_ test.
   auto last_opened_profiles =
