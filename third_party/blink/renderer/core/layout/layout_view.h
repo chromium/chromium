@@ -212,8 +212,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   PhysicalRect DocumentRect() const;
 
-  IntervalArena* GetIntervalArena();
-
   void SetLayoutQuoteHead(LayoutQuote* head) {
     NOT_DESTROYED();
     layout_quote_head_ = head;
@@ -386,7 +384,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   LayoutState* layout_state_;
 
   Member<ViewFragmentationContext> fragmentation_context_;
-  scoped_refptr<IntervalArena> interval_arena_;
 
   Member<LayoutQuote> layout_quote_head_;
   unsigned layout_counter_count_ = 0;

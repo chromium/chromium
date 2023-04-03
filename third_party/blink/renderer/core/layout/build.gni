@@ -60,8 +60,6 @@ blink_core_sources_layout = [
   "depth_ordered_layout_object_list.h",
   "flexible_box_algorithm.cc",
   "flexible_box_algorithm.h",
-  "floating_objects.cc",
-  "floating_objects.h",
   "fragmentainer_iterator.cc",
   "fragmentainer_iterator.h",
   "fragmentation_context.h",

@@ -36,8 +36,6 @@
 
 namespace blink {
 
-class FloatingObject;
-
 enum WhitespaceTreatment { kExcludeWhitespace, kIncludeWhitespace };
 
 class LineWidth {
@@ -76,7 +74,6 @@ class LineWidth {
   float TrailingWhitespaceWidth() const { return trailing_whitespace_width_; }
 
   void UpdateAvailableWidth(LayoutUnit minimum_height = LayoutUnit());
-  void ShrinkAvailableWidthForNewFloatIfNeeded(const FloatingObject&);
   void AddUncommittedWidth(float delta) { uncommitted_width_ += delta; }
   void Commit();
   void FitBelowFloats(bool is_first_line = false);

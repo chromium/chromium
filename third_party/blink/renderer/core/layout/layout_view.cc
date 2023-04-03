@@ -885,13 +885,6 @@ void LayoutView::UpdateHitTestResult(HitTestResult& result,
   }
 }
 
-IntervalArena* LayoutView::GetIntervalArena() {
-  NOT_DESTROYED();
-  if (!interval_arena_)
-    interval_arena_ = IntervalArena::Create();
-  return interval_arena_.get();
-}
-
 bool LayoutView::BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
   NOT_DESTROYED();
   // The base background color applies to the main frame only.

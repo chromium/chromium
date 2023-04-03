@@ -951,20 +951,6 @@ void LayoutBlockFlow::LayoutRunsAndFloats(LineLayoutState& layout_state) {
   LinkToEndLineIfNeeded(layout_state);
 }
 
-// Before restarting the layout loop with a new logicalHeight, remove all floats
-// that were added and reset the resolver.
-inline const InlineIterator& LayoutBlockFlow::RestartLayoutRunsAndFloatsInRange(
-    LayoutUnit old_logical_height,
-    LayoutUnit new_logical_height,
-    FloatingObject* last_float_from_previous_line,
-    InlineBidiResolver& resolver,
-    const InlineIterator& old_end) {
-  NOT_DESTROYED();
-  SetLogicalHeight(new_logical_height);
-  resolver.SetPositionIgnoringNestedIsolates(old_end);
-  return old_end;
-}
-
 void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
     LineLayoutState& layout_state,
     InlineBidiResolver& resolver,
@@ -1013,7 +999,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
     const InlineIterator previous_endof_line = end_of_line;
     bool is_new_uba_paragraph =
         layout_state.GetLineInfo().PreviousLineBrokeCleanly();
-    FloatingObject* last_float_from_previous_line = nullptr;
 
     WordMeasurements word_measurements;
     end_of_line =
@@ -1144,9 +1129,6 @@ void LayoutBlockFlow::LayoutRunsAndFloatsInRange(
               DCHECK(line_box->IsFirstAfterPageBreak());
               line_box->DeleteLine();
               line_box = nullptr;
-              end_of_line = RestartLayoutRunsAndFloatsInRange(
-                  old_logical_height, old_logical_height + adjustment,
-                  last_float_from_previous_line, resolver, previous_endof_line);
             }
           }
           if (line_box &&

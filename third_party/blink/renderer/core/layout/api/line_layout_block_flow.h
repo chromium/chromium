@@ -6,14 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_BLOCK_FLOW_H_
 
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
-#include "third_party/blink/renderer/core/layout/floating_objects.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
 class LayoutBlockFlow;
-class FloatingObject;
 
 class LineLayoutBlockFlow : public LineLayoutBox {
  public:
@@ -110,30 +108,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
       IndentTextOrNot indent_text = kDoNotIndentText) {
     ToBlockFlow()->UpdateStaticInlinePositionForChild(
         *To<LayoutBox>(box.GetLayoutObject()), logical_top, indent_text);
-  }
-
-  // TODO(dgrogan/eae): *ForFloat: add these methods to the FloatingObject
-  // class. Be consistent with use of start/end/before/after instead of
-  // logicalTop/Left etc.
-  LayoutUnit LogicalTopForFloat(const FloatingObject& floating_object) const {
-    return ToBlockFlow()->LogicalTopForFloat(floating_object);
-  }
-
-  LayoutUnit LogicalBottomForFloat(
-      const FloatingObject& floating_object) const {
-    return ToBlockFlow()->LogicalBottomForFloat(floating_object);
-  }
-
-  LayoutUnit LogicalLeftForFloat(const FloatingObject& floating_object) const {
-    return ToBlockFlow()->LogicalLeftForFloat(floating_object);
-  }
-
-  LayoutUnit LogicalRightForFloat(const FloatingObject& floating_object) const {
-    return ToBlockFlow()->LogicalRightForFloat(floating_object);
-  }
-
-  LayoutUnit LogicalWidthForFloat(const FloatingObject& floating_object) const {
-    return ToBlockFlow()->LogicalWidthForFloat(floating_object);
   }
 
   LayoutUnit LogicalRightOffsetForLine(

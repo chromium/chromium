@@ -43,8 +43,6 @@
 namespace blink {
 
 class LayoutBox;
-class LineLayoutBlockFlow;
-class FloatingObject;
 struct PhysicalRect;
 
 class ShapeOutsideDeltas final {
@@ -105,12 +103,6 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
     return ComputedShape().ShapeMarginLogicalBoundingBox().MaxY() +
            LogicalTopOffset();
   }
-
-  ShapeOutsideDeltas ComputeDeltasForContainingBlockLine(
-      const LineLayoutBlockFlow&,
-      const FloatingObject&,
-      LayoutUnit line_top,
-      LayoutUnit line_height);
 
   static ShapeOutsideInfo& EnsureInfo(const LayoutBox& key) {
     InfoMap& info_map = ShapeOutsideInfo::GetInfoMap();

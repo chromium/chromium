@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 
 namespace blink {
 
@@ -282,6 +283,12 @@ template <>
 struct ValueToString<blink::LayoutMultiColumnSet*> {
   static String ToString(const blink::LayoutMultiColumnSet* value) {
     return String::Format("%p", value);
+  }
+};
+template <>
+struct ValueToString<blink::LayoutUnit> {
+  static String ToString(const blink::LayoutUnit value) {
+    return String::Number(value.ToFloat());
   }
 };
 #endif

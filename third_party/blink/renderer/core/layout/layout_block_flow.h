@@ -39,7 +39,6 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
-#include "third_party/blink/renderer/core/layout/floating_objects.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/line/line_box_list.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
@@ -235,66 +234,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool GeneratesLineBoxesForInlineChild(LayoutObject*);
 
-  LayoutUnit LogicalTopForFloat(const FloatingObject& floating_object) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? floating_object.Y()
-                                     : floating_object.X();
-  }
-  LayoutUnit LogicalBottomForFloat(
-      const FloatingObject& floating_object) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? floating_object.MaxY()
-                                     : floating_object.MaxX();
-  }
-  LayoutUnit LogicalLeftForFloat(const FloatingObject& floating_object) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? floating_object.X()
-                                     : floating_object.Y();
-  }
-  LayoutUnit LogicalRightForFloat(const FloatingObject& floating_object) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? floating_object.MaxX()
-                                     : floating_object.MaxY();
-  }
-  LayoutUnit LogicalWidthForFloat(const FloatingObject& floating_object) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? floating_object.Width()
-                                     : floating_object.Height();
-  }
-
-  void SetLogicalTopForFloat(FloatingObject& floating_object,
-                             LayoutUnit logical_top) {
-    NOT_DESTROYED();
-    if (IsHorizontalWritingMode())
-      floating_object.SetY(logical_top);
-    else
-      floating_object.SetX(logical_top);
-  }
-  void SetLogicalLeftForFloat(FloatingObject& floating_object,
-                              LayoutUnit logical_left) {
-    NOT_DESTROYED();
-    if (IsHorizontalWritingMode())
-      floating_object.SetX(logical_left);
-    else
-      floating_object.SetY(logical_left);
-  }
-  void SetLogicalHeightForFloat(FloatingObject& floating_object,
-                                LayoutUnit logical_height) {
-    NOT_DESTROYED();
-    if (IsHorizontalWritingMode())
-      floating_object.SetHeight(logical_height);
-    else
-      floating_object.SetWidth(logical_height);
-  }
-  void SetLogicalWidthForFloat(FloatingObject& floating_object,
-                               LayoutUnit logical_width) {
-    NOT_DESTROYED();
-    if (IsHorizontalWritingMode())
-      floating_object.SetWidth(logical_width);
-    else
-      floating_object.SetHeight(logical_width);
-  }
-
   LayoutUnit StartAlignedOffsetForLine(LayoutUnit position, IndentTextOrNot);
 
   void SetStaticInlinePositionForChild(LayoutBox&, LayoutUnit inline_position);
@@ -385,41 +324,10 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                       LayoutObject* before_child,
                       bool full_remove_insert = false) override;
 
-  LayoutUnit XPositionForFloatIncludingMargin(
-      const FloatingObject& child) const {
-    NOT_DESTROYED();
-    LayoutUnit scrollbar_adjustment(OriginAdjustmentForScrollbars().x());
-    if (IsHorizontalWritingMode()) {
-      return child.X() + child.GetLayoutObject()->MarginLeft() +
-             scrollbar_adjustment;
-    }
-    return child.X() + MarginBeforeForChild(*child.GetLayoutObject());
-  }
-
-  DISABLE_CFI_PERF
-  LayoutUnit YPositionForFloatIncludingMargin(
-      const FloatingObject& child) const {
-    NOT_DESTROYED();
-    if (IsHorizontalWritingMode())
-      return child.Y() + MarginBeforeForChild(*child.GetLayoutObject());
-
-    return child.Y() + child.GetLayoutObject()->MarginTop();
-  }
-
-  LayoutPoint FlipFloatForWritingModeForChild(const FloatingObject&,
-                                              const LayoutPoint&) const;
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutBlockFlow";
   }
-
-  // Position and lay out the float, if it needs layout.
-  // |logical_top_margin_edge| is the minimum logical top offset for the float.
-  // The value returned is the minimum logical top offset for subsequent
-  // floats.
-  LayoutUnit PositionAndLayoutFloat(FloatingObject&,
-                                    LayoutUnit logical_top_margin_edge);
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
 
@@ -430,11 +338,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
-
-  bool IsOverhangingFloat(const FloatingObject& float_object) const {
-    NOT_DESTROYED();
-    return LogicalBottomForFloat(float_object) > LogicalHeight();
-  }
 
   void SetIsSelfCollapsingFromNG(bool is_self_collapsing) {
     NOT_DESTROYED();
@@ -542,10 +445,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void LayoutBlockChild(LayoutBox& child, BlockChildrenLayoutInfo&);
   void AdjustPositionedBlock(LayoutBox& child, const BlockChildrenLayoutInfo&);
-
-  LayoutPoint ComputeLogicalLocationForFloat(
-      const FloatingObject&,
-      LayoutUnit logical_top_offset) const;
 
   LayoutUnit LogicalRightOffsetForPositioningFloat(
       LayoutUnit logical_top,
@@ -898,12 +797,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                              BidiRun* trailing_space_run,
                                              const WordMeasurements&);
   void LayoutRunsAndFloats(LineLayoutState&);
-  const InlineIterator& RestartLayoutRunsAndFloatsInRange(
-      LayoutUnit old_logical_height,
-      LayoutUnit new_logical_height,
-      FloatingObject* last_float_from_previous_line,
-      InlineBidiResolver&,
-      const InlineIterator&);
   void LayoutRunsAndFloatsInRange(LineLayoutState&,
                                   InlineBidiResolver&,
                                   const InlineIterator& clean_line_start,

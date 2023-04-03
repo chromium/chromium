@@ -57,59 +57,6 @@ void LineWidth::UpdateAvailableWidth(LayoutUnit replaced_height) {
   ComputeAvailableWidthFromLeftAndRight();
 }
 
-void LineWidth::ShrinkAvailableWidthForNewFloatIfNeeded(
-    const FloatingObject& new_float) {
-  LayoutUnit height = block_.LogicalHeight();
-  if (height < block_.LogicalTopForFloat(new_float) ||
-      height >= block_.LogicalBottomForFloat(new_float))
-    return;
-
-  ShapeOutsideDeltas shape_deltas;
-  if (ShapeOutsideInfo* shape_outside_info =
-          new_float.GetLayoutObject()->GetShapeOutsideInfo()) {
-    LayoutUnit line_height = block_.LineHeight(
-        is_first_line_,
-        block_.IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine,
-        kPositionOfInteriorLineBoxes);
-    shape_deltas = shape_outside_info->ComputeDeltasForContainingBlockLine(
-        block_, new_float, block_.LogicalHeight(), line_height);
-  }
-
-  if (new_float.GetType() == FloatingObject::kFloatLeft) {
-    LayoutUnit new_left = block_.LogicalRightForFloat(new_float);
-    if (shape_deltas.IsValid()) {
-      if (shape_deltas.LineOverlapsShape()) {
-        new_left += shape_deltas.RightMarginBoxDelta();
-      } else {
-        // Per the CSS Shapes spec, If the line doesn't overlap the shape, then
-        // ignore this shape for this line.
-        new_left = left_;
-      }
-    }
-    if (IndentText() == kIndentText &&
-        block_.StyleRef().IsLeftToRightDirection())
-      new_left += FloorToInt(block_.TextIndentOffset());
-    left_ = std::max(left_, new_left);
-  } else {
-    LayoutUnit new_right = block_.LogicalLeftForFloat(new_float);
-    if (shape_deltas.IsValid()) {
-      if (shape_deltas.LineOverlapsShape()) {
-        new_right += shape_deltas.LeftMarginBoxDelta();
-      } else {
-        // Per the CSS Shapes spec, If the line doesn't overlap the shape, then
-        // ignore this shape for this line.
-        new_right = right_;
-      }
-    }
-    if (IndentText() == kIndentText &&
-        !block_.StyleRef().IsLeftToRightDirection())
-      new_right -= FloorToInt(block_.TextIndentOffset());
-    right_ = std::min(right_, new_right);
-  }
-
-  ComputeAvailableWidthFromLeftAndRight();
-}
-
 void LineWidth::Commit() {
   committed_width_ += uncommitted_width_;
   uncommitted_width_ = 0;
