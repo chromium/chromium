@@ -28,6 +28,9 @@ const NSTimeInterval kPinnedViewPopAnimationTime = 0.2;
 // Pinned cell identifier.
 NSString* const kPinnedCellIdentifier = @"PinnedCellIdentifier";
 
+// Pinned View identifier.
+NSString* const kPinnedViewIdentifier = @"PinnedViewIdentifier";
+
 // Pinned cell dimensions.
 const CGFloat kPinnedCellHeight = 36.0f;
 const CGFloat kPinnedCellMaxWidth = 168.0f;

@@ -27,6 +27,9 @@ extern const NSTimeInterval kPinnedViewPopAnimationTime;
 // Pinned cell identifier.
 extern NSString* const kPinnedCellIdentifier;
 
+// Pinned View identifier.
+extern NSString* const kPinnedViewIdentifier;
+
 // Pinned cell dimensions.
 extern const CGFloat kPinnedCellHeight;
 extern const CGFloat kPinnedCellMaxWidth;
