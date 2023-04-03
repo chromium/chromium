@@ -497,30 +497,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateRequested"
-    units="seconds" expires_after="2021-11-07">
-  <owner>dewittj@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    If at request time there is another request with the same URL, this tracks
-    this amount of time between creation of the most recent request and the
-    current request.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateSaved"
-    units="seconds" expires_after="2021-06-25">
-  <owner>dewittj@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    If at request time there is another downloaded page with the same URL, this
-    tracks this amount of time between creation of the most recent existing page
-    and the current request.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.DownloadUI.PrefetchedItemHasThumbnail"
     enum="BooleanAvailable" expires_after="2021-06-25">
   <owner>harringtond@chromium.org</owner>
