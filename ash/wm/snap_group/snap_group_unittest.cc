@@ -580,7 +580,7 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
     const gfx::ImageSkia unlocked_icon_image =
         gfx::CreateVectorIcon(kLockScreenEasyUnlockOpenIcon, color);
     const SkBitmap* expected_icon =
-        locked ? locked_icon_image.bitmap() : unlocked_icon_image.bitmap();
+        locked ? unlocked_icon_image.bitmap() : locked_icon_image.bitmap();
     const SkBitmap* actual_icon =
         lock_button->GetImage(views::ImageButton::ButtonState::STATE_NORMAL)
             .bitmap();

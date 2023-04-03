@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_lock_button.h"
 #include "ash/wm/window_util.h"
@@ -730,14 +731,17 @@ gfx::Rect MultiWindowResizeController::CalculateLockWidgetBounds(
     const gfx::Rect& resize_widget_bounds) const {
   if (windows_.direction == Direction::kLeftRight) {
     return gfx::Rect(
-        resize_widget_bounds.x(),
+        resize_widget_bounds.top_center().x() -
+            snap_group::kLockButtonCornerRadius,
         resize_widget_bounds.y() + kResizeWidgetAndLockWidgetDistance,
-        resize_widget_bounds.width(), resize_widget_bounds.width());
+        snap_group::kLockButtonCornerRadius * 2,
+        snap_group::kLockButtonCornerRadius * 2);
   } else {
     return gfx::Rect(
         resize_widget_bounds.x() + kResizeWidgetAndLockWidgetDistance,
-        resize_widget_bounds.y(), resize_widget_bounds.height(),
-        resize_widget_bounds.height());
+        resize_widget_bounds.y() - snap_group::kLockButtonCornerRadius,
+        snap_group::kLockButtonCornerRadius * 2,
+        snap_group::kLockButtonCornerRadius * 2);
   }
 }
 

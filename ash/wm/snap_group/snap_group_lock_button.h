@@ -27,12 +27,16 @@ class SnapGroupLockButton : public views::ImageButton {
   SnapGroupLockButton& operator=(const SnapGroupLockButton&) = delete;
   ~SnapGroupLockButton() override;
 
-  // Decides to create or remove a snap group on button toggled.
-  void OnLockButtonPressed(aura::Window* window1, aura::Window* window2);
+  // Called on lock button is pressed to create or remove a snap group and
+  // `RefreshLockButton()`.
+  void OnLockButtonPressed();
 
  private:
-  void UpdateLockButtonIcon(bool locked);
-  void UpdateLockButtonTooltip(bool locked);
+  // Updates the lock icon and tooltip to reflect the lock button state.
+  void RefreshLockButton();
+
+  aura::Window* window1_;
+  aura::Window* window2_;
 };
 
 }  // namespace ash
