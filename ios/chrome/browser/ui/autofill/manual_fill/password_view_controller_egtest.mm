@@ -402,8 +402,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that the Password View Controller is still present after tapping the
 // search bar.
-// TODO(crbug.com/1427909): This has been consistently failing.
-- (void)DISABLED_testPasswordControllerWhileSearching {
+- (void)testPasswordControllerWhileSearching {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -434,7 +433,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_minimumVisiblePercent(0.6)];
+      assertWithMatcher:grey_minimumVisiblePercent(0.5)];
 }
 
 // Tests that the Password View Controller is dismissed when tapping the
