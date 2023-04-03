@@ -51,7 +51,7 @@ export type BiDiMethod =
   | 'session.unsubscribe';
 // keep-sorted end
 
-export type EmptyResult = Record<string, never>;
+export type EmptyResult = Record<never, never>;
 export type EmptyResultWithCommandId = {id: number} | EmptyResult;
 
 export namespace Message {
