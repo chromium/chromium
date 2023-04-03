@@ -69,6 +69,9 @@ TEST(PresentationConnectionCallbacksTest, HandleSuccess) {
   ControllerPresentationConnection* connection = callbacks.connection_.Get();
   ASSERT_TRUE(connection);
   EXPECT_EQ(connection->GetState(), PresentationConnectionState::CONNECTING);
+
+  // Connection must be closed before the next connection test.
+  connection->close();
 }
 
 TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
@@ -102,6 +105,9 @@ TEST(PresentationConnectionCallbacksTest, HandleReconnect) {
   EXPECT_EQ(connection, new_connection);
   EXPECT_EQ(new_connection->GetState(),
             PresentationConnectionState::CONNECTING);
+
+  // Connection must be closed before the next connection test.
+  connection->close();
 }
 
 TEST(PresentationConnectionCallbacksTest, HandleError) {
