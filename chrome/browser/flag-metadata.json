@@ -4595,7 +4595,7 @@
   {
     "name": "ios-webpage-intent-annotations",
     "owners": [ "djean", "bling-flags@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
       "name": "iph-price-notifications-while-browsing",
