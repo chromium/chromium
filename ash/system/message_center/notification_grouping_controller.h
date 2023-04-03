@@ -42,6 +42,7 @@ class NotificationGroupingController
       const message_center::DisplaySource source) override;
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
+  void OnNotificationUpdated(const std::string& notification_id) override;
 
   // This is a callback which will be triggered after the "convert from single
   // notification to group notification" animation is completed. This handles
@@ -89,6 +90,10 @@ class NotificationGroupingController
   // group with `parent_id`.
   void AddNotificationToGroup(const std::string& notification_id,
                               const std::string& parent_id);
+
+  // Update the pinned state for the parent notification. It should be pinned if
+  // at least one of its child is pinned.
+  void UpdateParentNotificationPinnedState(const std::string& parent_id);
 
   // Whether a grouped parent notification is being added to MessageCenter. Used
   // to prevent an infinite loop.

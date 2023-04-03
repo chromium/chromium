@@ -310,6 +310,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
   }
 
   copy->set_priority(parent_notification.priority());
+  copy->set_pinned(parent_notification.pinned());
 
   // After copying, set to be a group parent.
   copy->SetGroupParent();
@@ -434,6 +435,12 @@ void NotificationGroupingController::OnNotificationRemoved(
       message_center->ResetPopupTimer(parent_id);
     }
 
+    auto* parent_notification = message_center->FindNotificationById(parent_id);
+    if (parent_notification && parent_notification->pinned()) {
+      // Updates to make sure if we should un-pin this parent notification.
+      UpdateParentNotificationPinnedState(parent_id);
+    }
+
     metrics_utils::LogCountOfNotificationsInOneGroup(
         grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
             .size());
@@ -454,6 +461,32 @@ void NotificationGroupingController::OnNotificationRemoved(
   }
 }
 
+void NotificationGroupingController::OnNotificationUpdated(
+    const std::string& notification_id) {
+  auto* message_center = MessageCenter::Get();
+  Notification* notification =
+      message_center->FindNotificationById(notification_id);
+
+  if (!notification || !notification->group_child()) {
+    return;
+  }
+
+  const std::string parent_id =
+      grouped_notification_list_->GetParentForChild(notification_id);
+  Notification* parent_notification =
+      MessageCenter::Get()->FindNotificationById(parent_id);
+
+  if (parent_notification && notification->pinned()) {
+    parent_notification->set_pinned(true);
+    return;
+  }
+
+  if (parent_notification && parent_notification->pinned()) {
+    // Updates to make sure if we should un-pin this parent notification.
+    UpdateParentNotificationPinnedState(parent_id);
+  }
+}
+
 void NotificationGroupingController::AddNotificationToGroup(
     const std::string& notification_id,
     const std::string& parent_id) {
@@ -471,6 +504,12 @@ void NotificationGroupingController::AddNotificationToGroup(
   // child notification, so that we can display the group popup according to
   // that notification.
   parent_notification->set_priority(notification->priority());
+
+  // The parent notification should be pin if any of its children notifications
+  // are pinned.
+  if (notification->pinned()) {
+    parent_notification->set_pinned(true);
+  }
 
   grouped_notification_list_->AddGroupedNotification(notification_id,
                                                      parent_id);
@@ -495,6 +534,30 @@ void NotificationGroupingController::AddNotificationToGroup(
           .size());
   metrics_utils::LogGroupNotificationAddedType(
       metrics_utils::GroupNotificationType::GROUP_CHILD);
+}
+
+void NotificationGroupingController::UpdateParentNotificationPinnedState(
+    const std::string& parent_id) {
+  auto* message_center = MessageCenter::Get();
+  auto* parent_notification = message_center->FindNotificationById(parent_id);
+  if (!parent_notification) {
+    return;
+  }
+
+  // The parent notification should be pinned if at least one of the child is
+  // pinned.
+  bool pinned = false;
+  for (auto child_id :
+       grouped_notification_list_->GetGroupedNotificationsForParent(
+           parent_id)) {
+    auto* child_notification = message_center->FindNotificationById(child_id);
+    if (child_notification && child_notification->pinned()) {
+      pinned = true;
+      break;
+    }
+  }
+
+  parent_notification->set_pinned(pinned);
 }
 
 }  // namespace ash
