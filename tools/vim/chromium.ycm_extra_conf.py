@@ -69,6 +69,7 @@ import ycm_core
 # If the user has set the environment variable CHROMIUM_BUILD_DIR we will
 # first attempt to find compilation flags in the compile-commands.json file in that
 # directory first.
+database = None
 compilation_database_folder=os.getenv('CHROMIUM_BUILD_DIR')
 if compilation_database_folder and os.path.exists(compilation_database_folder):
   database = ycm_core.CompilationDatabase(compilation_database_folder)
@@ -342,7 +343,7 @@ def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
   out_dir = GetNinjaOutputDirectory(chrome_root)
 
   clang_line = None
-  buildable_extension = extension
+  buildable_extension = os.path.splitext(filename)[1]
   for candidate in FileCompilationCandidates(filename):
     clang_line = GetClangCommandLineFromNinjaForSource(out_dir, candidate)
     if clang_line:
