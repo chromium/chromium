@@ -1181,7 +1181,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
         onView(withId(R.id.privacy_disclaimer)).check(matches(isDisplayed()));
-        onView(withText(R.string.fre_browser_managed_by_parents)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));
     }
 
     private void checkContinueButtonWithChildAccount(boolean hasFullNameInButtonText) {
