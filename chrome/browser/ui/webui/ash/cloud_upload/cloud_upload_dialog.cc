@@ -888,7 +888,7 @@ const int kDialogWidthForOneDriveSetup = 512;
 const int kDialogHeightForOneDriveSetup = 556;
 
 const int kDialogWidthForFileHandlerDialog = 512;
-const int kDialogHeightForFileHandlerDialog = 475;
+const int kDialogHeightForFileHandlerDialog = 375;
 const int kDialogHeightForFileHandlerDialogNoLocalApp = 311;
 
 const int kDialogWidthForMoveConfirmation = 512;
