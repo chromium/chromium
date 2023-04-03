@@ -7,8 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 void LogInternalError(StructuredMetricsError error) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError2", error);
@@ -46,6 +45,19 @@ void LogEventFileSizeKB(int64_t file_size_kb) {
   base::UmaHistogramMemoryKB("UMA.StructuredMetrics.EventFileSize",
                              file_size_kb);
 }
+void LogEventSerializedSizeBytes(int64_t event_size_bytes) {
+  base::UmaHistogramCounts1000("UMA.StructuredMetrics.EventSerializedSize",
+                               event_size_bytes);
+}
 
-}  // namespace structured
-}  // namespace metrics
+void LogUploadSizeBytes(int64_t upload_size_bytes) {
+  base::UmaHistogramCounts1000("UMA.StructuredMetrics.UploadSize",
+                               upload_size_bytes);
+}
+
+void LogExternalMetricsScanInUpload(int num_scans) {
+  base::UmaHistogramExactLinear(
+      "UMA.StructuredMetrics.ExternalMetricScansPerUpload", num_scans, 10);
+}
+
+}  // namespace metrics::structured
