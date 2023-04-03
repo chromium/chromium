@@ -941,26 +941,10 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 
   RegisterPathProvider();
 
-#if BUILDFLAG(IS_ANDROID) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
-  if (process_type.empty()) {
-    TRACE_EVENT0("startup", "InitializeICU");
-    // In browser process load ICU data files from disk.
-    if (!base::i18n::InitializeICU()) {
-      return TerminateForFatalInitializationError();
-    }
-  } else {
-    // In child process map ICU data files loaded by browser process.
-    int icu_data_fd = g_fds->MaybeGet(kAndroidICUDataDescriptor);
-    if (icu_data_fd == -1) {
-      return TerminateForFatalInitializationError();
-    }
-    auto icu_data_region = g_fds->GetRegion(kAndroidICUDataDescriptor);
-    if (!base::i18n::InitializeICUWithFileDescriptor(icu_data_fd,
-                                                     icu_data_region)) {
-      return TerminateForFatalInitializationError();
-    }
-  }
-#else
+// On Android, InitializeICU() is called from content_jni_onload.cc
+// so that it is available before Content::main() is called.
+// https://crbug.com/1418738
+#if !BUILDFLAG(IS_ANDROID)
   if (!base::i18n::InitializeICU())
     return TerminateForFatalInitializationError();
 #endif  // BUILDFLAG(IS_ANDROID) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)

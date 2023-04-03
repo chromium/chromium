@@ -4,14 +4,10 @@
 
 #include "content/public/app/content_jni_onload.h"
 
-#include <vector>
-
 #include "base/android/base_jni_onload.h"
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/functional/bind.h"
 #include "content/app/android/library_loader_hooks.h"
-#include "content/public/app/content_main.h"
 
 namespace content {
 namespace android {
