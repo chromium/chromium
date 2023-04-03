@@ -7,12 +7,12 @@
 #include <string>
 
 #include "ash/public/cpp/desk_template.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -84,7 +84,7 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
           *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
-  EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
+  EXPECT_EQ(dt->uuid(), base::Uuid::ParseCaseInsensitive(kTestUuidBrowser));
   EXPECT_EQ(dt->created_time(),
             desk_template_conversion::ProtoTimeToTime(1633535632));
   EXPECT_EQ(dt->template_name(),
@@ -141,7 +141,7 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
           *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
-  EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
+  EXPECT_EQ(dt->uuid(), base::Uuid::ParseCaseInsensitive(kTestUuidBrowser));
   EXPECT_EQ(dt->created_time(),
             desk_template_conversion::ProtoTimeToTime(1633535632));
   EXPECT_EQ(dt->template_name(),
@@ -203,7 +203,7 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
           *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
-  EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(
+  EXPECT_EQ(dt->uuid(), base::Uuid::ParseCaseInsensitive(
                             "7f4b7ff0-970a-41bb-aa91-f6c3e2724207"));
   EXPECT_EQ(dt->created_time(),
             desk_template_conversion::ProtoTimeToTime(1633535632000LL));

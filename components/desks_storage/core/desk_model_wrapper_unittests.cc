@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +19,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/types/strong_alias.h"
+#include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -80,7 +80,7 @@ std::string GetPolicyStringWithOneTemplate() {
 bool FindUuidInUuidList(
     const std::string& uuid_query,
     const std::vector<const ash::DeskTemplate*>& entry_list) {
-  base::GUID guid = base::GUID::ParseCaseInsensitive(uuid_query);
+  base::Uuid guid = base::Uuid::ParseCaseInsensitive(uuid_query);
   DCHECK(guid.is_valid());
 
   for (auto* entry : entry_list) {
@@ -117,7 +117,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
     int index,
     ash::DeskTemplateType type) {
   auto entry = std::make_unique<ash::DeskTemplate>(
-      base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, index)),
+      base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, index)),
       ash::DeskTemplateSource::kUser, base::StringPrintf("desk_%d", index),
       base::Time::Now(), type);
   entry->set_desk_restore_data(std::make_unique<app_restore::RestoreData>());
@@ -131,7 +131,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
     const std::string& name,
     const base::Time created_time) {
   auto entry = std::make_unique<ash::DeskTemplate>(
-      base::GUID::ParseCaseInsensitive(uuid), source, name, created_time,
+      base::Uuid::ParseCaseInsensitive(uuid), source, name, created_time,
       ash::DeskTemplateType::kTemplate);
   entry->set_desk_restore_data(std::make_unique<app_restore::RestoreData>());
   return entry;
@@ -143,7 +143,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestSaveAndRecallDesk(
     const std::string& name,
     const base::Time created_time) {
   auto entry = std::make_unique<ash::DeskTemplate>(
-      base::GUID::ParseCaseInsensitive(uuid), ash::DeskTemplateSource::kUser,
+      base::Uuid::ParseCaseInsensitive(uuid), ash::DeskTemplateSource::kUser,
       name, created_time, ash::DeskTemplateType::kSaveAndRecall);
   entry->set_desk_restore_data(std::make_unique<app_restore::RestoreData>());
   return entry;
@@ -156,7 +156,7 @@ class MockDeskModelObserver : public DeskModelObserver {
   MOCK_METHOD0(DeskModelLoaded, void());
   MOCK_METHOD1(EntriesAddedOrUpdatedRemotely,
                void(const std::vector<const ash::DeskTemplate*>&));
-  MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::GUID>&));
+  MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::Uuid>&));
 };
 
 // This test class only tests the overall wrapper desk model class. The
@@ -455,15 +455,15 @@ TEST_F(DeskModelWrapperTest, CanDetectDuplicateEntryNames) {
 
   EXPECT_TRUE(model_wrapper_->FindOtherEntryWithName(
       u"desk_01", ash::DeskTemplateType::kTemplate,
-      base::GUID::ParseCaseInsensitive(dupe_template_uuid)));
+      base::Uuid::ParseCaseInsensitive(dupe_template_uuid)));
 
   EXPECT_TRUE(model_wrapper_->FindOtherEntryWithName(
       u"save_and_recall_desk_01", ash::DeskTemplateType::kSaveAndRecall,
-      base::GUID::ParseCaseInsensitive(dupe_template_uuid)));
+      base::Uuid::ParseCaseInsensitive(dupe_template_uuid)));
 
   EXPECT_FALSE(model_wrapper_->FindOtherEntryWithName(
       u"desk_01", ash::DeskTemplateType::kSaveAndRecall,
-      base::GUID::ParseCaseInsensitive(dupe_second_save_and_recall_uuid)));
+      base::Uuid::ParseCaseInsensitive(dupe_second_save_and_recall_uuid)));
 }
 
 TEST_F(DeskModelWrapperTest, CanDetectNoDuplicateEntryNames) {
@@ -492,11 +492,11 @@ TEST_F(DeskModelWrapperTest, CanDetectNoDuplicateEntryNames) {
 
   EXPECT_FALSE(model_wrapper_->FindOtherEntryWithName(
       u"desk_02", ash::DeskTemplateType::kTemplate,
-      base::GUID::ParseCaseInsensitive(second_template_uuid)));
+      base::Uuid::ParseCaseInsensitive(second_template_uuid)));
 
   EXPECT_FALSE(model_wrapper_->FindOtherEntryWithName(
       u"save_and_recall_desk_02", ash::DeskTemplateType::kSaveAndRecall,
-      base::GUID::ParseCaseInsensitive(second_save_and_recall_uuid)));
+      base::Uuid::ParseCaseInsensitive(second_save_and_recall_uuid)));
 }
 
 TEST_F(DeskModelWrapperTest, CanGetEntryByUuid) {
@@ -512,20 +512,20 @@ TEST_F(DeskModelWrapperTest, CanGetEntryByUuid) {
 
   // Find the desk template by its uuid.
   GetEntryByUuidResult result1 = model_wrapper_->GetEntryByUUID(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))));
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))));
   EXPECT_EQ(result1.status, DeskModel::GetEntryByUuidStatus::kOk);
 
-  EXPECT_EQ(result1.entry->uuid(), base::GUID::ParseCaseInsensitive(
+  EXPECT_EQ(result1.entry->uuid(), base::Uuid::ParseCaseInsensitive(
                                        MakeTestUuidString(TestUuidId(1))));
   EXPECT_EQ(base::UTF16ToUTF8(result1.entry->template_name()), "desk_01");
 
   // Find the save and recall desk by its uuid.
   GetEntryByUuidResult result2 = model_wrapper_->GetEntryByUUID(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(3))));
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(3))));
 
   EXPECT_EQ(result2.status, DeskModel::GetEntryByUuidStatus::kOk);
 
-  EXPECT_EQ(result2.entry->uuid(), base::GUID::ParseCaseInsensitive(
+  EXPECT_EQ(result2.entry->uuid(), base::Uuid::ParseCaseInsensitive(
                                        MakeTestUuidString(TestUuidId(3))));
   EXPECT_EQ(base::UTF16ToUTF8(result2.entry->template_name()),
             "save_and_recall_desk_01");
@@ -543,9 +543,9 @@ TEST_F(DeskModelWrapperTest, GetEntryByUuidShouldReturnAdminTemplate) {
   EXPECT_EQ(model_wrapper_->GetAllEntryUuids().size(), 2ul);
 
   GetEntryByUuidResult result = model_wrapper_->GetEntryByUUID(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(5))));
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(5))));
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kOk);
-  EXPECT_EQ(result.entry->uuid(), base::GUID::ParseCaseInsensitive(
+  EXPECT_EQ(result.entry->uuid(), base::Uuid::ParseCaseInsensitive(
                                       MakeTestUuidString(TestUuidId(5))));
   EXPECT_EQ(result.entry->source(), ash::DeskTemplateSource::kPolicy);
   EXPECT_EQ(base::UTF16ToUTF8(result.entry->template_name()),
@@ -556,7 +556,7 @@ TEST_F(DeskModelWrapperTest, GetEntryByUuidReturnsNotFoundIfEntryDoesNotExist) {
   InitializeBridge();
 
   GetEntryByUuidResult result = model_wrapper_->GetEntryByUUID(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))));
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))));
   EXPECT_EQ(result.status, DeskModel::GetEntryByUuidStatus::kNotFound);
 }
 
@@ -585,17 +585,17 @@ TEST_F(DeskModelWrapperTest, CanUpdateEntry) {
 
   // Check that the entries are updated.
   GetEntryByUuidResult result1 = model_wrapper_->GetEntryByUUID(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))));
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))));
   EXPECT_EQ(result1.status, DeskModel::GetEntryByUuidStatus::kOk);
-  EXPECT_EQ(result1.entry->uuid(), base::GUID::ParseCaseInsensitive(
+  EXPECT_EQ(result1.entry->uuid(), base::Uuid::ParseCaseInsensitive(
                                        MakeTestUuidString(TestUuidId(1))));
   EXPECT_EQ(result1.entry->template_name(),
             base::UTF8ToUTF16(std::string("desk_01_mod")));
 
   GetEntryByUuidResult result3 = model_wrapper_->GetEntryByUUID(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(3))));
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(3))));
   EXPECT_EQ(result3.status, DeskModel::GetEntryByUuidStatus::kOk);
-  EXPECT_EQ(result3.entry->uuid(), base::GUID::ParseCaseInsensitive(
+  EXPECT_EQ(result3.entry->uuid(), base::Uuid::ParseCaseInsensitive(
                                        MakeTestUuidString(TestUuidId(3))));
   EXPECT_EQ(result3.entry->template_name(), u"save_and_recall_desk_01_mod");
 }
@@ -607,7 +607,7 @@ TEST_F(DeskModelWrapperTest, CanDeleteDeskTemplateEntry) {
                                    base::BindOnce(&VerifyEntryAddedCorrectly));
 
   model_wrapper_->DeleteEntry(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))),
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(1))),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
@@ -622,7 +622,7 @@ TEST_F(DeskModelWrapperTest, CanDeleteSaveAndRecallDeskEntry) {
                                    base::BindOnce(&VerifyEntryAddedCorrectly));
 
   model_wrapper_->DeleteEntry(
-      base::GUID::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(3))),
+      base::Uuid::ParseCaseInsensitive(MakeTestUuidString(TestUuidId(3))),
       base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));

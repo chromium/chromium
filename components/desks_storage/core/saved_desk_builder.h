@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
@@ -258,7 +258,7 @@ class SavedDeskBuilder {
   SavedDeskBuilder& AddAppWindow(BuiltApp built_app);
 
  private:
-  base::GUID desk_uuid_;
+  base::Uuid desk_uuid_;
   std::string desk_name_;
   ash::DeskTemplateSource desk_source_;
   ash::DeskTemplateType desk_type_;

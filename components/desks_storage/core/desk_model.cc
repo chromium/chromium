@@ -5,10 +5,10 @@
 #include "components/desks_storage/core/desk_model.h"
 
 #include "ash/public/cpp/desk_template.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,7 +62,7 @@ void DeskModel::RemoveObserver(DeskModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DeskModel::GetTemplateJson(const base::GUID& uuid,
+void DeskModel::GetTemplateJson(const base::Uuid& uuid,
                                 apps::AppRegistryCache* app_cache,
                                 GetTemplateJsonCallback callback) {
   auto result = GetEntryByUUID(uuid);
@@ -101,7 +101,7 @@ void DeskModel::RemovePolicyDeskTemplates() {
 }
 
 std::unique_ptr<ash::DeskTemplate> DeskModel::GetAdminDeskTemplateByUUID(
-    const base::GUID& uuid) const {
+    const base::Uuid& uuid) const {
   for (const std::unique_ptr<ash::DeskTemplate>& policy_entry :
        policy_entries_) {
     if (policy_entry->uuid() == uuid)

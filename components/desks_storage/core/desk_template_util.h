@@ -10,7 +10,7 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 
 namespace desks_storage::desk_template_util {
 
@@ -19,8 +19,8 @@ inline constexpr char kFloatingWorkspaceTemplateUuid[] =
 
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
-    const base::GUID& uuid,
-    const base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>&
+    const base::Uuid& uuid,
+    const base::flat_map<base::Uuid, std::unique_ptr<ash::DeskTemplate>>&
         entries);
 
 }  // namespace desks_storage::desk_template_util

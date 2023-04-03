@@ -40,7 +40,7 @@ using TestUuidId = base::StrongAlias<class TestUuidIdTag, int>;
 // Search `entry_list` for `entry_query` as a uuid and returns true if
 // found, false if not.
 bool FindUuidInUuidList(
-    const base::GUID& uuid,
+    const base::Uuid& uuid,
     const std::vector<const ash::DeskTemplate*>& entry_list) {
   for (auto* entry : entry_list) {
     if (entry->uuid() == uuid)
@@ -54,8 +54,8 @@ base::FilePath GetInvalidFilePath() {
   return base::FilePath(FILE_PATH_LITERAL("?"));
 }
 
-base::GUID GetTestUuid(TestUuidId uuid_id) {
-  return base::GUID::ParseCaseInsensitive(
+base::Uuid GetTestUuid(TestUuidId uuid_id) {
+  return base::Uuid::ParseCaseInsensitive(
       base::StringPrintf("1c186d5a-502e-49ce-9ee1-%012d", uuid_id.value()));
 }
 
@@ -161,7 +161,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
     ash::DeskTemplateType type) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          base::GUID::ParseCaseInsensitive(base::StringPrintf(
+          base::Uuid::ParseCaseInsensitive(base::StringPrintf(
               "1c186d5a-502e-49ce-9ee1-00000000000%d", index)),
           ash::DeskTemplateSource::kUser, base::StringPrintf("desk_%d", index),
           base::Time::Now(), type);
@@ -172,7 +172,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
 
 // Make test template with default restore data.
 std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
-    const base::GUID& uuid,
+    const base::Uuid& uuid,
     ash::DeskTemplateSource source,
     const std::string& name,
     const base::Time created_time) {
@@ -184,7 +184,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
 
 // Make test save and recall desk with default restore data.
 std::unique_ptr<ash::DeskTemplate> MakeTestSaveAndRecallDesk(
-    const base::GUID& uuid,
+    const base::Uuid& uuid,
     const std::string& name,
     const base::Time created_time) {
   auto entry = std::make_unique<ash::DeskTemplate>(

@@ -12,12 +12,12 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 
@@ -77,10 +77,10 @@ class LocalDeskDataManager : public DeskModel {
   // DeskModel:
   DeskModel::GetAllEntriesResult GetAllEntries() override;
   DeskModel::GetEntryByUuidResult GetEntryByUUID(
-      const base::GUID& uuid) override;
+      const base::Uuid& uuid) override;
   void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
-  void DeleteEntry(const base::GUID& uuid,
+  void DeleteEntry(const base::Uuid& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   size_t GetEntryCount() const override;
@@ -88,13 +88,13 @@ class LocalDeskDataManager : public DeskModel {
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
   size_t GetMaxDeskTemplateEntryCount() const override;
-  std::vector<base::GUID> GetAllEntryUuids() const override;
+  std::vector<base::Uuid> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
   ash::DeskTemplate* FindOtherEntryWithName(
       const std::u16string& name,
       ash::DeskTemplateType type,
-      const base::GUID& uuid) const override;
+      const base::Uuid& uuid) const override;
 
   static void SetDisableMaxTemplateLimitForTesting(bool disabled);
 
@@ -111,7 +111,7 @@ class LocalDeskDataManager : public DeskModel {
   // Add or update an entry by `new_entry`'s UUID.
   static AddOrUpdateEntryStatus AddOrUpdateEntryTask(
       const base::FilePath& local_saved_desk_path,
-      const base::GUID uuid,
+      const base::Uuid uuid,
       base::Value entry_base_value,
       ash::DeskTemplateType desk_type);
 
@@ -119,19 +119,19 @@ class LocalDeskDataManager : public DeskModel {
   void OnAddOrUpdateEntry(AddOrUpdateEntryCallback callback,
                           bool is_update,
                           ash::DeskTemplateType desk_type,
-                          const base::GUID uuid,
+                          const base::Uuid uuid,
                           std::unique_ptr<ash::DeskTemplate> old_entry,
                           std::unique_ptr<ash::DeskTemplate> new_entry,
                           AddOrUpdateEntryStatus status);
 
   using SavedDesks =
-      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+      base::flat_map<base::Uuid, std::unique_ptr<ash::DeskTemplate>>;
 
   // Remove entry with `uuid`. If the entry with `uuid` does not
   // exist, then the deletion is considered a success.
   static DeleteTaskResult DeleteEntryTask(
       const base::FilePath& local_saved_desk_path,
-      const base::GUID& uuid,
+      const base::Uuid& uuid,
       std::vector<std::unique_ptr<ash::DeskTemplate>> roll_back_entry);
 
   // Delete all entries.
@@ -144,7 +144,7 @@ class LocalDeskDataManager : public DeskModel {
                      DeleteTaskResult delete_return);
 
   // Returns the desk type of the `uuid`.
-  ash::DeskTemplateType GetDeskTypeOfUuid(const base::GUID uuid) const;
+  ash::DeskTemplateType GetDeskTypeOfUuid(const base::Uuid uuid) const;
 
   // Returns the max entry count of desk type `desk_type`.
   size_t GetMaxEntryCountByDeskType(ash::DeskTemplateType desk_type) const;

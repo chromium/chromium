@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 
 namespace ash {
 class DeskTemplate;
@@ -37,7 +37,7 @@ class DeskModelObserver {
   // the model to clients.
   virtual void EntriesAddedOrUpdatedRemotely(
       const std::vector<const ash::DeskTemplate*>& new_entries) = 0;
-  virtual void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) = 0;
+  virtual void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) = 0;
 
  protected:
   virtual ~DeskModelObserver() = default;
