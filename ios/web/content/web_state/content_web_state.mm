@@ -71,7 +71,9 @@ ContentWebState::ContentWebState(const CreateParams& params)
     : ContentWebState(params, nil) {}
 
 ContentWebState::ContentWebState(const CreateParams& params,
-                                 CRWSessionStorage* session_storage) {
+                                 CRWSessionStorage* session_storage)
+    : unique_identifier_(session_storage ? session_storage.uniqueIdentifier
+                                         : SessionID::NewUnique()) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(params.browser_state);
   scoped_refptr<content::SiteInstance> site_instance;
@@ -240,6 +242,10 @@ void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {}
 
 NSString* ContentWebState::GetStableIdentifier() const {
   return UUID_;
+}
+
+SessionID ContentWebState::GetUniqueIdentifier() const {
+  return unique_identifier_;
 }
 
 const std::string& ContentWebState::GetContentsMimeType() const {
