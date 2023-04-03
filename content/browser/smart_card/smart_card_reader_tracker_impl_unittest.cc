@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/smart_card/smart_card_reader_tracker.h"
+#include "content/browser/smart_card/smart_card_reader_tracker_impl.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -66,7 +66,7 @@ void PrintTo(const SmartCardReaderInfoPtr& reader_ptr, std::ostream* os) {
 namespace content {
 namespace {
 
-class SmartCardReaderTrackerTest : public testing::Test {
+class SmartCardReaderTrackerImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 };
@@ -91,10 +91,10 @@ class MockTrackerObserver : public SmartCardReaderTracker::Observer {
   MOCK_METHOD(void, OnError, (SmartCardResponseCode response_code), (override));
 };
 
-TEST_F(SmartCardReaderTrackerTest, ReaderChanged) {
+TEST_F(SmartCardReaderTrackerImplTest, ReaderChanged) {
   MockSmartCardContextFactory mock_context_factory;
-  SmartCardReaderTracker tracker(mock_context_factory.GetRemote(),
-                                 /*context_supports_reader_added=*/true);
+  SmartCardReaderTrackerImpl tracker(mock_context_factory.GetRemote(),
+                                     /*context_supports_reader_added=*/true);
   TestFuture<SmartCardContext::GetStatusChangeCallback>
       last_get_status_callback;
   {
