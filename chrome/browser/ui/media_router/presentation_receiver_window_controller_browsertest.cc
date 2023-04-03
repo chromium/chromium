@@ -165,8 +165,14 @@ class PresentationReceiverWindowControllerBrowserTest
   }
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1424970): Re-enable on lacros.
+#define MAYBE_CreatesWindow DISABLED_CreatesWindow
+#else
+#define MAYBE_CreatesWindow CreatesWindow
+#endif
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
-                       CreatesWindow) {
+                       MAYBE_CreatesWindow) {
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
