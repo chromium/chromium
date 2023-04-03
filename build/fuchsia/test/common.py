@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Common methods and variables used by Cr-Fuchsia testing infrastructure."""
 
+import enum
 import json
 import logging
 import os
@@ -30,6 +31,103 @@ _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 # This global variable is used to set the environment variable
 # |FFX_ISOLATE_DIR| when running ffx commands in E2E testing scripts.
 _FFX_ISOLATE_DIR = None
+
+
+class TargetState(enum.Enum):
+    """State of a target."""
+    UNKNOWN = enum.auto()
+    DISCONNECTED = enum.auto()
+    PRODUCT = enum.auto()
+    FASTBOOT = enum.auto()
+    ZEDBOOT = enum.auto()
+
+
+class BootMode(enum.Enum):
+    """Specifies boot mode for device."""
+    REGULAR = enum.auto()
+    RECOVERY = enum.auto()
+    BOOTLOADER = enum.auto()
+
+
+_STATE_TO_BOOTMODE = {
+    TargetState.PRODUCT: BootMode.REGULAR,
+    TargetState.FASTBOOT: BootMode.BOOTLOADER,
+    TargetState.ZEDBOOT: BootMode.RECOVERY
+}
+
+_BOOTMODE_TO_STATE = {value: key for key, value in _STATE_TO_BOOTMODE.items()}
+
+
+def _state_string_to_state(state_str: str) -> TargetState:
+    state_str = state_str.strip().lower()
+    if state_str == 'product':
+        return TargetState.PRODUCT
+    if state_str == 'zedboot (r)':
+        return TargetState.ZEDBOOT
+    if state_str == 'fastboot':
+        return TargetState.FASTBOOT
+    if state_str == 'unknown':
+        return TargetState.UNKNOWN
+    if state_str == 'disconnected':
+        return TargetState.DISCONNECTED
+
+    raise NotImplementedError(f'State {state_str} not supported')
+
+
+def _retry(count: int, sleep: Optional[int] = None):
+    def first_func(func):
+        def wrapper(*args, **kwargs):
+            exception = None
+            for _ in range(count):
+                try:
+                    return func(*args, **kwargs)
+                # pylint: disable=broad-except
+                except Exception as generic_exception:
+                    exception = generic_exception
+                    logging.warning('Function %s failed. Retrying...',
+                                    str(func))
+                    if sleep:
+                        time.sleep(sleep)
+                # pylint: enable=broad-except
+            raise exception
+
+        return wrapper
+
+    return first_func
+
+
+@_retry(count=3, sleep=30)
+def get_target_state(target_id: Optional[str]) -> TargetState:
+    """Return state of target or the default target.
+
+    Args:
+        target_id: Optional nodename of the target. If not given, default target
+        is used.
+
+    Returns:
+        TargetState of the given node, if found.
+
+    Raises:
+        RuntimeError: If target cannot be found, or default target is not
+            defined if |target_id| is not given.
+    """
+    targets = json.loads(
+        run_ffx_command(('target', 'list'),
+                        check=True,
+                        capture_output=True,
+                        json_out=True).stdout.strip())
+    for target in targets:
+        if target_id is None and target['is_default']:
+            return _state_string_to_state(target['target_state'])
+        if target_id == target['nodename']:
+            return _state_string_to_state(target['target_state'])
+
+    # Could not find a state for given target.
+    error_target = target_id
+    if target_id is None:
+        error_target = 'default target'
+
+    raise RuntimeError(f'Could not find state for {error_target}')
 
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
@@ -72,9 +170,10 @@ def _get_daemon_status():
       NotRunning to indicate if the daemon is running.
     """
     status = json.loads(
-        run_ffx_command(['--machine', 'json', 'daemon', 'socket'],
+        run_ffx_command(('daemon', 'socket'),
                         check=True,
                         capture_output=True,
+                        json_out=True,
                         suppress_repair=True).stdout.strip())
     return status.get('pid', {}).get('status', {'NotRunning': True})
 
@@ -144,6 +243,7 @@ def run_ffx_command(cmd: Iterable[str],
                     check: bool = True,
                     suppress_repair: bool = False,
                     configs: Optional[List[str]] = None,
+                    json_out: bool = False,
                     **kwargs) -> subprocess.CompletedProcess:
     """Runs `ffx` with the given arguments, waiting for it to exit.
 
@@ -162,6 +262,8 @@ def run_ffx_command(cmd: Iterable[str],
         suppress_repair: If True, do not attempt to find and run a repair
             command.
         configs: A list of configs to be applied to the current command.
+        json_out: Have command output returned as JSON. Must be parsed by
+            caller.
     Returns:
         A CompletedProcess instance
     Raises:
@@ -169,6 +271,8 @@ def run_ffx_command(cmd: Iterable[str],
     """
 
     ffx_cmd = [_FFX_TOOL]
+    if json_out:
+        ffx_cmd.extend(('--machine', 'json'))
     if target_id:
         ffx_cmd.extend(('--target', target_id))
     if configs:
@@ -206,7 +310,8 @@ def run_ffx_command(cmd: Iterable[str],
 
     # If the original command failed but a repair command was found and
     # succeeded, try one more time with the original command.
-    return run_ffx_command(cmd, target_id, check, True, **kwargs)
+    return run_ffx_command(cmd, target_id, check, True, configs, json_out,
+                           **kwargs)
 
 
 def run_continuous_ffx_command(cmd: Iterable[str],
@@ -372,3 +477,86 @@ def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
     # If the information was not retrieved, return empty strings to indicate
     # unknown system info.
     return ('', '')
+
+
+def boot_device(target_id: Optional[str],
+                mode: BootMode,
+                must_boot: bool = False) -> None:
+    """Boot device into desired mode, with fallback to SSH on failure.
+
+    Args:
+        target_id: Optional target_id of device.
+        mode: Desired boot mode.
+        must_boot: Forces device to boot, regardless of current state.
+    """
+    # Skip boot call if already in the state and not skipping check.
+    if not must_boot:
+        state = get_target_state(target_id)
+        wanted_state = _BOOTMODE_TO_STATE.get(mode)
+        logging.debug('Current state %s. Want state %s', str(state),
+                      str(wanted_state))
+        must_boot = state != wanted_state
+
+    if not must_boot:
+        logging.debug('Skipping boot - already in good state')
+        return
+
+    _boot_device_ffx(target_id, mode)
+
+    exception = None
+    for _ in range(30):
+        try:
+            state = get_target_state(target_id)
+            if state == wanted_state:
+                return
+            raise RuntimeError('Mode is not correct. Expected '
+                               f'{wanted_state}, got {state}')
+        except RuntimeError as runtime_e:
+            exception = runtime_e
+            time.sleep(2)
+    if exception:
+        # Fallback to SSH, with no retry if we tried with ffx.
+        if state != _BOOTMODE_TO_STATE.get(mode):
+            _boot_device_dm(target_id, mode)
+        else:
+            raise exception
+
+
+def _boot_device_ffx(target_id: Optional[str], mode: BootMode):
+    cmd = ['target', 'reboot']
+    if mode == BootMode.REGULAR:
+        logging.info('Triggering regular boot')
+    elif mode == BootMode.RECOVERY:
+        cmd.append('-r')
+    elif mode == BootMode.BOOTLOADER:
+        cmd.append('-b')
+    else:
+        raise NotImplementedError(f'BootMode {mode} not supported')
+
+    run_ffx_command(cmd, target_id=target_id, check=False)
+
+
+def _boot_device_dm(target_id: Optional[str], mode: BootMode):
+    # Can only use DM if device is in regular boot.
+    state = get_target_state(target_id)
+    if state != TargetState.PRODUCT:
+        _boot_device_ffx(target_id, mode.REGULAR)
+        if mode == BootMode.REGULAR:
+            return
+
+    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
+
+    reboot_cmd = None
+
+    if mode == BootMode.REGULAR:
+        reboot_cmd = 'reboot'
+    elif mode == BootMode.RECOVERY:
+        reboot_cmd = 'reboot-recovery'
+    elif mode == BootMode.BOOTLOADER:
+        reboot_cmd = 'reboot-bootloader'
+    else:
+        raise NotImplementedError(f'BootMode {mode} not supported')
+
+    # Boot commands can fail due to SSH connections timeout.
+    full_cmd = ssh_prefix + ['--', 'dm', reboot_cmd]
+    subprocess.run(full_cmd, check=False)
