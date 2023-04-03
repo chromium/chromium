@@ -40,7 +40,7 @@ class UsbServiceLinux final : public UsbService {
 
   void OnDeviceAdded(const std::string& device_path,
                      std::unique_ptr<UsbDeviceDescriptor> descriptor);
-  void DeviceReady(scoped_refptr<UsbDeviceLinux> device, bool success);
+  void DeviceReady(scoped_refptr<UsbDeviceLinux> device);
   void OnDeviceRemoved(const std::string& device_path);
   void HelperStarted();
 
