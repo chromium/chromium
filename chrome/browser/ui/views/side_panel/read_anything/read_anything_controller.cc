@@ -161,9 +161,13 @@ void ReadAnythingController::OnLinkClicked(const ui::AXTreeID& target_tree_id,
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = target_node_id;
-  ui::AXActionHandlerRegistry::GetInstance()
-      ->GetActionHandler(target_tree_id)
-      ->PerformAction(action_data);
+  ui::AXActionHandlerBase* handler =
+      ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
+          target_tree_id);
+  if (!handler) {
+    return;
+  }
+  handler->PerformAction(action_data);
 }
 
 void ReadAnythingController::OnSelectionChange(
@@ -179,9 +183,13 @@ void ReadAnythingController::OnSelectionChange(
   action_data.anchor_offset = anchor_offset;
   action_data.focus_node_id = focus_node_id;
   action_data.focus_offset = focus_offset;
-  ui::AXActionHandlerRegistry::GetInstance()
-      ->GetActionHandler(target_tree_id)
-      ->PerformAction(action_data);
+  ui::AXActionHandlerBase* handler =
+      ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
+          target_tree_id);
+  if (!handler) {
+    return;
+  }
+  handler->PerformAction(action_data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
