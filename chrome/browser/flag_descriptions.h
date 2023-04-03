@@ -3695,12 +3695,6 @@ extern const char kLacrosScreenCoordinatesEnabledDescription[];
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 extern const char kGetAllScreensMediaName[];
 extern const char kGetAllScreensMediaDescription[];
-
-extern const char kGetDisplayMediaSetName[];
-extern const char kGetDisplayMediaSetDescription[];
-
-extern const char kGetDisplayMediaSetAutoSelectAllScreensName[];
-extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)

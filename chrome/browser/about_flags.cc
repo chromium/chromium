@@ -8141,16 +8141,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGetAllScreensMediaDescription,
      kOsCrOS | kOsLacros | kOsLinux,
      FEATURE_VALUE_TYPE(blink::features::kGetAllScreensMedia)},
-    {"enable-get-display-media-set", flag_descriptions::kGetDisplayMediaSetName,
-     flag_descriptions::kGetDisplayMediaSetDescription,
-     kOsCrOS | kOsLacros | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSet)},
-
-    {"enable-get-display-media-set-auto-select-all-screens",
-     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensName,
-     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensDescription,
-     kOsCrOS | kOsLacros | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSetAutoSelectAllScreens)},
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)

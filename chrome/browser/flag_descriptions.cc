@@ -6369,18 +6369,6 @@ const char kGetAllScreensMediaName[] = "GetAllScreensMedia API";
 const char kGetAllScreensMediaDescription[] =
     "When enabled, the getAllScreensMedia API for capturing multiple screens "
     "at once, is available.";
-
-const char kGetDisplayMediaSetName[] = "GetDisplayMediaSet API";
-const char kGetDisplayMediaSetDescription[] =
-    "When enabled, the getDisplayMediaSet API for capturing multiple surfaces "
-    "at once is available.";
-
-const char kGetDisplayMediaSetAutoSelectAllScreensName[] =
-    "autoSelectAllScreens attribute for GetDisplayMediaSet";
-const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
-    "When enabled, the autoSelectAllScreens attribute is available for usage "
-    "with the GetDisplayMediaSet API.";
-
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
