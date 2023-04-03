@@ -25,7 +25,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -48,6 +47,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
@@ -1285,12 +1285,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::FilePath dest_path = profile_manager->user_data_dir();
   dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile 1"));
 
-  Profile* other_profile = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    other_profile = profile_manager->GetProfile(dest_path);
-  }
-  ASSERT_TRUE(other_profile);
+  Profile* other_profile =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path);
 
   // Close the browser.
   CloseBrowserAsynchronously(browser());
@@ -1357,10 +1353,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   // Create a new profile.
   base::FilePath dest_path =
       profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("New Profile"));
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  Profile* profile = profile_manager->GetProfile(dest_path);
-  ASSERT_TRUE(profile);
+  Profile* profile =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path);
 
   DisableWelcomePages({profile});
 
@@ -1453,13 +1447,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsForTwoProfiles) {
   // Create another profile.
   base::FilePath dest_path = profile_manager->user_data_dir();
   dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile 1"));
-
-  Profile* other_profile = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    other_profile = profile_manager->GetProfile(dest_path);
-  }
-  ASSERT_TRUE(other_profile);
+  Profile* other_profile =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path);
 
   // Use a couple arbitrary URLs.
   std::vector<GURL> urls1;
@@ -1525,19 +1514,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
 
   // Create two profiles.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
   DisableWelcomePages({profile1, profile2});
 
   // Don't delete Profiles too early.
@@ -1593,19 +1573,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
 
   // Open the two profiles.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
 
   // Simulate a launch after a browser update.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
@@ -1660,15 +1631,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::FilePath dest_path4 = profile_manager->user_data_dir().Append(
       FILE_PATH_LITERAL("New Profile 4"));
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  Profile* profile_home1 = profile_manager->GetProfile(dest_path1);
-  ASSERT_TRUE(profile_home1);
-  Profile* profile_home2 = profile_manager->GetProfile(dest_path2);
-  ASSERT_TRUE(profile_home2);
-  Profile* profile_last = profile_manager->GetProfile(dest_path3);
-  ASSERT_TRUE(profile_last);
-  Profile* profile_urls = profile_manager->GetProfile(dest_path4);
-  ASSERT_TRUE(profile_urls);
+  Profile* profile_home1 =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path1);
+  Profile* profile_home2 =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path2);
+  Profile* profile_last =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path3);
+  Profile* profile_urls =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path4);
 
   DisableWelcomePages(
       {profile_home1, profile_home2, profile_last, profile_urls});
@@ -1779,13 +1749,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
       FILE_PATH_LITERAL("New Profile 1"));
   base::FilePath dest_path2 = profile_manager->user_data_dir().Append(
       FILE_PATH_LITERAL("New Profile 2"));
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  Profile* profile1 = profile_manager->GetProfile(dest_path1);
-  ASSERT_TRUE(profile1);
-  Profile* profile2 = profile_manager->GetProfile(dest_path2);
-  ASSERT_TRUE(profile2);
-
+  Profile* profile1 =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path1);
+  Profile* profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path2);
   DisableWelcomePages({profile1, profile2});
 
   // Set the profiles to open last visited pages.
@@ -1877,19 +1844,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
       FILE_PATH_LITERAL("New Profile 2"));
   base::FilePath dest_path3 = profile_manager->user_data_dir().Append(
       FILE_PATH_LITERAL("New Profile 3"));
-
-  Profile* profile_home = nullptr;
-  Profile* profile_last = nullptr;
-  Profile* profile_urls = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile_home = profile_manager->GetProfile(dest_path1);
-    ASSERT_TRUE(profile_home);
-    profile_last = profile_manager->GetProfile(dest_path2);
-    ASSERT_TRUE(profile_last);
-    profile_urls = profile_manager->GetProfile(dest_path3);
-    ASSERT_TRUE(profile_urls);
-  }
+  Profile* profile_home =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path1);
+  Profile* profile_last =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path2);
+  Profile* profile_urls =
+      profiles::testing::CreateProfileSync(profile_manager, dest_path3);
 
   // Set the profiles to open the home page, last visited pages or URLs.
   SessionStartupPref pref_home(SessionStartupPref::DEFAULT);
@@ -1992,17 +1952,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
-    profile2 = profile_manager->GetProfile(
-        user_data_dir.Append(FILE_PATH_LITERAL("New Profile 2")));
-  }
-  ASSERT_TRUE(profile1);
-  ASSERT_TRUE(profile2);
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      user_data_dir.Append(FILE_PATH_LITERAL("New Profile 2")));
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreator browser_creator;
@@ -2065,13 +2020,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   Profile* profile1 = browser()->profile();
 
   // Create a new profile.
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile2 = profile_manager->GetProfile(
-        user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
-  }
-  ASSERT_TRUE(profile2);
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
 
   // Install web apps for the two profiles.
   auto example_url1 = GURL("http://www.example_one.com");
@@ -2174,13 +2125,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   Profile* profile1 = browser()->profile();
 
   // Create a new profile.
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile2 = profile_manager->GetProfile(
-        user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
-  }
-  ASSERT_TRUE(profile2);
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
 
   // Install web apps for the two profiles.
   auto example_url1 = GURL("http://www.example_one.com");
@@ -2453,20 +2400,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
   // Create two profiles.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
-
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
   DisableWelcomePages({profile1, profile2});
 
   // Open some urls with the browsers, and close them.
@@ -2539,18 +2476,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
   base::FilePath dest_path = profile_manager->user_data_dir();
 
-  Profile* profile1 = nullptr;
-  Profile* profile2 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-
-    profile2 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
-    ASSERT_TRUE(profile2);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  Profile* profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
 
   while (SessionRestore::IsRestoring(profile1) ||
          SessionRestore::IsRestoring(profile2)) {
@@ -2597,14 +2526,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   // Create a profile.
   base::FilePath dest_path = profile_manager->user_data_dir();
-
-  Profile* profile1 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
   DisableWelcomePages({profile1});
 
   // Open some urls with the browsers, and close them.
@@ -2635,13 +2558,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath dest_path = profile_manager->user_data_dir();
-  Profile* profile1 = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
 
   auto example_url = GURL("http://www.example.com");
   web_app::AppId new_app_id = InstallPWA(profile1, example_url);
@@ -2692,20 +2610,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   base::FilePath dest_path = profile_manager->user_data_dir();
 
-  Profile* profile1 = nullptr;
-  Profile* default_profile = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    profile1 = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
-    ASSERT_TRUE(profile1);
-  }
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    default_profile = profile_manager->GetProfile(
-        dest_path.Append(FILE_PATH_LITERAL("Default")));
-    ASSERT_TRUE(profile1);
-  }
+  Profile* profile1 = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+  Profile* default_profile = profiles::testing::CreateProfileSync(
+      profile_manager, dest_path.Append(FILE_PATH_LITERAL("Default")));
 
   // At this point, nothing is open except the basic browser.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -4000,7 +3908,8 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
             FILE_PATH_LITERAL("New Profile 2"))};
     for (int i = 0; i < 2; ++i) {
       const base::FilePath& profile_path = profile_paths[i];
-      ASSERT_TRUE(profile_manager->GetProfile(profile_path));
+      ASSERT_TRUE(
+          profiles::testing::CreateProfileSync(profile_manager, profile_path));
       // Mark newly created profiles as active.
       ProfileAttributesEntry* entry =
           profile_manager->GetProfileAttributesStorage()
