@@ -12,8 +12,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
+#include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/script_context.h"
-#include "extensions/renderer/script_injection.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -161,7 +161,8 @@ const Extension* ScriptContextSet::GetExtensionFromFrameAndWorld(
   std::string extension_id;
   if (world_id != 0) {
     // Isolated worlds (content script).
-    extension_id = ScriptInjection::GetHostIdForIsolatedWorld(world_id);
+    extension_id =
+        IsolatedWorldManager::GetInstance().GetHostIdForIsolatedWorld(world_id);
   } else {
     // For looking up the extension associated with this frame, we either want
     // to use the current url or possibly the data source url (which this frame

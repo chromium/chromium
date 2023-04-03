@@ -72,6 +72,7 @@
 #include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
 #include "extensions/renderer/id_generator_custom_bindings.h"
 #include "extensions/renderer/ipc_message_sender.h"
+#include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/logging_native_handler.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -82,7 +83,6 @@
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
-#include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/script_injection_manager.h"
 #include "extensions/renderer/service_worker_natives.h"
 #include "extensions/renderer/set_icon_natives.h"
@@ -1146,7 +1146,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // If the extension is later reloaded with a different set of permissions,
   // we'd like it to get a new isolated world ID, so that it can pick up the
   // changed origin allowlist.
-  ScriptInjection::RemoveIsolatedWorld(extension_id);
+  IsolatedWorldManager::GetInstance().RemoveIsolatedWorld(extension_id);
 
   // Inform the bindings system that the contexts will be removed to allow time
   // to clear out context-specific data, and then remove the contexts
