@@ -213,7 +213,13 @@ void CartService::AddCart(const GURL& navigation_url,
 }
 
 void CartService::DeleteCart(const GURL& url, bool ignore_remove_status) {
-  coupon_service_->DeleteFreeListingCouponsForUrl(url);
+  // Postpone coupon deletion to avoid ephemeral cart deletions.
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&CartService::CheckCartExistenceAfterDeletion,
+                         weak_ptr_factory_.GetWeakPtr(), url),
+          commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get());
   if (ignore_remove_status) {
     cart_db_->DeleteCart(eTLDPlusOne(url),
                          base::BindOnce(&CartService::OnOperationFinished,
@@ -446,6 +452,17 @@ void CartService::HasActiveCartForURLCallback(
   }
   DCHECK(proto_pairs.size() == 1);
   std::move(callback).Run(!IsCartExpired(proto_pairs[0].second));
+}
+
+void CartService::CheckCartExistenceAfterDeletion(GURL url) {
+  HasActiveCartForURL(url, base::BindOnce(&CartService::MaybeDeleteCoupons,
+                                          weak_ptr_factory_.GetWeakPtr(), url));
+}
+
+void CartService::MaybeDeleteCoupons(GURL url, bool has_cart) {
+  if (!has_cart) {
+    coupon_service_->DeleteFreeListingCouponsForUrl(url);
+  }
 }
 
 void CartService::ShouldShowDiscountConsentCallback(
