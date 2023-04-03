@@ -2138,6 +2138,9 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
+extern const char kDefaultViewportIsDeviceWidthName[];
+extern const char kDefaultViewportIsDeviceWidthDescription[];
+
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
 

@@ -4351,6 +4351,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHideNonDisplayableAccountEmailName,
      flag_descriptions::kHideNonDisplayableAccountEmailDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHideNonDisplayableAccountEmail)},
+    {"default-viewport-is-device-width",
+     flag_descriptions::kDefaultViewportIsDeviceWidthName,
+     flag_descriptions::kDefaultViewportIsDeviceWidthDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kDefaultViewportIsDeviceWidth)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,
