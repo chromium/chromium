@@ -716,6 +716,9 @@ const char* const kChromeHostURLs[] = {
     kChromeUIQuotaInternalsHost,
     kChromeUISignInInternalsHost,
     kChromeUISiteEngagementHost,
+#if !BUILDFLAG(IS_ANDROID)
+    kChromeUISuggestInternalsHost,
+#endif
     kChromeUINTPTilesInternalsHost,
     safe_browsing::kChromeUISafeBrowsingHost,
     kChromeUISyncInternalsHost,
