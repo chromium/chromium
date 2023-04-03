@@ -1285,6 +1285,7 @@ void DriveIntegrationService::ToggleBulkPinning() {
   GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
 
   if (enabled) {
+    pin_manager_->ShouldPin(true);
     pin_manager_->Start();
   } else {
     pin_manager_->Stop();
