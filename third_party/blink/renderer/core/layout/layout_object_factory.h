@@ -12,13 +12,10 @@
 namespace blink {
 
 class ComputedStyle;
-class Document;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
 enum class LegacyLayout;
-class LayoutText;
-class LayoutTextFragment;
 class Node;
 
 // Helper class for creation of certain LayoutObject-derived objects that may
@@ -39,13 +36,6 @@ class LayoutObjectFactory {
   static LayoutObject* CreateListMarker(Node&,
                                         const ComputedStyle&,
                                         LegacyLayout);
-
-  static LayoutText* CreateText(Node*, String, LegacyLayout);
-  static LayoutTextFragment* CreateTextFragment(Node*,
-                                                const String&,
-                                                int start_offset,
-                                                int length,
-                                                LegacyLayout);
 };
 
 }  // namespace blink

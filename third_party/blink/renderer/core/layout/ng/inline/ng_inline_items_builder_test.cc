@@ -67,8 +67,8 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   }
 
   void AppendText(const String& text, NGInlineItemsBuilder* builder) {
-    LayoutText* layout_text = LayoutText::CreateEmptyAnonymous(
-        GetDocument(), style_.get(), LegacyLayout::kAuto);
+    LayoutText* layout_text =
+        LayoutText::CreateEmptyAnonymous(GetDocument(), style_.get());
     anonymous_objects_->push_back(layout_text);
     builder->AppendText(text, layout_text);
   }
@@ -108,7 +108,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
     for (Input& input : inputs) {
       if (!input.layout_text) {
         input.layout_text = LayoutText::CreateEmptyAnonymous(
-            GetDocument(), GetStyle(input.whitespace), LegacyLayout::kAuto);
+            GetDocument(), GetStyle(input.whitespace));
         anonymous_objects.push_back(input.layout_text);
       }
       builder.AppendText(input.text, input.layout_text);

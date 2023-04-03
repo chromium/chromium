@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -333,11 +332,7 @@ LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
                                          LegacyLayout legacy) {
   if (IsSVGText(this))
     return MakeGarbageCollected<LayoutSVGInlineText>(this, data());
-
-  if (style.HasTextCombine())
-    return MakeGarbageCollected<LayoutNGText>(this, data());
-
-  return LayoutObjectFactory::CreateText(this, data(), legacy);
+  return MakeGarbageCollected<LayoutNGText>(this, data());
 }
 
 void Text::AttachLayoutTree(AttachContext& context) {

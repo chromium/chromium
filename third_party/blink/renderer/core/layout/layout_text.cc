@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
@@ -203,10 +202,9 @@ void LayoutText::Trace(Visitor* visitor) const {
 
 LayoutText* LayoutText::CreateEmptyAnonymous(
     Document& doc,
-    scoped_refptr<const ComputedStyle> style,
-    LegacyLayout legacy) {
+    scoped_refptr<const ComputedStyle> style) {
   LayoutText* text =
-      LayoutObjectFactory::CreateText(nullptr, StringImpl::empty_, legacy);
+      MakeGarbageCollected<LayoutNGText>(nullptr, StringImpl::empty_);
   text->SetDocumentForAnonymous(&doc);
   text->SetStyle(std::move(style));
   return text;
@@ -215,10 +213,9 @@ LayoutText* LayoutText::CreateEmptyAnonymous(
 LayoutText* LayoutText::CreateAnonymousForFormattedText(
     Document& doc,
     scoped_refptr<const ComputedStyle> style,
-    String text,
-    LegacyLayout legacy) {
+    String text) {
   LayoutText* layout_text =
-      LayoutObjectFactory::CreateText(nullptr, std::move(text), legacy);
+      MakeGarbageCollected<LayoutNGText>(nullptr, std::move(text));
   layout_text->SetDocumentForAnonymous(&doc);
   layout_text->SetStyleInternal(std::move(style));
   return layout_text;

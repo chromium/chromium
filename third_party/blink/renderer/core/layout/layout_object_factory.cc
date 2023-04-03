@@ -8,19 +8,12 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_li_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
@@ -118,38 +111,6 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
   }
   return CreateObject<LayoutObject, LayoutNGOutsideListMarker,
                       LayoutOutsideListMarker>(node, legacy);
-}
-
-LayoutText* LayoutObjectFactory::CreateText(Node* node,
-                                            String str,
-                                            LegacyLayout legacy) {
-  bool force_legacy = legacy == LegacyLayout::kForce;
-  if (!force_legacy) {
-    return MakeGarbageCollected<LayoutNGText>(node, std::move(str));
-  }
-  LayoutText* layout_text =
-      MakeGarbageCollected<LayoutText>(node, std::move(str));
-  if (force_legacy)
-    layout_text->SetForceLegacyLayout();
-  return layout_text;
-}
-
-LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
-    Node* node,
-    const String& str,
-    int start_offset,
-    int length,
-    LegacyLayout legacy) {
-  bool force_legacy = legacy == LegacyLayout::kForce;
-  if (!force_legacy) {
-    return MakeGarbageCollected<LayoutNGTextFragment>(node, str, start_offset,
-                                                      length);
-  }
-  LayoutTextFragment* layout_text_fragment =
-      MakeGarbageCollected<LayoutTextFragment>(node, str, start_offset, length);
-  if (force_legacy)
-    layout_text_fragment->SetForceLegacyLayout();
-  return layout_text_fragment;
 }
 
 }  // namespace blink

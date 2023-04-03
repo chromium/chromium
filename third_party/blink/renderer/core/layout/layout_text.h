@@ -88,14 +88,12 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void Trace(Visitor*) const override;
 
   static LayoutText* CreateEmptyAnonymous(Document&,
-                                          scoped_refptr<const ComputedStyle>,
-                                          LegacyLayout);
+                                          scoped_refptr<const ComputedStyle>);
 
   static LayoutText* CreateAnonymousForFormattedText(
       Document&,
       scoped_refptr<const ComputedStyle>,
-      String,
-      LegacyLayout legacy);
+      String);
 
   const char* GetName() const override {
     NOT_DESTROYED();
