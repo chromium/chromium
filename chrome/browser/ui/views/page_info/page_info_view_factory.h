@@ -128,6 +128,10 @@ class PageInfoViewFactory {
   // Returns the icon for 'About this site' button.
   static const ui::ImageModel GetAboutThisSiteIcon();
 
+  // Returns a reference to the color vector icon for 'About this site'
+  // sidepanel.
+  static const gfx::VectorIcon& GetAboutThisSiteColorVectorIcon();
+
   // Returns a reference to the vector icon for 'About this site' button.
   static const gfx::VectorIcon& GetAboutThisSiteVectorIcon();
 

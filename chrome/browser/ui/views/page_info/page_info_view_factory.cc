@@ -451,6 +451,17 @@ const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
 }
 
 // static
+const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteColorVectorIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (page_info::IsAboutThisSiteNewIconFeatureEnabled()) {
+    return vector_icons::kPageInsightsColorIcon;
+  }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  return views::kInfoIcon;
+}
+
+// static
 const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (page_info::IsAboutThisSiteNewIconFeatureEnabled()) {

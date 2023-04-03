@@ -81,8 +81,8 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
         SidePanelEntry::Id::kAboutThisSite,
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
         ui::ImageModel::FromVectorIcon(
-            PageInfoViewFactory::GetAboutThisSiteVectorIcon(), ui::kColorIcon,
-            icon_size),
+            PageInfoViewFactory::GetAboutThisSiteColorVectorIcon(),
+            ui::kColorIcon, icon_size),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
             base::Unretained(this)),
