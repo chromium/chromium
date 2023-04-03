@@ -62,9 +62,7 @@
 namespace extensions {
 
 ExtensionManagement::ExtensionManagement(Profile* profile)
-    : profile_(profile),
-      pref_service_(profile_->GetPrefs()),
-      is_child_(profile_->IsChild()) {
+    : profile_(profile), pref_service_(profile_->GetPrefs()) {
   TRACE_EVENT0("browser,startup",
                "ExtensionManagement::ExtensionManagement::ctor");
 #if BUILDFLAG(IS_CHROMEOS_ASH)

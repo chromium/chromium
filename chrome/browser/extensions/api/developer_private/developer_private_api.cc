@@ -123,12 +123,20 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#endif
+
 namespace extensions {
 
 namespace developer = api::developer_private;
 
 namespace {
-
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+const char kCannotUpdateChildAccountProfileSettingsError[] =
+    "Cannot change settings for a child account profile.";
+#endif
 const char kNoSuchExtensionError[] = "No such extension.";
 const char kRequiresUserGestureError[] =
     "This action requires a user gesture.";
@@ -142,8 +150,6 @@ const char kManifestKeyIsRequiredError[] =
     "The 'manifestKey' argument is required for manifest files.";
 const char kCouldNotFindWebContentsError[] =
     "Could not find a valid web contents.";
-const char kCannotUpdateChildAccountProfileSettingsError[] =
-    "Cannot change settings for a child account profile.";
 const char kNoOptionsPageForExtensionError[] =
     "Extension does not have an options page.";
 const char kCannotRepairHealthyExtension[] =
@@ -500,7 +506,13 @@ DeveloperPrivateAPI::GetFactoryInstance() {
 std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
-  info->is_child_account = profile->IsChild();
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  info->is_child_account = service->AreExtensionsPermissionsEnabled();
+#else
+  info->is_child_account = false;
+#endif
   PrefService* prefs = profile->GetPrefs();
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
@@ -1085,10 +1097,17 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 
   const developer::ProfileConfigurationUpdate& update = params->update;
   Profile* profile = Profile::FromBrowserContext(browser_context());
+
   PrefService* prefs = profile->GetPrefs();
   if (update.in_developer_mode) {
-    if (profile->IsChild())
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    SupervisedUserService* service =
+        SupervisedUserServiceFactory::GetForProfile(profile);
+    if (service->AreExtensionsPermissionsEnabled()) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
+    }
+#endif
+
     prefs->SetBoolean(prefs::kExtensionsUIDeveloperMode,
                       *update.in_developer_mode);
     SetCurrentDeveloperMode(util::GetBrowserContextId(browser_context()),
@@ -1311,10 +1330,14 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
     return RespondNow(Error(kCouldNotFindWebContentsError));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsChild()) {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  if (service->AreExtensionsPermissionsEnabled()) {
     return RespondNow(
         Error("Child account users cannot load unpacked extensions."));
   }
+#endif
   PrefService* prefs = profile->GetPrefs();
   if (!prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {
     return RespondNow(
@@ -1892,8 +1915,14 @@ DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
-  return RespondNow(
-      WithArguments(Profile::FromBrowserContext(browser_context())->IsChild()));
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  return RespondNow(WithArguments(service->AreExtensionsPermissionsEnabled()));
+#else
+  return RespondNow(WithArguments(false));
+#endif
 }
 
 DeveloperPrivateIsProfileManagedFunction::

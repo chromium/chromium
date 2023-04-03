@@ -526,7 +526,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
   if (!dummy_extension_->is_theme()) {
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
-    if (profile_->IsChild() && !service->CanInstallExtensions()) {
+    if (service->AreExtensionsPermissionsEnabled() &&
+        !service->CanInstallExtensions()) {
       SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
           ManagementAPI::GetFactoryInstance()
               ->Get(profile_)
@@ -662,7 +663,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 bool WebstorePrivateBeginInstallWithManifest3Function::
     PromptForParentApproval() {
-  DCHECK(profile_->IsChild());
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_);
+  DCHECK(service->AreExtensionsPermissionsEnabled());
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
     // The browser window has gone away.
@@ -736,11 +739,13 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
     case ExtensionInstallPrompt::Result::ACCEPTED:
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS: {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      SupervisedUserService* service =
+          SupervisedUserServiceFactory::GetForProfile(profile_);
       // Handle parent permission for child accounts on ChromeOS.
       if (!dummy_extension_->is_theme()  // Parent permission not required for
                                          // theme installation
           && g_browser_process->profile_manager()->IsValidProfile(profile_) &&
-          profile_->IsChild()) {
+          service->AreExtensionsPermissionsEnabled()) {
         if (PromptForParentApproval()) {
           // If are showing parent permission dialog, return instead of
           // break, so that we don't release the ref below.
@@ -886,12 +891,15 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!dummy_extension_->is_theme()) {
-    const bool is_child = profile_->IsChild();
+    SupervisedUserService* service =
+        SupervisedUserServiceFactory::GetForProfile(profile_);
+    const bool requires_parent_permission =
+        service->AreExtensionsPermissionsEnabled();
     // We don't prompt for parent permission for themes, so no need
     // to configure the install prompt to indicate that this is a child
     // asking a parent for installation permission.
-    prompt->set_requires_parent_permission(is_child);
-    if (is_child) {
+    prompt->set_requires_parent_permission(requires_parent_permission);
+    if (requires_parent_permission) {
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
     }
   }
@@ -1176,11 +1184,13 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
       IsPendingCustodianApproval::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!Profile::FromBrowserContext(browser_context())->IsChild())
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  SupervisedUserService* service = SupervisedUserServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context()));
+  if (!service->AreExtensionsPermissionsEnabled()) {
     return RespondNow(BuildResponse(false));
-
+  }
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
-
   const Extension* extension =
       registry->GetExtensionById(params->id, ExtensionRegistry::EVERYTHING);
   if (!extension) {
@@ -1198,6 +1208,9 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
       params->id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
 
   return RespondNow(BuildResponse(is_pending_approval));
+#else
+  return RespondNow(BuildResponse(false));
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 }
 
 ExtensionFunction::ResponseValue
