@@ -395,6 +395,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Ensures that the layer where the icon background is painted on is created.
   void EnsureIconBackgroundLayer();
 
+  // Returns the color ID for the app list item background, if the background
+  // needs to be shown.
+  ui::ColorId GetBackgroundLayerColorId() const;
+
   void OnExtendingAnimationEnded(bool extend_icon);
 
   // Returns the layer that paints the icon background.
