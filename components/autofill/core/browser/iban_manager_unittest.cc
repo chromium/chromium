@@ -65,8 +65,7 @@ class MockSuggestionsHandler : public IBANManager::SuggestionsHandler {
 
 class IBANManagerTest : public testing::Test {
  protected:
-  IBANManagerTest()
-      : iban_manager_(&personal_data_manager_, /*is_off_the_record=*/false) {}
+  IBANManagerTest() : iban_manager_(&personal_data_manager_) {}
 
   void SetUp() override {
     if (ui::ResourceBundle::HasSharedInstance()) {
@@ -308,23 +307,6 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
   // Because all criteria are met to trigger returning to the handler,
   // the handler should be triggered and this should return true.
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      AutoselectFirstSuggestion(false), test_field, autofill_client_,
-      suggestions_handler_.GetWeakPtr(),
-      /*context=*/context));
-}
-
-TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
-  SetUpIBAN(kIbanValue_0, kNickname_0);
-  iban_manager_.SetOffTheRecordForTesting(true);
-  AutofillField test_field;
-  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
-
-  // Setting up mock to verify that suggestions returning is not triggered if
-  // the user is off the record.
-  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
-
-  // Simulate request for suggestions.
-  EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
       AutoselectFirstSuggestion(false), test_field, autofill_client_,
       suggestions_handler_.GetWeakPtr(),
       /*context=*/context));

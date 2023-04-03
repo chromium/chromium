@@ -27,12 +27,10 @@ class IBANManager : public SingleFieldFormFiller,
                     public KeyedService,
                     public AutofillSubject {
  public:
-  // Initializes the instance with the given parameters. |personal_data_manager|
+  // Initializes the instance with the given parameters. `personal_data_manager`
   // is a profile-scope data manager used to retrieve IBAN data from the
-  // local autofill table. |is_off_the_record| indicates whether the user is
-  // currently operating in an off-the-record context (i.e. incognito).
-  explicit IBANManager(PersonalDataManager* personal_data_manager,
-                       bool is_off_the_record);
+  // local autofill table.
+  explicit IBANManager(PersonalDataManager* personal_data_manager);
 
   IBANManager(const IBANManager&) = delete;
   IBANManager& operator=(const IBANManager&) = delete;
@@ -57,13 +55,6 @@ class IBANManager : public SingleFieldFormFiller,
 
   base::WeakPtr<IBANManager> GetWeakPtr();
 
-#if defined(UNIT_TEST)
-  // Assign types to the fields for the testing purposes.
-  void SetOffTheRecordForTesting(bool is_off_the_record) {
-    is_off_the_record_ = is_off_the_record;
-  }
-#endif
-
  private:
   // Sends suggestions for |ibans| to the |query_handler|'s handler for display
   // in the associated Autofill popup.
@@ -72,8 +63,6 @@ class IBANManager : public SingleFieldFormFiller,
 
   raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_ =
       nullptr;
-
-  bool is_off_the_record_ = false;
 
   base::WeakPtrFactory<IBANManager> weak_ptr_factory_{this};
 };
