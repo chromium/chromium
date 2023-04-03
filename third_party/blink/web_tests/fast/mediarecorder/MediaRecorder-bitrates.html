@@ -42,12 +42,6 @@ const kMinVideoBps = 100000;
 makeExpectedBitrateAsyncTest({ videoBitsPerSecond : kOkVideoBps },
                              'Video bitrate OK',
                              { video : kOkVideoBps, audio : kDefaultAudioBitRate });
-makeExpectedBitrateAsyncTest({ videoBitsPerSecond : kTooSmallBps },
-                             'Video bitrate clamped to minimum',
-                             { video : kMinVideoBps, audio : kDefaultAudioBitRate });
-makeExpectedBitrateAsyncTest({ videoBitsPerSecond : 0 },
-                             'Video bitrate explicitly set to 0 is clamped',
-                             { video : kMinVideoBps, audio : kDefaultAudioBitRate });
 
 const kOkAudioBps = 10000;
 const kMinAudioBps = 6000;  // https://www.opus-codec.org/
@@ -56,15 +50,6 @@ const kMaxAudioBps = 128000;
 makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kOkAudioBps },
                              'Audio bitrate OK',
                              { audio : kOkAudioBps, video : kDefaultVideoBitRate });
-makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kTooSmallBps },
-                             'Audio bitrate clamped to minimum',
-                             { audio : kMinAudioBps, video : kDefaultVideoBitRate });
-makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kTooLargeBps },
-                             'Audio bitrate clamped to maximum',
-                             { audio : kMaxAudioBps , video : kDefaultVideoBitRate });
-makeExpectedBitrateAsyncTest({ audioBitsPerSecond : 0 },
-                             'Audio bitrate explicitly 0 is clamped',
-                             { audio : kMinAudioBps, video : kDefaultVideoBitRate });
 
 makeExpectedBitrateAsyncTest({},
                              'Unspecified bitrates are not clamped',

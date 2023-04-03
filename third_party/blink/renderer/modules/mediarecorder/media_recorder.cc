@@ -121,7 +121,7 @@ MediaRecorderBitrates GetBitratesFromOptions(
     audio_bps = std::min(options->audioBitsPerSecond(), kMaxIntAsUnsigned);
 
   if (use_audio) {
-    // |overallBps| overrides the specific audio and video bit rates.
+    // |overall_bps| overrides the specific audio and video bit rates.
     if (options->hasBitsPerSecond()) {
       if (use_video)
         audio_bps = overall_bps / 10;
@@ -129,7 +129,7 @@ MediaRecorderBitrates GetBitratesFromOptions(
         audio_bps = overall_bps;
     }
     // Limit audio bitrate values if set explicitly or calculated.
-    if (options->hasAudioBitsPerSecond() || options->hasBitsPerSecond()) {
+    if (options->hasBitsPerSecond()) {
       if (audio_bps.value() > kLargestAutoAllocatedOpusBitRate) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
@@ -149,13 +149,11 @@ MediaRecorderBitrates GetBitratesFromOptions(
                 String::Number(kSmallestPossibleOpusBitRate) + "bps)"));
         audio_bps = kSmallestPossibleOpusBitRate;
       }
-    } else {
-      DCHECK(!audio_bps);
     }
   }
 
   if (use_video) {
-    // Allocate the remaining |overallBps|, if any, to video.
+    // Allocate the remaining |overall_bps|, if any, to video.
     if (options->hasBitsPerSecond()) {
       video_bps = overall_bps >= audio_bps.value_or(0)
                       ? overall_bps - audio_bps.value_or(0)
@@ -164,7 +162,7 @@ MediaRecorderBitrates GetBitratesFromOptions(
 
     // Clamp the video bit rate. Avoid clamping if the user has not set it
     // explicitly.
-    if (options->hasVideoBitsPerSecond() || options->hasBitsPerSecond()) {
+    if (options->hasBitsPerSecond()) {
       if (video_bps.value() < kSmallestPossibleVpxBitRate) {
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
@@ -174,8 +172,6 @@ MediaRecorderBitrates GetBitratesFromOptions(
                 String::Number(kSmallestPossibleVpxBitRate) + "bps)"));
         video_bps = kSmallestPossibleVpxBitRate;
       }
-    } else {
-      DCHECK(!video_bps);
     }
   }
 

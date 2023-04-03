@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 PASS Passing no bitrate config results in defaults
 FAIL Passing bitsPerSecond:0 results in targets close to 0 assert_approx_equals: expected 0 +/- 100000 but got 106000
-FAIL Passing only audioBitsPerSecond:0 results in 0 for audio, default for video assert_equals: expected 0 but got 6000
-FAIL Passing only videoBitsPerSecond:0 results in 0 for video, default for audio assert_equals: expected 0 but got 100000
+PASS Passing only audioBitsPerSecond:0 results in 0 for audio, default for video
+PASS Passing only videoBitsPerSecond:0 results in 0 for video, default for audio
 FAIL Passing bitsPerSecond:0 overrides audio/video-specific values assert_approx_equals: expected 0 +/- 100000 but got 106000
 PASS Passing bitsPerSecond overrides audio/video zero values
 PASS Passing bitsPerSecond sets audio/video bitrate values
