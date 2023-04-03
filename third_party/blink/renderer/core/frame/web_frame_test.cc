@@ -6334,8 +6334,8 @@ TEST_F(WebFrameTest, SmartClipData) {
   gfx::Rect crop_rect(300, 125, 152, 50);
   frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
                                                   clip_html, clip_rect);
-  EXPECT_EQ(kExpectedClipText, clip_text);
-  EXPECT_EQ(kExpectedClipHtml, clip_html);
+  EXPECT_EQ(String(kExpectedClipText), clip_text);
+  EXPECT_EQ(String(kExpectedClipHtml), clip_html);
 }
 
 TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
@@ -6374,8 +6374,8 @@ TEST_F(WebFrameTest, SmartClipDataWithPinchZoom) {
   gfx::Rect crop_rect(200, 38, 228, 75);
   frame->GetFrame()->ExtractSmartClipDataInternal(crop_rect, clip_text,
                                                   clip_html, clip_rect);
-  EXPECT_EQ(kExpectedClipText, clip_text);
-  EXPECT_EQ(kExpectedClipHtml, clip_html);
+  EXPECT_EQ(String(kExpectedClipText), clip_text);
+  EXPECT_EQ(String(kExpectedClipHtml), clip_html);
 }
 
 TEST_F(WebFrameTest, SmartClipReturnsEmptyStringsWhenUserSelectIsNone) {
