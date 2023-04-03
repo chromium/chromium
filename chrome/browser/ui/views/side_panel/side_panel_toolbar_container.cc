@@ -184,8 +184,8 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
 }
 
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
-  bool side_panel_button_highlighted =
-      browser_view_->unified_side_panel()->GetVisible();
+  bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
+  bool side_panel_button_highlighted = side_panel_visible;
   absl::optional<SidePanelEntry::Id> current_active_id =
       browser_view_->side_panel_coordinator()->GetCurrentEntryId();
   for (PinnedSidePanelToolbarButton* pinned_button : pinned_entry_buttons_) {
@@ -202,8 +202,8 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
   // once provided by UX.
   GetSidePanelButton()->SetHighlighted(side_panel_button_highlighted);
   GetSidePanelButton()->SetTooltipText(l10n_util::GetStringUTF16(
-      side_panel_button_highlighted ? IDS_TOOLTIP_SIDE_PANEL_HIDE
-                                    : IDS_TOOLTIP_SIDE_PANEL_SHOW));
+      side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
+                         : IDS_TOOLTIP_SIDE_PANEL_SHOW));
 }
 
 void SidePanelToolbarContainer::ReorderViews() {
