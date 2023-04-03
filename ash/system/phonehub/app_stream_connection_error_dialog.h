@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "base/scoped_multi_source_observation.h"
+#include "ui/events/event.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -16,7 +17,7 @@ namespace gfx {
 class Rect;
 }
 
-using StartTetheringCallback = base::OnceCallback<void()>;
+using StartTetheringCallback = base::OnceCallback<void(const ui::Event&)>;
 
 namespace ash {
 

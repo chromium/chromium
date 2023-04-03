@@ -23,7 +23,11 @@ class ASH_EXPORT QuickActionsView : public views::View {
   QuickActionsView(QuickActionsView&) = delete;
   QuickActionsView operator=(QuickActionsView&) = delete;
 
-  QuickActionItem* enable_hotspot_for_testing() { return enable_hotspot_; }
+  // Return enable_hotspot to start tethering from Phone
+  // Hub error dialog.
+  QuickActionItem* GetEnableHotspotQuickActionItem() { return enable_hotspot_; }
+
+  // Used for testing only
   QuickActionItem* silence_phone_for_testing() { return silence_phone_; }
   QuickActionItem* locate_phone_for_testing() { return locate_phone_; }
 

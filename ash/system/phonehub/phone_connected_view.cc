@@ -14,6 +14,7 @@
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/phone_status_view.h"
+#include "ash/system/phonehub/quick_action_item.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
 #include "ash/system/phonehub/ui_constants.h"
@@ -73,7 +74,8 @@ PhoneConnectedView::PhoneConnectedView(
       phone_hub_manager->GetMultideviceFeatureAccessManager()));
 
   setup_layered_view(
-      AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));
+      quick_actions_view_ =
+          AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));
 
   auto* phone_model = phone_hub_manager->GetPhoneModel();
   if (phone_model) {
@@ -155,8 +157,13 @@ void PhoneConnectedView::OnAppStreamErrorDialogClosed() {
   app_stream_error_dialog_.reset();
 }
 
-void PhoneConnectedView::OnAppStreamErrorDialogButtonClicked() {
-  // TODO(b/273823627): Add method to enable hotspot.
+void PhoneConnectedView::OnAppStreamErrorDialogButtonClicked(
+    const ui::Event& event) {
+  auto* enable_hotspot = quick_actions_view_->GetEnableHotspotQuickActionItem();
+  if (enable_hotspot->IsToggled()) {
+    return;
+  }
+  enable_hotspot->icon_button()->NotifyClick(event);
 }
 
 }  // namespace ash
