@@ -77,6 +77,10 @@ class ClipboardCommands {
                                         Event*,
                                         EditorCommandSource,
                                         const String&);
+  static bool ExecutePasteFromImageURL(LocalFrame&,
+                                       Event*,
+                                       EditorCommandSource,
+                                       const String&);
 
   static bool PasteSupported(LocalFrame*);
 
@@ -109,6 +113,7 @@ class ClipboardCommands {
                               EditorCommandSource);
   static void PasteAsPlainTextFromClipboard(LocalFrame&, EditorCommandSource);
   static void PasteFromClipboard(LocalFrame&, EditorCommandSource);
+  static void PasteFromImageURL(LocalFrame&, EditorCommandSource, String);
 
   using FragmentAndPlainText = std::pair<DocumentFragment*, const bool>;
   static FragmentAndPlainText GetFragmentFromClipboard(LocalFrame&);

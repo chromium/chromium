@@ -12,7 +12,7 @@ export interface EmojiPickerApiProxy {
 
   insertEmoji(emoji: string, isVariant: boolean, searchLength: number): void;
 
-  copyGifToClipboard(gif: Url): void;
+  insertGif(gif: Url): void;
 
   isIncognitoTextField(): Promise<{incognito: boolean}>;
 
@@ -52,8 +52,8 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   }
 
   /** @override */
-  copyGifToClipboard(gif: Url) {
-    this.handler.copyGifToClipboard(gif);
+  insertGif(gif: Url) {
+    this.handler.insertGif(gif);
   }
 
   /** @override */

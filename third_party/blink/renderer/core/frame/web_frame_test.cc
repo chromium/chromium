@@ -14092,6 +14092,7 @@ class TestFocusedElementChangedLocalFrameHost : public FakeLocalFrameHost {
 
   // FakeLocalFrameHost:
   void FocusedElementChanged(bool is_editable_element,
+                             bool is_richly_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,
                              blink::mojom::FocusType focus_type) override {
     did_notify_ = true;

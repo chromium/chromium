@@ -7013,12 +7013,15 @@ void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
 
 void RenderFrameHostImpl::FocusedElementChanged(
     bool is_editable_element,
+    bool is_richly_editable_element,
     const gfx::Rect& bounds_in_frame_widget,
     blink::mojom::FocusType focus_type) {
   if (!GetView())
     return;
 
   has_focused_editable_element_ = is_editable_element;
+  has_focused_richly_editable_element_ = is_richly_editable_element;
+
   // First convert the bounds to root view.
   delegate_->OnFocusedElementChangedInFrame(
       this,

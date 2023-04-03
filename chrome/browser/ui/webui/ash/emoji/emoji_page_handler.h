@@ -43,7 +43,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
                   SearchGifsCallback callback) override;
   void GetGifsByIds(const std::vector<std::string>& ids,
                     GetGifsByIdsCallback callback) override;
-  void CopyGifToClipboard(const GURL& gif) override;
+  void InsertGif(const GURL& gif) override;
   void OnUiFullyLoaded() override;
 
  private:

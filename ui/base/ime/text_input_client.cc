@@ -9,6 +9,10 @@ namespace ui {
 TextInputClient::~TextInputClient() {
 }
 
+bool TextInputClient::CanInsertImage() {
+  return false;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 absl::optional<GrammarFragment> TextInputClient::GetGrammarFragmentAtCursor()
     const {

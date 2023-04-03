@@ -1817,6 +1817,10 @@ static const EditorInternalCommand* InternalCommand(
       {EditingCommandType::kAlignCenter, ExecuteJustifyCenter,
        SupportedFromMenuOrKeyBinding, EnabledInRichlyEditableText, StateNone,
        ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
+      {EditingCommandType::kPasteFromImageURL,
+       ClipboardCommands::ExecutePasteFromImageURL,
+       SupportedFromMenuOrKeyBinding, EnabledInEditableText, StateNone,
+       ValueStateOrNull, kNotTextInsertion, CanNotExecuteWhenDisabled},
   };
   // Handles all commands except EditingCommandType::Invalid.
   static_assert(

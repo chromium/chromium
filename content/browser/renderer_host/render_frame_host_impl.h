@@ -1557,6 +1557,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return has_focused_editable_element_;
   }
 
+  bool has_focused_richly_editable_element() const {
+    return has_focused_richly_editable_element_;
+  }
+
   // Binds a DevToolsAgent interface for debugging.
   void BindDevToolsAgent(
       mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
@@ -2328,6 +2332,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       std::vector<blink::mojom::FaviconURLPtr> favicon_urls) override;
   void DownloadURL(blink::mojom::DownloadURLParamsPtr params) override;
   void FocusedElementChanged(bool is_editable_element,
+                             bool is_richly_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,
                              blink::mojom::FocusType focus_type) override;
   void TextSelectionChanged(const std::u16string& text,
@@ -4376,6 +4381,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // If true then this frame's document has a focused element which is editable.
   bool has_focused_editable_element_ = false;
+
+  // If true then this frame's document has a focused element which is richly
+  // editable.
+  bool has_focused_richly_editable_element_ = false;
 
   std::unique_ptr<PendingNavigation> pending_navigate_;
 

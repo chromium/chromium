@@ -51,7 +51,7 @@ export class TestEmojiPickerApiProxyErrorImpl extends EmojiPickerApiProxyImpl {
     });
   }
 
-  override copyGifToClipboard() {
+  override insertGif() {
     // Fake the backend operation of copying gif to clipboard by doing nothing
   }
 }

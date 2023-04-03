@@ -438,14 +438,20 @@ interface LocalFrameHost {
   // Initiates a download based on user actions like 'ALT+click'.
   DownloadURL(DownloadURLParams params);
 
-  // Sent to the browser when focus changes inside the frame. The first
-  // parameter says whether the newly focused element needs keyboard input
-  // (true for textfields, text areas and content editable divs).
-  // The second parameter is the newly focused element's bounds relative to
-  // local root's view, and it will be an empty bounds if there is no focused
-  // element.
+  // Sent to the browser when focus changes inside the frame.
+  // - is_editable_element: Whether the newly focused element needs
+  //   keyboard input (true for textfields, text areas and content
+  //   editable divs).
+  // - is_richly_editable_element: Whether the newly focused element
+  //   is richly editable (true for content editable divs).
+  // - bounds_in_frame_widget: The newly focused element's bounds
+  //   relative to local root's view, and it will be an empty bounds
+  //   if there is no focused element.
+  // - foucus_type: Focus type.
   FocusedElementChanged(bool is_editable_element,
-                        gfx.mojom.Rect bounds_in_frame_widget, blink.mojom.FocusType focus_type);
+                        bool is_richly_editable_element,
+                        gfx.mojom.Rect bounds_in_frame_widget,
+                        blink.mojom.FocusType focus_type);
 
   // Notification that the text selection has changed.
   // Note: The second parameter is the character based offset of the

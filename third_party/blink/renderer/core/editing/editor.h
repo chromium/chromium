@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -233,6 +234,9 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   void RevealSelectionAfterEditingOperation(
       const mojom::blink::ScrollAlignment& = ScrollAlignment::ToEdgeIfNeeded());
 
+  void AddImageResourceObserver(ImageResourceObserver*);
+  void RemoveImageResourceObserver(ImageResourceObserver*);
+
  private:
   Member<LocalFrame> frame_;
   Member<CompositeEditCommand> last_edit_command_;
@@ -246,6 +250,7 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   EditorParagraphSeparator default_paragraph_separator_;
   Member<EditingStyle> typing_style_;
   bool mark_is_directional_ = false;
+  HeapHashSet<Member<ImageResourceObserver>> image_resource_observers_;
 
   LocalFrame& GetFrame() const {
     DCHECK(frame_);

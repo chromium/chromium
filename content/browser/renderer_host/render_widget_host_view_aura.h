@@ -217,6 +217,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const ui::KeyEvent& event) override;
+  bool CanInsertImage() override;
+  void InsertImage(const GURL& src) override;
   ui::TextInputType GetTextInputType() const override;
   ui::TextInputMode GetTextInputMode() const override;
   base::i18n::TextDirection GetTextDirection() const override;

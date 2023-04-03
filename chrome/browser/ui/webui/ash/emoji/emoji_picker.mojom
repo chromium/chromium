@@ -67,6 +67,11 @@ interface PageHandler {
   // search_length: Length of search string, used for metrics
   InsertEmoji(string emoji, bool is_variant, int16 search_length);
 
+  // Request backend to insert gif (will close the picker).
+  // gif: The gif to insert in the form of the url returned from the tenor API.
+  // e.g. "https://media.tenor.com/m8ggSG6nLqIAAAAC/christmas-minions.gif".
+  InsertGif(url.mojom.Url gif);
+
   // Allows the emoji picker to identify if it was initialized in a incognito
   // text field (so it will disable storing preference etc.)
   IsIncognitoTextField() => (bool incognito);
@@ -94,11 +99,6 @@ interface PageHandler {
   // (https://developers.google.com/tenor/guides/endpoints#posts).
   GetGifsByIds(array<string> ids) => (Status status,
                                       array<GifResponse> selected_gifs);
-
-  // Request backend to copy gif to clipboard (will close the picker).
-  // gif: The gif to insert in the form of the url returned from the tenor API
-  // e.g. "https://media.tenor.com/m8ggSG6nLqIAAAAC/christmas-minions.gif".
-  CopyGifToClipboard(url.mojom.Url gif);
 
   // Send a signal that emoji UI is fully loaded for metrics.
   OnUiFullyLoaded();
