@@ -31,7 +31,7 @@ element.style { ()
 
 ======== Pseudo ::before element ========
 [expanded] 
-[$#inspected:before, $].some-other-selector { (<style>)
+[$#inspected:before$], .some-other-selector { (<style>)
     content: "BEFORE";
 
 ======== Pseudo ::after element ========
@@ -81,7 +81,7 @@ element.style { ()
 
 Running: dumpBeforeStyles
 [expanded] 
-[$#inspected:before, $].some-other-selector { (<style>)
+[$#inspected:before$], .some-other-selector { (<style>)
     content: "BEFORE";
 
 

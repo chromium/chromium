@@ -6,7 +6,7 @@ element.style { ()
     font-size: 12px;
 
 [expanded] 
-foo, [$div#inspected, $]bar { (inspector-stylesheet:1 -> inspector-stylesheet:1:26)
+foo, [$div#inspected$], bar { (inspector-stylesheet:1 -> inspector-stylesheet:1:26)
     color: maroon;
 
 [expanded] 
