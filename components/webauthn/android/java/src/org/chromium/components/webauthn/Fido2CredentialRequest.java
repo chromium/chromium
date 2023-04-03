@@ -345,7 +345,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         task.addOnSuccessListener((isUVPAA) -> {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUVPAA);
         });
-        task.addOnFailureListener((e) -> { Log.e(TAG, "FIDO2 API call failed", e); });
+        task.addOnFailureListener((e) -> {
+            Log.e(TAG, "FIDO2 API call failed", e);
+            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
+        });
     }
 
     public void handleGetMatchingCredentialIdsRequest(RenderFrameHost frameHost,
