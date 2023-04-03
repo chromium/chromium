@@ -133,7 +133,7 @@ ClientSidePhishingModel::GetModelSharedMemoryRegion() const {
   return mapped_region_.region.Duplicate();
 }
 
-const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
+const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
 ClientSidePhishingModel::GetVisualTfLiteModelThresholds() const {
   return thresholds_;
 }
@@ -171,17 +171,18 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
             VLOG(0) << "Failed to verify CSD Flatbuffer indices and fields";
           } else {
             if (tflite_valid) {
-              thresholds_.Clear();  // Clear the previous model's thresholds
+              thresholds_.clear();  // Clear the previous model's thresholds
                                     // before adding on the new ones
               for (const flat::TfLiteModelMetadata_::Threshold* flat_threshold :
                    *(flatbuffer_model_->tflite_metadata()->thresholds())) {
-                TfLiteModelMetadata::Threshold* threshold = thresholds_.Add();
-                threshold->set_label(flat_threshold->label()->str());
-                threshold->set_threshold(flat_threshold->threshold());
-                threshold->set_esb_threshold(
+                TfLiteModelMetadata::Threshold threshold;
+                threshold.set_label(flat_threshold->label()->str());
+                threshold.set_threshold(flat_threshold->threshold());
+                threshold.set_esb_threshold(
                     flat_threshold->esb_threshold() > 0
                         ? flat_threshold->esb_threshold()
-                        : 0);
+                        : flat_threshold->threshold());
+                thresholds_[flat_threshold->label()->str()] = threshold;
               }
             }
           }
