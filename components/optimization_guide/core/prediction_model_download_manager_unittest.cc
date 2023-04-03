@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -87,7 +87,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
             [](const base::FilePath& models_dir_path,
                proto::OptimizationTarget optimization_target) {
               return models_dir_path.AppendASCII(
-                  base::GUID::GenerateRandomV4().AsLowercaseString());
+                  base::Uuid::GenerateRandomV4().AsLowercaseString());
             },
             temp_models_dir_.GetPath()),
         task_environment_.GetMainThreadTaskRunner());

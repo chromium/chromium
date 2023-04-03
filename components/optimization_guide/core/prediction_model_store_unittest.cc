@@ -6,12 +6,12 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/model_util.h"

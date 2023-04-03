@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -25,6 +24,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -1066,7 +1066,7 @@ base::FilePath PredictionManager::GetBaseModelDirForDownload(
              ? prediction_model_store_->GetBaseModelDirForModelCacheKey(
                    optimization_target, model_cache_key_)
              : models_dir_path_.AppendASCII(
-                   base::GUID::GenerateRandomV4().AsLowercaseString());
+                   base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 void PredictionManager::OverrideTargetModelForTesting(
