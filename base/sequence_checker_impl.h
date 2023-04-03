@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/threading/thread_checker_impl.h"
 
 namespace base {
 namespace debug {
@@ -58,10 +59,8 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
   void DetachFromSequence();
 
  private:
-  class Core;
-
-  mutable Lock lock_;
-  mutable std::unique_ptr<Core> core_ GUARDED_BY(lock_);
+  // SequenceCheckerImpl uses ThreadCheckerImpl for shared storage.
+  ThreadCheckerImpl thread_checker_;
 };
 
 }  // namespace base
