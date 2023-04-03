@@ -85,26 +85,6 @@ struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
 
 ASSERT_SIZE(LayoutBlockFlow, SameSizeAsLayoutBlockFlow);
 
-// Some features, such as floats, margin collapsing and fragmentation, require
-// some knowledge about things that happened when laying out previous block
-// child siblings. Only looking at the object currently being laid out isn't
-// always enough.
-class BlockChildrenLayoutInfo {
-  STACK_ALLOCATED();
-
- public:
-  BlockChildrenLayoutInfo(LayoutBlockFlow* block_flow,
-                          LayoutUnit before_edge,
-                          LayoutUnit after_edge) {}
-
-  LayoutUnit& PreviousFloatLogicalBottom() {
-    return previous_float_logical_bottom_;
-  }
-
- private:
-  LayoutUnit previous_float_logical_bottom_;
-};
-
 LayoutBlockFlow::LayoutBlockFlow(ContainerNode* node) : LayoutBlock(node) {
   SetChildrenInline(true);
 }
@@ -375,15 +355,8 @@ void LayoutBlockFlow::SetLogicalTopForChild(LayoutBox& child,
 
 bool LayoutBlockFlow::PositionAndLayoutOnceIfNeeded(
     LayoutBox& child,
-    LayoutUnit new_logical_top,
-    BlockChildrenLayoutInfo& layout_info) {
+    LayoutUnit new_logical_top) {
   NOT_DESTROYED();
-  LayoutUnit& previous_float_logical_bottom =
-      layout_info.PreviousFloatLogicalBottom();
-  LayoutUnit lowest_float =
-      std::max(previous_float_logical_bottom, LayoutUnit());
-
-  LayoutUnit old_logical_top = LogicalTopForChild(child);
   SetLogicalTopForChild(child, new_logical_top);
 
   SubtreeLayoutScope layout_scope(child);
@@ -393,26 +366,13 @@ bool LayoutBlockFlow::PositionAndLayoutOnceIfNeeded(
     return child.SelfNeedsLayout() || !child.ChildLayoutBlockedByDisplayLock();
   };
 
-  if (!child_needs_layout()) {
-    // Like in MarkDescendantsWithFloatsForLayoutIfNeeded, we only need
-    // to mark this object for layout if it actually is affected by a float
-    if (new_logical_top != old_logical_top && child.ShrinkToAvoidFloats() &&
-        (new_logical_top < lowest_float || old_logical_top < lowest_float)) {
-      // The child's width is affected by adjacent floats. When the child shifts
-      // to clear an item, its width can change (because it has more available
-      // width).
-      layout_scope.SetChildNeedsLayout(&child);
-    }
-  }
-
   bool needed_layout = child_needs_layout();
   if (needed_layout)
     child.UpdateLayout();
   return needed_layout;
 }
 
-void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
-                                       BlockChildrenLayoutInfo& layout_info) {
+void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child) {
   NOT_DESTROYED();
 
   // The child is a normal flow object. Compute the margins we will use for
@@ -426,9 +386,9 @@ void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
 
   // Use the estimated block position and lay out the child if needed. After
   // child layout, when we have enough information to perform proper margin
-  // collapsing and float clearing, we may have to reposition and lay out again
-  // if the estimate was wrong.
-  PositionAndLayoutOnceIfNeeded(child, logical_top_estimate, layout_info);
+  // collapsing, we may have to reposition and lay out again if the estimate was
+  // wrong.
+  PositionAndLayoutOnceIfNeeded(child, logical_top_estimate);
 
   // Now determine the correct ypos based off examination of collapsing margin
   // values.
@@ -439,7 +399,7 @@ void LayoutBlockFlow::LayoutBlockChild(LayoutBox& child,
   // determined during child layout that we need to insert a break to honor
   // widows, we also need to relayout.
   if (new_logical_top != logical_top_estimate || child.NeedsLayout()) {
-    PositionAndLayoutOnceIfNeeded(child, new_logical_top, layout_info);
+    PositionAndLayoutOnceIfNeeded(child, new_logical_top);
   }
 
   // Now place the child in the correct left position
@@ -456,8 +416,6 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
                                           LayoutUnit after_edge) {
   NOT_DESTROYED();
 
-  BlockChildrenLayoutInfo layout_info(this, before_edge, after_edge);
-
   for (auto* child = FirstChild(); child; child = child->NextSibling()) {
     child->SetShouldCheckForPaintInvalidation();
 
@@ -466,7 +424,7 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
 
     if (box->IsOutOfFlowPositioned()) {
       box->ContainingBlock()->InsertPositionedObject(box);
-      AdjustPositionedBlock(*box, layout_info);
+      AdjustPositionedBlock(*box);
       continue;
     }
     if (box->IsFloating()) {
@@ -475,13 +433,11 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
     }
 
     // Lay out the child.
-    LayoutBlockChild(*box, layout_info);
+    LayoutBlockChild(*box);
   }
 }
 
-void LayoutBlockFlow::AdjustPositionedBlock(
-    LayoutBox& child,
-    const BlockChildrenLayoutInfo& layout_info) {
+void LayoutBlockFlow::AdjustPositionedBlock(LayoutBox& child) {
   NOT_DESTROYED();
   LayoutUnit logical_top = LogicalHeight();
 

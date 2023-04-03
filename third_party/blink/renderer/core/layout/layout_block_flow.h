@@ -48,7 +48,6 @@ namespace blink {
 
 template <class Run>
 class BidiRunList;
-class BlockChildrenLayoutInfo;
 class LineInfo;
 class LineLayoutState;
 class LineWidth;
@@ -390,11 +389,10 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                            LayoutUnit after_edge);
 
   bool PositionAndLayoutOnceIfNeeded(LayoutBox& child,
-                                     LayoutUnit new_logical_top,
-                                     BlockChildrenLayoutInfo&);
+                                     LayoutUnit new_logical_top);
 
-  void LayoutBlockChild(LayoutBox& child, BlockChildrenLayoutInfo&);
-  void AdjustPositionedBlock(LayoutBox& child, const BlockChildrenLayoutInfo&);
+  void LayoutBlockChild(LayoutBox& child);
+  void AdjustPositionedBlock(LayoutBox& child);
 
   LayoutUnit LogicalRightOffsetForPositioningFloat(
       LayoutUnit logical_top,
