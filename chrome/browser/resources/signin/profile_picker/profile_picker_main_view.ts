@@ -66,7 +66,6 @@ export class ProfilePickerMainViewElement extends
         type: Boolean,
         value: true,
         computed: 'computeHideAskOnStartup_(profilesList_.length)',
-
       },
 
       askOnStartup_: {

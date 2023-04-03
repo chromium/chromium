@@ -9,7 +9,79 @@
     min-height: var(--view-min-size);
     min-width: var(--view-min-size);
   }
+
+  .left-banner {
+    content: url(images/left_banner_image.svg);
+    left: 0;
+  }
+
+  .right-banner {
+    content: url(images/right_banner_image.svg);
+    right: 0;
+  }
+
+  .left-banner,
+  .right-banner {
+    height: var(--banner-img-height);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: var(--banner-img-width);
+    z-index: -1;
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/tangible_sync_style_left_banner.svg);
+    left: 0;
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(images/tangible_sync_style_right_banner.svg);
+    right: 0;
+  }
+
+  .tangible-sync-style-left-banner,
+  .tangible-sync-style-right-banner {
+    max-width: 320px;
+    position: absolute;
+    top: 0;
+    width: 17vw;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .left-banner {
+      content: url(images/dark_mode_left_banner_image.svg);
+    }
+
+    .right-banner {
+      content: url(images/dark_mode_right_banner_image.svg);
+    }
+
+    .tangible-sync-style-left-banner {
+      content: url(images/tangible_sync_style_left_banner_dark.svg);
+    }
+
+    .tangible-sync-style-right-banner {
+      content: url(images/tangible_sync_style_right_banner_dark.svg);
+    }
+}
 </style>
+<img class="left-banner" alt=""
+  style$="display: [[getDisplayForVerticalBanner_(
+      shouldDisplayVerticalBanners_, isTangibleSyncEnabled_)]]">
+<img class="right-banner" alt=""
+    style$="display: [[getDisplayForVerticalBanner_(
+    shouldDisplayVerticalBanners_,
+    isTangibleSyncEnabled_)]]">
+<img class="tangible-sync-style-left-banner" alt=""
+    style$="display: [[getDisplayForTangibleSyncStyleVerticalBanner_(
+    shouldDisplayVerticalBanners_,
+    isTangibleSyncEnabled_)]]">
+<img class="tangible-sync-style-right-banner" alt=""
+    style$="display: [[getDisplayForTangibleSyncStyleVerticalBanner_(
+    shouldDisplayVerticalBanners_,
+    isTangibleSyncEnabled_)]]">
+
 <cr-view-manager id="viewManager">
   <profile-picker-main-view id="mainView" slot="view">
   </profile-picker-main-view>
