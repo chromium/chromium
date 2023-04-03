@@ -262,16 +262,19 @@ void SavedDeskRegularIconView::LoadDefaultIcon() {
   const int resource_id = native_theme && native_theme->ShouldUseDarkColors()
                               ? IDR_DEFAULT_FAVICON_DARK_64
                               : IDR_DEFAULT_FAVICON_64;
-  icon_view_->SetImage(CreateResizedImageToIconSize(
-      gfx::ImageSkiaOperations::CreateColorMask(
-          ui::ResourceBundle::GetSharedInstance()
-              .GetImageNamed(resource_id)
-              .AsImageSkia(),
-          // TODO(shidi): Replace the ash color provider with MaterialNext color
-          // provider.
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)),
-      /*is_default=*/true));
+
+  // `color_provider` only exist when view is created, otherwise it will be a
+  // nullptr. This will be called on `OnThemeChanged` again to ensure `SetImage`
+  // is done.
+  if (auto* color_provider = GetColorProvider()) {
+    icon_view_->SetImage(CreateResizedImageToIconSize(
+        gfx::ImageSkiaOperations::CreateColorMask(
+            ui::ResourceBundle::GetSharedInstance()
+                .GetImageNamed(resource_id)
+                .AsImageSkia(),
+            color_provider->GetColor(cros_tokens::kCrosSysOnSurface)),
+        /*is_default=*/true));
+  }
 }
 
 BEGIN_METADATA(SavedDeskRegularIconView, views::View)
