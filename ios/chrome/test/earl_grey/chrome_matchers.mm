@@ -699,6 +699,10 @@ id<GREYMatcher> PasswordsDestinationButton() {
   return [ChromeMatchersAppInterface passwordsDestinationButton];
 }
 
+id<GREYMatcher> PriceNotificationsDestinationButton() {
+  return [ChromeMatchersAppInterface priceNotificationsDestinationButton];
+}
+
 id<GREYMatcher> DownloadsDestinationButton() {
   return [ChromeMatchersAppInterface downloadsDestinationButton];
 }

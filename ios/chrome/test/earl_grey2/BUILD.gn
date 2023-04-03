@@ -185,6 +185,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/permissions:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:eg2_tests",
+    "//ios/chrome/browser/ui/price_notifications:eg2_tests",
     "//ios/chrome/browser/ui/qr_scanner:eg2_tests",
     "//ios/chrome/browser/ui/reading_list:eg2_tests",
     "//ios/chrome/browser/ui/recent_tabs:eg2_tests",

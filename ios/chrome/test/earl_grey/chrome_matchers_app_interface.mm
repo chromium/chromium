@@ -1079,6 +1079,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuPasswordsId);
 }
 
++ (id<GREYMatcher>)priceNotificationsDestinationButton {
+  return grey_anyOf(
+      grey_accessibilityID(kToolsMenuPriceNotifications),
+      grey_accessibilityID([NSString
+          stringWithFormat:@"%@-newBadge", kToolsMenuPriceNotifications]),
+      nullptr);
+}
+
 + (id<GREYMatcher>)readingListDestinationButton {
   return grey_accessibilityID(kToolsMenuReadingListId);
 }
