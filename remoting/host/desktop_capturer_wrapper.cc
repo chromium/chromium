@@ -14,6 +14,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 #if BUILDFLAG(IS_LINUX)
+#include "remoting/host/linux/wayland_desktop_capturer.h"
 #include "remoting/host/linux/wayland_utils.h"
 #endif
 
@@ -31,7 +32,15 @@ void DesktopCapturerWrapper::CreateCapturer(
     const webrtc::DesktopCaptureOptions& options) {
   DCHECK(!capturer_);
 
+#if BUILDFLAG(IS_LINUX)
+  if (IsRunningWayland()) {
+    capturer_ = std::make_unique<WaylandDesktopCapturer>(options);
+  } else {
+    capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+  }
+#else
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+#endif
 
   if (!capturer_) {
     LOG(ERROR) << "Failed to initialize screen capturer.";
