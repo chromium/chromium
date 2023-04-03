@@ -986,4 +986,9 @@ gfx::ContentColorUsage LayerImpl::GetContentColorUsage() const {
   return gfx::ContentColorUsage::kSRGB;
 }
 
+viz::ViewTransitionElementResourceId LayerImpl::ViewTransitionResourceId()
+    const {
+  return viz::ViewTransitionElementResourceId();
+}
+
 }  // namespace cc

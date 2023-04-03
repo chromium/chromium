@@ -177,4 +177,21 @@ gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
       shared_quad_state->quad_to_target_transform, expanded_rect);
 }
 
+gfx::Transform GetViewTransitionTransform(
+    gfx::Rect shared_element_quad,
+    gfx::Rect view_transition_content_output) {
+  gfx::Transform view_transition_transform;
+
+  view_transition_transform.Scale(
+      shared_element_quad.width() /
+          static_cast<SkScalar>(view_transition_content_output.width()),
+      shared_element_quad.height() /
+          static_cast<SkScalar>(view_transition_content_output.height()));
+
+  view_transition_transform.Translate(-view_transition_content_output.x(),
+                                      -view_transition_content_output.y());
+
+  return view_transition_transform;
+}
+
 }  // namespace viz

@@ -238,6 +238,7 @@ class CC_EXPORT RenderSurfaceImpl {
   int EffectTreeIndex() const;
 
   const EffectNode* OwningEffectNode() const;
+  EffectNode* OwningEffectNodeMutableForTest() const;
 
   const ViewTransitionElementId& GetViewTransitionElementId() const;
 

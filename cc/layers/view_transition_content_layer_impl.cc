@@ -86,4 +86,9 @@ const char* ViewTransitionContentLayerImpl::LayerTypeAsString() const {
   return "cc::ViewTransitionContentLayerImpl";
 }
 
+viz::ViewTransitionElementResourceId
+ViewTransitionContentLayerImpl::ViewTransitionResourceId() const {
+  return resource_id_;
+}
+
 }  // namespace cc

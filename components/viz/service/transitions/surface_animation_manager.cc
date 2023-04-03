@@ -25,6 +25,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/transition_utils.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -61,13 +62,8 @@ void ReplaceSharedElementWithRenderPass(
       target_render_pass->CreateAndAppendSharedQuadState();
   *copied_quad_state = *shared_element_quad.shared_quad_state;
 
-  gfx::Transform transform;
-  transform.Scale(shared_element_quad.rect.width() /
-                      static_cast<SkScalar>(shared_pass_output_rect.width()),
-                  shared_element_quad.rect.height() /
-                      static_cast<SkScalar>(shared_pass_output_rect.height()));
-  transform.Translate(-shared_pass_output_rect.x(),
-                      -shared_pass_output_rect.y());
+  gfx::Transform transform = GetViewTransitionTransform(
+      shared_element_quad.rect, shared_pass_output_rect);
 
   copied_quad_state->quad_to_target_transform.PreConcat(transform);
 

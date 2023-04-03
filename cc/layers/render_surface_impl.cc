@@ -194,6 +194,11 @@ const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
       EffectTreeIndex());
 }
 
+EffectNode* RenderSurfaceImpl::OwningEffectNodeMutableForTest() const {
+  return layer_tree_impl_->property_trees()->effect_tree_mutable().Node(
+      EffectTreeIndex());
+}
+
 const ViewTransitionElementId& RenderSurfaceImpl::GetViewTransitionElementId()
     const {
   return OwningEffectNode()->view_transition_shared_element_id;
