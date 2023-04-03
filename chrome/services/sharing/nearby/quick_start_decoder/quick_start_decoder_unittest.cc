@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -16,16 +17,16 @@
 
 namespace ash::quick_start {
 
+using QuickStartMessage = ash::quick_start::QuickStartMessage;
+
 namespace {
 
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
-constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
 constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr char kExampleCryptauthDeviceId[] = "helloworld";
 constexpr char kFidoMessageKey[] = "fidoMessage";
-constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
 constexpr uint8_t kSuccess = 0x00;
 constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
 constexpr int kCborDecoderErrorInvalidUtf8 = 6;
@@ -68,6 +69,7 @@ std::vector<uint8_t> BuildEncodedResponseData(
 class QuickStartDecoderTest : public testing::Test {
  public:
   QuickStartDecoderTest() {
+    QuickStartMessage::DisableSandboxCheckForTesting();
     decoder_ = std::make_unique<QuickStartDecoder>(
         remote_.BindNewPipeAndPassReceiver());
   }
@@ -94,22 +96,21 @@ class QuickStartDecoderTest : public testing::Test {
   mojo::Remote<mojom::QuickStartDecoder> remote_;
   std::unique_ptr<QuickStartDecoder> decoder_;
 
+  std::vector<uint8_t> ConvertMessageToBytes(QuickStartMessage* message) {
+    std::string json;
+    base::JSONWriter::Write(*message->GenerateEncodedMessage(), &json);
+
+    std::vector<uint8_t> payload(json.begin(), json.end());
+
+    return payload;
+  }
+
   std::vector<uint8_t> BuildSecondDeviceAuthPayload(std::vector<uint8_t> data) {
     // Package FIDO GetAssertion command bytes into MessagePayload.
-    base::Value::Dict second_device_auth_payload;
-    second_device_auth_payload.Set(kFidoMessageKey, base::Base64Encode(data));
-    base::Value::Dict message_payload;
-    message_payload.Set(kSecondDeviceAuthPayloadKey,
-                        std::move(second_device_auth_payload));
+    QuickStartMessage message(QuickStartMessageType::kSecondDeviceAuthPayload);
 
-    // Encode MessagePayload to JSON serialized bytes.
-    std::string json_serialized_payload;
-    EXPECT_TRUE(
-        base::JSONWriter::Write(message_payload, &json_serialized_payload));
-    std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
-                                        json_serialized_payload.end());
-
-    return response_bytes;
+    message.GetPayload()->Set(kFidoMessageKey, base::Base64Encode(data));
+    return ConvertMessageToBytes(&message);
   }
 };
 
@@ -246,51 +247,30 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyMessagePayload) {
-  base::Value::Dict message_payload;
-  std::string json_bootstrap_configuration;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
-  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
-                               json_bootstrap_configuration.end());
+  QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
   mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(std::move(payload));
+      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
   EXPECT_FALSE(response);
 }
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyBootstrapConfigurations) {
-  base::Value::Dict bootstrap_configurations;
-  base::Value::Dict message_payload;
-  message_payload.Set(kBootstrapConfigurationsKey,
-                      std::move(bootstrap_configurations));
+  QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
 
-  std::string json_bootstrap_configuration;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
-  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
-                               json_bootstrap_configuration.end());
   mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(std::move(payload));
+      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
   EXPECT_FALSE(response);
 }
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyDeviceDetails) {
   base::Value::Dict device_details;
-  base::Value::Dict bootstrap_configurations;
-  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
-  base::Value::Dict message_payload;
-  message_payload.Set(kBootstrapConfigurationsKey,
-                      std::move(bootstrap_configurations));
+  QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
-  std::string json_bootstrap_configuration;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
-  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
-                               json_bootstrap_configuration.end());
   mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(std::move(payload));
+      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
   EXPECT_TRUE(response);
   EXPECT_EQ(response->cryptauth_device_id, "");
 }
@@ -300,20 +280,11 @@ TEST_F(QuickStartDecoderTest,
   base::Value::Dict device_details;
   device_details.Set(kCryptauthDeviceIdKey, "");
 
-  base::Value::Dict bootstrap_configurations;
-  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
+  QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
-  base::Value::Dict message_payload;
-  message_payload.Set(kBootstrapConfigurationsKey,
-                      std::move(bootstrap_configurations));
-
-  std::string json_bootstrap_configuration;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
-  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
-                               json_bootstrap_configuration.end());
   mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(std::move(payload));
+      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
   EXPECT_TRUE(response);
   EXPECT_EQ(response->cryptauth_device_id, "");
 }
@@ -323,20 +294,11 @@ TEST_F(QuickStartDecoderTest,
   base::Value::Dict device_details;
   device_details.Set(kCryptauthDeviceIdKey, kExampleCryptauthDeviceId);
 
-  base::Value::Dict bootstrap_configurations;
-  bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
+  QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
+  message.GetPayload()->Set(kDeviceDetailsKey, std::move(device_details));
 
-  base::Value::Dict message_payload;
-  message_payload.Set(kBootstrapConfigurationsKey,
-                      std::move(bootstrap_configurations));
-
-  std::string json_bootstrap_configuration;
-  ASSERT_TRUE(
-      base::JSONWriter::Write(message_payload, &json_bootstrap_configuration));
-  std::vector<uint8_t> payload(json_bootstrap_configuration.begin(),
-                               json_bootstrap_configuration.end());
   mojom::BootstrapConfigurationsPtr response =
-      DoDecodeBootstrapConfigurations(std::move(payload));
+      DoDecodeBootstrapConfigurations(ConvertMessageToBytes(&message));
   EXPECT_TRUE(response);
   EXPECT_EQ(response->cryptauth_device_id, kExampleCryptauthDeviceId);
 }
@@ -362,18 +324,10 @@ TEST_F(QuickStartDecoderTest, ExtractFidoDataFromValidJsonResponse) {
 
 TEST_F(QuickStartDecoderTest,
        ExtractFidoDataFromJsonResponseFailsIfFidoDataMissingFromPayload) {
-  base::Value::Dict second_device_auth_payload;
-  base::Value::Dict message_payload;
-  message_payload.Set(kSecondDeviceAuthPayloadKey,
-                      std::move(second_device_auth_payload));
-
-  std::string json_serialized_payload;
-  base::JSONWriter::Write(message_payload, &json_serialized_payload);
-  std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
-                                      json_serialized_payload.end());
+  QuickStartMessage message(QuickStartMessageType::kSecondDeviceAuthPayload);
 
   absl::optional<std::vector<uint8_t>> result =
-      ExtractFidoDataFromJsonResponse(response_bytes);
+      ExtractFidoDataFromJsonResponse(ConvertMessageToBytes(&message));
   EXPECT_FALSE(result.has_value());
 }
 
