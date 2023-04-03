@@ -377,7 +377,6 @@ component("base") {
     "functional/overloaded.h",
     "functional/unretained_traits.h",
     "gtest_prod_util.h",
-    "guid.cc",
     "guid.h",
     "hash/hash.cc",
     "hash/hash.h",
