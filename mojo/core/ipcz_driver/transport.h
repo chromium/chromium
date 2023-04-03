@@ -41,7 +41,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
     EndpointType destination;
   };
   Transport(EndpointTypes endpoint_types,
-            PlatformChannelEndpoint endpoint,
+            Channel::Endpoint endpoint,
             base::Process remote_process,
             bool is_remote_process_untrusted = false);
 
@@ -49,7 +49,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // than MakeRefCounted<T>.
   static scoped_refptr<Transport> Create(
       EndpointTypes endpoint_types,
-      PlatformChannelEndpoint endpoint,
+      Channel::Endpoint endpoint,
       base::Process remote_process = base::Process(),
       bool is_remote_process_untrusted = false);
 
@@ -93,7 +93,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // invalidating the transport. May only be called on a Transport which has not
   // yet been activated, and only when the channel endpoint is not a server.
   PlatformChannelEndpoint TakeEndpoint() {
-    return std::move(inactive_endpoint_);
+    return std::move(absl::get<PlatformChannelEndpoint>(inactive_endpoint_));
   }
 
   // Handles reports of bad activity from ipcz, resulting from parcel rejection
@@ -168,6 +168,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
 
   ~Transport() override;
 
+  bool IsEndpointValid() const;
   bool CanTransmitHandles() const;
 
   // Indicates whether this transport should serialize its remote process handle
@@ -208,7 +209,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // start its underlying Channel instance once activated. Not guarded by a lock
   // since it must not accessed beyond activation, where thread safety becomes a
   // factor.
-  PlatformChannelEndpoint inactive_endpoint_;
+  Channel::Endpoint inactive_endpoint_;
 
   base::Lock lock_;
   scoped_refptr<Channel> channel_ GUARDED_BY(lock_);
