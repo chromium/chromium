@@ -169,9 +169,18 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
   }
   if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     auto it = scroll_translation_nodes_.find(&scroll_translation);
-    if (it != scroll_translation_nodes_.end()) {
-      return it->value;
+    if (it == scroll_translation_nodes_.end()) {
+      // Negative z-index scrolling contents in a non-stacking-context scroller
+      // appears earlier than the ScrollHitTest of the scroller, and this
+      // method can be called before ComputeNeedsCompositedScrolling() for the
+      // ScrollHitTest. If LCD-text is strongly preferred, here we assume the
+      // scroller is not composited. Even if later the scroller is found to
+      // have an opaque background and composited, not compositing the negative
+      // z-index contents won't cause any problem because they (with possible
+      // wrong rendering) are obscured by the opaque background.
+      return lcd_text_preference_ != LCDTextPreference::kStronglyPreferred;
     }
+    return it->value;
   }
   return false;
 }
@@ -434,8 +443,11 @@ bool PaintArtifactCompositor::DecompositeEffect(
                                     ? effect.OutputClip()->Unalias()
                                     : layer.GetPropertyTreeState().Clip(),
                                 effect);
-  absl::optional<PropertyTreeState> upcast_state =
-      group_state.CanUpcastWith(layer.GetPropertyTreeState());
+  auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
+    return NeedsCompositedScrolling(t);
+  };
+  absl::optional<PropertyTreeState> upcast_state = group_state.CanUpcastWith(
+      layer.GetPropertyTreeState(), is_composited_scroll);
   if (!upcast_state)
     return false;
 
@@ -468,8 +480,8 @@ bool PaintArtifactCompositor::DecompositeEffect(
       // the same composited layer.
       const auto& previous_sibling = pending_layers_[layer_index - 1];
       if (previous_sibling.DrawsContent() &&
-          !previous_sibling.CanMergeWithDecompositedBlendMode(layer,
-                                                              *upcast_state)) {
+          !previous_sibling.CanMergeWithDecompositedBlendMode(
+              layer, *upcast_state, is_composited_scroll)) {
         return false;
       }
     }
@@ -529,8 +541,6 @@ void PaintArtifactCompositor::LayerizeGroup(
       // layer, specifically scrollbar layers, foreign layers, scroll hit
       // testing layers.
       if (pending_layers_.back().ChunkRequiresOwnLayer()) {
-        // TODO(crbug.com/1414885): conditionally composite ScrollHitTest and
-        // scrollbar in CompositeScrollAfterPaint.
         continue;
       }
     } else {
@@ -582,10 +592,14 @@ void PaintArtifactCompositor::LayerizeGroup(
 
     // This iterates pending_layers_[first_layer_in_current_group:-1] in
     // reverse.
+    auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
+      return NeedsCompositedScrolling(t);
+    };
     for (wtf_size_t candidate_index = pending_layers_.size() - 1;
          candidate_index-- > first_layer_in_current_group;) {
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
-      if (candidate_layer.Merge(new_layer, lcd_text_preference_)) {
+      if (candidate_layer.Merge(new_layer, lcd_text_preference_,
+                                is_composited_scroll)) {
         pending_layers_.pop_back();
         break;
       }
@@ -711,16 +725,16 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
   return synthesized_clip;
 }
 
-static void UpdateCompositorViewportProperties(
-    const PaintArtifactCompositor::ViewportProperties& properties,
+void PaintArtifactCompositor::UpdateCompositorViewportProperties(
+    const ViewportProperties& properties,
     PropertyTreeManager& property_tree_manager,
     cc::LayerTreeHost* layer_tree_host) {
   // The inner and outer viewports' existence is linked. That is, either they're
   // both null or they both exist.
-  DCHECK_EQ(static_cast<bool>(properties.outer_scroll_translation),
-            static_cast<bool>(properties.inner_scroll_translation));
-  DCHECK(!properties.outer_clip ||
-         static_cast<bool>(properties.inner_scroll_translation));
+  CHECK_EQ(static_cast<bool>(properties.outer_scroll_translation),
+           static_cast<bool>(properties.inner_scroll_translation));
+  CHECK(!properties.outer_clip ||
+        static_cast<bool>(properties.inner_scroll_translation));
 
   cc::ViewportPropertyIds ids;
   if (properties.overscroll_elasticity_transform) {
@@ -740,10 +754,14 @@ static void UpdateCompositorViewportProperties(
       ids.outer_clip = property_tree_manager.EnsureCompositorClipNode(
           *properties.outer_clip);
     }
-    if (properties.outer_scroll_translation) {
-      ids.outer_scroll = property_tree_manager.EnsureCompositorOuterScrollNode(
-          *properties.outer_scroll_translation);
-    }
+    CHECK(properties.outer_scroll_translation);
+    ids.outer_scroll = property_tree_manager.EnsureCompositorOuterScrollNode(
+        *properties.outer_scroll_translation);
+
+    CHECK(NeedsCompositedScrolling(*properties.inner_scroll_translation));
+    CHECK(NeedsCompositedScrolling(*properties.outer_scroll_translation));
+    scroll_translation_nodes_.insert(properties.inner_scroll_translation, true);
+    scroll_translation_nodes_.insert(properties.outer_scroll_translation, true);
   }
 
   layer_tree_host->RegisterViewportPropertyIds(ids);

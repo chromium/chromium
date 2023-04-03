@@ -259,6 +259,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool SetScrollbarNeedsDisplay(CompositorElementId element_id);
 
  private:
+  void UpdateCompositorViewportProperties(const ViewportProperties&,
+                                          PropertyTreeManager&,
+                                          cc::LayerTreeHost*);
+
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.
   void CollectPendingLayers(scoped_refptr<const PaintArtifact>);

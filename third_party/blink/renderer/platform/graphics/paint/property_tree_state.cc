@@ -6,23 +6,68 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
 namespace blink {
 
 namespace {
 
-bool ClipChainHasCompositedTransformTo(
+using IsCompositedScrollFunction =
+    PropertyTreeState::IsCompositedScrollFunction;
+
+const TransformPaintPropertyNode* NearestCompositedScrollTranslation(
+    const TransformPaintPropertyNode& scroll_translation,
+    IsCompositedScrollFunction is_composited_scroll) {
+  for (auto* t = &scroll_translation; t->Parent();
+       t = &t->UnaliasedParent()->NearestScrollTranslationNode()) {
+    if (is_composited_scroll(*t)) {
+      return t;
+    }
+  }
+  return nullptr;
+}
+
+bool InSameTransformCompositingBoundary(
+    const TransformPaintPropertyNode& t1,
+    const TransformPaintPropertyNode& t2,
+    IsCompositedScrollFunction is_composited_scroll) {
+  const auto* composited_ancestor1 = t1.NearestDirectlyCompositedAncestor();
+  const auto* composited_ancestor2 = t2.NearestDirectlyCompositedAncestor();
+  if (composited_ancestor1 != composited_ancestor2) {
+    return false;
+  }
+  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    return true;
+  }
+  // In CompositeScrollAfterPaint, there may be indirectly composited scroll
+  // translations below the common nearest directly composited ancestor.
+  // Check if t1 and t2 have the same nearest composited scroll translation.
+  const auto& scroll_translation1 = t1.NearestScrollTranslationNode();
+  const auto& scroll_translation2 = t2.NearestScrollTranslationNode();
+  if (&scroll_translation1 == &scroll_translation2) {
+    return true;
+  }
+  return NearestCompositedScrollTranslation(scroll_translation1,
+                                            is_composited_scroll) ==
+         NearestCompositedScrollTranslation(scroll_translation2,
+                                            is_composited_scroll);
+}
+
+bool ClipChainInTransformCompositingBoundary(
     const ClipPaintPropertyNode& node,
     const ClipPaintPropertyNode& ancestor,
-    const TransformPaintPropertyNode& transform) {
-  const auto* composited_ancestor =
-      transform.NearestDirectlyCompositedAncestor();
+    const TransformPaintPropertyNode& transform,
+    IsCompositedScrollFunction is_composited_scroll) {
   for (const auto* n = &node; n != &ancestor; n = n->UnaliasedParent()) {
-    if (composited_ancestor !=
-        n->LocalTransformSpace().Unalias().NearestDirectlyCompositedAncestor())
-      return true;
+    if (!InSameTransformCompositingBoundary(transform,
+                                            n->LocalTransformSpace().Unalias(),
+                                            is_composited_scroll)) {
+      return false;
+    }
   }
-  return false;
+  return true;
 }
+
 }  // namespace
 
 const PropertyTreeState& PropertyTreeStateOrAlias::Root() {
@@ -42,7 +87,8 @@ bool PropertyTreeStateOrAlias::Changed(
 }
 
 absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
-    const PropertyTreeState& guest) const {
+    const PropertyTreeState& guest,
+    IsCompositedScrollFunction is_composited_scroll) const {
   // A number of criteria need to be met:
   //   1. The guest effect must be a descendant of the home effect. However this
   // check is enforced by the layerization recursion. Here we assume the guest
@@ -51,8 +97,8 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
   // visibility.
   //   3. The guest transform space must be within compositing boundary of the
   // home transform space.
-  //   4. The local space of each clip and effect node on the ancestor chain
-  // must be within compositing boundary of the home transform space.
+  //   4. The local space of each clip on the ancestor chain must be within
+  // compositing boundary of the home transform space.
   DCHECK_EQ(&Effect(), &guest.Effect());
 
   const TransformPaintPropertyNode* upcast_transform = nullptr;
@@ -60,13 +106,14 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
   if (&Transform() == &guest.Transform()) {
     upcast_transform = &Transform();
   } else {
-    if (Transform().NearestDirectlyCompositedAncestor() !=
-        guest.Transform().NearestDirectlyCompositedAncestor())
+    if (!InSameTransformCompositingBoundary(Transform(), guest.Transform(),
+                                            is_composited_scroll)) {
       return absl::nullopt;
-
-    if (Transform().IsBackfaceHidden() != guest.Transform().IsBackfaceHidden())
+    }
+    if (Transform().IsBackfaceHidden() !=
+        guest.Transform().IsBackfaceHidden()) {
       return absl::nullopt;
-
+    }
     upcast_transform =
         &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
   }
@@ -76,10 +123,11 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
     upcast_clip = &Clip();
   } else {
     upcast_clip = &Clip().LowestCommonAncestor(guest.Clip()).Unalias();
-    if (ClipChainHasCompositedTransformTo(Clip(), *upcast_clip,
-                                          *upcast_transform) ||
-        ClipChainHasCompositedTransformTo(guest.Clip(), *upcast_clip,
-                                          *upcast_transform)) {
+    if (!ClipChainInTransformCompositingBoundary(
+            Clip(), *upcast_clip, *upcast_transform, is_composited_scroll) ||
+        !ClipChainInTransformCompositingBoundary(guest.Clip(), *upcast_clip,
+                                                 *upcast_transform,
+                                                 is_composited_scroll)) {
       return absl::nullopt;
     }
   }
