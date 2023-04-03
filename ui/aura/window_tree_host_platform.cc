@@ -315,21 +315,18 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
 
   // Only set the sequence ID if this change will produce a frame.
   // If it won't, we may wait indefinitely for a frame that will never come.
-  bool produces_frame = old.bounds_dip.size() != latest.bounds_dip.size() ||
-                        old.size_px != latest.size_px ||
-                        old.window_scale != latest.window_scale ||
-                        old.raster_scale != latest.raster_scale;
-
-  if (produces_frame) {
-    // Update window()'s LocalSurfaceId. This will ensure that the parent ID is
-    // updated both here and for LayerTreeHostImpl. So, the CompositorFrame sent
-    // by LayerTreeHostImpl will include the updated parent ID for
-    // synchronization. Some operations may have already updated the
-    // LocalSurfaceId, but this only modifies pending commit state, so it's not
-    // expensive.
-    window()->AllocateLocalSurfaceId();
-    compositor()->SetLocalSurfaceIdFromParent(window()->GetLocalSurfaceId());
+  if (!latest.ProducesFrameOnUpdateFrom(old)) {
+    return -1;
   }
+
+  // Update window()'s LocalSurfaceId. This will ensure that the parent ID is
+  // updated both here and for LayerTreeHostImpl. So, the CompositorFrame sent
+  // by LayerTreeHostImpl will include the updated parent ID for
+  // synchronization. Some operations may have already updated the
+  // LocalSurfaceId, but this only modifies pending commit state, so it's not
+  // expensive.
+  window()->AllocateLocalSurfaceId();
+  compositor()->SetLocalSurfaceIdFromParent(window()->GetLocalSurfaceId());
 
   return window()->GetLocalSurfaceId().parent_sequence_number();
 }

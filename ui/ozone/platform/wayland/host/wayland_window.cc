@@ -1237,6 +1237,10 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   auto old = applied_state_;
   applied_state_ = latest.state;
 
+  // OnStateUpdate may return -1 if the state update does not require a new
+  // frame to be considered synchronized. For example, this can happen if the
+  // old and new states are the same, or it only changes the origin of the
+  // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
 
   // Latch in tests immediately if the test config is set.
