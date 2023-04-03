@@ -15,6 +15,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -67,4 +69,14 @@ content::WebContents* ProfilePickerTestBase::web_contents() {
   if (!web_view())
     return nullptr;
   return web_view()->GetWebContents();
+}
+
+GURL ProfilePickerTestBase::GetSigninChromeSyncDiceUrl() {
+  auto* profile_picker_view =
+      static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting());
+  GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+  if (profile_picker_view->ShouldUseDarkColors()) {
+    url = net::AppendQueryParameter(url, "color_scheme", "dark");
+  }
+  return net::AppendQueryParameter(url, "flow", "promo");
 }

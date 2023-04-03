@@ -50,6 +50,10 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
 
   // Gets the picker's web contents.
   content::WebContents* web_contents();
+
+  // Gets signin_chrome_sync_dice with appropriate parameters appended:
+  // if in dark mode, "color_scheme=dark", and always "flow=promo".
+  GURL GetSigninChromeSyncDiceUrl();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_
