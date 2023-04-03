@@ -214,22 +214,30 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
       !scroll_translation.ScrollNode()->UserScrollableVertical()) {
     return false;
   }
-  if (lcd_text_preference_ != LCDTextPreference::kStronglyPreferred ||
-      chunk_cursor + 1 == artifact.PaintChunks().end()) {
+  if (lcd_text_preference_ != LCDTextPreference::kStronglyPreferred) {
     return true;
   }
-  // Normally the next chunk contains the scrolling background which normally
-  // defines the opaqueness of the scrolling contents. If it has an opaque rect
+  // Find the chunk containing the scrolling background which normally defines
+  // the opaqueness of the scrolling contents. If it has an opaque rect
   // covering the whole scrolling contents, we can use composited scrolling
   // without losing LCD text.
-  const PaintChunk& next_chunk = *(chunk_cursor + 1);
-  return &next_chunk.properties.Transform().Unalias() == &scroll_translation &&
-         &next_chunk.properties.Clip().Unalias() ==
-             scroll_translation.ScrollNode()->OverflowClipNode() &&
-         &next_chunk.properties.Effect().Unalias() ==
-             &chunk_cursor->properties.Effect().Unalias() &&
-         next_chunk.rect_known_to_be_opaque.Contains(
-             scroll_translation.ScrollNode()->ContentsRect());
+  for (auto* next = chunk_cursor + 1; next != artifact.PaintChunks().end();
+       ++next) {
+    if (&next->properties.Transform() ==
+        &chunk_cursor->properties.Transform()) {
+      // Skip scroll controls that are painted in the same transform space
+      // as the ScrollHitTest.
+      continue;
+    }
+    return &next->properties.Transform().Unalias() == &scroll_translation &&
+           &next->properties.Clip().Unalias() ==
+               scroll_translation.ScrollNode()->OverflowClipNode() &&
+           &next->properties.Effect().Unalias() ==
+               &chunk_cursor->properties.Effect().Unalias() &&
+           next->rect_known_to_be_opaque.Contains(
+               scroll_translation.ScrollNode()->ContentsRect());
+  }
+  return true;
 }
 
 PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(

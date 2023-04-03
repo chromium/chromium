@@ -875,11 +875,8 @@ virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Ski
 
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 
-crbug.com/1414885 virtual/composite-scroll-after-paint/compositing/overflow/descendant-with-clip-path.html [ Failure ]
 crbug.com/1414885 virtual/composite-scroll-after-paint/compositing/overflow/nested-render-surfaces-with-intervening-clip.html [ Failure ]
 crbug.com/1414885 virtual/composite-scroll-after-paint/compositing/overflow/nested-render-surfaces.html [ Failure ]
-crbug.com/1414885 virtual/composite-scroll-after-paint/paint/invalidation/overflow/composited-overflow-with-borderbox-background.html [ Failure ]
-crbug.com/1414885 virtual/composite-scroll-after-paint/scrollbars/custom-scrollbar-with-incomplete-style.html [ Failure ]
 crbug.com/1414885 virtual/composite-scroll-after-paint/scrollbars/listbox-scrollbar-combinations.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
