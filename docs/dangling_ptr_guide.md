@@ -15,6 +15,7 @@ See also the general instructions about the dangling pointer detector:
     - [Incorrect destruction order](#incorrect-destruction-order)
     - [Observer callback](#observer-callback)
     - [Challenging lifespan](#challenging-lifespan)
+    - [Cyclic pointers](#cyclic-pointers)
     - [Fallback solution](#fallback-solution)
   - [`Case 3` The pointer manages ownership over the object](#the-pointer-manages-ownership-over-the-object)
     - [Smart pointers](#smart-pointers)
@@ -79,6 +80,16 @@ This represents ~4% of the dangling pointers.
 It is important to clear the pointer when the object is about to be deleted.
 Chrome uses the observer pattern heavily. In some cases, the observer does not
 clear its pointer toward the observed class when notified of its destruction.
+
+#### Cyclic pointers
+
+Sometimes two (or more) objects can have unowned references between each other,
+with neither one owning the other. This creates a situation where neither can
+be deleted without creating a dangling pointer unless some action is first
+taken to break the cycle. In order to create such a cycle in the first place, a
+call to a "setter" method or equivalent must have occurred handing one object
+a reference to the other. Balance out this call with another call to the same
+setter, but passing nullptr instead, before the destroying the other object.
 
 #### Challenging lifespan
 
