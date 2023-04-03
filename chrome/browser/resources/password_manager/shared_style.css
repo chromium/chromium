@@ -65,7 +65,8 @@
 .site-link {
   color: var(--cr-primary-text-color);
   display: block;
-  height: 20px;
+  height: auto;
+  line-height: 154%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
