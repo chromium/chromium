@@ -23,7 +23,7 @@ namespace updater {
 
 namespace {
 
-bool UsageStatsAllowedInDir(const base::FilePath& base_dir) {
+bool OtherAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
   base::FileEnumerator files(
       base_dir.Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING)), false,
       base::FileEnumerator::FileType::DIRECTORIES);
@@ -52,13 +52,13 @@ bool UsageStatsAllowedInDir(const base::FilePath& base_dir) {
 // Returns whether any crashpad databases in ~/Library/Application
 // Support/<company name>/<app name>/Crashpad have upload enabled. Google
 // Chrome channels all follow this pattern.
-bool UpdateUsageStatsTask::UsageStatsAllowed(
-    const std::vector<std::string>& app_ids) const {
-  if (!IsSystemInstall(scope_)) {
+bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
+                               UpdaterScope scope) {
+  if (!IsSystemInstall(scope)) {
     absl::optional<base::FilePath> application_support_dir =
         GetApplicationSupportDirectory(UpdaterScope::kUser);
     return application_support_dir &&
-           UsageStatsAllowedInDir(*application_support_dir);
+           OtherAppUsageStatsAllowedInDir(*application_support_dir);
   }
   // In the system case, iterate all users. If any user has opted-in to usage
   // stats, the system updater may transmit usage stats.
@@ -69,7 +69,7 @@ bool UpdateUsageStatsTask::UsageStatsAllowed(
   base::FileEnumerator files(user_dir, false,
                              base::FileEnumerator::FileType::DIRECTORIES);
   for (base::FilePath name = files.Next(); !name.empty(); name = files.Next()) {
-    if (UsageStatsAllowedInDir(
+    if (OtherAppUsageStatsAllowedInDir(
             name.Append(FILE_PATH_LITERAL("Library"))
                 .Append(FILE_PATH_LITERAL("Application Support")))) {
       return true;

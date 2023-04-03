@@ -26,7 +26,6 @@ if (is_chrome_branded) {
   mac_team_identifier = "EQHXZ8M8AV"
   updater_appid = "{44fc7fe2-65ce-487c-93f4-edee46eeaaab}"
   qualification_appid = "{6f0f9a34-a0ab-4a75-a0eb-6eab78d0dc4b}"
-  legacy_google_update_appid = "{430FD4D0-B729-4F61-AA34-91526481799D}"
   legacy_service_name_prefix = "gupdate"
   prefs_access_mutex = "{D8E4A6FE-EA7A-4D20-A8C8-B4628776A101}"
   setup_mutex_prefix = "{A5732CF5-E5AD-47A5-8131-DC4CCA530B02}"
@@ -53,6 +52,12 @@ if (is_chrome_branded) {
   IPolicyStatusValueGUID = "27634814-8E41-4C35-8577-980134A96544"
   IProcessLauncherGUID = "128C2DA6-2BC0-44C0-B3F6-4EC22E647964"
   IProcessLauncher2GUID = "D106AB5F-A70E-400E-A21B-96208C1D8DBB"
+
+  if (is_mac) {
+    legacy_google_update_appid = keystone_bundle_identifier
+  } else {
+    legacy_google_update_appid = "{430FD4D0-B729-4F61-AA34-91526481799D}"
+  }
 } else {
   browser_name = "Chromium"
   browser_product_name = "Chromium"
@@ -75,7 +80,6 @@ if (is_chrome_branded) {
   mac_team_identifier = "PLACEHOLDER"
   updater_appid = "{6e8ffa8f-e7e2-4000-9884-589283c27015}"
   qualification_appid = "{43f3a046-04b3-4443-a770-d67dae90e440}"
-  legacy_google_update_appid = "{8B2B92A3-1BA2-4154-A89C-DA74C9C505E4}"
   legacy_service_name_prefix = "cupdate"
   prefs_access_mutex = "{A6B9ECD5-772A-4D3F-BFEB-CF9340534A3E}"
   setup_mutex_prefix = "{25569F82-3B67-4185-8127-88E4CF803680}"
@@ -101,6 +105,12 @@ if (is_chrome_branded) {
   IPolicyStatusValueGUID = "47C8886A-A4B5-4F6C-865A-41A207074DFA"
   IProcessLauncherGUID = "EED70106-3604-4385-866E-6D540E99CA1A"
   IProcessLauncher2GUID = "BAEE6326-C925-4FA4-AFE9-5FA69902B021"
+
+  if (is_mac) {
+    legacy_google_update_appid = keystone_bundle_identifier
+  } else {
+    legacy_google_update_appid = "{8B2B92A3-1BA2-4154-A89C-DA74C9C505E4}"
+  }
 }
 
 # Chrome and Chromium share the same endpoints for now.

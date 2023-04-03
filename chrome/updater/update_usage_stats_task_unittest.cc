@@ -18,11 +18,9 @@
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
-#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -72,13 +70,6 @@ void ClearAppUsageStats(const std::string& app_id, UpdaterScope scope) {
 
 class UpdateUsageStatsTaskTest : public testing::Test {
  protected:
-  void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    update_client::RegisterPrefs(pref_service_->registry());
-    persisted_data_ = base::MakeRefCounted<PersistedData>(GetTestScope(),
-                                                          pref_service_.get());
-  }
-
   void SetAppUsageStats(const std::string& app_id, bool enabled) {
     cleanups_.emplace_back(
         base::BindOnce(&ClearAppUsageStats, app_id, GetTestScope()));
@@ -102,11 +93,8 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 #endif
   }
 
-  scoped_refptr<PersistedData> persisted_data_;
-
  private:
   std::vector<base::ScopedClosureRunner> cleanups_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 
 // Mac Google-branded builds may pick up Chrome or other Google software
@@ -116,9 +104,7 @@ class UpdateUsageStatsTaskTest : public testing::Test {
 TEST_F(UpdateUsageStatsTaskTest, NoApps) {
   ClearAppUsageStats("app1", GetTestScope());
   ClearAppUsageStats("app2", GetTestScope());
-  ASSERT_FALSE(base::MakeRefCounted<UpdateUsageStatsTask>(GetTestScope(),
-                                                          persisted_data_)
-                   ->UsageStatsAllowed({"app1", "app2"}));
+  ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
 }
 
 // TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
@@ -126,18 +112,14 @@ TEST_F(UpdateUsageStatsTaskTest, NoApps) {
 TEST_F(UpdateUsageStatsTaskTest, OneAppEnabled) {
   SetAppUsageStats("app1", true);
   SetAppUsageStats("app2", false);
-  ASSERT_TRUE(base::MakeRefCounted<UpdateUsageStatsTask>(GetTestScope(),
-                                                         persisted_data_)
-                  ->UsageStatsAllowed({"app1", "app2"}));
+  ASSERT_TRUE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
 }
 #endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(UpdateUsageStatsTaskTest, ZeroAppsEnabled) {
   SetAppUsageStats("app1", false);
   SetAppUsageStats("app2", false);
-  ASSERT_FALSE(base::MakeRefCounted<UpdateUsageStatsTask>(GetTestScope(),
-                                                          persisted_data_)
-                   ->UsageStatsAllowed({"app1", "app2"}));
+  ASSERT_FALSE(OtherAppUsageStatsAllowed({"app1", "app2"}, GetTestScope()));
 }
 #endif
 

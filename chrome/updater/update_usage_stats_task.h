@@ -16,6 +16,9 @@
 
 namespace updater {
 
+bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
+                               UpdaterScope scope);
+
 class PersistedData;
 
 class UpdateUsageStatsTask
@@ -31,8 +34,6 @@ class UpdateUsageStatsTask
   FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, OneAppEnabled);
   FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, ZeroAppsEnabled);
   virtual ~UpdateUsageStatsTask();
-
-  bool UsageStatsAllowed(const std::vector<std::string>& app_ids) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;
