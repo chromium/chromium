@@ -48,7 +48,8 @@ EcheAppManager::EcheAppManager(
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
     LaunchAppHelper::LaunchNotificationFunction launch_notification_function,
     LaunchAppHelper::CloseNotificationFunction close_notification_function)
-    : connection_manager_(
+    : phone_hub_manager_(phone_hub_manager),
+      connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
               device_sync_client,
@@ -132,7 +133,7 @@ EcheAppManager::EcheAppManager(
   signaler_->SetSystemInfoProvider(system_info_provider_.get());
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
-    phone_hub_manager->SetEcheConnectionStatusHandler(
+    phone_hub_manager_->SetEcheConnectionStatusHandler(
         eche_connection_status_handler_.get());
   }
 }
@@ -193,6 +194,10 @@ void EcheAppManager::StreamGoBack() {
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
+  if (features::IsEcheNetworkConnectionStateEnabled() && phone_hub_manager_) {
+    phone_hub_manager_->SetEcheConnectionStatusHandler(nullptr);
+  }
+
   eche_stream_orientation_observer_.reset();
   system_info_provider_.reset();
   eche_tray_stream_status_observer_.reset();

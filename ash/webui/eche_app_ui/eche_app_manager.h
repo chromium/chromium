@@ -115,6 +115,7 @@ class EcheAppManager : public KeyedService {
   void Shutdown() override;
 
  private:
+  phonehub::PhoneHubManager* phone_hub_manager_;
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;
