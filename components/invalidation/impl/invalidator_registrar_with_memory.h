@@ -51,8 +51,6 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  static void ClearTopicsWithObsoleteOwnerNames(PrefService* prefs);
-
   // Starts sending notifications to |handler|.  |handler| must not be nullptr,
   // and it must not already be registered.
   void RegisterHandler(InvalidationHandler* handler);
