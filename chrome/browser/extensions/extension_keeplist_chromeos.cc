@@ -45,6 +45,7 @@ ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
   static const base::StringPiece kKeeplist[] = {
       extension_misc::kGCSEExtensionId,
       extension_misc::kGnubbyV3ExtensionId,
+      extension_misc::kPdfExtensionId,
   };
   return base::make_span(kKeeplist);
 }
@@ -201,8 +202,9 @@ ExtensionsRunInOSOnlyFromBrowserInitParams() {
     auto& ash_keep_list_param =
         chromeos::BrowserParamsProxy::Get()->ExtensionKeepList();
     DCHECK(!ash_keep_list_param.is_null());
-    for (const auto& id : ash_keep_list_param->extensions_run_in_os_only)
+    for (const auto& id : ash_keep_list_param->extensions_run_in_os_only) {
       ids.push_back(id);
+    }
     return ids;
   }());
   return *keep_list;
@@ -237,8 +239,9 @@ GetExtensionsRunInOSAndStandaloneBrowserLacros() {
   // to use static compiled allowlist.
   // TODO(crbug/1371661): Remove the backward compatibility handling code in
   // M112.
-  if (ash_keep_list_param.is_null())
+  if (ash_keep_list_param.is_null()) {
     return ExtensionsRunInOSAndStandaloneBrowserAllowlist();
+  }
 
   return base::make_span(
       ExtensionsRunInOSAndStandaloneBrowserFromBrowserInitParams().data(),
@@ -255,8 +258,9 @@ GetExtensionAppsRunInOSAndStandaloneBrowserLacros() {
   // to use static compiled allowlist.
   // TODO(crbug/1371661): Remove the backward compatibility handling code in
   // M112.
-  if (ash_keep_list_param.is_null())
+  if (ash_keep_list_param.is_null()) {
     return ExtensionAppsRunInOSAndStandaloneBrowserAllowlist();
+  }
 
   return base::make_span(
       ExtensionAppsRunInOSAndStandaloneBrowserFromBrowserInitParams().data(),
@@ -272,8 +276,9 @@ base::span<const base::StringPiece> GetExtensionsRunInOSOnlyLacros() {
   // to use static compiled allowlist.
   // TODO(crbug/1371661): Remove the backward compatibility handling code in
   // M112.
-  if (ash_keep_list_param.is_null())
+  if (ash_keep_list_param.is_null()) {
     return ExtensionsRunInOSOnlyAllowlist();
+  }
 
   return base::make_span(ExtensionsRunInOSOnlyFromBrowserInitParams().data(),
                          ExtensionsRunInOSOnlyFromBrowserInitParams().size());
@@ -288,8 +293,9 @@ base::span<const base::StringPiece> GetExtensionAppsRunInOSOnlyLacros() {
   // to use static compiled allowlist.
   // TODO(crbug/1371661): Remove the backward compatibility handling code in
   // M112.
-  if (ash_keep_list_param.is_null())
+  if (ash_keep_list_param.is_null()) {
     return ExtensionAppsRunInOSOnlyAllowlist();
+  }
 
   return base::make_span(
       ExtensionAppsRunInOSOnlyFromBrowserInitParams().data(),
@@ -308,16 +314,18 @@ crosapi::mojom::ExtensionKeepListPtr BuildExtensionKeeplistInitParam() {
         std::string(id));
   }
 
-  for (const auto& id : ExtensionAppsRunInOSOnlyAllowlist())
+  for (const auto& id : ExtensionAppsRunInOSOnlyAllowlist()) {
     keep_list_param->extension_apps_run_in_os_only.push_back(std::string(id));
+  }
 
   for (const auto& id : ExtensionsRunInOSAndStandaloneBrowserAllowlist()) {
     keep_list_param->extensions_run_in_os_and_standalonebrowser.push_back(
         std::string(id));
   }
 
-  for (const auto& id : ExtensionsRunInOSOnlyAllowlist())
+  for (const auto& id : ExtensionsRunInOSOnlyAllowlist()) {
     keep_list_param->extensions_run_in_os_only.push_back(std::string(id));
+  }
 
   return keep_list_param;
 }
@@ -412,14 +420,14 @@ bool ExtensionRunsInOSOnly(base::StringPiece extension_id) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool IsAppServiceBlocklistCrosapiSupported() {
   const auto* block_list = chromeos::BrowserParamsProxy::Get()
-                         ->StandaloneBrowserAppServiceBlockList();
+                               ->StandaloneBrowserAppServiceBlockList();
   return block_list != nullptr;
 }
 
 bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
     base::StringPiece app_id) {
   const auto* block_list = chromeos::BrowserParamsProxy::Get()
-                         ->StandaloneBrowserAppServiceBlockList();
+                               ->StandaloneBrowserAppServiceBlockList();
   DCHECK(block_list);
   return base::Contains(block_list->extension_apps, app_id);
 }
@@ -427,7 +435,7 @@ bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
 bool ExtensionBlockListedForAppServiceInStandaloneBrowser(
     base::StringPiece extension_id) {
   const auto* block_list = chromeos::BrowserParamsProxy::Get()
-                         ->StandaloneBrowserAppServiceBlockList();
+                               ->StandaloneBrowserAppServiceBlockList();
   DCHECK(block_list);
   return base::Contains(block_list->extensions, extension_id);
 }
