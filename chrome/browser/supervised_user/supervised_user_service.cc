@@ -490,7 +490,9 @@ bool SupervisedUserService::IsSafeSitesEnabled() const {
 }
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
-  bool use_denylist = IsSafeSitesEnabled();
+  bool use_denylist =
+      IsSafeSitesEnabled() &&
+      !base::FeatureList::IsEnabled(supervised_user::kRetireStaticDenyList);
   if (use_denylist != url_filter_.HasDenylist()) {
     if (use_denylist && denylist_state_ == DenylistLoadState::NOT_LOADED) {
       LoadDenylist(GetDenylistPath(), GURL(kDenylistURL));

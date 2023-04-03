@@ -25,6 +25,8 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 
 BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
+BASE_DECLARE_FEATURE(kRetireStaticDenyList);
+
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.
 bool IsWebFilterInterstitialRefreshEnabled();
