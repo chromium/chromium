@@ -12,6 +12,7 @@
  */
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -20,9 +21,9 @@ import '../os_settings_menu/os_settings_menu.js';
 import '../os_settings_main/os_settings_main.js';
 import '../os_toolbar/os_toolbar.js';
 import '../../settings_shared.css.js';
-import '../../prefs/prefs.js';
 import '../../settings_vars.css.js';
 
+import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
@@ -31,7 +32,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util_ts.js';
 import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsPrefsElement} from '../../prefs/prefs.js';
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';

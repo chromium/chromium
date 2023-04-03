@@ -15,16 +15,16 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './profile_info_browser_proxy.js';
 import '../icons.html.js';
-import '../prefs/prefs.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {assert} from '//resources/js/assert_ts.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';

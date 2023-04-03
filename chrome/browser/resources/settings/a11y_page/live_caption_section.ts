@@ -16,10 +16,10 @@ import '../settings_shared.css.js';
 
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './live_caption_section.html.js';
 

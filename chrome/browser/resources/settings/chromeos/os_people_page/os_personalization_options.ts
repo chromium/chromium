@@ -7,14 +7,14 @@
  * 'personalization-options' contains several toggles related to
  * personalizations.
  */
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
-import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './os_personalization_options.html.js';
 

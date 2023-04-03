@@ -417,10 +417,6 @@ non_web_component_files = [
   "page_visibility.ts",
   "people_page/profile_info_browser_proxy.ts",
   "people_page/sync_browser_proxy.ts",
-  "prefs/pref_util.ts",
-  "prefs/prefs.ts",
-  "prefs/prefs_mixin.ts",
-  "prefs/prefs_types.ts",
   "privacy_page/privacy_page_browser_proxy.ts",
   "relaunch_mixin.ts",
 ]

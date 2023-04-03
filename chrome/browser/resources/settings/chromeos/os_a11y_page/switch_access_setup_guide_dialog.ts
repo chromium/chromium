@@ -13,13 +13,13 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../controls/settings_slider.js';
 import '../os_settings_icons.html.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {castExists} from '../assert_extras.js';
 import {routes} from '../os_settings_routes.js';
 import {Router} from '../router.js';

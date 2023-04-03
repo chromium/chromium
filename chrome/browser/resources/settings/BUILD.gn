@@ -305,10 +305,6 @@ build_webui("build") {
     "people_page/profile_info_browser_proxy.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
-    "prefs/prefs_mixin.ts",
-    "prefs/prefs.ts",
-    "prefs/prefs_types.ts",
-    "prefs/pref_util.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
@@ -411,6 +407,7 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
+    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

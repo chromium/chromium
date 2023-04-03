@@ -26,6 +26,7 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/most_visited",
       "cr_components/omnibox",
       "cr_components/page_image_service",
+      "cr_components/settings_prefs",
   ]
 
   for c in shared_ts_folders:

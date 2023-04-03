@@ -6,6 +6,7 @@
  * @fileoverview 'settings-device-page' is the settings page for device and
  * peripheral settings.
  */
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './audio.js';
 import './display.js';
@@ -20,7 +21,6 @@ import './power.js';
 import './storage.js';
 import './storage_external.js';
 import './stylus.js';
-import '../../prefs/prefs.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';

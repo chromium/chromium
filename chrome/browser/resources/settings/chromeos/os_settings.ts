@@ -12,7 +12,7 @@ import '../strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
 // TODO(b/263414034) Determine if these imports are needed here at all,
 // or should be moved to lazy_load.ts
-import '../prefs/prefs.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import './device_page/audio.js';
 import './device_page/cros_audio_config.js';
 import './device_page/device_page.js';
@@ -97,6 +97,8 @@ export * as nearbyShareMojom from '/shared/mojo/nearby_share.mojom-webui.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '/shared/nearby_contact_manager.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
+export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -106,8 +108,6 @@ export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
-export {SettingsPrefsElement} from '../prefs/prefs.js';
-export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';

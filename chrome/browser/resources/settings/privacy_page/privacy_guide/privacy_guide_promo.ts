@@ -7,10 +7,10 @@
  * 'settings-privacy-guide-promo' is an element representing a promo for the
  * privacy guide feature.
  */
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
-import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 

@@ -9,9 +9,9 @@
  */
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../people_page/signout_dialog.js';
-import '../prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
 // </if>
@@ -24,13 +24,13 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrivacyPageVisibility} from '../page_visibility.js';
 import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './personalization_options.html.js';

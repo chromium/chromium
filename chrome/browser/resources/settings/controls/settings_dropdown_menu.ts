@@ -18,8 +18,7 @@ import '../settings_vars.css.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
+import {prefToString, stringToPrefValue} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
 
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin} from './pref_control_mixin.js';

@@ -9,9 +9,8 @@ import '../settings_shared.css.js';
 import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {prefToString} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
 import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-
-import {prefToString} from '../prefs/pref_util.js';
 
 import {getTemplate} from './controlled_radio_button.html.js';
 import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';

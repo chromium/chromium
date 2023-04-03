@@ -8,11 +8,11 @@
  * allow users to configure their keyboard remapped keys for each keyboard.
  */
 
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../../icons.html.js';
 import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 import './keyboard_remap_modifier_key_row.js';
-import '../../prefs/prefs.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';

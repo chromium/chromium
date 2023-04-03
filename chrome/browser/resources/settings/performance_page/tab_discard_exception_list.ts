@@ -13,6 +13,7 @@ import '../settings_shared.css.js';
 import './tab_discard_exception_dialog.js';
 import './tab_discard_exception_entry.js';
 
+import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
@@ -23,7 +24,6 @@ import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {TooltipMixin, TooltipMixinInterface} from '../tooltip_mixin.js';
 
 import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';

@@ -8,6 +8,7 @@
  * save any passwords.
  */
 
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -22,7 +23,6 @@ import '../controls/extension_controlled_indicator.js';
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../controls/settings_toggle_button.js';
-import '../prefs/prefs.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 import './password_list_item.js';
@@ -32,6 +32,7 @@ import './passwords_import_dialog.js';
 import './passwords_shared.css.js';
 import './avatar_icon.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -50,7 +51,6 @@ import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
