@@ -31,6 +31,7 @@
 #include "third_party/blink/public/web/web_form_control_element.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -209,13 +210,25 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
 
     // Simulate key events in case the website checks via JS that a keyboard
     // interaction took place.
-    send_event(WebInputEvent::Type::kRawKeyDown);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAutofillSendUnidentifiedKeyAfterFill)) {
+      send_event(WebInputEvent::Type::kRawKeyDown);
+    } else {
+      Unwrap<Element>()->DispatchScopedEvent(
+          *Event::CreateBubble(event_type_names::kKeydown));
+    }
 
     Unwrap<TextControlElement>()->SetAutofillValue(
         value, value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
 
-    send_event(WebInputEvent::Type::kChar);
-    send_event(WebInputEvent::Type::kKeyUp);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAutofillSendUnidentifiedKeyAfterFill)) {
+      send_event(WebInputEvent::Type::kChar);
+      send_event(WebInputEvent::Type::kKeyUp);
+    } else {
+      Unwrap<Element>()->DispatchScopedEvent(
+          *Event::CreateBubble(event_type_names::kKeyup));
+    }
 
     if (!Focused())
       DispatchBlurEvent();

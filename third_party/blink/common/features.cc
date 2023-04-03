@@ -39,6 +39,13 @@ BASE_FEATURE(kAutofillDetectRemovedFormControls,
              "AutofillDetectRemovedFormControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If disabled (default for many years), autofilling triggers KeyDown and
+// KeyUp events that do not send any key codes. If enabled, these events
+// contain the "Unidentified" key.
+BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
+             "AutofillSendUnidentifiedKeyAfterFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Apply lazy-loading to ad frames which have embeds likely impacting Core Web
 // Vitals.
 BASE_FEATURE(kAutomaticLazyFrameLoadingToAds,
