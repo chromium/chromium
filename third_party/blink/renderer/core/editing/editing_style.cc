@@ -131,18 +131,13 @@ static const Vector<const CSSProperty*>& InheritableEditingProperties(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
   if (properties.empty()) {
-    properties.ReserveInitialCapacity(std::size(kStaticEditingProperties) + 2);
-    CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kStaticEditingProperties,
-        std::size(kStaticEditingProperties), properties,
-        [](const CSSProperty& property) { return property.IsInherited(); });
-    // TODO(crbug.com/1417543): Move to `kStaticEditingProperties` when removing
-    // the runtime switch.
-    if (RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-      properties.push_back(&GetCSSPropertyWhiteSpaceCollapse());
-      properties.push_back(&GetCSSPropertyTextWrap());
-    } else {
-      properties.push_back(&GetCSSPropertyWhiteSpace());
+    const Vector<const CSSProperty*>& all =
+        AllEditingProperties(execution_context);
+    properties.ReserveInitialCapacity(all.size());
+    for (const CSSProperty* property : all) {
+      if (property->IsInherited()) {
+        properties.push_back(property);
+      }
     }
   }
   return properties;

@@ -68,14 +68,12 @@ void CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
     const ExecutionContext* execution_context,
     const CSSPropertyID* properties,
     wtf_size_t property_count,
-    Vector<const CSSProperty*>& out_vector,
-    bool (*predicate)(const CSSProperty&)) {
+    Vector<const CSSProperty*>& out_vector) {
   DCHECK(out_vector.empty());
   out_vector.reserve(property_count);
   for (unsigned i = 0; i < property_count; i++) {
     const CSSProperty& property = Get(properties[i]);
-    if (property.IsWebExposed(execution_context) &&
-        (!predicate || predicate(property))) {
+    if (property.IsWebExposed(execution_context)) {
       out_vector.push_back(&property);
     }
   }
