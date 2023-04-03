@@ -133,7 +133,10 @@ class AccountSelectionMediator {
                 assert contentView != null;
                 View continueButton = contentView.findViewById(R.id.account_selection_continue_btn);
 
-                View focusView = continueButton.isShown()
+                // TODO(crbug.com/1430240): Update SheetType and focus views for accessibility
+                // according to SheetType instead of number of accounts.
+                boolean isSingleAccountChooser = mAccounts.size() == 1;
+                View focusView = continueButton.isShown() && !isSingleAccountChooser
                         ? continueButton
                         : contentView.findViewById(R.id.header_title);
                 focusView.requestFocus();
