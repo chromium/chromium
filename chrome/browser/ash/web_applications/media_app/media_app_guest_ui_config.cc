@@ -54,6 +54,8 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
                           photos_version >= min_photos_version;
   source->AddBoolean("photosAvailableForImage", photos_available);
   source->AddBoolean("photosAvailableForVideo", photos_available);
+  source->AddBoolean("pdfSignature", base::FeatureList::IsEnabled(
+                                         ash::features::kMediaAppPdfSignature));
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
