@@ -876,14 +876,32 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
 
   InterruptClearAll();
 
+  MessageView* found_child;
+  for (auto* child : children()) {
+    auto* mvc = AsMVC(child);
+    // First checks through the immediate children.
+    if (mvc->GetNotificationId() == id) {
+      found_child = mvc->message_view();
+      break;
+    }
+
+    // Then checks if they have inner children who might have matching id
+    // This can be true for grouped notifications.
+    auto* inner_child = static_cast<MessageView*>(mvc->message_view()
+                    ->FindGroupNotificationView(id));
+    if (inner_child) {
+      found_child = inner_child;
+      break;
+    }
+  }
+
   // The corresponding MessageView may have been slid out and deleted, so just
   // ignore this update as the notification will soon be deleted.
-  auto* child = GetNotificationById(id);
-  if (!child) {
+  if (!found_child) {
     return;
   }
 
-  child->UpdateWithNotification(*notification);
+  found_child->UpdateWithNotification(*notification);
   ResetBounds();
 }
 
