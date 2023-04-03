@@ -7,11 +7,11 @@
 
 declare_args() {
   # Version of iOS that we're targeting.
-  ios_deployment_target = "14.0"
+  ios_deployment_target = "15.0"
 }
 
 # Always assert that ios_deployment_target is used on non-iOS platforms to
 # prevent unused args warnings.
 if (!is_ios) {
-  assert(ios_deployment_target == "14.0" || true)
+  assert(ios_deployment_target == "15.0" || true)
 }
