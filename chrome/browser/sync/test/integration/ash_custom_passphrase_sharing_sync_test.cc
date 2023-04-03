@@ -71,12 +71,6 @@ std::string PrefValueToProtoString(const base::Value& value) {
   return result;
 }
 
-std::string ComputeKeyName(const syncer::Nigori& nigori) {
-  std::string key_name;
-  nigori.GetKeyName(&key_name);
-  return key_name;
-}
-
 std::string GetServerNigoriKeyName(fake_server::FakeServer* fake_server) {
   sync_pb::NigoriSpecifics specifics;
   fake_server::GetServerNigori(fake_server, &specifics);
@@ -301,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
   std::unique_ptr<syncer::Nigori> exposed_key =
       GetDecryptionKeyExposedViaCrosapi();
   ASSERT_THAT(exposed_key, NotNull());
-  EXPECT_THAT(ComputeKeyName(*exposed_key),
+  EXPECT_THAT(exposed_key->GetKeyName(),
               Eq(kCustomPassphraseSpecifics.encryption_keybag().key_name()));
 }
 
@@ -330,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
   std::unique_ptr<syncer::Nigori> exposed_key =
       GetDecryptionKeyExposedViaCrosapi();
   ASSERT_THAT(exposed_key, NotNull());
-  EXPECT_THAT(ComputeKeyName(*exposed_key),
+  EXPECT_THAT(exposed_key->GetKeyName(),
               Eq(GetServerNigoriKeyName(GetFakeServer())));
 }
 

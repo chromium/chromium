@@ -201,34 +201,31 @@ std::unique_ptr<Nigori> Nigori::CreateByImport(
 }
 
 // Permute[Kenc,Kmac](Nigori::Password || kNigoriKeyName)
-bool Nigori::GetKeyName(std::string* permuted) const {
+std::string Nigori::GetKeyName() const {
   static constexpr char kNigoriKeyName[] = "nigori-key";
   NigoriStream plaintext;
   plaintext << Nigori::Password << kNigoriKeyName;
 
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC,
-                      std::string(kIvSize, 0)))
-    return false;
+  CHECK(encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC,
+                       std::string(kIvSize, 0)));
 
   std::string ciphertext;
-  if (!encryptor.Encrypt(plaintext.str(), &ciphertext))
-    return false;
+  CHECK(encryptor.Encrypt(plaintext.str(), &ciphertext));
 
   HMAC hmac(HMAC::SHA256);
-  if (!hmac.Init(keys_.mac_key->key()))
-    return false;
+  CHECK(hmac.Init(keys_.mac_key->key()));
 
   std::vector<unsigned char> hash(kHashSize);
-  if (!hmac.Sign(ciphertext, &hash[0], hash.size()))
-    return false;
+  CHECK(hmac.Sign(ciphertext, &hash[0], hash.size()));
 
   std::string output;
   output.assign(ciphertext);
   output.append(hash.begin(), hash.end());
 
-  Base64Encode(output, permuted);
-  return true;
+  std::string base64_encoded_output;
+  Base64Encode(output, &base64_encoded_output);
+  return base64_encoded_output;
 }
 
 // Enc[Kenc,Kmac](value)

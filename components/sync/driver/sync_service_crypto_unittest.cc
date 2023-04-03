@@ -51,12 +51,9 @@ sync_pb::EncryptedData MakeEncryptedData(
   std::unique_ptr<Nigori> nigori =
       Nigori::CreateByDerivation(derivation_params, passphrase);
 
-  std::string nigori_name;
-  EXPECT_TRUE(nigori->GetKeyName(&nigori_name));
-
   const std::string unencrypted = "test";
   sync_pb::EncryptedData encrypted;
-  encrypted.set_key_name(nigori_name);
+  encrypted.set_key_name(nigori->GetKeyName());
   encrypted.set_blob(nigori->Encrypt(unencrypted));
   return encrypted;
 }
