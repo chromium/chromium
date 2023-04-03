@@ -435,11 +435,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     if (this.viewState === ViewState.ADD) {
       this.shortcutProvider
-          .addUserAccelerator(
+          .addAccelerator(
               this.source, this.action, getAccelerator(newAcceleratorInfo))
-          .then((result: AcceleratorConfigResult) => {
+          .then(({result}) => {
             // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.kSuccess) {
+            if (result.result === AcceleratorConfigResult.kSuccess) {
               this.lookupManager.addAccelerator(
                   this.source, this.action, newAcceleratorInfo);
               this.fireUpdateEvent();

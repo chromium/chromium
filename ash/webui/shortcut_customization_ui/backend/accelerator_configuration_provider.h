@@ -6,13 +6,16 @@
 #define ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_BACKEND_ACCELERATOR_CONFIGURATION_PROVIDER_H_
 
 #include <map>
+#include <memory>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/mojom/accelerator_configuration.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -71,6 +74,10 @@ class AcceleratorConfigurationProvider
                        observer) override;
   void GetAcceleratorLayoutInfos(
       GetAcceleratorLayoutInfosCallback callback) override;
+  void AddAccelerator(mojom::AcceleratorSource source,
+                      uint32_t action_id,
+                      const ui::Accelerator& accelerator,
+                      AddAcceleratorCallback callback) override;
   void RemoveAccelerator(mojom::AcceleratorSource source,
                          uint32_t action_id,
                          const ui::Accelerator& accelerator,
@@ -113,8 +120,24 @@ class AcceleratorConfigurationProvider
       const NonConfigurableAcceleratorDetails& details) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AcceleratorConfigurationProviderTest,
+                           SetLayoutDetailsMapForTesting);
   friend class AcceleratorConfigurationProviderTest;
   using NonConfigAcceleratorActionMap = ui::AcceleratorMap<AcceleratorActionId>;
+
+  // Accelerator that is queued to be added. This should only be set if the user
+  // has attempted to add an accelerator that conflicts with a overridable
+  // existing accelerator.
+  struct PendingAccelerator {
+    PendingAccelerator(const ui::Accelerator& accelerator,
+                       mojom::AcceleratorSource source,
+                       AcceleratorActionId action)
+        : accelerator(accelerator), source(source), action(action) {}
+
+    ui::Accelerator accelerator;
+    mojom::AcceleratorSource source;
+    AcceleratorActionId action;
+  };
 
   void OnAcceleratorsUpdated(mojom::AcceleratorSource source,
                              const ActionIdToAcceleratorsMap& mapping);
@@ -138,10 +161,17 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorState state,
       std::vector<mojom::AcceleratorInfoPtr>& output);
 
+  void SetLayoutDetailsMapForTesting(
+      const std::vector<AcceleratorLayoutDetails>& layouts);
+
   // Set only for testing purposes, this will ignore the default layouts.
   bool ignore_layouts_for_testing_ = false;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
+  // A lookup map that provides a way to lookup a shortcut's layout details.
+  // This is initialized only once along with `layout_infos_`.
+  base::flat_map<std::string, AcceleratorLayoutDetails>
+      accelerator_layout_lookup_;
 
   std::map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
       id_to_accelerator_info_;
@@ -168,6 +198,8 @@ class AcceleratorConfigurationProvider
   // A map from accelerators to AcceleratorActions, used as a reverse lookup for
   // standard non-configurable accelerators.
   NonConfigAcceleratorActionMap non_configurable_accelerator_to_id_;
+
+  std::unique_ptr<PendingAccelerator> pending_accelerator_;
 
   mojo::Remote<shortcut_customization::mojom::AcceleratorsUpdatedObserver>
       accelerators_updated_mojo_observer_;

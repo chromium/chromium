@@ -86,6 +86,13 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     return this.remote.hasLauncherButton();
   }
 
+  addAccelerator(
+      source: AcceleratorSource, action: number,
+      accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    // TODO(cambickel) Replace with real mojo method.
+    return this.fakeProvider.addAccelerator(source, action, accelerator);
+  }
+
   removeAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
@@ -98,13 +105,6 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
     // TODO(cambickel) Replace with real mojo method.
     return this.fakeProvider.replaceAccelerator(
         source, action, oldAccelerator, newAccelerator);
-  }
-
-  addUserAccelerator(
-      source: AcceleratorSource, action: number,
-      accelerator: Accelerator): Promise<AcceleratorConfigResult> {
-    // TODO(cambickel) Replace with real mojo method.
-    return this.fakeProvider.addUserAccelerator(source, action, accelerator);
   }
 
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {

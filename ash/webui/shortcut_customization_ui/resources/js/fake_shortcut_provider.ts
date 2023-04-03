@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
-import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 /**
@@ -36,7 +36,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getAcceleratorLayoutInfos');
     this.methods.register('isMutable');
     this.methods.register('hasLauncherButton');
-    this.methods.register('addUserAccelerator');
+    this.methods.register('addAccelerator');
     this.methods.register('replaceAccelerator');
     this.methods.register('removeAccelerator');
     this.methods.register('restoreDefault');
@@ -93,11 +93,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
         ON_ACCELERATORS_UPDATED_METHOD_NAME, config);
   }
 
-  addUserAccelerator(): Promise<AcceleratorConfigResult> {
+  addAccelerator(
+      _source: AcceleratorSource, _actionId: number,
+      _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    this.methods.setResult(
-        'addUserAccelerator', AcceleratorConfigResult.kSuccess);
-    return this.methods.resolveMethod('addUserAccelerator');
+    const result = new AcceleratorResultData();
+    result.result = AcceleratorConfigResult.kSuccess;
+    this.methods.setResult('addAccelerator', {result});
+    return this.methods.resolveMethod('addAccelerator');
   }
 
   replaceAccelerator(): Promise<AcceleratorConfigResult> {

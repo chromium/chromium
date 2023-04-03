@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorsUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -92,11 +92,15 @@ suite('fakeShortcutProviderTest', function() {
     });
   });
 
-  test('AddUserAcceleratorFake', () => {
+  test('AddAcceleratorFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
-    return getProvider().addUserAccelerator().then((result) => {
-      assertEquals(AcceleratorConfigResult.kSuccess, result);
-    });
+    return getProvider()
+        .addAccelerator(
+            AcceleratorSource.kAsh,
+            /*action_id=*/ 0, {} as Accelerator)
+        .then(({result}) => {
+          assertEquals(AcceleratorConfigResult.kSuccess, result.result);
+        });
   });
 
   test('ReplaceAcceleratorFake', () => {

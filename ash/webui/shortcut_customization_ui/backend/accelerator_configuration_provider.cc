@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
@@ -21,6 +22,7 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/strings/strcat.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,6 +33,7 @@
 #include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -74,6 +77,10 @@ const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
                          ui::Accelerator::KeyState::RELEASED)}}});
   return *hiddenAcceleratorMap;
 }
+
+constexpr int kCustomizationModifierMask =
+    ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
+    ui::EF_COMMAND_DOWN;
 
 // Gets the parts of the string that don't contain replacements.
 // Ex: "Press and " -> ["Press ", " and "]
@@ -216,6 +223,63 @@ mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
   return info_mojom;
 }
 
+// Returns a non-null value if there was an error detected with validating
+// the `source` or `action_id`.
+absl::optional<AcceleratorConfigResult> ValidateSourceAndAction(
+    mojom::AcceleratorSource source,
+    AcceleratorActionId action_id,
+    AshAcceleratorConfiguration* ash_accelerator_configuration) {
+  // Adding/Removing an accelerator can only be done in Ash accelerators.
+  if (source != mojom::AcceleratorSource::kAsh) {
+    return AcceleratorConfigResult::kActionLocked;
+  }
+
+  // Verify that `action_id` is a valid Ash accelerator ID. If validity checks
+  // fail, return `kNotFound`.
+  if (!ash_accelerator_configuration->IsValid(action_id)) {
+    return AcceleratorConfigResult::kNotFound;
+  }
+
+  return absl::nullopt;
+}
+
+// Returns a non-null value if there was an error with validating the
+// accelerator.
+absl::optional<AcceleratorConfigResult> ValidateAccelerator(
+    const ui::Accelerator& accelerator) {
+  // TODO(jimmyxgong): The following cases are not finalized, we still need to
+  // validate if the key is present in connected keyboards.
+
+  // Sanitize the modifiers with only the relevant modifiers for customization.
+  const int modifiers = accelerator.modifiers() & kCustomizationModifierMask;
+
+  // Case: Accelerator must have Modifier + Key, unless the singular key
+  // is a function key.
+  if (modifiers == ui::EF_NONE &&
+      !ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
+    return AcceleratorConfigResult::kMissingModifier;
+  }
+
+  // Case: Top-row action keys cannot be part of the accelerator.
+  if (ui::KeyboardCapability::IsTopRowActionKey(accelerator.key_code())) {
+    return AcceleratorConfigResult::kKeyNotAllowed;
+  }
+
+  // Case: Accelerator cannot only have SHIFT as its modifier.
+  if (modifiers == ui::EF_SHIFT_DOWN) {
+    return AcceleratorConfigResult::kShiftOnlyNotAllowed;
+  }
+
+  // No errors with the accelerator.
+  return absl::nullopt;
+}
+
+std::string GetUuid(mojom::AcceleratorSource source,
+                    AcceleratorActionId action) {
+  return base::StrCat({base::NumberToString(static_cast<int>(source)), "-",
+                       base::NumberToString(action)});
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -242,8 +306,11 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
 
   // Create LayoutInfos from kAcceleratorLayouts. LayoutInfos are static
   // data that provides additional details for the app for styling.
+  // Also create a cached shortcut description lookup.
   for (const auto& layout_details : kAcceleratorLayouts) {
     layout_infos_.push_back(LayoutInfoToMojom(layout_details));
+    accelerator_layout_lookup_[GetUuid(
+        layout_details.source, layout_details.action_id)] = layout_details;
   }
 }
 
@@ -337,6 +404,90 @@ void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(
   std::move(callback).Run(mojo::Clone(layout_infos_));
 }
 
+void AcceleratorConfigurationProvider::AddAccelerator(
+    mojom::AcceleratorSource source,
+    uint32_t action_id,
+    const ui::Accelerator& accelerator,
+    AddAcceleratorCallback callback) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  // Validate the source and action, if no errors then validate the accelerator.
+  absl::optional<AcceleratorConfigResult> error_result =
+      ValidateSourceAndAction(source, action_id,
+                              ash_accelerator_configuration_);
+  if (!error_result.has_value()) {
+    error_result = ValidateAccelerator(accelerator);
+  }
+
+  if (error_result.has_value()) {
+    pending_accelerator_.reset();
+    result_data->result = *error_result;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Check if `accelerator` conflicts with non-configurable accelerators.
+  // This includes: browser, accessbility, and ambient accelerators.
+  const uint32_t* non_configurable_conflict_id =
+      non_configurable_accelerator_to_id_.Find(accelerator);
+  // If there was a conflict with a non-configurable accelerator
+  if (non_configurable_conflict_id) {
+    pending_accelerator_.reset();
+    result_data->result = AcceleratorConfigResult::kConflict;
+    // Get the shortcut name and add it to the return struct.
+    result_data->shortcut_name = l10n_util::GetStringUTF16(
+        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
+                                           *non_configurable_conflict_id)]
+            .description_string_id);
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Check if the accelerator conflicts with an existing ash accelerator.
+  const AcceleratorAction* found_ash_action =
+      ash_accelerator_configuration_->FindAcceleratorAction(accelerator);
+  if (found_ash_action &&
+      !ash_accelerator_configuration_->IsDeprecated(accelerator)) {
+    // Accelerator already exists, check if it belongs to a locked action.
+    const auto& layout_iter = accelerator_layout_lookup_.find(
+        GetUuid(mojom::AcceleratorSource::kAsh, *found_ash_action));
+    CHECK(layout_iter != accelerator_layout_lookup_.end());
+    const AcceleratorLayoutDetails& layout_details = layout_iter->second;
+    const std::u16string& shortcut_name =
+        l10n_util::GetStringUTF16(layout_details.description_string_id);
+    if (layout_details.locked) {
+      pending_accelerator_.reset();
+      result_data->result = AcceleratorConfigResult::kActionLocked;
+      result_data->shortcut_name = shortcut_name;
+      std::move(callback).Run(std::move(result_data));
+      return;
+    }
+
+    // If not locked, then check if the user has already pressed the accelerator
+    // for this action. If not, store it and return the error. If this is a
+    // different accelerator then store it.
+    if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
+        pending_accelerator_->source != source ||
+        pending_accelerator_->accelerator != accelerator) {
+      result_data->result =
+          mojom::AcceleratorConfigResult::kConflictCanOverride;
+      pending_accelerator_.reset();
+      pending_accelerator_ =
+          std::make_unique<PendingAccelerator>(accelerator, source, action_id);
+      result_data->shortcut_name = shortcut_name;
+      std::move(callback).Run(std::move(result_data));
+      return;
+    }
+  }
+
+  // Continue with adding the accelerator.
+  pending_accelerator_.reset();
+  result_data->result = ash_accelerator_configuration_->AddUserAccelerator(
+      action_id, accelerator);
+  std::move(callback).Run(std::move(result_data));
+}
+
 void AcceleratorConfigurationProvider::RemoveAccelerator(
     mojom::AcceleratorSource source,
     uint32_t action_id,
@@ -345,18 +496,11 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   DCHECK(::features::IsShortcutCustomizationEnabled());
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  if (source != mojom::AcceleratorSource::kAsh) {
-    // Only ash accelerators can be modified, return early since all other
-    // sources are locked.
-    result_data->result = AcceleratorConfigResult::kActionLocked;
-    std::move(callback).Run(std::move(result_data));
-    return;
-  }
-
-  // Verify that `action_id` is a valid Ash accelerator ID. If validity checks
-  // fail, return `kNotFound`.
-  if (!ash_accelerator_configuration_->IsValid(action_id)) {
-    result_data->result = AcceleratorConfigResult::kNotFound;
+  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+      ValidateSourceAndAction(source, action_id,
+                              ash_accelerator_configuration_);
+  if (validated_source_action_result.has_value()) {
+    result_data->result = *validated_source_action_result;
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -373,17 +517,11 @@ void AcceleratorConfigurationProvider::RestoreDefault(
     RestoreDefaultCallback callback) {
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  // Restoring an action is only supported for ash accelerators.
-  if (source != mojom::AcceleratorSource::kAsh) {
-    result_data->result = AcceleratorConfigResult::kActionLocked;
-    std::move(callback).Run(std::move(result_data));
-    return;
-  }
-
-  // Verify that `action_id` is a valid Ash accelerator ID. If validity checks
-  // fail, return `kNotFound`.
-  if (!ash_accelerator_configuration_->IsValid(action_id)) {
-    result_data->result = AcceleratorConfigResult::kNotFound;
+  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+      ValidateSourceAndAction(source, action_id,
+                              ash_accelerator_configuration_);
+  if (validated_source_action_result.has_value()) {
+    result_data->result = *validated_source_action_result;
     std::move(callback).Run(std::move(result_data));
     return;
   }
@@ -484,6 +622,15 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
   for (const auto& accelerator_alias : accelerator_aliases) {
     output.push_back(CreateStandardAcceleratorInfo(
         accelerator_alias, locked, GetAcceleratorType(accelerator), state));
+  }
+}
+
+void AcceleratorConfigurationProvider::SetLayoutDetailsMapForTesting(
+    const std::vector<AcceleratorLayoutDetails>& layouts) {
+  accelerator_layout_lookup_.clear();
+  for (const auto& layout : layouts) {
+    accelerator_layout_lookup_[GetUuid(layout.source, layout.action_id)] =
+        layout;
   }
 }
 
