@@ -148,6 +148,14 @@ class CORE_EXPORT RootFrameViewport final
     return !!pending_view_state_;
   }
 
+  // A sequence of UserScrolls may occur close enough to each other (e.g.
+  // repeated keypresses) to produce a single scroll.
+  // This function returns true if any UserScroll in a sequence of
+  // UserScrolls applies a non-zero scroll delta to the LayoutViewport.
+  bool ScrollAffectsLayoutViewport() {
+    return user_scroll_sequence_affects_layout_viewport_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(RootFrameViewportTest, DistributeScrollOrder);
 
@@ -178,6 +186,7 @@ class CORE_EXPORT RootFrameViewport final
   Member<ScrollableArea> layout_viewport_;
   absl::optional<HistoryItem::ViewState> pending_view_state_;
   bool should_restore_scroll_;
+  bool user_scroll_sequence_affects_layout_viewport_ = false;
 };
 
 template <>

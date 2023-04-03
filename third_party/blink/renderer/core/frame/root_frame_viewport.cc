@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
@@ -572,6 +573,21 @@ ScrollResult RootFrameViewport::UserScroll(
           ? layout_delta.y()
           : 0);
 
+  if (ScrollAnimatorEnabled()) {
+    bool visual_viewport_has_running_animation =
+        GetVisualViewport().GetScrollAnimator().HasRunningAnimation();
+    bool layout_viewport_has_running_animation =
+        LayoutViewport().GetScrollAnimator().HasRunningAnimation();
+    // We reset |user_scroll_sequence_affects_layout_viewport_| only if this
+    // UserScroll is not a continuation of a longer sequence because an earlier
+    // UserScroll in the sequence may have already affected the layout
+    // viewport.
+    if (!visual_viewport_has_running_animation &&
+        !layout_viewport_has_running_animation) {
+      user_scroll_sequence_affects_layout_viewport_ = false;
+    }
+  }
+
   // If there won't be any scrolling, bail early so we don't produce any side
   // effects like cancelling existing animations.
   if (visual_consumed_delta.IsZero() && scrollable_axis_delta.IsZero()) {
@@ -594,6 +610,9 @@ ScrollResult RootFrameViewport::UserScroll(
     return visual_result;
   }
 
+  if (!scrollable_axis_delta.IsZero()) {
+    user_scroll_sequence_affects_layout_viewport_ = true;
+  }
   auto all_done = MakeViewportScrollCompletion(std::move(on_finish));
 
   ScrollResult visual_result =

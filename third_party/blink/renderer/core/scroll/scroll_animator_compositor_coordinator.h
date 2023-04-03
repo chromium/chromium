@@ -97,8 +97,6 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   void DetachElement();
 
-  virtual bool HasRunningAnimation() const { return false; }
-
   virtual void ResetAnimationState();
   virtual void CancelAnimation();
   // Aborts the currently running scroll offset animation on the compositor
