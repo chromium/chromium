@@ -3985,6 +3985,13 @@
     "expiry_milestone": 117
   },
   {
+    "name": "firmware-update-jelly",
+    "owners": [
+      "//ash/webui/firmware_update_ui/OWNERS"
+    ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "fix-pdf-snapshot",
     "owners": [ "asamidoi" ],
     "expiry_milestone": 117

@@ -5720,6 +5720,12 @@ const char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
 const char kFilesTrashDriveDescription[] =
     "Enable trash for Drive volume in Files App.";
 
+const char kFirmwareUpdateJellyName[] =
+    "Enable jelly colors for the Firmware Update App";
+const char kFirmwareUpdateJellyDescription[] =
+    "Enable jelly colors for the Firmware Update App. Requires "
+    "jelly-colors flag to be enabled.";
+
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";
 const char kForceSpectreVariant2MitigationDescription[] =

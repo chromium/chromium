@@ -3285,6 +3285,9 @@ extern const char kFilesTrashDescription[];
 extern const char kFilesTrashDriveName[];
 extern const char kFilesTrashDriveDescription[];
 
+extern const char kFirmwareUpdateJellyName[];
+extern const char kFirmwareUpdateJellyDescription[];
+
 extern const char kFirstPartyVietnameseInputName[];
 extern const char kFirstPartyVietnameseInputDescription[];
 
