@@ -57,7 +57,10 @@ class ButtonContainer : public views::Button {
                   const int preferred_width,
                   absl::optional<int> container_id,
                   const VcEffectId effect_id)
-      : callback_(callback), toggled_(toggle_state), effect_id_(effect_id) {
+      : callback_(callback),
+        toggled_(toggle_state),
+        effect_id_(effect_id),
+        vector_icon_(vector_icon) {
     SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
     SetID(video_conference::BubbleViewID::kToggleEffectsButton);
@@ -80,11 +83,11 @@ class ButtonContainer : public views::Button {
 
     auto icon = std::make_unique<views::ImageView>();
     icon->SetImage(ui::ImageModel::FromVectorIcon(
-        *vector_icon, cros_tokens::kCrosSysOnSurface, kIconSize));
+        *vector_icon_, cros_tokens::kCrosSysOnSurface, kIconSize));
     icon_ = AddChildView(std::move(icon));
 
     // Label is below the button.
-    AddChildView(std::make_unique<views::Label>(label_text));
+    label_ = AddChildView(std::make_unique<views::Label>(label_text));
 
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     UpdateColorsAndBackground();
@@ -122,9 +125,15 @@ class ButtonContainer : public views::Button {
     ui::ColorId background_color_id =
         toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                  : cros_tokens::kCrosSysSystemOnBase;
-
     SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id, kButtonCornerRadius));
+
+    ui::ColorId foreground_color_id =
+        toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                 : cros_tokens::kCrosSysOnSurface;
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        *vector_icon_, foreground_color_id, kIconSize));
+    label_->SetEnabledColorId(foreground_color_id);
   }
 
   views::Button::PressedCallback callback_;
@@ -137,6 +146,9 @@ class ButtonContainer : public views::Button {
 
   // Owned by the views hierarchy.
   views::ImageView* icon_ = nullptr;
+  views::Label* label_ = nullptr;
+
+  const gfx::VectorIcon* vector_icon_;
 
   base::WeakPtrFactory<ButtonContainer> weak_ptr_factory_{this};
 };
