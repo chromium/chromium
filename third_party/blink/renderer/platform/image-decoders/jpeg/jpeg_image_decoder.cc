@@ -121,6 +121,13 @@ cc::YUVSubsampling YuvSubsampling(const jpeg_decompress_struct& info) {
   return cc::YUVSubsampling::kUnknown;
 }
 
+bool SubsamplingSupportedByDecodeToYUV(cc::YUVSubsampling subsampling) {
+  // Only subsamplings 4:4:4, 4:2:2, and 4:2:0 are supported.
+  return subsampling == cc::YUVSubsampling::k444 ||
+         subsampling == cc::YUVSubsampling::k422 ||
+         subsampling == cc::YUVSubsampling::k420;
+}
+
 // Extracts the JPEG color space of an image for UMA purposes given |info| which
 // is assumed to have gone through a jpeg_read_header(). When the color space is
 // YCbCr, we also extract the chroma subsampling. The caveat is that the
@@ -875,10 +882,7 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
       // TODO(crbug.com/911246): Support color space transformations on planar
       // data.
       !ColorTransform() &&
-      // Only subsamplings 4:4:4, 4:2:2, and 4:2:0 are supported.
-      (GetYUVSubsampling() == cc::YUVSubsampling::k444 ||
-       GetYUVSubsampling() == cc::YUVSubsampling::k422 ||
-       GetYUVSubsampling() == cc::YUVSubsampling::k420);
+      SubsamplingSupportedByDecodeToYUV(GetYUVSubsampling());
 }
 
 void JPEGImageDecoder::SetDecodedSize(unsigned width, unsigned height) {
