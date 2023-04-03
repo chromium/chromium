@@ -43,7 +43,7 @@ ExtensionFunction::ResponseAction IdleQueryStateFunction::Run() {
       IdleManagerFactory::GetForBrowserContext(browser_context())
           ->QueryState(threshold);
 
-  return RespondNow(OneArgument(IdleManager::CreateIdleValue(state)));
+  return RespondNow(WithArguments(IdleManager::CreateIdleValue(state)));
 }
 
 void IdleQueryStateFunction::IdleStateCallback(ui::IdleState state) {
@@ -69,6 +69,6 @@ ExtensionFunction::ResponseAction IdleGetAutoLockDelayFunction::Run() {
   const int delay = IdleManagerFactory::GetForBrowserContext(browser_context())
                         ->GetAutoLockDelay()
                         .InSeconds();
-  return RespondNow(OneArgument(base::Value(delay)));
+  return RespondNow(WithArguments(delay));
 }
 }  // namespace extensions

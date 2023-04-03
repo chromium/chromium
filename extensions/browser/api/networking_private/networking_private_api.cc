@@ -207,7 +207,7 @@ void NetworkingPrivateGetManagedPropertiesFunction::Result(
   FilterProperties(result.value(), PropertiesType::GET, extension(),
                    source_context_type(), source_url(), context_id(),
                    *GetContextData());
-  Respond(OneArgument(base::Value(std::move(*result))));
+  Respond(WithArguments(std::move(*result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +236,7 @@ void NetworkingPrivateGetStateFunction::Success(base::Value::Dict result) {
   FilterProperties(result, PropertiesType::GET, extension(),
                    source_context_type(), source_url(), context_id(),
                    *GetContextData());
-  Respond(OneArgument(base::Value(std::move(result))));
+  Respond(WithArguments(std::move(result)));
 }
 
 void NetworkingPrivateGetStateFunction::Failure(const std::string& error) {
@@ -397,7 +397,7 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
 
 void NetworkingPrivateGetNetworksFunction::Success(
     base::Value::List network_list) {
-  return Respond(OneArgument(base::Value(std::move(network_list))));
+  return Respond(WithArguments(std::move(network_list)));
 }
 
 void NetworkingPrivateGetNetworksFunction::Failure(const std::string& error) {
@@ -444,7 +444,7 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
 
 void NetworkingPrivateGetVisibleNetworksFunction::Success(
     base::Value::List network_properties_list) {
-  Respond(OneArgument(base::Value(std::move(network_properties_list))));
+  Respond(WithArguments(std::move(network_properties_list)));
 }
 
 void NetworkingPrivateGetVisibleNetworksFunction::Failure(
@@ -496,7 +496,7 @@ void NetworkingPrivateGetEnabledNetworkTypesFunction::Result(
       LOG(ERROR) << "networkingPrivate: Unexpected type: " << type;
     }
   }
-  return Respond(OneArgument(base::Value(std::move(enabled_networks_list))));
+  return Respond(WithArguments(std::move(enabled_networks_list)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -521,7 +521,7 @@ void NetworkingPrivateGetDeviceStatesFunction::Result(
   base::Value::List device_state_list;
   for (const auto& properties : *device_states)
     device_state_list.Append(properties->ToValue());
-  return Respond(OneArgument(base::Value(std::move(device_state_list))));
+  return Respond(WithArguments(std::move(device_state_list)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -915,8 +915,7 @@ NetworkingPrivateGetCertificateListsFunction::Run() {
 
 void NetworkingPrivateGetCertificateListsFunction::Result(
     absl::optional<base::Value::Dict> certificate_lists) {
-  return Respond(
-      OneArgument(base::Value(std::move(certificate_lists.value()))));
+  return Respond(WithArguments(std::move(certificate_lists.value())));
 }
 
 }  // namespace extensions

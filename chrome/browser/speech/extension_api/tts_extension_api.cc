@@ -354,7 +354,7 @@ ExtensionFunction::ResponseAction TtsResumeFunction::Run() {
 }
 
 void TtsIsSpeakingFunction::OnIsSpeakingComplete(bool speaking) {
-  Respond(OneArgument(base::Value(speaking)));
+  Respond(WithArguments(speaking));
 }
 
 ExtensionFunction::ResponseAction TtsIsSpeakingFunction::Run() {
@@ -379,8 +379,8 @@ ExtensionFunction::ResponseAction TtsIsSpeakingFunction::Run() {
   }
 #endif
 
-  return RespondNow(OneArgument(
-      base::Value(content::TtsController::GetInstance()->IsSpeaking())));
+  return RespondNow(
+      WithArguments(content::TtsController::GetInstance()->IsSpeaking()));
 }
 
 ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
@@ -409,7 +409,7 @@ ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
     result_voices.Append(std::move(result_voice));
   }
 
-  return RespondNow(OneArgument(base::Value(std::move(result_voices))));
+  return RespondNow(WithArguments(std::move(result_voices)));
 }
 
 TtsAPI::TtsAPI(content::BrowserContext* context) {

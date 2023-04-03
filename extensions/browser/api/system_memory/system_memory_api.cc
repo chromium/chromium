@@ -20,8 +20,7 @@ ExtensionFunction::ResponseAction SystemMemoryGetInfoFunction::Run() {
 
 void SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted(bool success) {
   if (success) {
-    Respond(OneArgument(
-        base::Value(MemoryInfoProvider::Get()->memory_info().ToValue())));
+    Respond(WithArguments(MemoryInfoProvider::Get()->memory_info().ToValue()));
   } else {
     Respond(Error("Error occurred when querying memory information."));
   }

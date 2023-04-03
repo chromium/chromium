@@ -61,8 +61,7 @@ SystemPrivateGetIncognitoModeAvailabilityFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(
       value >= 0 &&
       value < static_cast<int>(std::size(kIncognitoModeAvailabilityStrings)));
-  return RespondNow(
-      OneArgument(base::Value(kIncognitoModeAvailabilityStrings[value])));
+  return RespondNow(WithArguments(kIncognitoModeAvailabilityStrings[value]));
 }
 
 ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
@@ -128,11 +127,11 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
   base::Value::Dict dict;
   dict.Set(kStateKey, state);
   dict.Set(kDownloadProgressKey, download_progress);
-  return RespondNow(OneArgument(base::Value(std::move(dict))));
+  return RespondNow(WithArguments(std::move(dict)));
 }
 
 ExtensionFunction::ResponseAction SystemPrivateGetApiKeyFunction::Run() {
-  return RespondNow(OneArgument(base::Value(google_apis::GetAPIKey())));
+  return RespondNow(WithArguments(google_apis::GetAPIKey()));
 }
 
 }  // namespace extensions

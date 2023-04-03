@@ -66,10 +66,10 @@ void EnterpriseDeviceAttributesBase::OnCrosapiResult(
     case Result::Tag::kErrorMessage:
       // We intentionally drop the error message here because the extension API
       // is expected to return "" on validation error.
-      Respond(OneArgument(base::Value("")));
+      Respond(WithArguments(""));
       return;
     case Result::Tag::kContents:
-      Respond(OneArgument(base::Value(result->get_contents())));
+      Respond(WithArguments(result->get_contents()));
       return;
   }
 }

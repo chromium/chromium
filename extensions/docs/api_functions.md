@@ -146,7 +146,7 @@ ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   // even though the function finished synchronously in C++, the extension still
   // sees this as an asynchronous function, because the IPC between the
   // renderer and the browser is asynchronous.
-  return RespondNow(OneArgument(base::Value(std::move(frobulate_result))));
+  return RespondNow(WithArguments(std::move(frobulate_result)));
 }
 ```
 
@@ -180,7 +180,7 @@ ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
 }
 
 void GizmoFrobulateFunction::OnFrobulated(const std::string& frobulate_result) {
-  Respond(OneArgument(base::Value(frobulate_result)));
+  Respond(WithArguments(frobulate_result));
 }
 ```
 

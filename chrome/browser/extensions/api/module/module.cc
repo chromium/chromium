@@ -37,14 +37,14 @@ ExtensionFunction::ResponseAction ExtensionSetUpdateUrlDataFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ExtensionIsAllowedIncognitoAccessFunction::Run() {
-  return RespondNow(OneArgument(base::Value(
-      util::IsIncognitoEnabled(extension_id(), browser_context()))));
+  return RespondNow(WithArguments(
+      util::IsIncognitoEnabled(extension_id(), browser_context())));
 }
 
 ExtensionFunction::ResponseAction
 ExtensionIsAllowedFileSchemeAccessFunction::Run() {
-  return RespondNow(OneArgument(
-      base::Value(util::AllowFileAccess(extension_id(), browser_context()))));
+  return RespondNow(
+      WithArguments(util::AllowFileAccess(extension_id(), browser_context())));
 }
 
 }  // namespace extensions

@@ -425,8 +425,8 @@ ExtensionActionHideFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ActionIsEnabledFunction::RunExtensionAction() {
-  return RespondNow(OneArgument(base::Value(
-      extension_action_->GetIsVisibleIgnoringDeclarative(tab_id_))));
+  return RespondNow(WithArguments(
+      extension_action_->GetIsVisibleIgnoringDeclarative(tab_id_)));
 }
 
 // static
