@@ -171,7 +171,6 @@ class MODULES_EXPORT RTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
 
   uintptr_t Id() const override;
   String Mid() const override;
-  void SetMid(absl::optional<String>) override;
   std::unique_ptr<RTCRtpSenderPlatform> Sender() const override;
   std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override;
   webrtc::RtpTransceiverDirection Direction() const override;

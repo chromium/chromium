@@ -32,7 +32,6 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
   // can exist for the same webrtc-layer transceiver.
   virtual uintptr_t Id() const = 0;
   virtual String Mid() const = 0;
-  virtual void SetMid(absl::optional<String>) {}
   virtual std::unique_ptr<RTCRtpSenderPlatform> Sender() const = 0;
   virtual std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const = 0;
   virtual webrtc::RtpTransceiverDirection Direction() const = 0;
