@@ -1689,7 +1689,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin64-public/R114-15407.0.0",
+        "cros_img": "kevin64-public/R114-15408.0.0",
         "name": "lacros_all_tast_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
