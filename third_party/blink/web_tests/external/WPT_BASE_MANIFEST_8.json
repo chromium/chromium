@@ -268533,11 +268533,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "507b64aa7ef9b876e5480711a414549542b98a17",
+     "c1c2a868456833b63257b65c8b83ca6a73611b23",
      []
     ],
     "mtime.json": [
-     "4a9e6f7be04d5ff5a3a76417dce3b3b7748a4c47",
+     "1285c37efa1bbe8a622b8fff47d781554b69a3ff",
      []
     ]
    },
@@ -277338,6 +277338,10 @@
       ],
       "border-bottom-applies-to-001-ref.xht": [
        "ff381421b7ac5f70952f610b93d18561d81136d6",
+       []
+      ],
+      "border-bottom-applies-to-013.xht.ini": [
+       "b781f080fe457a356d04e3b65fe0e9a251fd5cda",
        []
       ],
       "border-bottom-color-001-ref.xht": [
@@ -287889,6 +287893,10 @@
      ],
      "hex-003-ref.html": [
       "dc7e324e0edbd096f5ac6a31346836377e366c8d",
+      []
+     ],
+     "hsla-004.html.ini": [
+      "930046262fd1f50fa00a483954b3abf3bc8e9c5e",
       []
      ],
      "htaccess": [
@@ -319074,6 +319082,10 @@
        "59933dbf456a7ffd32f3db8b49c5342f05034449",
        []
       ],
+      "text-transform-capitalize-009.html.ini": [
+       "73a0f031ccfa759178a2b86ed4d485f0f6586fe9",
+       []
+      ],
       "text-transform-capitalize-014.html.ini": [
        "4080d27f0bc429516e18336bf4fff03742a3a083",
        []
@@ -324841,7 +324853,7 @@
        []
       ],
       "kind-of-widget-fallback-color-input-border-bottom-left-radius-001.html.ini": [
-       "8fdc45a4a68385a5b17ac303b3d8cb28ca125190",
+       "8ca46ce015dd4ac01130fdd11f18dabc200afcc4",
        []
       ],
       "kind-of-widget-fallback-color-input-border-bottom-style-001.html.ini": [
@@ -332695,6 +332707,10 @@
        []
       ]
      },
+     "repaint-added-backdrop-filter.html.ini": [
+      "3995a70e4c5b2fa762d551e889d87155528c522d",
+      []
+     ],
      "resources": {
       "reference.png": [
        "68641b76771abf086dc213b353ac2088fffb931a",
@@ -369117,7 +369133,7 @@
      []
     ],
     "OWNERS": [
-     "1dcc6038a5d88dbffc3945a12534c055326ef1e3",
+     "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
      []
     ],
     "SourceBuffer-abort-expected.txt": [
@@ -381625,6 +381641,10 @@
        []
       ]
      },
+     "response-code-non-successful.html.ini": [
+      "195bab9080d43f83ab72f4103d7350bd6da0697b",
+      []
+     ],
      "response-code-successful.html.ini": [
       "bf9c058e4cce7a3a4d57d1d479400282aa8e7589",
       []
@@ -388916,6 +388936,10 @@
      "5109b167cbdb7b80b7808ed068d1e4fa0c592a37",
      []
     ],
+    "pad.https.any.js.ini": [
+     "e8ae5506b90dadc37431af931c14e17f0b4ba2e5",
+     []
+    ],
     "pooling.https.any.js.ini": [
      "398b9661cbbe6b9bb34487216d97d3a5b5b34015",
      []
@@ -389046,6 +389070,10 @@
        "8a1eea34f95f52f024fb8e3b8977e037040f7584",
        []
       ],
+      "pad.json": [
+       "ac4834d7f09cd3ed788a16de8162fc7cb8b02c19",
+       []
+      ],
       "pow.json": [
        "d6c9f592df7b4103ec477dcd2a49cdc482c88672",
        []
@@ -389124,7 +389152,7 @@
       ]
      },
      "utils.js": [
-      "1aec133aef00d6e1e910c217ba9e144d390214c3",
+      "a91dfa04c6e7b38cb1d461edef7cbb72edaa65ba",
       []
      ]
     },
@@ -419304,7 +419332,7 @@
      ]
     ],
     "async-unsanitized-html-formats-write-read.tentative.https.html": [
-     "ffe6a31c2a7a9382796b1917d724eb4b1ac13fd5",
+     "46e335c804b74e09c917f68616a62cff584b1fae",
      [
       null,
       {
@@ -560882,7 +560910,7 @@
       ]
      ],
      "loaf-desired-exec-time.html": [
-      "d47ca28c303a72531d5bb0b3438980a9e269c1d7",
+      "fc1f2e8707cd0e8aec7ebc7ed43f7ccba95320d1",
       [
        null,
        {
@@ -628910,6 +628938,57 @@
         [
          "title",
          "test WebNN API matmul operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "pad.https.any.js": [
+     "f9d13d495f95bc4e4970e94946a94fec50719c22",
+     [
+      "webnn/pad.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API pad operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/pad.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API pad operation"
         ],
         [
          "global",

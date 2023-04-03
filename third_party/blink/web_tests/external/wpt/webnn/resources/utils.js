@@ -269,6 +269,7 @@ const PrecisionMetrics = {
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
   leakyRelu: {ULP: {float32: 1, float16: 1}},
   matmul: {ULP: {float32: getMatmulPrecisionTolerance, float16: getMatmulPrecisionTolerance}},
+  pad: {ULP: {float32: 0, float16: 0}},
   // Begin Pooling operations
   averagePool2d: {ULP: {float32: getAveragePool2dPrecisionTolerance, float16: getAveragePool2dPrecisionTolerance}},
   maxPool2d: {ULP: {float32: 0, float16: 0}},
