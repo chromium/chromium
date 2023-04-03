@@ -93,7 +93,9 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 - (void)showHelpBubbleIfEligible {
-  DCHECK(self.browserState);
+  if (!self.browserState) {
+    return;
+  }
   // Waits to present the bubbles until the feature engagement tracker database
   // is fully initialized. This method requires that `self.browserState` is not
   // NULL.
@@ -118,7 +120,9 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 - (void)showLongPressHelpBubbleIfEligible {
-  DCHECK(self.browserState);
+  if (!self.browserState) {
+    return;
+  }
   // Waits to present the bubble until the feature engagement tracker database
   // is fully initialized. This method requires that `self.browserState` is not
   // NULL.

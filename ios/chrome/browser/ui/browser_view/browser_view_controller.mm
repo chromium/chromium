@@ -1023,9 +1023,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (_isShutdown)
     return NO;
 
-  if (!self.browser)
-    return NO;
-
   if (self.presentedViewController)
     return NO;
 
@@ -1041,8 +1038,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  DCHECK(self.browser);
-
   CGRect initialViewsRect = self.view.bounds;
   UIViewAutoresizing initialViewAutoresizing =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -1123,15 +1118,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.viewVisible = YES;
   [self updateBroadcastState];
   [self updateToolbarState];
-
-  // `viewDidAppear` can be called after `browserState` is destroyed. Since
-  // `presentBubblesIfEligible` requires that `self.browserState` is not NULL,
-  // check for `self.browserState` before calling the presenting the bubbles.
-  // TODO(crbug.com/1329091): determine if this check is still needed?
-  if (self.browserState) {
-    [self.helpHandler showHelpBubbleIfEligible];
-    [self.helpHandler showLongPressHelpBubbleIfEligible];
-  }
+  [self.helpHandler showHelpBubbleIfEligible];
+  [self.helpHandler showLongPressHelpBubbleIfEligible];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -1199,10 +1187,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  // After `-shutdown` is called, `self.browserState` is invalid and will cause
-  // a crash.
-  if (!self.browserState || _isShutdown)
+  // After `-shutdown` is called, browserState is invalid and will cause a
+  // crash.
+  if (_isShutdown) {
     return;
+  }
 
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
@@ -1275,8 +1264,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-  // After `-shutdown` is called, `self.browser` is invalid and will cause
-  // a crash.
+  // After `-shutdown` is called, browser is invalid and will cause a crash.
   if (_isShutdown)
     return;
 
@@ -1523,8 +1511,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _voiceSearchController.dispatcher = self.loadQueryCommandsHandler;
   }
 
-  // TODO(crbug.com/1329097): Move tab strip setup to BrowserCoordinator.
-  // Potentially inject these coordinators as a stopgap.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       [self.tabStripCoordinator start];
@@ -2962,7 +2948,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)prepareForOverflowMenuPresentation {
-  DCHECK(self.browserState);
   DCHECK(self.visible || self.dismissingModal);
 
   // Dismiss the omnibox (if open).
@@ -3009,9 +2994,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // tabs (since doing so is a no-op for the tabs that don't have it set).
     _expectingForegroundTab = NO;
 
-    WebStateList* webStateList = self.browser->GetWebStateList();
-    for (int index = 0; index < webStateList->count(); ++index) {
-      web::WebState* webStateAtIndex = webStateList->GetWebStateAt(index);
+    for (int index = 0; index < self.webStateListSize; ++index) {
+      web::WebState* webStateAtIndex = self.webStateList->GetWebStateAt(index);
       PagePlaceholderTabHelper::FromWebState(webStateAtIndex)
           ->CancelPlaceholderForNextNavigation();
     }
