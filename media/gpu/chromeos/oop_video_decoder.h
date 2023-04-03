@@ -106,10 +106,17 @@ class OOPVideoDecoder : public VideoDecoderMixin,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
                         VideoDecoderType decoder_type);
+
   void OnDecodeDone(uint64_t decode_id,
                     bool is_flush_cb,
                     const DecoderStatus& status);
+  void DeferDecodeCallback(DecodeCB decode_cb, const DecoderStatus& status);
+  void CallDeferredDecodeCallback(DecodeCB decode_cb,
+                                  const DecoderStatus& status);
+  bool HasPendingDecodeCallbacks() const;
+
   void OnResetDone();
+  void CallResetCallback();
 
   void Stop();
 
@@ -120,10 +127,16 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   uint64_t decode_counter_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  // std::map is used to ensure that iterating through |pending_decodes_| is
-  // done in the order in which Decode() is called.
+  // |pending_decodes_| tracks the decode requests that have been sent to the
+  // remote decoder. We use std::map to ensure that iterating through
+  // |pending_decodes_| is done in the order in which Decode() is called.
   std::map<uint64_t, DecodeCB> pending_decodes_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // |num_deferred_decode_cbs_| tracks how many decode callbacks are in the
+  // queue as tasks waiting to be executed. This does not include decode
+  // callbacks awaiting a reply from the remote decoder.
+  uint64_t num_deferred_decode_cbs_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   bool is_flushing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
