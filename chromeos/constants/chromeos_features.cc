@@ -51,6 +51,11 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable experimental goldfish web app profile isolation.
+BASE_FEATURE(kExperimentalWebAppProfileIsolation,
+             "ExperimentalWebAppProfileIsolation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable experimental goldfish web app isolation.
 BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",

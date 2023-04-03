@@ -3670,6 +3670,9 @@ extern const char kLibAssistantV2MigrationDescription[];
 extern const char kDesktopCaptureLacrosV2Name[];
 extern const char kDesktopCaptureLacrosV2Description[];
 
+extern const char kExperimentalWebAppProfileIsolationName[];
+extern const char kExperimentalWebAppProfileIsolationDescription[];
+
 extern const char kExperimentalWebAppStoragePartitionIsolationName[];
 extern const char kExperimentalWebAppStoragePartitionIsolationDescription[];
 

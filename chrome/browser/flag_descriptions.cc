@@ -6382,11 +6382,18 @@ const char kDesktopCaptureLacrosV2Description[] =
     "Enables the improved desktop/window capturer for doing screen/window "
     "sharing on Lacros";
 
+const char kExperimentalWebAppProfileIsolationName[] =
+    "Enable experimental web app profile isolation";
+const char kExperimentalWebAppProfileIsolationDescription[] =
+    "This is a highly experimental feature to isolate a web app with a "
+    "dedicated profile. Enabling this flag could break things. And a factory"
+    "reset might be needed to fully recover the state.";
+
 const char kExperimentalWebAppStoragePartitionIsolationName[] =
     "Enable experimental web app stroage partition isolation";
 const char kExperimentalWebAppStoragePartitionIsolationDescription[] =
     "This is highly experimental. Enabling this flag could break things. And a "
-    "power wash might be needed to fully recover the state.";
+    "factory reset might be needed to fully recover the state.";
 
 const char kLacrosAuraCaptureName[] = "Enable Lacros Aura Capture";
 const char kLacrosAuraCaptureDescription[] =
