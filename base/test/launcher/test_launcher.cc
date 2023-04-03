@@ -2191,6 +2191,13 @@ size_t NumParallelJobs(unsigned int cores_per_job) {
 #else
   size_t cores = base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
 #endif
+#if BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR
+  // If we are targeting the simulator increase the number of jobs we use by 2x
+  // the number of cores. This is necessary because the startup of each
+  // process is slow, so using 2x empirically approaches the total machine
+  // utilization.
+  cores *= 2;
+#endif
   return std::max(size_t(1), cores / cores_per_job);
 }
 
