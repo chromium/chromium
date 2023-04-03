@@ -1145,15 +1145,15 @@
     },
 
     'tryserver.chromium.codesearch': {
-      'gen-android-try': 'codesearch_gen_chromium_android_bot',
-      'gen-chromiumos-try': 'codesearch_gen_chromium_chromiumos_bot',
-      'gen-fuchsia-try': 'codesearch_gen_chromium_fuchsia_bot',
-      'gen-ios-try': 'codesearch_gen_chromium_ios_bot',
-      'gen-lacros-try': 'codesearch_gen_chromium_lacros_bot',
-      'gen-linux-try': 'codesearch_gen_chromium_bot',
-      'gen-mac-try': 'codesearch_gen_chromium_mac_bot',
-      'gen-webview-try': 'codesearch_gen_chromium_webview_bot',
-      'gen-win-try': 'codesearch_gen_chromium_bot',
+      'gen-android-try': 'codesearch_gen_chromium_android_bot_reclient',
+      'gen-chromiumos-try': 'codesearch_gen_chromium_chromiumos_bot_reclient',
+      'gen-fuchsia-try': 'codesearch_gen_chromium_fuchsia_bot_reclient',
+      'gen-ios-try': 'codesearch_gen_chromium_ios_bot_reclient',
+      'gen-lacros-try': 'codesearch_gen_chromium_lacros_bot_reclient',
+      'gen-linux-try': 'codesearch_gen_chromium_bot_reclient',
+      'gen-mac-try': 'codesearch_gen_chromium_mac_bot_reclient',
+      'gen-webview-try': 'codesearch_gen_chromium_android_bot_reclient',
+      'gen-win-try': 'codesearch_gen_chromium_bot_reclient',
     },
 
     'tryserver.chromium.dawn': {
@@ -2435,20 +2435,41 @@
       'codesearch', 'android_without_codecs', 'static',
     ],
 
+    'codesearch_gen_chromium_android_bot_reclient': [
+      # Set is_component_build=false to enable cronet targets.
+      'codesearch_reclient', 'android_without_codecs', 'static',
+    ],
+
     'codesearch_gen_chromium_bot': [
       'codesearch',
+    ],
+
+    'codesearch_gen_chromium_bot_reclient': [
+      'codesearch_reclient',
     ],
 
     'codesearch_gen_chromium_chromiumos_bot': [
       'codesearch', 'chromeos',
     ],
 
+    'codesearch_gen_chromium_chromiumos_bot_reclient': [
+      'codesearch_reclient', 'chromeos',
+    ],
+
     'codesearch_gen_chromium_fuchsia_bot': [
       'codesearch_release', 'fuchsia', 'cast_receiver',
     ],
 
+    'codesearch_gen_chromium_fuchsia_bot_reclient': [
+      'codesearch_release_reclient', 'fuchsia', 'cast_receiver',
+    ],
+
     'codesearch_gen_chromium_ios_bot': [
       'codesearch_ios', 'ios', 'ios_disable_code_signing'
+    ],
+
+    'codesearch_gen_chromium_ios_bot_reclient': [
+      'codesearch_ios_reclient', 'ios', 'ios_disable_code_signing'
     ],
 
     # Lacros uses different gn args to build for chromeOS device vs. Linux. For
@@ -2457,8 +2478,18 @@
       'codesearch', 'lacros_on_linux',
     ],
 
+    # Lacros uses different gn args to build for chromeOS device vs. Linux. For
+    # simplicity, we only generate codesearch x-refs for lacros on Linux.
+    'codesearch_gen_chromium_lacros_bot_reclient': [
+      'codesearch_reclient', 'lacros_on_linux',
+    ],
+
     'codesearch_gen_chromium_mac_bot': [
       'codesearch', 'mac',
+    ],
+
+    'codesearch_gen_chromium_mac_bot_reclient': [
+      'codesearch_reclient', 'mac',
     ],
 
     'codesearch_gen_chromium_webview_bot': [
@@ -4011,9 +4042,29 @@
                  'blink_enable_generated_code_formatting'],
     },
 
+    # Same as regular codesearch except ios does not allow component builds
+    'codesearch_ios_reclient': {
+      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
+      'mixins': ['reclient', 'clang', 'debug', 'minimal_symbols',
+                 'blink_enable_generated_code_formatting'],
+    },
+
+    # Settings used by the codesearch builders to generate cross-references.
+    'codesearch_reclient': {
+      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
+      'mixins': ['reclient', 'clang', 'shared', 'debug', 'minimal_symbols',
+                 'blink_enable_generated_code_formatting'],
+    },
+
     'codesearch_release': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['release', 'static', 'goma',
+                 'blink_enable_generated_code_formatting'],
+    },
+
+    'codesearch_release_reclient': {
+      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
+      'mixins': ['release', 'static', 'reclient',
                  'blink_enable_generated_code_formatting'],
     },
 
