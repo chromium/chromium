@@ -20,7 +20,6 @@ class Font;
 class GraphicsContext;
 class InlineTextBox;
 class LayoutObject;
-class LayoutTextCombine;
 class StyleableMarker;
 class DocumentMarker;
 struct PhysicalOffset;
@@ -83,15 +82,13 @@ class InlineTextBoxPainter {
                               const PhysicalRect& box_rect,
                               const ComputedStyle&,
                               const Font&,
-                              Color text_color,
-                              LayoutTextCombine* = nullptr);
+                              Color text_color);
 
   template <PaintOptions>
   PhysicalRect GetSelectionRect(GraphicsContext&,
                                 const PhysicalRect& box_rect,
                                 const ComputedStyle&,
                                 const Font&,
-                                LayoutTextCombine* = nullptr,
                                 bool allow_empty_selection = false);
 
   void PaintStyleableMarkerUnderline(GraphicsContext&,

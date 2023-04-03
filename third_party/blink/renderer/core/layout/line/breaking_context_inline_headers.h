@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/line/inline_iterator.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/layout_text_info.h"
@@ -104,7 +103,6 @@ class BreakingContext {
   void HandleReplaced();
   bool HandleText(WordMeasurements&, bool& hyphenated);
   void PrepareForNextCharacter(const LineLayoutText&,
-                               bool& prohibit_break_inside,
                                bool previous_character_is_space);
   bool CanBreakAtWhitespace(bool break_words,
                             WordMeasurement&,
@@ -960,9 +958,6 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
                      line_break_anywhere);
   bool keep_all =
       auto_wrap_ && current_style_->WordBreak() == EWordBreak::kKeepAll;
-  bool prohibit_break_inside = current_style_->HasTextCombine() &&
-                               layout_text.IsCombineText() &&
-                               LineLayoutTextCombine(layout_text).IsCombined();
 
   // This is currently only used for word-break: break-all, specifically for the
   // case where we have a break opportunity within a word, then a string of non-
@@ -1084,7 +1079,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
         StopIgnoringSpaces(last_space);
       }
 
-      PrepareForNextCharacter(layout_text, prohibit_break_inside,
+      PrepareForNextCharacter(layout_text,
                               previous_is_space_or_other_space_separator_);
       at_start_ = false;
       NextCharacter(c, last_character, second_to_last_character);
@@ -1243,7 +1238,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
       }
     }
 
-    PrepareForNextCharacter(layout_text, prohibit_break_inside,
+    PrepareForNextCharacter(layout_text,
                             previous_is_space_or_other_space_separator_);
     at_start_ = false;
     is_line_empty = line_info_.IsEmpty();
@@ -1323,12 +1318,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
 
 inline void BreakingContext::PrepareForNextCharacter(
     const LineLayoutText& layout_text,
-    bool& prohibit_break_inside,
     bool previous_is_space_or_other_space_separator) {
-  if (prohibit_break_inside) {
-    current_.SetNextBreakablePosition(layout_text.TextLength());
-    prohibit_break_inside = false;
-  }
   if (current_character_is_space_ && !previous_character_is_space_) {
     start_of_ignored_spaces_.SetLineLayoutItem(current_.GetLineLayoutItem());
     start_of_ignored_spaces_.SetOffset(current_.Offset());

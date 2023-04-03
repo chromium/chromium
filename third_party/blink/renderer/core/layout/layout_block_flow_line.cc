@@ -60,12 +60,6 @@ class ExpansionOpportunities {
           {text.Characters8() + run.start_,
            static_cast<size_t>(run.stop_ - run.start_)},
           run.box_->Direction(), is_after_expansion);
-    } else if (run.line_layout_item_.IsCombineText()) {
-      // Justfication applies to before and after the combined text as if
-      // it is an ideographic character, and is prohibited inside the
-      // combined text.
-      opportunities_in_run = is_after_expansion ? 1 : 2;
-      is_after_expansion = true;
     } else {
       opportunities_in_run = Character::ExpansionOpportunityCount(
           {text.Characters16() + run.start_,

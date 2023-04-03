@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
@@ -130,20 +129,6 @@ LayoutText* LayoutObjectFactory::CreateText(Node* node,
   }
   LayoutText* layout_text =
       MakeGarbageCollected<LayoutText>(node, std::move(str));
-  if (force_legacy)
-    layout_text->SetForceLegacyLayout();
-  return layout_text;
-}
-
-LayoutText* LayoutObjectFactory::CreateTextCombine(Node* node,
-                                                   String str,
-                                                   LegacyLayout legacy) {
-  bool force_legacy = legacy == LegacyLayout::kForce;
-  if (!force_legacy) {
-    return MakeGarbageCollected<LayoutNGText>(node, std::move(str));
-  }
-  LayoutText* const layout_text =
-      MakeGarbageCollected<LayoutTextCombine>(node, std::move(str));
   if (force_legacy)
     layout_text->SetForceLegacyLayout();
   return layout_text;

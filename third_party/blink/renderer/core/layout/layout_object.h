@@ -2888,11 +2888,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsListMarker() || IsLayoutNGListMarker();
   }
 
-  virtual bool IsCombineText() const {
-    NOT_DESTROYED();
-    return false;
-  }
-
   // ImageResourceObserver override.
   void ImageChanged(ImageResourceContent*, CanDeferInvalidation) final;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override {

@@ -41,7 +41,6 @@ class LayoutObjectFactory {
                                         LegacyLayout);
 
   static LayoutText* CreateText(Node*, String, LegacyLayout);
-  static LayoutText* CreateTextCombine(Node*, String, LegacyLayout);
   static LayoutTextFragment* CreateTextFragment(Node*,
                                                 const String&,
                                                 int start_offset,

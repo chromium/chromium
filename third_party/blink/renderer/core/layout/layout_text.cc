@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/ellipsis_box.h"
@@ -1129,12 +1128,6 @@ ALWAYS_INLINE float LayoutText::WidthFromFont(
     gfx::RectF* glyph_bounds_accumulation,
     float expansion) const {
   NOT_DESTROYED();
-  if (StyleRef().HasTextCombine() && IsCombineText()) {
-    const auto* combine_text = To<LayoutTextCombine>(this);
-    if (combine_text->IsCombined())
-      return combine_text->CombinedTextWidth(f);
-  }
-
   TextRun run =
       ConstructTextRun(f, this, start, len, StyleRef(), text_direction);
   run.SetCharactersLength(TextLength() - start);

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
@@ -211,7 +210,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                                                        selection_state)) {
       PhysicalRect selection_rect =
           GetSelectionRect<InlineTextBoxPainter::PaintOptions::kNormal>(
-              context, box_rect, style_to_use, style_to_use.GetFont(), nullptr,
+              context, box_rect, style_to_use, style_to_use.GetFont(),
               /* allow_empty_selection*/ true);
 
       TextDirection direction = inline_text_box_.IsLeftToRightDirection()
@@ -286,36 +285,11 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
 
   absl::optional<AffineTransform> rotation;
   absl::optional<GraphicsContextStateSaver> state_saver;
-  LayoutTextCombine* combined_text = nullptr;
   if (!inline_text_box_.IsHorizontal()) {
-    if (style_to_use.HasTextCombine() &&
-        inline_text_box_.GetLineLayoutItem().IsCombineText()) {
-      combined_text = &To<LayoutTextCombine>(InlineLayoutObject());
-      if (!combined_text->IsCombined())
-        combined_text = nullptr;
-    }
-    if (combined_text) {
-      box_rect.SetWidth(combined_text->InlineWidthForLayout());
-      // Justfication applies to before and after the combined text as if
-      // it is an ideographic character, and is prohibited inside the
-      // combined text.
-      if (float expansion = text_run.Expansion()) {
-        text_run.SetExpansion(0);
-        if (text_run.AllowsLeadingExpansion()) {
-          if (text_run.AllowsTrailingExpansion())
-            expansion /= 2;
-          PhysicalOffset offset(LayoutUnit(),
-                                LayoutUnit::FromFloatRound(expansion));
-          box_origin += offset;
-          box_rect.Move(offset);
-        }
-      }
-    } else {
-      rotation.emplace(
-          TextPainterBase::Rotation(box_rect, TextPainterBase::kClockwise));
-      state_saver.emplace(context);
-      context.ConcatCTM(*rotation);
-    }
+    rotation.emplace(
+        TextPainterBase::Rotation(box_rect, TextPainterBase::kClockwise));
+    state_saver.emplace(context);
+    context.ConcatCTM(*rotation);
   }
 
   // Determine text colors.
@@ -351,17 +325,10 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                          font, DocumentMarkerPaintPhase::kBackground);
     if (have_selection) {
       PhysicalRect selection_rect;
-      if (combined_text) {
-        selection_rect =
-            PaintSelection<InlineTextBoxPainter::PaintOptions::kCombinedText>(
-                context, box_rect, style_to_use, font,
-                selection_style.fill_color, combined_text);
-      } else {
-        selection_rect =
-            PaintSelection<InlineTextBoxPainter::PaintOptions::kNormal>(
-                context, box_rect, style_to_use, font,
-                selection_style.fill_color);
-      }
+      selection_rect =
+          PaintSelection<InlineTextBoxPainter::PaintOptions::kNormal>(
+              context, box_rect, style_to_use, font,
+              selection_style.fill_color);
 
       if (recorder && !box_rect.Contains(selection_rect)) {
         gfx::Rect selection_visual_rect = ToEnclosingRect(selection_rect);
@@ -415,8 +382,6 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   if (has_text_emphasis)
     text_painter.SetEmphasisMark(style_to_use.TextEmphasisMarkString(),
                                  emphasis_mark_position);
-  if (combined_text)
-    text_painter.SetCombinedText(combined_text);
   if (inline_text_box_.Truncation() != kCNoTruncation && ltr != flow_is_ltr)
     text_painter.SetEllipsisOffset(inline_text_box_.Truncation());
 
@@ -763,7 +728,6 @@ PhysicalRect InlineTextBoxPainter::GetSelectionRect(
     const PhysicalRect& box_rect,
     const ComputedStyle& style,
     const Font& font,
-    LayoutTextCombine* combined_text,
     bool allow_empty_selection) {
   // See if we have a selection to paint at all.
   int start_pos, end_pos;
@@ -803,13 +767,6 @@ PhysicalRect InlineTextBoxPainter::GetSelectionRect(
       respect_hyphen ? &characters_with_hyphen : nullptr);
   if (respect_hyphen)
     end_pos = text_run.length();
-
-  if (options == InlineTextBoxPainter::PaintOptions::kCombinedText) {
-    DCHECK(combined_text);
-    // We can't use the height of m_inlineTextBox because LayoutTextCombine's
-    // inlineTextBox is horizontal within vertical flow
-    combined_text->TransformToInlineCoordinates(context, box_rect, true);
-  }
 
   LayoutUnit selection_bottom = inline_text_box_.Root().SelectionBottom();
   LayoutUnit selection_top = inline_text_box_.Root().SelectionTop();
@@ -852,13 +809,11 @@ PhysicalRect InlineTextBoxPainter::GetSelectionRect(
 }
 
 template <InlineTextBoxPainter::PaintOptions options>
-PhysicalRect InlineTextBoxPainter::PaintSelection(
-    GraphicsContext& context,
-    const PhysicalRect& box_rect,
-    const ComputedStyle& style,
-    const Font& font,
-    Color text_color,
-    LayoutTextCombine* combined_text) {
+PhysicalRect InlineTextBoxPainter::PaintSelection(GraphicsContext& context,
+                                                  const PhysicalRect& box_rect,
+                                                  const ComputedStyle& style,
+                                                  const Font& font,
+                                                  Color text_color) {
   auto layout_item = inline_text_box_.GetLineLayoutItem();
   Color c = HighlightPaintingUtils::HighlightBackgroundColor(
       layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode(),
@@ -867,7 +822,7 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
     return PhysicalRect();
 
   PhysicalRect selection_rect =
-      GetSelectionRect<options>(context, box_rect, style, font, combined_text);
+      GetSelectionRect<options>(context, box_rect, style, font);
 
   // If the text color ends up being the same as the selection background,
   // invert the selection background.

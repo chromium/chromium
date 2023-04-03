@@ -144,8 +144,6 @@ class LineLayoutItem {
 
   bool IsBR() const { return layout_object_->IsBR(); }
 
-  bool IsCombineText() const { return layout_object_->IsCombineText(); }
-
   bool IsHorizontalWritingMode() const {
     return layout_object_->IsHorizontalWritingMode();
   }

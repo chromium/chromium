@@ -34,8 +34,8 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -335,7 +335,7 @@ LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
     return MakeGarbageCollected<LayoutSVGInlineText>(this, data());
 
   if (style.HasTextCombine())
-    return LayoutObjectFactory::CreateTextCombine(this, data(), legacy);
+    return MakeGarbageCollected<LayoutNGText>(this, data());
 
   return LayoutObjectFactory::CreateText(this, data(), legacy);
 }

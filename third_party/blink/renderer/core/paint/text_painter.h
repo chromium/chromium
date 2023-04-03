@@ -14,7 +14,6 @@ namespace blink {
 class TextDecorationOffsetBase;
 class TextRun;
 struct TextRunPaintInfo;
-class LayoutTextCombine;
 
 // Text painter for legacy layout. Operates on TextRuns.
 class CORE_EXPORT TextPainter : public TextPainterBase {
@@ -35,10 +34,6 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                         horizontal),
         run_(run) {}
   ~TextPainter() = default;
-
-  void SetCombinedText(LayoutTextCombine* combined_text) {
-    combined_text_ = combined_text;
-  }
 
   void Paint(unsigned start_offset,
              unsigned end_offset,
@@ -81,7 +76,6 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                                       const cc::PaintFlags* flags = nullptr);
 
   const TextRun& run_;
-  LayoutTextCombine* combined_text_ = nullptr;
 };
 
 }  // namespace blink
