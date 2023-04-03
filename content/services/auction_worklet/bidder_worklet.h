@@ -170,6 +170,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
+      const std::string& expected_buyer_currency,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
       const absl::optional<GURL>& direct_from_seller_auction_signals) override;
 
@@ -187,6 +188,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     absl::optional<std::string> auction_signals_json;
     absl::optional<std::string> per_buyer_signals_json;
     absl::optional<base::TimeDelta> per_buyer_timeout;
+    std::string expected_buyer_currency;
     url::Origin browser_signal_seller_origin;
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
@@ -400,6 +402,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         DirectFromSellerSignalsRequester::Result
             direct_from_seller_result_auction_signals,
         const absl::optional<base::TimeDelta> per_buyer_timeout,
+        const std::string& expected_buyer_currency,
         const url::Origin& browser_signal_seller_origin,
         const absl::optional<url::Origin>&
             browser_signal_top_level_seller_origin,
@@ -431,6 +434,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const DirectFromSellerSignalsRequester::Result&
             direct_from_seller_result_auction_signals,
         const absl::optional<base::TimeDelta> per_buyer_timeout,
+        const std::string& expected_buyer_currency,
         const url::Origin& browser_signal_seller_origin,
         const url::Origin* browser_signal_top_level_seller_origin,
         const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,

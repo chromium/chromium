@@ -199,6 +199,7 @@ source_set("headers") {
     "input/web_touch_event.h",
     "input/web_touch_point.h",
     "interest_group/ad_auction_constants.h",
+    "interest_group/ad_auction_currencies.h",
     "interest_group/ad_display_size.h",
     "interest_group/ad_display_size_mojom_traits.h",
     "interest_group/ad_display_size_utils.h",

@@ -136,6 +136,21 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts
   using MaybePromiseBuyerTimeouts = MaybePromise<BuyerTimeouts>;
 
+  // Represents auction's expectations on which currency which buyer uses.
+  //
+  // Typemapped to blink::mojom::AuctionAdConfigBuyerCurrencies
+  struct BuyerCurrencies {
+    // Fallback value used for buyers not in `per_buyer_currencies`.
+    absl::optional<std::string> all_buyers_currency;
+
+    // Currency expectations for buyer per their origin.
+    absl::optional<base::flat_map<url::Origin, std::string>>
+        per_buyer_currencies;
+  };
+
+  // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerCurrencies
+  using MaybePromiseBuyerCurrencies = MaybePromise<BuyerCurrencies>;
+
   // Subset of AuctionConfig that is not shared by all auctions that are
   // using the same SellerWorklet object (so it's "not shared" between
   // AuctionConfigs that share the same SellerWorklet). Other AuctionConfig
@@ -198,6 +213,13 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // launching worklet processes, loading scripts and signals, and running
     // the buyer's generateBid() functions.
     MaybePromiseBuyerTimeouts buyer_cumulative_timeouts;
+
+    // Expectation of currency seller worklet in this auction will provide when
+    // modified bids or converting them for reporting.
+    absl::optional<std::string> seller_currency;
+
+    // Expectation of currency for bids made by various participating buyers.
+    MaybePromiseBuyerCurrencies buyer_currencies;
 
     // Values restrict the number of bidding interest groups for a particular
     // buyer that can participate in an auction. Values must be greater than 0.

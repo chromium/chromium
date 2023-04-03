@@ -4170,12 +4170,64 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "perBuyerCumulativeTimeouts buyer 'https://invalid^&' for "
       "AuctionAdConfig "
       "with seller 'https://test.com' must be \"*\" (wildcard) or a valid "
-      "https "
-      "origin.",
+      "https origin.",
       RunAuctionAndWait(R"({
       seller: 'https://test.com',
       decisionLogicUrl: 'https://test.com',
       perBuyerCumulativeTimeouts: {'https://invalid^&': 100}
+  })"));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidPerBuyerCurrenciesOrigin) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "perBuyerCurrencies buyer 'https://invalid^&' for "
+      "AuctionAdConfig "
+      "with seller 'https://test.com' must be \"*\" (wildcard) or a valid "
+      "https origin.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      perBuyerCurrencies: {'https://invalid^&': 'USD'}
+  })"));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidPerBuyerCurrenciesCurrency) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator':"
+      " perBuyerCurrencies currency 'usd' for AuctionAdConfig with seller"
+      " 'https://test.com' must be a 3-letter uppercase currency code.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      perBuyerCurrencies: {'*': 'usd'}
+  })"));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidSellerCurrency) {
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator':"
+      " sellerCurrency 'usd' for AuctionAdConfig with seller"
+      " 'https://test.com' must be a 3-letter uppercase currency code.",
+      RunAuctionAndWait(R"({
+      seller: 'https://test.com',
+      decisionLogicUrl: 'https://test.com',
+      sellerCurrency: 'usd'
   })"));
   WaitForAccessObserved({});
 }
@@ -8641,7 +8693,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
     perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
-    perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
+    perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
+    perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'}
   });
 })())",
                       seller_origin, seller_script_url,
@@ -8771,7 +8824,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
     perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
-    perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
+    perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
+    perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'}
   });
 })())",
                       seller_origin, seller_script_url,
@@ -8949,6 +9003,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
     perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
     perBuyerPrioritySignals: {'*': {foo: 3}},
+    perBuyerCurrencies: {'*': 'MXN', $5: 'CAD'},
     componentAuctions: [{
       seller: $5,
       decisionLogicUrl: $6,
@@ -8962,6 +9017,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       perBuyerTimeouts: maybePromise({$8: 200}),
       perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
       perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
+      perBuyerCurrencies: maybePromise({$8: 'USD'}),
+      sellerCurrency: 'CAD',
     }],
   });
 })())",

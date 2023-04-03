@@ -94,6 +94,10 @@ template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
     blink::AuctionConfig::MaybePromiseBuyerTimeouts>;
 
 template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
+    blink::mojom::AuctionAdConfigMaybePromiseBuyerCurrenciesDataView,
+    blink::AuctionConfig::MaybePromiseBuyerCurrencies>;
+
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
     blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignalsDataView,
     blink::AuctionConfig::MaybePromiseDirectFromSellerSignals>;
 
@@ -103,6 +107,17 @@ bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
          blink::AuctionConfig::BuyerTimeouts* out) {
   if (!data.ReadPerBuyerTimeouts(&out->per_buyer_timeouts) ||
       !data.ReadAllBuyersTimeout(&out->all_buyers_timeout)) {
+    return false;
+  }
+  return true;
+}
+
+bool StructTraits<blink::mojom::AuctionAdConfigBuyerCurrenciesDataView,
+                  blink::AuctionConfig::BuyerCurrencies>::
+    Read(blink::mojom::AuctionAdConfigBuyerCurrenciesDataView data,
+         blink::AuctionConfig::BuyerCurrencies* out) {
+  if (!data.ReadPerBuyerCurrencies(&out->per_buyer_currencies) ||
+      !data.ReadAllBuyersCurrency(&out->all_buyers_currency)) {
     return false;
   }
   return true;
@@ -131,6 +146,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
       !data.ReadBuyerTimeouts(&out->buyer_timeouts) ||
+      !data.ReadSellerCurrency(&out->seller_currency) ||
+      !data.ReadBuyerCurrencies(&out->buyer_currencies) ||
       !data.ReadBuyerCumulativeTimeouts(&out->buyer_cumulative_timeouts) ||
       !data.ReadPerBuyerGroupLimits(&out->per_buyer_group_limits) ||
       !data.ReadPerBuyerPrioritySignals(&out->per_buyer_priority_signals) ||

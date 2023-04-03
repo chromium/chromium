@@ -197,6 +197,33 @@ void AuctionRunner::ResolvedBuyerTimeoutsPromise(
   NotifyPromiseResolved(auction_id.get(), config);
 }
 
+void AuctionRunner::ResolvedBuyerCurrenciesPromise(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    const blink::AuctionConfig::BuyerCurrencies& buyer_currencies) {
+  if (state_ == State::kFailed) {
+    return;
+  }
+
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, auction_id);
+  if (!config) {
+    mojo::ReportBadMessage(
+        "Invalid auction ID in ResolvedBuyerCurrenciesPromise");
+    return;
+  }
+
+  if (!config->non_shared_params.buyer_currencies.is_promise()) {
+    mojo::ReportBadMessage(
+        "ResolvedBuyerCurrenciesPromise updating non-promise");
+    return;
+  }
+
+  config->non_shared_params.buyer_currencies =
+      blink::AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
+          buyer_currencies);
+  NotifyPromiseResolved(auction_id.get(), config);
+}
+
 void AuctionRunner::ResolvedDirectFromSellerSignalsPromise(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
     const absl::optional<blink::DirectFromSellerSignals>&

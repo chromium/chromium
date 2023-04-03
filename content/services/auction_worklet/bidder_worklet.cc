@@ -388,12 +388,14 @@ void BidderWorklet::FinishGenerateBid(
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
+    const std::string& expected_buyer_currency,
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals) {
   GenerateBidTaskList::iterator task = finalize_receiver_set_.current_context();
   task->auction_signals_json = auction_signals_json;
   task->per_buyer_signals_json = per_buyer_signals_json;
   task->per_buyer_timeout = per_buyer_timeout;
+  task->expected_buyer_currency = expected_buyer_currency;
   task->finalize_generate_bid_called = true;
   HandleDirectFromSellerForGenerateBid(direct_from_seller_per_buyer_signals,
                                        direct_from_seller_auction_signals,
@@ -670,6 +672,7 @@ void BidderWorklet::V8State::GenerateBid(
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
+    const std::string& expected_buyer_currency,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
@@ -692,7 +695,7 @@ void BidderWorklet::V8State::GenerateBid(
       base::OptionalToPtr(per_buyer_signals_json),
       direct_from_seller_result_per_buyer_signals,
       direct_from_seller_result_auction_signals, per_buyer_timeout,
-      browser_signal_seller_origin,
+      expected_buyer_currency, browser_signal_seller_origin,
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
       bidding_browser_signals, auction_start_time,
       trusted_bidding_signals_result, trace_id,
@@ -729,7 +732,7 @@ void BidderWorklet::V8State::GenerateBid(
               base::OptionalToPtr(per_buyer_signals_json),
               direct_from_seller_result_per_buyer_signals,
               direct_from_seller_result_auction_signals, per_buyer_timeout,
-              browser_signal_seller_origin,
+              expected_buyer_currency, browser_signal_seller_origin,
               base::OptionalToPtr(browser_signal_top_level_seller_origin),
               bidding_browser_signals, auction_start_time,
               trusted_bidding_signals_result, trace_id,
@@ -782,6 +785,7 @@ BidderWorklet::V8State::GenerateSingleBid(
     const DirectFromSellerSignalsRequester::Result&
         direct_from_seller_result_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
+    const std::string& expected_buyer_currency,
     const url::Origin& browser_signal_seller_origin,
     const url::Origin* browser_signal_top_level_seller_origin,
     const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
@@ -909,8 +913,8 @@ BidderWorklet::V8State::GenerateSingleBid(
 
   context_recycler->set_bid_bindings()->ReInitialize(
       start, browser_signal_top_level_seller_origin != nullptr,
-      &bidder_worklet_non_shared_params, should_exclude_ad_due_to_kanon,
-      should_exclude_component_ad_due_to_kanon);
+      &bidder_worklet_non_shared_params, expected_buyer_currency,
+      should_exclude_ad_due_to_kanon, should_exclude_component_ad_due_to_kanon);
 
   std::vector<v8::Local<v8::Value>> args;
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
@@ -1566,6 +1570,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->direct_from_seller_result_per_buyer_signals),
           std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->per_buyer_timeout),
+          std::move(task->expected_buyer_currency),
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
           std::move(task->bidding_browser_signals), task->auction_start_time,

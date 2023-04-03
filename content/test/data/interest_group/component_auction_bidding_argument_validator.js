@@ -17,6 +17,7 @@ function generateBid(
   return {
       'ad': ad,
       'bid': 2,
+      'bidCurrency': 'USD',
       'adCost': 3,
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl],

@@ -36,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -212,6 +213,7 @@ class SellerWorkletTest : public testing::Test {
   void SetDefaultParameters() {
     ad_metadata_ = "[1]";
     bid_ = 1;
+    bid_currency_ = blink::kUnspecifiedAdCurrency;
     decision_logic_url_ = GURL("https://url.test/");
     trusted_scoring_signals_url_.reset();
     auction_ad_config_non_shared_params_ =
@@ -224,6 +226,7 @@ class SellerWorkletTest : public testing::Test {
             /*shared_storage_allowed=*/true);
     experiment_group_id_ = absl::nullopt;
     browser_signals_other_seller_.reset();
+    component_expect_bid_currency_ = absl::nullopt;
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
     browser_signal_render_url_ = GURL("https://render.url.test/");
@@ -340,9 +343,9 @@ class SellerWorkletTest : public testing::Test {
       PrivateAggregationRequests expected_pa_requests,
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
-        ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+        ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
         direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
-        browser_signals_other_seller_.Clone(),
+        browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
@@ -404,9 +407,9 @@ class SellerWorkletTest : public testing::Test {
   void RunScoreAdOnWorkletExpectingCallbackNeverInvoked(
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ScoreAd(
-        ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+        ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
         direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
-        browser_signals_other_seller_.Clone(),
+        browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,
@@ -685,6 +688,7 @@ class SellerWorkletTest : public testing::Test {
   // `bid_` is a browser signal for report_result(), but a direct parameter for
   // score_bid().
   double bid_;
+  std::string bid_currency_;
   GURL decision_logic_url_;
   absl::optional<GURL> trusted_scoring_signals_url_;
   blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params_;
@@ -694,6 +698,7 @@ class SellerWorkletTest : public testing::Test {
   mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   absl::optional<uint16_t> experiment_group_id_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
+  absl::optional<std::string> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
@@ -828,7 +833,7 @@ TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
   const mojom::ComponentAuctionModifiedBidParamsPtr
       kExpectedComponentAuctionModifiedBidParams =
           mojom::ComponentAuctionModifiedBidParams::New(
-              /*ad=*/"null", /*bid=*/0, /*has_bid=*/false);
+              /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false);
 
   // With a null `browser_signals_other_seller_`, returning a raw score is
   // allowed, and if returning an object, `allowComponentAuction` doesn't
@@ -929,22 +934,23 @@ TEST_F(SellerWorkletTest, ScoreAdAd) {
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:1, allowComponentAuction:true}", 1, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       R"({ad:"foo", desirability:1, allowComponentAuction:true})", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/R"("foo")", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/R"("foo")", /*bid=*/0, /*bid_currency=*/"",
+          /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:[[35]], desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"[[35]]", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"[[35]]", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
 }
 
 // Test the `rejectReason` output field of scoreAd().
@@ -1044,31 +1050,43 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "{ad:null, desirability:1, allowComponentAuction:true, bid:13}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/13, /*has_bid=*/true));
+          /*ad=*/"null", /*bid=*/13, blink::kUnspecifiedAdCurrency,
+          /*has_bid=*/true));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, bid:1.2}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/1.2, /*has_bid=*/true));
+          /*ad=*/"null", /*bid=*/1.2, blink::kUnspecifiedAdCurrency,
+          /*has_bid=*/true));
+
+  // Can also specify the currency.
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'USD'}",
+      1,
+      /*expected_errors=*/{},
+      mojom::ComponentAuctionModifiedBidParams::New(
+          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/"USD",
+          /*has_bid=*/true));
 
   // Not providing a bid is fine.
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
 
   // Non-numeric bids are ignored.
   RunScoreAdWithReturnValueExpectingResult(
       R"({ad:null, desirability:1, allowComponentAuction:true, bid:"5"})", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, bid:[4]}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
 
   // Invalid bids result in errors.
   RunScoreAdWithReturnValueExpectingResult(
@@ -1091,6 +1109,48 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "{ad:null, desirability:1, allowComponentAuction:true, bid:0/0}", 0,
       /*expected_errors=*/
       {"https://url.test/ scoreAd() returned an invalid bid."});
+
+  // Currency mismatch or invalid currency produce errors, too
+  // (and a match doesn't)
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'USSD'}",
+      0, {"https://url.test/ scoreAd() returned an invalid bidCurrency."});
+  auction_ad_config_non_shared_params_.seller_currency = "CAD";
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'USD'}",
+      0,
+      {"https://url.test/ scoreAd() bidCurrency mismatch vs own sellerCurrency,"
+       " expected 'CAD' got 'USD'."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'CAD'}",
+      1,
+      /*expected_errors=*/{},
+      mojom::ComponentAuctionModifiedBidParams::New(
+          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/"CAD",
+          /*has_bid=*/true));
+  auction_ad_config_non_shared_params_.seller_currency = absl::nullopt;
+
+  // In component auctions, there is also verification against parent auction's
+  // bidderCurrencies.
+  component_expect_bid_currency_ = "EUR";
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'USD'}",
+      0,
+      {"https://url.test/ scoreAd() bidCurrency mismatch in component auction "
+       "vs parent auction bidderCurrency, expected 'EUR' got 'USD'."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{ad:null, desirability:1, allowComponentAuction:true, "
+      "bid:1.2, bidCurrency: 'EUR'}",
+      1,
+      /*expected_errors=*/{},
+      mojom::ComponentAuctionModifiedBidParams::New(
+          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/"EUR",
+          /*has_bid=*/true));
+  component_expect_bid_currency_ = absl::nullopt;
 
   // A 0 bid is normally considered invalid, unless desirability is 0, in which
   // case it is ignored.
@@ -1145,7 +1205,7 @@ TEST_F(SellerWorkletTest, ScoreAdTopLevelSeller) {
              {desirability: 2, allowComponentAuction: true} : 0)",
       2, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
 
   // `topLevelSeller` should be empty when a component seller is scoring a bid.
   // Must set `allowComponentAuction` to true for any value to be returned.
@@ -1176,7 +1236,7 @@ TEST_F(SellerWorkletTest, ScoreAdComponentSeller) {
              0 : {desirability: 2, allowComponentAuction: true})",
       2, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*has_bid=*/false));
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/"", /*has_bid=*/false));
 
   // `componentSeller` should be set when a component seller is scoring a bid.
   // Must set `allowComponentAuction` to true for any value to be returned.
@@ -1243,6 +1303,15 @@ TEST_F(SellerWorkletTest, ScoreAdBid) {
   RunScoreAdWithReturnValueExpectingResult("bid", 0.5);
   bid_ = -1;
   RunScoreAdWithReturnValueExpectingResult("bid", 0);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdBidCurrency) {
+  RunScoreAdWithReturnValueExpectingResult(
+      "browserSignals.bidCurrency === '???' ? 2 : 0", 2);
+
+  bid_currency_ = "USD";
+  RunScoreAdWithReturnValueExpectingResult(
+      "browserSignals.bidCurrency === 'USD' ? 2 : 0", 2);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdBiddingDuration) {
@@ -2530,6 +2599,15 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_cumulative_timeouts));
 
+  blink::AuctionConfig::BuyerCurrencies buyer_currencies;
+  buyer_currencies.per_buyer_currencies.emplace();
+  buyer_currencies.per_buyer_currencies
+      .value()[url::Origin::Create(GURL("https://example.ca"))] = "CAD";
+  buyer_currencies.all_buyers_currency = "USD";
+  auction_ad_config_non_shared_params_.buyer_currencies =
+      blink::AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
+          std::move(buyer_currencies));
+
   auction_ad_config_non_shared_params_.per_buyer_priority_signals = {
       {url::Origin::Create(GURL("https://a.com")), {{"signals_c", 0.5}}}};
   auction_ad_config_non_shared_params_.all_buyers_priority_signals = {
@@ -2546,6 +2624,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
           "sellerTimeout":200,
           "perBuyerSignals":{"https://a.com":{"signals_a":"A"},
                              "https://b.com":{"signals_b":"B"}},
+          "perBuyerCurrencies":{"*": "USD",
+                                "https://example.ca": "CAD"},
           "perBuyerTimeouts":{"https://a.com":100,"*":150},
           "perBuyerCumulativeTimeouts":{"https://a.com":101,"*":151},
           "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
@@ -2756,10 +2836,11 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worklet->ScoreAd(
-          ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+          ad_metadata_, bid_, bid_currency_,
+          auction_ad_config_non_shared_params_,
           direct_from_seller_seller_signals_,
           direct_from_seller_auction_signals_,
-          browser_signals_other_seller_.Clone(),
+          browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
           seller_timeout_,
@@ -2820,9 +2901,9 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ScoreAd(
-      ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
       direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
-      browser_signals_other_seller_.Clone(),
+      browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       seller_timeout_,
@@ -3453,9 +3534,9 @@ TEST_F(SellerWorkletTest, Cancelation) {
   mojo::Receiver<mojom::ScoreAdClient> client_receiver(&client);
 
   seller_worklet->ScoreAd(
-      ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
       direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
-      browser_signals_other_seller_.Clone(),
+      browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       seller_timeout_,
@@ -3511,9 +3592,9 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
   mojo::Receiver<mojom::ScoreAdClient> client_receiver(&client);
 
   seller_worklet->ScoreAd(
-      ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
       direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
-      browser_signals_other_seller_.Clone(),
+      browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
       seller_timeout_,
@@ -4041,9 +4122,10 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   for (int i = 0; i < 2; ++i) {
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
-        ad_metadata_, i + 1, auction_ad_config_non_shared_params_,
+        ad_metadata_, i + 1, bid_currency_,
+        auction_ad_config_non_shared_params_,
         direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
-        browser_signals_other_seller_.Clone(),
+        browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
         seller_timeout_,

@@ -18,6 +18,8 @@ function generateBid(
       'ad': ad,
       'bid': 2,
       'adCost': 3,
+      'bidCurrency':
+          interestGroup.owner.startsWith("https://a.test") ? 'USD' : 'CAD',
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl]
   };

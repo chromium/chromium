@@ -58,6 +58,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -338,6 +339,27 @@ absl::optional<base::TimeDelta> PerBuyerCumulativeTimeout(
       buyer, auction_config.non_shared_params.buyer_cumulative_timeouts);
 }
 
+std::string PerBuyerCurrency(const url::Origin& buyer,
+                             const blink::AuctionConfig& auction_config) {
+  const blink::AuctionConfig::MaybePromiseBuyerCurrencies& buyer_currencies =
+      auction_config.non_shared_params.buyer_currencies;
+  DCHECK(!buyer_currencies.is_promise());
+  const auto& per_buyer_currencies =
+      buyer_currencies.value().per_buyer_currencies;
+  if (per_buyer_currencies.has_value()) {
+    auto it = per_buyer_currencies->find(buyer);
+    if (it != per_buyer_currencies->end()) {
+      return it->second;
+    }
+  }
+  const auto& all_buyers_currency =
+      buyer_currencies.value().all_buyers_currency;
+  if (all_buyers_currency.has_value()) {
+    return all_buyers_currency.value();
+  }
+  return blink::kUnspecifiedAdCurrency;
+}
+
 }  // namespace
 
 InterestGroupAuction::BidState::BidState() = default;
@@ -398,6 +420,7 @@ InterestGroupAuction::Bid::Bid(
     BidRole bid_role,
     std::string ad_metadata,
     double bid,
+    std::string bid_currency,
     absl::optional<double> ad_cost,
     blink::AdDescriptor ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
@@ -410,6 +433,7 @@ InterestGroupAuction::Bid::Bid(
     : bid_role(bid_role),
       ad_metadata(std::move(ad_metadata)),
       bid(bid),
+      bid_currency(std::move(bid_currency)),
       ad_cost(std::move(ad_cost)),
       ad_descriptor(std::move(ad_descriptor)),
       ad_component_descriptors(std::move(ad_component_descriptors)),
@@ -1000,6 +1024,7 @@ class InterestGroupAuction::BuyerHelper
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
         PerBuyerTimeout(owner_, *auction_->config_),
+        PerBuyerCurrency(owner_, *auction_->config_),
         GetDirectFromSellerPerBuyerSignals(
             url_builder, bid_state->bidder->interest_group.owner),
         GetDirectFromSellerAuctionSignals(url_builder));
@@ -1382,6 +1407,15 @@ class InterestGroupAuction::BuyerHelper
       return nullptr;
     }
 
+    if (!blink::IsValidOrUnspecifiedAdCurrencyCode(mojo_bid->bid_currency) ||
+        !blink::VerifyAdCurrencyCode(
+            PerBuyerCurrency(owner_, *auction_->config_),
+            mojo_bid->bid_currency)) {
+      generate_bid_client_receiver_set_.ReportBadMessage(
+          "Invalid bid currency");
+      return nullptr;
+    }
+
     const blink::InterestGroup& interest_group =
         bid_state.bidder->interest_group;
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
@@ -1441,7 +1475,8 @@ class InterestGroupAuction::BuyerHelper
     }
 
     return std::make_unique<Bid>(
-        bid_role, std::move(mojo_bid->ad), mojo_bid->bid, mojo_bid->ad_cost,
+        bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
+        std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
         std::move(mojo_bid->ad_descriptor), std::move(ad_component_descriptors),
         std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
         bidding_signals_data_version, matching_ad, &bid_state, auction_);
@@ -2727,6 +2762,8 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
       bid_role, modified_bid_params->ad,
       modified_bid_params->has_bid ? modified_bid_params->bid
                                    : component_bid->bid,
+      modified_bid_params->has_bid ? modified_bid_params->bid_currency
+                                   : std::string(),
       component_bid->ad_cost, component_bid->ad_descriptor,
       component_bid->ad_component_descriptors, component_bid->modeling_signals,
       component_bid->bid_duration, component_bid->bidding_signals_data_version,
@@ -2778,13 +2815,16 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   DCHECK(url_builder);  // Should be ready by now.
   seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
-      bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
-      GetDirectFromSellerSellerSignals(url_builder),
+      bid_raw->ad_metadata, bid_raw->bid, bid_raw->bid_currency,
+      config_->non_shared_params, GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerAuctionSignals(url_builder),
-      GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
-      bid_raw->ad_descriptor.url, bid_raw->GetAdComponentUrls(),
-      bid_raw->bid_duration.InMilliseconds(), SellerTimeout(), bid_trace_id,
-      std::move(score_ad_remote));
+      GetOtherSellerParam(*bid_raw),
+      parent_ ? absl::make_optional<std::string>(
+                    PerBuyerCurrency(config_->seller, *parent_->config_))
+              : absl::nullopt,
+      bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
+      bid_raw->GetAdComponentUrls(), bid_raw->bid_duration.InMilliseconds(),
+      SellerTimeout(), bid_trace_id, std::move(score_ad_remote));
 }
 
 bool InterestGroupAuction::ValidateScoreBidCompleteResult(
@@ -2820,13 +2860,29 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
           "Invalid component_auction_modified_bid_params");
       return false;
     }
-    // If a component seller modified the bid, the new bid must also be valid.
+    // If a component seller modified the bid, the new bid must also be valid,
+    // as should its currency.
     if (component_auction_modified_bid_params &&
-        component_auction_modified_bid_params->has_bid &&
-        !IsValidBid(component_auction_modified_bid_params->bid)) {
-      score_ad_receivers_.ReportBadMessage(
-          "Invalid component_auction_modified_bid_params bid");
-      return false;
+        component_auction_modified_bid_params->has_bid) {
+      if (!IsValidBid(component_auction_modified_bid_params->bid)) {
+        score_ad_receivers_.ReportBadMessage(
+            "Invalid component_auction_modified_bid_params bid");
+        return false;
+      }
+
+      if (!blink::IsValidOrUnspecifiedAdCurrencyCode(
+              component_auction_modified_bid_params->bid_currency) ||
+          (config_->non_shared_params.seller_currency &&
+           !blink::VerifyAdCurrencyCode(
+               config_->non_shared_params.seller_currency.value(),
+               component_auction_modified_bid_params->bid_currency)) ||
+          !blink::VerifyAdCurrencyCode(
+              PerBuyerCurrency(config_->seller, *parent_->config_),
+              component_auction_modified_bid_params->bid_currency)) {
+        score_ad_receivers_.ReportBadMessage(
+            "Invalid component_auction_modified_bid_params bid_currency");
+        return false;
+      }
     }
   }
   return true;

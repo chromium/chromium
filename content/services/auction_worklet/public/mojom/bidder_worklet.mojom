@@ -95,6 +95,10 @@ struct BidderWorkletBid {
   // Offered bid value. Always greater than 0.
   double bid;
 
+  // Currency for the bid. Always either a 3-character uppercase ASCII string,
+  // or blink::kUnspecifiedAdCurrency.
+  string bid_currency;
+
   // 'adCost' returned by generateBid, if any.
   double? ad_cost;
 
@@ -267,6 +271,9 @@ interface GenerateBidFinalizer {
   //  publisher page and provided to all interest groups with the same owner
   //  as the one specified `interest_group`.
   //
+  // `expected_buyer_currency` Currency restriction specified for this buyer.
+  //  Either a currency code or blink::kUnspecifiedAdCurrency.
+  //
   // `per_buyer_timeout` Restrict the runtime of particular buyer's bidding
   //  scripts. Any timeout higher than 500 ms will be clamped to 500 ms before
   //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
@@ -279,6 +286,7 @@ interface GenerateBidFinalizer {
       string? auction_signals_json,
       string? per_buyer_signals_json,
       mojo_base.mojom.TimeDelta? per_buyer_timeout,
+      string expected_buyer_currency,
       url.mojom.Url? direct_from_seller_per_buyer_signals,
       url.mojom.Url? direct_from_seller_auction_signals);
 };

@@ -42,6 +42,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -106,6 +107,45 @@ bool CreatePerBuyerTimeoutsObject(
   if (buyer_timeouts.all_buyers_timeout.has_value()) {
     if (!per_buyer_timeouts_dict.Set(
             "*", buyer_timeouts.all_buyers_timeout.value().InMilliseconds())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Attempts to create an v8 Object from `maybe_promise_buyer_currencies`. On
+//  fatal error, returns false. Otherwise, writes the result to
+// `out_per_buyer_currencies`, which will be left unchanged if there are no
+// currencies to write to it.
+bool CreatePerBuyerCurrenciesObject(
+    v8::Isolate* isolate,
+    const blink::AuctionConfig::MaybePromiseBuyerCurrencies&
+        maybe_promise_buyer_currencies,
+    v8::Local<v8::Object>& out_per_buyer_currencies) {
+  DCHECK(!maybe_promise_buyer_currencies.is_promise());
+
+  const blink::AuctionConfig::BuyerCurrencies& buyer_currencies =
+      maybe_promise_buyer_currencies.value();
+  // If there is nothing specified, leave `out_per_buyer_currencies` empty, and
+  // indicate success.
+  if (!buyer_currencies.per_buyer_currencies.has_value() &&
+      !buyer_currencies.all_buyers_currency.has_value()) {
+    return true;
+  }
+
+  out_per_buyer_currencies = v8::Object::New(isolate);
+  gin::Dictionary per_buyer_currencies_dict(isolate, out_per_buyer_currencies);
+
+  if (buyer_currencies.per_buyer_currencies.has_value()) {
+    for (const auto& kv : buyer_currencies.per_buyer_currencies.value()) {
+      if (!per_buyer_currencies_dict.Set(kv.first.Serialize(), kv.second)) {
+        return false;
+      }
+    }
+  }
+  if (buyer_currencies.all_buyers_currency.has_value()) {
+    if (!per_buyer_currencies_dict.Set(
+            "*", buyer_currencies.all_buyers_currency.value())) {
       return false;
     }
   }
@@ -231,6 +271,23 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   if (!per_buyer_cumulative_timeouts.IsEmpty()) {
     auction_config_dict.Set("perBuyerCumulativeTimeouts",
                             per_buyer_cumulative_timeouts);
+  }
+
+  v8::Local<v8::Object> per_buyer_currencies;
+  if (!CreatePerBuyerCurrenciesObject(
+          isolate, auction_ad_config_non_shared_params.buyer_currencies,
+          per_buyer_currencies)) {
+    return false;
+  }
+
+  if (!per_buyer_currencies.IsEmpty()) {
+    auction_config_dict.Set("perBuyerCurrencies", per_buyer_currencies);
+  }
+
+  if (auction_ad_config_non_shared_params.seller_currency.has_value()) {
+    auction_config_dict.Set(
+        "sellerCurrency",
+        auction_ad_config_non_shared_params.seller_currency.value());
   }
 
   if (auction_ad_config_non_shared_params.per_buyer_priority_signals ||
@@ -388,11 +445,13 @@ int SellerWorklet::context_group_id_for_testing() const {
 void SellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
+    const std::string& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     const absl::optional<GURL>& direct_from_seller_seller_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
+    const absl::optional<std::string>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
@@ -407,10 +466,12 @@ void SellerWorklet::ScoreAd(
   auto score_ad_task = score_ad_tasks_.begin();
   score_ad_task->ad_metadata_json = ad_metadata_json;
   score_ad_task->bid = bid;
+  score_ad_task->bid_currency = bid_currency;
   score_ad_task->auction_ad_config_non_shared_params =
       auction_ad_config_non_shared_params;
   score_ad_task->browser_signals_other_seller =
       std::move(browser_signals_other_seller);
+  score_ad_task->component_expect_bid_currency = component_expect_bid_currency;
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
   score_ad_task->browser_signal_render_url = browser_signal_render_url;
@@ -623,6 +684,7 @@ void SellerWorklet::V8State::SetWorkletScript(
 void SellerWorklet::V8State::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
+    const std::string& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     DirectFromSellerSignalsRequester::Result
@@ -631,6 +693,7 @@ void SellerWorklet::V8State::ScoreAd(
         direct_from_seller_result_auction_signals,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
+    const absl::optional<std::string>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<std::string>& browser_signal_ad_components,
@@ -701,6 +764,7 @@ void SellerWorklet::V8State::ScoreAd(
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs) ||
+      !browser_signals_dict.Set("bidCurrency", bid_currency) ||
       (scoring_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  scoring_signals_data_version.value()))) {
@@ -883,6 +947,60 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params->bid = 0;
       component_auction_modified_bid_params->has_bid =
           result_dict.Get("bid", &component_auction_modified_bid_params->bid);
+      if (component_auction_modified_bid_params->has_bid) {
+        bool drop_for_invalid_currency = false;
+        v8::Local<v8::Value> bid_currency_value;
+        component_auction_modified_bid_params->bid_currency =
+            blink::kUnspecifiedAdCurrency;
+        if (score_ad_object
+                ->Get(context,
+                      v8_helper_->CreateStringFromLiteral("bidCurrency"))
+                .ToLocal(&bid_currency_value) &&
+            !bid_currency_value->IsUndefined()) {
+          if (!gin::ConvertFromV8(
+                  isolate, bid_currency_value,
+                  &component_auction_modified_bid_params->bid_currency) ||
+              !blink::IsValidAdCurrencyCode(
+                  component_auction_modified_bid_params->bid_currency)) {
+            errors_out.push_back(
+                base::StrCat({decision_logic_url_.spec(),
+                              " scoreAd() returned an invalid bidCurrency."}));
+            drop_for_invalid_currency = true;
+          }
+        }
+
+        std::string expected_seller_currency =
+            auction_ad_config_non_shared_params.seller_currency.value_or(
+                blink::kUnspecifiedAdCurrency);
+        if (!drop_for_invalid_currency &&
+            !blink::VerifyAdCurrencyCode(
+                expected_seller_currency,
+                component_auction_modified_bid_params->bid_currency)) {
+          errors_out.push_back(base::StrCat(
+              {decision_logic_url_.spec(),
+               " scoreAd() bidCurrency mismatch vs own sellerCurrency, "
+               "expected '",
+               expected_seller_currency, "' got '",
+               component_auction_modified_bid_params->bid_currency, "'."}));
+          drop_for_invalid_currency = true;
+        }
+        if (!drop_for_invalid_currency && component_expect_bid_currency &&
+            !blink::VerifyAdCurrencyCode(
+                component_expect_bid_currency.value(),
+                component_auction_modified_bid_params->bid_currency)) {
+          errors_out.push_back(base::StrCat(
+              {decision_logic_url_.spec(),
+               " scoreAd() bidCurrency mismatch in component auction "
+               "vs parent auction bidderCurrency, expected '",
+               component_expect_bid_currency.value(), "' got '",
+               component_auction_modified_bid_params->bid_currency, "'."}));
+          drop_for_invalid_currency = true;
+        }
+
+        if (drop_for_invalid_currency) {
+          score = 0;
+        }
+      }
     }
   }
 
@@ -1413,12 +1531,13 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
       v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
-          task->ad_metadata_json, task->bid,
+          task->ad_metadata_json, task->bid, std::move(task->bid_currency),
           std::move(task->auction_ad_config_non_shared_params),
           std::move(task->direct_from_seller_result_seller_signals),
           std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->trusted_scoring_signals_result),
           std::move(task->browser_signals_other_seller),
+          std::move(task->component_expect_bid_currency),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),

@@ -11,7 +11,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   validateBrowserSignals(browserSignals, /*isScoreAd=*/true);
   validateDirectFromSellerSignals(directFromSellerSignals);
   return {desirability: 13, allowComponentAuction: true,
-          bid:42, ad:['Replaced metadata']};
+          bid:42, bidCurrency: 'CAD', ad:['Replaced metadata']};
 }
 
 function reportResult(auctionConfig, browserSignals, directFromSellerSignals) {
@@ -38,7 +38,7 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 11) {
+  if (Object.keys(auctionConfig).length !== 13) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
@@ -92,6 +92,15 @@ function validateAuctionConfig(auctionConfig) {
         JSON.stringify(auctionConfig.perBuyerCumulativeTimeouts);
   }
 
+  if (auctionConfig.perBuyerCurrencies[buyerOrigin] !== 'USD') {
+    throw 'Wrong perBuyerCurrencies ' +
+        JSON.stringify(auctionConfig.perBuyerCurrencies);
+  }
+
+  if (auctionConfig.sellerCurrency !== 'CAD') {
+    throw 'Wrong sellerCurrency' + JSON.stringify(auctionConfig.sellerCurrency);
+  }
+
   const perBuyerPrioritySignals = auctionConfig.perBuyerPrioritySignals;
   if (Object.keys(perBuyerPrioritySignals).length !== 2 ||
       JSON.stringify(perBuyerPrioritySignals[buyerOrigin]) !==
@@ -136,7 +145,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 7) {
+    if (Object.keys(browserSignals).length !== 8) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -147,6 +156,8 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
       throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
+    if (browserSignals.bidCurrency != 'USD')
+      throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
     if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
