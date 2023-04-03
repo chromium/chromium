@@ -48,13 +48,17 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
                                    GLuint framebuffer,
                                    const gfx::Size& frame_size,
                                    const gfx::Transform& uv_transform);
-  void CopyTextureToFramebuffer(GLuint texture,
-                                GLuint framebuffer,
-                                const gfx::Size& frame_size,
-                                const gfx::Transform& uv_transform) override;
 
  private:
   void DoRuntimeInitialization() override;
+
+  // Makes all the relevant GL calls to actually draw the texture for the
+  // runtime, will operate on the supplied framebuffer.
+  void CopyTextureToFramebuffer(GLuint texture,
+                                GLuint framebuffer,
+                                const gfx::Size& frame_size,
+                                const gfx::Transform& uv_transform);
+
   std::unique_ptr<ArRenderer> ar_renderer_;
   // samplerExternalOES texture for the camera image.
   GLuint camera_texture_id_arcore_ = 0;

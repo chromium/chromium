@@ -164,12 +164,10 @@ struct WebXrFrame {
   // Viewport bounds used for rendering, in texture coordinates with uv=(0, 1)
   // corresponding to viewport pixel (0, 0) as set by UpdateLayerBounds.
   //
-  // Currently this is only used by the ARCore handheld AR mode which is
-  // monoscopic and uses the left viewport. TODO(https://crbug.com/1134203): The
-  // GVR device currently has its own separate bounds tracking implementation.
-  // That should be updated to use this implementation, at that time a matching
-  // bounds_right would need to be added.
+  // When used by monoscoping ARCore, only the left viewport/bounds are used.
+  // Cardboard makes use of both.
   gfx::RectF bounds_left;
+  gfx::RectF bounds_right;
 };
 
 class WebXrPresentationState {

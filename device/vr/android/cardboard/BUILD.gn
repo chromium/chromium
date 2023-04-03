@@ -12,9 +12,16 @@ component("vr_cardboard") {
   sources = [
     "cardboard_device.cc",
     "cardboard_device.h",
+    "cardboard_device_params.cc",
+    "cardboard_device_params.h",
+    "cardboard_image_transport.cc",
+    "cardboard_image_transport.h",
+    "cardboard_render_loop.cc",
+    "cardboard_render_loop.h",
     "cardboard_sdk.h",
     "cardboard_sdk_impl.cc",
     "cardboard_sdk_impl.h",
+    "scoped_cardboard_objects.h",
   ]
 
   public_deps = [
@@ -29,5 +36,6 @@ component("vr_cardboard") {
     "//third_party/cardboard",
     "//ui/android",
     "//ui/gfx",
+    "//ui/gl/init",
   ]
 }

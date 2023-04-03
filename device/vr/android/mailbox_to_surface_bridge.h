@@ -5,6 +5,8 @@
 #ifndef DEVICE_VR_ANDROID_MAILBOX_TO_SURFACE_BRIDGE_H_
 #define DEVICE_VR_ANDROID_MAILBOX_TO_SURFACE_BRIDGE_H_
 
+#include "base/functional/callback_forward.h"
+
 namespace gfx {
 class ColorSpace;
 class GpuFence;

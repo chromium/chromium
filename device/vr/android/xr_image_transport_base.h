@@ -83,20 +83,6 @@ class XrImageTransportBase {
   void SetFrameAvailableCallback(XrFrameCallback on_frame_available);
   void ServerWaitForGpuFence(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
-  // This method provides an abstraction to the caller about whether the system
-  // is running in SharedBuffer mode or not, and returns the texture that the
-  // renderer has most recently populated and submitted back to the device for
-  // rendering. There must be a texture in the `RenderingFrame` state of the
-  // `WebXrPresentationState` machine for this to properly return data.
-  GLuint GetRenderingTextureId(WebXrPresentationState* webxr);
-
-  // Makes all the relevant GL calls to actually draw the texture for the
-  // runtime, will operate on the supplied framebuffer.
-  virtual void CopyTextureToFramebuffer(GLuint texture,
-                                        GLuint framebuffer,
-                                        const gfx::Size& frame_size,
-                                        const gfx::Transform& uv_transform) = 0;
-
  protected:
   bool IsOnGlThread() const;
 
@@ -106,6 +92,13 @@ class XrImageTransportBase {
   bool ResizeSharedBuffer(WebXrPresentationState* webxr,
                           const gfx::Size& size,
                           WebXrSharedBuffer* buffer);
+
+  // This method provides an abstraction to the caller about whether the system
+  // is running in SharedBuffer mode or not, and returns the texture that the
+  // renderer has most recently populated and submitted back to the device for
+  // rendering. There must be a texture in the `RenderingFrame` state of the
+  // `WebXrPresentationState` machine for this to properly return data.
+  GLuint GetRenderingTextureId(WebXrPresentationState* webxr);
 
   // Runs before the rest of the initialization for the XrImageTransport to
   // allow for any specialized gl context setup or other setup that may be
