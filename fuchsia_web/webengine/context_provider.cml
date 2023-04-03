@@ -4,7 +4,9 @@
 {
   include: [
     "//fuchsia_web/webinstance_host/web_instance_host_with_svc_directory.shard.cml",
-    "syslog/client.shard.cml",
+
+    // Use but do not offer. All capability routing be via FIDL calls.
+    "syslog/use.shard.cml",
   ],
   program: {
     runner: "elf",
