@@ -9295,27 +9295,6 @@
             ]
         }
     ],
-    "PartitionedCookies": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Test",
-                    "enable_features": [
-                        "PartitionedCookies"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordChangeAndroid": [
         {
             "platforms": [
