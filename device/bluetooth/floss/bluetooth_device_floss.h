@@ -98,6 +98,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsGattServicesDiscoveryComplete() const override;
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override;
+  BluetoothPairingFloss* BeginPairing(
+      BluetoothDevice::PairingDelegate* pairing_delegate);
 #if BUILDFLAG(IS_CHROMEOS)
   bool UsingReliableWrite() const { return using_reliable_write_; }
   void BeginReliableWrite();

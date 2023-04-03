@@ -792,9 +792,21 @@ void BluetoothAdapterFloss::AdapterSspRequest(
 
   BluetoothPairingFloss* pairing = device->pairing();
 
+  // For incoming bonding which is not "just works", let the user decide whether
+  // to accept or reject the request. Don't process "just works" requests as
+  // it will be auto-accepted but it might be originated from a malicious peer.
+  if (!pairing &&
+      variant != FlossAdapterClient::BluetoothSspVariant::kConsent) {
+    device::BluetoothDevice::PairingDelegate* pairing_delegate =
+        DefaultPairingDelegate();
+    if (pairing_delegate) {
+      pairing = device->BeginPairing(pairing_delegate);
+    }
+  }
+
   if (!pairing) {
-    // For incoming bonding, reject it right away to avoid users try to pair
-    // with it while the remote is waiting reply.
+    // Reject the request right away to avoid users try to pair with it while
+    // the remote is waiting reply.
     FlossDBusManager::Get()->GetAdapterClient()->SetPairingConfirmation(
         base::DoNothing(), remote_device, /*accept=*/false);
     return;

@@ -398,6 +398,12 @@ void BluetoothDeviceFloss::Pair(
   Connect(pairing_delegate, std::move(callback));
 }
 
+BluetoothPairingFloss* BluetoothDeviceFloss::BeginPairing(
+    BluetoothDevice::PairingDelegate* pairing_delegate) {
+  pairing_ = std::make_unique<BluetoothPairingFloss>(pairing_delegate);
+  return pairing_.get();
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void BluetoothDeviceFloss::OnExecuteWrite(
     base::OnceClosure callback,
