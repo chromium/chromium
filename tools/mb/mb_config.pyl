@@ -720,7 +720,7 @@
         'build2': 'gpu_tests_release_bot_remote_links_reclient',
       },
       'Comparison Linux (reclient vs reclient remote links)(small)': {
-        'build1': 'gpu_tests_release_bot_no_nacl_reclient',
+        'build1': 'gpu_tests_release_bot_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_small_reclient',
       },
       'Linux Builder reclient staging': 'gpu_tests_release_bot_reclient',
@@ -2719,10 +2719,6 @@
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
     ],
 
-    'gpu_tests_release_bot_no_nacl_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'disable_nacl',
-    ],
-
     'gpu_tests_release_bot_reclient': [
       'gpu_tests', 'release_bot_reclient',
     ],
@@ -2732,7 +2728,7 @@
     ],
 
     'gpu_tests_release_bot_remote_links_small_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_small', 'disable_nacl',
+      'gpu_tests', 'release_bot_reclient', 'use_remoteexec_links_small',
     ],
 
     'gpu_tests_release_bot_x86_minimal_symbols': [
