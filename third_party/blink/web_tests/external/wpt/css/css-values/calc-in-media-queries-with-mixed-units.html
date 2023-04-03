@@ -5,147 +5,22 @@
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="https://www.w3.org/TR/css3-values/#calc-computed-value">
-    <style>
-      iframe {
-        width: 100px;
-        height: 10px;
-        border: 0px;
-      }
-    </style>
   </head>
-   <body>
-    <iframe title="px/em" srcdoc="
-        <style>
-          body {
-            margin: 0;
-            font-size: 16px;
-          }
-          .box {
-            background: rgb(0, 0, 255);
-            width: 100%;
-            height: 10px;
-          }
-
-          @media (width: calc(116px - 1em)) {
-            .box {
-              background: rgb(255, 165, 0);
-            }
-          }
-        </style>
-      <div class='box'></div>
-    "></iframe>
-
-    <iframe title="vh/em" srcdoc="
-    <style>
-      body {
-        margin: 0;
-        font-size: 16px;
-      }
-      .box {
-        background: rgb(0, 0, 255);
-        width: 100%;
-        height: 10px;
-      }
-
-      @media (width: calc(200vh + 5em)) {
-        .box {
-          background: rgb(255, 165, 0);
-        }
-      }
-    </style>
-  <div class='box'></div>
-    "></iframe>
-
-    <iframe title="vw/em" srcdoc="
-        <style>
-          body {
-            margin: 0;
-            font-size: 16px;
-          }
-          .box {
-            background: rgb(0, 0, 255);
-            width: 100%;
-            height: 10px;
-          }
-
-          @media (height: calc(100vw - 5.625em)) {
-            .box {
-              background: rgb(255, 165, 0);
-            }
-          }
-        </style>
-      <div class='box'></div>
-    "></iframe>
-
-    <iframe title="vw/vh" srcdoc="
-        <style>
-          body {
-            margin: 0;
-            font-size: 16px;
-          }
-          .box {
-            background: rgb(0, 0, 255);
-            width: 100%;
-            height: 10px;
-          }
-
-          @media (width: calc(10vw + 900vh)) {
-            .box {
-              background: rgb(255, 165, 0);
-            }
-          }
-        </style>
-      <div class='box'></div>
-    "></iframe>
-
-    <iframe title="vh/px" srcdoc="
-        <style>
-          body {
-            margin: 0;
-            font-size: 16px;
-          }
-          .box {
-            background: rgb(0, 0, 255);
-            width: 100%;
-            height: 10px;
-          }
-
-          @media (width: calc(900vh + 10px)) {
-            .box {
-              background: rgb(255, 165, 0);
-            }
-          }
-        </style>
-      <div class='box'></div>
-    "></iframe>
-
-    <iframe title="vw/px" srcdoc="
-    <style>
-      body {
-        margin: 0;
-        font-size: 16px;
-      }
-      .box {
-        background: rgb(0, 0, 255);
-        width: 100%;
-        height: 10px;
-      }
-
-      @media (width: calc(90vw + 10px)) {
-        .box {
-          background: rgb(255, 165, 0);
-        }
-      }
-    </style>
-  <div class='box'></div>
-  "></iframe>
+  <body>
+    <iframe src="./support/mixed-units-01.html" title="px/em" frameborder="0" height="10" width="100"></iframe>
+    <iframe src="./support/mixed-units-02.html" title="vh/em" frameborder="0" height="10" width="100"></iframe>
+    <iframe src="./support/mixed-units-03.html" title="vw/em" frameborder="0" height="10" width="100"></iframe>
+    <iframe src="./support/mixed-units-04.html" title="vw/vh" frameborder="0" height="10" width="100"></iframe>
+    <iframe src="./support/mixed-units-05.html" title="vh/px" frameborder="0" height="10" width="100"></iframe>
+    <iframe src="./support/mixed-units-06.html" title="vw/px" frameborder="0" height="10" width="100"></iframe>
     <script>
       for (const frame of document.querySelectorAll("iframe")) {
         async_test((t) => {
-          frame.addEventListener("load", t.step_func_done(() => {
+          frame.addEventListener("load", t.step_func(() => {
             const box = frame.contentWindow.document.querySelector(".box");
             const actual = frame.contentWindow.getComputedStyle(box).getPropertyValue("background-color");
             assert_equals(actual, "rgb(255, 165, 0)");
+            t.done();
           }));
         }, `box should be orange if the calc between ${frame.title} in @media was correct`);
       }
