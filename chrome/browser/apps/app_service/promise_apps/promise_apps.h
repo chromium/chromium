@@ -28,11 +28,15 @@ std::string EnumToString(PromiseStatus);
 // its own promise app.
 struct PromiseApp {
  public:
-  explicit PromiseApp(const apps::PackageId& package_id)
-      : package_id(package_id) {}
+  explicit PromiseApp(const apps::PackageId& package_id);
+  ~PromiseApp();
+
   PackageId package_id;
+
+  absl::optional<std::string> name;
   absl::optional<float> progress;
   PromiseStatus status = PromiseStatus::kUnknown;
+  bool should_show = true;
 
   std::unique_ptr<PromiseApp> Clone() const;
 };

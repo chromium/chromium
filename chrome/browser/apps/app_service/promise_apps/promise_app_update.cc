@@ -48,6 +48,20 @@ const PackageId& PromiseAppUpdate::PackageId() const {
   }
 }
 
+absl::optional<std::string> PromiseAppUpdate::Name() const {
+  if (delta_ && delta_->name.has_value()) {
+    return *delta_->name;
+  }
+  if (state_ && state_->name.has_value()) {
+    return *state_->name;
+  }
+  return absl::nullopt;
+}
+
+bool PromiseAppUpdate::NameChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(name);
+}
+
 absl::optional<float> PromiseAppUpdate::Progress() const {
   if (delta_ && delta_->progress.has_value()) {
     return *delta_->progress;
@@ -68,6 +82,14 @@ PromiseStatus PromiseAppUpdate::Status() const {
 
 bool PromiseAppUpdate::StatusChanged() const {
   IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(status, PromiseStatus::kUnknown);
+}
+
+bool PromiseAppUpdate::ShouldShow() const {
+  GET_VALUE_WITH_DEFAULT_VALUE(should_show, false);
+}
+
+bool PromiseAppUpdate::ShouldShowChanged() const {
+  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(should_show, false);
 }
 
 }  // namespace apps
