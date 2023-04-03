@@ -662,8 +662,6 @@ class SessionRestoreImpl : public BrowserListObserver {
       // but unminimized.
       base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
           new_group_ids;
-      // TODO(https://crbug.com/1378744): did_show_browser is for tracking
-      // down a bug.
       bool did_show_browser = false;
       RestoreTabsToBrowser(*(*i), browser, initial_tab_count, created_contents,
                            &new_group_ids, did_show_browser);
@@ -673,21 +671,6 @@ class SessionRestoreImpl : public BrowserListObserver {
         DCHECK(did_show_browser);
       (*tab_count) += (static_cast<int>(browser->tab_strip_model()->count()) -
                        initial_tab_count);
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_MAC)
-      // On the mac, app visibility is asynchronously available, so we can't
-      // rely on a particular value here.
-      const bool is_visibility_async =
-          browser->type() == Browser::Type::TYPE_APP;
-#else
-      const bool is_visibility_async = false;
-#endif  // BUILDFLAG(IS_MAC)
-
-      DCHECK(is_visibility_async || browser->window()->IsVisible() ||
-             browser->window()->IsMinimized());
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
       // 6. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
       //    restore the groups' visual data.
