@@ -571,6 +571,11 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Se il criterio non viene configurato o se viene impostato su Disattivato, non è possibile unire i criteri relativi al cloud a livello di utente ai criteri di altre fonti.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
+<translation id="152740744678799092">Se il criterio viene impostato su Enabled, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il provider di ricerca predefinito, imposta gli altri criteri relativi alla ricerca predefinita. Se non configuri questi criteri, l'utente può scegliere il provider predefinito. Se il criterio viene impostato su Disabled, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL. Il valore Disabled non è supportato da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, il provider di ricerca predefinito è attivo e gli utenti possono impostare l'elenco dei provider di ricerca.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1547424904796464052">Hash SHA-256 esadecimale codificato dell'immagine del firmware.</translation>

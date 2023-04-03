@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Sayyora</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> tizimdan uzildi.</translation>
 <translation id="2307462900900812319">Tarmoqni sozlash</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytma topilmaydi. Administratorga murojaat qiling.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> identifikatorli kengaytmalar topilmaydi. Administratorga murojaat qiling.}}</translation>
 <translation id="2325650632570794183">Bunday fayl turi qo‘llab-quvvatlanmaydi. Bu faylni ocha oladigan ilovani topish uchun Chrome Internet do‘koniga kiring.</translation>
 <translation id="2326539130272988168">Bolgar</translation>
 <translation id="2337715497728194187">Bruschettaga ulashish</translation>

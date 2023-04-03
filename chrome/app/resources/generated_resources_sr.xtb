@@ -2861,7 +2861,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} лозинка је сачувана на овом уређају}one{{COUNT} лозинка је сачувана на овом уређају}few{{COUNT} лозинке су сачуване на овом уређају}other{{COUNT} лозинки је сачувано на овом уређају}}</translation>
 <translation id="346298925039590474">Ова мобилна мрежа ће бити доступна свим корисницима на овом уређају</translation>
 <translation id="3464145797867108663">Додај пословни профил</translation>
-<translation id="346431825526753">Ово је налог за децу којим управља <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Остварите попусте за <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> и друго</translation>
 <translation id="3468298837301810372">Ознака</translation>
 <translation id="3468999815377931311">Android телефон</translation>
@@ -3665,7 +3664,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Величина и фонт текста веб-сајта</translation>
 <translation id="4158364720893025815">Прошли смо</translation>
-<translation id="4159681666905192102">Ово је налог за децу којим управљају <ph name="CUSTODIAN_EMAIL" /> и <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Непозната тастатура</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не припада важећој организацији. Обратите се администратору. Ако сте ви администратор, можете да подесите организацију тако што ћете посетити g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>

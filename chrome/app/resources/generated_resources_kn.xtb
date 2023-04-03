@@ -2870,7 +2870,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಉಳಿಸಲಾಗಿದೆ}one{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ}other{ಈ ಸಾಧನದಲ್ಲಿ {COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="346298925039590474">ಈ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಈ ಸಾಧನದಲ್ಲಿನ ಎಲ್ಲಾ ಬಳಕೆದಾರರಿಗೆ ಲಭ್ಯವಿರುತ್ತದೆ</translation>
 <translation id="3464145797867108663">ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಸೇರಿಸಿ</translation>
-<translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" /> ಅವರು ನಿರ್ವಹಿಸುವ ಮಕ್ಕಳಿಗೆ ಖಾತೆಯಾಗಿದೆ.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳಿಗಾಗಿ ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3468298837301810372">ಲೇಬಲ್</translation>
 <translation id="3468999815377931311">Android ಫೋನ್</translation>
@@ -3246,7 +3245,7 @@
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="3790417903123637354">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="379082410132524484">ನಿಮ್ಮ ಕಾರ್ಡ್‌ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
-<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ವಿಸ್ತರಣೆಗಳು</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು</translation>
 <translation id="3794792524918736965">Windows Hello ಆನ್ ಮಾಡಿ</translation>
 <translation id="379500251094592809">Nearby ಶೇರ್ ಅನ್ನು ಬಳಸಲು, ಎರಡೂ ಸಾಧನಗಳು ಅನ್‌ಲಾಕ್ ಆಗಿವೆ, ಪರಸ್ಪರ ಹತ್ತಿರದಲ್ಲಿವೆ ಹಾಗೂ ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಲ್ಲಿರದ Chromebook ಜೊತೆಗೆ ನೀವು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ಅದು ಸಮೀಪದ ಗೋಚರತೆಯನ್ನು ಆನ್ ಮಾಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ (ಸಮಯವನ್ನು ಆಯ್ಕೆಮಾಡುವ ಮೂಲಕ ಸ್ಥಿತಿ ಕ್ಷೇತ್ರವನ್ನು ತೆರೆಯಿರಿ, ನಂತರ ಸಮೀಪದ ಗೋಚರತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ) <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">ಆಫ್ ಆಗಿದೆ</translation>
@@ -3675,7 +3674,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">ವೆಬ್‌ಸೈಟ್ ಪಠ್ಯ ಗಾತ್ರ ಮತ್ತು ಫಾಂಟ್</translation>
 <translation id="4158364720893025815">ಪಾಸ್</translation>
-<translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" /> ಮತ್ತು <ph name="SECOND_CUSTODIAN_EMAIL" /> ಅವರು ಮಕ್ಕಳಿಗೆ ನಿರ್ವಹಿಸುವಂತಹ ಖಾತೆಯಾಗಿರುತ್ತದೆ.</translation>
 <translation id="4163560723127662357">ಅಪರಿಚಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ಇಮೇಲ್ ಮಾನ್ಯ ಸಂಸ್ಥೆಗೆ ಸೇರಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ನೀವು ನಿರ್ವಾಹಕರಾಗಿದ್ದರೆ, ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡುವ ಮೂಲಕ ನಿಮ್ಮ ಸಂಸ್ಥೆಯನ್ನು ನೀವು ಸೆಟಪ್ ಮಾಡಬಹುದು: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -6610,7 +6608,7 @@
 <translation id="6824725898506587159">ಭಾಷೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6825184156888454064">ಹೆಸರಿನ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="6826872289184051766">USB ಮೂಲಕ ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="6827121912381363404">ಎಲ್ಲಾ ವಿಸ್ತರಣೆಗಳು <ph name="PERMITTED_SITE" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಅನುಮತಿಸಿ</translation>
+<translation id="6827121912381363404">ಎಲ್ಲಾ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು <ph name="PERMITTED_SITE" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಅನುಮತಿಸಿ</translation>
 <translation id="6827517233063803343">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಎಲ್ಲಾ ChromeOS ಸಾಧನಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ಬ್ರೌಸರ್ ಸಿಂಕ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ, <ph name="LINK_BEGIN" />Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="6827767090350758381">ಡಿಸೆಂಬರ್ 2022 ರ ನಂತರ Chrome ಆ್ಯಪ್‌ಗಳ ಹಳೆಯ ಆವೃತ್ತಿಗಳು Windows ಸಾಧನಗಳಲ್ಲಿ ತೆರೆಯುವುದಿಲ್ಲ. ಹೊಸ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಅಥವಾ ಈ ಆ್ಯಪ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="6828153365543658583">ಕೆಳಗಿನ ಬಳಕೆದಾರರಿಗೆ ಸೈನ್-ಇನ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸು:</translation>

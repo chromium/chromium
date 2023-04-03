@@ -2857,7 +2857,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3462958980772249646">{COUNT,plural, =1{Se guardó {COUNT} contraseña en este dispositivo}other{Se guardaron {COUNT} contraseñas en este dispositivo}}</translation>
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
 <translation id="3464145797867108663">Agregar un perfil de trabajo</translation>
-<translation id="346431825526753">Esta es una cuenta para niños administrada por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Obtener descuentos para <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> y más</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
@@ -3660,7 +3659,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4157869833395312646">Criptografía controlada por servidor de Microsoft</translation>
 <translation id="4158315983204257156">Tamaño del texto y fuente del sitio web</translation>
 <translation id="4158364720893025815">Se completó la acción</translation>
-<translation id="4159681666905192102">Esta es una cuenta para niños administrada por <ph name="CUSTODIAN_EMAIL" /> y <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconocido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> no pertenece a una organización válida. Comunícate con el administrador. Si eres administrador, puedes configurar tu organización en el siguiente sitio: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>

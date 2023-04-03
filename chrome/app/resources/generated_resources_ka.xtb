@@ -2235,6 +2235,7 @@
 <translation id="2886119409731773154">ამას შეიძლება 30 წუთამდე დასჭირდეს</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> და <ph name="NUMBER_OF_DEVICES" /> სხვა</translation>
+<translation id="2889043468805635730">პრობლემები არ მოიძებნა</translation>
 <translation id="2889064240420137087">ბმულის გახსნა…</translation>
 <translation id="2891566119238851894">ძიების გახსნა გვერდით პანელში. ძიება არ არის გახსნილი გვერდით პანელში.</translation>
 <translation id="2891922230654533301">გსურთ, გამოიყენოთ თქვენი მოწყობილობა <ph name="APP_NAME" />-ში შესასვლელად?</translation>
@@ -2861,7 +2862,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ამ მოწყობილობაზე შენახულია {COUNT} პაროლი}other{ამ მოწყობილობაზე შენახულია {COUNT} პაროლი}}</translation>
 <translation id="346298925039590474">ეს მობილური ქსელი ამ მოწყობილობის ყველა მომხმარებლისთვის ხელმისაწვდომი იქნება</translation>
 <translation id="3464145797867108663">სამსახურის პროფილის დამატება</translation>
-<translation id="346431825526753">ეს არის ანგარიში ბავშვებისათვის, რომელიც იმართება <ph name="CUSTODIAN_EMAIL" />-ს მიერ.</translation>
 <translation id="346546413339447252">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME_1" />-ისთვის, <ph name="MERCHANT_NAME_2" />-ისა და სხვა დაწესებულებებისთვის</translation>
 <translation id="3468298837301810372">ლეიბლი</translation>
 <translation id="3468999815377931311">Android ტელეფონი</translation>
@@ -3333,6 +3333,7 @@
 <translation id="3861977424605124250">გაშვებისას ჩვენება</translation>
 <translation id="386239283124269513">ჯგუფის &amp;აღდგენა</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
+<translation id="3866142613641074814">თქვენს ზოგიერთ პაროლს საფრთხე ემუქრება</translation>
 <translation id="3866249974567520381">აღწერა</translation>
 <translation id="3867134342671430205">ეკრანის გადატანა შესაძლებელია ჩავლებით ან ისრიანი კლავიშებით</translation>
 <translation id="3867944738977021751">სერტიფიკატის ველები</translation>
@@ -3664,7 +3665,6 @@
 <translation id="4157869833395312646">Microsoft სერვერის მართული კრიპტოგრაფია</translation>
 <translation id="4158315983204257156">ვებსაიტების ტექსტის ზომა და შრიფტი</translation>
 <translation id="4158364720893025815">საშვი</translation>
-<translation id="4159681666905192102">ეს არის ანგარიში ბავშვებისათვის, რომელიც იმართება <ph name="CUSTODIAN_EMAIL" />-სა და <ph name="SECOND_CUSTODIAN_EMAIL" />-ს მიერ.</translation>
 <translation id="4163560723127662357">უცნობი კლავიატურა</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> არ ეკუთვნის სწორ ორგანიზაციას. დაუკავშირდით თქვენს ადმინისტრატორს. თუ ადმინისტრატორი ხართ, ორგანიზაციის დასაყენებლად გადადით მისამართზე g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
@@ -8669,6 +8669,7 @@
 <translation id="866611985033792019">ამ სერტიფიკატისთვის ელფოსტის მომხმარებლების ამოცნობის მინდობა</translation>
 <translation id="8666321716757704924">ნებართვების ხელახლა დაიშვა <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="8666759526542103597">ბრაუზერზე დაფუძნებული რეკლამის პერსონალიზების შესახებ</translation>
+<translation id="8667261224612332309">თქვენი ზოგიერთი პაროლის გაუმჯობესება შეიძლება</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> ახლა სრულეკრანიან რეჟიმშია და მაუსის კურსორი გამოირთო.</translation>
 <translation id="8667760277771450375">ჩვენ ვმუშაობთ ახალ ხერხებზე, რომელთა მეშვეობითაც შეიზღუდება საიტებს შორის თვალის მიდევნების მექანიზმები, საიტებს კი მაინც ექნება სარეკლამო სპამისა და თაღლითობის აღკვეთის შესაძლებლობა.</translation>
 <translation id="8668378421690365723">თქვენმა მოწყობილობამ, შესაძლოა, სათანადოდ აღარ იმუშაოს, უსაფრთხოებასა და წარმადობასთან დაკავშირებით კი გარკვეული პრობლემები შეგექმნათ.</translation>
@@ -8998,6 +8999,7 @@
 <translation id="8953476467359856141">დატენისას</translation>
 <translation id="895347679606913382">იწყება…</translation>
 <translation id="8957757410289731985">პროფილის მორგება</translation>
+<translation id="8959144235813727886">საიტები ან აპები</translation>
 <translation id="895944840846194039">JavaScript მეხსიერება</translation>
 <translation id="8960208913905765425">სწრაფი პასუხები — საზომი ერთეულების გადაყვანა</translation>
 <translation id="8960638196855923532">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის შეტყობინებები და აპები</translation>

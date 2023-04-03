@@ -2253,6 +2253,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2886119409731773154">Tai gali užtrukti iki trisdešimt minučių</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> ir dar <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2889043468805635730">Nerasta jokių problemų</translation>
 <translation id="2889064240420137087">Atidaryti nuorodą naudojant...</translation>
 <translation id="2891566119238851894">Atidarykite paiešką šoniniame skydelyje. Paieška neatidaryta šoniniame skydelyje.</translation>
 <translation id="2891922230654533301">Naudoti jūsų įrenginį prisijungiant prie „<ph name="APP_NAME" />“?</translation>
@@ -2879,7 +2880,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} slaptažodis išsaugotas šiame įrenginyje}one{{COUNT} slaptažodis išsaugotas šiame įrenginyje}few{{COUNT} slaptažodžiai išsaugoti šiame įrenginyje}many{{COUNT} slaptažodžio išsaugota šiame įrenginyje}other{{COUNT} slaptažodžių išsaugota šiame įrenginyje}}</translation>
 <translation id="346298925039590474">Šis mobiliojo ryšio tinklas bus pasiekiamas visiems šio įrenginio naudotojams</translation>
 <translation id="3464145797867108663">Pridėti darbo profilį</translation>
-<translation id="346431825526753">Tai yra vaikų paskyra, kurią tvarko <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Gaukite nuolaidų parduotuvėse „<ph name="MERCHANT_NAME_1" />“, „<ph name="MERCHANT_NAME_2" />“ ir kitur</translation>
 <translation id="3468298837301810372">Etiketė</translation>
 <translation id="3468999815377931311">„Android“ telefonas</translation>
@@ -3351,6 +3351,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3861977424605124250">Rodyti paleidžiant</translation>
 <translation id="386239283124269513">&amp;Atkurti grupę</translation>
 <translation id="3865414814144988605">Skyra</translation>
+<translation id="3866142613641074814">Turite slaptažodžių, kuriems iškilo pavojus</translation>
 <translation id="3866249974567520381">Aprašas</translation>
 <translation id="3867134342671430205">Vilkite arba rodyklių klavišais perkelkite ekraną</translation>
 <translation id="3867944738977021751">Sertifikato laukai</translation>
@@ -3682,7 +3683,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4157869833395312646">„Microsoft“ serverio ribotas šifravimas</translation>
 <translation id="4158315983204257156">Svetainės teksto dydis ir šriftas</translation>
 <translation id="4158364720893025815">Pavyko</translation>
-<translation id="4159681666905192102">Tai yra vaikų paskyra, kurią tvarko <ph name="CUSTODIAN_EMAIL" /> ir <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nežinoma klaviatūra</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nepriklauso tinkamai organizacijai. Susisiekite su administratoriumi. Jei esate administratorius, galite nustatyti savo organizaciją apsilankę adresu šiuo adresu: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
@@ -8697,6 +8697,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="866611985033792019">Pasitikėti šiuo sertifikatu nustatant el. pašto naudotojus</translation>
 <translation id="8666321716757704924">Svetainei <ph name="WEBSITE" /> vėl suteikti leidimai</translation>
 <translation id="8666759526542103597">Apie skelbimų suasmeninimą pagal naršyklę</translation>
+<translation id="8667261224612332309">Turite slaptažodžių, kuriuos galima patobulinti</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> dabar veikia viso ekrano režimu ir neleidžiamas pelės žymeklis.</translation>
 <translation id="8667760277771450375">Ieškome būdų apriboti veiklos skirtingose svetainėse stebėjimą, leisdami svetainėms išvengti skelbimų šlamšto ir apgaulių.</translation>
 <translation id="8668378421690365723">Jūsų įrenginys gali tinkamai nebeveikti ir gali kilti saugos bei našumo problemų.</translation>
@@ -9029,6 +9030,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8953476467359856141">Įkraunant</translation>
 <translation id="895347679606913382">Pradedama...</translation>
 <translation id="8957757410289731985">Tinkinti profilį</translation>
+<translation id="8959144235813727886">Svetainės arba programos</translation>
 <translation id="895944840846194039">„JavaScript“ atmintis</translation>
 <translation id="8960208913905765425">Sparčiųjų atsakymų matavimo vienetų konvertavimas</translation>
 <translation id="8960638196855923532">Dabar galite peržiūrėti telefono pranešimus ir programas</translation>

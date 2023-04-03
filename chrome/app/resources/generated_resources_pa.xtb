@@ -797,6 +797,7 @@
 <translation id="16620462294541761">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਪ੍ਰਮਾਣਿਤ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="166278006618318542">ਵਿਸ਼ਾ ਜਨਤਕ ਕੁੰਜੀ ਅਲਗੋਰਿਦਮ</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ਐਪ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
+<translation id="1663698992894057019">ਨਵੀਨਤਮ ਸੁਰੱਖਿਆ ਅਤੇ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਨਵੀਂ Chromebook 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰੋ</translation>
 <translation id="1665328953287874063">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਜਾਂ ਪਿੰਨ ਵਰਤੋ</translation>
 <translation id="1666232093776384142">ਪੈਰੀਫੈਰਲਾਂ ਲਈ ਡਾਟਾ ਪਹੁੰਚ ਸੁਰੱਖਿਆ ਬੰਦ ਕਰੋ</translation>
 <translation id="1667842670298352129">ਖਾਸ ਲਿਖਤ ਨੂੰ ਉੱਚੀ ਅਵਾਜ਼ ਵਿੱਚ ਸੁਣੋ। ਪਹਿਲਾਂ, ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ ਦਿੱਤੇ 'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਪ੍ਰਤੀਕ ਦੀ ਚੋਣ ਕਰੋ, ਫਿਰ ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ। ਤੁਸੀਂ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਵੀ ਵਰਤ ਸਕਦੇ ਹੋ: ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ, ਫਿਰ Search + S ਦਬਾਓ।</translation>
@@ -2876,7 +2877,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਸ ਡੀਵਾਈਸ 'ਤੇ {COUNT} ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ}}</translation>
 <translation id="346298925039590474">ਇਹ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਇਸ ਡੀਵਾਈਸ ਦੇ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਉਪਲਬਧ ਰਹੇਗਾ</translation>
 <translation id="3464145797867108663">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="346431825526753">ਇਹ <ph name="CUSTODIAN_EMAIL" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਬੱਚਿਆਂ ਦਾ ਇੱਕ ਖਾਤਾ ਹੈ।</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ਅਤੇ ਹੋਰਾਂ ਲਈ ਛੋਟਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="3468298837301810372">ਲੇਬਲ</translation>
 <translation id="3468999815377931311">Android ਫ਼ੋਨ</translation>
@@ -3680,7 +3680,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">ਵੈੱਬਸਾਈਟ ਦੀ ਲਿਖਤ ਦਾ ਆਕਾਰ ਅਤੇ ਫ਼ੌਂਟ</translation>
 <translation id="4158364720893025815">ਪਾਸ</translation>
-<translation id="4159681666905192102">ਇਹ <ph name="CUSTODIAN_EMAIL" /> ਅਤੇ <ph name="SECOND_CUSTODIAN_EMAIL" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਬੱਚਿਆਂ ਦਾ ਇੱਕ ਖਾਤਾ ਹੈ।</translation>
 <translation id="4163560723127662357">ਅਗਿਆਤ ਕੀ-ਬੋਰਡ</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ਕਿਸੇ ਵੈਧ ਸੰਸਥਾ ਨਾਲ ਸੰਬੰਧਿਤ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਜੇ ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਇਸ ਵੈੱਬ ਪਤੇ 'ਤੇ ਜਾ ਕੇ ਆਪਣੀ ਸੰਸਥਾ ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">ਸਾਈਟ ਸੈਟਿੰਗਾਂ</translation>
@@ -3747,6 +3746,7 @@
 <translation id="4231141543165771749">ਗੇਮ ਕੰਟਰੋਲਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="4231542173270219144">ਪਰਖਾਂ ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਪੈਮ ਅਤੇ ਧੋਖਾਧੜੀ ਵਿੱਚ ਕਮੀ ਨਿੱਜੀ ਸਥਿਤੀ ਦੇ ਟੋਕਨਾਂ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ, ਜਿਸ ਨਾਲ ਸਾਈਟਾਂ ਨੂੰ ਧੋਖਾਧੜੀ ਨਾਲ ਲੜਨ ਅਤੇ ਬੋਟਾਂ ਤੇ ਲੋਕਾਂ ਵਿਚਕਾਰ ਫ਼ਰਕ ਕਰਨ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ।</translation>
 <translation id="4232375817808480934">Kerberos ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
+<translation id="4233739489690259993">ਤੁਹਾਡੀ Chromebook ਹੁਣ ਸੁਰੱਖਿਆ ਅਤੇ ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ। ਨਵੀਨਤਮ ਸੁਰੱਖਿਆ ਅਤੇ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ। ਪੇਸ਼ਕਸ਼ ਸੰਬੰਧੀ ਨਿਯਮ ਲਾਗੂ ਹੁੰਦੇ ਹਨ।</translation>
 <translation id="4235965441080806197">ਸਾਈਨ-ਇਨ ਰੱਦ ਕਰੋ</translation>
 <translation id="4236163961381003811">ਹੋਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਲੱਭੋ</translation>
 <translation id="4237282663517880406">Google Drive ਸੰਬੰਧੀ ਸੁਝਾਅ ਦਿਖਾਓ</translation>
@@ -4833,6 +4833,7 @@
 <translation id="5228579091201413441">ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5229337741799419985">ਇਹ ਸੈਟਿੰਗ ਤੁਹਾਡੀ ਪਛਾਣ ਕੀਤੇ ਬਿਨਾਂ ਜਾਂ ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇਖਣ ਦੀ ਆਗਿਆ ਦਿੱਤੇ ਬਿਨਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="5230516054153933099">ਵਿੰਡੋ</translation>
+<translation id="5231427103154766313">ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰਨ ਲਈ ਰਿਮੋਟ ਵਰਤੋ।</translation>
 <translation id="5233019165164992427">NaCl ਡੀਬੱਗ ਪੋਰਟ</translation>
 <translation id="5233231016133573565">ਪ੍ਰਕਿਰਿਆ ਆਈ.ਡੀ.</translation>
 <translation id="5233638681132016545">ਨਵੀਂ ਟੈਬ</translation>
@@ -5254,6 +5255,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5601833336918638013">ਸਾਈਟਾਂ ਨੂੰ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦੀ ਖੋਜ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
+<translation id="5602586420788540146">ਨਵੇਂ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5602765853043467355">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5605758115928394442">ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਇੱਕ ਸੂਚਨਾ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਭੇਜੀ ਗਈ।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਇਨ੍ਹਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
@@ -6318,6 +6320,7 @@
 <translation id="657229725818377235">ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਦੇ ਵਿਰੁੱਧ ਹੋਰ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6573096386450695060">ਹਮੇਸ਼ਾਂ ਰੀਡਾਇਰੈਕਟ ਕਰਨ ਦਿਓ</translation>
 <translation id="6573497332121198392">ਸ਼ਾਰਟਕੱਟ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
+<translation id="6573915150656780875">ਤੁਹਾਡੀ Chromebook ਹੁਣ ਸੁਰੱਖਿਆ ਅਤੇ ਸਾਫ਼ਟਵੇਅਰ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਰਹੀ ਹੈ। ਬਿਹਤਰੀਨ ਅਨੁਭਵ ਲਈ ਨਵੀਂ Chromebook ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="657402800789773160">&amp;ਇਹ ਸਫ਼ਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="6577284282025554716">ਡਾਊਨਲੋਡ ਰੱਦ ਹੋਇਆ: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">ਨੈੱਟਵਰਕ ਸਿਹਤ ਦਾ ਸਨੈਪਸ਼ਾਟ</translation>
@@ -7754,6 +7757,7 @@
 <translation id="7844992432319478437">diff ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7846634333498149051">ਕੀ-ਬੋਰਡ</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਲਈ Ctrl + Alt + S ਨੂੰ ਦਬਾਓ</translation>
+<translation id="7848244988854036372">ਨਵੇਂ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸਾਰਿਆਂ (<ph name="URL_COUNT" />) ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="7849264908733290972">ਨਵੀਂ ਟੈਬ ਵਿੱਚ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="784934925303690534">ਸਮਾਂ ਰੇਂਜ</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ਤੁਹਾਡੇ ChromeOS ਡੀਵਾਈਸਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਰਿਪੋਰਟਾਂ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦੇਣ ਨਾਲ ਸਾਨੂੰ, ChromeOS ਵਿੱਚ ਕੀ ਠੀਕ ਕਰਨਾ ਹੈ ਅਤੇ ਕੀ ਸੁਧਾਰ ਕਰਨਾ ਹੈ, ਇਸ ਨੂੰ ਤਰਜੀਹ ਦੇਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਅਜਿਹੀਆਂ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀਆਂ ਹਨ ਜਿਵੇਂ ਕਿ ChromeOS ਕਦੋਂ ਕ੍ਰੈਸ਼ ਹੁੰਦਾ ਹੈ, ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋ, ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਕਿੰਨੀ ਮੈਮੋਰੀ ਵਰਤਦੇ ਹੋ ਅਤੇ Android ਐਪ ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ। ਕੁਝ ਇਕੱਤਰ ਡਾਟਾ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ ਦੀ ਵੀ ਮਦਦ ਕਰੇਗਾ।<ph name="END_PARAGRAPH1" />

@@ -2861,7 +2861,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} lozinka je sačuvana na ovom uređaju}one{{COUNT} lozinka je sačuvana na ovom uređaju}few{{COUNT} lozinke su sačuvane na ovom uređaju}other{{COUNT} lozinki je sačuvano na ovom uređaju}}</translation>
 <translation id="346298925039590474">Ova mobilna mreža će biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj poslovni profil</translation>
-<translation id="346431825526753">Ovo je nalog za decu kojim upravlja <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Ostvarite popuste za <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i drugo</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
@@ -3665,7 +3664,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Veličina i font teksta veb-sajta</translation>
 <translation id="4158364720893025815">Prošli smo</translation>
-<translation id="4159681666905192102">Ovo je nalog za decu kojim upravljaju <ph name="CUSTODIAN_EMAIL" /> i <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nepoznata tastatura</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ne pripada važećoj organizaciji. Obratite se administratoru. Ako ste vi administrator, možete da podesite organizaciju tako što ćete posetiti g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Podešavanja sajta</translation>

@@ -2876,7 +2876,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} password ang naka-save sa device na ito}one{{COUNT} password ang naka-save sa device na ito}other{{COUNT} na password ang naka-save sa device na ito}}</translation>
 <translation id="346298925039590474">Magiging available ang mobile network na ito sa lahat ng user sa device na ito</translation>
 <translation id="3464145797867108663">Magdagdag ng profile sa trabaho</translation>
-<translation id="346431825526753">Isa itong account para sa mga bata na pinamamahalaan ni <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> at iba pa</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
@@ -3679,7 +3678,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Laki at font ng text sa website</translation>
 <translation id="4158364720893025815">Pumasa</translation>
-<translation id="4159681666905192102">Isa itong account para sa mga bata na pinamamahalaan nina <ph name="CUSTODIAN_EMAIL" /> at <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Hindi kilalang keyboard</translation>
 <translation id="4165942112764990069">Hindi nabibilang sa valid na organisasyon ang <ph name="USER_EMAIL" />. Makipag-uganayan sa iyong administrator. Kung isa kang administrator, puwede mong i-set up ang iyong organisasyon sa pamamagitan ng pagbisita sa: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>

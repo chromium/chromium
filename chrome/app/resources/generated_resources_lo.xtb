@@ -2874,7 +2874,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ມີ {COUNT} ລະຫັດຜ່ານບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້}other{ມີ {COUNT} ລະຫັດຜ່ານບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້}}</translation>
 <translation id="346298925039590474">ເຄືອຂ່າຍມືຖືນີ້ຈະສາມາດໃຊ້ໄດ້ກັບຜູ້ໃຊ້ທັງໝົດຢູ່ອຸປະກອນນີ້</translation>
 <translation id="3464145797867108663">ເພີ່ມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
-<translation id="346431825526753">ອັນ​ນີ້​ແມ່ນ​ບັນ​ຊີ​ສຳ​ລັບ​ເດັກ​ນ້ອຍ​ທີ່​ຈັດ​ການ​ໂດຍ <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">ຮັບສ່ວນຫຼຸດສຳລັບ <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ແລະ ອື່ນໆ</translation>
 <translation id="3468298837301810372">ປ້າຍກຳກັບ</translation>
 <translation id="3468999815377931311">ໂທລະສັບ Android</translation>
@@ -3677,7 +3676,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">ຟອນ ແລະ ຂະໜາດຂໍ້ຄວາມໃນເວັບໄຊ</translation>
 <translation id="4158364720893025815">ຜ່ານ</translation>
-<translation id="4159681666905192102">ນີ້​ແມ່ນ​ບັນ​ຊີ​ສຳ​ລັບ​ເດັກ​ນ້ອຍ​ທີ່​ຖືກ​ຄຸ້​ມ​ຄອງ​ໂດຍ <ph name="CUSTODIAN_EMAIL" /> ແລະ <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">ຄີບອດທີ່ບໍ່ຮູ້​ຈັກ</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ບໍ່ໄດ້ເປັນຂອງອົງການທີ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ຫາກທ່ານເປັນຜູ້ເບິ່ງແຍງລະບົບ, ທ່ານສາມາດຕັ້ງຄ່າອົງການຂອງທ່ານໄດ້ໂດຍການເຂົ້າໄປ: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>

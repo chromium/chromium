@@ -2863,7 +2863,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3462958980772249646">{COUNT,plural, =1{Šajā ierīcē ir saglabāta {COUNT} parole.}zero{Šajā ierīcē ir saglabātas {COUNT} paroles.}one{Šajā ierīcē ir saglabāta {COUNT} parole.}other{Šajā ierīcē ir saglabātas {COUNT} paroles.}}</translation>
 <translation id="346298925039590474">Šis mobilais tīkls būs pieejams visiem šīs ierīces lietotājiem</translation>
 <translation id="3464145797867108663">Pievienot darba profilu</translation>
-<translation id="346431825526753">Šis ir bērniem paredzēts konts, ko pārvalda <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Iegūstiet atlaides <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> u.c. tirgotāju precēm</translation>
 <translation id="3468298837301810372">Iezīme</translation>
 <translation id="3468999815377931311">Android tālrunis</translation>
@@ -3667,7 +3666,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4157869833395312646">Microsoft serverbāzēta šifrēšana</translation>
 <translation id="4158315983204257156">Vietņu teksta lielums un fonts</translation>
 <translation id="4158364720893025815">Pārbaude sekmīga</translation>
-<translation id="4159681666905192102">Šis ir bērniem paredzēts konts, ko pārvalda <ph name="CUSTODIAN_EMAIL" /> un <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nezināma tastatūra</translation>
 <translation id="4165942112764990069">Konts <ph name="USER_EMAIL" /> nepieder derīgai organizācijai. Sazinieties ar administratoru. Ja esat administrators, varat iestatīt savu organizāciju, apmeklējot šo vietni: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>

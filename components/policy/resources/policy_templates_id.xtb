@@ -574,6 +574,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan tidak disetel atau disetel ke Nonaktif, kebijakan cloud tingkat pengguna tidak akan digabungkan dengan kebijakan dari sumber lain.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
+<translation id="152740744678799092">Jika kebijakan disetel ke Aktif, penelusuran default akan dilakukan saat pengguna memasukkan teks non-URL ke kolom URL. Untuk menentukan penyedia penelusuran default, setel kebijakan penelusuran default lainnya. Jika kebijakan tersebut dibiarkan kosong, pengguna dapat memilih penyedia default. Jika kebijakan disetel ke Nonaktif, penelusuran tidak akan dilakukan saat pengguna memasukkan teks non-URL di kolom URL. Nilai Nonaktif tidak didukung oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, penyedia penelusuran default akan diaktifkan, dan pengguna dapat menyetel daftar penyedia penelusuran.
+
+      Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di Pengelolaan Cloud Browser Chrome. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1542491165152947087">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
 <translation id="1547424904796464052">Hash SHA-256 dengan enkode heksadesimal pada image firmware.</translation>

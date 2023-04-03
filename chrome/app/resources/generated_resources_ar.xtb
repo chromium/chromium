@@ -2241,6 +2241,7 @@
 <translation id="2886119409731773154">يمكن أن تستغرق عملية الاحتفاظ بنسخة احتياطية ما يصل إلى 30 دقيقة.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> و<ph name="NUMBER_OF_DEVICES" /> جهاز آخر</translation>
+<translation id="2889043468805635730">لم يتم العثور على أي مشاكل.</translation>
 <translation id="2889064240420137087">فتح الرابط باستخدام...</translation>
 <translation id="2891566119238851894">‏افتَح صفحة "بحث Google" في اللوحة الجانبية. صفحة "بحث Google" غير مفتوحة في اللوحة الجانبية.</translation>
 <translation id="2891922230654533301">هل تريد استخدام جهازك لتسجيل الدخول إلى <ph name="APP_NAME" />؟</translation>
@@ -2867,7 +2868,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز.}zero{تم حفظ {COUNT} كلمة مرور على هذا الجهاز.}two{تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز.}few{تم حفظ {COUNT} كلمات مرور على هذا الجهاز.}many{تم حفظ {COUNT} كلمة مرور على هذا الجهاز.}other{تم حفظ {COUNT} كلمة مرور على هذا الجهاز.}}</translation>
 <translation id="346298925039590474">ستكون شبكة الجوّال هذه متاحة لجميع المستخدمين على هذا الجهاز.</translation>
 <translation id="3464145797867108663">إضافة ملف شخصي للعمل</translation>
-<translation id="346431825526753">هذا هو حساب للأطفال يديره <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">هل تريد الحصول على خصومات عند الشراء من <ph name="MERCHANT_NAME_1" /> و<ph name="MERCHANT_NAME_2" /> وغيرهما المزيد؟</translation>
 <translation id="3468298837301810372">الاسم</translation>
 <translation id="3468999815377931311">‏هاتف Android</translation>
@@ -3340,6 +3340,7 @@
 <translation id="3861977424605124250">إظهار عند بدء التشغيل</translation>
 <translation id="386239283124269513">استعادة المجموعة</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
+<translation id="3866142613641074814">هناك كلمات مرور معرّضة لخطر الاختراق.</translation>
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="3867134342671430205">يمكنك السحب أو استخدام مفاتيح الأسهم لتحريك الشاشة.</translation>
 <translation id="3867944738977021751">حقول الشهادة</translation>
@@ -3668,7 +3669,6 @@
 <translation id="4157869833395312646">‏ترميز عن طريق بوابة خادم Microsoft</translation>
 <translation id="4158315983204257156">حجم وخط نصوص المواقع الإلكترونية</translation>
 <translation id="4158364720893025815">نجاح</translation>
-<translation id="4159681666905192102">هذا هو حساب للأطفال يتم إدارته من قبل <ph name="CUSTODIAN_EMAIL" /> و<ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">لوحة مفاتيح غير معروفة</translation>
 <translation id="4165942112764990069">‏لا ينتمي البريد الإلكتروني <ph name="USER_EMAIL" /> إلى مؤسسة صالحة. يُرجى التواصل مع المشرف. وإذا كنت مشرفًا، يمكنك ضبط إعدادات مؤسستك بالانتقال إلى: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">إعدادات المواقع الإلكترونية</translation>
@@ -8684,6 +8684,7 @@
 <translation id="866611985033792019">الوثوق بهذه الشهادة لتحديد هوية مستخدمي البريد الإلكتروني</translation>
 <translation id="8666321716757704924">الأذونات المسموح بها مرة أخرى لـ <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">لمحة عن تخصيص الإعلانات حسب المتصفِّح</translation>
+<translation id="8667261224612332309">هناك كلمات مرور يمكن تحسينها.</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> في وضع ملء الشاشة الآن وتم إيقاف مؤشر الماوس.</translation>
 <translation id="8667760277771450375">نحن نستكشف طرقًا للحد من تتبُّع الاستخدام بين مواقع إلكترونية مختلفة، مع السماح لهذه المواقع بحظر الرسائل الإعلانية غير المرغوب فيها ومنع الاحتيال.</translation>
 <translation id="8668378421690365723">من المحتمَل أن يتوقف جهازك عن العمل بشكل مناسب، وقد يواجه مشاكل تتعلّق بالأمان والأداء.</translation>
@@ -9017,6 +9018,7 @@
 <translation id="8953476467359856141">أثناء الشحن</translation>
 <translation id="895347679606913382">بدء التحميل...</translation>
 <translation id="8957757410289731985">تخصيص الملف الشخصي</translation>
+<translation id="8959144235813727886">المواقع الإلكترونية والتطبيقات</translation>
 <translation id="895944840846194039">‏ذاكرة JavaScript</translation>
 <translation id="8960208913905765425">تحويل الوحدات باستخدام ميزة "معلومات سريعة"</translation>
 <translation id="8960638196855923532">يمكنك الآن الاطّلاع على الإشعارات والتطبيقات المتوفّرة على هاتفك</translation>

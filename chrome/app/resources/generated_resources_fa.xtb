@@ -794,6 +794,7 @@
 <translation id="16620462294541761">متأسفانه، گذرواژه شما تأیید نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="166278006618318542">الگوریتم کلید عمومی موضوع</translation>
 <translation id="1662801900924515589"><ph name="APP" /> نصب شد</translation>
+<translation id="1663698992894057019">‏برای دریافت آخرین ویژگی‌های امنیتی و نرم‌افزاری، دستگاهتان را به Chromebook جدیدی ارتقا دهید.</translation>
 <translation id="1665328953287874063">برای باز کردن قفل <ph name="DEVICE_TYPE" />، از گذرواژه یا پین استفاده کنید</translation>
 <translation id="1666232093776384142">غیرفعال کردن محافظت از دسترسی به داده برای لوازم جانبی</translation>
 <translation id="1667842670298352129">‏نوشتار موردنظرتان بلند خوانده می‌شود. ابتدا نماد «انتخاب برای شنیدن» را در پایین صفحه‌نمایش انتخاب کنید، سپس نوشتار را برجسته کنید. همچنین می‌توانید از «میان‌بر صفحه‌کلید» استفاده کنید: نوشتار موردنظر را برجسته کنید، سپس کلیدهای «جستجو + S» را فشار دهید.</translation>
@@ -2246,6 +2247,7 @@
 <translation id="2886119409731773154">ممکن است حداکثر ۳۰ دقیقه طول بکشد</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> و <ph name="NUMBER_OF_DEVICES" /> مورد دیگر</translation>
+<translation id="2889043468805635730">مشکلی پیدا نشد</translation>
 <translation id="2889064240420137087">بازکردن پیوند با...</translation>
 <translation id="2891566119238851894">جستجو در پانل کناری باز می‌شود. جستجو در پانل کناری باز نیست.</translation>
 <translation id="2891922230654533301">برای وارد شدن به سیستم <ph name="APP_NAME" /> از دستگاهتان استفاده شود؟</translation>
@@ -2872,7 +2874,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} گذرواژه در این دستگاه ذخیره شده است}one{{COUNT} گذرواژه در این دستگاه ذخیره شده است}other{{COUNT} گذرواژه در این دستگاه ذخیره شده است}}</translation>
 <translation id="346298925039590474">این شبکه تلفن همراه دردسترس همه کاربرانی که از این دستگاه استفاده می‌کنند قرار خواهد گرفت</translation>
 <translation id="3464145797867108663">افزودن نمایه کاری</translation>
-<translation id="346431825526753">این یک حساب مخصوص بچه‌ها است که توسط <ph name="CUSTODIAN_EMAIL" /> مدیریت می‌شود.</translation>
 <translation id="346546413339447252">دریافت تخفیف از <ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> و فروشندگان بیشتر</translation>
 <translation id="3468298837301810372">برچسب</translation>
 <translation id="3468999815377931311">‏تلفن Android</translation>
@@ -3344,6 +3345,7 @@
 <translation id="3861977424605124250">نمایش هنگام راه‌اندازی</translation>
 <translation id="386239283124269513">&amp;بازیابی گروه</translation>
 <translation id="3865414814144988605">وضوح</translation>
+<translation id="3866142613641074814">گذرواژه‌هایی دارید که درمعرض خطر هستند</translation>
 <translation id="3866249974567520381">توضیح</translation>
 <translation id="3867134342671430205">برای انتقال نمایشگر، بکشید یا از کلیدهای پیکان استفاده کنید</translation>
 <translation id="3867944738977021751">فیلدهای گواهی</translation>
@@ -3675,7 +3677,6 @@
 <translation id="4157869833395312646">‏رمزنگاری انتقال یافته از دروازه سرور Microsoft</translation>
 <translation id="4158315983204257156">اندازه نوشتار و قلم وب‌سایت</translation>
 <translation id="4158364720893025815">موفق</translation>
-<translation id="4159681666905192102">این یک حساب مخصوص بچه‌ها است که توسط <ph name="CUSTODIAN_EMAIL" /> و <ph name="SECOND_CUSTODIAN_EMAIL" /> مدیریت می‌شود.</translation>
 <translation id="4163560723127662357">صفحه‌کلید ناشناس</translation>
 <translation id="4165942112764990069">‏<ph name="USER_EMAIL" /> متعلق به سازمانی معتبر نیست. با سرپرست تماس بگیرید. اگر خودتان سرپرست هستید، می‌توانید با مراجعه به نشانی زیر سازمانتان را راه‌اندازی کنید: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
@@ -3742,6 +3743,7 @@
 <translation id="4231141543165771749">بستن کنترل‌های بازی</translation>
 <translation id="4231542173270219144">وقتی نسخه آزمایشی روشن باشد، «کاهش هرزنامه و تقلب» برای کمک به سایت‌ها در مبارزه با تقلب و تشخیص روبات‌ها از انسان، به کدهای حالت خصوصی متکی است.</translation>
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
+<translation id="4233739489690259993">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای دریافت آخرین نسخه امنیتی و ویژگی‌های جدید، دستگاهتان را ارتقا دهید. شرایط پیشنهاد اعمال می‌شود.</translation>
 <translation id="4235965441080806197">لغو ورود به سیستم</translation>
 <translation id="4236163961381003811">کاوش افزونه‌های بیشتر</translation>
 <translation id="4237282663517880406">‏نمایش پیشنهادهای Google Drive</translation>
@@ -4828,6 +4830,7 @@
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
 <translation id="5229337741799419985">این تنظیم بدون شناسایی شما یا اجازه دادن به سایت‌ها برای دیدن سابقه مرورتان کار می‌کند</translation>
 <translation id="5230516054153933099">پنجره</translation>
+<translation id="5231427103154766313">برای توقف پخش محتوا، از کنترل ازراه‌دور استفاده کنید.</translation>
 <translation id="5233019165164992427">‏درگاه اشکال‌زدایی NaCl</translation>
 <translation id="5233231016133573565">شناسه فرایند</translation>
 <translation id="5233638681132016545">برگه جدید</translation>
@@ -5249,6 +5252,7 @@
 <translation id="5601503069213153581">پین</translation>
 <translation id="5601823921345337195">‏اجازه ندارد به دستگاه‌های MIDI مرتبط شود</translation>
 <translation id="5601833336918638013">به سایت‌ها اجازه داده نشود دستگاه‌های بلوتوث را جستجو کنند</translation>
+<translation id="5602586420788540146">باز کردن در گروه برگه جدید</translation>
 <translation id="5602765853043467355">نشانک‌ها، سابقه، گذرواژه‌ها و موارد دیگر از این دستگاه پاک شود</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
@@ -6313,6 +6317,7 @@
 <translation id="657229725818377235">محافظت بیشتری دربرابر وب‌سایت‌ها و بارگیری‌های خطرناک دریافت کنید</translation>
 <translation id="6573096386450695060">همیشه مجاز</translation>
 <translation id="6573497332121198392">نمی‌توان میان‌بر را برداشت</translation>
+<translation id="6573915150656780875">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای داشتن بهترین تجربه، Chromebook جدیدی دریافت کنید.</translation>
 <translation id="657402800789773160">&amp;بارگیری مجدد این صفحه</translation>
 <translation id="6577284282025554716">بارگیری لغو شد: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">عکس آنی از وضعیت شبکه</translation>
@@ -7748,6 +7753,7 @@
 <translation id="7844992432319478437">به‌روزرسانی تفاوت</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
 <translation id="7847212883280406910">‏برای رفتن به <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> کلیدهای Ctrl + Alt + S را فشار دهید.</translation>
+<translation id="7848244988854036372">باز کردن همه (<ph name="URL_COUNT" />) در گروه برگه جدید</translation>
 <translation id="7849264908733290972">باز کردن &amp;تصویر در برگهٔ جدید</translation>
 <translation id="784934925303690534">محدوده زمانی</translation>
 <translation id="7850717413915978159">‏<ph name="BEGIN_PARAGRAPH1" />اگر به دستگاه‌های ChromeOS اجازه دهید گزارش‌های خودکار ارسال کند، به ما کمک می‌کنید آنچه را باید در ChromeOS درست کنیم و بهبود ببخشیم اولویت‌بندی کنیم. این گزارش‌ها می‌تواند شامل مواردی ازاین‌قبیل باشد: چه زمانی ChromeOS خراب می‌شود، از کدام ویژگی‌ها استفاده می‌کنید، معمولاً از چه مقدار حافظه استفاده می‌کنید، و داده‌های استفاده و عیب‌یابی برنامه Android. برخی‌از داده‌های انبوهشی به برنامه‌ها و شرکای Google، مثل توسعه‌دهندگان Android، هم کمک می‌کند.<ph name="END_PARAGRAPH1" />
@@ -8679,6 +8685,7 @@
 <translation id="866611985033792019">برای شناسایی کاربران ایمیل، به این گواهی اطمینان شود</translation>
 <translation id="8666321716757704924">اجازه‌ها دوباره به <ph name="WEBSITE" /> اعطا شد</translation>
 <translation id="8666759526542103597">درباره «شخصی‌سازی آگهی مبتنی بر مرورگر»</translation>
+<translation id="8667261224612332309">گذرواژه‌هایی دارید که می‌توانید آن‌ها را بهبود ببخشید</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> در حال حاضر تمام صفحه است و مکان‌نمای ماوس شما را غیرفعال کرده است.</translation>
 <translation id="8667760277771450375">درحال کاوش روش‌هایی برای محدود کردن ردیابی بین‌سایتی و درعین‌حال امکان دادن به سایت‌ها برای متوقف کردن هرزآگهی و تقلب هستیم.</translation>
 <translation id="8668378421690365723">ممکن است دستگاهتان دیگر به‌درستی کار نکند و احتمال دارد با مشکلات عملکردی و امنیتی مواجه شود.</translation>
@@ -9009,6 +9016,7 @@
 <translation id="8953476467359856141">هنگام شارژ شدن</translation>
 <translation id="895347679606913382">در حال شروع...</translation>
 <translation id="8957757410289731985">سفارشی کردن نمایه</translation>
+<translation id="8959144235813727886">سایت‌ها و برنامه‌ها</translation>
 <translation id="895944840846194039">حافطه جاوا اسکریپت</translation>
 <translation id="8960208913905765425">تبدیل واحد «پاسخ‌های سریع»</translation>
 <translation id="8960638196855923532">اکنون می‌توانید اعلان‌ها و برنامه‌های تلفنتان را مشاهده کنید</translation>

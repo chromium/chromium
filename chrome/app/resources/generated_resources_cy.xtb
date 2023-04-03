@@ -799,6 +799,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="16620462294541761">Mae'n ddrwg gennym, ni ellid dilysu'ch cyfrinair. Rhowch gynnig arall arni.</translation>
 <translation id="166278006618318542">Algorithm Allwedd Gyhoeddus y Goddrych</translation>
 <translation id="1662801900924515589">Wedi gosod <ph name="APP" /></translation>
+<translation id="1663698992894057019">Uwchraddiwch i Chromebook newydd ar gyfer y diogelwch a'r feddalwedd ddiweddaraf</translation>
 <translation id="1665328953287874063">Defnyddiwch gyfrinair neu PIN i ddatgloi eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Analluogi diogelwch mynediad data ar gyfer perifferolion</translation>
 <translation id="1667842670298352129">Clywed testun penodol yn cael ei ddarllen yn uchel. Yn gyntaf, dewiswch yr eicon Dewis i siarad ar waelod eich sgrîn, yna amlygwch y testun. Gallwch hefyd ddefnyddio llwybr byr bysellfwrdd: Amlygu testun, yna pwyswch Search + S.</translation>
@@ -2879,7 +2880,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3462958980772249646">{COUNT,plural, =1{Mae {COUNT} cyfrinair wedi'i gadw ar y ddyfais hon}zero{Mae {COUNT} cyfrinair wedi'u cadw ar y ddyfais hon}two{Mae {COUNT} gyfrinair wedi'u cadw ar y ddyfais hon}few{Mae {COUNT} chyfrinair wedi'u cadw ar y ddyfais hon}many{Mae {COUNT} chyfrinair wedi'u cadw ar y ddyfais hon}other{Mae {COUNT} cyfrinair wedi'u cadw ar y ddyfais hon}}</translation>
 <translation id="346298925039590474">Bydd y rhwydwaith symudol hwn ar gael i'r holl ddefnyddwyr ar y ddyfais hon</translation>
 <translation id="3464145797867108663">Ychwanegu proffil gwaith</translation>
-<translation id="346431825526753">Rheolir y cyfrif ar gyfer plentyn hwn gan <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Cael gostyngiadau ar gyfer <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> a rhagor</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Ffôn Android</translation>
@@ -3683,7 +3683,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Maint testun a ffont y wefan</translation>
 <translation id="4158364720893025815">Tocyn</translation>
-<translation id="4159681666905192102">Rheolir y cyfrif ar gyfer plentyn hwn gan <ph name="CUSTODIAN_EMAIL" /> a <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Bysellfwrdd anhysbys</translation>
 <translation id="4165942112764990069">Nid yw <ph name="USER_EMAIL" /> yn perthyn i sefydliad dilys. Cysylltwch â'ch gweinyddwr. Os ydych yn weinyddwr, gallwch osod eich sefydliad drwy fynd i: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
@@ -3750,6 +3749,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4231141543165771749">Cau'r rheolyddion gêm</translation>
 <translation id="4231542173270219144">Pan fydd treialon ymlaen, mae lleihau Sothach a thwyll yn dibynnu ar docynnau ymddiriedaeth i helpu gwefannau i ymladd twyll a gwahaniaethu rhwng botiau a phobl.</translation>
 <translation id="4232375817808480934">Ffurfweddu Kerberos</translation>
+<translation id="4233739489690259993">Nid yw eich Chromebook bellach yn derbyn diweddariadau diogelwch a meddalwedd. Uwchraddiwch eich dyfais ar gyfer y diogelwch diweddaraf a nodweddion newydd. Mae telerau cynnig yn berthnasol.</translation>
 <translation id="4235965441080806197">Canslo mewngofnodi</translation>
 <translation id="4236163961381003811">Darganfod rhagor o estyniadau</translation>
 <translation id="4237282663517880406">Dangos awgrymiadau Google Drive</translation>
@@ -4836,6 +4836,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5228579091201413441">Galluogi cysoni</translation>
 <translation id="5229337741799419985">Mae'r gosodiad hwn yn gweithio heb eich adnabod na chaniatáu i wefannau weld eich hanes pori</translation>
 <translation id="5230516054153933099">Ffenestr</translation>
+<translation id="5231427103154766313">Defnyddiwch reolydd i atal castio.</translation>
 <translation id="5233019165164992427">Porth dadfygio NaCl</translation>
 <translation id="5233231016133573565">Rhif adnabod y broses</translation>
 <translation id="5233638681132016545">Tab newydd</translation>
@@ -5257,6 +5258,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Ni chaniateir cysylltu â dyfeisiau MIDI</translation>
 <translation id="5601833336918638013">Peidio â chaniatáu i wefannau chwilio am ddyfeisiau Bluetooth</translation>
+<translation id="5602586420788540146">Agor mewn grŵp tabiau newydd</translation>
 <translation id="5602765853043467355">Clirio nodau tudalen, hanes, cyfrineiriau a rhagor o'r ddyfais hon</translation>
 <translation id="5605758115928394442">Anfonwyd hysbysiad i'ch ffôn i gadarnhau mai chi sydd yno.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Mae'r estyniad hwn wedi'i rwystro}zero{Mae'r estyniadau hyn wedi'u rhwystro}two{Mae'r estyniadau hyn wedi'u rhwystro}few{Mae'r estyniadau hyn wedi'u rhwystro}many{Mae'r estyniadau hyn wedi'u rhwystro}other{Mae'r estyniadau hyn wedi'u rhwystro}}</translation>
@@ -6321,6 +6323,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="657229725818377235">Cael rhagor o amddiffyniad rhag gwefannau peryglus a lawrlwythiadau</translation>
 <translation id="6573096386450695060">Caniatáu bob amser</translation>
 <translation id="6573497332121198392">Methu â thynnu'r llwybr byr</translation>
+<translation id="6573915150656780875">Nid yw eich Chromebook bellach yn derbyn diweddariadau diogelwch a meddalwedd. Cael Chromebook newydd i gael y profiad gorau.</translation>
 <translation id="657402800789773160">&amp;Ail-lwytho'r Dudalen hon</translation>
 <translation id="6577284282025554716">Wedi canslo lawrlwytho: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Ciplun o Iechyd y Rhwydwaith</translation>
@@ -7763,6 +7766,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7844992432319478437">Wrthi'n diweddaru ffeil diff</translation>
 <translation id="7846634333498149051">Bysellfwrdd</translation>
 <translation id="7847212883280406910">Pwyswch Ctrl + Alt + S i newid i <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="7848244988854036372">Agor pob un (<ph name="URL_COUNT" />) mewn grŵp tabiau newydd</translation>
 <translation id="7849264908733290972">Agor y &amp;Llun mewn Tab Newydd</translation>
 <translation id="784934925303690534">Ystod amser</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i'ch dyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion rydych yn eu defnyddio, faint o gof rydych yn ei ddefnyddio, a data diagnostig a defnydd apiau Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />

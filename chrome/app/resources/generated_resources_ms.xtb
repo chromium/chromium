@@ -2877,7 +2877,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} kata laluan disimpan pada peranti ini}other{{COUNT} kata laluan disimpan pada peranti ini}}</translation>
 <translation id="346298925039590474">Rangkaian mudah alih ini akan tersedia kepada semua pengguna pada peranti ini</translation>
 <translation id="3464145797867108663">Tambah profil kerja</translation>
-<translation id="346431825526753">Ini ialah akaun untuk kanak-kanak yang diurus oleh <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Dapatkan diskaun untuk <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> dan pelbagai lagi</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
@@ -3681,7 +3680,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4157869833395312646">Kriptografi Berpintu Pelayan Microsoft</translation>
 <translation id="4158315983204257156">Saiz dan fon teks laman web</translation>
 <translation id="4158364720893025815">Pas</translation>
-<translation id="4159681666905192102">Ini ialah akaun untuk kanak-kanak yang diurus oleh <ph name="CUSTODIAN_EMAIL" /> dan <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Papan kekunci yang tidak diketahui.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> bukan milik organisasi yang sah. Hubungi pentadbir anda. Jika anda seorang pentadbir, anda boleh menyediakan organisasi anda dengan melawati: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>

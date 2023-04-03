@@ -2878,7 +2878,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ဤစက်တွင် စကားဝှက် {COUNT} ခု သိမ်းသည်}other{ဤစက်တွင် စကားဝှက် {COUNT} ခု သိမ်းသည်}}</translation>
 <translation id="346298925039590474">ယခုမိုဘိုင်းကွန်ရက်ကို ဤစက်ပေါ်ရှိ အသုံးပြုသူအားလုံး သုံးနိုင်ပါမည်</translation>
 <translation id="3464145797867108663">အလုပ်ပရိုဖိုင်ကို ထည့်ရန်</translation>
-<translation id="346431825526753">၄င်းသည် <ph name="CUSTODIAN_EMAIL" /> မှ စီမံသော ကလေးများအတွက် အကောင့်တစ်ခုဖြစ်သည်။</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />၊ <ph name="MERCHANT_NAME_2" /> စသည်တို့အတွက် လျှော့ဈေးများ ရယူမလား</translation>
 <translation id="3468298837301810372">အညွှန်း</translation>
 <translation id="3468999815377931311">Android ဖုန်း</translation>
@@ -3681,7 +3680,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">ဝဘ်ဆိုက်စာသားအရွယ်အစားနှင့် ဖောင့်</translation>
 <translation id="4158364720893025815">အောင်မြင်သည်</translation>
-<translation id="4159681666905192102">၄င်းသည်  <ph name="CUSTODIAN_EMAIL" /> နှင့် <ph name="SECOND_CUSTODIAN_EMAIL" /> မှ စီမံသော ကလေးများအတွက် အကောင့်တစ်ခုဖြစ်သည်။</translation>
 <translation id="4163560723127662357">အမည်မသိ ကီးဘုတ်</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> သည် ခိုင်မာသော အဖွဲ့အစည်းတွင် ရှိမနေပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ သင်သည် စီမံခန့်ခွဲသူဖြစ်ပါက ဤနေရာသို့ ဝင်ကြည့်ပြီး သင့်အဖွဲ့အစည်းကို စနစ်ထည့်သွင်းနိုင်သည်- g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>

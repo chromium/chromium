@@ -2863,7 +2863,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3462958980772249646">{COUNT,plural, =1{V tomto zariadení je uložené {COUNT} heslo}few{V tomto zariadení sú uložené {COUNT} heslá}many{{COUNT} passwords are saved on this device}other{V tomto zariadení je uložených {COUNT} hesiel}}</translation>
 <translation id="346298925039590474">Táto mobilná sieť bude k dispozícii pre všetkých používateľov tohto zariadenia</translation>
 <translation id="3464145797867108663">Pridať pracovný profil</translation>
-<translation id="346431825526753">Toto je detský účet spravovaný používateľom <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Získajte zľavy u obchodníkov <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> a ďalších</translation>
 <translation id="3468298837301810372">Menovka:</translation>
 <translation id="3468999815377931311">Telefón s Androidom</translation>
@@ -3666,7 +3665,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4157869833395312646">Šifrovanie Server Gated Cryptography spoločnosti Microsoft</translation>
 <translation id="4158315983204257156">Písmo textu a jeho veľkosť na webe</translation>
 <translation id="4158364720893025815">Prešlo kontrolou</translation>
-<translation id="4159681666905192102">Toto je detský účet spravovaný používateľmi <ph name="CUSTODIAN_EMAIL" /> a <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Neznáma klávesnica</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nepatrí platnej organizácii. Kontaktujte svojho správcu. Ak ste správca, môžete nastaviť organizáciu na g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>

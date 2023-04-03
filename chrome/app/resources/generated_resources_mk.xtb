@@ -2876,7 +2876,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} лозинка е зачувана на уредов}one{{COUNT} лозинка се зачувани на уредов}other{{COUNT} лозинки се зачувани на уредов}}</translation>
 <translation id="346298925039590474">Мобилнава мрежа ќе им биде достапна на сите корисници на уредов</translation>
 <translation id="3464145797867108663">Додајте работен профил</translation>
-<translation id="346431825526753">Ова е сметка за деца управувана од <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Добијте попусти за <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> и други</translation>
 <translation id="3468298837301810372">Ознака</translation>
 <translation id="3468999815377931311">Телефон со Android</translation>
@@ -3679,7 +3678,6 @@
 <translation id="4157869833395312646">Шифрирање на сервер со порти на Microsoft</translation>
 <translation id="4158315983204257156">Големина и фонт на текст на веб-сајт</translation>
 <translation id="4158364720893025815">Успешна проверка</translation>
-<translation id="4159681666905192102">Ова е сметка за деца управувана од <ph name="CUSTODIAN_EMAIL" /> и <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Непозната тастатура</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не припаѓа на важечка организација. Контактирајте со администраторот. Ако сте администратор, може да ја поставите вашата организација на: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>

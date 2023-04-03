@@ -2858,7 +2858,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} fjalëkalim është ruajtur në këtë pajisje}other{{COUNT} fjalëkalime janë ruajtur në këtë pajisje}}</translation>
 <translation id="346298925039590474">Ky rrjet celular do të ofrohet për të gjithë përdoruesit e kësaj pajisjeje</translation>
 <translation id="3464145797867108663">Shto profilin e punës</translation>
-<translation id="346431825526753">Kjo është një llogari për fëmijë, e menaxhuar nga <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Merr zbritje për <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> dhe të tjera</translation>
 <translation id="3468298837301810372">Etiketa</translation>
 <translation id="3468999815377931311">Telefon me Android</translation>
@@ -3661,7 +3660,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4157869833395312646">Kriptografia e rrethuar e serverit të Microsoft</translation>
 <translation id="4158315983204257156">Fonti dhe madhësia e tekstit të sajtit të uebit</translation>
 <translation id="4158364720893025815">Leje</translation>
-<translation id="4159681666905192102">Kjo është një llogari për fëmijë e menaxhuar nga <ph name="CUSTODIAN_EMAIL" /> dhe <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Tastierë e panjohur</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nuk përkon me një organizatë të vlefshme. Kontakto me administratorin tënd. Nëse je administrator, mund ta konfigurosh organizatën tënde duke vizituar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>

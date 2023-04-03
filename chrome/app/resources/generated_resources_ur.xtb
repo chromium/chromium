@@ -2864,7 +2864,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{اس آلہ پر {COUNT} پاس ورڈ محفوظ ہے}other{اس آلہ پر {COUNT} پاس ورڈز محفوظ ہیں}}</translation>
 <translation id="346298925039590474">یہ موبائل نیٹ ورک اس آلہ پر سبھی صارفین کیلئے دستیاب ہوگا</translation>
 <translation id="3464145797867108663">دفتری پروفائل شامل کریں</translation>
-<translation id="346431825526753">یہ <ph name="CUSTODIAN_EMAIL" /> کے زیر انتظام بچوں کیلئے ایک اکاؤنٹ ہے۔</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> اور مزید کیلئے رعایتیں حاصل کریں</translation>
 <translation id="3468298837301810372">لیبل</translation>
 <translation id="3468999815377931311">‏Android فون</translation>
@@ -3668,7 +3667,6 @@
 <translation id="4157869833395312646">‏Microsoft سرور گیٹڈ کرپٹوگرافی</translation>
 <translation id="4158315983204257156">ویب سائٹ کے ٹیکسٹ کا سائز اور فونٹ</translation>
 <translation id="4158364720893025815">چیک پاس ہوا</translation>
-<translation id="4159681666905192102">یہ بچوں کیلئے <ph name="CUSTODIAN_EMAIL" /> اور <ph name="SECOND_CUSTODIAN_EMAIL" /> کی جانب سے نظم کردہ ایک اکاؤنٹ ہے۔</translation>
 <translation id="4163560723127662357">نامعلوم کی بورڈ</translation>
 <translation id="4165942112764990069">‏<ph name="USER_EMAIL" /> ایک درست تنظیم سے تعلق نہیں رکھتا۔ اپنے منتظم سے رابطہ کریں۔ اگر آپ منتظم ہیں تو آپ مندرجہ ذیل لنک کو ملاحظہ کر کے اپنی تنظیم کو سیٹ اپ کر سکتے ہیں: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>

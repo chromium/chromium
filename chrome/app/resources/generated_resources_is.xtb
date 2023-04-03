@@ -797,6 +797,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="16620462294541761">Því miður var ekki hægt að staðfesta aðgangsorðið þitt. Reyndu aftur.</translation>
 <translation id="166278006618318542">Reiknirit opinbers lykils viðfangs</translation>
 <translation id="1662801900924515589"><ph name="APP" /> var sett upp</translation>
+<translation id="1663698992894057019">Skiptu yfir í nýja Chromebook-tölvu til að fá nýjustu öryggis- og hugbúnaðaruppfærslurnar</translation>
 <translation id="1665328953287874063">Notaðu aðgangsorð eða PIN-númer til að opna <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Slökkva á gagnaaðgangsvörn fyrir jaðartæki</translation>
 <translation id="1667842670298352129">Heyra tiltekinn texta í upplestri. Veldu fyrst táknið „Textaupplestur“ neðst á skjánum og yfirstrikaðu síðan textann. Þú getur einnig notað flýtilykil: Yfirstrikaðu textann og ýttu síðan á Search + S.</translation>
@@ -2876,7 +2877,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} aðgangsorð er vistað í þessu tæki}one{{COUNT} aðgangsorð er vistað í þessu tæki}other{{COUNT} aðgangsorð eru vistuð í þessu tæki}}</translation>
 <translation id="346298925039590474">Allir notendur þessa tækis hafa aðgang að þessu farsímakerfi</translation>
 <translation id="3464145797867108663">Bæta við vinnusniði</translation>
-<translation id="346431825526753">Þetta er reikningur fyrir börn sem <ph name="CUSTODIAN_EMAIL" /> stjórnar.</translation>
 <translation id="346546413339447252">Fá afslætti hjá <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> og fleirum</translation>
 <translation id="3468298837301810372">Merki</translation>
 <translation id="3468999815377931311">Android sími</translation>
@@ -3679,7 +3679,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4157869833395312646">Microsoft-dulritun með hliðvörð frá þjóni</translation>
 <translation id="4158315983204257156">Textastærð og leturgerð vefsvæðis</translation>
 <translation id="4158364720893025815">Stóðst</translation>
-<translation id="4159681666905192102">Þetta er reikningur fyrir börn sem <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" /> stjórna.</translation>
 <translation id="4163560723127662357">Óþekkt lyklaborð</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> tilheyrir ekki gildu fyrirtæki. Hafðu samband við kerfisstjórann þinn. Ef þú ert kerfisstjóri geturðu sett upp fyrirtækið þitt á: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
@@ -3746,6 +3745,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4231141543165771749">Loka leikjastýringum</translation>
 <translation id="4231542173270219144">Þegar kveikt er á prufuútgáfum eru traustslyklar notaðir til að draga úr rusli og svikum til að auðvelda vefsvæðum að berjast gegn svikum og greina á milli spjallara og fólks.</translation>
 <translation id="4232375817808480934">Stilla Kerberos</translation>
+<translation id="4233739489690259993">Chromebook-tölvan þín fær ekki öryggis- og hugbúnaðaruppfærslur lengur. Uppfærðu tækið til að fá nýjustu öryggisúrræðin og nýja eiginleika. Skilmálar tilboðs gilda.</translation>
 <translation id="4235965441080806197">Hætta við innskráningu</translation>
 <translation id="4236163961381003811">Sjá fleiri viðbætur</translation>
 <translation id="4237282663517880406">Sýna Google Drive-tillögur</translation>
@@ -4832,6 +4832,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
 <translation id="5229337741799419985">Þessi stilling virkar án þess að auðkenna þig eða leyfa vefsvæðum að sjá vafraferilinn þinn</translation>
 <translation id="5230516054153933099">Gluggi</translation>
+<translation id="5231427103154766313">Notaðu fjarstýringuna til að hætta útsendingu</translation>
 <translation id="5233019165164992427">Villuleitargátt NaCl</translation>
 <translation id="5233231016133573565">Auðkenni ferlis</translation>
 <translation id="5233638681132016545">Nýr flipi</translation>
@@ -5253,6 +5254,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5601503069213153581">PIN-númer</translation>
 <translation id="5601823921345337195">Mega ekki tengjast MIDI-tækjum</translation>
 <translation id="5601833336918638013">Ekki leyfa vefsvæðum að leita að Bluetooth-tækjum</translation>
+<translation id="5602586420788540146">Opna í nýjum flipahóp</translation>
 <translation id="5602765853043467355">Hreinsa bókamerki, feril, aðgangsorð og fleira úr þessu tæki</translation>
 <translation id="5605758115928394442">Tilkynning var send í símann þinn til að staðfesta að þetta sért þú.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er á bannlista}one{Þessar viðbætur eru á bannlista}other{Þessar viðbætur eru á bannlista}}</translation>
@@ -6317,6 +6319,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="657229725818377235">Fáðu aukna vernd gegn hættulegum vefsvæðum og niðurhali</translation>
 <translation id="6573096386450695060">Leyfa alltaf</translation>
 <translation id="6573497332121198392">Ekki er hægt að fjarlægja flýtileið</translation>
+<translation id="6573915150656780875">Chromebook-tölvan þín fær ekki öryggis- og hugbúnaðaruppfærslur lengur. Fáðu þér nýja Chromebook-tölvu til að upplifunin verði sem best.</translation>
 <translation id="657402800789773160">Endu&amp;rhlaða þessa síðu</translation>
 <translation id="6577284282025554716">Hætt við niðurhal: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Skyndimynd af ástandi netkerfis</translation>
@@ -7753,6 +7756,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7844992432319478437">Uppfærir breytingaskrá</translation>
 <translation id="7846634333498149051">Lyklaborð</translation>
 <translation id="7847212883280406910">Ýttu á Ctrl + Alt + S til að skipta yfir í <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="7848244988854036372">Opna allt (<ph name="URL_COUNT" />) í nýjum flipahóp</translation>
 <translation id="7849264908733290972">Opna mynd í nýjum fl&amp;ipa</translation>
 <translation id="784934925303690534">Tímabil</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar eru notaðir, hversu mikið minni er yfirleitt notað sem og greiningar- og notkunargögn Android forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />

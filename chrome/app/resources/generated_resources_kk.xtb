@@ -2857,7 +2857,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{Бұл құрылғыда {COUNT} құпия сөз сақталған}other{Бұл құрылғыда {COUNT} құпия сөз сақталған}}</translation>
 <translation id="346298925039590474">Бұл мобильдік желі осы құрылғыдағы барлық пайдаланушыға қолжетімді болады.</translation>
 <translation id="3464145797867108663">Жұмыс профилін қосу</translation>
-<translation id="346431825526753">Бұл <ph name="CUSTODIAN_EMAIL" /> басқаратын балаларға арналған аккаунт.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> және басқа дүкендердің жеңілдіктерін алыңыз</translation>
 <translation id="3468298837301810372">Белгі</translation>
 <translation id="3468999815377931311">Android телефоны</translation>
@@ -3660,7 +3659,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Веб-сайт мәтінінің өлшемі мен қарпі</translation>
 <translation id="4158364720893025815">Тексеруден өтті</translation>
-<translation id="4159681666905192102">Бұл <ph name="CUSTODIAN_EMAIL" /> және <ph name="SECOND_CUSTODIAN_EMAIL" /> басқаратын балаларға арналған аккаунт болып табылады.</translation>
 <translation id="4163560723127662357">Белгісіз пернетақта</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> электрондық мекенжайы расталған ұйымға тиесілі емес. Әкімшіңізге хабарласыңыз. Егер әкімші болсаңыз, g.co/ChromeEnterpriseAccount бетіне өту арқылы ұйымыңызды реттей аласыз.</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>

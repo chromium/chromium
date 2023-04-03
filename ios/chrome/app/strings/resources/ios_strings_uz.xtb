@@ -177,6 +177,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2218443599109088993">Uzoqlashtirish</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2239626343334228536">Brauzer tarixini tozalash...</translation>
+<translation id="22508856139286506">Yopilgan ogohlantirishlar (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyu → Tarix</translation>
 <translation id="2256933947031277845">Tashkilotingiz faqat ayrim hisoblardan kirishga ruxsat beradi.</translation>
 <translation id="225943865679747347">Xatolik kodi: <ph name="ERROR_CODE" /></translation>
@@ -1180,6 +1181,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="891658175948553296">Saytdagi matnni ajratib belgilang</translation>
 <translation id="8917490105272468696">Ha, roziman</translation>
 <translation id="8928133177108699615">Ish stoli</translation>
+<translation id="8934982071228289624">Bu parolni hisobingizga saqlash uchun avval qurilmangizda kodni sozlashingiz kerak.</translation>
 <translation id="894191600409472540">Kuchli parollar yarating</translation>
 <translation id="8952559610785099500">Parol kiritish</translation>
 <translation id="8953046091948372197">Parollaringiz shu yerda chiqadi</translation>

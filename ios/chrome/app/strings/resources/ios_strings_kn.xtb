@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">ತೆರೆದ ವಿಂಡೋಗೆ ಬದಲಿಸಿ.</translation>
 <translation id="1112015203684611006">ಮುದ್ರಿಸುವಿಕೆ ವಿಫಲಗೊಂಡಿದೆ.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> ದಿನಗಳ ನಂತರ</translation>
 <translation id="1125564390852150847">ಹೊಸ ಟ್ಯಾಬ್ ರಚಿಸಿ.</translation>
 <translation id="1126013303640354461">Google Pay ನಲ್ಲಿನ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.
 ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಮಾತ್ರ ನಿಮ್ಮ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಡೇಟಾವನ್ನು ಓದಬಹುದು. ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿಲ್ಲ ಅಥವಾ ಸಂಗ್ರಹಿಸಲಾಗಿಲ್ಲ. ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನೀವು ಮರೆತರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, ನೀವು ಸಿಂಕ್ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@
 <translation id="2626236249646841566">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2637313651144986786">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ...</translation>
 <translation id="2647269890314209800">ಬಳಕೆಯಲ್ಲಿರುವ ಕುಕೀಗಳು</translation>
+<translation id="2648721026697078500">ಎಂದೂ ಸರಿಸಬೇಡಿ</translation>
 <translation id="2648803196158606475">ಓದಿರುವುದನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="2664621323652615289">ನಿಲ್ಲಿಸಿ</translation>
@@ -346,6 +348,7 @@
 <translation id="3305294846493618482">ಇನ್ನಷ್ಟು</translation>
 <translation id="3311748811247479259">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="3324193307694657476">ವಿಳಾಸ 2</translation>
+<translation id="3328459813621383194">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸರಿಸಿ</translation>
 <translation id="3328801116991980348">ಸೈಟ್ ಮಾಹಿತಿ</translation>
 <translation id="3371831930909698441">ಅನುವಾದ ಲಭ್ಯವಿದೆ. ಪರದೆಯ ಕೆಳಭಾಗದ ಸಮೀಪದಲ್ಲಿ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.</translation>
 <translation id="3377063233124932127">ಇದೀಗ ನೀವು ಉಳಿಸಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇನ್ನಷ್ಟು ವಿಷಯಗಳು ಮೇಲ್ಭಾಗದಲ್ಲಿ ಇರುತ್ತವೆ.</translation>
@@ -510,6 +513,7 @@
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4536418791685807335">ಮತ್ತೊಮ್ಮೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4540780316273593836">ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ</translation>
+<translation id="4550040941166547650">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಬೇಕೆ?}one{{COUNT} ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೆ?}other{{COUNT} ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೆ?}}</translation>
 <translation id="457386861538956877">ಇನ್ನಷ್ಟು...</translation>
 <translation id="4587235830039045480">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ</translation>
@@ -763,6 +767,7 @@
 <translation id="6193424046394092997">{count,plural, =1{{title} ಗೆ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ}one{{title} ಗೆ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ}other{{title} ಗೆ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="6196207969502475924">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> ದಿನಗಳು ಅಥವಾ ಅದಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಸಮಯದಿಂದ ಬಳಸಲಾಗಿರದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿಗೆ ಸರಿಸಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="6213567400989743524">ವಜಾಗೊಳಿಸಿದ ಎಚ್ಚರಿಕೆಗಳು</translation>
 <translation id="6219550825416862075">ಮರಳಿ ಸುಸ್ವಾಗತ</translation>
 <translation id="6219688215832490856">ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
@@ -1058,6 +1063,7 @@
 <translation id="8059533439631660104">ವಿಭಾಗವನ್ನು ಕುಗ್ಗಿಸುತ್ತದೆ.</translation>
 <translation id="8065292699993359127">URL ಗಳನ್ನು Chrome ನ ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="806745655614357130">ನನ್ನ ಡೇಟಾ ಪ್ರತ್ಯೇಕವಾಗಿ ಇರಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="8069394452933076548">ಇತ್ತೀಚೆಗೆ ಬಳಸಲಾಗಿರದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್ ವಿಭಾಗಕ್ಕೆ ಯಾವಾಗ ಸರಿಸಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="8073670137947914548">ಡೌನ್‌ಲೋಡ್‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="8073872304774253879">ಹುಡುಕಾಟಗಳು ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಿ</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -1201,6 +1207,7 @@
 <translation id="9055772144595778347">ಸೈನ್ ಇನ್ ಆಗಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="9055960261314198756">ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="9057972802061533987">ಫಾಲೋ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
+<translation id="9061495354530850708">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9068336935206019333">Chrome ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ತೆರಯಬೇಕೆ?</translation>
 <translation id="9079935439869366234">ಎಲ್ಲಾ ಓದದೇ ಇರುವವುಗಳನ್ನು ಗುರುತಿಸಿ</translation>

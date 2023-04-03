@@ -2864,7 +2864,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} пароль захаваны на гэтай прыладзе}one{{COUNT} пароль захаваны на гэтай прыладзе}few{{COUNT} паролі захаваны на гэтай прыладзе}many{{COUNT} пароляў захаваны на гэтай прыладзе}other{{COUNT} пароля захаваны на гэтай прыладзе}}</translation>
 <translation id="346298925039590474">Гэта мабільная сетка будзе даступнай усім карыстальнікам прылады</translation>
 <translation id="3464145797867108663">Дадаць працоўны профіль</translation>
-<translation id="346431825526753">Гэта ўліковы запіс для дзяцей, якім кіруе <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Атрымлівайце скідкі ў крамах "<ph name="MERCHANT_NAME_1" />", "<ph name="MERCHANT_NAME_2" />" і не толькі</translation>
 <translation id="3468298837301810372">Метка</translation>
 <translation id="3468999815377931311">Тэлефон Android</translation>
@@ -3665,7 +3664,6 @@
 <translation id="4157869833395312646">Крыптаграфія праз сервер Microsoft</translation>
 <translation id="4158315983204257156">Шрыфт і памер тэксту на вэб-сайтах</translation>
 <translation id="4158364720893025815">Праверка пройдзена</translation>
-<translation id="4159681666905192102">Гэта ўліковы запіс для дзяцей, якім кіруюць <ph name="CUSTODIAN_EMAIL" /> і <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Невядомая клавіятура</translation>
 <translation id="4165942112764990069">Электронны адрас <ph name="USER_EMAIL" /> не з'яўляецца электронным адрасам сапраўднай арганізацыі. Звярніцеся да адміністратара. Калі вы самі з'яўляецеся адміністратарам, вы можаце наладзіць сваю арганізацыю на старонцы g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>

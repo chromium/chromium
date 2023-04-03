@@ -2008,7 +2008,7 @@
 <translation id="2683638487103917598">ఫోల్డర్ క్రమబద్ధీకరించబడింది</translation>
 <translation id="2684004000387153598">కొనసాగించడానికి, సరే క్లిక్ చేసి, ఆపై మీ ఈమెయిల్‌ అడ్రస్‌ కోసం కొత్త ప్రొఫైల్‌ను రూపొందించడానికి వ్యక్తిని జోడించండి క్లిక్ చేయండి.</translation>
 <translation id="2687403674020088961">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
-<translation id="2687407218262674387">Google సేవా నిబంధనలు</translation>
+<translation id="2687407218262674387">Google సర్వీస్ నియమాలు</translation>
 <translation id="2687621393791886981">నన్ను తర్వాత అడగు</translation>
 <translation id="2688196195245426394">పరికరం సర్వర్‌తో నమోదు అవుతున్నప్పుడు ఎర్రర్: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది <ph name="ACCOUNT" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
@@ -2875,7 +2875,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ఈ పరికరంలో {COUNT} పాస్‌వర్డ్ సేవ్ చేయబడింది}other{ఈ పరికరంలో {COUNT} పాస్‌వర్డ్‌లు సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="346298925039590474">ఈ మొబైల్ నెట్‌వర్క్ ఈ పరికరంలోని యూజర్‌లు అందరికీ అందుబాటులో ఉంటుంది</translation>
 <translation id="3464145797867108663">వర్క్ ప్రొఫైల్‌ను జోడించండి</translation>
-<translation id="346431825526753">ఇది <ph name="CUSTODIAN_EMAIL" /> నిర్వహించే చిన్నపిల్లల ఖాతా.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" />, మరిన్నిటి కోసం డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="3468298837301810372">లేబుల్</translation>
 <translation id="3468999815377931311">Android ఫోన్</translation>
@@ -3679,7 +3678,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">వెబ్‌సైట్ టెక్స్ట్ సైజ్, ఫాంట్</translation>
 <translation id="4158364720893025815">పాస్</translation>
-<translation id="4159681666905192102">ఇది <ph name="CUSTODIAN_EMAIL" /> మరియు <ph name="SECOND_CUSTODIAN_EMAIL" /> నిర్వహించే చిన్నపిల్లల ఖాతా.</translation>
 <translation id="4163560723127662357">తెలియని కీబోర్డ్</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />, చెల్లుబాటులో ఉన్న సంస్థకు చెందినది కాదు. మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయండి. మీరు అడ్మినిస్ట్రేటర్ అయితే, ఈ సైట్‌ను సందర్శించడం ద్వారా మీరు మీ సంస్థను సెటప్ చేయవచ్చు: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
@@ -8055,7 +8053,7 @@
 <translation id="8096740438774030488">బ్యాటరీలో ఉన్నప్పుడు స్లీప్ మోడ్‌లో ఉండాలి</translation>
 <translation id="80974698889265265">PINలు సరిపోలడం లేదు</translation>
 <translation id="809792523045608178">'<ph name="IDS_SHORT_PRODUCT_NAME" />' అన్నది, ఎక్స్‌టెన్షన్ నుండి అందించబడిన ప్రాక్సీ సెట్టింగ్‌లను ఉపయోగిస్తోంది</translation>
-<translation id="8097959162767603171">ముందుగా మీ అడ్మినిస్ట్రేటర్, అడ్మిన్ కన్సోల్‌కి చెందిన, Chrome పరికర లిస్ట్‌లో ఉన్న సేవా నిబంధనలను తప్పనిసరిగా అంగీకరించాలి.</translation>
+<translation id="8097959162767603171">ముందుగా మీ అడ్మినిస్ట్రేటర్, అడ్మిన్ కన్సోల్‌కి చెందిన, Chrome పరికర లిస్ట్‌లో ఉన్న సర్వీస్ నియమాలను తప్పనిసరిగా అంగీకరించాలి.</translation>
 <translation id="8098156986344908134"><ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేసి, హార్డ్ డ్రైవ్‌ను ఫ్యాక్టరీ రీసెట్ చేయాలా?</translation>
 <translation id="8098616321286360457">నెట్‌వర్క్ కనెక్షన్ అవసరం</translation>
 <translation id="8100230553590752325">ఏ పరికరంలో అయినా సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>

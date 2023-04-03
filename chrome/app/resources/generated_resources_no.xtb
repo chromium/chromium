@@ -2872,7 +2872,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} passord er lagret på denne enheten}other{{COUNT} passord er lagret på denne enheten}}</translation>
 <translation id="346298925039590474">Dette mobilnettverket blir tilgjengelig for alle brukere på denne enheten</translation>
 <translation id="3464145797867108663">Legg til en jobbprofil</translation>
-<translation id="346431825526753">Dette er en konto for barn, som administreres av <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Få rabatter hos <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> og andre</translation>
 <translation id="3468298837301810372">Etikett</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
@@ -3674,7 +3673,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Tekststørrelse og skrifttype på nettsteder</translation>
 <translation id="4158364720893025815">Bestått</translation>
-<translation id="4159681666905192102">Dette er en konto for barn som administreres av <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Ukjent tastatur</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> tilhører ikke noen gyldig organisasjon. Kontakt administratoren din. Hvis du er en administrator, kan du konfigurere organisasjonen din ved å gå til g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>

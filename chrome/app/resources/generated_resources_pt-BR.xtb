@@ -2879,7 +2879,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} senha salva neste dispositivo}one{{COUNT} senha salva neste dispositivo}other{{COUNT} senhas salvas neste dispositivo}}</translation>
 <translation id="346298925039590474">Esta rede móvel ficará disponível para todos os usuários no dispositivo</translation>
 <translation id="3464145797867108663">Adicionar perfil de trabalho</translation>
-<translation id="346431825526753">Esta é uma conta para as crianças gerenciada por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Receba descontos para estes comerciantes: <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e mais</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Smartphone Android</translation>
@@ -3683,7 +3682,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4157869833395312646">Criptografia de entrada para servidor da Microsoft </translation>
 <translation id="4158315983204257156">Tamanho e fonte do texto em sites</translation>
 <translation id="4158364720893025815">Aprovado</translation>
-<translation id="4159681666905192102">Esta é uma conta para crianças gerenciada por <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> não pertence a uma organização válida. Entre em contato com o administrador. Se você é um administrador, configure sua organização em g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Configurações do site</translation>

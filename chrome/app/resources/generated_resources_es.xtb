@@ -2861,7 +2861,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} contraseña se ha guardado en este dispositivo}other{{COUNT} contraseñas se han guardado en este dispositivo}}</translation>
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
 <translation id="3464145797867108663">Añadir perfil de trabajo</translation>
-<translation id="346431825526753">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Recibir descuentos de <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> y más</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
@@ -3663,7 +3662,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4157869833395312646">Criptografía activada por servidor de Microsoft</translation>
 <translation id="4158315983204257156">Tamaño y fuente del texto de los sitios web</translation>
 <translation id="4158364720893025815">Aprobada</translation>
-<translation id="4159681666905192102">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" /> y <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconocido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> no pertenece a una organización válida. Ponte en contacto con tu administrador. Si eres administrador, puedes configurar tu organización en g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>

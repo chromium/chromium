@@ -2877,7 +2877,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} mật khẩu được lưu trên thiết bị này}other{{COUNT} mật khẩu được lưu trên thiết bị này}}</translation>
 <translation id="346298925039590474">Tất cả người dùng trên thiết bị này đều có thể sử dụng mạng di động này</translation>
 <translation id="3464145797867108663">Thêm hồ sơ công việc</translation>
-<translation id="346431825526753">Đây là tài khoản cho trẻ em do <ph name="CUSTODIAN_EMAIL" /> quản lý.</translation>
 <translation id="346546413339447252">Nhận chiết khấu của <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" />, v.v.</translation>
 <translation id="3468298837301810372">Nhãn</translation>
 <translation id="3468999815377931311">Điện thoại Android</translation>
@@ -3681,7 +3680,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4157869833395312646">Mã hóa Cổng Máy chủ của Microsoft</translation>
 <translation id="4158315983204257156">Phông chữ và kích thước văn bản của trang web</translation>
 <translation id="4158364720893025815">Đạt</translation>
-<translation id="4159681666905192102">Đây là tài khoản cho trẻ em do <ph name="CUSTODIAN_EMAIL" /> và <ph name="SECOND_CUSTODIAN_EMAIL" /> quản lý.</translation>
 <translation id="4163560723127662357">Bàn phím không xác định</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> không thuộc về một tổ chức hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu bạn là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>

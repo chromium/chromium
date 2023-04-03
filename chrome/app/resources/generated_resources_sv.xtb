@@ -2249,6 +2249,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2886119409731773154">Det kan ta upp till 30 minuter</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> och <ph name="NUMBER_OF_DEVICES" /> till</translation>
+<translation id="2889043468805635730">Inga problem hittades</translation>
 <translation id="2889064240420137087">Öppna länk med ...</translation>
 <translation id="2891566119238851894">Öppna sökning på sidopanelen. Sökning är inte öppet på sidopanelen.</translation>
 <translation id="2891922230654533301">Vill du logga in på <ph name="APP_NAME" /> med enheten?</translation>
@@ -2875,7 +2876,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} lösenord har sparats på den här enheten}other{{COUNT} lösenord har sparats på den här enheten}}</translation>
 <translation id="346298925039590474">Det här mobilnätverket blir tillgängligt för alla som använder den här enheten</translation>
 <translation id="3464145797867108663">Lägg till jobbprofil</translation>
-<translation id="346431825526753">Det här är ett konto för barn som hanteras av <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Få rabatter på <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> med flera</translation>
 <translation id="3468298837301810372">Etikett</translation>
 <translation id="3468999815377931311">Android-mobil</translation>
@@ -3347,6 +3347,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3861977424605124250">Visa vid start</translation>
 <translation id="386239283124269513">&amp;Återställ grupp</translation>
 <translation id="3865414814144988605">Upplösning</translation>
+<translation id="3866142613641074814">Du har lösenord som är i fara</translation>
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="3867134342671430205">Flytta skärmarna med piltangenterna eller genom att dra</translation>
 <translation id="3867944738977021751">Certifikatfält</translation>
@@ -3678,7 +3679,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4157869833395312646">Microsofts serverstyrda kryptografi</translation>
 <translation id="4158315983204257156">Textstorlek och teckensnitt på webbplatser</translation>
 <translation id="4158364720893025815">Godkänd</translation>
-<translation id="4159681666905192102">Det här är ett konto för barn som hanteras av <ph name="CUSTODIAN_EMAIL" /> och <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Okänt tangentbord</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> tillhör inte en giltig organisation. Kontakta administratören. Om du är administratör kan du konfigurera organisationen genom att besöka: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
@@ -8681,6 +8681,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="866611985033792019">Lita på detta certifikat för identifiering av e-postanvändare</translation>
 <translation id="8666321716757704924">Behörigheter har tillåtits igen för <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">Om webbläsarbaserad annonsanpassning</translation>
+<translation id="8667261224612332309">Du har lösenord du bör ändra till något starkare</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> visas nu i helskärm och har inaktiverat din muspekare.</translation>
 <translation id="8667760277771450375">Vi utforskar nya sätt att begränsa spårning från webbplats till webbplats samtidigt som webbplatserna kan motverka bedrägerier och spam.</translation>
 <translation id="8668378421690365723">Enheten kanske inte längre fungerar som den ska och säkerhets- och prestandaproblem kan uppstå.</translation>
@@ -9010,6 +9011,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8953476467359856141">Vid laddning</translation>
 <translation id="895347679606913382">Startar...</translation>
 <translation id="8957757410289731985">Anpassa profil</translation>
+<translation id="8959144235813727886">Webbplatser och appar</translation>
 <translation id="895944840846194039">JavaScript-minne</translation>
 <translation id="8960208913905765425">Enhetskonvertering i Snabbinfo</translation>
 <translation id="8960638196855923532">Nu kan du se telefonens aviseringar och appar</translation>

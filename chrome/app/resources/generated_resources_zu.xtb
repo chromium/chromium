@@ -2878,7 +2878,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3462958980772249646">{COUNT,plural, =1{Iphasiwedi engu-{COUNT} ilondoloziwe kule divayisi}one{Amaphasiwedi angu-{COUNT} alondoloziwe kule divayisi.}other{Amaphasiwedi angu-{COUNT} alondoloziwe kule divayisi.}}</translation>
 <translation id="346298925039590474">Le nethiwekhi yeselula izotholakala kubo bonke abasebenzisi kule divayisi</translation>
 <translation id="3464145797867108663">Engeza iphrofayela yomsebenzi</translation>
-<translation id="346431825526753">Le yi-akhawunti yezingane ephethwe ngu-<ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Thola izaphulelo ze-<ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> nokuningi</translation>
 <translation id="3468298837301810372">Ilebula</translation>
 <translation id="3468999815377931311">Ifoni ye-Android</translation>
@@ -3681,7 +3680,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4157869833395312646">I-Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Usayizi wombhalo wewebhusayithi nefonti</translation>
 <translation id="4158364720893025815">Dlula</translation>
-<translation id="4159681666905192102">Le yi-akhawunti yezingane ephethwe ngu-<ph name="CUSTODIAN_EMAIL" /> no-<ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Ikhibhodi engaziwa</translation>
 <translation id="4165942112764990069">I-<ph name="USER_EMAIL" /> ayiyona eyenhlangano evumelekile. Xhumana nomlawuli wakho. Uma ungumphathi, ungasetha inhlangano yakho ngokuvakashela ku-: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Izilungiselelo zesayithi</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Bytt til åpent vindu</translation>
 <translation id="1112015203684611006">Utskriften mislyktes.</translation>
+<translation id="1118266931011974190">Etter <ph name="THRESHOLD" /> dager</translation>
 <translation id="1125564390852150847">Åpne en ny fane.</translation>
 <translation id="1126013303640354461">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, må du tilbakestille synkroniseringen. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2626236249646841566">Kontroller tilkoblingen din, og prøv å logge på igjen.</translation>
 <translation id="2637313651144986786">Søk i faner…</translation>
 <translation id="2647269890314209800">Informasjonskapsler som er i bruk</translation>
+<translation id="2648721026697078500">Flytt aldri</translation>
 <translation id="2648803196158606475">Slett leste</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2664621323652615289">Stopp</translation>
@@ -346,6 +348,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
+<translation id="3328459813621383194">Flytt inaktive faner</translation>
 <translation id="3328801116991980348">Informasjon om nettstedet</translation>
 <translation id="3371831930909698441">Oversetter er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="3377063233124932127">Nå finner du blant annet de lagrede bokmerkene og passordene dine øverst.</translation>
@@ -510,6 +513,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4536418791685807335">Prøv å logge på igjen.</translation>
 <translation id="4540780316273593836">Noe gikk galt</translation>
+<translation id="4550040941166547650">Bare på denne enheten</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vil du lukke {COUNT} inaktiv fane?}other{Vil du lukke {COUNT} inaktive faner?}}</translation>
 <translation id="457386861538956877">Mer</translation>
 <translation id="4587235830039045480">Lagre passord i Google-kontoen din</translation>
@@ -763,6 +767,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6193424046394092997">{count,plural, =1{Satt som bokmerke i {title}}other{Satt som bokmerke i {title}}}</translation>
 <translation id="6196207969502475924">Google Talesøk</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Lukk {COUNT} fane}other{Lukk {COUNT} faner}}</translation>
+<translation id="6210079381482819663">Faner som ikke brukes i <ph name="THRESHOLD" /> dager eller mer, flyttes hit. Du kan når som helst endre dette i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Avviste varsler</translation>
 <translation id="6219550825416862075">Velkommen tilbake</translation>
 <translation id="6219688215832490856">Oversett aldri</translation>
@@ -1058,6 +1063,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8059533439631660104">Skjuler delen.</translation>
 <translation id="8065292699993359127">Åpne nettadresser i Chrome i inkognitomodus</translation>
 <translation id="806745655614357130">Hold dataene mine adskilt</translation>
+<translation id="8069394452933076548">Velg når faner som ikke er brukt nylig, skal flyttes til inaktiv-fanen.</translation>
 <translation id="8073670137947914548">Nedlastingen er fullført</translation>
 <translation id="8073872304774253879">Gjør søking og surfing bedre</translation>
 <translation id="8076492880354921740">Faner</translation>
@@ -1201,6 +1207,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9055772144595778347">Kan ikke logge på</translation>
 <translation id="9055960261314198756">Økt beskyttelse er av</translation>
 <translation id="9057972802061533987">Kan ikke følge. Noe gikk galt.</translation>
+<translation id="9061495354530850708">I Google-kontoen din</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9068336935206019333">Åpne i Chrome Inkognito</translation>
 <translation id="9079935439869366234">Merk alle som ulest</translation>

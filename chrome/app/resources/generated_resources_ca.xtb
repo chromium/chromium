@@ -2234,6 +2234,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2886119409731773154">Aquest procés pot tardar fins a 30 minuts</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> i <ph name="NUMBER_OF_DEVICES" /> més</translation>
+<translation id="2889043468805635730">No s'ha trobat cap problema</translation>
 <translation id="2889064240420137087">Obre l'enllaç amb...</translation>
 <translation id="2891566119238851894">Obre la cerca al tauler lateral. La cerca no està oberta al tauler lateral.</translation>
 <translation id="2891922230654533301">Vols utilitzar el teu dispositiu per iniciar la sessió a <ph name="APP_NAME" />?</translation>
@@ -2860,7 +2861,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3462958980772249646">{COUNT,plural, =1{S'ha desat {COUNT} contrasenya en aquest dispositiu}other{S'han desat {COUNT} contrasenyes en aquest dispositiu}}</translation>
 <translation id="346298925039590474">Aquesta xarxa mòbil estarà disponible per a tots els usuaris d'aquest dispositiu</translation>
 <translation id="3464145797867108663">Afegeix un perfil de treball</translation>
-<translation id="346431825526753">Aquest és un compte infantil gestionat per <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Obtén descomptes per a <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i més</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telèfon Android</translation>
@@ -3332,6 +3332,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3861977424605124250">Mostra a l'inici</translation>
 <translation id="386239283124269513">&amp;Restaura el grup</translation>
 <translation id="3865414814144988605">Resolució</translation>
+<translation id="3866142613641074814">Tens contrasenyes que estan en perill</translation>
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="3867134342671430205">Per moure una pantalla, arrossega-la o utilitza les tecles de fletxa</translation>
 <translation id="3867944738977021751">Camps del certificat</translation>
@@ -3662,7 +3663,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4157869833395312646">Xifratge activat per servidor de Microsoft</translation>
 <translation id="4158315983204257156">Mida i font del text del lloc web</translation>
 <translation id="4158364720893025815">Superat</translation>
-<translation id="4159681666905192102">Aquest és un compte infantil gestionat per <ph name="CUSTODIAN_EMAIL" /> i per <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclat desconegut</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> no pertany a una organització vàlida. Contacta amb l'administrador. Si ets administrador, pots configurar la teva organització a g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
@@ -8664,6 +8664,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="866611985033792019">Confia en aquest certificat per identificar els usuaris de correu electrònic</translation>
 <translation id="8666321716757704924">S'han tornat a concedir els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">Sobre la personalització d'anuncis basada en el navegador</translation>
+<translation id="8667261224612332309">Tens contrasenyes que es poden millorar</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> es visualitza a pantalla completa i ha desactivat el cursor del ratolí.</translation>
 <translation id="8667760277771450375">Estem explorant maneres de restringir el seguiment entre llocs web i de, alhora, permetre que els llocs web aturin el frau i el contingut brossa publicitari.</translation>
 <translation id="8668378421690365723">És possible que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment.</translation>
@@ -8993,6 +8994,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8953476467359856141">Mentre es carrega</translation>
 <translation id="895347679606913382">S'està iniciant...</translation>
 <translation id="8957757410289731985">Personalitza el perfil</translation>
+<translation id="8959144235813727886">Llocs web i aplicacions</translation>
 <translation id="895944840846194039">Memòria de JavaScript</translation>
 <translation id="8960208913905765425">Conversió d'unitats de Respostes ràpides</translation>
 <translation id="8960638196855923532">Ara pots consultar les notificacions i les aplicacions del telèfon</translation>

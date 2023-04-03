@@ -2243,6 +2243,7 @@
 <translation id="2886119409731773154">ይህ እስከ 30 ደቂቃ ሊወስድ ይችላል</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> እና <ph name="NUMBER_OF_DEVICES" /> ሌሎች</translation>
+<translation id="2889043468805635730">ምንም ችግሮች አልተገኙም</translation>
 <translation id="2889064240420137087">አገናኝ ክፈት በ...</translation>
 <translation id="2891566119238851894">በጎን ፓነል ውስጥ ፍለጋን ክፈት ፍለጋ በጎን ፓነል ውስጥ አልተከፈተም።</translation>
 <translation id="2891922230654533301">ወደ <ph name="APP_NAME" /> ለመግባት መሣሪያዎን ይጠቀሙበት?</translation>
@@ -2869,7 +2870,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተቀምጧል}one{{COUNT} የይለፍ ቃል በዚህ መሣሪያ ላይ ተቀምጧል}other{{COUNT} የይለፍ ቃላት በዚህ መሣሪያ ላይ ተቀምጠዋል}}</translation>
 <translation id="346298925039590474">ይህ የሞባይል አውታረ ወረብ በዚህ መሣሪያ ላይ ላሉት ሁሉም ተጠቃሚዎች ይገኛል</translation>
 <translation id="3464145797867108663">የስራ መገለጫን አክል</translation>
-<translation id="346431825526753">ይሄ በ<ph name="CUSTODIAN_EMAIL" /> የሚቀናበር የህጻናት መለያ ነው።</translation>
 <translation id="346546413339447252">ለ<ph name="MERCHANT_NAME_1" />፣ <ph name="MERCHANT_NAME_2" /> እና ሌሎችም የዋጋ ቅናሾችን ያግኙ</translation>
 <translation id="3468298837301810372">መለያ</translation>
 <translation id="3468999815377931311">የAndroid ስልክ</translation>
@@ -3341,6 +3341,7 @@
 <translation id="3861977424605124250">ጅምር ላይ አሳይ</translation>
 <translation id="386239283124269513">ቡድንን &amp;ወደነበረበት መልስ</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
+<translation id="3866142613641074814">ስጋት ውስጥ የገቡ የይለፍ ቃላት አሉዎት</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
 <translation id="3867134342671430205">ማሳያ ለመውሰድ የቀስት ቁልፎችን ይጎትቱ ወይም ይጠቀሙ</translation>
 <translation id="3867944738977021751">የሰርቲፊኬት መስኮች</translation>
@@ -3670,7 +3671,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">የድር ጣቢያ የጽሑፍ መጠን እና ቅርጸ-ቁምፊ</translation>
 <translation id="4158364720893025815">እለፍ</translation>
-<translation id="4159681666905192102">ይህ የህጻናት መለያ በ<ph name="CUSTODIAN_EMAIL" /> እና <ph name="SECOND_CUSTODIAN_EMAIL" /> ነው የሚቀናበረው።</translation>
 <translation id="4163560723127662357">ያልታወቀ የቁልፍ ሰሌዳ</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ትክክለኛ የሆነ ድርጅት አካል አይደለም። የእርስዎን አስተዳዳሪ ያነጋግሩ። አስተዳዳሪ ከሆኑ የሚከተለውን በመጎብኘት ድርጅትዎን ማዋቀር ይችላሉ፦ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
@@ -8679,6 +8679,7 @@ nil</translation>
 <translation id="866611985033792019">የኢሜይል ተጠቃሚዎችን ለመለየት ይህን የዕውቅና ማረጋገጫ እመን</translation>
 <translation id="8666321716757704924">ለ<ph name="WEBSITE" /> ፈቃዶች እንደገና ተፈቅደዋል</translation>
 <translation id="8666759526542103597">በአሳሽ ላይ የተመሰረተ ማስታወቂያን ግላዊነት ስለማላበስ</translation>
+<translation id="8667261224612332309">መሻሻል የሚችሉ የይለፍ ቃላት አሉዎት</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> አሁን ሙሉ ማያ ገጽ ነው፣ እናም የመዳፊትዎ ጠቋሚን አሰናክሎታል።</translation>
 <translation id="8667760277771450375">ጣቢያዎች የማስታወቂያ አይፈለጌ መልዕክት እና መጭበርበርን እንዲያቆሙ እያስቻልን የጣቢያ ተሳጋሪ ክትትልን የምንገድብባቸውን መንገዶች እየሰስን ነው።</translation>
 <translation id="8668378421690365723">የእርስዎ መሣሪያ ከእንግዲህ በትክክል ላይሰራ እና የደህንነት እና የአፈጻጸም ችግሮች ሊያጋጥሙዎት ይችላሉ።</translation>
@@ -9009,6 +9010,7 @@ nil</translation>
 <translation id="8953476467359856141">ባትሪ በመሙላት ላይ ሳለ</translation>
 <translation id="895347679606913382">በመጀመር ላይ…</translation>
 <translation id="8957757410289731985">መገለጫን አብጅ</translation>
+<translation id="8959144235813727886">ጣቢያዎች እና መተግበሪያዎች</translation>
 <translation id="895944840846194039">የJavaScript ማህደረ ትውስታ</translation>
 <translation id="8960208913905765425">የፈጣን መልሶች አሃድ ልወጣ</translation>
 <translation id="8960638196855923532">አሁን የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች መመልከት ይችላሉ</translation>

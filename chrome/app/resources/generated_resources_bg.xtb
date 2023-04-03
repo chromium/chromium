@@ -2872,7 +2872,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} парола е запазена на това устройство}other{{COUNT} пароли са запазени на това устройство}}</translation>
 <translation id="346298925039590474">Тази мобилна мрежа ще бъде налице за всички потребители на устройството</translation>
 <translation id="3464145797867108663">Добавяне на служебен потребителски профил</translation>
-<translation id="346431825526753">Това е профил за деца, управляван от <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Получаване на отстъпки за <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> и др.</translation>
 <translation id="3468298837301810372">Етикет</translation>
 <translation id="3468999815377931311">Телефон с Android</translation>
@@ -3677,7 +3676,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4157869833395312646">„Преминаваща през сървъра шифрована информация“ от Microsoft</translation>
 <translation id="4158315983204257156">Размер и шрифт на текста в уебсайтовете</translation>
 <translation id="4158364720893025815">Отговаря на условията</translation>
-<translation id="4159681666905192102">Това е профил за деца, управляван от <ph name="CUSTODIAN_EMAIL" /> и <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Неизвестна клавиатура</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не принадлежи на валидна организация. Обърнете се към администратора си. Ако вие сте администратор, можете да настроите организацията си на адрес: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>

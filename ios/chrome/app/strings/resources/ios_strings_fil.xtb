@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Lumipat sa Nakabukas na Window</translation>
 <translation id="1112015203684611006">Hindi na-print.</translation>
+<translation id="1118266931011974190">Pagkalipas ng <ph name="THRESHOLD" /> (na) Araw</translation>
 <translation id="1125564390852150847">Gumawa ng bagong tab.</translation>
 <translation id="1126013303640354461">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
 Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinadala sa o na-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2626236249646841566">Tingnan ang iyong koneksyon at subukang mag-sign in ulit.</translation>
 <translation id="2637313651144986786">Maghanap sa Mga Tab...</translation>
 <translation id="2647269890314209800">Ginagamit ang Cookies</translation>
+<translation id="2648721026697078500">Huwag Kailanman Ilipat</translation>
 <translation id="2648803196158606475">I-delete ang Nabasa Na</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2664621323652615289">Ihinto</translation>
@@ -346,6 +348,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3305294846493618482">higit pa</translation>
 <translation id="3311748811247479259">Naka-off</translation>
 <translation id="3324193307694657476">Address 2</translation>
+<translation id="3328459813621383194">Ilipat ang Mga Hindi Aktibong Tab</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
 <translation id="3371831930909698441">Available ang pagsasalin. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="3377063233124932127">Nasa taas na ngayon ang iyong mga naka-save na bookmark, password, at higit pa.</translation>
@@ -510,6 +513,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
 <translation id="4536418791685807335">Subukang mag-sign in muli.</translation>
 <translation id="4540780316273593836">Nagkaproblema</translation>
+<translation id="4550040941166547650">Sa Device Lang na Ito</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Isara ang {COUNT} Hindi Aktibong Tab?}one{Isara ang {COUNT} Hindi Aktibong Tab?}other{Isara ang {COUNT} na Hindi Aktibong Tab?}}</translation>
 <translation id="457386861538956877">Higit pa...</translation>
 <translation id="4587235830039045480">I-save ang password sa iyong Google Account</translation>
@@ -763,6 +767,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6193424046394092997">{count,plural, =1{Na-bookmark sa {title}}one{Na-bookmark sa {title}}other{Na-bookmark sa {title}}}</translation>
 <translation id="6196207969502475924">Paghahanap gamit ang boses</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Isara ang {COUNT} Tab}one{Isara ang {COUNT} Tab}other{Isara ang {COUNT} na Tab}}</translation>
+<translation id="6210079381482819663">Ililipat dito ang mga tab na hindi ginamit sa loob ng <ph name="THRESHOLD" /> (na) araw o higit pa. Puwede mo itong baguhin anumang oras sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Mga Na-dismiss na Babala</translation>
 <translation id="6219550825416862075">Maligayang Pagbabalik</translation>
 <translation id="6219688215832490856">Huwag Kailanman I-translate</translation>
@@ -1057,6 +1062,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8059533439631660104">Kino-collapse ang seksyon.</translation>
 <translation id="8065292699993359127">Buksan ang mga URL sa Chrome sa Incognito</translation>
 <translation id="806745655614357130">Panatilihing hiwalay ang aking data</translation>
+<translation id="8069394452933076548">Piliin kung kailan ililipat ang mga tab na hindi ginamit kamakailan sa seksyon ng hindi aktibong tab.</translation>
 <translation id="8073670137947914548">Tapos na ang pag-download</translation>
 <translation id="8073872304774253879">Mas Pahusayin ang Mga Paghahanap at Pagba-browse</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
@@ -1199,6 +1205,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9055772144595778347">Di Makapag-sign In</translation>
 <translation id="9055960261314198756">Naka-off ang Pinaigting na Proteksyon</translation>
 <translation id="9057972802061533987">Hindi masubaybayan. Nagkaproblema.</translation>
+<translation id="9061495354530850708">Sa Iyong Google Account</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="9068336935206019333">Buksan sa Chrome Incognito</translation>
 <translation id="9079935439869366234">Markahan ang Lahat bilang Hindi pa Nababasa</translation>

@@ -792,6 +792,7 @@
 <translation id="16620462294541761">パスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="166278006618318542">サブジェクトの公開鍵アルゴリズム</translation>
 <translation id="1662801900924515589"><ph name="APP" /> をインストールしました</translation>
+<translation id="1663698992894057019">新しい Chromebook にアップグレードして、最新のセキュリティとソフトウェアを手に入れましょう</translation>
 <translation id="1665328953287874063">パスワードまたは PIN を使用して <ph name="DEVICE_TYPE" /> のロックを解除してください</translation>
 <translation id="1666232093776384142">周辺機器でデータアクセスの保護を無効化</translation>
 <translation id="1667842670298352129">指定したテキストを読み上げます。画面下部の「選択して読み上げ」アイコンを選択してから、テキストを選択します。キーボード ショートカットを使用する場合は、テキストを選択してから検索+S キーを押します。</translation>
@@ -2228,6 +2229,7 @@
 <translation id="2886119409731773154">最大で 30 分ほどかかる場合があります</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
+<translation id="2889043468805635730">問題は見つかりませんでした</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
 <translation id="2891566119238851894">サイドパネルで検索を開きます。サイドパネルで検索が開いていません。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
@@ -2854,7 +2856,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスに保存されています}other{{COUNT} 件のパスワードがこのデバイスに保存されています}}</translation>
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
 <translation id="3464145797867108663">仕事用プロファイルを追加</translation>
-<translation id="346431825526753">これは <ph name="CUSTODIAN_EMAIL" /> によって管理されている子供向けのアカウントです。</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> などの割引情報を取得しますか？</translation>
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
@@ -3325,6 +3326,7 @@
 <translation id="3861977424605124250">起動時に表示する</translation>
 <translation id="386239283124269513">グループを復元(&amp;R)</translation>
 <translation id="3865414814144988605">解像度</translation>
+<translation id="3866142613641074814">セキュリティ上の問題があるパスワードがあります</translation>
 <translation id="3866249974567520381">説明</translation>
 <translation id="3867134342671430205">ディスプレイを移動するには、矢印キーをドラッグまたは使用します</translation>
 <translation id="3867944738977021751">証明書のフィールド</translation>
@@ -3656,7 +3658,6 @@
 <translation id="4157869833395312646">Microsoft SGC（Server Gated Cryptography）</translation>
 <translation id="4158315983204257156">ウェブサイトのテキストのサイズとフォント</translation>
 <translation id="4158364720893025815">合格</translation>
-<translation id="4159681666905192102">これは <ph name="CUSTODIAN_EMAIL" /> と <ph name="SECOND_CUSTODIAN_EMAIL" /> によって管理されている子供向けのアカウントです。</translation>
 <translation id="4163560723127662357">不明なキーボード</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> は有効な組織に属していません。管理者にお問い合わせください。管理者の方は、g.co/ChromeEnterpriseAccount で組織を設定していただけます。</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -3723,6 +3724,7 @@
 <translation id="4231141543165771749">ゲーム操作キーを閉じる</translation>
 <translation id="4231542173270219144">試用期間中、スパムと不正行為の削減はプライベート ステート トークンに依拠して行われ、サイトが不正行為に対処し、bot と人間を区別できるようにします。</translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
+<translation id="4233739489690259993">この Chromebook は、セキュリティ アップデートとソフトウェア アップデートの提供が終了しました。最新のセキュリティと新機能でデバイスをアップグレードしましょう。特典の利用規約が適用されます。</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
 <translation id="4236163961381003811">他の拡張機能を見る</translation>
 <translation id="4237282663517880406">Google ドライブの検索候補を表示する</translation>
@@ -4806,6 +4808,7 @@
 <translation id="5228579091201413441">同期を有効にする</translation>
 <translation id="5229337741799419985">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありません</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
+<translation id="5231427103154766313">リモコンを使用してキャストを停止してください。</translation>
 <translation id="5233019165164992427">NaCl デバッグ ポート</translation>
 <translation id="5233231016133573565">プロセス ID</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
@@ -5226,6 +5229,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI デバイスへの接続を許可しないサイト</translation>
 <translation id="5601833336918638013">サイトが Bluetooth デバイスを検出することを許可しない</translation>
+<translation id="5602586420788540146">新しいタブグループで開く</translation>
 <translation id="5602765853043467355">ブックマーク、履歴、パスワード、その他の設定情報をこのデバイスから削除する</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{この拡張機能はブロックされています}other{これらの拡張機能はブロックされています}}</translation>
@@ -6289,6 +6293,7 @@
 <translation id="657229725818377235">危険なウェブサイトやダウンロードからの保護を強化する</translation>
 <translation id="6573096386450695060">常に許可</translation>
 <translation id="6573497332121198392">ショートカットの削除はできません</translation>
+<translation id="6573915150656780875">この Chromebook は、セキュリティ アップデートとソフトウェア アップデートの提供が終了しました。快適にご利用いただくには、新しい Chromebook をご購入ください。</translation>
 <translation id="657402800789773160">ページを再読み込み(&amp;R)</translation>
 <translation id="6577284282025554716"><ph name="FILE_NAME" /> のダウンロードがキャンセルされました</translation>
 <translation id="657866106756413002">ネットワーク健全性のスナップショット</translation>
@@ -7720,6 +7725,7 @@
 <translation id="7844992432319478437">差分の更新中</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> に切り替えるには Ctrl + Alt+ S キーを押します</translation>
+<translation id="7848244988854036372">すべて（<ph name="URL_COUNT" /> 個）を新しいタブグループで開く</translation>
 <translation id="7849264908733290972">新しいタブで画像を開く(&amp;I)</translation>
 <translation id="784934925303690534">期間</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。自動レポートでは、Chrome OS がクラッシュした時間、使用されている機能、通常のメモリ使用量、Android アプリの診断データと使用状況データなどの情報が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
@@ -8651,6 +8657,7 @@
 <translation id="866611985033792019">メールユーザーの識別でこの証明書を信頼します</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> にもう一度権限を許可しました</translation>
 <translation id="8666759526542103597">ブラウザベースの広告のパーソナライズについて</translation>
+<translation id="8667261224612332309">改善できるパスワードがあります</translation>
 <translation id="8667328578593601900">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示で、マウスカーソルは無効です。</translation>
 <translation id="8667760277771450375">Chrome では、サイトが広告のスパムと不正行為を防止できるようにしながら、クロスサイト トラッキングを制限する方法を模索しています。</translation>
 <translation id="8668378421690365723">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
@@ -8980,6 +8987,7 @@
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">開始しています...</translation>
 <translation id="8957757410289731985">プロフィールをカスタマイズ</translation>
+<translation id="8959144235813727886">サイトとアプリ</translation>
 <translation id="895944840846194039">JavaScript メモリ</translation>
 <translation id="8960208913905765425">クイック アンサーの単位変換</translation>
 <translation id="8960638196855923532">スマートフォンの通知とアプリを表示できるようになりました</translation>

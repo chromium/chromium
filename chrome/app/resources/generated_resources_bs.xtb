@@ -2875,7 +2875,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} lozinka je sačuvana na uređaju}one{{COUNT} lozinka je sačuvana na uređaju}few{{COUNT} lozinke su sačuvane na uređaju}other{{COUNT} lozinki je sačuvano na uređaju}}</translation>
 <translation id="346298925039590474">Ova mobilna mreža će biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj radni profil</translation>
-<translation id="346431825526753">Ovo je račun za djecu kojim upravlja <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Primajte popuste za trgovine <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i još mnoge druge</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
@@ -3679,7 +3678,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Veličina teksta i font web lokacije</translation>
 <translation id="4158364720893025815">Uspješno</translation>
-<translation id="4159681666905192102">Ovo je račun za djecu kojim upravlja <ph name="CUSTODIAN_EMAIL" /> i <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nepoznata tastatura</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ne pripada važećoj organizaciji. Kontaktirajte administratora. Ako ste administrator, možete postaviti organizaciju ako posjetite: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>

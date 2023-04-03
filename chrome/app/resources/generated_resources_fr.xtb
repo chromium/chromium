@@ -2235,6 +2235,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2886119409731773154">L'opération peut prendre jusqu'à 30 minutes.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> et <ph name="NUMBER_OF_DEVICES" /> autres</translation>
+<translation id="2889043468805635730">Aucun problème détecté</translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
 <translation id="2891566119238851894">Ouvrir la recherche dans le panneau latéral. Elle est fermée dans ce panneau.</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" /> ?</translation>
@@ -2861,7 +2862,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} mot de passe est enregistré sur cet appareil}one{{COUNT} mot de passe est enregistré sur cet appareil}other{{COUNT} mots de passe sont enregistrés sur cet appareil}}</translation>
 <translation id="346298925039590474">Ce réseau mobile sera accessible à tous les utilisateurs de cet appareil</translation>
 <translation id="3464145797867108663">Ajouter un profil professionnel</translation>
-<translation id="346431825526753">Il s'agit d'un compte pour enfants géré par <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Obtenir des remises pour <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> et d'autres</translation>
 <translation id="3468298837301810372">Libellé</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
@@ -3333,6 +3333,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3861977424605124250">Afficher au démarrage</translation>
 <translation id="386239283124269513">&amp;Restaurer le groupe</translation>
 <translation id="3865414814144988605">Résolution</translation>
+<translation id="3866142613641074814">Vous avez des mots de passe faibles</translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="3867134342671430205">Déplacez un écran à l'aide des touches fléchées ou en le faisant glisser</translation>
 <translation id="3867944738977021751">Champs de certificat</translation>
@@ -3664,7 +3665,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Taille et police du texte des sites</translation>
 <translation id="4158364720893025815">Succès</translation>
-<translation id="4159681666905192102">Il s'agit d'un compte pour enfants géré par <ph name="CUSTODIAN_EMAIL" /> et <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Clavier inconnu</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> n'appartient pas à une organisation valide. Contactez votre administrateur. Si vous avez ce rôle, vous pouvez configurer votre organisation sur g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
@@ -8669,6 +8669,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="866611985033792019">Considérer ce certificat comme fiable pour identifier les utilisateurs de messageries</translation>
 <translation id="8666321716757704924">Autorisations de nouveau accordées pour <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">À propos de la personnalisation des annonces basée sur un navigateur</translation>
+<translation id="8667261224612332309">Certains de vos mots de passe peuvent être améliorés</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> est maintenant en mode plein écran et a désactivé le curseur de votre souris.</translation>
 <translation id="8667760277771450375">Nous étudions différents moyens de limiter le suivi intersites tout en permettant aux sites de lutter contre le spam publicitaire et la fraude.</translation>
 <translation id="8668378421690365723">Votre appareil risque de ne plus fonctionner correctement et pourra rencontrer des problèmes de sécurité et de performances.</translation>
@@ -8999,6 +9000,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8953476467359856141">Lorsque l'appareil est en charge</translation>
 <translation id="895347679606913382">Démarrage...</translation>
 <translation id="8957757410289731985">Personnaliser le profil</translation>
+<translation id="8959144235813727886">Sites et applis</translation>
 <translation id="895944840846194039">Mémoire JavaScript</translation>
 <translation id="8960208913905765425">Conversion d'unité pour Réponses rapides</translation>
 <translation id="8960638196855923532">Vous pouvez désormais afficher les notifications et applis de votre téléphone</translation>

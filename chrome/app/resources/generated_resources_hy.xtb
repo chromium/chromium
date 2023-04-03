@@ -2862,7 +2862,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{Այս սարքում պահված է {COUNT} գաղտնաբառ}one{Այս սարքում պահված է {COUNT} գաղտնաբառ}other{Այս սարքում պահված է {COUNT} գաղտնաբառ}}</translation>
 <translation id="346298925039590474">Այս բջջային ցանցը հասանելի կլինի այս սարքի բոլոր օգտատերերին</translation>
 <translation id="3464145797867108663">Ավելացնել աշխատանքային պրոֆիլ</translation>
-<translation id="346431825526753">Սա երեխայի հաշիվ է, որը կառավարվում է <ph name="CUSTODIAN_EMAIL" />-ի կողմից:</translation>
 <translation id="346546413339447252">Ստացեք զեղչեր <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> և այլ խանութներում</translation>
 <translation id="3468298837301810372">Պիտակ</translation>
 <translation id="3468999815377931311">Android հեռախոս</translation>
@@ -3665,7 +3664,6 @@
 <translation id="4157869833395312646">Microsoft սերվերի գաղտնագրում</translation>
 <translation id="4158315983204257156">Կայքի տեքստի չափ և տառատեսակ</translation>
 <translation id="4158364720893025815">Ստուգումն անցել է</translation>
-<translation id="4159681666905192102">Սա երեխայի հաշիվ է, որը կառավարվում է <ph name="CUSTODIAN_EMAIL" />-ի և <ph name="SECOND_CUSTODIAN_EMAIL" />-ի կողմից:</translation>
 <translation id="4163560723127662357">Անհայտ ստեղնաշար</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> հասցեն չի պատկանում վավեր կազմակերպության։ Դիմեք ձեր ադմինիստրատորին։ Եթե դուք ադմինիստրատոր եք, կարող եք ձեր կազմակերպության հաշիվը կարգավորել այստեղ՝ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>

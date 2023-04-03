@@ -575,6 +575,11 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces la política o no la habilitas, las políticas de nube destinadas a los usuarios no podrán combinarse con políticas de cualquier otro origen.</translation>
 <translation id="152657506688053119">Lista de las URL alternativas para el proveedor de búsqueda predeterminado</translation>
+<translation id="152740744678799092">Si habilitas la política, se realizará una búsqueda predeterminada cuando el usuario ingrese texto que no sea una URL en la barra de direcciones. Para especificar el proveedor de búsqueda predeterminado, establece el resto de las políticas para la búsqueda predeterminada. Si dejas vacías esas políticas, el usuario podrá elegir el proveedor predeterminado. Si inhabilitas la política, no se realizará ninguna búsqueda cuando el usuario ingrese texto que no sea una URL en la barra de direcciones. El valor inhabilitado no es compatible con la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, se habilitará el proveedor de búsqueda predeterminado, y los usuarios podrán establecer la lista de proveedores de búsqueda.
+
+      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la Administración en la nube para el navegador Chrome. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
 <translation id="1547424904796464052">Hash SHA-256 con codificación hexadecimal de la imagen de firmware.</translation>

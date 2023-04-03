@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Uvijek prevedi <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Prijeđite na otvoreni prozor</translation>
 <translation id="1112015203684611006">Ispis nije uspio.</translation>
+<translation id="1118266931011974190">Nakon <ph name="THRESHOLD" /> dana</translation>
 <translation id="1125564390852150847">Otvori novu karticu.</translation>
 <translation id="1126013303640354461">Načini plaćanja i adrese s Google Paya neće se šifrirati. Povijest pregledavanja iz Chromea neće se sinkronizirati.
 Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, morat ćete poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2626236249646841566">Provjerite vezu i pokušajte se ponovno prijaviti.</translation>
 <translation id="2637313651144986786">Pretraži kartice...</translation>
 <translation id="2647269890314209800">Upotreba kolačića</translation>
+<translation id="2648721026697078500">Nikad ne premještaj</translation>
 <translation id="2648803196158606475">Izbriši pročitano</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2664621323652615289">Zaustavi</translation>
@@ -346,6 +348,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3305294846493618482">više</translation>
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3324193307694657476">2. adresni redak</translation>
+<translation id="3328459813621383194">Premještanje neaktivnih kartica</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="3371831930909698441">Prevoditelj je dostupan. Opcije su dostupne pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Sada se vaše spremljene oznake, zaporke i ostalo nalaze pri vrhu.</translation>
@@ -510,6 +513,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
 <translation id="4540780316273593836">Nešto nije u redu</translation>
+<translation id="4550040941166547650">Samo na ovom uređaju</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Želite li zatvoriti {COUNT} neaktivnu karticu?}one{Želite li zatvoriti {COUNT} neaktivnu karticu?}few{Želite li zatvoriti {COUNT} neaktivne kartice?}other{Želite li zatvoriti {COUNT} neaktivnih kartica?}}</translation>
 <translation id="457386861538956877">Više...</translation>
 <translation id="4587235830039045480">Spremite zaporku na svoj Google račun</translation>
@@ -763,6 +767,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6193424046394092997">{count,plural, =1{Označeno kao {title}}one{Označeno kao {title}}few{Označeno kao {title}}other{Označeno kao {title}}}</translation>
 <translation id="6196207969502475924">Glasovno pretraživanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zatvori {COUNT} karticu}one{Zatvori {COUNT} karticu}few{Zatvori {COUNT} kartice}other{Zatvori {COUNT} kartica}}</translation>
+<translation id="6210079381482819663">Kartice koje se ne upotrebljavaju <ph name="THRESHOLD" /> ili više dana premještaju se ovdje. To uvijek možete promijeniti u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Odbačena upozorenja</translation>
 <translation id="6219550825416862075">Dobro došli natrag</translation>
 <translation id="6219688215832490856">Nikad ne prevodi</translation>
@@ -1057,6 +1062,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8059533439631660104">Sažima odjeljak.</translation>
 <translation id="8065292699993359127">Otvorite URL-ove u Chromeu u anonimnom načinu</translation>
 <translation id="806745655614357130">Moje podatke čuvaj zasebno</translation>
+<translation id="8069394452933076548">Odaberite kada će se kartice koje nisu korištene u posljednje vrijeme premjestiti u odjeljak neaktivnih kartica.</translation>
 <translation id="8073670137947914548">Preuzimanje je dovršeno</translation>
 <translation id="8073872304774253879">Poboljšajte pretraživanje i pregledavanje</translation>
 <translation id="8076492880354921740">Kartice</translation>
@@ -1200,6 +1206,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9055772144595778347">Prijava nije moguća</translation>
 <translation id="9055960261314198756">Isključena je poboljšana zaštita</translation>
 <translation id="9057972802061533987">Praćenje nije uspjelo. Nešto nije u redu.</translation>
+<translation id="9061495354530850708">Na vašem Google računu</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9068336935206019333">Otvori u anonimnom načinu Chromea</translation>
 <translation id="9079935439869366234">Označi sve kao nepročitano</translation>

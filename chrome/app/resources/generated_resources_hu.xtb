@@ -2874,7 +2874,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} jelszó van mentve ezen az eszközön}other{{COUNT} jelszó van mentve ezen az eszközön}}</translation>
 <translation id="346298925039590474">Ez a mobilhálózat az ezt az eszközt használó összes felhasználó számára hozzáférhető lesz</translation>
 <translation id="3464145797867108663">Munkaprofil hozzáadása</translation>
-<translation id="346431825526753">Ez a fiók gyerekeknek készült; <ph name="CUSTODIAN_EMAIL" /> felügyelete mellett.</translation>
 <translation id="346546413339447252">Kedvezményeket kaphat a következőknél: <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> stb.</translation>
 <translation id="3468298837301810372">Címke</translation>
 <translation id="3468999815377931311">Androidos telefon</translation>
@@ -3676,7 +3675,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4157869833395312646">Microsoft - szerver által kezdeményezett erős titkosítás (SGC)</translation>
 <translation id="4158315983204257156">Webhelyek szövegének mérete és betűtípusa</translation>
 <translation id="4158364720893025815">Sikeres ellenőrzés</translation>
-<translation id="4159681666905192102">Ez a fiók gyerekeknek készült; <ph name="CUSTODIAN_EMAIL" /> és <ph name="SECOND_CUSTODIAN_EMAIL" /> felügyelete mellett.</translation>
 <translation id="4163560723127662357">Ismeretlen billentyűzet</translation>
 <translation id="4165942112764990069">A(z) <ph name="USER_EMAIL" /> nem tartozik érvényes szervezethez. Forduljon a rendszergazdához. Ha Ön a rendszergazda, beállíthatja a szervezetét a következő oldalon: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>

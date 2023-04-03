@@ -2863,7 +2863,6 @@ Pretende pará-lo?</translation>
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} palavra-passe é guardada neste dispositivo}other{{COUNT} palavras-passe são guardadas neste dispositivo}}</translation>
 <translation id="346298925039590474">Esta rede móvel ficará acessível a todos os utilizadores neste dispositivo</translation>
 <translation id="3464145797867108663">Adicionar perfil de trabalho</translation>
-<translation id="346431825526753">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Obtenha descontos para <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e muito mais</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telemóvel Android</translation>
@@ -3667,7 +3666,6 @@ Pretende pará-lo?</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Tipo de letra e tamanho do texto do Website</translation>
 <translation id="4158364720893025815">Aprovado</translation>
-<translation id="4159681666905192102">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> não pertence a uma entidade válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua entidade ao visitar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Definições de sites</translation>

@@ -797,6 +797,7 @@
 <translation id="16620462294541761">很抱歉，系統無法驗證您的密碼，請再試一次。</translation>
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="1662801900924515589">已安裝「<ph name="APP" />」</translation>
+<translation id="1663698992894057019">請改用新 Chromebook，以獲得最新的安全和軟件更新</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">停用周邊裝置的資料存取保護</translation>
 <translation id="1667842670298352129">由系統讀出特定文字。請先選取畫面底部的「選取以朗讀」圖示，然後突顯所需文字。您亦可使用鍵盤快速鍵：突顯文字，然後按下搜尋鍵 + S 鍵。</translation>
@@ -2879,7 +2880,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{此裝置已儲存 {COUNT} 個密碼}other{此裝置已儲存 {COUNT} 個密碼}}</translation>
 <translation id="346298925039590474">此裝置的所有使用者都可連接此流動網絡</translation>
 <translation id="3464145797867108663">新增工作設定檔</translation>
-<translation id="346431825526753">這是一個兒童帳戶 (由 <ph name="CUSTODIAN_EMAIL" /> 管理)。</translation>
 <translation id="346546413339447252">取得 <ph name="MERCHANT_NAME_1" />、<ph name="MERCHANT_NAME_2" /> 等商店的折扣</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
@@ -3683,7 +3683,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">網站文字大小和字型</translation>
 <translation id="4158364720893025815">通過</translation>
-<translation id="4159681666905192102">這是一個兒童帳戶 (由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 管理)。</translation>
 <translation id="4163560723127662357">未知的鍵盤</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不屬於有效的機構，請聯絡您的管理員。如果您是管理員，可前往 g.co/ChromeEnterpriseAccount 設定機構</translation>
 <translation id="4165986682804962316">網站設定</translation>
@@ -3750,6 +3749,7 @@
 <translation id="4231141543165771749">關閉遊戲控制項</translation>
 <translation id="4231542173270219144">在試用期間，為減少垃圾內容和欺詐行為，系統需依賴 Private State Token，以協助網站對抗欺詐行為，並分辨機器人和真人。</translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
+<translation id="4233739489690259993">Chromebook 不會再收到安全和軟件更新。請改用新款裝置，以取得最新的安全性和新功能。須遵守優惠條款。</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4236163961381003811">探索更多擴充程式</translation>
 <translation id="4237282663517880406">顯示「Google 雲端硬碟」建議</translation>
@@ -4836,6 +4836,7 @@
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5229337741799419985">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄</translation>
 <translation id="5230516054153933099">視窗</translation>
+<translation id="5231427103154766313">使用遙控器停止投放。</translation>
 <translation id="5233019165164992427">NaCl 偵錯連接埠</translation>
 <translation id="5233231016133573565">程序 ID</translation>
 <translation id="5233638681132016545">新分頁</translation>
@@ -5257,6 +5258,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">不允許連接 MIDI 裝置</translation>
 <translation id="5601833336918638013">不允許網站尋找藍牙裝置</translation>
+<translation id="5602586420788540146">在新分頁中開啟</translation>
 <translation id="5602765853043467355">清除此裝置上的書籤、記錄和密碼等資料。</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充程式}other{已封鎖這些擴充程式}}</translation>
@@ -6319,6 +6321,7 @@
 <translation id="657229725818377235">進一步防範危險網站和下載檔案</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573497332121198392">無法移除捷徑</translation>
+<translation id="6573915150656780875">Chromebook 不會再收到安全和軟件更新。請改用新 Chromebook，以獲得最佳使用體驗。</translation>
 <translation id="657402800789773160">重新載入這個網頁(&amp;R)</translation>
 <translation id="6577284282025554716"><ph name="FILE_NAME" /> 已經取消下載</translation>
 <translation id="657866106756413002">網絡健康快覽</translation>
@@ -7752,6 +7755,7 @@
 <translation id="7844992432319478437">正在更新差異部分</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7847212883280406910">按下 Ctrl + Alt + S 鍵切換至 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="7848244988854036372">在新分頁群組中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
 <translation id="7849264908733290972">在新分頁中開啟圖片(&amp;I)</translation>
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這類報告可能包括 Chrome OS 當機時間、您所使用的功能、記憶體一般使用量，以及 Android 應用程式診斷和使用資料。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />

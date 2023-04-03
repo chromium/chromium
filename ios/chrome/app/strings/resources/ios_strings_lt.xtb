@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Perjungti į atidarytą langą</translation>
 <translation id="1112015203684611006">Nepav. atsp.</translation>
+<translation id="1118266931011974190">Po <ph name="THRESHOLD" /> d.</translation>
 <translation id="1125564390852150847">Kurti naują skirtuką.</translation>
 <translation id="1126013303640354461">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
 Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Pamiršę slaptafrazę arba norėdami pakeisti šį nustatymą turėsite iš naujo nustatyti sinchronizavimą. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2626236249646841566">Patikrinkite ryšį ir bandykite prisijungti dar kartą.</translation>
 <translation id="2637313651144986786">Ieškoti skirtukų…</translation>
 <translation id="2647269890314209800">Naudojami slapukai</translation>
+<translation id="2648721026697078500">Niekada neperkelti</translation>
 <translation id="2648803196158606475">Ištrinti skaitytus</translation>
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2664621323652615289">Sustabdyti</translation>
@@ -346,6 +348,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3305294846493618482">daugiau</translation>
 <translation id="3311748811247479259">Išjungta</translation>
 <translation id="3324193307694657476">2 adreso eil.</translation>
+<translation id="3328459813621383194">Neaktyvių skirtukų perkėlimas</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="3377063233124932127">Dabar išsaugotos žymės, slaptažodžiai ir kt. yra viršuje.</translation>
@@ -510,6 +513,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="452750746583162491">Peržiūrėti sinchronizuotus duomenis</translation>
 <translation id="4536418791685807335">Bandykite prisijungti dar kartą.</translation>
 <translation id="4540780316273593836">Kažkas nepavyko</translation>
+<translation id="4550040941166547650">Tik šiame įrenginyje</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Uždaryti {COUNT} neaktyvų skirtuką?}one{Uždaryti {COUNT} neaktyvų skirtuką?}few{Uždaryti {COUNT} neaktyvius skirtukus?}many{Uždaryti {COUNT} neaktyvaus skirtuko?}other{Uždaryti {COUNT} neaktyvių skirtukų?}}</translation>
 <translation id="457386861538956877">Daugiau...</translation>
 <translation id="4587235830039045480">Slaptažodžio išsaugojimas „Google“ paskyroje</translation>
@@ -763,6 +767,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6193424046394092997">{count,plural, =1{Sukurta žymė aplanke „{title}“}one{Sukurtos žymės aplanke „{title}“}few{Sukurtos žymės aplanke „{title}“}many{Sukurtos žymės aplanke „{title}“}other{Sukurtos žymės aplanke „{title}“}}</translation>
 <translation id="6196207969502475924">Paieška balsu</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Uždaryti {COUNT} skirtuką}one{Uždaryti {COUNT} skirtuką}few{Uždaryti {COUNT} skirtukus}many{Uždaryti {COUNT} skirtuko}other{Uždaryti {COUNT} skirtukų}}</translation>
+<translation id="6210079381482819663">Čia perkeliami skirtukai, kurie nebuvo naudojami <ph name="THRESHOLD" /> ar daugiau dienų. Tai galite bet kada pakeisti skiltyje <ph name="BEGIN_LINK" />Nustatymai<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Perspėjimai, kurių atsisakyta</translation>
 <translation id="6219550825416862075">Sveiki sugrįžę</translation>
 <translation id="6219688215832490856">Niekada neversti</translation>
@@ -1058,6 +1063,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8059533439631660104">Sutraukia skiltį.</translation>
 <translation id="8065292699993359127">Atidaryti URL naršyklėje „Chrome“ inkognito režimu</translation>
 <translation id="806745655614357130">Duomenis laikyti atskirai</translation>
+<translation id="8069394452933076548">Pasirinkite, kada pastaruoju metu nenaudojami skirtukai bus perkelti į neaktyvių skirtukų skiltį.</translation>
 <translation id="8073670137947914548">Atsisiuntimas užbaigtas</translation>
 <translation id="8073872304774253879">Tobulinti paieškas ir naršymą</translation>
 <translation id="8076492880354921740">Skirtukai</translation>
@@ -1180,6 +1186,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="891658175948553296">Paryškinkite tekstą svetainėje</translation>
 <translation id="8917490105272468696">Taip, sutinku</translation>
 <translation id="8928133177108699615">Stalinio kompiuterio</translation>
+<translation id="8934982071228289624">Jei norite išsaugoti šį slaptažodį paskyroje, pirmiausia turite nustatyti slaptažodį įrenginyje.</translation>
 <translation id="894191600409472540">Kurkite sudėtingus slaptažodžius</translation>
 <translation id="8952559610785099500">Slaptažodžio pridėjimas</translation>
 <translation id="8953046091948372197">Čia rasite slaptažodžius</translation>
@@ -1200,6 +1207,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9055772144595778347">Neįmanoma prisij.</translation>
 <translation id="9055960261314198756">Sustiprinta apsauga išjungta</translation>
 <translation id="9057972802061533987">Negalima stebėti. Kažkas nepavyko.</translation>
+<translation id="9061495354530850708">„Google“ paskyroje</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9068336935206019333">Atidaryti „Chrome“ inkognito režimu</translation>
 <translation id="9079935439869366234">Pažymėti visus kaip neskaitytus</translation>

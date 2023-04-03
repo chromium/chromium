@@ -2858,7 +2858,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3462958980772249646">{COUNT,plural, =1{Bu cihazda kayıtlı {COUNT} şifre var}other{Bu cihazda kayıtlı {COUNT} şifre var}}</translation>
 <translation id="346298925039590474">Bu mobil ağ, bu cihazdaki tüm kullanıcılar tarafından kullanılabilir</translation>
 <translation id="3464145797867108663">Çalışma profili ekle</translation>
-<translation id="346431825526753">Bu hesap çocuklar içindir ve <ph name="CUSTODIAN_EMAIL" /> tarafından yönetilmektedir</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android telefon</translation>
@@ -3661,7 +3660,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4157869833395312646">Microsoft Sunucu Geçitli Şifreleme</translation>
 <translation id="4158315983204257156">Web sitesi metin boyutu ve yazı tipi</translation>
 <translation id="4158364720893025815">Başarılı</translation>
-<translation id="4159681666905192102">Bu hesap çocuklar içindir ve <ph name="CUSTODIAN_EMAIL" /> ile <ph name="SECOND_CUSTODIAN_EMAIL" /> tarafından yönetilmektedir</translation>
 <translation id="4163560723127662357">Bilinmeyen klavye</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> geçerli bir kuruluşa ait değil. Yöneticinizle iletişime geçin. Yöneticiyseniz g.co/ChromeEnterpriseAccount adresinden kuruluşunuzu kaydedebilirsiniz.</translation>
 <translation id="4165986682804962316">Site ayarları</translation>

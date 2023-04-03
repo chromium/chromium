@@ -2862,7 +2862,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3462958980772249646">{COUNT,plural, =1{V tomto zařízení je uloženo {COUNT} heslo}few{V tomto zařízení jsou uložena {COUNT} hesla}many{V tomto zařízení je uloženo {COUNT} hesla}other{V tomto zařízení je uloženo {COUNT} hesel}}</translation>
 <translation id="346298925039590474">Tato mobilní síť bude k dispozici všem uživatelům tohoto zařízení</translation>
 <translation id="3464145797867108663">Přidat pracovní profil</translation>
-<translation id="346431825526753">Toto je dětský účet spravovaný uživatelem <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Získat slevy u obchodníků <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> a dalších</translation>
 <translation id="3468298837301810372">Štítek</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
@@ -3664,7 +3663,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4157869833395312646">Technologie Microsoft SGC (Server Gated Cryptography)</translation>
 <translation id="4158315983204257156">Velikost a písmo textu na webu</translation>
 <translation id="4158364720893025815">Úspěch</translation>
-<translation id="4159681666905192102">Toto je dětský účet spravovaný uživateli <ph name="CUSTODIAN_EMAIL" /> a <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Neznámá klávesnice</translation>
 <translation id="4165942112764990069">Adresa <ph name="USER_EMAIL" /> nepatří platné organizaci. Kontaktujte svého administrátora. Pokud jste administrátor, můžete organizaci nastavit na adrese g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>

@@ -2861,7 +2861,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‌വേഡ് സംരക്ഷിച്ചിരിക്കുന്നു}other{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‌വേഡുകൾ സംരക്ഷിച്ചിരിക്കുന്നു}}</translation>
 <translation id="346298925039590474">ഈ ഉപകരണത്തിലുള്ള എല്ലാ ഉപയോക്താക്കൾക്കും ഈ മൊബൈൽ നെറ്റ്‌വർക്ക് ലഭ്യമാകും</translation>
 <translation id="3464145797867108663">ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുക</translation>
-<translation id="346431825526753">ഇത് <ph name="CUSTODIAN_EMAIL" /> എന്നയാൾ നിയന്ത്രിക്കുന്ന കുട്ടികൾക്കുള്ള അക്കൗണ്ടാണ്.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> എന്നിവയ്ക്കും മറ്റും കിഴിവുകൾ നേടുക</translation>
 <translation id="3468298837301810372">ലേബല്‍‌</translation>
 <translation id="3468999815377931311">Android ഫോൺ</translation>
@@ -3664,7 +3663,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">വെബ്‌സൈറ്റ് ടെക്സ്റ്റിന്റെ വലുപ്പവും ഫോണും</translation>
 <translation id="4158364720893025815">വിജയകരം</translation>
-<translation id="4159681666905192102">ഇത് <ph name="CUSTODIAN_EMAIL" />, <ph name="SECOND_CUSTODIAN_EMAIL" /> എന്നിവർ നിയന്ത്രിക്കുന്ന കുട്ടികൾക്കുള്ള അക്കൗണ്ടാണ്.</translation>
 <translation id="4163560723127662357">അജ്ഞാത കീബോർഡ്</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> സാധുവായ ഒരു സ്ഥാപനത്തിൽ ഉൾപ്പെടുന്നതല്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. നിങ്ങൾ ഒരു അഡ്മിൻ ആണെങ്കിൽ ഇവിടെ സന്ദർശിച്ച് നിങ്ങളുടെ സ്ഥാപനം സജ്ജീകരിക്കാനാകും: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>

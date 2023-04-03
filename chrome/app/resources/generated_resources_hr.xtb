@@ -2864,7 +2864,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} zaporka spremljena je na ovom uređaju}one{{COUNT} zaporka spremljena je na ovom uređaju}few{{COUNT} zaporke spremljene su na ovom uređaju}other{{COUNT} zaporki spremljeno je na ovom uređaju}}</translation>
 <translation id="346298925039590474">Ta će mobilna mreža biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj poslovni profil</translation>
-<translation id="346431825526753">Ovo je račun za djecu kojim upravlja <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Traži popuste za trgovine <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i druge trgovine.</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
@@ -3668,7 +3667,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Veličina i font teksta web-lokacije</translation>
 <translation id="4158364720893025815">Prolaz</translation>
-<translation id="4159681666905192102">Ovo je račun za djecu kojim upravljaju <ph name="CUSTODIAN_EMAIL" /> i <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nepoznata tipkovnica</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ne pripada važećoj organizaciji. Obratite se administratoru. Ako ste administrator, možete postaviti organizaciju tako da posjetite: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Postavke web-lokacije</translation>

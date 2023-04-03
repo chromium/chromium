@@ -796,6 +796,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="16620462294541761">Sorry, your password could not be verified. Please try again.</translation>
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="1662801900924515589"><ph name="APP" /> installed</translation>
+<translation id="1663698992894057019">Upgrade to a new Chromebook for the latest security features and software</translation>
 <translation id="1665328953287874063">Use a password or PIN to unlock your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Disable data access protection for peripherals</translation>
 <translation id="1667842670298352129">Hear specific text read aloud. First, select the Select to Speak icon at the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search + S.</translation>
@@ -2876,7 +2877,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3462958980772249646">{COUNT,plural, =1{{COUNT} password is saved on this device}other{{COUNT} passwords are saved on this device}}</translation>
 <translation id="346298925039590474">This mobile network will be available to all users on this device</translation>
 <translation id="3464145797867108663">Add work profile</translation>
-<translation id="346431825526753">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Get discounts for <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> and more</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
@@ -3680,7 +3680,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Website text size and font</translation>
 <translation id="4158364720893025815">Pass</translation>
-<translation id="4159681666905192102">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" /> and <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Unknown keyboard</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Site settings</translation>
@@ -3747,6 +3746,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4231141543165771749">Close game controls</translation>
 <translation id="4231542173270219144">When trials are on, spam and fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.</translation>
 <translation id="4232375817808480934">Configure Kerberos</translation>
+<translation id="4233739489690259993">Your Chromebook is no longer receiving security and software updates. Upgrade your device for the latest security features and new features. Offer terms apply.</translation>
 <translation id="4235965441080806197">Cancel sign in</translation>
 <translation id="4236163961381003811">Discover more extensions</translation>
 <translation id="4237282663517880406">Show Google Drive suggestions</translation>
@@ -4833,6 +4833,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5228579091201413441">Enable sync</translation>
 <translation id="5229337741799419985">This setting works without identifying you or allowing sites to see your browsing history.</translation>
 <translation id="5230516054153933099">Window</translation>
+<translation id="5231427103154766313">Use remote to stop casting.</translation>
 <translation id="5233019165164992427">NaCl debug port</translation>
 <translation id="5233231016133573565">Process ID</translation>
 <translation id="5233638681132016545">New tab</translation>
@@ -5254,6 +5255,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Not allowed to connect to MIDI devices</translation>
 <translation id="5601833336918638013">Don't allow sites to look for Bluetooth devices</translation>
+<translation id="5602586420788540146">Open in new tab group</translation>
 <translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
@@ -6318,6 +6320,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="657229725818377235">Get more protection against dangerous websites and downloads</translation>
 <translation id="6573096386450695060">Always allow</translation>
 <translation id="6573497332121198392">Can't remove shortcut</translation>
+<translation id="6573915150656780875">Your Chromebook is no longer receiving security and software updates. Get a new Chromebook for the best experience.</translation>
 <translation id="657402800789773160">&amp;Reload This Page</translation>
 <translation id="6577284282025554716">Download cancelled: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">Network health snapshot</translation>
@@ -7752,6 +7755,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7844992432319478437">Updating diff</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7847212883280406910">Press Ctrl + Alt + S to switch to <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="7848244988854036372">Open all (<ph name="URL_COUNT" />) in new tab group</translation>
 <translation id="7849264908733290972">Open &amp;Image in New Tab</translation>
 <translation id="784934925303690534">Time range</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1" />

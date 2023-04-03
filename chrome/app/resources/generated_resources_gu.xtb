@@ -2229,6 +2229,7 @@
 <translation id="2886119409731773154">આમાં 30 મિનિટ સુધીનો સમય લાગી શકે છે</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> અને અન્ય <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2889043468805635730">કોઈ સમસ્યા મળી નથી</translation>
 <translation id="2889064240420137087">આની સાથે લિંક ખોલો...</translation>
 <translation id="2891566119238851894">બાજુની પૅનલમાં શોધની સેવા ચાલુ કરો. બાજુની પૅનલમાં શોધની સેવા ચાલુ નથી.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" />માં સાઇન ઇન કરવા માટે તમારા ડિવાઇસનો ઉપયોગ કરીએ?</translation>
@@ -2855,7 +2856,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{આ ડિવાઇસમાં {COUNT} પાસવર્ડ સાચવવામાં આવ્યો છે}one{આ ડિવાઇસમાં {COUNT} પાસવર્ડ સાચવવામાં આવ્યો છે}other{આ ડિવાઇસમાં {COUNT} પાસવર્ડ સાચવવામાં આવ્યા છે}}</translation>
 <translation id="346298925039590474">આ મોબાઇલ નેટવર્ક, આ ડિવાઇસ પરના બધા વપરાશકર્તાઓ માટે ઉપલબ્ધ રહેશે</translation>
 <translation id="3464145797867108663">ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
-<translation id="346431825526753">આ બાળકો માટેનું એકાઉન્ટ છે, જે <ph name="CUSTODIAN_EMAIL" /> દ્વારા મેનેજ કરાય છે.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> અને અન્ય માટે ડિસ્કાઉન્ટ મેળવો</translation>
 <translation id="3468298837301810372">લેબલ</translation>
 <translation id="3468999815377931311">Android ફોન</translation>
@@ -3326,6 +3326,7 @@
 <translation id="3861977424605124250">સ્ટાર્ટઅપ કરતી વખતે બતાવો</translation>
 <translation id="386239283124269513">&amp;ગ્રૂપ રિસ્ટોર કરો</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
+<translation id="3866142613641074814">તમારી પાસે એવા પાસવર્ડ છે જે જોખમમાં છે</translation>
 <translation id="3866249974567520381">વર્ણન</translation>
 <translation id="3867134342671430205">ડિસ્પ્લેને ખસેડવા માટે એરો કીને ખેંચો કે તેનો ઉપયોગ કરો</translation>
 <translation id="3867944738977021751">પ્રમાણપત્ર ફીલ્ડ્સ</translation>
@@ -3657,7 +3658,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">વેબસાઇટ પરની ટેક્સ્ટનું કદ અને ફૉન્ટ</translation>
 <translation id="4158364720893025815">પાસ</translation>
-<translation id="4159681666905192102">આ બાળકો માટેનું એકાઉન્ટ છે, જે <ph name="CUSTODIAN_EMAIL" /> અને <ph name="SECOND_CUSTODIAN_EMAIL" /> દ્વારા મેનેજ કરાય છે.</translation>
 <translation id="4163560723127662357">અજાણીતું કીબોર્ડ</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />, કોઈ માન્ય સંસ્થાની માલિકીનું નથી. તમારા વ્યવસ્થાપકનો સંપર્ક કરો. જો તમે કોઈ વ્યવસ્થાપક હો, તો તમે અહીંની મુલાકાત લઈને તમારી સંસ્થા માટે સેટઅપ કરી શકશો: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
@@ -8655,6 +8655,7 @@ USB ડિવાઇસ</translation>
 <translation id="866611985033792019">ઇમેઇલ વપરાશકર્તાઓને ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" />ને ફરી પરવાનગીઓ આપવામાં આવી</translation>
 <translation id="8666759526542103597">બ્રાઉઝર આધારિત રુચિ મુજબ જાહેરાત વિશેની માહિતી</translation>
+<translation id="8667261224612332309">તમારી પાસે એવા પાસવર્ડ છે જેને બહેતર બનાવી શકાય છે</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> હવે પૂર્ણ સ્ક્રીનમાં છે અને તમારું માઉસ કર્સર અક્ષમ કરવામાં આવ્યું છે.</translation>
 <translation id="8667760277771450375">અમે જાહેરાતમાં સ્પામ અને કપટને રોકવા માટે સાઇટને સક્ષમ કરતી વખતે, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરવાની રીતોની શોધખોળ કરી રહ્યાં છીએ.</translation>
 <translation id="8668378421690365723">તમારું ડિવાઇસ હવે કદાચ યોગ્ય રીતે કામ કરશે નહીં અને સુરક્ષા તથા પર્ફોર્મન્સ સંબંધિત સમસ્યાઓ આવી શકે છે.</translation>
@@ -8985,6 +8986,7 @@ USB ડિવાઇસ</translation>
 <translation id="8953476467359856141">ચાર્જિંગ થતી વખતે</translation>
 <translation id="895347679606913382">પ્રારંભ કરે છે...</translation>
 <translation id="8957757410289731985">પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
+<translation id="8959144235813727886">સાઇટ અને ઍપ</translation>
 <translation id="895944840846194039">JavaScript મેમરી</translation>
 <translation id="8960208913905765425">ઝડપી જવાબોનું એકમ રૂપાંતરણ</translation>
 <translation id="8960638196855923532">હવે તમે તમારા ફોનના નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>

@@ -2872,7 +2872,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3462958980772249646">{COUNT,plural, =1{Nenosiri {COUNT} limehifadhiwa katika kifaa hiki}other{Manenosiri {COUNT} yamehifadhiwa kwenye katika kifaa hiki}}</translation>
 <translation id="346298925039590474">Mtandao huu wa simu utapatikana kwa watumiaji wote kwenye kifaa hiki</translation>
 <translation id="3464145797867108663">Ongeza wasifu wa kazini</translation>
-<translation id="346431825526753">Hii ni akaunti ya watoto inayodhibitiwa na <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Pata punguzo la <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> na zaidi</translation>
 <translation id="3468298837301810372">Lebo</translation>
 <translation id="3468999815377931311">Simu ya Android</translation>
@@ -3673,7 +3672,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4157869833395312646">Usimbaji wa Vizuizi vya Seva kutoka Microsoft</translation>
 <translation id="4158315983204257156">Fonti na ukubwa wa maandishi ya tovuti</translation>
 <translation id="4158364720893025815">Tumefaulu</translation>
-<translation id="4159681666905192102">Hii ni akaunti ya watoto inayodhibitiwa na <ph name="CUSTODIAN_EMAIL" /> na <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Kibodi isiyojulikana</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> haipo kwenye shirika sahihi. Wasiliana na msimamizi wako. Iwapo wewe ni msimamizi, unaweza kuweka mipangilio ya shirika lako kwa kutembelea: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Mipangilio ya tovuti</translation>

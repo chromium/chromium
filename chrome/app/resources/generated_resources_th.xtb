@@ -2862,7 +2862,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{ระบบบันทึกรหัสผ่าน {COUNT} รายการไว้ในอุปกรณ์นี้แล้ว}other{ระบบบันทึกรหัสผ่าน {COUNT} รายการไว้ในอุปกรณ์นี้แล้ว}}</translation>
 <translation id="346298925039590474">เครือข่ายมือถือนี้จะพร้อมใช้งานสำหรับผู้ใช้ทุกคนในอุปกรณ์นี้</translation>
 <translation id="3464145797867108663">เพิ่มโปรไฟล์งาน</translation>
-<translation id="346431825526753">นี่เป็นบัญชีสำหรับเด็กที่จัดการโดย <ph name="CUSTODIAN_EMAIL" /></translation>
 <translation id="346546413339447252">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> และอื่นๆ</translation>
 <translation id="3468298837301810372">ป้ายกำกับ</translation>
 <translation id="3468999815377931311">โทรศัพท์ Android</translation>
@@ -3666,7 +3665,6 @@
 <translation id="4157869833395312646">วิธีการเข้ารหัสแบบ Server Gated ของ Microsoft</translation>
 <translation id="4158315983204257156">ขนาดและแบบอักษรของข้อความในเว็บไซต์</translation>
 <translation id="4158364720893025815">ผ่าน</translation>
-<translation id="4159681666905192102">นี่เป็นบัญชีสำหรับเด็กที่จัดการโดย <ph name="CUSTODIAN_EMAIL" /> และ <ph name="SECOND_CUSTODIAN_EMAIL" /></translation>
 <translation id="4163560723127662357">แป้นพิมพ์ที่ไม่รู้จัก</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ไม่ได้เป็นขององค์กรที่ถูกต้อง โปรดติดต่อผู้ดูแลระบบ หากคุณเป็นผู้ดูแลระบบ ให้ตั้งค่าองค์กรโดยไปที่ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">การตั้งค่าเว็บไซต์</translation>

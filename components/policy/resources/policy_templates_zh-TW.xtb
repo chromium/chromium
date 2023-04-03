@@ -565,6 +565,11 @@
 
       如果不設定這項政策或設為 Disabled，使用者層級的雲端政策就不能與其他來源的政策合併。</translation>
 <translation id="152657506688053119">預設搜尋的替代網址清單</translation>
+<translation id="152740744678799092">如果將這項政策設為啟用，當使用者在網址列中輸入非網址的文字時，系統會執行預設搜尋。如要指定預設搜尋引擎，請設定其他的預設搜尋政策。如果將其他的預設搜尋政策留空，使用者就能選擇預設搜尋引擎。如果將這項政策設為停用，使用者在網址列中輸入非網址的文字時，系統不會執行任何搜尋。<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> 不支援停用的值。
+
+      如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果未設定，系統會啟用預設搜尋引擎，而且使用者可以設定搜尋引擎清單。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、搭載 Windows 10 專業版的執行個體，或是已註冊 Chrome 瀏覽器雲端管理服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="1530812829012954197">一律在瀏覽器中算繪以下網址模式</translation>
 <translation id="1542491165152947087">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。</translation>
 <translation id="1547424904796464052">韌體映像檔的十六進位編碼 SHA-256 雜湊。</translation>

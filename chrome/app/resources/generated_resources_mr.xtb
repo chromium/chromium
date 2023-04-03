@@ -795,6 +795,7 @@
 <translation id="16620462294541761">सॉरी, तुमचा पासवर्ड पडताळणी करणे शक्य नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="166278006618318542">विषय सार्वजनिक की अल्गोरिदम</translation>
 <translation id="1662801900924515589"><ph name="APP" /> इंस्टॉल केले</translation>
+<translation id="1663698992894057019">नवीनतम सुरक्षेसाठी आणि सॉफ्टवेअरसाठी नवीन Chromebook वर अपग्रेड करा</translation>
 <translation id="1665328953287874063">तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करण्यासाठी पासवर्ड किंवा पिन वापरा</translation>
 <translation id="1666232093776384142">पेरिफेरलसाठी डेटा अ‍ॅक्सेस संरक्षण बंद करा</translation>
 <translation id="1667842670298352129">मोठ्याने वाचलेला विशिष्ट मजकूर ऐका. प्रथम, तुमच्या स्क्रीनच्या तळाशी असलेला बोलण्यासाठी निवडा आयकन निवडा, त्यानंतर मजकूर हायलाइट करा. तुम्ही कीबोर्ड शॉर्टकटदेखील वापरू शकता: मजकूर हायलाइट करा, त्यानंतर Search + S प्रेस करा.</translation>
@@ -2875,7 +2876,6 @@
 <translation id="3462958980772249646">{COUNT,plural, =1{या डिव्हाइसवर {COUNT} पासवर्ड सेव्ह केला आहे}other{या डिव्हाइसवर {COUNT} पासवर्ड सेव्ह केले आहेत}}</translation>
 <translation id="346298925039590474">हे मोबाइल नेटवर्क या डिव्हाइसवरील सर्व वापरकर्त्यांसाठी उपलब्ध असेल</translation>
 <translation id="3464145797867108663">कार्य प्रोफाइल जोडा</translation>
-<translation id="346431825526753">हे मुलांसाठी असलेले खाते <ph name="CUSTODIAN_EMAIL" /> द्वारे व्‍यवस्‍थापित केले.</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> आणि आणखी बऱ्याच व्यापाऱ्यांसाठी सवलती मिळवा</translation>
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फोन</translation>
@@ -3677,7 +3677,6 @@
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">वेबसाइटच्या मजकुराचा आकार आणि फाँट</translation>
 <translation id="4158364720893025815">पूर्ण झालेली</translation>
-<translation id="4159681666905192102">हे मुलांसाठी असलेले खाते <ph name="CUSTODIAN_EMAIL" /> आणि <ph name="SECOND_CUSTODIAN_EMAIL" /> द्वारे व्‍यवस्‍थापित केले.</translation>
 <translation id="4163560723127662357">अज्ञात कीबोर्ड</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> हा कोणत्याही नोंदणीकृत संस्थेशी संबंधित नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. तुम्ही ॲडमिनिस्ट्रेटर असल्यास, पुढील लिंकला भेट देऊन तुमची संस्था सेट करू शकता: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
@@ -3744,6 +3743,7 @@
 <translation id="4231141543165771749">गेम नियंत्रणे बंद करा</translation>
 <translation id="4231542173270219144">चाचण्या सुरू असताना, स्पॅम आणि घोटाळा कमी करणे हे खाजगी स्टेट टोकनवर अवलंबून असते, त्यांच्यामुळे साइटना घोटाळ्याविरुद्ध लढण्यात आणि लोक व बॉट यांच्यातील फरक ओळखण्यात मदत होते.</translation>
 <translation id="4232375817808480934">Kerberos कॉंफिगर करा</translation>
+<translation id="4233739489690259993">तुमच्या Chromebook ला आता सुरक्षा आणि सॉफ्टवेअर अपडेट मिळत नाहीत. नवीनतम सुरक्षेसाठी आणि नवीन वैशिष्ट्यांसाठी तुमचे डिव्हाइस अपग्रेड करा. ऑफर अटी लागू.</translation>
 <translation id="4235965441080806197">साइन इन रद्द करा</translation>
 <translation id="4236163961381003811">आणखी एक्स्टेंशन शोधा</translation>
 <translation id="4237282663517880406">Google Drive सूचना दाखवा</translation>
@@ -4830,6 +4830,7 @@
 <translation id="5228579091201413441">सिंक सुरू करा</translation>
 <translation id="5229337741799419985">हे सेटिंग तुम्हाला ओळखल्याशिवाय किंवा साइटला तुमचा ब्राउझिंग इतिहास पाहण्याची अनुमती न देता काम करते</translation>
 <translation id="5230516054153933099">विंडो</translation>
+<translation id="5231427103154766313">कास्ट करणे थांबवण्यासाठी रिमोट वापरा.</translation>
 <translation id="5233019165164992427">NaCl डीबग पोर्ट</translation>
 <translation id="5233231016133573565">प्रक्रिया आयडी</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
@@ -5251,6 +5252,7 @@
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601823921345337195">MIDI डिव्हाइसशी कनेक्ट करण्याची अनुमती नाही</translation>
 <translation id="5601833336918638013">साइटना ब्लूटूथ डिव्हाइस शोधण्याची अनुमती देऊ नका</translation>
+<translation id="5602586420788540146">नवीन टॅब गटामध्ये उघडा</translation>
 <translation id="5602765853043467355">या डिव्हाइसमधून बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही साफ करा</translation>
 <translation id="5605758115928394442">ते तुम्हीच आहात हे निश्चित करण्यासाठी तुमच्या फोनवर सूचना पाठवली होती.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{हे एक्स्टेंशन ब्लॉक केले आहे}other{ही एक्स्टेंशन ब्लॉक केली आहेत}}</translation>
@@ -6316,6 +6318,7 @@
 <translation id="657229725818377235">धोकादायक वेबसाइट आणि डाउनलोडपासून अधिक संरक्षण मिळवा</translation>
 <translation id="6573096386450695060">नेहमी अनुमती द्या</translation>
 <translation id="6573497332121198392">शॉर्टकट काढून टाकू शकत नाही</translation>
+<translation id="6573915150656780875">तुमच्या Chromebook ला आता सुरक्षा आणि सॉफ्टवेअर अपडेट मिळत नाहीत. सर्वोत्तम अनुभवासाठी नवीन Chromebook मिळवा.</translation>
 <translation id="657402800789773160">हे पृष्ठ &amp;रीलोड करा</translation>
 <translation id="6577284282025554716">डाउनलोड रद्द केले: <ph name="FILE_NAME" /></translation>
 <translation id="657866106756413002">नेटवर्क हेल्थ स्नॅपशॉट</translation>
@@ -7748,6 +7751,7 @@
 <translation id="7844992432319478437">फरक अपडेट करत आहे</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> वर स्विच करण्यासाठी Ctrl + Alt + S प्रेस करा</translation>
+<translation id="7848244988854036372">सर्व (<ph name="URL_COUNT" />) नवीन टॅब गटामध्ये उघडा</translation>
 <translation id="7849264908733290972">नवीन टॅबमध्ये &amp;प्रतिमा उघडा</translation>
 <translation id="784934925303690534">वेळ वर्गवारी</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />तुमच्या ChromeOS डिव्‍हाइसना आपोआप अहवाल पाठवण्‍याची अनुमती देण्‍याने आम्‍हाला ChromeOS मध्‍ये कोणती सुधारणा करायची आणि कशाचे निराकरण करायचे याला प्राधान्य देण्‍यात मदत होते. या अहवालांमध्ये ChromeOS कधी क्रॅश होते, तुम्ही कोणती वैशिष्ट्ये वापरता, तुम्ही सामान्यतः किती मेमरी वापरता आणि Android अ‍ॅप निदान व वापर डेटा यांसारख्या गोष्टींचा समावेश असू शकतो. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल.<ph name="END_PARAGRAPH1" />

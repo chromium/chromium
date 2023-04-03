@@ -2849,7 +2849,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3462958980772249646">{COUNT,plural, =1{Na tym urządzeniu jest zapisane {COUNT} hasło}few{Na tym urządzeniu są zapisane {COUNT} hasła}many{Na tym urządzeniu jest zapisanych {COUNT} haseł}other{Na tym urządzeniu jest zapisane {COUNT} hasła}}</translation>
 <translation id="346298925039590474">Ta sieć komórkowa będzie dostępna dla wszystkich użytkowników urządzenia</translation>
 <translation id="3464145797867108663">Dodaj profil służbowy</translation>
-<translation id="346431825526753">To jest konto dla dzieci, którym zarządza <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Korzystaj z rabatów u sprzedawców: <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i innych</translation>
 <translation id="3468298837301810372">Etykieta</translation>
 <translation id="3468999815377931311">Telefon z Androidem</translation>
@@ -3653,7 +3652,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4157869833395312646">Kryptografia Server Gated Cryptography firmy Microsoft</translation>
 <translation id="4158315983204257156">Rozmiar i czcionka tekstu w witrynie</translation>
 <translation id="4158364720893025815">Sukces</translation>
-<translation id="4159681666905192102">To jest konto dla dzieci, którym zarządzają <ph name="CUSTODIAN_EMAIL" /> i <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nieznana klawiatura</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nie jest prawidłowym adresem w organizacji. Skontaktuj się z administratorem. Jeśli jesteś administratorem, możesz skonfigurować usługę dla swojej organizacji na stronie: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
