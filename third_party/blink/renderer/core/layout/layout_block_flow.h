@@ -526,55 +526,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     bool ever_had_layout;
   };
 
-  // MarginValues holds the margins in the block direction
-  // used during collapsing margins computation.
-  // CSS mandates to keep track of both positive and negative margins:
-  // "When two or more margins collapse, the resulting margin width is the
-  // maximum of the collapsing margins' widths. In the case of negative
-  // margins, the maximum of the absolute values of the negative adjoining
-  // margins is deducted from the maximum of the positive adjoining margins.
-  // If there are no positive margins, the maximum of the absolute values of
-  // the adjoining margins is deducted from zero."
-  // https://drafts.csswg.org/css2/box.html#collapsing-margins
-  class MarginValues {
-    DISALLOW_NEW();
-
-   public:
-    MarginValues(LayoutUnit before_pos,
-                 LayoutUnit before_neg,
-                 LayoutUnit after_pos,
-                 LayoutUnit after_neg)
-        : positive_margin_before_(before_pos),
-          negative_margin_before_(before_neg),
-          positive_margin_after_(after_pos),
-          negative_margin_after_(after_neg) {}
-
-    LayoutUnit PositiveMarginBefore() const { return positive_margin_before_; }
-    LayoutUnit NegativeMarginBefore() const { return negative_margin_before_; }
-    LayoutUnit PositiveMarginAfter() const { return positive_margin_after_; }
-    LayoutUnit NegativeMarginAfter() const { return negative_margin_after_; }
-
-    void SetPositiveMarginBefore(LayoutUnit pos) {
-      positive_margin_before_ = pos;
-    }
-    void SetNegativeMarginBefore(LayoutUnit neg) {
-      negative_margin_before_ = neg;
-    }
-    void SetPositiveMarginAfter(LayoutUnit pos) {
-      positive_margin_after_ = pos;
-    }
-    void SetNegativeMarginAfter(LayoutUnit neg) {
-      negative_margin_after_ = neg;
-    }
-
-   private:
-    LayoutUnit positive_margin_before_;
-    LayoutUnit negative_margin_before_;
-    LayoutUnit positive_margin_after_;
-    LayoutUnit negative_margin_after_;
-  };
-  MarginValues MarginValuesForChild(LayoutBox& child) const;
-
   // Allocated only when some of these fields have non-default values
   struct LayoutBlockFlowRareData final
       : public GarbageCollected<LayoutBlockFlowRareData> {
@@ -584,24 +535,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     LayoutBlockFlowRareData& operator=(const LayoutBlockFlowRareData&) = delete;
     ~LayoutBlockFlowRareData();
 
-    static LayoutUnit PositiveMarginBeforeDefault(
-        const LayoutBlockFlow* block) {
-      return block->MarginBefore().ClampNegativeToZero();
-    }
-    static LayoutUnit NegativeMarginBeforeDefault(
-        const LayoutBlockFlow* block) {
-      return (-block->MarginBefore()).ClampNegativeToZero();
-    }
-    static LayoutUnit PositiveMarginAfterDefault(const LayoutBlockFlow* block) {
-      return block->MarginAfter().ClampNegativeToZero();
-    }
-    static LayoutUnit NegativeMarginAfterDefault(const LayoutBlockFlow* block) {
-      return (-block->MarginAfter()).ClampNegativeToZero();
-    }
-
     void Trace(Visitor*) const;
 
-    MarginValues margins_;
     LayoutUnit pagination_strut_propagated_from_child_;
 
     LayoutUnit first_forced_break_offset_;
@@ -627,77 +562,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   bool ShouldTruncateOverflowingText() const;
 
  protected:
-  LayoutUnit MaxPositiveMarginBefore() const {
-    NOT_DESTROYED();
-    return rare_data_
-               ? rare_data_->margins_.PositiveMarginBefore()
-               : LayoutBlockFlowRareData::PositiveMarginBeforeDefault(this);
-  }
-  LayoutUnit MaxNegativeMarginBefore() const {
-    NOT_DESTROYED();
-    return rare_data_
-               ? rare_data_->margins_.NegativeMarginBefore()
-               : LayoutBlockFlowRareData::NegativeMarginBeforeDefault(this);
-  }
-  LayoutUnit MaxPositiveMarginAfter() const {
-    NOT_DESTROYED();
-    return rare_data_
-               ? rare_data_->margins_.PositiveMarginAfter()
-               : LayoutBlockFlowRareData::PositiveMarginAfterDefault(this);
-  }
-  LayoutUnit MaxNegativeMarginAfter() const {
-    NOT_DESTROYED();
-    return rare_data_
-               ? rare_data_->margins_.NegativeMarginAfter()
-               : LayoutBlockFlowRareData::NegativeMarginAfterDefault(this);
-  }
-
-  void SetMaxMarginBeforeValues(LayoutUnit pos, LayoutUnit neg);
-  void SetMaxMarginAfterValues(LayoutUnit pos, LayoutUnit neg);
-
-  void InitMaxMarginValues() {
-    NOT_DESTROYED();
-    if (rare_data_) {
-      rare_data_->margins_ = MarginValues(
-          LayoutBlockFlowRareData::PositiveMarginBeforeDefault(this),
-          LayoutBlockFlowRareData::NegativeMarginBeforeDefault(this),
-          LayoutBlockFlowRareData::PositiveMarginAfterDefault(this),
-          LayoutBlockFlowRareData::NegativeMarginAfterDefault(this));
-    }
-  }
-
   virtual ETextAlign TextAlignmentForLine(bool ends_with_soft_break) const;
 
  private:
-  LayoutUnit CollapsedMarginBefore() const final {
-    NOT_DESTROYED();
-    return MaxPositiveMarginBefore() - MaxNegativeMarginBefore();
-  }
-  LayoutUnit CollapsedMarginAfter() const final {
-    NOT_DESTROYED();
-    return MaxPositiveMarginAfter() - MaxNegativeMarginAfter();
-  }
-
-  LayoutUnit AdjustedMarginBeforeForPagination(
-      const LayoutBox&,
-      LayoutUnit logical_top_margin_edge,
-      LayoutUnit logical_top_border_edge,
-      const BlockChildrenLayoutInfo&) const;
-
-  LayoutUnit CollapseMargins(LayoutBox& child,
-                             BlockChildrenLayoutInfo&,
-                             bool child_is_self_collapsing);
-  LayoutUnit EstimateLogicalTopPosition(
-      LayoutBox& child,
-      const BlockChildrenLayoutInfo&,
-      LayoutUnit& estimate_without_pagination);
-  void MarginBeforeEstimateForChild(LayoutBox&, LayoutUnit&, LayoutUnit&) const;
-  void HandleAfterSideOfBlock(LayoutBox* last_child,
-                              LayoutUnit top,
-                              LayoutUnit bottom,
-                              MarginInfo&);
-  void SetCollapsedBottomMargin(const MarginInfo&);
-
   static void RecalcFloatingDescendantsVisualOverflow(
       const NGPhysicalFragment& fragment);
 

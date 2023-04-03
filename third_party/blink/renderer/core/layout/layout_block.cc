@@ -121,8 +121,6 @@ static TrackedDescendantsMap& GetPercentHeightDescendantsMap() {
 
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
-      has_margin_before_quirk_(false),
-      has_margin_after_quirk_(false),
       has_markup_truncation_(false),
       width_available_to_children_changed_(false),
       height_available_to_children_changed_(false),
@@ -2072,92 +2070,6 @@ void LayoutBlock::PaginatedContentWasLaidOut(
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock())
     flow_thread->ContentWasLaidOut(OffsetFromLogicalTopOfFirstPage() +
                                    logical_bottom_offset_after_pagination);
-}
-
-LayoutUnit LayoutBlock::CollapsedMarginBeforeForChild(
-    const LayoutBox& child) const {
-  NOT_DESTROYED();
-  // If the child has the same directionality as we do, then we can just return
-  // its collapsed margin.
-  if (!child.IsWritingModeRoot())
-    return child.CollapsedMarginBefore();
-
-  // The child has a different directionality.  If the child is parallel, then
-  // it's just flipped relative to us.  We can use the collapsed margin for the
-  // opposite edge.
-  if (child.IsHorizontalWritingMode() == IsHorizontalWritingMode())
-    return child.CollapsedMarginAfter();
-
-  // The child is perpendicular to us, which means its margins don't collapse
-  // but are on the "logical left/right" sides of the child box. We can just
-  // return the raw margin in this case.
-  return MarginBeforeForChild(child);
-}
-
-LayoutUnit LayoutBlock::CollapsedMarginAfterForChild(
-    const LayoutBox& child) const {
-  NOT_DESTROYED();
-  // If the child has the same directionality as we do, then we can just return
-  // its collapsed margin.
-  if (!child.IsWritingModeRoot())
-    return child.CollapsedMarginAfter();
-
-  // The child has a different directionality.  If the child is parallel, then
-  // it's just flipped relative to us.  We can use the collapsed margin for the
-  // opposite edge.
-  if (child.IsHorizontalWritingMode() == IsHorizontalWritingMode())
-    return child.CollapsedMarginBefore();
-
-  // The child is perpendicular to us, which means its margins don't collapse
-  // but are on the "logical left/right" side of the child box. We can just
-  // return the raw margin in this case.
-  return MarginAfterForChild(child);
-}
-
-bool LayoutBlock::HasMarginBeforeQuirk(const LayoutBox* child) const {
-  NOT_DESTROYED();
-  // If the child has the same directionality as we do, then we can just return
-  // its margin quirk.
-  auto* child_layout_block = DynamicTo<LayoutBlock>(child);
-  if (!child->IsWritingModeRoot()) {
-    return child_layout_block ? child_layout_block->HasMarginBeforeQuirk()
-                              : child->StyleRef().HasMarginBeforeQuirk();
-  }
-
-  // The child has a different directionality. If the child is parallel, then
-  // it's just flipped relative to us. We can use the opposite edge.
-  if (child->IsHorizontalWritingMode() == IsHorizontalWritingMode()) {
-    return child_layout_block ? child_layout_block->HasMarginAfterQuirk()
-                              : child->StyleRef().HasMarginAfterQuirk();
-  }
-
-  // The child is perpendicular to us and box sides are never quirky in
-  // html.css, and we don't really care about whether or not authors specified
-  // quirky ems, since they're an implementation detail.
-  return false;
-}
-
-bool LayoutBlock::HasMarginAfterQuirk(const LayoutBox* child) const {
-  NOT_DESTROYED();
-  // If the child has the same directionality as we do, then we can just return
-  // its margin quirk.
-  auto* child_layout_block = DynamicTo<LayoutBlock>(child);
-  if (!child->IsWritingModeRoot()) {
-    return child_layout_block ? child_layout_block->HasMarginAfterQuirk()
-                              : child->StyleRef().HasMarginAfterQuirk();
-  }
-
-  // The child has a different directionality. If the child is parallel, then
-  // it's just flipped relative to us. We can use the opposite edge.
-  if (child->IsHorizontalWritingMode() == IsHorizontalWritingMode()) {
-    return child_layout_block ? child_layout_block->HasMarginBeforeQuirk()
-                              : child->StyleRef().HasMarginBeforeQuirk();
-  }
-
-  // The child is perpendicular to us and box sides are never quirky in
-  // html.css, and we don't really care about whether or not authors specified
-  // quirky ems, since they're an implementation detail.
-  return false;
 }
 
 const char* LayoutBlock::GetName() const {

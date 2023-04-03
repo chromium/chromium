@@ -232,27 +232,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return has_markup_truncation_;
   }
 
-  void SetHasMarginBeforeQuirk(bool b) {
-    NOT_DESTROYED();
-    has_margin_before_quirk_ = b;
-  }
-  void SetHasMarginAfterQuirk(bool b) {
-    NOT_DESTROYED();
-    has_margin_after_quirk_ = b;
-  }
-
-  bool HasMarginBeforeQuirk() const {
-    NOT_DESTROYED();
-    return has_margin_before_quirk_;
-  }
-  bool HasMarginAfterQuirk() const {
-    NOT_DESTROYED();
-    return has_margin_after_quirk_;
-  }
-
-  bool HasMarginBeforeQuirk(const LayoutBox* child) const;
-  bool HasMarginAfterQuirk(const LayoutBox* child) const;
-
   void MarkPositionedObjectsForLayout();
 
   LayoutUnit TextIndentOffset() const;
@@ -330,8 +309,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     NOT_DESTROYED();
     child.SetMarginAfter(value, Style());
   }
-  LayoutUnit CollapsedMarginBeforeForChild(const LayoutBox& child) const;
-  LayoutUnit CollapsedMarginAfterForChild(const LayoutBox& child) const;
 
   enum ScrollbarChangeContext { kStyleChange, kLayout };
   virtual void ScrollbarsChanged(bool horizontal_scrollbar_changed,
@@ -605,8 +582,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   // Note these quirk values can't be put in LayoutBlockRareData since they are
   // set too frequently.
-  unsigned has_margin_before_quirk_ : 1;
-  unsigned has_margin_after_quirk_ : 1;
   unsigned has_markup_truncation_ : 1;
   unsigned width_available_to_children_changed_ : 1;
   unsigned height_available_to_children_changed_ : 1;
