@@ -53,7 +53,6 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
     # Navigate to some page.
     await send_JSON_command(
         websocket, {
-            "id": get_next_command_id(),
             "method": "browsingContext.navigate",
             "params": {
                 "url": "data:text/html,<h2>test</h2>",
@@ -84,7 +83,6 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
     # Navigate to some page.
     await send_JSON_command(
         websocket, {
-            "id": get_next_command_id(),
             "method": "browsingContext.navigate",
             "params": {
                 "url": "data:text/html,<h2>test</h2>",
@@ -107,7 +105,6 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
     # Navigate to some page.
     await send_JSON_command(
         websocket, {
-            "id": get_next_command_id(),
             "method": "browsingContext.navigate",
             "params": {
                 "url": page_with_nested_iframe_url,

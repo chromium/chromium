@@ -26,7 +26,6 @@ async def test_browsingContext_subscribeToAllBrowsingContextEvents_eventReceived
     await subscribe(websocket, "browsingContext")
 
     await send_JSON_command(websocket, {
-        "id": 9,
         "method": "browsingContext.create",
         "params": {
             "type": "tab"
@@ -454,15 +453,14 @@ async def test_browsingContext_close_browsingContext_closed(
         websocket, context_id):
     await subscribe(websocket, ["browsingContext.contextDestroyed"])
 
-    # Send command.
-    command = {
-        "id": 12,
-        "method": "browsingContext.close",
-        "params": {
-            "context": context_id
-        }
-    }
-    await send_JSON_command(websocket, command)
+    await send_JSON_command(
+        websocket, {
+            "id": 12,
+            "method": "browsingContext.close",
+            "params": {
+                "context": context_id
+            }
+        })
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
@@ -492,7 +490,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "id": 13,
@@ -547,7 +545,6 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    # Send command.
     await send_JSON_command(
         websocket, {
             "id": 14,
@@ -602,7 +599,6 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    # Send command.
     await send_JSON_command(
         websocket, {
             "id": 15,

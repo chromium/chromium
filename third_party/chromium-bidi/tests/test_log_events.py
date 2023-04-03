@@ -25,7 +25,7 @@ from test_helpers import (ANY_TIMESTAMP, read_JSON_message, send_JSON_command,
 async def test_log_subscribeToAllLogEvents_logEventReceived(
         websocket, context_id):
     await subscribe(websocket, "log")
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -45,7 +45,7 @@ async def test_log_subscribeToAllLogEvents_logEventReceived(
 async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
         websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -58,7 +58,6 @@ async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
             }
         })
 
-    # Wait for responses
     await wait_for_event(websocket, "log.entryAdded")
 
 
@@ -66,10 +65,8 @@ async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
 async def test_consoleLog_textAndArgs(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
 
-    # Send command.
     await send_JSON_command(
         websocket, {
-            "id": 33,
             "method": "script.evaluate",
             "params": {
                 "expression": "console.log("
@@ -92,10 +89,8 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
             }
         })
 
-    # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
-    # Assert "log.entryAdded" event emitted.
     assert {
         "method": "log.entryAdded",
         "params": {
@@ -188,7 +183,7 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
 @pytest.mark.asyncio
 async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -201,7 +196,6 @@ async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
             }
         })
 
-    # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert method "info".
@@ -213,7 +207,7 @@ async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
 @pytest.mark.asyncio
 async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -226,7 +220,6 @@ async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
             }
         })
 
-    # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert method "error".
@@ -238,7 +231,7 @@ async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
 @pytest.mark.asyncio
 async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -251,7 +244,6 @@ async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
             }
         })
 
-    # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert method "error".
@@ -263,7 +255,7 @@ async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
 @pytest.mark.asyncio
 async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
@@ -276,7 +268,6 @@ async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
             }
         })
 
-    # Wait for responses
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert method "error".
@@ -302,10 +293,8 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                     '{\"id\":1,\"font-size\":\"20px\"}, ' \
                     '{\"id\":1,\"font-size\":\"20px\"} EOL'
 
-    # Send command.
     await send_JSON_command(
         websocket, {
-            "id": 55,
             "method": "script.evaluate",
             "params": {
                 "expression": f"console.log('"
@@ -324,7 +313,6 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
             }
         })
 
-    # Wait for responses
     response = await wait_for_event(websocket, "log.entryAdded")
 
     assert response["params"]["text"] == expected_text
@@ -334,22 +322,19 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
 async def test_exceptionThrown_logEntryAddedEventEmitted(
         websocket, context_id):
     await subscribe(websocket, "log.entryAdded")
-    # Send command.
-    command = {
-        "id": 14,
-        "method": "browsingContext.navigate",
-        "params": {
-            "url": "data:text/html,<script>throw new Error('some error')</script>",
-            "wait": "interactive",
-            "context": context_id
-        }
-    }
-    await send_JSON_command(websocket, command)
 
-    # Wait for responses
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "data:text/html,<script>throw new Error('some error')</script>",
+                "wait": "interactive",
+                "context": context_id
+            }
+        })
+
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
-    # Assert "log.entryAdded" event emitted.
     assert {
         "method": "log.entryAdded",
         "params": {
@@ -377,7 +362,6 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
 
 @pytest.mark.asyncio
 async def test_buffer_bufferedEventsReturned(websocket, context_id):
-    # Send command.
     await send_JSON_command(
         websocket, {
             "id": 15,

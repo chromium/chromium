@@ -263,7 +263,6 @@ async def test_script_evaluateInteractsWithDom_resultReceived(
         websocket, context_id):
     result = await execute_command(
         websocket, {
-            "id": 32,
             "method": "script.evaluate",
             "params": {
                 "expression": "'!!@@##, ' + window.location.href",

@@ -46,7 +46,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
-    # Send command.
+
     await send_JSON_command(
         websocket, {
             "id": 13,
@@ -102,7 +102,6 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    # Send command.
     await send_JSON_command(
         websocket, {
             "id": 14,
@@ -157,7 +156,6 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    # Send command.
     await send_JSON_command(
         websocket, {
             "id": 15,
