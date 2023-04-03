@@ -287,14 +287,14 @@ void PreloadingDataImpl::RecordRecallStatsToUMA(
                                   : PredictorConfusionMatrix::kFalseNegative);
 
     for (const auto& preloading_type : kPreloadingTypes) {
-      const auto uma_attemp_recall =
+      const auto uma_attempt_recall =
           base::StrCat({"Preloading.", PreloadingTypeToString(preloading_type),
                         ".Attempt.", predictor_type.name(), ".Recall"});
       base::UmaHistogramEnumeration(
-          uma_attemp_recall, preloading_attempt_recall_stats_.contains(
-                                 {predictor_type, preloading_type})
-                                 ? PredictorConfusionMatrix::kTruePositive
-                                 : PredictorConfusionMatrix::kFalseNegative);
+          uma_attempt_recall, preloading_attempt_recall_stats_.contains(
+                                  {predictor_type, preloading_type})
+                                  ? PredictorConfusionMatrix::kTruePositive
+                                  : PredictorConfusionMatrix::kFalseNegative);
     }
   }
 }
