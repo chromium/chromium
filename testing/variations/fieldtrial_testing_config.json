@@ -326,6 +326,41 @@
                     "disable_features": [
                         "RequestDesktopSiteDefaultsControl"
                     ]
+                },
+                {
+                    "name": "Enabled_SubDomain_Iph_AllDomains_20230403",
+                    "params": {
+                        "SubdomainSettings": "true",
+                        "iph_type_generic": "true"
+                    },
+                    "enable_features": [
+                        "RequestDesktopSiteExceptions",
+                        "RequestDesktopSiteExceptionsDowngrade",
+                        "RequestDesktopSitePerSiteIph"
+                    ],
+                    "disable_features": [
+                        "RequestDesktopSiteDefaults",
+                        "RequestDesktopSiteDefaultsControl",
+                        "RequestDesktopSiteDefaultsDowngrade"
+                    ]
+                },
+                {
+                    "name": "Enabled_SubDomain_Iph_TopDomains_20230403",
+                    "params": {
+                        "SubdomainSettings": "true",
+                        "iph_type_specific": "true",
+                        "site_list": "semiconductor.withgoogle.com,tarsim.gov.tr,viewsync.net,drinksonme.live,subway-surfers.onl,newprofilepic.com,messenger.com,hidoctor.me,youneedabudget.com,apsdigicamps.com,lexiacore5.com,discord.com,scc-service.com,kdealer.com,whatsapp.com,thelearningodyssey.com,roblox.com,tcs.com,vidyamandir.com,drift-hunters.com,mobile01.com,semparar.com.br,customuse.com,terramap.github.io,justdancenow.com,inacap.cl,subwaysurferss.co,loola.tv,pixelied.com,yampi.com.br,essaytyper.com,bsf.gov.in,xiaoji001.org,opscrecruitment.in,icai.org,twitch.com,clipchamp.com,gocharting.com,yal.cc,fireant.vn,i-ready.com,jezevec10.com,xrcloud.com,marquesconsult.com.br,koreatech.ac.kr,coway.com,yell0wsuit.page,itsc.edu.do,here.fm,ceptam10.com,jltutors.net,wbsedcl.in,startgamer.ru,ppsc.gov.in,kidsandus.es,upnfm.edu.hn,telegnosis.co,nsysu.edu.tw,apponfly.com,epfindia.gov.in,eperolehan.gov.my,sdms.gov.rw,ktu.edu.in,advantagetvs.in,nikee.net,aptonline.in,upbocw.in,ubook.com,gendama.jp,deped.gov.ph,jharkhanduniversities.nic.in,wbhed.gov.in,chd4.com,qxbroker.com,prernaup.in,pariksha.nic.in,nu.edu.bd,ifam.edu.br,aiimsexams.ac.in,up.gov.in,banglarbhumi.gov.in,freenom.com,mahadbtmahait.gov.in,wbmdfcscholarship.org,sspy-up.gov.in,joinindianarmy.nic.in,sbm.gov.in,wbmdfcscholarship.in,banglarshiksha.gov.in,jamabandi.nic.in,fruitmail.net,paymath-official.net"
+                    },
+                    "enable_features": [
+                        "RequestDesktopSiteExceptions",
+                        "RequestDesktopSiteExceptionsDowngrade",
+                        "RequestDesktopSitePerSiteIph"
+                    ],
+                    "disable_features": [
+                        "RequestDesktopSiteDefaults",
+                        "RequestDesktopSiteDefaultsControl",
+                        "RequestDesktopSiteDefaultsDowngrade"
+                    ]
                 }
             ]
         }
