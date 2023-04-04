@@ -30,6 +30,10 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // before the view is loaded.
 @property(nonatomic, strong) UIView* titleView;
 
+// The view displayed under titles and subtitles. Nil if not needed.
+// If needed, must be set before the view is loaded.
+@property(nonatomic, strong) UIView* underTitleView;
+
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleString;
 

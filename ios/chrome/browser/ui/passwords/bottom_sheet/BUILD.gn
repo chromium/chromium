@@ -9,12 +9,26 @@ source_set("bottom_sheet") {
     "password_suggestion_bottom_sheet_delegate.h",
     "password_suggestion_bottom_sheet_mediator.h",
     "password_suggestion_bottom_sheet_mediator.mm",
+    "password_suggestion_bottom_sheet_view_controller.h",
+    "password_suggestion_bottom_sheet_view_controller.mm",
   ]
   deps = [
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/bottom_sheet",
+    "//ios/chrome/browser/passwords:password_controller_delegate",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
   ]
 }
 

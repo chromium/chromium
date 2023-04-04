@@ -117,16 +117,27 @@ const CGFloat kFaviconBadgeSideLength = 24;
     self.imageContainerView = self.imageView;
   }
 
-  UILabel* title = [self createTitleLabel];
-  UITextView* subtitle = [self createSubtitleView];
+  NSMutableArray* stackSubviews = [[NSMutableArray alloc] init];
 
-  NSArray* stackSubviews = nil;
-  if ([self.secondaryTitleString length] != 0) {
+  [stackSubviews addObject:self.imageContainerView];
+
+  if (self.titleString.length) {
+    UILabel* title = [self createTitleLabel];
+    [stackSubviews addObject:title];
+  }
+
+  if (self.secondaryTitleString.length) {
     UITextView* secondaryTitle = [self createSecondaryTitleView];
-    stackSubviews =
-        @[ self.imageContainerView, title, secondaryTitle, subtitle ];
-  } else {
-    stackSubviews = @[ self.imageContainerView, title, subtitle ];
+    [stackSubviews addObject:secondaryTitle];
+  }
+
+  if (self.subtitleString.length) {
+    UITextView* subtitle = [self createSubtitleView];
+    [stackSubviews addObject:subtitle];
+  }
+
+  if (self.underTitleView) {
+    [stackSubviews addObject:self.underTitleView];
   }
 
   DCHECK(stackSubviews);

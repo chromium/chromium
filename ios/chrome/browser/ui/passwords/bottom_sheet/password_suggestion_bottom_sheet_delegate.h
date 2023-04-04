@@ -14,6 +14,10 @@
 // selected by the user, which is expected to fill the relevant fields.
 - (void)didSelectSuggestion:(NSInteger)row;
 
+// Request to refocus the field which originally triggered the bottom sheet
+// after the bottom sheet has been dismissed.
+- (void)refocus;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_
