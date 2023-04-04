@@ -161,6 +161,11 @@ class CanvasAnimationNoClearPage(ToughCanvasPage):
   URL = 'file://../tough_canvas_cases/canvas-animation-no-clear.html'
 
 
+class CanvasGlobalAlpha(ToughCanvasPage):
+  BASE_NAME = 'canvas_globalAlpha'
+  URL = 'file://../tough_canvas_cases/canvas_globalAlpha.html'
+
+
 class CanvasToBlobPage(ToughCanvasPage):
   BASE_NAME = 'canvas_to_blob'
   URL = 'file://../tough_canvas_cases/canvas_toBlob.html'

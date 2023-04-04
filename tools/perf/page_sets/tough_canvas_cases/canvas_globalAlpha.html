@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    * {
+      margin: 0;
+    }
+  </style>
+<body>
+  <canvas id="canvas"></canvas>
+</body>
+<script>
+// See crbug.com/1369796
+// Draw hundreds of moving, semi-transparent, overlapping rectangles. This is
+// meant to stress composited draw with globalAlpha for canvas 2d.
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const rectSize = 400;
+const numRects = 300;
+ctx.globalAlpha = 0.05;
+ctx.fillStyle = "darkblue";
+const rects = [];
+
+function randBetween(min, max, seed) {
+  function rand(seed) {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+  return (rand(seed) * (max - min)) + min;
+}
+
+class RandomRect {
+  constructor(n) {
+    this.direction = randBetween(0, 360, n + 31);
+    this.directionX = Math.cos(this.direction);
+    this.directionY = -Math.sin(this.direction);
+    this.x = randBetween(-rectSize, canvas.width, n + 201);
+    this.y = randBetween(-rectSize, canvas.height, n + 207);
+    this.speed = randBetween(0.5, 5.5, n + 47);
+  }
+
+  wrap() {
+    while (this.x < -rectSize)
+      this.x += canvas.width + rectSize;
+    while (this.x > canvas.width)
+      this.x -= canvas.width + rectSize;
+    while (this.y < -rectSize)
+      this.y += canvas.height + rectSize;
+    while (this.y > canvas.height)
+      this.y -= canvas.height + rectSize;
+  }
+
+  draw() {
+    this.x += this.directionX * this.speed;
+    this.y += this.directionY * this.speed;
+    this.wrap();
+    ctx.fillRect(this.x, this.y, rectSize, rectSize);
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const rect of rects) {
+    rect.draw();
+  }
+  requestAnimationFrame(draw);
+}
+
+window.onload = function () {
+  for (let i = 0; i < numRects; i++) {
+    rects.push(new RandomRect(i));
+  }
+  draw();
+};
+</script>
+</html>
