@@ -1346,8 +1346,11 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         // a navigation, the else branch would be taken. Explicit check for
         // web_ui_ is required, otherwise we will allocate a new instance
         // unnecessarily here.
-        render_frame_host_->CreateWebUI(request->common_params().url,
-                                        request->bindings());
+        std::unique_ptr<WebUIImpl> web_ui =
+            request->CreateWebUIIfNeeded(render_frame_host_.get());
+        if (web_ui) {
+          render_frame_host_->MaybeSetWebUI(*request, std::move(web_ui));
+        }
         if (render_frame_host_->IsRenderFrameLive()) {
           render_frame_host_->web_ui()->WebUIRenderFrameCreated(
               render_frame_host_.get());
@@ -1428,10 +1431,13 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     if (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
             browser_context, request->common_params().url) &&
         request->state() < NavigationRequest::CANCELING) {
-      bool created_web_ui = speculative_render_frame_host_->CreateWebUI(
-          request->common_params().url, request->bindings());
-      notify_webui_of_rf_creation =
-          created_web_ui && speculative_render_frame_host_->web_ui();
+      std::unique_ptr<WebUIImpl> web_ui =
+          request->CreateWebUIIfNeeded(speculative_render_frame_host_.get());
+      if (web_ui) {
+        notify_webui_of_rf_creation =
+            speculative_render_frame_host_->MaybeSetWebUI(*request,
+                                                          std::move(web_ui));
+      }
     }
 
     navigation_rfh = speculative_render_frame_host_.get();

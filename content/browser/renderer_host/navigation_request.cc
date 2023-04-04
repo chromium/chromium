@@ -9342,4 +9342,38 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
   return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
 }
 
+std::unique_ptr<WebUIImpl> NavigationRequest::CreateWebUIIfNeeded(
+    RenderFrameHostImpl* frame_host) {
+  TRACE_EVENT2("content", "NavigationRequest::CreateWebUI", "frame_host",
+               frame_host, "url", GetURL());
+  WebUI::TypeID new_web_ui_type =
+      WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
+          frame_host->GetSiteInstance()->GetBrowserContext(), GetURL());
+  if (new_web_ui_type == WebUI::kNoWebUI) {
+    // The navigation doesn't need a WebUI.
+    return nullptr;
+  }
+
+  // We reuse WebUI on navigations with the same WebUI type where we use the
+  // same RFH, so don't create a new one if there is already an existing WebUI
+  // in `frame_host`. However, it is useful to verify that its type hasn't
+  // changed. Site isolation guarantees that RenderFrameHostImpl will be changed
+  // if the WebUI type differs.
+  if (frame_host->web_ui()) {
+    CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
+    return nullptr;
+  }
+
+  std::unique_ptr<WebUIImpl> web_ui = std::make_unique<WebUIImpl>(frame_host);
+  std::unique_ptr<WebUIController> controller(
+      WebUIControllerFactoryRegistry::GetInstance()
+          ->CreateWebUIControllerForURL(web_ui.get(), GetURL()));
+  if (!controller) {
+    return nullptr;
+  }
+
+  web_ui->SetController(std::move(controller));
+  return web_ui;
+}
+
 }  // namespace content

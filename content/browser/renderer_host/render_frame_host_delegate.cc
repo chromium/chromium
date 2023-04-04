@@ -102,13 +102,6 @@ RenderFrameHostImpl* RenderFrameHostDelegate::GetFocusedFrame() {
   return nullptr;
 }
 
-std::unique_ptr<WebUIImpl>
-RenderFrameHostDelegate::CreateWebUIForRenderFrameHost(
-    RenderFrameHostImpl* frame_host,
-    const GURL& url) {
-  return nullptr;
-}
-
 FrameTree* RenderFrameHostDelegate::CreateNewWindow(
     RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,

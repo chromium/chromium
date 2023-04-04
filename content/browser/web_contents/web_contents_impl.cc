@@ -8303,12 +8303,6 @@ void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
                     new_frame->GetRenderViewHost());
 }
 
-std::unique_ptr<WebUIImpl> WebContentsImpl::CreateWebUIForRenderFrameHost(
-    RenderFrameHostImpl* frame_host,
-    const GURL& url) {
-  return CreateWebUI(frame_host, url);
-}
-
 void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
     RenderViewHost* render_view_host) {
   OPTIONAL_TRACE_EVENT1(
@@ -8652,24 +8646,6 @@ void WebContentsImpl::OnPreferredSizeChanged(const gfx::Size& old_size) {
   const gfx::Size new_size = GetPreferredSize();
   if (new_size != old_size)
     delegate_->UpdatePreferredSize(this, new_size);
-}
-
-std::unique_ptr<WebUIImpl> WebContentsImpl::CreateWebUI(
-    RenderFrameHostImpl* frame_host,
-    const GURL& url) {
-  TRACE_EVENT2("content", "WebContentsImpl::CreateWebUI", "frame_host",
-               frame_host, "url", url);
-  std::unique_ptr<WebUIImpl> web_ui =
-      std::make_unique<WebUIImpl>(this, frame_host);
-  std::unique_ptr<WebUIController> controller(
-      WebUIControllerFactoryRegistry::GetInstance()
-          ->CreateWebUIControllerForURL(web_ui.get(), url));
-  if (controller) {
-    web_ui->SetController(std::move(controller));
-    return web_ui;
-  }
-
-  return nullptr;
 }
 
 FindRequestManager* WebContentsImpl::GetFindRequestManager() {

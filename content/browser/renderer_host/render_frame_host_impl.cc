@@ -10023,33 +10023,30 @@ bool RenderFrameHostImpl::IsFocused() {
          focused_rfh->IsDescendantOfWithinFrameTree(this);
 }
 
-bool RenderFrameHostImpl::CreateWebUI(const GURL& dest_url,
-                                      int entry_bindings) {
+bool RenderFrameHostImpl::MaybeSetWebUI(NavigationRequest& request,
+                                        std::unique_ptr<WebUIImpl> new_web_ui) {
+  // This function should only be called to set a WebUI object. To clear an
+  // existing WebUI object, call `ClearWebUI()` instead.
+  CHECK(new_web_ui);
+  // If a WebUI has been set for a RenderFrameHost, we shouldn't overwrite it
+  // with a new WebUI.
+  CHECK(!web_ui_);
+
   // Verify expectation that WebUI should not be created for error pages.
   DCHECK(!GetSiteInstance()->GetSiteInfo().is_error_page());
 
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
-          GetSiteInstance()->GetBrowserContext(), dest_url);
+          GetSiteInstance()->GetBrowserContext(), request.GetURL());
   CHECK_NE(new_web_ui_type, WebUI::kNoWebUI);
 
-  // If |web_ui_| already exists, there is no need to create a new one. However,
-  // it is useful to verify that its type hasn't changed. Site isolation
-  // guarantees that RenderFrameHostImpl will be changed if the WebUI type
-  // differs.
-  if (web_ui_) {
-    CHECK_EQ(new_web_ui_type, web_ui_type_);
-    return false;
-  }
-
-  web_ui_ = delegate_->CreateWebUIForRenderFrameHost(this, dest_url);
-  if (!web_ui_)
-    return false;
+  web_ui_ = std::move(new_web_ui);
 
   // If we have assigned (zero or more) bindings to the NavigationEntry in
   // the past, make sure we're not granting it different bindings than it
   // had before. If so, note it and don't give it any bindings, to avoid a
   // potential privilege escalation.
+  int entry_bindings = request.bindings();
   if (entry_bindings != FrameNavigationEntry::kInvalidBindings &&
       web_ui_->GetBindings() != entry_bindings) {
     RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));

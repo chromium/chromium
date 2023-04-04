@@ -63,13 +63,13 @@ std::u16string WebUI::GetJavascriptCall(
   return result;
 }
 
-WebUIImpl::WebUIImpl(WebContentsImpl* contents, RenderFrameHostImpl* frame_host)
+WebUIImpl::WebUIImpl(RenderFrameHostImpl* frame_host)
     : bindings_(BINDINGS_POLICY_WEB_UI),
       requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
-      web_contents_(contents),
+      web_contents_(WebContentsImpl::FromRenderFrameHostImpl(frame_host)),
       frame_host_(frame_host),
-      web_contents_observer_(new WebUIMainFrameObserver(this, contents)) {
-  DCHECK(contents);
+      web_contents_observer_(new WebUIMainFrameObserver(this, web_contents_)) {
+  DCHECK(web_contents_);
 
   // Assert that we can only open webui for the active or speculative pages.
   DCHECK(frame_host->lifecycle_state() ==

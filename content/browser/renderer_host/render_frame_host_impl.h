@@ -1495,13 +1495,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // addition, its associated RenderWidgetHost has to be focused.
   bool IsFocused();
 
-  // Creates a WebUI for this RenderFrameHost based on the provided |dest_url|
-  // if required. Returns true if a new WebUI was created.
-  // If this is a history navigation its NavigationEntry bindings should be
-  // provided through |entry_bindings| to allow verifying that they are not
-  // being set differently this time around. Otherwise |entry_bindings| should
-  // be set to NavigationEntryImpl::kInvalidBindings so that no checks are done.
-  bool CreateWebUI(const GURL& dest_url, int entry_bindings);
+  // Tries to set `new_web_ui` as the WebUI for this RenderFrameHost, which is
+  // based on the provided `request`'s URL. Returns true if the WebUI can be
+  // used by this RenderFrameHost.
+  bool MaybeSetWebUI(NavigationRequest& request,
+                     std::unique_ptr<WebUIImpl> new_web_ui);
 
   // Destroys WebUI instance and resets related data.
   // This indirectly calls content's embedders and may have arbitrary side

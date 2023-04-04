@@ -362,12 +362,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Called by when |source_rfh| advances focus to a RenderFrameProxyHost.
   virtual void OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {}
 
-  // Creates a WebUI object for a frame navigating to |url|. If no WebUI
-  // applies, returns null.
-  virtual std::unique_ptr<WebUIImpl> CreateWebUIForRenderFrameHost(
-      RenderFrameHostImpl* frame_host,
-      const GURL& url);
-
   // Called by |frame| to notify that it has received an update on focused
   // element. |bounds_in_root_view| is the rectangle containing the element that
   // is focused and is with respect to root frame's RenderWidgetHost's
