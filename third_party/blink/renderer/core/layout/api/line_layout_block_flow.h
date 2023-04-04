@@ -126,10 +126,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
                                                    logical_height);
   }
 
-  void SetHasMarkupTruncation(bool b) {
-    ToBlockFlow()->SetHasMarkupTruncation(b);
-  }
-
   LayoutUnit LogicalWidth() { return ToBlockFlow()->LogicalWidth(); }
 
   LineBoxList* LineBoxes() { return ToBlockFlow()->LineBoxes(); }

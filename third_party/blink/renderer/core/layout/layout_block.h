@@ -201,15 +201,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // itself for the legend is still a child of this object.
   bool IsAnonymousNGFieldsetContentWrapper() const;
 
-  void SetHasMarkupTruncation(bool b) {
-    NOT_DESTROYED();
-    has_markup_truncation_ = b;
-  }
-  bool HasMarkupTruncation() const {
-    NOT_DESTROYED();
-    return has_markup_truncation_;
-  }
-
   LayoutUnit TextIndentOffset() const;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
@@ -517,7 +508,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   // Note these quirk values can't be put in LayoutBlockRareData since they are
   // set too frequently.
-  unsigned has_markup_truncation_ : 1;
   unsigned width_available_to_children_changed_ : 1;
   unsigned height_available_to_children_changed_ : 1;
   unsigned descendants_with_floats_marked_for_layout_ : 1;

@@ -109,7 +109,6 @@ TrackedContainerMap& GetPositionedContainerMap() {
 
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
-      has_markup_truncation_(false),
       width_available_to_children_changed_(false),
       height_available_to_children_changed_(false),
       descendants_with_floats_marked_for_layout_(false),
