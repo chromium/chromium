@@ -9,6 +9,7 @@ source_set("public") {
     "browser_list.h",
     "browser_list_factory.h",
     "browser_list_observer.h",
+    "browser_list_observer.mm",
     "browser_observer.h",
     "browser_observer_bridge.h",
     "browser_observer_bridge.mm",
