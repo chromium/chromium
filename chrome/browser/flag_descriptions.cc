@@ -2095,6 +2095,10 @@ const char kOmniboxCR23SteadyStateIconsName[] = "Omnibox Steady State Icons";
 const char kOmniboxCR23SteadyStateIconsDescription[] =
     "Updates Omnibox steady state icons to comply with CR23 guidelines.";
 
+const char kOmniboxCr23UmbrellaName[] = "Omnibox CR23 Umbrella";
+const char kOmniboxCr23UmbrellaDescription[] =
+    "Updates all Omnibox UI to comply with CR23 guidelines.";
+
 const char kOmniboxDisableCGIParamMatchingName[] =
     "Disable CGI Param Name Matching";
 const char kOmniboxDisableCGIParamMatchingDescription[] =

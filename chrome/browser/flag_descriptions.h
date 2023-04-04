@@ -1175,6 +1175,9 @@ extern const char kOmniboxCR23ExpandedStateShapeDescription[];
 extern const char kOmniboxCR23SteadyStateIconsName[];
 extern const char kOmniboxCR23SteadyStateIconsDescription[];
 
+extern const char kOmniboxCr23UmbrellaName[];
+extern const char kOmniboxCr23UmbrellaDescription[];
+
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
 

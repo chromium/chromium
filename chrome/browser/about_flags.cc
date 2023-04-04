@@ -5757,6 +5757,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
 
+    {"omnibox-cr23-umbrella", flag_descriptions::kOmniboxCr23UmbrellaName,
+     flag_descriptions::kOmniboxCr23UmbrellaDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kCr2023Umbrella)},
+
     {"omnibox-cr23-expanded-state-height",
      flag_descriptions::kOmniboxCR23ExpandedStateHeightName,
      flag_descriptions::kOmniboxCR23ExpandedStateHeightDescription, kOsDesktop,
