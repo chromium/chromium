@@ -105,6 +105,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           form_source_url_);
 
   int number_of_unchanged_profiles = 0;
+  absl::optional<AutofillProfile> migration_candidate;
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
   // existing profile. For `kAccount` profiles:
@@ -142,14 +143,17 @@ void ProfileImportProcess::DetermineProfileImportType() {
     AutofillProfile merged_profile = *existing_profile;
     if (!merged_profile.MergeDataFrom(observed_profile_, app_locale_)) {
       ++number_of_unchanged_profiles;
+      // The `observed_profile_` is a duplicate of the `existing_profile`.
+      // Consider it for migration.
+      MaybeSetMigrationCandidate(migration_candidate, *existing_profile);
       continue;
     }
 
     // At this point, the observed profile was merged with (a copy of) the
     // existing profile which changed in some way.
     // Now, determine if the merge alters any settings-visible value, or if the
-    // merge can  be considered as a silent update that does not need to get
-    // user confirmation.
+    // merge can be considered as a silent update that does not need to get user
+    // confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile, app_locale_)) {
       if (allow_only_silent_updates_ ||
@@ -201,6 +205,9 @@ void ProfileImportProcess::DetermineProfileImportType() {
     } else {
       ++number_of_unchanged_profiles;
     }
+    // The `observed_profile_` only differs from the `existing_profile` in a
+    // non-settings visible way. Consider it for migration.
+    MaybeSetMigrationCandidate(migration_candidate, merged_profile);
   }
 
   // If the profile is not mergeable with an existing profile, the import
@@ -237,10 +244,17 @@ void ProfileImportProcess::DetermineProfileImportType() {
           silent_updates_present
               ? AutofillProfileImportType::kSilentUpdateForIncompleteProfile
               : AutofillProfileImportType::kUnusableIncompleteProfile;
-    } else {
+    } else if (!migration_candidate) {
       import_type_ = silent_updates_present
                          ? AutofillProfileImportType::kSilentUpdate
                          : AutofillProfileImportType::kDuplicateImport;
+    } else {
+      import_type_ =
+          silent_updates_present
+              ? AutofillProfileImportType::kProfileMigrationAndSilentUpdate
+              : AutofillProfileImportType::kProfileMigration;
+      CHECK(migration_candidate.has_value());
+      import_candidate_ = std::move(migration_candidate);
     }
   }
 
@@ -250,10 +264,23 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
   // At this point, all existing profiles are either unchanged, updated and/or
   // one is the merge candidate.
+  // One of the unchanged or updated profiles might be considered for migration.
+  // In this case, `import_type()` is `kProfileMigrationAndMaybeSilentUpdates`.
   DCHECK_EQ(existing_profiles.size(),
             number_of_unchanged_profiles + updated_profiles_.size() +
                 (merge_candidate_.has_value() ? 1 : 0));
   DCHECK_NE(import_type_, AutofillProfileImportType::kImportTypeUnspecified);
+}
+
+void ProfileImportProcess::MaybeSetMigrationCandidate(
+    absl::optional<AutofillProfile>& migration_candidate,
+    const AutofillProfile& profile) const {
+  if (!migration_candidate && !allow_only_silent_updates_ &&
+      profile.source() == AutofillProfile::Source::kLocalOrSyncable &&
+      personal_data_manager_->IsEligibleForAddressAccountStorage() &&
+      !personal_data_manager_->IsProfileMigrationBlocked(profile.guid())) {
+    migration_candidate = profile;
+  }
 }
 
 std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
@@ -271,14 +298,34 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
 
   // If there is a confirmed import candidate, add it.
   if (confirmed_import_candidate_.has_value()) {
-    resulting_profiles.emplace_back(confirmed_import_candidate_.value());
-    guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
+    // Confirming an import candidate corresponds to either a new/update profile
+    // or a migration prompt.
+    if (is_migration()) {
+      AutofillProfile migrated_profile =
+          confirmed_import_candidate_->ConvertToAccountProfile();
+      CHECK_NE(migrated_profile.guid(), confirmed_import_candidate_->guid());
+      resulting_profiles.push_back(migrated_profile);
+      guids_of_changed_profiles.insert(migrated_profile.guid());
+      // Adding the `confirmed_import_candidate_`'s GUID ensures that it isn't
+      // revived below as one of the unchanged profiles.
+      guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
+      // If the `import_candidate_` was silently updated, it is part of
+      // `updated_profiles_`. Remove the corresponding
+      // `confirmed_import_candidate_` from `reesulting_profiles`, so it doesn't
+      // get revived.
+      base::EraseIf(resulting_profiles, [&](const AutofillProfile& profile) {
+        return profile.guid() == confirmed_import_candidate_->guid();
+      });
+    } else {
+      resulting_profiles.emplace_back(confirmed_import_candidate_.value());
+      guids_of_changed_profiles.insert(confirmed_import_candidate_->guid());
+    }
   }
 
   // Add all other profiles that are currently available in the personal data
   // manager.
   for (const auto* unchanged_profile : personal_data_manager_->GetProfiles()) {
-    if (guids_of_changed_profiles.count(unchanged_profile->guid()) == 0) {
+    if (!guids_of_changed_profiles.contains(unchanged_profile->guid())) {
       resulting_profiles.push_back(*unchanged_profile);
     }
   }
@@ -296,7 +343,7 @@ void ProfileImportProcess::SetUserDecision(
   user_decision_ = decision;
   switch (user_decision_) {
     // If the import was accepted either with or without a prompt, the import
-    // candidate gets confired.
+    // candidate gets confirmed.
     case UserDecision::kUserNotAsked:
     case UserDecision::kAccepted:
       confirmed_import_candidate_ = import_candidate_;

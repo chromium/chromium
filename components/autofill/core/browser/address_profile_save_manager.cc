@@ -97,12 +97,14 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
       FinalizeProfileImport(std::move(import_process));
       return;
 
-    // Both the import of a new profile, or a merge with an existing profile
-    // that changes a settings-visible value of an existing profile triggers a
-    // user prompt.
+    // The import of a new profile, a merge with an existing profile that
+    // changes a settings-visible value of an existing profile, or a profile
+    // migration triggers a user prompt.
     case AutofillProfileImportType::kNewProfile:
     case AutofillProfileImportType::kConfirmableMerge:
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kProfileMigration:
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
       OfferSavePrompt(std::move(import_process));
       return;
 
@@ -133,7 +135,8 @@ void AddressProfileSaveManager::OfferSavePrompt(
       process_ptr->import_candidate().value(),
       base::OptionalToPtr(process_ptr->merge_candidate()),
       AutofillClient::SaveAddressProfilePromptOptions{
-          .show_prompt = true, .is_migration_to_account = false},
+          .show_prompt = true,
+          .is_migration_to_account = process_ptr->is_migration()},
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(import_process)));

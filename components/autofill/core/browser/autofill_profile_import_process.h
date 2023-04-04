@@ -54,7 +54,14 @@ enum class AutofillProfileImportType {
   // Indicates that even though the incomplete profile contained structured
   // information, it could not be used for a silent update.
   kUnusableIncompleteProfile,
-  kMaxValue = kUnusableIncompleteProfile
+  // The observed profile corresponds to an existing kLocalOrSyncable profile,
+  // which can be migrated to the account profile storage.
+  kProfileMigration,
+  // Like `kProfileMigration`, but additionally the migration candidate and
+  // other stored profiles can be silently updated. These silent updates happen
+  // even if the user declines the migration.
+  kProfileMigrationAndSilentUpdate,
+  kMaxValue = kProfileMigrationAndSilentUpdate
 };
 
 // Specifies the status of the imported phone number.
@@ -144,6 +151,12 @@ class ProfileImportProcess {
 
   AutofillProfileImportType import_type() const { return import_type_; }
 
+  bool is_migration() const {
+    return import_type_ == AutofillProfileImportType::kProfileMigration ||
+           import_type_ ==
+               AutofillProfileImportType::kProfileMigrationAndSilentUpdate;
+  }
+
   const ProfileImportMetadata& import_metadata() const {
     return import_metadata_;
   }
@@ -210,6 +223,19 @@ class ProfileImportProcess {
   // a merge candidate in case there is a confirmable merge.
   void DetermineProfileImportType();
 
+  // If the observed profile is a duplicate (modulo silent updates) of an
+  // existing `kLocalOrSyncable` profile, eligible users are prompted to change
+  // its storage location to `kAccount`.
+  // This function checks whether the `profile` qualifies for migration and sets
+  // the `migration_candidate` accordingly. The conditions are:
+  // - `migration_candidate` not set yet.
+  // - The User eligible for account profile storage.
+  // - `profile` is of source `kLocalOrSyncable` and not blocked for migration.
+  // - Not only silent updates are allowed.
+  void MaybeSetMigrationCandidate(
+      absl::optional<AutofillProfile>& migration_candidate,
+      const AutofillProfile& profile) const;
+
   // An id to identify an import request.
   AutofillProfileImportId import_id_;
 
@@ -226,7 +252,8 @@ class ProfileImportProcess {
   // profile.
   absl::optional<AutofillProfile> merge_candidate_;
 
-  // The import candidate that is presented to the user.
+  // The import candidate that is presented to the user. In case of a migration,
+  // this is an existing profile.
   absl::optional<AutofillProfile> import_candidate_;
 
   // The type of the import indicates if the profile is just a duplicate of an
