@@ -211,6 +211,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS);
 
   // Platform app sources that are not API-specific..
+  source_map->RegisterSource("chromeWebViewElement",
+                             IDR_CHROME_WEB_VIEW_ELEMENT_JS);
   source_map->RegisterSource("chromeWebViewInternal",
                              IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("chromeWebView", IDR_CHROME_WEB_VIEW_JS);
@@ -219,7 +221,7 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
     extensions::ScriptContext* context) {
   DCHECK(context->GetAvailability("webViewInternal").is_available());
-  context->module_system()->Require("chromeWebView");
+  context->module_system()->Require("chromeWebViewElement");
 }
 
 void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(
