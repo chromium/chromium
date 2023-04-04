@@ -202,7 +202,8 @@
     return;
   }
 
-  DCHECK(!current_promo.has_value());
+  CHECK(!current_promo.has_value()) << "Current promo is already set: "
+                                    << NameForPromo(current_promo.value());
   current_promo = promo;
 
   auto handler_it = _displayHandlerPromos.find(promo);
