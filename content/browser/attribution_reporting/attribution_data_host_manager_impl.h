@@ -201,6 +201,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   base::OneShotTimer trigger_timer_;
   base::circular_deque<DelayedTrigger> delayed_triggers_;
 
+  data_decoder::DataDecoder data_decoder_;
+
   base::WeakPtrFactory<AttributionDataHostManagerImpl> weak_factory_{this};
 };
 

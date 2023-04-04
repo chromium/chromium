@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_response_headers.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -540,9 +541,7 @@ void AttributionDataHostManagerImpl::HandleNextWebDecode(
 
   const auto& pending_decode = registrations.pending_web_decodes().front();
 
-  // TODO(crbug.com/1430046): Consider reusing decoders within a redirect chain
-  // to avoid creating as many processes.
-  data_decoder::DataDecoder::ParseJsonIsolated(
+  data_decoder_.ParseJson(
       pending_decode.header,
       base::BindOnce(&AttributionDataHostManagerImpl::OnWebSourceParsed,
                      weak_factory_.GetWeakPtr(), registrations.Id()));
@@ -555,9 +554,7 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
 
   const auto& header = registrations.pending_os_decodes().front();
 
-  // TODO(crbug.com/1430046): Consider reusing decoders within a redirect chain
-  // to avoid creating as many processes.
-  data_decoder::DataDecoder::ParseStructuredHeaderItemIsolated(
+  data_decoder_.ParseStructuredHeaderItem(
       header, base::BindOnce(&AttributionDataHostManagerImpl::OnOsSourceParsed,
                              weak_factory_.GetWeakPtr(), registrations.Id()));
 }
