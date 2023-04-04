@@ -482,4 +482,19 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
   EXPECT_FALSE(target->IsInTopLayer());
 }
 
+TEST_F(HTMLElementTest, AnchorAttrWithFeatureDisabled) {
+  ScopedHTMLSelectMenuElementForTest select_menu_disabled(false);
+  ScopedCSSAnchorPositioningForTest anchor_pos_disabled(false);
+
+  SetBodyInnerHTML("<div id=anchor><div anchor=anchor id=target></div></div>");
+
+  Element* anchor = GetDocument().getElementById("anchor");
+  Element* target = GetDocument().getElementById("target");
+
+  // Shouldn't hook up objects related to anchor attr when the feature is
+  // disabled.
+  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_FALSE(target->GetAnchorElementObserver());
+}
+
 }  // namespace blink

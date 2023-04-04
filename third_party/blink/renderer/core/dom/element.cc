@@ -8601,8 +8601,8 @@ AnchorScrollData* Element::GetAnchorScrollData() const {
 }
 
 void Element::IncrementImplicitlyAnchoredElementCount() {
-  if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled() &&
-      !HasImplicitlyAnchoredElement() && GetLayoutObject()) {
+  DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+  if (!HasImplicitlyAnchoredElement() && GetLayoutObject()) {
     // Invalidate layout to populate itself into NGPhysical/LogicalAnchorQuery.
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kAnchorPositioning);
@@ -8629,6 +8629,7 @@ AnchorElementObserver* Element::GetAnchorElementObserver() const {
 
 AnchorElementObserver& Element::EnsureAnchorElementObserver() {
   DCHECK(IsHTMLElement());
+  DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   return EnsureElementRareData().EnsureAnchorElementObserver(
       To<HTMLElement>(this));
 }

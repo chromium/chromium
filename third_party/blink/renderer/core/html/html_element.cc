@@ -791,7 +791,8 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     EnsureElementInternals().ReadonlyAttributeChanged();
     return;
   }
-  if (params.name == html_names::kAnchorAttr) {
+  if (params.name == html_names::kAnchorAttr &&
+      RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
     EnsureAnchorElementObserver().Notify();
     return;
   }
