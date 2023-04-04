@@ -1156,6 +1156,28 @@
       }
     ]
   },
+  "chromeos-trogdor64-chrome-skylab-fyi": {
+    "additional_compile_targets": [
+      "chrome",
+      "linux_symbols",
+      "symupload"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "autotest_name": "tast.chrome-from-tls",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor64-release/R114-15407.0.0",
+        "name": "chrome_all_tast_tests TROGDOR64_RELEASE_LKGM",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
+        "test": "chrome_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "timeout_sec": 21600,
+        "variant_id": "TROGDOR64_RELEASE_LKGM"
+      }
+    ]
+  },
   "lacros-amd64-generic-chrome-fyi": {
     "additional_compile_targets": [
       "chrome"
