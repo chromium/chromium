@@ -219,13 +219,16 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
 
   std::vector<FencedFrameConfig> nested_configs;
   nested_configs.reserve(ad_component_descriptors.size());
-  for (auto& ad_component_descriptor : ad_component_descriptors) {
+  for (const auto& ad_component_descriptor : ad_component_descriptors) {
     // This config has no urn:uuid. It will later be set when being read into
     // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
+    // For an ad component, the `fenced_frame_reporter` from its parent fenced
+    // frame is reused.
     // TODO(crbug.com/1420638): Once the representation of size in fenced frame
     // config is finalized, pass the ad component size from the winning bid to
     // its fenced frame config.
-    nested_configs.emplace_back(SubstituteSizeIntoURL(ad_component_descriptor));
+    nested_configs.emplace_back(SubstituteSizeIntoURL(ad_component_descriptor),
+                                /*is_ad_component=*/true);
   }
   config.nested_configs_.emplace(std::move(nested_configs),
                                  VisibilityToEmbedder::kOpaque,

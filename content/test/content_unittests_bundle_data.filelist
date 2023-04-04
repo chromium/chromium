@@ -993,6 +993,8 @@ data/interest_group/bidding_logic_invalid_ad_url.js
 data/interest_group/bidding_logic_invalid_ad_url.js.mock-http-headers
 data/interest_group/bidding_logic_loop_forever.js
 data/interest_group/bidding_logic_loop_forever.js.mock-http-headers
+data/interest_group/bidding_logic_register_ad_beacon.js
+data/interest_group/bidding_logic_register_ad_beacon.js.mock-http-headers
 data/interest_group/bidding_logic_report_to_name.js
 data/interest_group/bidding_logic_report_to_name.js.mock-http-headers
 data/interest_group/bidding_logic_stop_bidding_after_win.js
@@ -1021,6 +1023,8 @@ data/interest_group/decision_logic_expect_top_frame_a_test.js
 data/interest_group/decision_logic_expect_top_frame_a_test.js.mock-http-headers
 data/interest_group/decision_logic_loop_forever.js
 data/interest_group/decision_logic_loop_forever.js.mock-http-headers
+data/interest_group/decision_logic_register_ad_beacon.js
+data/interest_group/decision_logic_register_ad_beacon.js.mock-http-headers
 data/interest_group/decision_logic_report_to_seller_signals.js
 data/interest_group/decision_logic_report_to_seller_signals.js.mock-http-headers
 data/interest_group/decision_logic_throws.js
