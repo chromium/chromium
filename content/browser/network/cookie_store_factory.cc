@@ -68,8 +68,7 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
     scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
         new net::SQLitePersistentCookieStore(
             config.path, client_task_runner, background_task_runner,
-            config.restore_old_session_cookies, config.crypto_delegate,
-            /*enable_exclusive_access=*/false));
+            config.restore_old_session_cookies, config.crypto_delegate));
 
     cookie_monster =
         std::make_unique<net::CookieMonster>(std::move(sqlite_store), net_log);

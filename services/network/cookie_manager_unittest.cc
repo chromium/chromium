@@ -2864,8 +2864,7 @@ class SessionCleanupCookieManagerTest : public CookieManagerTest {
     auto sqlite_store = base::MakeRefCounted<net::SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(kTestCookiesFilename),
         task_environment_.GetMainThreadTaskRunner(), background_task_runner_,
-        /*restore_old_session_cookies=*/true, /*crypto_delegate=*/nullptr,
-        /*enable_exclusive_access=*/false);
+        true, nullptr);
     return base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store.get());
   }
 

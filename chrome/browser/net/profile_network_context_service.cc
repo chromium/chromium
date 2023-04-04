@@ -849,14 +849,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         base::FilePath(chrome::kNetworkPersistentStateFilename);
     network_context_params->file_paths->cookie_database_name =
         base::FilePath(chrome::kCookieFilename);
-
-#if BUILDFLAG(IS_WIN)
-    // If this feature is enabled, then the cookie database used by this profile
-    // will be locked for exclusive access by sqlite3 implementation in the
-    // network service.
-    network_context_params->enable_locking_cookie_database =
-        base::FeatureList::IsEnabled(features::kLockProfileCookieDatabase);
-#endif  // BUILDFLAG(IS_WIN)
     network_context_params->file_paths->trust_token_database_name =
         base::FilePath(chrome::kTrustTokenFilename);
 

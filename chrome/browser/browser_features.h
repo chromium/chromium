@@ -74,7 +74,6 @@ BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
-BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
 #endif
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);

@@ -2659,16 +2659,10 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
     crypto_delegate = cookie_config::GetCookieCryptoDelegate();
   }
 
-#if BUILDFLAG(IS_WIN)
-  const bool enable_exclusive_access = params_->enable_locking_cookie_database;
-#else
-  const bool enable_exclusive_access = false;
-#endif  // BUILDFLAG(IS_WIN)
   scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
       new net::SQLitePersistentCookieStore(
           cookie_path, client_task_runner, background_task_runner,
-          params_->restore_old_session_cookies, crypto_delegate,
-          enable_exclusive_access));
+          params_->restore_old_session_cookies, crypto_delegate));
 
   return base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store);
 }

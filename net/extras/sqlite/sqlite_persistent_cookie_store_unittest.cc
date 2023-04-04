@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -146,8 +145,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
 
   void Create(bool crypt_cookies,
               bool restore_old_session_cookies,
-              bool use_current_thread,
-              bool enable_exclusive_access) {
+              bool use_current_thread) {
     if (crypt_cookies)
       cookie_crypto_delegate_ = std::make_unique<CookieCryptor>();
 
@@ -156,14 +154,14 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
         use_current_thread ? base::SingleThreadTaskRunner::GetCurrentDefault()
                            : client_task_runner_,
         background_task_runner_, restore_old_session_cookies,
-        cookie_crypto_delegate_.get(), enable_exclusive_access);
+        cookie_crypto_delegate_.get());
   }
 
   void CreateAndLoad(bool crypt_cookies,
                      bool restore_old_session_cookies,
                      CanonicalCookieVector* cookies) {
     Create(crypt_cookies, restore_old_session_cookies,
-           false /* use_current_thread */, /*enable_exclusive_access=*/false);
+           false /* use_current_thread */);
     Load(cookies);
   }
 
@@ -325,7 +323,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestSessionCookiesDeletedOnStartup) {
   // transient cookie and flush it to disk.
   store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
       temp_dir_.GetPath().Append(kCookieFilename), client_task_runner_,
-      background_task_runner_, false, nullptr, false);
+      background_task_runner_, false, nullptr);
 
   // Posting a blocking task to db_thread_ makes sure that the DB thread waits
   // until both Load and Flush have been posted to its task queue.
@@ -360,7 +358,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestSessionCookiesDeletedOnStartup) {
   // which was added during the second cookie store load.
   store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
       temp_dir_.GetPath().Append(kCookieFilename), client_task_runner_,
-      background_task_runner_, true, nullptr, false);
+      background_task_runner_, true, nullptr);
   store_->Load(base::BindOnce(&SQLitePersistentCookieStoreTest::OnLoaded,
                               base::Unretained(this)),
                NetLogWithSource());
@@ -391,7 +389,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadCookiesForKey) {
   // base::SingleThreadTaskRunner::GetCurrentDefault() instead of
   // |client_task_runner_| for this test.
   Create(false /* crypt_cookies */, false /* restore_old_session_cookies */,
-         true /* use_current_thread */, false /* enable_exclusive_access */);
+         true /* use_current_thread */);
 
   // Posting a blocking task to db_thread_ makes sure that the DB thread waits
   // until both Load and LoadCookiesForKey have been posted to its task queue.
@@ -1387,7 +1385,7 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   // its PersistentCookieStore on the same thread as its methods are invoked on;
   // so to avoid needing to post every CookieMonster API call, this uses the
   // current thread for SQLitePersistentCookieStore's |client_task_runner|.
-  Create(false, false, true /* use_current_thread */, false);
+  Create(false, false, true /* use_current_thread */);
 
   // Create a cookie on a scheme that doesn't handle cookies by default,
   // and save it.
@@ -1435,8 +1433,7 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   // destroyed store's ops will happen on same runners as the previous
   // instances, so they should complete before the new PersistentCookieStore
   // starts looking at the state on disk.
-  Create(false, false, true /* want current thread to invoke cookie monster */,
-         false);
+  Create(false, false, true /* want current thread to invoke cookie monster */);
   cookie_monster =
       std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr);
   ResultSavingCookieCallback<bool> cookie_scheme_callback2;
@@ -1466,8 +1463,7 @@ TEST_F(SQLitePersistentCookieStoreTest, OpsIfInitFailed) {
   // (e.g. lsan) to actual catch thing.
   ASSERT_TRUE(
       base::CreateDirectory(temp_dir_.GetPath().Append(kCookieFilename)));
-  Create(false, false, true /* want current thread to invoke cookie monster */,
-         false);
+  Create(false, false, true /* want current thread to invoke cookie monster */);
   std::unique_ptr<CookieMonster> cookie_monster =
       std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr);
 
@@ -1513,8 +1509,7 @@ TEST_F(SQLitePersistentCookieStoreTest, Coalescing) {
       absl::nullopt /* cookie_partition_key */);
 
   for (const TestCase& testcase : testcases) {
-    Create(false, false, true /* want current thread to invoke the store. */,
-           false);
+    Create(false, false, true /* want current thread to invoke the store. */);
 
     base::RunLoop run_loop;
     store_->Load(base::BindLambdaForTesting(
@@ -1554,8 +1549,7 @@ TEST_F(SQLitePersistentCookieStoreTest, Coalescing) {
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, NoCoalesceUnrelated) {
-  Create(false, false, true /* want current thread to invoke the store. */,
-         false);
+  Create(false, false, true /* want current thread to invoke the store. */);
 
   base::RunLoop run_loop;
   store_->Load(base::BindLambdaForTesting(
@@ -1586,59 +1580,6 @@ TEST_F(SQLitePersistentCookieStoreTest, NoCoalesceUnrelated) {
 
   db_thread_event_.Signal();
 }
-
-// Locking is only supported on Windows.
-#if BUILDFLAG(IS_WIN)
-
-class SQLitePersistentCookieStoreExclusiveAccessTest
-    : public SQLitePersistentCookieStoreTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  const bool& ShouldBeExclusive() { return GetParam(); }
-};
-
-TEST_P(SQLitePersistentCookieStoreExclusiveAccessTest, LockedStore) {
-  Create(false, false, true /* want current thread to invoke the store. */,
-         /* exclusive access */ ShouldBeExclusive());
-
-  base::RunLoop run_loop;
-  store_->Load(base::BindLambdaForTesting(
-                   [&](CanonicalCookieVector cookies) { run_loop.Quit(); }),
-               NetLogWithSource());
-  run_loop.Run();
-
-  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-      GURL("http://www.example.com/path"), "Tasty=Yes", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
-
-  // Wedge the background thread to make sure that it doesn't start consuming
-  // the queue.
-  background_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SQLitePersistentCookieStoreTest::WaitOnDBEvent,
-                                base::Unretained(this)));
-
-  store_->AddCookie(*cookie);
-
-  {
-    base::File file(
-        temp_dir_.GetPath().Append(kCookieFilename),
-        base::File::Flags::FLAG_OPEN_ALWAYS | base::File::Flags::FLAG_READ);
-    // If locked, should not be able to open file even for read.
-    EXPECT_EQ(ShouldBeExclusive(), !file.IsValid());
-  }
-
-  db_thread_event_.Signal();
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SQLitePersistentCookieStoreExclusiveAccessTest,
-                         ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "Exclusive" : "NotExclusive";
-                         });
-
-#endif  // BUILDFLAG(IS_WIN)
 
 bool CreateV10Schema(sql::Database* db) {
   sql::MetaTable meta_table;

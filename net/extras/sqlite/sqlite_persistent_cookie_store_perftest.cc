@@ -96,8 +96,7 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(cookie_filename), client_task_runner_,
-        background_task_runner_, /*restore_old_session_cookies=*/true,
-        /*crypto_delegate=*/nullptr, /*enable_exclusive_access=*/false);
+        background_task_runner_, false, nullptr);
     std::vector<CanonicalCookie*> cookies;
     Load();
     ASSERT_EQ(0u, cookies_.size());
@@ -116,8 +115,7 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
 
     store_ = base::MakeRefCounted<SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(cookie_filename), client_task_runner_,
-        background_task_runner_, /*restore_old_session_cookies=*/true,
-        /*crypto_delegate=*/nullptr, /*enable_exclusive_access=*/false);
+        background_task_runner_, false, nullptr);
   }
 
   // Pick a random cookie out of the 15000 in the store and return it.
