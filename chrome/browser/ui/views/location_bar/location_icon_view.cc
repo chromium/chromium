@@ -150,6 +150,7 @@ void LocationIconView::AddedToWidget() {
 void LocationIconView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
   UpdateIcon();
+  UpdateBackground();
 }
 
 int LocationIconView::GetMinimumLabelTextWidth() const {
@@ -296,6 +297,14 @@ void LocationIconView::UpdateIcon() {
     SetImageModel(icon);
 }
 
+void LocationIconView::UpdateBackground() {
+  if (features::IsChromeRefresh2023()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
+        height() / 2));
+  }
+}
+
 void LocationIconView::OnIconFetched(const gfx::Image& image) {
   DCHECK(!image.IsEmpty());
   SetImageModel(ui::ImageModel::FromImage(image));
@@ -306,12 +315,7 @@ void LocationIconView::Update(bool suppress_animations) {
   UpdateIcon();
   UpdateBorder();
   SetAccessibleProperties(/*is_initialization*/ false);
-
-  if (features::IsChromeRefresh2023()) {
-    SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
-        height() / 2));
-  }
+  UpdateBackground();
   // The label text color may have changed in response to changes in security
   // level.
   UpdateLabelColors();

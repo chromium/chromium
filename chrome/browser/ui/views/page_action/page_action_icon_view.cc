@@ -79,6 +79,7 @@ PageActionIconView::PageActionIconView(
   image()->SetFlipCanvasOnPaintForRTLUI(true);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   if (features::IsChromeRefresh2023()) {
     // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
     // you do not need to hardcode color values.
@@ -110,9 +111,10 @@ PageActionIconView::PageActionIconView(
           return ink_drop_highlight;
         },
         this));
+    if (auto* focus_ring = views::FocusRing::Get(this); focus_ring) {
+      focus_ring->SetOutsetFocusRingDisabled();
+    }
   }
-
-  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);

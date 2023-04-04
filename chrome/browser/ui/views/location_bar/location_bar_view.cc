@@ -105,6 +105,7 @@
 #include "extensions/common/feature_switch.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -115,6 +116,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -347,7 +349,9 @@ void LocationBarView::Init() {
   if (browser_ && !is_popup_mode_)
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
 
-  params.icon_color = icon_color;
+  params.icon_color = features::IsChromeRefresh2023()
+                          ? ui::kColorSysOnSurfaceSubtle
+                          : icon_color;
   params.between_icon_spacing = features::IsChromeRefresh2023() ? 8 : 0;
   params.font_list = &font_list;
   params.browser = browser_;
@@ -1406,11 +1410,14 @@ void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
 
 SkColor LocationBarView::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
-  ui::ColorId id = kColorOmniboxSecurityChipDefault;
+  ui::ColorId id = features::IsChromeRefresh2023()
+                       ? kColorOmniboxText
+                       : kColorOmniboxSecurityChipDefault;
   if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT)
     id = kColorOmniboxTextDimmed;
   else if (security_level == security_state::SECURE)
-    id = kColorOmniboxSecurityChipSecure;
+    id = features::IsChromeRefresh2023() ? kColorOmniboxText
+                                         : kColorOmniboxSecurityChipSecure;
   else if (security_level == security_state::DANGEROUS)
     id = kColorOmniboxSecurityChipDangerous;
   return GetColorProvider()->GetColor(id);
