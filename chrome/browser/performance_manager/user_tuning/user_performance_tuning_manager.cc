@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
