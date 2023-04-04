@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <iterator>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -425,6 +426,14 @@ std::string AutofillField::FieldSignatureAsStr() const {
 bool AutofillField::IsFieldFillable() const {
   ServerFieldType field_type = Type().GetStorableType();
   return IsFillableFieldType(field_type);
+}
+
+bool AutofillField::HasExpirationDateType() const {
+  static constexpr std::array kExpirationDateTypes = {
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
+  return base::Contains(kExpirationDateTypes, Type().GetStorableType());
 }
 
 bool AutofillField::HasPredictionDespiteUnrecognizedAutocompleteAttribute()
