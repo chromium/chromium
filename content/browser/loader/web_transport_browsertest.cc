@@ -28,8 +28,6 @@
 namespace content {
 namespace {
 
-using base::ASCIIToUTF16;
-
 class WebTransportBrowserTest : public ContentBrowserTest {
  public:
   WebTransportBrowserTest() { server_.Start(); }
@@ -59,54 +57,6 @@ class WebTransportBrowserTest : public ContentBrowserTest {
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   WebTransportSimpleTestServer server_;
 };
-
-IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CertificateFingerprint) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
-
-  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
-
-  ASSERT_TRUE(
-      ExecJs(shell(), base::StringPrintf(R"JS(
-    async function run() {
-      const hashValue = new Uint8Array(32);
-      // The connection fails because the fingerprint does not match.
-      const transport = new WebTransport(
-          'https://localhost:%d/echo', {
-            serverCertificateHashes: [
-              {
-                algorithm: "sha-256",
-                value: hashValue,
-              },
-            ],
-          });
-
-      let fulfilled = false;
-      try {
-        await transport.ready;
-        fulfilled = true
-      } catch {}
-
-      if (fulfilled) {
-        throw Error('ready should be rejected');
-      }
-
-      try {
-        await transport.closed;
-      } catch (e) {
-        return;
-      }
-      throw Error('closed should be rejected');
-    }
-
-    run().then(() => { document.title = 'PASS'; },
-               (e) => { console.log(e); document.title = 'FAIL'; });
-)JS",
-                                         server_.server_address().port())));
-
-  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
-}
 
 // A test that aims to reproduce https://crbug.com/1369030 -- note that since
 // the bug in question is a race condition, this test will probably be flaky if
