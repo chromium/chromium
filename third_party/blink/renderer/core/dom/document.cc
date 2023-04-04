@@ -405,6 +405,7 @@ class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
  public:
   void OnResize(const HeapVector<Member<ResizeObserverEntry>>& entries) final;
   ResizeObserver::DeliveryTime Delivery() const final;
+  bool SkipNonAtomicInlineObservations() const final;
 };
 
 // Returns true if any of <object> ancestors don't start loading or are loading
@@ -625,6 +626,11 @@ void IntrinsicSizeResizeObserverDelegate::OnResize(
 ResizeObserver::DeliveryTime IntrinsicSizeResizeObserverDelegate::Delivery()
     const {
   return ResizeObserver::DeliveryTime::kBeforeOthers;
+}
+
+bool IntrinsicSizeResizeObserverDelegate::SkipNonAtomicInlineObservations()
+    const {
+  return true;
 }
 
 void Document::UnassociatedListedElementsList::MarkDirty() {

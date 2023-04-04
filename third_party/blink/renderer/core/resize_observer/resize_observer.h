@@ -49,6 +49,7 @@ class CORE_EXPORT ResizeObserver final
     virtual DeliveryTime Delivery() const {
       return DeliveryTime::kInsertionOrder;
     }
+    virtual bool SkipNonAtomicInlineObservations() const { return false; }
   };
 
   static ResizeObserver* Create(ScriptState*, V8ResizeObserverCallback*);
@@ -79,6 +80,9 @@ class CORE_EXPORT ResizeObserver final
 
   DeliveryTime Delivery() const {
     return delegate_ ? delegate_->Delivery() : DeliveryTime::kInsertionOrder;
+  }
+  bool SkipNonAtomicInlineObservations() const {
+    return delegate_ && delegate_->SkipNonAtomicInlineObservations();
   }
 
  private:

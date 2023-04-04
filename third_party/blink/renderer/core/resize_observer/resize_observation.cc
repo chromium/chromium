@@ -56,6 +56,7 @@ ResizeObservation::ResizeObservation(Element* target,
       observation_size_(kInitialObservationSize),
       observed_box_(observed_box) {
   DCHECK(target_);
+  DCHECK(observer_);
 }
 
 bool ResizeObservation::ObservationSizeOutOfSync() {
@@ -65,6 +66,16 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
   // Skip resize observations on locked elements.
   if (UNLIKELY(target_ && DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
                               *target_))) {
+    return false;
+  }
+
+  // Don't observe non-atomic inlines if requested.
+  // This is used by contain-intrinsic-size delegate to implement the following
+  // resolution:
+  // https://github.com/w3c/csswg-drafts/issues/7606#issuecomment-1240015961
+  if (observer_->SkipNonAtomicInlineObservations() &&
+      target_->GetLayoutObject() && target_->GetLayoutObject()->IsInline() &&
+      !target_->GetLayoutObject()->IsAtomicInlineLevel()) {
     return false;
   }
 
