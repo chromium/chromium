@@ -80,13 +80,16 @@ let driverString = "";
 for (let i = 0; i < driverContents.length; i++) {
   driverString += `\\${driverContents[i].toString(8)}`;
 }
+
+const buildkiteSuffix = process.env.BUILDKITE ? "-buildkite" : "";
+
 fs.writeFileSync(
   `${__dirname}/base/record_replay_driver.cc`,
   `
 namespace recordreplay {
   char gRecordReplayDriver[] = "${driverString}";
   int gRecordReplayDriverSize = ${driverContents.length};
-  char gBuildId[] = "${computeBuildId(driverDate, driverRevision)}";
+  char gBuildId[] = "${computeBuildId(driverDate, driverRevision)}${buildkiteSuffix}";
 }
 `
 );
