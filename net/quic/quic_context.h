@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 
@@ -140,7 +142,8 @@ struct NET_EXPORT QuicParams {
   // If true, connection migration v2 will be used to migrate existing
   // sessions to network when the platform indicates that the default network
   // is changing.
-  bool migrate_sessions_on_network_change_v2 = false;
+  bool migrate_sessions_on_network_change_v2 =
+      base::FeatureList::IsEnabled(features::kMigrateSessionsOnNetworkChangeV2);
   // If true, connection migration v2 may be used to migrate active QUIC
   // sessions to alternative network if current network connectivity is poor.
   bool migrate_sessions_early_v2 = false;

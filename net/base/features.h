@@ -376,6 +376,11 @@ NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyServer;
 NET_EXPORT extern const base::FeatureParam<std::string>
     kIpPrivacyProxyAllowlist;
 
+// Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
+// false. This is needed as a workaround to set this value to true on Android
+// but not on WebView (until crbug.com/1430082 has been fixed).
+NET_EXPORT BASE_DECLARE_FEATURE(kMigrateSessionsOnNetworkChangeV2);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

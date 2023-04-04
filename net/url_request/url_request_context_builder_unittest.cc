@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -403,6 +404,27 @@ TEST_F(URLRequestContextBuilderTest, BindToNetworkCustomManagerOptions) {
 #else   // !BUILDFLAG(IS_ANDROID)
   GTEST_SKIP() << "BindToNetwork is supported only on Android";
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(URLRequestContextBuilderTest, MigrateSessionsOnNetworkChangeV2Default) {
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+
+  const QuicParams* quic_params = context->quic_context()->params();
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(quic_params->migrate_sessions_on_network_change_v2);
+#else   // !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(URLRequestContextBuilderTest, MigrateSessionsOnNetworkChangeV2Override) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      net::features::kMigrateSessionsOnNetworkChangeV2);
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+
+  const QuicParams* quic_params = context->quic_context()->params();
+  EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
 }
 
 }  // namespace

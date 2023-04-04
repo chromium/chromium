@@ -2778,6 +2778,9 @@ TEST_P(QuicStreamFactoryTest,
 // will not crash if sessions are closed after FinishCreateSession runs.
 TEST_P(QuicStreamFactoryTest, CloseSessionDuringCreation) {
   quic_params_->close_sessions_on_ip_change = true;
+  // close_sessions_on_ip_change == true requires
+  // migrate_sessions_on_network_change_v2 == false.
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
   auto factory = MockQuicStreamFactory(
       net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
@@ -2972,6 +2975,9 @@ TEST_P(QuicStreamFactoryTest, OnIdleNetworkDetectedAsyncQuicSession) {
 
 TEST_P(QuicStreamFactoryTest, CloseSessionsOnIPAddressChanged) {
   quic_params_->close_sessions_on_ip_change = true;
+  // close_sessions_on_ip_change == true requires
+  // migrate_sessions_on_network_change_v2 == false.
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -3060,6 +3066,9 @@ TEST_P(QuicStreamFactoryTest, CloseSessionsOnIPAddressChanged) {
 // go to a new connection.
 TEST_P(QuicStreamFactoryTest, GoAwaySessionsOnIPAddressChanged) {
   quic_params_->goaway_sessions_on_ip_change = true;
+  // close_sessions_on_ip_change == true requires
+  // migrate_sessions_on_network_change_v2 == false.
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
