@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,6 +17,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
@@ -56,8 +56,9 @@ class MockListener : public SessionStorageDataMap::Listener {
 class SessionStorageAreaImplTest : public testing::Test {
  public:
   SessionStorageAreaImplTest()
-      : test_namespace_id1_(base::GenerateGUID()),
-        test_namespace_id2_(base::GenerateGUID()) {
+      : test_namespace_id1_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+        test_namespace_id2_(
+            base::Uuid::GenerateRandomV4().AsLowercaseString()) {
     leveldb_database_ = AsyncDomStorageDatabase::OpenInMemory(
         absl::nullopt, "SessionStorageAreaImplTestDatabase",
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),

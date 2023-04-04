@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
@@ -54,9 +54,10 @@ class LevelDBEnv : public leveldb_env::ChromiumEnv {
 class SessionStorageMetadataTest : public testing::Test {
  public:
   SessionStorageMetadataTest()
-      : test_namespace1_id_(base::GenerateGUID()),
-        test_namespace2_id_(base::GenerateGUID()),
-        test_namespace3_id_(base::GenerateGUID()) {
+      : test_namespace1_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+        test_namespace2_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+        test_namespace3_id_(
+            base::Uuid::GenerateRandomV4().AsLowercaseString()) {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
         absl::nullopt, "SessionStorageMetadataTest",
@@ -419,8 +420,8 @@ TEST_F(SessionStorageMetadataTest, DatabaseVersionTooNew) {
 class SessionStorageMetadataMigrationTest : public testing::Test {
  public:
   SessionStorageMetadataMigrationTest()
-      : test_namespace1_id_(base::GenerateGUID()),
-        test_namespace2_id_(base::GenerateGUID()),
+      : test_namespace1_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
+        test_namespace2_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
         test_storage_key1_(
             blink::StorageKey::CreateFromStringForTesting("http://host1:1/")) {
     next_map_id_key_ = std::vector<uint8_t>(
