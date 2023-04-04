@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -51,9 +52,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
-#include "third_party/blink/renderer/core/layout/line/inline_iterator.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/line/line_width.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -117,38 +116,33 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
   DCHECK(!NeedsLayout());
   DCHECK(!ChildPrePaintBlockedByDisplayLock());
 
-  if (PhysicalFragmentCount()) {
-    // TODO(crbug.com/1144203): This should compute in the stitched coordinate
-    // system, but overflows in the block direction is converted to the inline
-    // direction in the multicol container. Just unite overflows in the inline
-    // direction only for now.
-    for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
-      if (const NGFragmentItems* items = fragment.Items()) {
-        PhysicalRect children_rect;
-        for (NGInlineCursor cursor(fragment, *items); cursor;
-             cursor.MoveToNextSkippingChildren()) {
-          const NGFragmentItem* child = cursor.CurrentItem();
-          DCHECK(child);
-          if (child->HasSelfPaintingLayer()) {
-            continue;
-          }
-          PhysicalRect child_rect = child->InkOverflow();
-          if (!child_rect.IsEmpty()) {
-            child_rect.offset += child->OffsetInContainerFragment();
-            children_rect.Unite(child_rect);
-          }
+  if (!PhysicalFragmentCount()) {
+    return;
+  }
+
+  // TODO(crbug.com/1144203): This should compute in the stitched coordinate
+  // system, but overflows in the block direction is converted to the inline
+  // direction in the multicol container. Just unite overflows in the inline
+  // direction only for now.
+  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+    if (const NGFragmentItems* items = fragment.Items()) {
+      PhysicalRect children_rect;
+      for (NGInlineCursor cursor(fragment, *items); cursor;
+           cursor.MoveToNextSkippingChildren()) {
+        const NGFragmentItem* child = cursor.CurrentItem();
+        DCHECK(child);
+        if (child->HasSelfPaintingLayer()) {
+          continue;
         }
-        AddContentsVisualOverflow(children_rect);
-      } else if (fragment.HasFloatingDescendantsForPaint()) {
-        AddVisualOverflowFromFloats(fragment);
+        PhysicalRect child_rect = child->InkOverflow();
+        if (!child_rect.IsEmpty()) {
+          child_rect.offset += child->OffsetInContainerFragment();
+          children_rect.Unite(child_rect);
+        }
       }
-    }
-  } else {
-    for (RootInlineBox* curr = FirstRootBox(); curr;
-         curr = curr->NextRootBox()) {
-      LayoutRect visual_overflow =
-          curr->VisualOverflowRect(curr->LineTop(), curr->LineBottom());
-      AddContentsVisualOverflow(visual_overflow);
+      AddContentsVisualOverflow(children_rect);
+    } else if (fragment.HasFloatingDescendantsForPaint()) {
+      AddVisualOverflowFromFloats(fragment);
     }
   }
 }
@@ -210,16 +204,6 @@ void LayoutBlockFlow::ResetLayout() {
   DCHECK(!IsLayoutNGObject()) << this;
   if (!FirstChild() && !IsAnonymousBlock())
     SetChildrenInline(true);
-
-  // Text truncation kicks in if overflow isn't visible and text-overflow isn't
-  // 'clip'. If this is an anonymous block, we have to examine the parent.
-  // FIXME: CSS3 says that descendants that are clipped must also know how to
-  // truncate. This is insanely difficult to figure out in general (especially
-  // in the middle of doing layout), so we only handle the simple case of an
-  // anonymous block truncating when its parent is clipped.
-  // Walk all the lines and delete our ellipsis line boxes if they exist.
-  if (ChildrenInline() && ShouldTruncateOverflowingText())
-    DeleteEllipsisLineBoxes();
 }
 
 DISABLE_CFI_PERF
@@ -240,11 +224,8 @@ void LayoutBlockFlow::LayoutChildren(bool relayout_children,
 
   SetLogicalHeight(before_edge);
 
-  if (ChildrenInline())
-    LayoutInlineChildren(relayout_children, after_edge);
-  else
-    LayoutBlockChildren(relayout_children, layout_scope, before_edge,
-                        after_edge);
+  DCHECK(!ChildrenInline());
+  LayoutBlockChildren(relayout_children, layout_scope, before_edge, after_edge);
 
   NotifyDisplayLockDidLayoutChildren();
 }
@@ -428,14 +409,6 @@ void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
   }
 }
 
-RootInlineBox* LayoutBlockFlow::CreateAndAppendRootInlineBox() {
-  NOT_DESTROYED();
-  RootInlineBox* root_box = CreateRootInlineBox();
-  line_boxes_.AppendLineBox(root_box);
-
-  return root_box;
-}
-
 // Note: When this function is called from |LayoutInline::SplitFlow()|, some
 // fragments point to destroyed |LayoutObject|.
 void LayoutBlockFlow::DeleteLineBoxTree() {
@@ -572,11 +545,8 @@ void LayoutBlockFlow::UpdateStaticInlinePositionForChild(
     LayoutUnit logical_top,
     IndentTextOrNot indent_text) {
   NOT_DESTROYED();
-  if (child.StyleRef().IsOriginalDisplayInlineType())
-    SetStaticInlinePositionForChild(
-        child, StartAlignedOffsetForLine(logical_top, indent_text));
-  else
-    SetStaticInlinePositionForChild(child, StartOffsetForContent());
+  DCHECK(!child.StyleRef().IsOriginalDisplayInlineType());
+  SetStaticInlinePositionForChild(child, StartOffsetForContent());
 }
 
 void LayoutBlockFlow::SetStaticInlinePositionForChild(
@@ -1162,11 +1132,6 @@ void LayoutBlockFlow::MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
                                        full_remove_insert);
 }
 
-RootInlineBox* LayoutBlockFlow::CreateRootInlineBox() {
-  NOT_DESTROYED();
-  return MakeGarbageCollected<RootInlineBox>(LineLayoutItem(this));
-}
-
 void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
     const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -1275,73 +1240,30 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   }
 }
 
-RecalcLayoutOverflowResult
-LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
-  NOT_DESTROYED();
-  DCHECK(ChildrenInline());
-  RecalcLayoutOverflowResult result;
-  HeapHashSet<Member<RootInlineBox>> line_boxes;
-  ClearCollectionScope<HeapHashSet<Member<RootInlineBox>>> scope(&line_boxes);
-  for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
-       walker.Advance()) {
-    LayoutObject* layout_object = walker.Current().GetLayoutObject();
-    if (layout_object->IsOutOfFlowPositioned())
-      continue;
-
-    result.Unite(layout_object->RecalcLayoutOverflow());
-
-    // TODO(chrishtr): should this be IsBox()? Non-blocks can be inline and
-    // have line box wrappers.
-    if (auto* layout_block_object = DynamicTo<LayoutBlock>(layout_object)) {
-      if (InlineBox* inline_box_wrapper =
-              layout_block_object->InlineBoxWrapper())
-        line_boxes.insert(&inline_box_wrapper->Root());
-    }
-  }
-
-  // FIXME: Glyph overflow will get lost in this case, but not really a big
-  // deal.
-  GlyphOverflowAndFallbackFontsMap text_box_data_map;
-  for (auto box : line_boxes) {
-    box->ClearKnownToHaveNoOverflow();
-    box->ComputeOverflow(box->LineTop(), box->LineBottom(), text_box_data_map);
-  }
-  return result;
-}
-
 void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
 
-  // TODO(crbug.com/1144203): This code path should be switch to
-  // |RecalcFragmentsVisualOverflow|.
-  if (CanUseFragmentsForVisualOverflow()) {
-    for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
-      if (const NGFragmentItems* items = fragment.Items()) {
-        NGInlineCursor cursor(fragment, *items);
-        NGInlinePaintContext inline_context;
-        NGFragmentItem::RecalcInkOverflowForCursor(&cursor, &inline_context);
-      }
-      // Even if this turned out to be an inline formatting context with
-      // fragment items (handled above), we need to handle floating descendants.
-      // If a float is block-fragmented, it is resumed as a regular box fragment
-      // child, rather than becoming a fragment item.
-      if (fragment.HasFloatingDescendantsForPaint())
-        RecalcFloatingDescendantsVisualOverflow(fragment);
-    }
+  if (!CanUseFragmentsForVisualOverflow()) {
     return;
   }
 
-  for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
-       walker.Advance()) {
-    LayoutObject* layout_object = walker.Current().GetLayoutObject();
-    layout_object->RecalcNormalFlowChildVisualOverflowIfNeeded();
+  // TODO(crbug.com/1144203): This code path should be switch to
+  // |RecalcFragmentsVisualOverflow|.
+  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+    if (const NGFragmentItems* items = fragment.Items()) {
+      NGInlineCursor cursor(fragment, *items);
+      NGInlinePaintContext inline_context;
+      NGFragmentItem::RecalcInkOverflowForCursor(&cursor, &inline_context);
+    }
+    // Even if this turned out to be an inline formatting context with
+    // fragment items (handled above), we need to handle floating descendants.
+    // If a float is block-fragmented, it is resumed as a regular box fragment
+    // child, rather than becoming a fragment item.
+    if (fragment.HasFloatingDescendantsForPaint()) {
+      RecalcFloatingDescendantsVisualOverflow(fragment);
+    }
   }
-
-  // Child inline boxes' self visual overflow is already computed at the same
-  // time as layout overflow. But we need to add replaced children visual rects.
-  for (RootInlineBox* box = FirstRootBox(); box; box = box->NextRootBox())
-    box->AddReplacedChildrenVisualOverflow(box->LineTop(), box->LineBottom());
 }
 
 void LayoutBlockFlow::RecalcFloatingDescendantsVisualOverflow(

@@ -42,17 +42,10 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/line/line_box_list.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
-#include "third_party/blink/renderer/core/layout/line/trailing_objects.h"
 
 namespace blink {
 
-template <class Run>
-class BidiRunList;
-class LineInfo;
-class LineLayoutState;
-class LineWidth;
 class LayoutMultiColumnFlowThread;
-class MarginInfo;
 class NGPhysicalFragment;
 
 struct NGInlineNodeData;
@@ -64,11 +57,6 @@ enum IndentTextOrNot { kDoNotIndentText, kIndentText };
 //
 // LayoutBlockFlows are the only LayoutObject allowed to own floating objects
 // (aka floats): http://www.w3.org/TR/CSS21/visuren.html#floats .
-//
-// LayoutBlockFlow is also the only LayoutObject to own a line box tree and
-// perform inline layout. See layout_block_flow_line.cc for these parts.
-//
-// TODO(jchaffraix): We need some float and line box expert to expand on this.
 //
 // LayoutBlockFlow enforces the following invariant:
 //
@@ -200,9 +188,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return static_cast<RootInlineBox*>(LastLineBox());
   }
 
-  RootInlineBox* CreateAndAppendRootInlineBox();
-  RootInlineBox* ConstructLine(BidiRunList<BidiRun>&, const LineInfo&);
-
   // Return the number of lines in *this* block flow. Does not recurse into
   // block flow children.
   // Will start counting from the first line, and stop counting right after
@@ -227,10 +212,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ChildBecameFloatingOrOutOfFlow(LayoutBox* child);
   void CollapseAnonymousBlockChild(LayoutBlockFlow* child);
-
-  bool GeneratesLineBoxesForInlineChild(LayoutObject*);
-
-  LayoutUnit StartAlignedOffsetForLine(LayoutUnit position, IndentTextOrNot);
 
   void SetStaticInlinePositionForChild(LayoutBox&, LayoutUnit inline_position);
   void UpdateStaticInlinePositionForChild(LayoutBox&,
@@ -267,13 +248,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void AddVisualOverflowFromInlineChildren();
 
-  void AddLayoutOverflowFromInlineChildren();
-
-  // FIXME: This should be const to avoid a const_cast, but can modify child
-  // dirty bits and LayoutTextCombine.
-  void ComputeInlinePreferredLogicalWidths(LayoutUnit& min_logical_width,
-                                           LayoutUnit& max_logical_width);
-
   // Return true if this object is allowed to establish a multicol container.
   virtual bool AllowsColumns() const;
 
@@ -293,7 +267,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
 
-  RecalcLayoutOverflowResult RecalcInlineChildrenLayoutOverflow();
   void RecalcInlineChildrenVisualOverflow();
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
@@ -329,8 +302,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 #endif
 
  protected:
-  void LayoutInlineChildren(bool relayout_children, LayoutUnit after_edge);
-
   void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
@@ -401,8 +372,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
       LayoutUnit offset_from_floats,
       IndentTextOrNot apply_text_indent) const;
 
-  virtual RootInlineBox* CreateRootInlineBox();  // Subclassed by SVG
-
   void DirtyLinesFromChangedChild(
       LayoutObject* child,
       MarkingBehavior marking_behaviour = kMarkContainerChain) override {
@@ -432,19 +401,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void MakeChildrenNonInline(LayoutObject* insertion_point = nullptr);
   void ChildBecameNonInline(LayoutObject* child) final;
 
-  void UpdateLogicalWidthForAlignment(const ETextAlign&,
-                                      const RootInlineBox*,
-                                      BidiRun* trailing_space_run,
-                                      LayoutUnit& logical_left,
-                                      LayoutUnit& total_logical_width,
-                                      LayoutUnit& available_logical_width,
-                                      unsigned expansion_opportunity_count);
-
  public:
   bool ShouldTruncateOverflowingText() const;
-
- protected:
-  virtual ETextAlign TextAlignmentForLine(bool ends_with_soft_break) const;
 
  private:
   static void RecalcFloatingDescendantsVisualOverflow(
@@ -457,81 +415,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 
  protected:
-  friend class MarginInfo;
-  friend class LineWidth;  // needs to know FloatingObject
-
   // LayoutNGRubyBase objects need to be able to split and merge, moving their
   // children around (calling MakeChildrenNonInline).
   friend class LayoutNGRubyBase;
-
-  // FIXME-BLOCKFLOW: These methods have implementations in
-  // LayoutBlockFlowLine. They should be moved to the proper header once the
-  // line layout code is separated from LayoutBlock and LayoutBlockFlow.
-  // START METHODS DEFINED IN LayoutBlockFlowLine
- private:
-  InlineFlowBox* CreateLineBoxes(LineLayoutItem,
-                                 const LineInfo&,
-                                 InlineBox* child_box);
-  void ComputeInlineDirectionPositionsForLine(RootInlineBox*,
-                                              const LineInfo&,
-                                              BidiRun* first_run,
-                                              BidiRun* trailing_space_run,
-                                              bool reached_end,
-                                              GlyphOverflowAndFallbackFontsMap&,
-                                              VerticalPositionCache&,
-                                              const WordMeasurements&);
-  BidiRun* ComputeInlineDirectionPositionsForSegment(
-      RootInlineBox*,
-      const LineInfo&,
-      LayoutUnit& logical_left,
-      LayoutUnit& available_logical_width,
-      BidiRun* first_run,
-      BidiRun* trailing_space_run,
-      GlyphOverflowAndFallbackFontsMap& text_box_data_map,
-      VerticalPositionCache&,
-      const WordMeasurements&);
-  void ComputeBlockDirectionPositionsForLine(RootInlineBox*,
-                                             BidiRun*,
-                                             GlyphOverflowAndFallbackFontsMap&,
-                                             VerticalPositionCache&);
-  // Helper function for LayoutInlineChildren()
-  RootInlineBox* CreateLineBoxesFromBidiRuns(unsigned bidi_level,
-                                             BidiRunList<BidiRun>&,
-                                             const InlineIterator& end,
-                                             LineInfo&,
-                                             VerticalPositionCache&,
-                                             BidiRun* trailing_space_run,
-                                             const WordMeasurements&);
-  void LayoutRunsAndFloats(LineLayoutState&);
-  void LayoutRunsAndFloatsInRange(LineLayoutState&,
-                                  InlineBidiResolver&,
-                                  const InlineIterator& clean_line_start,
-                                  const BidiStatus& clean_line_bidi_status);
-  void LinkToEndLineIfNeeded(LineLayoutState&);
-  RootInlineBox* DetermineStartPosition(LineLayoutState&, InlineBidiResolver&);
-  void DetermineEndPosition(LineLayoutState&,
-                            RootInlineBox* start_box,
-                            InlineIterator& clean_line_start,
-                            BidiStatus& clean_line_bidi_status);
-  bool LineBoxHasBRWithClearance(RootInlineBox*);
-  bool MatchedEndLine(LineLayoutState&,
-                      const InlineBidiResolver&,
-                      const InlineIterator& end_line_start,
-                      const BidiStatus& end_line_status);
-  void DeleteEllipsisLineBoxes();
-  void CheckLinesForTextOverflow();
-  void TryPlacingEllipsisOnAtomicInlines(RootInlineBox*,
-                                         LayoutUnit block_right_edge,
-                                         LayoutUnit block_left_edge,
-                                         LayoutUnit width,
-                                         const AtomicString&,
-                                         InlineBox*);
-  void ClearTruncationOnAtomicInlines(RootInlineBox*);
-  void MarkLinesDirtyInBlockRange(LayoutUnit logical_top,
-                                  LayoutUnit logical_bottom,
-                                  RootInlineBox* highest = nullptr);
-
-  // END METHODS DEFINED IN LayoutBlockFlowLine
 };
 
 template <>

@@ -475,10 +475,8 @@ void LayoutBlock::AddLayoutOverflowFromChildren() {
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
-  if (ChildrenInline())
-    To<LayoutBlockFlow>(this)->AddLayoutOverflowFromInlineChildren();
-  else
-    AddLayoutOverflowFromBlockChildren();
+  DCHECK(!ChildrenInline());
+  AddLayoutOverflowFromBlockChildren();
 }
 
 void LayoutBlock::ComputeVisualOverflow(bool) {
@@ -1117,16 +1115,10 @@ MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
       return sizes;
   }
 
+  DCHECK(!ChildrenInline());
   MinMaxSizes child_sizes;
-  if (ChildrenInline()) {
-    // FIXME: Remove this const_cast.
-    To<LayoutBlockFlow>(const_cast<LayoutBlock*>(this))
-        ->ComputeInlinePreferredLogicalWidths(child_sizes.min_size,
-                                              child_sizes.max_size);
-  } else {
-    ComputeBlockPreferredLogicalWidths(child_sizes.min_size,
-                                       child_sizes.max_size);
-  }
+  ComputeBlockPreferredLogicalWidths(child_sizes.min_size,
+                                     child_sizes.max_size);
 
   child_sizes.max_size = std::max(child_sizes.min_size, child_sizes.max_size);
 
@@ -1745,17 +1737,13 @@ RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
 
   RecalcLayoutOverflowResult result;
 
-  if (ChildrenInline()) {
-    SECURITY_DCHECK(IsLayoutBlockFlow());
-    result.Unite(
-        To<LayoutBlockFlow>(this)->RecalcInlineChildrenLayoutOverflow());
-  } else {
-    for (LayoutBox* box = FirstChildBox(); box; box = box->NextSiblingBox()) {
-      if (box->IsOutOfFlowPositioned())
-        continue;
-
-      result.Unite(box->RecalcLayoutOverflow());
+  DCHECK(!ChildrenInline());
+  for (LayoutBox* box = FirstChildBox(); box; box = box->NextSiblingBox()) {
+    if (box->IsOutOfFlowPositioned()) {
+      continue;
     }
+
+    result.Unite(box->RecalcLayoutOverflow());
   }
 
   result.Unite(RecalcPositionedDescendantsLayoutOverflow());

@@ -34,11 +34,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
     return LineLayoutItem(ToBlockFlow()->LastChild());
   }
 
-  LayoutUnit StartAlignedOffsetForLine(LayoutUnit position,
-                                       IndentTextOrNot indent_text) {
-    return ToBlockFlow()->StartAlignedOffsetForLine(position, indent_text);
-  }
-
   bool CanContainFirstFormattedLine() const {
     return ToBlockFlow()->CanContainFirstFormattedLine();
   }
@@ -129,10 +124,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
   LayoutUnit LogicalWidth() { return ToBlockFlow()->LogicalWidth(); }
 
   LineBoxList* LineBoxes() { return ToBlockFlow()->LineBoxes(); }
-
-  InlineBox* CreateAndAppendRootInlineBox() {
-    return ToBlockFlow()->CreateAndAppendRootInlineBox();
-  }
 
   InlineFlowBox* LastLineBox() { return ToBlockFlow()->LastLineBox(); }
 

@@ -37,7 +37,6 @@ namespace blink {
 struct PaintInfo;
 class LineLayoutBox;
 class NGBlockNode;
-class WordMeasurement;
 
 typedef HeapLinkedHashSet<Member<LayoutBox>> TrackedLayoutBoxLinkedHashSet;
 typedef HeapHashMap<WeakMember<const LayoutBlock>,
@@ -45,7 +44,6 @@ typedef HeapHashMap<WeakMember<const LayoutBlock>,
     TrackedDescendantsMap;
 typedef HeapHashMap<WeakMember<const LayoutBox>, Member<LayoutBlock>>
     TrackedContainerMap;
-typedef Vector<WordMeasurement, 64> WordMeasurements;
 
 enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
 
