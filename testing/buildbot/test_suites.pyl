@@ -3763,6 +3763,7 @@
     },
 
     'ios_blink_tests': {
+      'absl_hardening_tests': {},
       'base_unittests': {},
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
@@ -3790,12 +3791,16 @@
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
+      'shell_dialogs_unittests': {},
       'skia_unittests': {},
       'sql_unittests': {},
       'storage_unittests': {},
+      'ui_base_unittests': {},
+      'ui_touch_selection_unittests': {},
       'url_unittests': {},
       'viz_unittests': {},
       'wtf_unittests': {},
+      'zlib_unittests': {},
     },
 
     'ios_clang_tests': {
