@@ -837,8 +837,9 @@ Node* TextControlElement::CreatePlaceholderBreakElement() const {
 void TextControlElement::AddPlaceholderBreakElementIfNecessary() {
   HTMLElement* inner_editor = InnerEditorElement();
   if (inner_editor->GetLayoutObject() &&
-      !inner_editor->GetLayoutObject()->Style()->PreserveNewline())
+      inner_editor->GetLayoutObject()->Style()->ShouldCollapseBreaks()) {
     return;
+  }
   auto* last_child_text_node = DynamicTo<Text>(inner_editor->lastChild());
   if (!last_child_text_node)
     return;

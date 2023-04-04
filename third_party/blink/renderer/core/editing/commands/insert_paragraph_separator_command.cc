@@ -489,7 +489,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   if (leading_whitespace.IsNotNull()) {
     if (auto* text_node = DynamicTo<Text>(leading_whitespace.AnchorNode())) {
       DCHECK(!text_node->GetLayoutObject() ||
-             text_node->GetLayoutObject()->Style()->CollapseWhiteSpace())
+             text_node->GetLayoutObject()->Style()->ShouldCollapseWhiteSpaces())
           << text_node;
       ReplaceTextInNode(text_node,
                         leading_whitespace.ComputeOffsetInContainerNode(), 1,
@@ -592,7 +592,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
              position_after_split.ComputeContainerNode()
                  ->GetLayoutObject()
                  ->Style()
-                 ->CollapseWhiteSpace())
+                 ->ShouldCollapseWhiteSpaces())
           << position_after_split;
       DeleteInsignificantTextDownstream(position_after_split);
       if (position_after_split.AnchorNode()->IsTextNode()) {

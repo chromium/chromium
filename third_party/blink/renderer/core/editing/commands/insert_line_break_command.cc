@@ -61,7 +61,7 @@ bool InsertLineBreakCommand::ShouldUseBreakElement(
   // parent's layoutObject.
   Position p(insertion_pos.ParentAnchoredEquivalent());
   return IsRichlyEditablePosition(p) && p.AnchorNode()->GetLayoutObject() &&
-         !p.AnchorNode()->GetLayoutObject()->Style()->PreserveNewline();
+         p.AnchorNode()->GetLayoutObject()->Style()->ShouldCollapseBreaks();
 }
 
 void InsertLineBreakCommand::DoApply(EditingState* editing_state) {

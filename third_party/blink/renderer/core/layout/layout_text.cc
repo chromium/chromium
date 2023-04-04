@@ -1124,7 +1124,8 @@ ALWAYS_INLINE float LayoutText::WidthFromFont(
       ConstructTextRun(f, this, start, len, StyleRef(), text_direction);
   run.SetCharactersLength(TextLength() - start);
   DCHECK_GE(run.CharactersLength(), run.length());
-  run.SetTabSize(!StyleRef().CollapseWhiteSpace(), StyleRef().GetTabSize());
+  run.SetTabSize(StyleRef().ShouldPreserveWhiteSpaces(),
+                 StyleRef().GetTabSize());
   run.SetXPos(lead_width + text_width_so_far);
   run.SetExpansion(expansion);
 
@@ -1159,7 +1160,7 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
   // below.
   float lead_width = lead_width_layout_unit.ToFloat();
 
-  bool collapse_white_space = StyleRef().CollapseWhiteSpace();
+  bool collapse_white_space = StyleRef().ShouldCollapseWhiteSpaces();
   if (!collapse_white_space)
     strip_front_spaces = false;
 
@@ -1194,7 +1195,7 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
 
   DCHECK(text_);
   if (text_[0] == kSpaceCharacter ||
-      (text_[0] == kNewlineCharacter && !StyleRef().PreserveNewline()) ||
+      (text_[0] == kNewlineCharacter && StyleRef().ShouldCollapseBreaks()) ||
       text_[0] == kTabulationCharacter) {
     const Font& font = StyleRef().GetFont();  // FIXME: This ignores first-line.
     if (strip_front_spaces) {
@@ -1459,7 +1460,7 @@ void LayoutText::ComputePreferredLogicalWidths(
     bool previous_character_is_whitespace = is_whitespace;
     bool is_newline = false;
     if (c == kNewlineCharacter) {
-      if (style_to_use.PreserveNewline()) {
+      if (style_to_use.ShouldPreserveBreaks()) {
         has_break_ = true;
         is_newline = true;
         is_whitespace = false;
@@ -1467,7 +1468,7 @@ void LayoutText::ComputePreferredLogicalWidths(
         is_whitespace = true;
       }
     } else if (c == kTabulationCharacter) {
-      if (!style_to_use.CollapseWhiteSpace()) {
+      if (style_to_use.ShouldPreserveWhiteSpaces()) {
         has_tab_ = true;
         is_whitespace = false;
       } else {
@@ -1493,9 +1494,10 @@ void LayoutText::ComputePreferredLogicalWidths(
       has_end_white_space_ = is_newline || is_whitespace;
     }
 
-    if (!ignoring_spaces && style_to_use.CollapseWhiteSpace() &&
-        previous_character_is_whitespace && is_whitespace)
+    if (!ignoring_spaces && style_to_use.ShouldCollapseWhiteSpaces() &&
+        previous_character_is_whitespace && is_whitespace) {
       ignoring_spaces = true;
+    }
 
     if (ignoring_spaces && !is_whitespace)
       ignoring_spaces = false;
@@ -1677,7 +1679,7 @@ void LayoutText::ComputePreferredLogicalWidths(
             ConstructTextRun(f, this, i, 1, style_to_use, text_direction);
         text_run.SetCharactersLength(len - i);
         DCHECK_GE(text_run.CharactersLength(), text_run.length());
-        text_run.SetTabSize(!StyleRef().CollapseWhiteSpace(),
+        text_run.SetTabSize(!StyleRef().ShouldCollapseWhiteSpaces(),
                             StyleRef().GetTabSize());
         text_run.SetXPos(lead_width + curr_max_width);
 
@@ -1912,7 +1914,7 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
         FirstTextBox()->GetLineLayoutItem().Style(
             FirstTextBox()->IsFirstLineStyle());
     TextRun text_run = TextRun(String(text));
-    text_run.SetTabSize(!style_to_use->CollapseWhiteSpace(),
+    text_run.SetTabSize(style_to_use->ShouldPreserveWhiteSpaces(),
                         style_to_use->GetTabSize());
     gfx::RectF glyph_bounds;
     float text_width =
@@ -2289,7 +2291,7 @@ float LayoutText::Width(unsigned from,
 
   float w;
   if (&f == &StyleRef().GetFont()) {
-    if (!StyleRef().PreserveNewline() && !from && len == TextLength()) {
+    if (StyleRef().ShouldCollapseBreaks() && !from && len == TextLength()) {
       if (fallback_fonts) {
         DCHECK(glyph_bounds);
         if (IntrinsicLogicalWidthsDirty() ||
@@ -2315,7 +2317,8 @@ float LayoutText::Width(unsigned from,
     run.SetCharactersLength(TextLength() - from);
     DCHECK_GE(run.CharactersLength(), run.length());
 
-    run.SetTabSize(!StyleRef().CollapseWhiteSpace(), StyleRef().GetTabSize());
+    run.SetTabSize(StyleRef().ShouldPreserveWhiteSpaces(),
+                   StyleRef().GetTabSize());
     run.SetXPos(x_pos.ToFloat());
     w = f.Width(run, fallback_fonts, glyph_bounds);
   }

@@ -86,9 +86,10 @@ class MidpointState final {
         // We hit the line break before the start point. Shave off the start
         // point.
         num_midpoints_--;
-        if (endpoint.GetLineLayoutItem().Style()->CollapseWhiteSpace() &&
-            endpoint.GetLineLayoutItem().IsText())
+        if (endpoint.GetLineLayoutItem().Style()->ShouldCollapseWhiteSpaces() &&
+            endpoint.GetLineLayoutItem().IsText()) {
           endpoint.SetOffset(endpoint.Offset() - 1);
+        }
       }
     }
   }

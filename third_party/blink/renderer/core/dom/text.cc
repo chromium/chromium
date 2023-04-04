@@ -269,7 +269,7 @@ static inline bool CanHaveWhitespaceChildren(
         !context.previous_in_flow->IsText())
       return false;
 
-    return style.PreserveNewline() ||
+    return style.ShouldPreserveBreaks() ||
            !EndsWithWhitespace(
                To<LayoutText>(context.previous_in_flow)->GetText());
   }
@@ -298,13 +298,15 @@ bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
     return false;
 
   // pre-wrap in SVG never makes layoutObject.
-  if (!style.CollapseWhiteSpace() && style.ShouldWrapLine() && parent.IsSVG()) {
+  if (style.ShouldPreserveWhiteSpaces() && style.ShouldWrapLine() &&
+      parent.IsSVG()) {
     return false;
   }
 
   // pre/pre-wrap/pre-line always make layoutObjects.
-  if (style.PreserveNewline())
+  if (style.ShouldPreserveBreaks()) {
     return true;
+  }
 
   if (!context.use_previous_in_flow)
     return false;
@@ -383,7 +385,7 @@ void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
 namespace {
 
 bool NeedsWhitespaceLayoutObject(const ComputedStyle& style) {
-  return style.PreserveNewline();
+  return style.ShouldPreserveBreaks();
 }
 
 }  // namespace

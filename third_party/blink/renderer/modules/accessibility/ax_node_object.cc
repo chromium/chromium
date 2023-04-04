@@ -1638,7 +1638,7 @@ bool AXNodeObject::IsLineBreakingObject() const {
   // Line 2</pre>
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
     const ComputedStyle& style = layout_object->StyleRef();
-    if (layout_text->HasNonCollapsedText() && style.PreserveNewline() &&
+    if (layout_text->HasNonCollapsedText() && style.ShouldPreserveBreaks() &&
         layout_text->PlainText().find('\n') != WTF::kNotFound) {
       return true;
     }

@@ -111,7 +111,7 @@ class LineLayoutItem {
     if (IsSVGInlineText())
       return false;
 
-    return StyleRef().PreserveNewline();
+    return StyleRef().ShouldPreserveBreaks();
   }
 
   unsigned length() const { return layout_object_->length(); }

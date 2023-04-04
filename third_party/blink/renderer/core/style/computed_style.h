@@ -2236,10 +2236,10 @@ class ComputedStyle : public ComputedStyleBase,
     return blink::ShouldWrapLine(ToTextWrap(ws));
   }
   static bool DeprecatedPreserveNewline(EWhiteSpace ws) {
-    return ShouldPreserveBreaks(ToWhiteSpaceCollapse(ws));
+    return blink::ShouldPreserveBreaks(ToWhiteSpaceCollapse(ws));
   }
   static bool DeprecatedCollapseWhiteSpace(EWhiteSpace ws) {
-    return blink::ShouldCollapseSpacesAndTabs(ToWhiteSpaceCollapse(ws));
+    return blink::ShouldCollapseWhiteSpaces(ToWhiteSpaceCollapse(ws));
   }
 
   // This function may return values not defined as the enum values. See
@@ -2249,22 +2249,25 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Semantic functions for the `white-space` property and its longhands.
-  bool ShouldPreserveSpacesAndTabs() const {
-    return blink::ShouldPreserveSpacesAndTabs(GetWhiteSpaceCollapse());
+  bool ShouldPreserveWhiteSpaces() const {
+    return blink::ShouldPreserveWhiteSpaces(GetWhiteSpaceCollapse());
   }
-  bool PreserveNewline() const {
+  bool ShouldCollapseWhiteSpaces() const {
+    return blink::ShouldCollapseWhiteSpaces(GetWhiteSpaceCollapse());
+  }
+  bool ShouldPreserveBreaks() const {
     return blink::ShouldPreserveBreaks(GetWhiteSpaceCollapse());
   }
-  bool CollapseWhiteSpace() const {
-    return blink::ShouldCollapseSpacesAndTabs(GetWhiteSpaceCollapse());
+  bool ShouldCollapseBreaks() const {
+    return blink::ShouldCollapseBreaks(GetWhiteSpaceCollapse());
   }
   bool IsCollapsibleWhiteSpace(UChar c) const {
     switch (c) {
       case ' ':
       case '\t':
-        return CollapseWhiteSpace();
+        return ShouldCollapseWhiteSpaces();
       case '\n':
-        return !PreserveNewline();
+        return ShouldCollapseBreaks();
     }
     return false;
   }
@@ -2273,15 +2276,15 @@ class ComputedStyle : public ComputedStyleBase,
   bool ShouldBreakSpaces() const {
     return blink::ShouldBreakSpaces(GetWhiteSpaceCollapse());
   }
-  bool BreakOnlyAfterWhiteSpace() const {
-    return (ShouldPreserveSpacesAndTabs() && ShouldWrapLine()) ||
+  bool ShouldBreakOnlyAfterWhiteSpace() const {
+    return (ShouldPreserveWhiteSpaces() && ShouldWrapLine()) ||
            GetLineBreak() == LineBreak::kAfterWhiteSpace;
   }
   bool NeedsTrailingSpace() const {
-    return BreakOnlyAfterWhiteSpace() && ShouldWrapLine();
+    return ShouldBreakOnlyAfterWhiteSpace() && ShouldWrapLine();
   }
 
-  bool BreakWords() const {
+  bool ShouldBreakWords() const {
     return (WordBreak() == EWordBreak::kBreakWord ||
             OverflowWrap() != EOverflowWrap::kNormal) &&
            ShouldWrapLine();

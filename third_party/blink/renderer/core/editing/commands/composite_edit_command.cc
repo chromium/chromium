@@ -700,8 +700,9 @@ bool CompositeEditCommand::CanRebalance(const Position& position) const {
     return false;
 
   LayoutText* layout_text = text_node->GetLayoutObject();
-  if (layout_text && !layout_text->Style()->CollapseWhiteSpace())
+  if (layout_text && layout_text->Style()->ShouldPreserveWhiteSpaces()) {
     return false;
+  }
 
   return true;
 }
@@ -789,8 +790,9 @@ void CompositeEditCommand::PrepareWhitespaceAtPositionForSplit(
   if (text_node->length() == 0)
     return;
   LayoutText* layout_text = text_node->GetLayoutObject();
-  if (layout_text && !layout_text->Style()->CollapseWhiteSpace())
+  if (layout_text && layout_text->Style()->ShouldPreserveWhiteSpaces()) {
     return;
+  }
 
   // Delete collapsed whitespace so that inserting nbsps doesn't uncollapse it.
   Position upstream_pos = MostBackwardCaretPosition(position);
@@ -1815,10 +1817,11 @@ bool CompositeEditCommand::BreakOutOfEmptyMailBlockquotedParagraph(
 
   Position caret_pos(MostForwardCaretPosition(caret.DeepEquivalent()));
   // A line break is either a br or a preserved newline.
-  DCHECK(
-      IsA<HTMLBRElement>(caret_pos.AnchorNode()) ||
-      (caret_pos.AnchorNode()->IsTextNode() &&
-       caret_pos.AnchorNode()->GetLayoutObject()->Style()->PreserveNewline()))
+  DCHECK(IsA<HTMLBRElement>(caret_pos.AnchorNode()) ||
+         (caret_pos.AnchorNode()->IsTextNode() && caret_pos.AnchorNode()
+                                                      ->GetLayoutObject()
+                                                      ->Style()
+                                                      ->ShouldPreserveBreaks()))
       << caret_pos;
 
   if (IsA<HTMLBRElement>(*caret_pos.AnchorNode())) {

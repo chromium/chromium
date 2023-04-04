@@ -442,7 +442,7 @@ LayoutUnit InlineTextBox::PlaceEllipsisBox(bool flow_is_ltr,
 
 bool InlineTextBox::IsLineBreak() const {
   return GetLineLayoutItem().IsBR() ||
-         (GetLineLayoutItem().StyleRef().PreserveNewline() && Len() == 1 &&
+         (GetLineLayoutItem().StyleRef().ShouldPreserveBreaks() && Len() == 1 &&
           GetLineLayoutItem().GetText().length() > Start() &&
           (*GetLineLayoutItem().GetText().Impl())[Start()] == '\n');
 }
@@ -678,7 +678,7 @@ TextRun InlineTextBox::ConstructTextRun(
   TextRun run(string, TextPos().ToFloat(), Expansion(), GetExpansionBehavior(),
               Direction(),
               DirOverride() || style.RtlOrdering() == EOrder::kVisual);
-  run.SetTabSize(!style.CollapseWhiteSpace(), style.GetTabSize());
+  run.SetTabSize(style.ShouldPreserveWhiteSpaces(), style.GetTabSize());
 
   // Propagate the maximum length of the characters buffer to the TextRun, even
   // when we're only processing a substring.

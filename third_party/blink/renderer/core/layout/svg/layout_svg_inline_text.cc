@@ -70,8 +70,8 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
   LayoutNGText::StyleDidChange(diff, old_style);
   UpdateScaledFont();
 
-  const bool new_collapse = StyleRef().CollapseWhiteSpace();
-  const bool old_collapse = old_style && old_style->CollapseWhiteSpace();
+  const bool new_collapse = StyleRef().ShouldCollapseWhiteSpaces();
+  const bool old_collapse = old_style && old_style->ShouldCollapseWhiteSpaces();
   if (old_collapse != new_collapse) {
     ForceSetText(OriginalText());
     return;
