@@ -81,6 +81,7 @@ component("session_id") {
     "core/session_id.h",
     "core/session_id_generator.cc",
     "core/session_id_generator.h",
+    "core/sessions_export.h",
   ]
 
   configs += [ ":implementation" ]
