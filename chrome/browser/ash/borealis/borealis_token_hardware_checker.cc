@@ -94,6 +94,23 @@ AllowStatus BorealisTokenHardwareChecker::Check() const {
     return ReleasedBoardChecks("Ryzen [357]");
   } else if (IsBoard("draco")) {
     return AllowStatus::kAllowed;
+  } else if (IsBoard("nissa")) {
+    if (TokenHashMatches("nissa/!wcers4vuP7+2a/X$C8",
+                         "24/U3nXWbTno/VJwp17HI+UDzWd77iXj5oDgavIZhoI=")) {
+      LOG(WARNING) << "Nissa vendor token provided, bypassing hardware checks.";
+      return AllowStatus::kAllowed;
+    }
+    // TODO(b/274537000): unblock for non-developer users.
+    return AllowStatus::kIncorrectToken;
+  } else if (IsBoard("skyrim")) {
+    if (TokenHashMatches("skyrim/!2-DxWY_cL/nXF1U+oV",
+                         "esBGhWX18eOMlNrqOS5oEcFfyy0MbNJ5VWz+92iVOwk=")) {
+      LOG(WARNING)
+          << "Skyrim vendor token provided, bypassing hardware checks.";
+      return AllowStatus::kAllowed;
+    }
+    // TODO(b/274537000): unblock for non-developer users.
+    return AllowStatus::kIncorrectToken;
   }
   return AllowStatus::kIncorrectToken;
 }
