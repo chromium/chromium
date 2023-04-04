@@ -59,17 +59,8 @@ class AppsContainerViewTest : public AshTestBase {
   AppsContainerViewTest() = default;
   ~AppsContainerViewTest() override = default;
 
-  // testing::Test:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
-    search_model_ = std::make_unique<SearchModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(
-        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
-  }
-
   void AddFolderWithApps(int count) {
-    app_list_test_model_->CreateAndPopulateFolderWithApps(count);
+    GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(count);
   }
 
   AppListToastContainerView* GetToastContainerView() {
@@ -105,10 +96,6 @@ class AppsContainerViewTest : public AshTestBase {
                 ->gradient_mask()
                 .IsEmpty();
   }
-
- private:
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
 };
 
 TEST_F(AppsContainerViewTest, ContinueSectionVisibleByDefault) {

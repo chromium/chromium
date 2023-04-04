@@ -69,11 +69,6 @@ class PagedAppsGridViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
-    search_model_ = std::make_unique<SearchModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(
-        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
-
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     grid_test_api_ = std::make_unique<test::AppsGridViewTestApi>(
         GetAppListTestHelper()->GetRootPagedAppsGridView());
@@ -168,8 +163,6 @@ class PagedAppsGridViewTest : public AshTestBase {
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
 };
 
 // Tests with app list nudge enabled.
@@ -693,8 +686,9 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
 TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
   ui::ScopedAnimationDurationScaleMode scope_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  app_list_test_model_->CreateSingleItemFolder("folder_id", "Item_0");
-  app_list_test_model_->PopulateApps(5);
+  GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",
+                                                          "Item_0");
+  GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
   auto* generator = GetEventGenerator();
@@ -767,7 +761,7 @@ TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
 TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
   ui::ScopedAnimationDurationScaleMode scope_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  app_list_test_model_->PopulateApps(5);
+  GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
   auto* generator = GetEventGenerator();
@@ -811,7 +805,7 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
 TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
   ui::ScopedAnimationDurationScaleMode scope_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  app_list_test_model_->PopulateApps(10);
+  GetAppListTestHelper()->model()->PopulateApps(10);
   UpdateLayout();
 
   auto* generator = GetEventGenerator();
@@ -867,7 +861,7 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
 TEST_F(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
   ui::ScopedAnimationDurationScaleMode scope_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  app_list_test_model_->PopulateApps(5);
+  GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
   AppListItemView* item_view = GetPagedAppsGridView()->view_model()->view_at(0);
@@ -908,7 +902,7 @@ TEST_F(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
 // shown will visually change back to the first page.
 TEST_F(PagedAppsGridViewTest, DragOutsideOfNextPageSelectsOriginalPage) {
   const size_t kTotalApps = grid_test_api_->TilesPerPageInPagedGrid(0) + 1;
-  app_list_test_model_->PopulateApps(kTotalApps);
+  GetAppListTestHelper()->model()->PopulateApps(kTotalApps);
   UpdateLayout();
 
   PaginationModel* pagination_model =

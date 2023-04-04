@@ -55,11 +55,6 @@ class AppListItemViewPixelTest
       scoped_feature_list_.InitAndEnableFeature(
           features::kAppCollectionFolderRefresh);
     }
-
-    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
-    search_model_ = std::make_unique<SearchModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(
-        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
   }
 
   // Creates multiple folders that contain from 1 app to `max_items` apps
@@ -68,10 +63,11 @@ class AppListItemViewPixelTest
     AppListFolderItem* folder_item;
     for (int i = 1; i <= max_items; ++i) {
       if (i == 1) {
-        folder_item = app_list_test_model_->CreateSingleItemFolder("folder_id",
-                                                                   "item_id");
+        folder_item = GetAppListTestHelper()->model()->CreateSingleItemFolder(
+            "folder_id", "item_id");
       } else {
-        folder_item = app_list_test_model_->CreateAndPopulateFolderWithApps(i);
+        folder_item =
+            GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(i);
       }
       // Update the notification state of the first app in the folder to
       // simulate that there exists an app with notifications in the folder.
@@ -81,7 +77,8 @@ class AppListItemViewPixelTest
   }
 
   void CreateAppListItem(const std::string& name) {
-    AppListItem* item = app_list_test_model_->CreateAndAddItem(name + "_id");
+    AppListItem* item =
+        GetAppListTestHelper()->model()->CreateAndAddItem(name + "_id");
     item->SetName(name);
     item->SetIsNewInstall(is_new_install());
     item->UpdateNotificationBadge(has_notification());
@@ -124,10 +121,6 @@ class AppListItemViewPixelTest
   bool use_rtl() const { return std::get<3>(GetParam()); }
   bool is_new_install() const { return std::get<4>(GetParam()); }
   bool has_notification() const { return std::get<5>(GetParam()); }
-
- protected:
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

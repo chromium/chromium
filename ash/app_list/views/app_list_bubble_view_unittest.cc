@@ -106,15 +106,6 @@ class AppListBubbleViewTest : public AshTestBase {
   AppListBubbleViewTest() = default;
   ~AppListBubbleViewTest() override = default;
 
-  // testing::Test:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
-    search_model_ = std::make_unique<SearchModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(
-        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
-  }
-
   // Simulates the Assistant being enabled.
   void SimulateAssistantEnabled() {
     assistant_test_api_ = AssistantTestApi::Create();
@@ -135,11 +126,11 @@ class AppListBubbleViewTest : public AshTestBase {
   }
 
   void AddAppItems(int num_items) {
-    app_list_test_model_->PopulateApps(num_items);
+    GetAppListTestHelper()->model()->PopulateApps(num_items);
   }
 
   void AddFolderWithApps(int count) {
-    app_list_test_model_->CreateAndPopulateFolderWithApps(count);
+    GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(count);
   }
 
   SearchBoxView* GetSearchBoxView() {
@@ -186,8 +177,6 @@ class AppListBubbleViewTest : public AshTestBase {
     return view ? view->GetClassName() : "none";
   }
 
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
 
