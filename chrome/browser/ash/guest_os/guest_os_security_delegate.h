@@ -7,12 +7,17 @@
 
 #include <memory>
 
+#include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/security_delegate.h"
 
 namespace base {
 class FilePath;
+}
+
+namespace exo {
+class WaylandServerHandle;
 }
 
 namespace guest_os {
@@ -35,6 +40,16 @@ class GuestOsSecurityDelegate : public exo::SecurityDelegate {
   static void BuildServer(
       std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
       BuildCallback callback);
+
+  // When |security_delegate| is used to build a wayland server, we transfer
+  // ownership to Exo. The |callback| will be invoked with the result of that
+  // build.
+  static void MakeServerWithFd(
+      std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
+      base::ScopedFD fd,
+      base::OnceCallback<void(base::WeakPtr<GuestOsSecurityDelegate>,
+                              std::unique_ptr<exo::WaylandServerHandle>)>
+          callback);
 
   // This method safely removes the server at |path| based on whether
   // |security_delegate| is still valid or not. This is useful if you think

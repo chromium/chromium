@@ -5994,6 +5994,7 @@ source_set("unit_tests") {
     "//components/exo",
     "//components/exo:test_support",
     "//components/exo/server",
+    "//components/exo/wayland:test_support",
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
     "//components/favicon_base",

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/server/wayland_server_controller.h"
+#include "components/exo/server/wayland_server_handle.h"
 #include "third_party/cros_system_api/constants/vm_tools.h"
 
 namespace guest_os {
@@ -20,12 +21,29 @@ void GuestOsSecurityDelegate::BuildServer(
     std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
     BuildCallback callback) {
   // Ownership of the security_delegate is transferred to exo in the following
-  // request. Exo ensures the security_delegate live until we call
+  // request. Exo ensures the security_delegate lives until we call
   // DeleteServer(), so we will retain a copy of its pointer for future use.
   base::WeakPtr<GuestOsSecurityDelegate> cap_ptr =
       security_delegate->weak_factory_.GetWeakPtr();
   exo::WaylandServerController::Get()->CreateServer(
       std::move(security_delegate),
+      base::BindOnce(std::move(callback), cap_ptr));
+}
+
+// static
+void GuestOsSecurityDelegate::MakeServerWithFd(
+    std::unique_ptr<GuestOsSecurityDelegate> security_delegate,
+    base::ScopedFD fd,
+    base::OnceCallback<void(base::WeakPtr<GuestOsSecurityDelegate>,
+                            std::unique_ptr<exo::WaylandServerHandle>)>
+        callback) {
+  // Ownership of the security_delegate is transferred to exo in the following
+  // request. Exo ensures the security_delegate lives until we call
+  // CloseSocket(), so we will retain a copy of its pointer for future use.
+  base::WeakPtr<GuestOsSecurityDelegate> cap_ptr =
+      security_delegate->weak_factory_.GetWeakPtr();
+  exo::WaylandServerController::Get()->ListenOnSocket(
+      std::move(security_delegate), std::move(fd),
       base::BindOnce(std::move(callback), cap_ptr));
 }
 

@@ -14,10 +14,26 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
-#include "chromeos/ash/components/dbus/vm_wl/wl.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+
+namespace exo {
+class WaylandServerHandle;
+}
+
+namespace vm_tools {
+
+namespace apps {
+enum VmType : int;
+}
+
+namespace wl {
+class ListenOnSocketRequest;
+class CloseSocketRequest;
+}  // namespace wl
+
+}  // namespace vm_tools
 
 namespace guest_os {
 
@@ -58,6 +74,26 @@ class GuestOsWaylandServer {
     base::FilePath server_path_;
   };
 
+  class ScopedServer {
+   public:
+    ScopedServer(std::unique_ptr<exo::WaylandServerHandle> handle,
+                 base::WeakPtr<GuestOsSecurityDelegate> security_delegate);
+
+    // No copying
+    ScopedServer(const ScopedServer&) = delete;
+    ScopedServer& operator=(const ScopedServer&) = delete;
+
+    ~ScopedServer();
+
+    base::WeakPtr<GuestOsSecurityDelegate> security_delegate() const {
+      return security_delegate_;
+    }
+
+   private:
+    std::unique_ptr<exo::WaylandServerHandle> handle_;
+    base::WeakPtr<GuestOsSecurityDelegate> security_delegate_;
+  };
+
   // Enumerates the reasons why a wayland server might not be created.
   enum class ServerFailure {
     kUnknownVmType,
@@ -69,6 +105,13 @@ class GuestOsWaylandServer {
   // When a server is requested, the response will either be a handle to that
   // server's details, or a failure.
   using Result = borealis::Expected<ServerDetails*, ServerFailure>;
+
+  using ResponseCallback =
+      base::OnceCallback<void(absl::optional<std::string>)>;
+
+  using ServersByName =
+      base::flat_map<std::string, std::unique_ptr<ScopedServer>>;
+  using ServersByType = base::flat_map<vm_tools::apps::VmType, ServersByName>;
 
   // Creates a wayland server as per the |request|, and responds with the
   // relevant details in the |response_callback|. This API is used by e.g.
@@ -84,17 +127,15 @@ class GuestOsWaylandServer {
   // Use the given |socket_fd| as a wayland socket for the VM given by
   // |request|. Invokes the |response_callback| with nullopt on success, or a
   // string description of an error on failure.
-  static void ListenOnSocket(
-      const vm_tools::wl::ListenOnSocketRequest& request,
-      base::ScopedFD socket_fd,
-      base::OnceCallback<void(absl::optional<std::string>)> response_callback);
+  static void ListenOnSocket(const vm_tools::wl::ListenOnSocketRequest& request,
+                             base::ScopedFD socket_fd,
+                             ResponseCallback callback);
 
   // Advise that the wayland server for the VM given in |request| is no-longer
   // needed. Invokes the |response_callback| with nullopt on success, or a
   // string description of an error on failure.
-  static void CloseSocket(
-      const vm_tools::wl::CloseSocketRequest& request,
-      base::OnceCallback<void(absl::optional<std::string>)> response_callback);
+  static void CloseSocket(const vm_tools::wl::CloseSocketRequest& request,
+                          ResponseCallback callback);
 
   explicit GuestOsWaylandServer(Profile* profile);
 
@@ -106,6 +147,12 @@ class GuestOsWaylandServer {
   // session, and are removed at logout.
   void Get(vm_tools::launch::VmType vm_type,
            base::OnceCallback<void(Result)> callback);
+
+  // Returns a weak handle to the security delegate for the VM with the given
+  // |name| and |type|, if one exists, and nullptr otherwise.
+  base::WeakPtr<GuestOsSecurityDelegate> GetDelegate(
+      vm_tools::apps::VmType type,
+      const std::string& name) const;
 
   void SetCapabilityFactoryForTesting(
       vm_tools::launch::VmType vm_type,
@@ -119,13 +166,39 @@ class GuestOsWaylandServer {
       base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
       base::FilePath path);
 
+  void Listen(base::ScopedFD fd,
+              vm_tools::apps::VmType type,
+              const std::string& name,
+              ResponseCallback callback);
+
+  void Close(vm_tools::apps::VmType type,
+             const std::string& name,
+             ResponseCallback callback);
+
  private:
   class DelegateHolder;
+
+  void OnSecurityDelegateCreated(
+      base::ScopedFD fd,
+      vm_tools::apps::VmType type,
+      std::string name,
+      ResponseCallback callback,
+      std::unique_ptr<GuestOsSecurityDelegate> delegate);
+
+  void OnServerCreated(vm_tools::apps::VmType type,
+                       std::string name,
+                       ResponseCallback callback,
+                       base::WeakPtr<GuestOsSecurityDelegate> delegate,
+                       std::unique_ptr<exo::WaylandServerHandle> handle);
 
   Profile* profile_;
 
   base::flat_map<vm_tools::launch::VmType, std::unique_ptr<DelegateHolder>>
       delegate_holders_;
+
+  ServersByType servers_;
+
+  base::WeakPtrFactory<GuestOsWaylandServer> weak_factory_{this};
 };
 
 }  // namespace guest_os
