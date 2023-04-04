@@ -35,8 +35,6 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import androidx.test.runner.lifecycle.Stage;
 import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
@@ -54,6 +52,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -189,7 +188,12 @@ public class StartSurfaceTestUtils {
      * @param cta The ChromeTabbedActivity under test.
      */
     public static void waitForStartSurfaceVisible(ChromeTabbedActivity cta) {
+        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), getStartSurfaceLayoutType());
+
+        if (getStartSurfaceLayoutType() == LayoutType.START_SURFACE) {
+            onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
+        }
     }
 
     /**
@@ -221,6 +225,10 @@ public class StartSurfaceTestUtils {
             @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta) {
         waitForLayoutVisible(layoutChangedCallbackHelper, currentlyActiveLayout, cta,
                 getStartSurfaceLayoutType());
+
+        if (getStartSurfaceLayoutType() == LayoutType.START_SURFACE) {
+            onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
+        }
     }
 
     /**
@@ -580,18 +588,9 @@ public class StartSurfaceTestUtils {
      */
     public static void pressBackAndVerifyChromeToBackground(ChromeTabbedActivityTestRule testRule) {
         // Verifies Chrome is closed.
-        try {
-            pressBack(testRule);
-        } catch (Exception e) {
-        } finally {
-            CriteriaHelper.pollUiThread(
-                    ()
-                            -> ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
-                                       testRule.getActivity())
-                            == Stage.STOPPED,
-                    "Tapping back button should close Chrome.", MAX_TIMEOUT_MS,
-                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        }
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        pressBack(testRule);
+        Assert.assertTrue(AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
 
     /**

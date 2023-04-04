@@ -24,7 +24,6 @@ import android.view.View;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
-import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -37,7 +36,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -171,9 +169,8 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        StartSurfaceTestUtils.pressBackAndVerifyChromeToBackground(mActivityTestRule);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        ApplicationTestUtils.waitForActivityState(cta, Stage.STOPPED);
     }
 
     @Test

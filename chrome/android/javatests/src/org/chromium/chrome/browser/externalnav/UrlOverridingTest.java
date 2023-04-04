@@ -1322,11 +1322,14 @@ public class UrlOverridingTest {
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
         mTestContext.setIntentFilterForHost("example.com", filter);
 
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         mCustomTabActivityRule.launchActivity(getCustomTabFromChromeIntent(initialUrl, true));
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(monitor.getHits(), Matchers.is(1));
         }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
 
     @Test
