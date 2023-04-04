@@ -97,10 +97,7 @@ export class BrailleBackground {
 
   /** @override */
   async backTranslate(cells) {
-    return new Promise(resolve => {
-      BrailleTranslatorManager.instance.getDefaultTranslator().backTranslate(
-          cells, resolve);
-    });
+    return await BrailleTranslatorManager.backTranslate(cells);
   }
 
   /**
