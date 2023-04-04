@@ -7,6 +7,7 @@ package org.chromium.net;
 import android.content.Context;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.UrlUtils;
 
 /**
@@ -20,79 +21,82 @@ public final class NativeTestServer {
 
     public static boolean startNativeTestServer(Context context) {
         TestFilesInstaller.installIfNeeded(context);
-        return nativeStartNativeTestServer(
+        return NativeTestServerJni.get().startNativeTestServer(
                 TestFilesInstaller.getInstalledPath(context), UrlUtils.getIsolatedTestRoot());
     }
 
     public static void shutdownNativeTestServer() {
-        nativeShutdownNativeTestServer();
+        NativeTestServerJni.get().shutdownNativeTestServer();
     }
 
     public static String getEchoBodyURL() {
-        return nativeGetEchoBodyURL();
+        return NativeTestServerJni.get().getEchoBodyURL();
     }
 
     public static String getEchoHeaderURL(String header) {
-        return nativeGetEchoHeaderURL(header);
+        return NativeTestServerJni.get().getEchoHeaderURL(header);
     }
 
     public static String getEchoAllHeadersURL() {
-        return nativeGetEchoAllHeadersURL();
+        return NativeTestServerJni.get().getEchoAllHeadersURL();
     }
 
     public static String getEchoMethodURL() {
-        return nativeGetEchoMethodURL();
+        return NativeTestServerJni.get().getEchoMethodURL();
     }
 
     public static String getRedirectToEchoBody() {
-        return nativeGetRedirectToEchoBody();
+        return NativeTestServerJni.get().getRedirectToEchoBody();
     }
 
     public static String getFileURL(String filePath) {
-        return nativeGetFileURL(filePath);
+        return NativeTestServerJni.get().getFileURL(filePath);
     }
 
     // Returns a URL that the server will return an Exabyte of data
     public static String getExabyteResponseURL() {
-        return nativeGetExabyteResponseURL();
+        return NativeTestServerJni.get().getExabyteResponseURL();
     }
 
     // The following URLs will make NativeTestServer serve a response based on
     // the contents of the corresponding file and its mock-http-headers file.
 
     public static String getSuccessURL() {
-        return nativeGetFileURL("/success.txt");
+        return NativeTestServerJni.get().getFileURL("/success.txt");
     }
 
     public static String getRedirectURL() {
-        return nativeGetFileURL("/redirect.html");
+        return NativeTestServerJni.get().getFileURL("/redirect.html");
     }
 
     public static String getMultiRedirectURL() {
-        return nativeGetFileURL("/multiredirect.html");
+        return NativeTestServerJni.get().getFileURL("/multiredirect.html");
     }
 
     public static String getNotFoundURL() {
-        return nativeGetFileURL("/notfound.html");
+        return NativeTestServerJni.get().getFileURL("/notfound.html");
     }
 
     public static int getPort() {
-        return nativeGetPort();
+        return NativeTestServerJni.get().getPort();
     }
 
     public static String getHostPort() {
-        return nativeGetHostPort();
+        return NativeTestServerJni.get().getHostPort();
     }
 
-    private static native boolean nativeStartNativeTestServer(String filePath, String testDataDir);
-    private static native void nativeShutdownNativeTestServer();
-    private static native String nativeGetEchoBodyURL();
-    private static native String nativeGetEchoHeaderURL(String header);
-    private static native String nativeGetEchoAllHeadersURL();
-    private static native String nativeGetEchoMethodURL();
-    private static native String nativeGetRedirectToEchoBody();
-    private static native String nativeGetFileURL(String filePath);
-    private static native String nativeGetExabyteResponseURL();
-    private static native String nativeGetHostPort();
-    private static native int nativeGetPort();
+    @NativeMethods("cronet_tests")
+    interface Natives {
+        boolean startNativeTestServer(String filePath, String testDataDir);
+        void shutdownNativeTestServer();
+        String getEchoBodyURL();
+        String getEchoHeaderURL(String header);
+        String getEchoAllHeadersURL();
+        String getEchoMethodURL();
+        String getRedirectToEchoBody();
+        String getFileURL(String filePath);
+        String getExabyteResponseURL();
+        String getHostPort();
+        int getPort();
+    }
 }

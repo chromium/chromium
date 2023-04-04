@@ -11,6 +11,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.UrlUtils;
 
 /**
@@ -35,7 +36,7 @@ public final class QuicTestServer {
             throw new IllegalStateException("Quic server is already running");
         }
         TestFilesInstaller.installIfNeeded(context);
-        nativeStartQuicTestServer(
+        QuicTestServerJni.get().startQuicTestServer(
                 TestFilesInstaller.getInstalledPath(context), UrlUtils.getIsolatedTestRoot());
         sBlock.block();
         sBlock.close();
@@ -49,7 +50,7 @@ public final class QuicTestServer {
         if (!sServerRunning) {
             return;
         }
-        nativeShutdownQuicTestServer();
+        QuicTestServerJni.get().shutdownQuicTestServer();
         sServerRunning = false;
     }
 
@@ -62,7 +63,7 @@ public final class QuicTestServer {
     }
 
     public static int getServerPort() {
-        return nativeGetServerPort();
+        return QuicTestServerJni.get().getServerPort();
     }
 
     public static final String getServerCert() {
@@ -84,7 +85,10 @@ public final class QuicTestServer {
         sBlock.open();
     }
 
-    private static native void nativeStartQuicTestServer(String filePath, String testDataDir);
-    private static native void nativeShutdownQuicTestServer();
-    private static native int nativeGetServerPort();
+    @NativeMethods("cronet_tests")
+    interface Natives {
+        void startQuicTestServer(String filePath, String testDataDir);
+        void shutdownQuicTestServer();
+        int getServerPort();
+    }
 }

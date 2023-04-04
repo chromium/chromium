@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.CronetUrlRequestContext;
@@ -62,11 +63,13 @@ public class CronetTestUtil {
 
         public NetworkThreadTestConnector(CronetEngine cronetEngine) {
             mRequestContext = (CronetUrlRequestContext) cronetEngine;
-            nativePrepareNetworkThread(mRequestContext.getUrlRequestContextAdapter());
+            CronetTestUtilJni.get().prepareNetworkThread(
+                    mRequestContext.getUrlRequestContextAdapter());
         }
 
         public void shutdown() {
-            nativeCleanupNetworkThread(mRequestContext.getUrlRequestContextAdapter());
+            CronetTestUtilJni.get().cleanupNetworkThread(
+                    mRequestContext.getUrlRequestContextAdapter());
         }
     }
 
@@ -75,13 +78,14 @@ public class CronetTestUtil {
      * @param urlRequest is the UrlRequest object of interest.
      */
     public static int getLoadFlags(UrlRequest urlRequest) {
-        return nativeGetLoadFlags(((CronetUrlRequest) urlRequest).getUrlRequestAdapterForTesting());
+        return CronetTestUtilJni.get().getLoadFlags(
+                ((CronetUrlRequest) urlRequest).getUrlRequestAdapterForTesting());
     }
 
     public static boolean doesURLRequestContextExistForTesting(
             CronetEngine engine, Network network) {
         CronetUrlRequestContext context = (CronetUrlRequestContext) engine;
-        return nativeURLRequestContextExistsForTesting(
+        return CronetTestUtilJni.get().uRLRequestContextExistsForTesting(
                 context.getUrlRequestContextAdapter(), network.getNetworkHandle());
     }
 
@@ -98,20 +102,27 @@ public class CronetTestUtil {
     /**
      * Returns whether the device supports calling nativeGetTaggedBytes().
      */
-    public static native boolean nativeCanGetTaggedBytes();
+    public static boolean nativeCanGetTaggedBytes() {
+        return CronetTestUtilJni.get().canGetTaggedBytes();
+    }
 
     /**
      * Query the system to find out how many bytes were received with tag
      * {@code expectedTag} for our UID.
      * @param expectedTag the tag to query for.
-     * @return the count of recieved bytes.
+     * @return the count of received bytes.
      */
-    public static native long nativeGetTaggedBytes(int expectedTag);
+    public static long nativeGetTaggedBytes(int expectedTag) {
+        return CronetTestUtilJni.get().getTaggedBytes(expectedTag);
+    }
 
-    private static native int nativeGetLoadFlags(long urlRequestAdapter);
-
-    private static native void nativePrepareNetworkThread(long contextAdapter);
-    private static native void nativeCleanupNetworkThread(long contextAdapter);
-    private static native boolean nativeURLRequestContextExistsForTesting(
-            long contextAdapter, long networkHandle);
+    @NativeMethods("cronet_tests")
+    interface Natives {
+        boolean canGetTaggedBytes();
+        long getTaggedBytes(int expectedTag);
+        int getLoadFlags(long urlRequestAdapter);
+        void prepareNetworkThread(long contextAdapter);
+        void cleanupNetworkThread(long contextAdapter);
+        boolean uRLRequestContextExistsForTesting(long contextAdapter, long networkHandle);
+    }
 }
