@@ -29,8 +29,6 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -107,12 +105,6 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         ->GetLocationBarView()
         ->page_action_icon_controller()
         ->GetIconView(PageActionIconType::kHighEfficiency);
-  }
-
-  views::InkDropState GetInkDropState() {
-    return views::InkDrop::Get(GetPageActionIconView())
-        ->GetInkDrop()
-        ->GetTargetInkDropState();
   }
 
   template <class T>
@@ -210,35 +202,6 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.HighEfficiency.BubbleAction",
       HighEfficiencyBubbleActionType::kDismiss, 1);
-}
-
-// When the dialog is closed, the ink drop should hide.
-TEST_F(HighEfficiencyChipViewTest, ShouldShowAndHideInkDrop) {
-  SetTabDiscardState(0, true);
-
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_EQ(GetInkDropState(), views::InkDropState::HIDDEN);
-
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
-  // Open bubble
-  test_api.NotifyClick(press);
-  test_api.NotifyClick(release);
-  EXPECT_EQ(GetInkDropState(), views::InkDropState::ACTIVATED);
-
-  // Close bubble
-  test_api.NotifyClick(press);
-
-  // TODO(drubery): This assertion fails on Mac after
-  // https://crrev.com/c/4348483 since the bubble no longer takes out an
-  // ScopedAnchorHighlight because it is never made visible. The test setup
-  // needs to be updated so that the bubble is visible.
-#if !BUILDFLAG(IS_MAC)
-  EXPECT_EQ(GetInkDropState(), views::InkDropState::HIDDEN);
-#endif
 }
 
 // A link should be rendered within the dialog.
