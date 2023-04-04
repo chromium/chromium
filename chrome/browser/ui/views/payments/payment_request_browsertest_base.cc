@@ -53,6 +53,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/views_switches.h"
 
 namespace payments {
 
@@ -89,6 +90,11 @@ void PaymentRequestBrowserTestBase::SetUpCommandLine(
   // load pages from "a.com" without an interstitial.
   command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   command_line->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
+
+  // Clicks from tests should always be allowed, even on dialogs that have
+  // protection against accidental double-clicking/etc.
+  command_line->AppendSwitch(
+      views::switches::kDisableInputEventActivationProtectionForTesting);
 }
 
 void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
@@ -114,10 +120,6 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
 
   // Register all prefs with our pref testing service.
   payments::RegisterProfilePrefs(prefs_.registry());
-
-  // Clicks from tests should always be allowed, even on dialogs that have
-  // protection against accidental double-clicking/etc.
-  views::InputEventActivationProtector::DisableForTesting();
 }
 
 void PaymentRequestBrowserTestBase::NavigateTo(const std::string& file_path) {

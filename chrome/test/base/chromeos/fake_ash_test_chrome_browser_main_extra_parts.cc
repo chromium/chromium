@@ -73,7 +73,6 @@ void FakeAshTestChromeBrowserMainExtraParts::PostBrowserStart() {
 
   crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
       test_controller_ash_.get());
-  views::InputEventActivationProtector::DisableForTesting();
 
   ignore_signin_errors_ =
       ash::SigninErrorNotifier::IgnoreSyncErrorsForTesting();

@@ -502,6 +502,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--user-data-dir=%s' % tmp_ash_data_dir_name,
         '--enable-wayland-server',
         '--no-startup-window',
+        '--disable-input-event-activation-protection',
         '--disable-lacros-keep-alive',
         '--disable-login-lacros-opening',
         '--enable-field-trial-config',

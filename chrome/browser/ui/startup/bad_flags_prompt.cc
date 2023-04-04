@@ -43,6 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
+#include "ui/views/views_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/flags/bad_flags_snackbar_manager.h"
@@ -158,6 +159,10 @@ static const char* kBadFlags[] = {
     // learning model output used by the History Clusters service and should
     // only be used for testing purposes.
     history_clusters::switches::kClustersOverrideFile,
+
+    // This flag disables protection against potentially unintentional user
+    // interaction with certain UI elements.
+    views::switches::kDisableInputEventActivationProtectionForTesting,
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

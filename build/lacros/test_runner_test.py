@@ -103,6 +103,7 @@ class TestRunnerTest(unittest.TestCase):
           '--user-data-dir=/tmp/ash-data',
           '--enable-wayland-server',
           '--no-startup-window',
+          '--disable-input-event-activation-protection',
           '--disable-lacros-keep-alive',
           '--disable-login-lacros-opening',
           '--enable-field-trial-config',

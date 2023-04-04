@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/views_switches.h"
 
 namespace test {
 
@@ -46,6 +47,8 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
        ash::features::kLacrosOnly},
       {});
   command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
+  command_line->AppendSwitch(
+      views::switches::kDisableInputEventActivationProtectionForTesting);
   command_line->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
   command_line->AppendSwitch(ash::switches::kDisableLoginLacrosOpening);
   command_line->AppendSwitch(switches::kNoStartupWindow);

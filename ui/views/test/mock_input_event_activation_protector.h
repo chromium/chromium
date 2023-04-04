@@ -12,10 +12,6 @@ namespace views {
 
 // Mock version of InputEventActivationProtector for injection during tests, to
 // allow verifying that protected Views work as expected.
-//
-// If you are just looking to disable input protection entirely for your test,
-// use the static views::InputEventActivationProtector::DisableForTesting method
-// instead.
 class MockInputEventActivationProtector : public InputEventActivationProtector {
  public:
   MockInputEventActivationProtector();

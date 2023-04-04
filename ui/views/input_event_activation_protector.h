@@ -16,6 +16,7 @@ namespace views {
 
 // The goal of this class is to prevent potentially unintentional user
 // interaction with a UI element.
+// See switch kDisableInputEventActivationProtectionForTesting for disabling it.
 class VIEWS_EXPORT InputEventActivationProtector {
  public:
   InputEventActivationProtector() = default;
@@ -41,9 +42,6 @@ class VIEWS_EXPORT InputEventActivationProtector {
 
   // Resets the state for click tracking.
   void ResetForTesting();
-
-  // Integration tests can disable all input event activation protectors.
-  static void DisableForTesting();
 
  private:
   // Timestamp of when the view being tracked is first shown.
