@@ -51,6 +51,16 @@ public class SuggestionsMetrics {
         int COUNT = 4;
     }
 
+    @IntDef({ActionInSuggestIntentResult.SUCCESS, ActionInSuggestIntentResult.BAD_URI_SYNTAX,
+            ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND, ActionInSuggestIntentResult.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActionInSuggestIntentResult {
+        int SUCCESS = 0; // Intent started successfully.
+        int BAD_URI_SYNTAX = 1; // Unable to deserialize intent: invalid syntax.
+        int ACTIVITY_NOT_FOUND = 2; // Unable to start intent: no activity.
+        int COUNT = 3;
+    }
+
     /**
      * Record how long the Suggestion List needed to layout its content and children.
      */
@@ -236,6 +246,17 @@ public class SuggestionsMetrics {
                         ? HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST
                         : HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
                 elapsedTimeMs, 1, 1000, 50);
+    }
+
+    /**
+     * Record the outcome of ActionInSuggest chip interaction.
+     *
+     * @param intentResult the {@link #ActionInSuggestIntentResult} to record
+     */
+    public static final void recordActionInSuggestIntentResult(
+            @ActionInSuggestIntentResult int intentResult) {
+        RecordHistogram.recordEnumeratedHistogram("Android.Omnibox.ActionInSuggest.IntentResult",
+                intentResult, ActionInSuggestIntentResult.COUNT);
     }
 
     /**

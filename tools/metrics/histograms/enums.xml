@@ -1352,6 +1352,12 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="No Action"/>
 </enum>
 
+<enum name="ActionInSuggestIntentResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid URI Syntax"/>
+  <int value="2" label="Activity not found"/>
+</enum>
+
 <enum name="ActionInSuggestType">
   <summary>The type of Omnibox Action in Suggest.</summary>
   <int value="0" label="Unknown"/>

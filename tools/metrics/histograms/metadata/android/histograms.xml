@@ -2293,6 +2293,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.Omnibox.ActionInSuggest.IntentResult"
+    enum="ActionInSuggestIntentResult" expires_after="2023-08-20">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the outcome of the User's interaction with ActionInSuggest chips,
+    breaking down the cases where the intent could not be created or started.
+
+    Recorded every time the user interacts with the ActionInSuggest, for the
+    Action that the user interacted with. Not recorded if the user does not
+    interact with ActionInSuggest.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.InputToNavigationControllerStart" units="ms"
     expires_after="2023-08-20">
   <owner>spelchat@chromium.org</owner>
