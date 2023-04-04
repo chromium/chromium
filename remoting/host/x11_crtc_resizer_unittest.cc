@@ -108,4 +108,19 @@ TEST(X11CrtcResizerTest, BottomAlignmentKept) {
   ExpectEqual(result[1], DesktopRect::MakeXYWH(200, 100, 100, 100));
 }
 
+TEST(X11CrtcResizerTest, MiddleAlignmentKept) {
+  X11CrtcResizer resizer(nullptr, nullptr);
+
+  resizer.SetCrtcsForTest({
+      {.x = 0, .y = 0, .width = 200, .height = 100},
+      {.x = 50, .y = 100, .width = 100, .height = 100},
+  });
+
+  resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {400, 100});
+
+  auto result = resizer.GetCrtcsForTest();
+  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 400, 100));
+  ExpectEqual(result[1], DesktopRect::MakeXYWH(150, 100, 100, 100));
+}
+
 }  // namespace remoting
