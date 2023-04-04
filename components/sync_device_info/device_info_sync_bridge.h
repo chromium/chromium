@@ -81,7 +81,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const EntityData& entity_data) override;
   std::string GetStorageKey(const EntityData& entity_data) override;
-  void ApplyStopSyncChanges(
+  void ApplyDisableSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
   ModelTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
       syncer::SyncCommitError commit_error) override;

@@ -180,13 +180,8 @@ std::string PasskeySyncBridge::GetStorageKey(
   return entity_data.specifics.webauthn_credential().sync_id();
 }
 
-void PasskeySyncBridge::ApplyStopSyncChanges(
+void PasskeySyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // If |delete_metadata_change_list| is null, it indicates that sync metadata
-  // shouldn't be deleted, for example chrome is shutting down.
-  if (!delete_metadata_change_list) {
-    return;
-  }
   CHECK(store_);
   store_->DeleteAllDataAndMetadata(base::DoNothing());
   data_.clear();

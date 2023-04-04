@@ -59,8 +59,8 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   bool SupportsIncrementalUpdates() const override;
-  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
-                                delete_metadata_change_list) override;
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   delete_metadata_change_list) override;
 
  private:
   // Helper function to send all offer data to the callback.

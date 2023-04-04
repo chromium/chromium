@@ -224,8 +224,7 @@ void ClientTagBasedModelTypeProcessor::OnSyncStopping(
 
   switch (metadata_fate) {
     case KEEP_METADATA: {
-      bridge_->ApplyStopSyncChanges(
-          /*delete_metadata_change_list=*/nullptr);
+      bridge_->OnSyncPaused();
       // The model is still ready to sync (with the same |bridge_|) and same
       // sync metadata.
       ResetState(KEEP_METADATA);
@@ -278,7 +277,15 @@ void ClientTagBasedModelTypeProcessor::ClearAllProvidedMetadataAndResetState(
 
 void ClientTagBasedModelTypeProcessor::ClearAllMetadataAndResetStateImpl(
     std::unique_ptr<MetadataChangeList> change_list) {
-  bridge_->ApplyStopSyncChanges(std::move(change_list));
+  if (change_list) {
+    bridge_->ApplyDisableSyncChanges(std::move(change_list));
+  } else {
+    // TODO(crbug.com/1428905): This mimics the behavior previous to
+    // https://crrev.com/c/4372288 but is quite questionable: it means sync was
+    // disabled before the initial download completed, which has nothing to do
+    // with sync-paused.
+    bridge_->OnSyncPaused();
+  }
 
   // Reset all the internal state of the processor.
   ResetState(CLEAR_METADATA);
@@ -1259,7 +1266,7 @@ bool ClientTagBasedModelTypeProcessor::ClearPersistedMetadataIfInvalid(
 
   // Check if ClearMetadataWhileStopped() was called before ModelReadyToSync().
   // If so, clear the metadata from storage (using the bridge's
-  // ApplyStopSyncChanges()).
+  // ApplyDisableSyncChanges()).
   if (pending_clear_metadata_) {
     pending_clear_metadata_ = false;
     // Avoid calling the bridge if there's nothing to clear.

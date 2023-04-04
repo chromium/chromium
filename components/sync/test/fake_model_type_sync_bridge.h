@@ -116,8 +116,6 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   ConflictResolution ResolveConflict(
       const std::string& storage_key,
       const EntityData& remote_data) const override;
-  void ApplyStopSyncChanges(
-      std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
   bool IsEntityDataValid(const EntityData& entity_data) const override;

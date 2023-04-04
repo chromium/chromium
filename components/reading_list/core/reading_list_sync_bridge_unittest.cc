@@ -329,7 +329,7 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithUnspecifiedStorage) {
                             /*estimated_read_time=*/base::TimeDelta());
 
   ASSERT_EQ(1ul, model_->size());
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
   EXPECT_EQ(1ul, model_->size());
 }
 
@@ -340,7 +340,7 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorage) {
                             /*estimated_read_time=*/base::TimeDelta());
 
   ASSERT_EQ(1ul, model_->size());
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
   EXPECT_EQ(0ul, model_->size());
 }
 
@@ -367,23 +367,10 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
   ASSERT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
               SizeIs(1));
 
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
   EXPECT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
               SizeIs(0));
-}
-
-TEST_F(ReadingListSyncBridgeTest, PauseSyncWithAccountStorage) {
-  ResetModelAndBridge(syncer::StorageType::kAccount);
-  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
-                            reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
-
-  ASSERT_EQ(1ul, model_->size());
-  // A null metadata change list means sync is paused (rather than permanently
-  // disabled).
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
-  EXPECT_EQ(1ul, model_->size());
 }
 
 TEST_F(ReadingListSyncBridgeTest, CompareEntriesForSync) {

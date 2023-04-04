@@ -45,19 +45,18 @@ ConflictResolution ModelTypeSyncBridge::ResolveConflict(
   return ConflictResolution::kUseRemote;
 }
 
-void ModelTypeSyncBridge::ApplyStopSyncChanges(
+void ModelTypeSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
-  if (delete_metadata_change_list) {
-    // Nothing to do if this fails, so just ignore the error it might return.
-    ApplySyncChanges(std::move(delete_metadata_change_list),
-                     EntityChangeList());
-  }
+  // Nothing to do if this fails, so just ignore the error it might return.
+  ApplySyncChanges(std::move(delete_metadata_change_list), EntityChangeList());
 }
 
 void ModelTypeSyncBridge::OnCommitAttemptErrors(
     const syncer::FailedCommitResponseDataList& error_response_list) {
   // By default the bridge just ignores failed commit items.
 }
+
+void ModelTypeSyncBridge::OnSyncPaused() {}
 
 ModelTypeSyncBridge::CommitAttemptFailedBehavior
 ModelTypeSyncBridge::OnCommitAttemptFailed(SyncCommitError commit_error) {

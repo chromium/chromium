@@ -1241,7 +1241,7 @@ TEST_F(DeviceInfoSyncBridgeTest, SendLocalData) {
   EXPECT_EQ(2, change_count());
 }
 
-TEST_F(DeviceInfoSyncBridgeTest, ApplyStopSyncChangesWithClearData) {
+TEST_F(DeviceInfoSyncBridgeTest, ApplyDisableSyncChanges) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   ASSERT_EQ(1u, bridge()->GetAllDeviceInfo().size());
   ASSERT_EQ(1, change_count());
@@ -1257,7 +1257,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyStopSyncChangesWithClearData) {
   ASSERT_EQ(2, change_count());
 
   // Should clear out all local data and notify observers.
-  bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
   EXPECT_EQ(0u, bridge()->GetAllDeviceInfo().size());
   EXPECT_EQ(3, change_count());
   EXPECT_TRUE(ReadAllFromStore().empty());
@@ -1275,34 +1275,6 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyStopSyncChangesWithClearData) {
                           EntityChangeList());
   // Local device.
   EXPECT_EQ(1u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_TRUE(bridge()->IsPulseTimerRunningForTest());
-}
-
-TEST_F(DeviceInfoSyncBridgeTest, ApplyStopSyncChangesWithKeepData) {
-  InitializeAndMergeInitialData(SyncMode::kFull);
-  ASSERT_EQ(1u, bridge()->GetAllDeviceInfo().size());
-  ASSERT_EQ(1, change_count());
-  ASSERT_FALSE(ReadAllFromStore().empty());
-  ASSERT_TRUE(bridge()->IsPulseTimerRunningForTest());
-
-  const DeviceInfoSpecifics specifics = CreateSpecifics(1);
-  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
-                                          EntityAddList({specifics}));
-
-  ASSERT_FALSE(error);
-  ASSERT_EQ(2u, bridge()->GetAllDeviceInfo().size());
-  ASSERT_EQ(2, change_count());
-
-  // Should clear out all local data and notify observers.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
-  EXPECT_EQ(2u, bridge()->GetAllDeviceInfo().size());
-  EXPECT_EQ(2, change_count());
-  EXPECT_FALSE(ReadAllFromStore().empty());
-  EXPECT_TRUE(bridge()->IsPulseTimerRunningForTest());
-
-  // Reloading from storage should still contain remote data.
-  RestartBridge();
-  EXPECT_EQ(2u, bridge()->GetAllDeviceInfo().size());
   EXPECT_TRUE(bridge()->IsPulseTimerRunningForTest());
 }
 
@@ -1456,7 +1428,7 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceNameForSyncModeToggle) {
   ASSERT_EQ(expected_device_name_full_sync, device->client_name());
 
   // Toggle to transport only sync mode.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
   bridge()->OnSyncStarting(
       TestDataTypeActivationRequest(SyncMode::kTransportOnly));
 
@@ -1465,7 +1437,7 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceNameForSyncModeToggle) {
   ASSERT_EQ(expected_device_name_transport_only, device->client_name());
 
   // Toggle to full sync mode.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->OnSyncPaused();  // No-op, but for the sake of a realistic sequence.
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
 
   device = local_device()->GetLocalDeviceInfo();
@@ -1564,7 +1536,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
             bridge()->CreateMetadataChangeList();
         change_list->ClearMetadata(CacheGuidForSuffix(kLocalSuffix));
         change_list->ClearModelTypeState();
-        bridge()->ApplyStopSyncChanges(std::move(change_list));
+        bridge()->ApplyDisableSyncChanges(std::move(change_list));
 
         bridge()->OnSyncStarting(
             TestDataTypeActivationRequest(SyncMode::kFull));
@@ -1621,7 +1593,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
       bridge()->CreateMetadataChangeList();
   change_list->ClearMetadata(CacheGuidForSuffix(kLocalSuffix));
   change_list->ClearModelTypeState();
-  bridge()->ApplyStopSyncChanges(std::move(change_list));
+  bridge()->ApplyDisableSyncChanges(std::move(change_list));
 
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
 

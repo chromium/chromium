@@ -62,8 +62,8 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   bool SupportsGetStorageKey() const override;
-  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
-                                delete_metadata_change_list) override;
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 

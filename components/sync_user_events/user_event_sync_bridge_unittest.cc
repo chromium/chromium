@@ -208,13 +208,13 @@ TEST_F(UserEventSyncBridgeTest, SingleRecord) {
               ElementsAre(Pair(storage_key, MatchesUserEvent(specifics))));
 }
 
-TEST_F(UserEventSyncBridgeTest, ApplyStopSyncChanges) {
+TEST_F(UserEventSyncBridgeTest, ApplyDisableSyncChanges) {
   WaitUntilModelReadyToSync();
   const UserEventSpecifics specifics(CreateSpecifics(1u, 2u, 3u));
   bridge()->RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
   ASSERT_THAT(GetAllData(), SizeIs(1));
 
-  bridge()->ApplyStopSyncChanges(WriteBatch::CreateMetadataChangeList());
+  bridge()->ApplyDisableSyncChanges(WriteBatch::CreateMetadataChangeList());
   // The bridge may asynchronously query the store to choose what to delete.
   base::RunLoop().RunUntilIdle();
 

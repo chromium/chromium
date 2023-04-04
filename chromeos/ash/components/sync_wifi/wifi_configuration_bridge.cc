@@ -293,12 +293,8 @@ std::string WifiConfigurationBridge::GetStorageKey(
       .SerializeToString();
 }
 
-void WifiConfigurationBridge::ApplyStopSyncChanges(
+void WifiConfigurationBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (!delete_metadata_change_list) {
-    return;
-  }
-
   // Since bridge and ModelTypeStore state represents the synced networks state,
   // while actual data is stored by Shill, it's appropriate to treat all data
   // stored by bridge as metadata and clear it out when processor requests to

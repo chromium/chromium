@@ -165,11 +165,16 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     sync_started_ = true;
   }
 
-  void ApplyStopSyncChanges(std::unique_ptr<MetadataChangeList>
-                                delete_metadata_change_list) override {
+  void ApplyDisableSyncChanges(std::unique_ptr<MetadataChangeList>
+                                   delete_metadata_change_list) override {
     sync_started_ = false;
-    FakeModelTypeSyncBridge::ApplyStopSyncChanges(
+    FakeModelTypeSyncBridge::ApplyDisableSyncChanges(
         std::move(delete_metadata_change_list));
+  }
+
+  void OnSyncPaused() override {
+    sync_started_ = false;
+    FakeModelTypeSyncBridge::OnSyncPaused();
   }
 
   std::string GetStorageKey(const EntityData& entity_data) override {
@@ -3111,8 +3116,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldNotInvokeBridgeOnSyncStartingFromOnSyncStopping) {
   InitializeToReadyState();
   ASSERT_TRUE(bridge()->sync_started());
-  // OnSyncStopping() calls bridge's ApplyStopSyncChanges(), which should reset
-  // `sync_started_` flag.
+  // OnSyncStopping() calls bridge's ApplyDisableSyncChanges(), which should
+  // reset `sync_started_` flag.
   type_processor()->OnSyncStopping(CLEAR_METADATA);
   // OnSyncStopping() should clear the activation request, hence avoiding call
   // to bridge's OnSyncStarting().

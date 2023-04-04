@@ -613,15 +613,14 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
   return metadata_error;
 }
 
-void HistorySyncBridge::ApplyStopSyncChanges(
+void HistorySyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (delete_metadata_change_list) {
-    // A non-null `delete_metadata_change_list` indicates that Sync is being
-    // turned off only permanently. Delete all foreign visits from the DB.
-    history_backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ModelTypeSyncBridge::ApplyStopSyncChanges(
+  // Delete all foreign visits from the DB.
+  history_backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
+
+  ModelTypeSyncBridge::ApplyDisableSyncChanges(
       std::move(delete_metadata_change_list));
 }
 
@@ -819,10 +818,9 @@ void HistorySyncBridge::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
   sync_transport_state_ = state;
 
-  // TODO(crbug.com/897628): Currently ApplyStopSyncChanges() doesn't always
-  // get called with a non-null MetadataChangeList when Sync is turned off. This
-  // is a workaround to still clear foreign history in that case. Remove once
-  // that bug is fixed.
+  // TODO(crbug.com/897628): Currently ApplyDisableSyncChanges() doesn't always
+  // get called when Sync is turned off. This is a workaround to still clear
+  // foreign history in that case. Remove once that bug is fixed.
   if (sync_transport_state_ == syncer::SyncService::TransportState::DISABLED) {
     // This is cheap if there is no foreign history in the DB, so it's okay to
     // call this somewhat too often.

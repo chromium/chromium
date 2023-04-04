@@ -900,11 +900,8 @@ bool PasswordSyncBridge::SupportsGetStorageKey() const {
   return false;
 }
 
-void PasswordSyncBridge::ApplyStopSyncChanges(
+void PasswordSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (!delete_metadata_change_list) {
-    return;
-  }
   if (!password_store_sync_->IsAccountStore()) {
     password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
     sync_enabled_or_disabled_cb_.Run();

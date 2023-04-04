@@ -983,7 +983,7 @@ TEST_F(AutofillWalletSyncBridgeTest, LoadMetadataCalled) {
   ResetBridge(/*initial_sync_done=*/true);
 }
 
-TEST_F(AutofillWalletSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
+TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges) {
   // Create one profile, one card and one cloud token data on the client.
   AutofillProfile local_profile = test::GetServerProfile();
   table()->SetServerProfiles({local_profile});
@@ -998,9 +998,9 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
 
-  // Passing in a non-null metadata change list indicates to the bridge that
-  // sync is stopping because it was disabled.
-  bridge()->ApplyStopSyncChanges(
+  // ApplyDisableSyncChanges indicates to the bridge that sync is stopping
+  // because it was disabled.
+  bridge()->ApplyDisableSyncChanges(
       std::make_unique<syncer::InMemoryMetadataChangeList>());
 
   // This bridge should not touch the metadata; should get deleted by the
@@ -1008,29 +1008,6 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
   ExpectCountsOfWalletMetadataInDB(/*cards_count=*/1u, /*address_count=*/1u);
 
   EXPECT_TRUE(GetAllLocalData().empty());
-}
-
-TEST_F(AutofillWalletSyncBridgeTest, ApplyStopSyncChanges_KeepData) {
-  // Create one profile, one card and one cloud token data on the client.
-  AutofillProfile local_profile = test::GetServerProfile();
-  table()->SetServerProfiles({local_profile});
-  CreditCard local_card = test::GetMaskedServerCard();
-  table()->SetServerCreditCards({local_card});
-  CreditCardCloudTokenData cloud_token_data =
-      test::GetCreditCardCloudTokenData1();
-  table()->SetCreditCardCloudTokenData({cloud_token_data});
-
-  // We do not write to DB at all, so we should not commit any changes.
-  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
-
-  // Passing in a non-null metadata change list indicates to the bridge that
-  // sync is stopping but the data type is not disabled.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
-
-  EXPECT_FALSE(GetAllLocalData().empty());
 }
 
 // This test ensures that an int64 -> int conversion bug we encountered is

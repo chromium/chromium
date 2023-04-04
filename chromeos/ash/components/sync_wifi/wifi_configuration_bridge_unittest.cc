@@ -507,7 +507,7 @@ TEST_F(WifiConfigurationBridgeTest, MergeSyncData) {
   histogram_tester.ExpectTotalCount(kTotalCountHistogram, 1);
 }
 
-TEST_F(WifiConfigurationBridgeTest, ApplyStopSyncChangesAndMergeSyncData) {
+TEST_F(WifiConfigurationBridgeTest, ApplyDisableSyncChangesAndMergeSyncData) {
   InitializeSyncStore();
 
   // Mimic initial sync with single sync network.
@@ -531,7 +531,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplyStopSyncChangesAndMergeSyncData) {
   EXPECT_TRUE(VectorContainsProto(updated_local_networks, meow_sync));
 
   // Mimic sync being stopped with request to clear metadata.
-  bridge()->ApplyStopSyncChanges(
+  bridge()->ApplyDisableSyncChanges(
       std::make_unique<syncer::InMemoryMetadataChangeList>());
 
   // Add local network while sync is not running.

@@ -270,28 +270,22 @@ std::string ReadingListSyncBridge::GetStorageKey(
   return entity_data.specifics.reading_list().entry_id();
 }
 
-void ReadingListSyncBridge::ApplyStopSyncChanges(
+void ReadingListSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // A non-null |delete_metadata_change_list| indicates sync (or reading list
-  // sync) is permanently disabled (as opposed to temporarily paused).
-  if (delete_metadata_change_list) {
-    switch (storage_type_) {
-      case syncer::StorageType::kUnspecified:
-        // Fall back to the default behavior.
-        break;
-      case syncer::StorageType::kAccount:
-        // For account storage, in addition to sync metadata deletion (which
-        // |delete_metadata_change_list| represents), the actual reading list
-        // entries need to be deleted. This function does both and is even
-        // robust against orphan or unexpected data in storage.
-        model_->SyncDeleteAllEntriesAndSyncMetadata();
-        break;
-    }
+  switch (storage_type_) {
+    case syncer::StorageType::kUnspecified:
+      // Fall back to the default behavior.
+      ModelTypeSyncBridge::ApplyDisableSyncChanges(
+          std::move(delete_metadata_change_list));
+      break;
+    case syncer::StorageType::kAccount:
+      // For account storage, in addition to sync metadata deletion (which
+      // |delete_metadata_change_list| represents), the actual reading list
+      // entries need to be deleted. This function does both and is even
+      // robust against orphan or unexpected data in storage.
+      model_->SyncDeleteAllEntriesAndSyncMetadata();
+      break;
   }
-
-  // Exercise the default codepath to be safe (but should be a no-op).
-  ModelTypeSyncBridge::ApplyStopSyncChanges(
-      std::move(delete_metadata_change_list));
 }
 
 bool ReadingListSyncBridge::CompareEntriesForSync(

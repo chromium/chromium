@@ -360,12 +360,6 @@ ConflictResolution FakeModelTypeSyncBridge::ResolveConflict(
   return conflict_resolution_;
 }
 
-void FakeModelTypeSyncBridge::ApplyStopSyncChanges(
-    std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
-  ModelTypeSyncBridge::ApplyStopSyncChanges(
-      std::move(delete_metadata_change_list));
-}
-
 sync_pb::EntitySpecifics
 FakeModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {

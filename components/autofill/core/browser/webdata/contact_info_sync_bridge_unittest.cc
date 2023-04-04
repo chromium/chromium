@@ -308,10 +308,9 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
   bridge().AutofillProfileChanged(change);
 }
 
-// Tests that `ApplyStopSyncChanges()` clears all data in AutofillTable when the
-// data type gets disabled. This is indicated by passing a non-null metadata
-// change list to `ApplyStopSyncChanges()`.
-TEST_F(ContactInfoSyncBridgeTest, ApplyStopSyncChanges_DisableContactInfo) {
+// Tests that `ApplyDisableSyncChanges()` clears all data in AutofillTable when
+// the data type gets disabled.
+TEST_F(ContactInfoSyncBridgeTest, ApplyDisableSyncChanges) {
   const AutofillProfile remote = TestProfile(kGUID1);
   ASSERT_TRUE(StartSyncing({remote}));
   ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
@@ -319,24 +318,9 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyStopSyncChanges_DisableContactInfo) {
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges);
 
-  bridge().ApplyStopSyncChanges(bridge().CreateMetadataChangeList());
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
 
   EXPECT_TRUE(GetAllDataFromTable().empty());
-}
-
-// Tests that `ApplyStopSyncChanges()` leaves the local data as-is when sync is
-// stopping.
-TEST_F(ContactInfoSyncBridgeTest, ApplyStopSyncChanges_SyncStopping) {
-  const AutofillProfile remote = TestProfile(kGUID1);
-  ASSERT_TRUE(StartSyncing({remote}));
-  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
-
-  EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges).Times(0);
-
-  bridge().ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
-
-  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
 }
 
 // Tests that trimming `ContactInfoSpecifics` with only supported values set

@@ -322,7 +322,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeSyncData_LogDataValidity) {
 
 // Tests that when sync is stopped and the data type is disabled, client should
 // remove all client data.
-TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
+TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {
   // Create one offer data in the client table.
   AutofillOfferData client_data = test::GetCardLinkedOfferData1();
   table()->SetAutofillOffers({client_data});
@@ -330,31 +330,11 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_ClearAllData) {
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges());
 
-  // Passing in a non-null metadata change list indicates to the bridge that
-  // sync is stopping but the data type is not disabled.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/
-                                 std::make_unique<
-                                     syncer::InMemoryMetadataChangeList>());
+  bridge()->ApplyDisableSyncChanges(/*delete_metadata_change_list=*/
+                                    std::make_unique<
+                                        syncer::InMemoryMetadataChangeList>());
 
   EXPECT_TRUE(GetAllLocalData().empty());
-}
-
-// Tests that when sync is stopped but the data type is not disabled, client
-// should keep all the data.
-TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyStopSyncChanges_KeepAllData) {
-  // Create one offer data in the client table.
-  AutofillOfferData client_data = test::GetCardLinkedOfferData1();
-  table()->SetAutofillOffers({client_data});
-
-  // We do not write to DB at all, so we should not commit any changes.
-  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
-
-  // Passing in a null metadata change list indicates to the bridge that
-  // sync is stopping and the data type is disabled.
-  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
-
-  EXPECT_FALSE(GetAllLocalData().empty());
 }
 
 }  // namespace autofill

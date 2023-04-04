@@ -143,13 +143,10 @@ std::string SecurityEventSyncBridgeImpl::GetStorageKey(
   return GetStorageKeyFromSpecifics(entity_data.specifics.security_event());
 }
 
-void SecurityEventSyncBridgeImpl::ApplyStopSyncChanges(
+void SecurityEventSyncBridgeImpl::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  if (delete_metadata_change_list) {
-    store_->DeleteAllDataAndMetadata(
-        base::BindOnce(&SecurityEventSyncBridgeImpl::OnCommit,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  store_->DeleteAllDataAndMetadata(base::BindOnce(
+      &SecurityEventSyncBridgeImpl::OnCommit, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SecurityEventSyncBridgeImpl::OnStoreCreated(
