@@ -181,6 +181,12 @@
         white-space: normal;
       }
 
+      :host(.label-first) #label-container {
+        order: -1;
+        padding-inline-end: var(--cr-checkbox-label-padding-end, 20px);
+        padding-inline-start: 0;
+      }
+
       :host(.no-label) #label-container {
         display: none;
       }
