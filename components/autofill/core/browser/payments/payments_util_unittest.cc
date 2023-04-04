@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
