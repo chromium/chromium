@@ -98,30 +98,6 @@ void InitLogging(const base::CommandLine& command_line) {
 
 namespace content {
 
-WolvicContentMainDelegate* GetWolvicContentMainDelegate() {
-  LOG(ERROR) << "WolvicLifecycle GetWolvicContentMainDelegate()";
-  return static_cast<WolvicContentMainDelegate*>(
-      GetContentMainDelegateForTesting());
-}
-
-jobject CreateWebContents(JNIEnv* env, WolvicContentMainDelegate* delegate) {
-  LOG(ERROR) << "WolvicLifecycle CreateWebContents()";
-  CHECK(delegate->browser_context() != nullptr);
-
-  WebContents::CreateParams create_params(
-      static_cast<BrowserContext*>(delegate->browser_context()), nullptr);
-  delegate->web_contents_list_.push_back(WebContents::Create(create_params));
-  WebContents* web_contents = delegate->web_contents_list_.back().get();
-
-  NavigationController::LoadURLParams params(GURL("https://google.com"));
-  params.frame_name = "";
-  params.transition_type = static_cast<ui::PageTransition>(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  web_contents->GetController().LoadURLWithParams(params);
-
-  return env->NewGlobalRef(web_contents->GetJavaWebContents().obj());
-}
-
 // TODO(crbug/1219642): Consider not needing VariationsServiceClient just to use
 // VariationsFieldTrialCreator.
 class ShellVariationsServiceClient
@@ -180,6 +156,12 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
 WolvicContentMainDelegate::WolvicContentMainDelegate() {}
 
 WolvicContentMainDelegate::~WolvicContentMainDelegate() {}
+
+// static
+WolvicContentMainDelegate* WolvicContentMainDelegate::Get() {
+  return static_cast<WolvicContentMainDelegate*>(
+      GetContentMainDelegateForTesting());
+}
 
 absl::optional<int> WolvicContentMainDelegate::BasicStartupComplete() {
   LOG(ERROR) << "WolvicLifecycle BasicStartupComplete()";
