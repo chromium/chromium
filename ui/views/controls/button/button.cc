@@ -124,6 +124,30 @@ Button::PressedCallback& Button::PressedCallback::operator=(PressedCallback&&) =
 
 Button::PressedCallback::~PressedCallback() = default;
 
+Button::ScopedAnchorHighlight::ScopedAnchorHighlight(
+    base::WeakPtr<Button> button)
+    : button_(button) {}
+Button::ScopedAnchorHighlight::~ScopedAnchorHighlight() {
+  if (button_) {
+    button_->ReleaseAnchorHighlight();
+  }
+}
+Button::ScopedAnchorHighlight::ScopedAnchorHighlight(
+    Button::ScopedAnchorHighlight&&) = default;
+
+// We need to implement this one manually because the default move assignment
+// operator does not call the destructor on `this`. That leads to us failing to
+// release our reference on `button_`.
+Button::ScopedAnchorHighlight& Button::ScopedAnchorHighlight::operator=(
+    Button::ScopedAnchorHighlight&& other) {
+  if (button_) {
+    button_->ReleaseAnchorHighlight();
+  }
+
+  button_ = std::move(other.button_);
+  return *this;
+}
+
 // static
 constexpr Button::ButtonState Button::kButtonStates[STATE_COUNT];
 
@@ -346,6 +370,14 @@ void Button::SetHighlighted(bool highlighted) {
                                          ? views::InkDropState::ACTIVATED
                                          : views::InkDropState::DEACTIVATED,
                                      nullptr);
+}
+
+Button::ScopedAnchorHighlight Button::AddAnchorHighlight() {
+  if (0 == anchor_count_++) {
+    SetHighlighted(true);
+  }
+
+  return ScopedAnchorHighlight(GetWeakPtr());
 }
 
 base::CallbackListSubscription Button::AddStateChangedCallback(
@@ -685,6 +717,10 @@ bool Button::ShouldEnterHoveredState() {
   return check_mouse_position && IsMouseHovered();
 }
 
+base::WeakPtr<Button> Button::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void Button::OnEnabledChanged() {
   if (GetEnabled() ? (state_ != STATE_DISABLED) : (state_ == STATE_DISABLED))
     return;
@@ -696,6 +732,12 @@ void Button::OnEnabledChanged() {
   } else {
     SetState(STATE_DISABLED);
     InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
+  }
+}
+
+void Button::ReleaseAnchorHighlight() {
+  if (0 == --anchor_count_) {
+    SetHighlighted(false);
   }
 }
 

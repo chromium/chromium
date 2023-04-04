@@ -979,8 +979,13 @@ void BubbleDialogDelegate::SetAnchoredDialogKey() {
 void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {
   Button* button = Button::AsButton(highlighted_button_tracker_.view());
   button = button ? button : Button::AsButton(GetAnchorView());
-  if (button && highlight_button_when_shown_)
-    button->SetHighlighted(highlighted);
+  if (button && highlight_button_when_shown_) {
+    if (highlighted) {
+      button_anchor_higlight_ = button->AddAnchorHighlight();
+    } else {
+      button_anchor_higlight_.reset();
+    }
+  }
 }
 
 BEGIN_METADATA(BubbleDialogDelegateView, View)

@@ -307,8 +307,6 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     // (partially) outside the viewport. Ensure that the anchor view is visible.
     anchor.view->ScrollViewToVisible();
   }
-  // The anchor for promo bubbles should not highlight.
-  set_highlight_button_when_shown(false);
   DCHECK(anchor.view)
       << "A bubble that closes on blur must be initially focused.";
   UseCompactMargins();

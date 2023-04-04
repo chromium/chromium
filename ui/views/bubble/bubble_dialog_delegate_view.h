@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -445,6 +446,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // monitor clicks as well for the desired behavior.
   std::unique_ptr<ui::BubbleCloser> mac_bubble_closer_;
 #endif
+
+  // Used to ensure the button remains anchored while this dialog is open.
+  absl::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.

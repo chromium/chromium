@@ -927,4 +927,68 @@ TEST_F(ButtonTest, SetTooltipTextNotifiesAccessibilityEvent) {
   EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
 }
 
+TEST_F(ButtonTest, AnchorHighlightSetsHiglight) {
+  TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
+
+  Button::ScopedAnchorHighlight highlight = button()->AddAnchorHighlight();
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
+TEST_F(ButtonTest, AnchorHighlightDestructionClearsHighlight) {
+  TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
+
+  absl::optional<Button::ScopedAnchorHighlight> highlight =
+      button()->AddAnchorHighlight();
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  highlight.reset();
+  EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
+TEST_F(ButtonTest, NestedAnchorHighlights) {
+  TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
+
+  absl::optional<Button::ScopedAnchorHighlight> highlight1 =
+      button()->AddAnchorHighlight();
+  absl::optional<Button::ScopedAnchorHighlight> highlight2 =
+      button()->AddAnchorHighlight();
+
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  highlight2.reset();
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  highlight1.reset();
+  EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
+TEST_F(ButtonTest, OverlappingAnchorHighlights) {
+  TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
+
+  absl::optional<Button::ScopedAnchorHighlight> highlight1 =
+      button()->AddAnchorHighlight();
+  absl::optional<Button::ScopedAnchorHighlight> highlight2 =
+      button()->AddAnchorHighlight();
+
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  highlight1.reset();
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  highlight2.reset();
+  EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
+TEST_F(ButtonTest, AnchorHighlightsCanOutliveButton) {
+  CreateButtonWithInkDrop(false);
+
+  absl::optional<Button::ScopedAnchorHighlight> highlight =
+      button()->AddAnchorHighlight();
+
+  // Creating a new button will destroy the old one
+  CreateButtonWithInkDrop(false);
+
+  highlight.reset();
+}
+
 }  // namespace views
