@@ -12,7 +12,8 @@ var priceCleanupPostfix = '(/(each|set))';
 var priceRegexTemplate = '((reg|regular|orig|from|' + priceCleanupPrefix +
     ')\\s+)?' +
     '(\\d+\\s*/\\s*)?(US(D)?\\s*)?' +
-    '\\$[\\d.,]+(\\s+(to|-|–)\\s+(\\$)?[\\d.,]+)?' + priceCleanupPostfix + '?';
+    '\\$\\s*[\\d.,]+(\\s+(to|-|–)\\s+(\\$)?[\\d.,]+)?' +
+    priceCleanupPostfix + '?';
 var priceRegexFull = new RegExp('^' + priceRegexTemplate + '( ea)?$', 'i');
 var priceRegex = new RegExp(priceRegexTemplate, 'i');
 var priceCleanupRegex = new RegExp(
