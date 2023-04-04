@@ -728,21 +728,13 @@ class DriveIntegrationService::BulkPinningPrefUpdater
 
   void OnProgress(const Progress& progress) override {
     if (progress.IsStoppedOrError()) {
-      DisableBulkPinningPref();
+      VLOG(1) << "Disabling bulk pinning preference";
+      pref_service_->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
+                                false);
     }
   }
-
-  void OnDrop() override { DisableBulkPinningPref(); }
 
  private:
-  void DisableBulkPinningPref() {
-    if (!pref_service_) {
-      LOG(ERROR) << "Service unavailable to update bulk pinning pref";
-      return;
-    }
-    pref_service_->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled, false);
-  }
-
   raw_ptr<PrefService> const pref_service_;
 };
 
