@@ -643,6 +643,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool DoWritePixelsINTERNALDirectTextureUpload(
       SkiaImageRepresentation* dest_shared_image,
       const SkImageInfo& src_info,
+      const int plane_index,
       const void* pixel_data,
       size_t row_bytes);
   void DoReadbackARGBImagePixelsINTERNAL(GLint src_x,
@@ -1924,12 +1925,12 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                                               GLuint pixels_offset,
                                               const volatile GLbyte* mailbox) {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoWritePixelsINTERNAL");
-  if (src_sk_color_type > kLastEnum_SkColorType) {
+  if (src_sk_color_type < 0 || src_sk_color_type > kLastEnum_SkColorType) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "WritePixels",
                        "src_sk_color_type must be a valid SkColorType");
     return;
   }
-  if (src_sk_alpha_type > kLastEnum_SkAlphaType) {
+  if (src_sk_alpha_type < 0 || src_sk_alpha_type > kLastEnum_SkAlphaType) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "WritePixels",
                        "src_sk_alpha_type must be a valid SkAlphaType");
     return;
@@ -1947,8 +1948,15 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
+  viz::SharedImageFormat dest_format = dest_shared_image->format();
+  if (!dest_format.IsValidPlaneIndex(plane_index)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
+                       "Invalid plane_index");
+    return;
+  }
+
   if (SkColorTypeBytesPerPixel(
-          viz::ToClosestSkColorType(true, dest_shared_image->format())) !=
+          viz::ToClosestSkColorType(true, dest_format, plane_index)) !=
       SkColorTypeBytesPerPixel(static_cast<SkColorType>(src_sk_color_type))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                        "Bytes per pixel for src SkColorType and dst "
@@ -1960,6 +1968,13 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   // pixel data.
   sk_sp<SkColorSpace> color_space;
   if (pixels_offset > 0) {
+    // For multiplanar formats write is per plane, and source color
+    // space must be nullptr to allow letting Skia assume srgb color space.
+    if (dest_format.is_multi_plane()) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
+                         "Unexpected color space for multiplanar shared image");
+      return;
+    }
     void* color_space_bytes =
         GetSharedMemoryAs<void*>(shm_id, shm_offset, pixels_offset);
     if (!color_space_bytes) {
@@ -2012,8 +2027,9 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
       SkColorSpace::Equals(
           src_info.colorSpace(),
           dest_shared_image->color_space().ToSkColorSpace().get()) &&
-      DoWritePixelsINTERNALDirectTextureUpload(
-          dest_shared_image.get(), src_info, pixel_data, row_bytes)) {
+      DoWritePixelsINTERNALDirectTextureUpload(dest_shared_image.get(),
+                                               src_info, plane_index,
+                                               pixel_data, row_bytes)) {
     return;
   }
 
@@ -2031,10 +2047,13 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
+  auto* surface = dest_scoped_access->surface(plane_index);
+  DCHECK(surface);
+
   if (!begin_semaphores.empty()) {
-    bool result = dest_scoped_access->surface()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
+    bool result =
+        surface->wait(begin_semaphores.size(), begin_semaphores.data(),
+                      /*deleteSemaphoresAfterWait=*/false);
     if (!result) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                          "Unable to obtain write access to dest shared image.");
@@ -2042,7 +2061,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     }
   }
 
-  auto* canvas = dest_scoped_access->surface()->getCanvas();
+  auto* canvas = surface->getCanvas();
   bool written =
       canvas->writePixels(src_info, pixel_data, row_bytes, x_offset, y_offset);
   if (!written) {
@@ -2050,7 +2069,8 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                        "Failed to write pixels to SkCanvas");
   }
 
-  FlushSurface(dest_scoped_access.get());
+  auto end_state = dest_scoped_access->TakeEndState();
+  surface->flush({}, end_state.get());
   SubmitIfNecessary(std::move(end_semaphores));
 
   if (!dest_shared_image->IsCleared()) {
@@ -2062,6 +2082,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
 bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
     SkiaImageRepresentation* dest_shared_image,
     const SkImageInfo& src_info,
+    const int plane_index,
     const void* pixel_data,
     size_t row_bytes) {
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -2085,12 +2106,14 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
 
   SkPixmap pixmap(src_info, pixel_data, row_bytes);
   bool written = gr_context()->updateBackendTexture(
-      dest_scoped_access->promise_image_texture()->backendTexture(), &pixmap,
+      dest_scoped_access->promise_image_texture(plane_index)->backendTexture(),
+      &pixmap,
       /*levels=*/1, dest_shared_image->surface_origin(), nullptr, nullptr);
 
   if (auto end_state = dest_scoped_access->TakeEndState())
     gr_context()->setBackendTextureState(
-        dest_scoped_access->promise_image_texture()->backendTexture(),
+        dest_scoped_access->promise_image_texture(plane_index)
+            ->backendTexture(),
         *end_state);
 
   SubmitIfNecessary(std::move(end_semaphores));
