@@ -260,4 +260,39 @@ export function firmwareUpdateAppTest() {
     const fakeUpdate = getFirmwareUpdateFromDialog();
     assertTrue(getUpdateDialog().open);
   });
+
+  test('UpdatesCSSWhenIsJellyEnabledForFirmwareAppSet', async () => {
+    /* @type {HTMLLinkElement} */
+    const linkEl = document.createElement('link');
+    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
+    linkEl.href = disabledUrl;
+    document.head.appendChild(linkEl);
+
+    // Setup for jelly disabled.
+    loadTimeData.overrideValues({
+      isJellyEnabledForFirmwareUpdate: false,
+    });
+    initializePage();
+    await flushTasks();
+
+    assertTrue(linkEl.href.includes(disabledUrl));
+
+    // Clear app element.
+    page.remove();
+    page = null;
+    document.body.innerHTML = '';
+
+    // Setup for jelly disabled.
+    loadTimeData.overrideValues({
+      isJellyEnabledForFirmwareUpdate: true,
+    });
+    initializePage();
+    await flushTasks();
+
+    const enabledUrl = 'chrome://theme/colors.css';
+    assertTrue(linkEl.href.includes(enabledUrl));
+
+    // Clean up.
+    document.head.removeChild(linkEl);
+  });
 }
