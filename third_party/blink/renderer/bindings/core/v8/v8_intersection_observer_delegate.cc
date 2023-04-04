@@ -25,9 +25,6 @@ V8IntersectionObserverDelegate::~V8IntersectionObserverDelegate() = default;
 void V8IntersectionObserverDelegate::Deliver(
     const HeapVector<Member<IntersectionObserverEntry>>& entries,
     IntersectionObserver& observer) {
-  probe::UserCallback callback_probe(
-      ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-      "IntersectionObserver", "callback", AtomicString(), false);
   callback_->InvokeAndReportException(&observer, entries, &observer);
 }
 

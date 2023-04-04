@@ -7,6 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
@@ -129,21 +130,23 @@ template <class CallbackBase,
           CallbackReturnTypeIsPromise return_type_is_promise>
 bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     CallInternal(int argc, v8::Local<v8::Value>* argv) {
+  ExecutionContext* execution_context =
+      ExecutionContext::From(callback_->CallbackRelevantScriptState());
+  probe::InvokeCallback probe_scope(execution_context, class_like_name_,
+                                    /*callback=*/nullptr, function_);
+
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 10. Let callResult be Construct(F, esArgs).
-    return V8ScriptRunner::CallAsConstructor(
-               callback_->GetIsolate(), function_,
-               ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-               argc, argv)
+    return V8ScriptRunner::CallAsConstructor(callback_->GetIsolate(), function_,
+                                             execution_context, argc, argv)
         .ToLocal(&result_);
   } else {
     // step 12. Let callResult be Call(X, thisArg, esArgs).
     // or
     // step 11. Let callResult be Call(F, thisArg, esArgs).
-    return V8ScriptRunner::CallFunction(
-               function_,
-               ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-               callback_this_, argc, argv, callback_->GetIsolate())
+    return V8ScriptRunner::CallFunction(function_, execution_context,
+                                        callback_this_, argc, argv,
+                                        callback_->GetIsolate())
         .ToLocal(&result_);
   }
 }

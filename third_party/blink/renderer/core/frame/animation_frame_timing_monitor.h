@@ -10,6 +10,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
@@ -82,10 +83,10 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::RecalculateStyle&);
   void Will(const probe::UpdateLayout&);
   void Did(const probe::UpdateLayout&);
-  void Will(const probe::UserCallback&);
-  void Did(const probe::UserCallback&);
-  void Will(const probe::CallFunction&);
-  void Did(const probe::CallFunction&);
+  void Will(const probe::InvokeCallback&);
+  void Did(const probe::InvokeCallback&);
+  void Will(const probe::InvokeEventHandler&);
+  void Did(const probe::InvokeEventHandler&);
   void WillRunJavaScriptDialog();
   void DidRunJavaScriptDialog();
   void DidFinishSyncXHR(base::TimeDelta);

@@ -187,9 +187,6 @@ void ResizeObserver::DeliverObservations() {
 
   DCHECK(callback_ || delegate_);
   if (callback_) {
-    probe::UserCallback callback_probe(
-        ExecutionContext::From(callback_->CallbackRelevantScriptState()),
-        "ResizeObserver", "callback", AtomicString(), false);
     callback_->InvokeAndReportException(this, entries, this);
   }
   if (delegate_)

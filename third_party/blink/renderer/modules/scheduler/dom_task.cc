@@ -195,8 +195,6 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
       WebSchedulingPriorityToString(task_queue_->GetPriority()),
       delay_.InMillisecondsF());
   probe::AsyncTask async_task(context, &async_task_context_);
-  probe::UserCallback probe(context, "Scheduler", "postTask", AtomicString(),
-                            true);
 
   std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
