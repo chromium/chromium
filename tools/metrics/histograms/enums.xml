@@ -42027,6 +42027,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4534"
       label="CSSGetComputedWebkitFontSmoothingAnimationDurationZero"/>
   <int value="4535" label="DocumentOpenAliasedOriginDocumentDomain"/>
+  <int value="4536" label="GamepadTouchEvents"/>
+  <int value="4537" label="GamepadTouchTouchId"/>
+  <int value="4538" label="GamepadTouchSurfaceId"/>
+  <int value="4539" label="GamepadTouchPosition"/>
+  <int value="4540" label="GamepadTouchSurfaceDimension"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -59810,6 +59815,7 @@ from previous Chrome versions.
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146521164" label="EcheNetworkConnectionState:disabled"/>
   <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
+  <int value="-1145909380" label="EnableGamepadMultitouch:disabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>
   <int value="-1145702446" label="ChromeHomeInactivitySheetExpansion:enabled"/>
   <int value="-1145246849" label="ThirdPartyDoodles:enabled"/>
@@ -61904,6 +61910,7 @@ from previous Chrome versions.
   <int value="2070488" label="EnablePasswordsAccountStorageSavingUi:disabled"/>
   <int value="2814115" label="webview-mparch-fenced-frames"/>
   <int value="3001424" label="FeatureNotificationGuide:enabled"/>
+  <int value="3058782" label="EnableGamepadMultitouch:enabled"/>
   <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>

@@ -3874,6 +3874,11 @@ enum WebFeature {
   kCSSGetComputedAnimationDurationZero = 4533,
   kCSSGetComputedWebkitFontSmoothingAnimationDurationZero = 4534,
   kDocumentOpenAliasedOriginDocumentDomain = 4535,
+  kGamepadTouchEvents = 4536,
+  kGamepadTouchTouchId = 4537,
+  kGamepadTouchSurfaceId = 4538,
+  kGamepadTouchPosition = 4539,
+  kGamepadTouchSurfaceDimension = 4540,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

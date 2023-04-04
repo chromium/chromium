@@ -52,6 +52,16 @@ enum class GamepadHapticsResult {
   kNotSupported = 4
 };
 
+struct GamepadTouch {
+  uint32_t touch_id = 0;
+  uint8_t surface_id = 0;
+  bool has_surface_dimensions = false;
+  float x = 0.0f;
+  float y = 0.0f;
+  uint32_t surface_width;
+  uint32_t surface_height;
+};
+
 class GamepadHapticActuator {
  public:
   static constexpr double kMaxEffectDurationMillis = 5000.0;
@@ -115,6 +125,7 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
   static constexpr size_t kIdLengthCap = 128;
   static constexpr size_t kAxesLengthCap = 16;
   static constexpr size_t kButtonsLengthCap = 32;
+  static constexpr size_t kTouchEventsLengthCap = 8;
 
   Gamepad();
   Gamepad(const Gamepad& other);
@@ -154,6 +165,14 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
 
   // Button states
   GamepadButton buttons[kButtonsLengthCap];
+
+  // Number of valid entries in the touch_events array.
+  uint32_t touch_events_length;
+
+  // Touch events states
+  bool supports_touch_events_ = false;
+
+  GamepadTouch touch_events[kTouchEventsLengthCap];
 
   GamepadHapticActuator vibration_actuator;
 

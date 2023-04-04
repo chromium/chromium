@@ -304,6 +304,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/gamepad/gamepad_event.idl",
           "//third_party/blink/renderer/modules/gamepad/gamepad_event_init.idl",
           "//third_party/blink/renderer/modules/gamepad/gamepad_haptic_actuator.idl",
+          "//third_party/blink/renderer/modules/gamepad/gamepad_touch.idl",
           "//third_party/blink/renderer/modules/gamepad/navigator_gamepad.idl",
           "//third_party/blink/renderer/modules/geolocation/geolocation.idl",
           "//third_party/blink/renderer/modules/geolocation/geolocation_coordinates.idl",

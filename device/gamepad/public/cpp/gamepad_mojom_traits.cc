@@ -124,6 +124,20 @@ bool StructTraits<device::mojom::GamepadHapticActuatorDataView,
 }
 
 // static
+bool StructTraits<device::mojom::GamepadTouchDataView, device::GamepadTouch>::
+    Read(device::mojom::GamepadTouchDataView data, device::GamepadTouch* out) {
+  out->touch_id = data.touch_id();
+  out->surface_id = data.surface_id();
+  out->x = data.x();
+  out->y = data.y();
+  out->has_surface_dimensions = data.has_surface_dimensions();
+  out->surface_width = data.surface_width();
+  out->surface_height = data.surface_height();
+
+  return true;
+}
+
+// static
 void StructTraits<device::mojom::GamepadPoseDataView,
                   device::GamepadPose>::SetToNull(device::GamepadPose* out) {
   memset(out, 0, sizeof(device::GamepadPose));
@@ -283,6 +297,12 @@ bool StructTraits<device::mojom::GamepadDataView, device::Gamepad>::Read(
   if (!data.ReadPose(&out->pose)) {
     return false;
   }
+
+  base::span<device::GamepadTouch> touch_events(out->touch_events);
+  if (!data.ReadTouchEvents(&touch_events)) {
+    return false;
+  }
+  out->touch_events_length = static_cast<uint32_t>(touch_events.size());
 
   device::GamepadHand hand;
   if (!data.ReadHand(&hand)) {

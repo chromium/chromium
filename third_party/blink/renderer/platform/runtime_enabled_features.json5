@@ -1791,6 +1791,11 @@
       base_feature: "none",
     },
     {
+      name: "GamepadMultitouch",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "GetAllScreensMedia",
       depends_on: ["GetDisplayMedia"],
       public: true,

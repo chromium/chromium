@@ -36,6 +36,10 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
 
   GamepadPose wgp;
   memset(&wgp, 0, sizeof(GamepadPose));
+
+  GamepadTouch wgt;
+  memset(&wgt, 0, sizeof(GamepadTouch));
+
   if (type == GamepadPose_Null) {
     wgp.not_null = false;
   } else if (type == GamepadCommon) {
@@ -83,6 +87,11 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   send.hand = GamepadHand::kRight;
   send.display_id = static_cast<unsigned short>(16);
 
+  send.touch_events_length = 0U;
+  for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
+    send.touch_events_length++;
+    send.touch_events[i] = wgt;
+  }
   return send;
 }
 
@@ -132,12 +141,17 @@ bool isWebGamepadPoseEqual(const GamepadPose& lhs, const GamepadPose& rhs) {
   return true;
 }
 
+bool isWebGamepadTouchEqual(const GamepadTouch& lhs, const GamepadTouch& rhs) {
+  return (lhs.x == rhs.x && lhs.y == rhs.y);
+}
+
 bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
   if (send.connected != echo.connected || send.timestamp != echo.timestamp ||
       send.axes_length != echo.axes_length ||
       send.buttons_length != echo.buttons_length ||
       !isWebGamepadPoseEqual(send.pose, echo.pose) || send.hand != echo.hand ||
-      send.display_id != echo.display_id || send.mapping != echo.mapping) {
+      send.display_id != echo.display_id || send.mapping != echo.mapping ||
+      send.touch_events_length != echo.touch_events_length) {
     return false;
   }
   for (size_t i = 0; i < Gamepad::kIdLengthCap; i++) {
@@ -155,6 +169,13 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
       return false;
     }
   }
+
+  for (size_t i = 0; i < Gamepad::kTouchEventsLengthCap; i++) {
+    if (!isWebGamepadTouchEqual(send.touch_events[i], echo.touch_events[i])) {
+      return false;
+    }
+  }
+
   return true;
 }
 }  // namespace

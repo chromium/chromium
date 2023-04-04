@@ -2513,6 +2513,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-gamepad-multitouch",
+    "owners": [ "mattreynolds", "deviceapi-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
     "expiry_milestone": 116

@@ -67,6 +67,16 @@ enum GamepadMapping {
   GamepadMappingXRStandard = 2
 };
 
+struct GamepadTouch {
+  uint32 touch_id;
+  uint8 surface_id;
+  double x;
+  double y;
+  uint32 surface_height;
+  uint32 surface_width;
+  bool has_surface_dimensions;
+};
+
 struct GamepadPose {
   GamepadQuaternion? orientation;
   GamepadVector? position;
@@ -107,6 +117,7 @@ struct Gamepad {
   GamepadMapping mapping;
   GamepadPose? pose;
   GamepadHand hand;
+  array<GamepadTouch> touch_events;
   uint32 display_id;
 };
 

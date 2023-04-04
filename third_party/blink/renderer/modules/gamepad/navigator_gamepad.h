@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_NAVIGATOR_GAMEPAD_H_
 
 #include "base/time/time.h"
+#include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace device {
 class Gamepad;
@@ -93,6 +95,10 @@ class MODULES_EXPORT NavigatorGamepad final
   // Gamepad::Client
   GamepadHapticActuator* GetVibrationActuatorForGamepad(
       const Gamepad&) override;
+  void SetTouchEvents(const Gamepad&,
+                      GamepadTouchVector&,
+                      unsigned,
+                      const device::GamepadTouch*) override;
 
   // A reference to the buffer containing the last-received gamepad state. May
   // be nullptr if no data has been received yet. Do not overwrite this buffer
@@ -109,6 +115,13 @@ class MODULES_EXPORT NavigatorGamepad final
   HeapVector<Member<Gamepad>> gamepads_back_;
 
   HeapVector<Member<GamepadHapticActuator>> vibration_actuators_;
+
+  // Together the following keep track of the nextTouchId per Gamepad
+  using TouchIdMap =
+      WTF::HashMap<uint32_t, uint32_t, WTF::IntWithZeroKeyHashTraits<uint32_t>>;
+
+  TouchIdMap touch_id_map_[device::Gamepads::kItemsLengthCap];
+  uint32_t next_touch_id_[device::Gamepads::kItemsLengthCap];
 
   // The timestamp for the navigationStart attribute. Gamepad timestamps are
   // reported relative to this value.

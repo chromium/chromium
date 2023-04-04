@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/gamepad-helpers.js"></script>
+<script>
+
+
+promise_test(async (t) => {
+    // Connect a gamepad with no touch data.
+    let connectPromise = ongamepadconnected(t);
+    gamepadController.connect(0);
+    gamepadController.setId(0, "NOTOUCHDATA");
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    let gamepad = navigator.getGamepads()[0];
+
+    assert_equals(gamepad.touchEvents, null);
+
+    gamepadController.disconnect(0);
+}, "gamepad with no touch data");
+
+
+promise_test(async (t) => {
+    // Connect a gamepad with two touch data.
+    let connectPromise = ongamepadconnected(t);
+    gamepadController.connect(0);
+    gamepadController.setId(0, "TOUCHDATA");
+    gamepadController.setTouchCount(0, 2);
+    gamepadController.setTouchData(0, 0, 1, 0.11, 0.22);
+    gamepadController.setTouchData(0, 1, 2, -0.909, -0.808);
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    let gamepad = navigator.getGamepads()[0];
+
+    assert_equals(gamepad.touchEvents.__proto__,
+        Array.prototype);
+    assert_equals(gamepad.touchEvents[0].__proto__,
+        GamepadTouch.prototype);
+    assert_equals(gamepad.touchEvents[0].touchId.__proto__,
+        Number.prototype);
+    assert_equals(gamepad.touchEvents[0].surfaceId.__proto__,
+        Number.prototype);
+    assert_true(Object.isFrozen(gamepad.touchEvents));
+
+    gamepadController.disconnect(0);
+}, "validate gamepad multi-touch API");
+
+
+promise_test(async (t) => {
+    // Connect a gamepad with two touch data.
+    let connectPromise = ongamepadconnected(t);
+    gamepadController.connect(0);
+    gamepadController.setId(0, "TOUCHDATACHANGE");
+    gamepadController.setTouchCount(0, 4);
+    gamepadController.setTouchData(0, 0, 1, 0.11, 0.22);
+    gamepadController.setTouchData(0, 1, 2, -0.91, -0.81);
+    gamepadController.setTouchData(0, 2, 3, -0.35, 0.24);
+    gamepadController.setTouchData(0, 3, 6, -0.35, 0.24);
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    let gamepad = navigator.getGamepads()[0];
+
+    assert_equals(gamepad.touchEvents[0].touchId, 0);
+    assert_equals(gamepad.touchEvents[0].surfaceId, 0);
+    assert_equals(gamepad.touchEvents[0].position[0], Math.fround(0.11));
+    assert_equals(gamepad.touchEvents[0].position[1], Math.fround(0.22));
+
+    assert_equals(gamepad.touchEvents[1].touchId, 1);
+    assert_equals(gamepad.touchEvents[1].surfaceId, 0);
+    assert_equals(gamepad.touchEvents[1].position[0], Math.fround(-0.91));
+    assert_equals(gamepad.touchEvents[1].position[1], Math.fround(-0.81));
+
+    assert_equals(gamepad.touchEvents[2].touchId, 2);
+    assert_equals(gamepad.touchEvents[2].surfaceId, 0);
+    assert_equals(gamepad.touchEvents[2].position[0], Math.fround(-0.35));
+    assert_equals(gamepad.touchEvents[2].position[1], Math.fround(0.24));
+
+    assert_equals(gamepad.touchEvents[3].touchId, 3);
+    assert_equals(gamepad.touchEvents[3].surfaceId, 0);
+    assert_equals(gamepad.touchEvents[3].position[0], Math.fround(-0.35));
+    assert_equals(gamepad.touchEvents[3].position[1], Math.fround(0.24));
+
+    gamepadController.disconnect(0);
+
+
+}, "validate gamepad multi-touch same touch objects");
+
+
+promise_test(async (t) => {
+    // Connect a gamepad with two touch data.
+    let connectPromise = ongamepadconnected(t);
+    gamepadController.connect(0);
+    gamepadController.setId(0, "Naointendo");
+
+    gamepadController.setTouchCount(0, 2);
+    gamepadController.setTouchData(0, 0, 1, 0.32, 0.55);
+    gamepadController.setTouchData(0, 1, 2, -0.76, -0.899);
+
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    gamepadController.setTouchCount(0, 2);
+    gamepadController.setTouchData(0, 0, 1, 0.11, 0.22);
+    gamepadController.setTouchData(0, 1, 2, -0.91, -0.81);
+
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    let gamepadAfter = navigator.getGamepads()[0];
+
+    assert_equals(gamepadAfter.touchEvents[0].touchId, 0);
+    assert_equals(gamepadAfter.touchEvents[0].surfaceId, 0);
+    assert_equals(gamepadAfter.touchEvents[0].position[0],Math.fround(0.11));
+    assert_equals(gamepadAfter.touchEvents[0].position[1],Math.fround(0.22));
+
+    assert_equals(gamepadAfter.touchEvents[1].touchId, 1);
+    assert_equals(gamepadAfter.touchEvents[1].surfaceId, 0);
+    assert_equals(gamepadAfter.touchEvents[1].position[0],Math.fround(-0.91));
+    assert_equals(gamepadAfter.touchEvents[1].position[1],Math.fround(-0.81));
+
+    gamepadController.disconnect(0);
+
+
+}, "validate gamepad multi-touch gets updated");
+
+</script>
+</body>

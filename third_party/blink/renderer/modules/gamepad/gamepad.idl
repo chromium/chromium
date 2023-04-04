@@ -47,4 +47,9 @@ enum GamepadMappingType {
     // Gamepad vibration is proposed as an extension to the Gamepad API.
     // https://github.com/w3c/gamepad/pull/68
     [MeasureAs=GamepadVibrationActuator] readonly attribute GamepadHapticActuator? vibrationActuator;
+
+    // Gamepad vibration is proposed as an extension to the Gamepad API.
+    // https://github.com/w3c/gamepad/pull/168
+    [RuntimeEnabled=GamepadMultitouch, CachedAttribute=IsTouchDataDirty, MeasureAs=GamepadTouchEvents] readonly attribute FrozenArray<GamepadTouch>? touchEvents;
+
 };

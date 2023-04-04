@@ -30,6 +30,11 @@ BASE_FEATURE(kRestrictGamepadAccess,
              "RestrictGamepadAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables gamepad multitouch
+BASE_FEATURE(kEnableGamepadMultitouch,
+             "EnableGamepadMultitouch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables gamepad vibration on Android 12+.
 BASE_FEATURE(kEnableAndroidGamepadVibration,
@@ -46,6 +51,14 @@ bool AreGamepadButtonAxisEventsEnabled() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line &&
       command_line->HasSwitch(switches::kEnableGamepadButtonAxisEvents)) {
+    return true;
+  }
+
+  return false;
+}
+
+bool IsGamepadMultitouchEnabled() {
+  if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {
     return true;
   }
 

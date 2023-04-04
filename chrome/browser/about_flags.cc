@@ -6805,6 +6805,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableGamepadButtonAxisEventsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableGamepadButtonAxisEvents)},
 
+    {"enable-gamepad-multitouch",
+     flag_descriptions::kEnableGamepadMultitouchName,
+     flag_descriptions::kEnableGamepadMultitouchDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kEnableGamepadMultitouch)},
+
     {"restrict-gamepad-access", flag_descriptions::kRestrictGamepadAccessName,
      flag_descriptions::kRestrictGamepadAccessDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRestrictGamepadAccess)},

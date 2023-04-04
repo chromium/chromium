@@ -1112,6 +1112,11 @@ const char kEnableGamepadButtonAxisEventsDescription[] =
     "Enables the ability to subscribe to changes in buttons and/or axes "
     "on the gamepad object.";
 
+extern const char kEnableGamepadMultitouchName[] = "Gamepad Multitouch";
+extern const char kEnableGamepadMultitouchDescription[] =
+    "Enables the ability to receive input from multitouch surface "
+    "on the gamepad object.";
+
 const char kEnableGenericSensorExtraClassesName[] =
     "Generic Sensor Extra Classes";
 const char kEnableGenericSensorExtraClassesDescription[] =

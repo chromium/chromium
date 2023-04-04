@@ -3162,6 +3162,7 @@ interface Gamepad
     getter index
     getter mapping
     getter timestamp
+    getter touchEvents
     getter vibrationActuator
     method constructor
 interface GamepadAxisEvent : GamepadEvent
@@ -3191,6 +3192,13 @@ interface GamepadHapticActuator
     method constructor
     method playEffect
     method reset
+interface GamepadTouch
+    attribute @@toStringTag
+    getter position
+    getter surfaceDimensions
+    getter surfaceId
+    getter touchId
+    method constructor
 interface Geolocation
     attribute @@toStringTag
     method clearWatch
