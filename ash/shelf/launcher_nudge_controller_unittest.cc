@@ -360,7 +360,7 @@ TEST_F(LauncherNudgeControllerTest, NudgeLabelVisibilityTest) {
 
   // Wait until the label to be shown and check if the label is visible.
   waiter.WaitUntilLabelShown();
-  views::View* label_container = home_button->label_container_for_test();
+  views::View* label_container = home_button->expandable_container_for_test();
   EXPECT_TRUE(label_container && label_container->GetVisible());
   EXPECT_EQ(label_container->layer()->opacity(), 1);
 
@@ -390,7 +390,7 @@ TEST_F(LauncherNudgeControllerTest, NudgeLabelVisibilityTest) {
   waiter2.WaitUntilAnimationEnded();
 
   // The label is removed after it is clicked.
-  EXPECT_FALSE(home_button->label_container_for_test());
+  EXPECT_FALSE(home_button->expandable_container_for_test());
 }
 
 TEST_F(LauncherNudgeControllerTest, AnimationUsedDependsOnAvailableSpace) {

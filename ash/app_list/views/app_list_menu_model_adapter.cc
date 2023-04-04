@@ -208,6 +208,7 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
         case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         case AppListLaunchedFrom::kLaunchedFromContinueTask:
         case AppListLaunchedFrom::kLaunchedFromShelf:
+        case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
           NOTREACHED();
           break;
       }

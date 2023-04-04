@@ -1172,6 +1172,10 @@ BASE_FEATURE(kHoldingSpaceTour,
              "HoldingSpaceTour",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHomeButtonQuickAppAccess,
+             "HomeButtonQuickAppAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a call-to-action label beside the home button.
 BASE_FEATURE(kHomeButtonWithText,
              "HomeButtonWithText",
@@ -2775,6 +2779,10 @@ bool IsHoldingSpaceSuggestionsEnabled() {
 
 bool IsHoldingSpaceTourEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceTour);
+}
+
+bool IsHomeButtonQuickAppAccessEnabled() {
+  return base::FeatureList::IsEnabled(kHomeButtonQuickAppAccess);
 }
 
 bool IsHomeButtonWithTextEnabled() {

@@ -38,6 +38,9 @@ void AppListModelProvider::SetActiveModel(AppListModel* model,
 
   model_ = model;
   search_model_ = search_model;
+  // TODO(b/266734005): For consistency, make ChromeAppListModelUpdater the
+  // owner of the quick app access model.
+  quick_app_access_model_ = &default_quick_app_access_model_;
 
   for (auto& observer : observers_)
     observer.OnActiveAppListModelsChanged(model_, search_model_);
@@ -46,6 +49,7 @@ void AppListModelProvider::SetActiveModel(AppListModel* model,
 void AppListModelProvider::ClearActiveModel() {
   model_ = &default_model_;
   search_model_ = &default_search_model_;
+  quick_app_access_model_ = &default_quick_app_access_model_;
 
   for (auto& observer : observers_)
     observer.OnActiveAppListModelsChanged(model_, search_model_);
