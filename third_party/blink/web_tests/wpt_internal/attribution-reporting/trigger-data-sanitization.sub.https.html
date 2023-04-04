@@ -35,12 +35,15 @@ const dataIn = params.get('in');
 const dataOut = params.get('out');
 
 attribution_reporting_promise_test(async t => {
+  const source = {
+    destination: "https://{{host}}",
+    source_event_id: generateSourceEventId(),
+  };
   await registerAttributionSrc(t, {
-    source: {
-      destination: 'https://{{host}}',
-    },
+    source,
     method,
   });
+  await waitForSourceToBeRegistered(source.source_event_id);
 
   await registerAttributionSrc(t, {trigger: {
     event_trigger_data: [{trigger_data: `${dataIn}`}],

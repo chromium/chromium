@@ -9,12 +9,15 @@
 <body>
 <script>
 attribution_reporting_promise_test(async t => {
-  await registerAttributionSrc(t, {
-    source: {
+  const source = {
+      source_event_id: generateSourceEventId(),
       destination: `https://{{host}}`,
-    },
+    };
+  await registerAttributionSrc(t, {
+    source,
     method: 'a',
   });
+  await waitForSourceToBeRegistered(source.source_event_id);
 
   await Promise.all([
     registerAttributionSrc(t, {trigger: {

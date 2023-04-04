@@ -7,14 +7,15 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const host = `https://{{host}}`;
-
+  const source = {
+    destination: host,
+    source_event_id: generateSourceEventId(),
+    filter_data: { a: ["b"] },
+  };
   await registerAttributionSrc(t, {
-    source: {
-      destination: host,
-      source_event_id: '333',
-      filter_data: {a: ['b']},
-    },
+    source,
   });
+  await waitForSourceToBeRegistered(source.source_event_id);
 
   await registerAttributionSrc(t, {
     trigger: {
@@ -33,7 +34,7 @@ attribution_reporting_promise_test(async t => {
   assert_own_property(report[0], 'body');
   const reportBody = report[0].body;
   assert_equals(reportBody.attribution_destination, host);
-  assert_equals(reportBody.source_event_id, '333');
+  assert_equals(reportBody.source_event_id, source.source_event_id);
   assert_equals(reportBody.source_site, host);
   assert_not_own_property(reportBody, 'source_debug_key');
   assert_not_own_property(reportBody, 'trigger_debug_key');

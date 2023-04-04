@@ -13,13 +13,16 @@
 <script>
 const filter_data_promise_test = (testCase) =>
   attribution_reporting_promise_test(async t => {
-    await registerAttributionSrc(t, {
-      source: {
-        destination: `https://{{host}}`,
+    const source = {
+      source_event_id: generateSourceEventId(),
+      destination: `https://{{host}}`,
         filter_data: testCase.source_filter_data,
-      },
+    };
+    await registerAttributionSrc(t, {
+      source,
       method: testCase.method === undefined ? 'open' : testCase.method,
     });
+    await waitForSourceToBeRegistered(source.source_event_id);
 
     await registerAttributionSrc(t, {
       trigger: {
