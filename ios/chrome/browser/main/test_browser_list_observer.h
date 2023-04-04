@@ -55,6 +55,7 @@ class TestBrowserListObserver : public BrowserListObserver {
                         Browser* browser) override;
   void OnIncognitoBrowserRemoved(const BrowserList* browser_list,
                                  Browser* browser) override;
+  void OnBrowserListShutdown(BrowserList* browser_list) override;
 
  private:
   // Backing vars for the corresponding getter methods.

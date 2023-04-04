@@ -39,3 +39,7 @@ void TestBrowserListObserver::OnIncognitoBrowserRemoved(
   last_removed_incognito_browser_ = browser;
   last_incognito_browsers_ = browser_list->AllIncognitoBrowsers();
 }
+
+void TestBrowserListObserver::OnBrowserListShutdown(BrowserList* browser_list) {
+  browser_list->RemoveObserver(this);
+}
