@@ -121,6 +121,7 @@ export const domainQuestions = {
     questionBluetoothOtherDevices,
   ],
   'wifi': [
+    questionGeneralTimestamp,
     questionWifiTypeOfIssue,
     questionWifiConnectedButNotInternet,
     questionWifiNetworkWorkingBefore,
