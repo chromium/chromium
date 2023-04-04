@@ -24,7 +24,7 @@ class BookmarkNode;
 
 // Initializes BookmarksFolderEditorCoordinator, to create a new folder in
 // `parentFolderNode`.
-// If `parentFolderNode` is `nullptr`, a default parent will be set.
+// `parentFolderNode` cannot be `nullptr`.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
@@ -33,7 +33,7 @@ class BookmarkNode;
     NS_DESIGNATED_INITIALIZER;
 // Initializes BookmarksFolderEditorCoordinator. The view will edit the bookmark
 // folder node.
-// `folderNode` cannot be `nullptr` or editable.
+// `folderNode` cannot be `nullptr` and must be editable.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)navigationController
                        browser:(Browser*)browser

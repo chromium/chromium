@@ -123,6 +123,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                   syncSetupService:(SyncSetupService*)syncSetupService
                        syncService:(syncer::SyncService*)syncService {
   DCHECK(browser);
+  DCHECK(parentFolder);
   BookmarksFolderEditorViewController* folderCreator =
       [[self alloc] initWithBookmarkModel:bookmarkModel
                          syncSetupService:syncSetupService
@@ -459,9 +460,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Private
 
 - (void)setParentFolder:(const BookmarkNode*)parentFolder {
-  if (!parentFolder) {
-    parentFolder = self.bookmarkModel->mobile_node();
-  }
+  DCHECK(parentFolder);
   _parentFolder = parentFolder;
 }
 
