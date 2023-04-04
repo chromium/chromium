@@ -41,11 +41,6 @@ enum WebHistoryQueryBuckets {
   NUM_WEB_HISTORY_QUERY_BUCKETS
 };
 
-void RecordMetricsForNoticeAboutOtherFormsOfBrowsingHistory(bool shown) {
-  UMA_HISTOGRAM_BOOLEAN("History.ShownHeaderAboutOtherFormsOfBrowsingHistory",
-                        shown);
-}
-
 QueryOptions OptionsWithEndTime(QueryOptions original_options,
                                 base::Time end_time) {
   QueryOptions options(original_options);
@@ -323,7 +318,6 @@ void BrowsingHistoryService::QueryHistoryInternal(
   } else {
     state->remote_status = NO_DEPENDENCY;
     // The notice could not have been shown, because there is no web history.
-    RecordMetricsForNoticeAboutOtherFormsOfBrowsingHistory(false);
     has_synced_results_ = false;
     has_other_forms_of_browsing_history_ = false;
   }
@@ -774,10 +768,6 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
 void BrowsingHistoryService::OtherFormsOfBrowsingHistoryQueryComplete(
     bool found_other_forms_of_browsing_history) {
   has_other_forms_of_browsing_history_ = found_other_forms_of_browsing_history;
-
-  RecordMetricsForNoticeAboutOtherFormsOfBrowsingHistory(
-      has_other_forms_of_browsing_history_);
-
   driver_->HasOtherFormsOfBrowsingHistory(has_other_forms_of_browsing_history_,
                                           has_synced_results_);
 }
