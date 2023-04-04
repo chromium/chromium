@@ -389,7 +389,7 @@ HostCache::Entry::Entry(
 
     // Even if otherwise empty, having the metadata result object signifies
     // receiving a compatible HTTPS record.
-    https_record_compatibility_ = {true};
+    https_record_compatibility_ = std::vector<bool>{true};
 
     if (endpoint_metadatas_.value().empty())
       error_ = ERR_NAME_NOT_RESOLVED;
