@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
@@ -58,7 +58,7 @@ BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentId(
 }
 
 BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentGuid(
-    const base::GUID& parent_guid) {
+    const base::Uuid& parent_guid) {
   DCHECK(parent_guid.is_valid()) << parent_guid.AsLowercaseString();
   parent_guid_ = parent_guid;
   return *this;
@@ -119,7 +119,7 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
   if (parent_id_.empty()) {
     parent_id_ =
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
-    parent_guid_ = base::GUID::ParseLowercase(
+    parent_guid_ = base::Uuid::ParseLowercase(
         bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
   }
 
@@ -147,8 +147,8 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
     const sync_pb::EntitySpecifics& entity_specifics,
     bool is_folder) {
   if (id_.empty()) {
-    id_ =
-        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, base::GenerateGUID());
+    id_ = LoopbackServerEntity::CreateId(
+        syncer::BOOKMARKS, base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
 
   return base::WrapUnique<LoopbackServerEntity>(

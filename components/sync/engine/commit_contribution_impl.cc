@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -275,7 +275,8 @@ void CommitContributionImpl::AdjustCommitProto(
     // across restarts in case of recommitting an item, it doesn't result in
     // creating a duplicate.
     if (commit_proto->id_string().empty()) {
-      commit_proto->set_id_string(base::GenerateGUID());
+      commit_proto->set_id_string(
+          base::Uuid::GenerateRandomV4().AsLowercaseString());
     }
   }
 

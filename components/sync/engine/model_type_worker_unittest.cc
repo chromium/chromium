@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
@@ -933,7 +933,8 @@ TEST_F(ModelTypeWorkerTest,
 // server.
 TEST_F(ModelTypeWorkerTest,
        ReceiveUpdates_DuplicateOriginatorClientIdForDistinctServerIds) {
-  const std::string kOriginatorClientItemId = base::GenerateGUID();
+  const std::string kOriginatorClientItemId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   const std::string kURL1 = "http://url1";
   const std::string kURL2 = "http://url2";
   const std::string kURL3 = "http://url3";
@@ -1002,8 +1003,10 @@ TEST_F(
   entity2.set_id_string(kServerId2);
   entity1.mutable_specifics()->mutable_bookmark()->set_url(kURL1);
   entity2.mutable_specifics()->mutable_bookmark()->set_url(kURL2);
-  entity1.set_originator_cache_guid(base::GenerateGUID());
-  entity2.set_originator_cache_guid(base::GenerateGUID());
+  entity1.set_originator_cache_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  entity2.set_originator_cache_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
   entity1.set_originator_client_item_id(kOriginatorClientItemId);
   entity2.set_originator_client_item_id(kOriginatorClientItemId);
 
@@ -1789,8 +1792,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
-  const std::string kGuid1 = base::GenerateGUID();
-  const std::string kGuid2 = base::GenerateGUID();
+  const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string kGuid2 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   sync_pb::SyncEntity entity;
 
@@ -1813,7 +1816,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithMissingGUID) {
-  const std::string kGuid1 = base::GenerateGUID();
+  const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   sync_pb::SyncEntity entity;
 
@@ -1857,7 +1860,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   const EntityData& data = response_data.entity;
 
   EXPECT_EQ(kInvalidOCII, data.originator_client_item_id);
-  EXPECT_TRUE(base::IsValidGUIDOutputString(data.specifics.bookmark().guid()));
+  EXPECT_TRUE(
+      base::Uuid::ParseLowercase(data.specifics.bookmark().guid()).is_valid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
@@ -2218,7 +2222,7 @@ class ModelTypeWorkerBookmarksTest : public ModelTypeWorkerTest {
 };
 
 TEST_F(ModelTypeWorkerBookmarksTest, CanDecryptUpdateWithMissingBookmarkGUID) {
-  const std::string kGuid1 = base::GenerateGUID();
+  const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Initialize the worker with basic encryption state.
   NormalInitialize();
@@ -2310,16 +2314,17 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                               .at(0)
                               ->entity.originator_client_item_id);
 
-  EXPECT_TRUE(base::IsValidGUIDOutputString(processor()
-                                                ->GetNthUpdateResponse(1)
-                                                .at(0)
-                                                ->entity.specifics.bookmark()
-                                                .guid()));
+  EXPECT_TRUE(base::Uuid::ParseLowercase(processor()
+                                             ->GetNthUpdateResponse(1)
+                                             .at(0)
+                                             ->entity.specifics.bookmark()
+                                             .guid())
+                  .is_valid());
 }
 
 TEST_F(ModelTypeWorkerBookmarksTest,
        CannotDecryptUpdateWithMissingBookmarkGUID) {
-  const std::string kGuid1 = base::GenerateGUID();
+  const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Initialize the worker with basic encryption state.
   NormalInitialize();
@@ -2393,11 +2398,12 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                               .at(0)
                               ->entity.originator_client_item_id);
 
-  EXPECT_TRUE(base::IsValidGUIDOutputString(processor()
-                                                ->GetNthUpdateResponse(0)
-                                                .at(0)
-                                                ->entity.specifics.bookmark()
-                                                .guid()));
+  EXPECT_TRUE(base::Uuid::ParseLowercase(processor()
+                                             ->GetNthUpdateResponse(0)
+                                             .at(0)
+                                             ->entity.specifics.bookmark()
+                                             .guid())
+                  .is_valid());
 }
 
 TEST_F(ModelTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {

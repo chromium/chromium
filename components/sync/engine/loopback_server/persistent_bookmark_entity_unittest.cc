@@ -4,7 +4,7 @@
 
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,7 +14,7 @@ namespace {
 
 TEST(PersistentBookmarkEntityTest, CreateNew) {
   sync_pb::SyncEntity entity;
-  entity.set_id_string(base::GenerateGUID());
+  entity.set_id_string(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   entity.mutable_specifics()->mutable_preference();
   EXPECT_FALSE(
