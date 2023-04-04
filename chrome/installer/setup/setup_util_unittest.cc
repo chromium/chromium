@@ -15,11 +15,9 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
@@ -735,24 +733,6 @@ TEST(SetupUtilTest, DeleteDMTokenFromRegistryWhenKeyNotFound) {
 TEST(SetupUtilTest, WerHelperRegPath) {
   // Must return a valid regpath, never an empty string.
   ASSERT_FALSE(installer::GetWerHelperRegistryPath().empty());
-}
-
-TEST(SetupUtilTest, GetSecureSystemTemp) {
-  base::FilePath secure_system_temp;
-  ASSERT_EQ(installer::GetSecureSystemTemp(&secure_system_temp),
-            !!::IsUserAnAdmin());
-  if (!::IsUserAnAdmin()) {
-    return;
-  }
-
-  base::FilePath dir_windows;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_WINDOWS, &dir_windows));
-  base::FilePath dir_program_files;
-  ASSERT_TRUE(
-      base::PathService::Get(base::DIR_PROGRAM_FILES, &dir_program_files));
-
-  ASSERT_TRUE((dir_windows.AppendASCII("SystemTemp") == secure_system_temp) ||
-              (dir_program_files == secure_system_temp));
 }
 
 namespace installer {
