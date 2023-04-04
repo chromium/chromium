@@ -30,7 +30,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-constexpr base::TimeDelta kRevocationThreshold = base::Days(60);
 constexpr base::TimeDelta kRevocationThresholdNoDelayForTesting = base::Days(0);
 constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
     base::Minutes(5);
@@ -88,7 +87,8 @@ base::TimeDelta GetRevocationThreshold() {
                  kSafetyCheckUnusedSitePermissionsWithDelay.Get()) {
     return kRevocationThresholdWithDelayForTesting;
   }
-  return kRevocationThreshold;
+  return content_settings::features::
+      kSafetyCheckUnusedSitePermissionsRevocationThreshold.Get();
 }
 
 base::TimeDelta GetCleanUpThreshold() {
@@ -98,7 +98,8 @@ base::TimeDelta GetCleanUpThreshold() {
           .Get()) {
     return kRevocationCleanUpThresholdWithDelayForTesting;
   }
-  return permissions::kRevocationCleanUpThreshold;
+  return content_settings::features::
+      kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
 }
 
 }  // namespace

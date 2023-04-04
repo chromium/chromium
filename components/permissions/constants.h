@@ -66,11 +66,6 @@ extern const char kPermissionsPromptSurveyReleaseChannelKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kRevokedKey[];
 
-// The duration for which a site's permissions are revoked and presented for
-// review to the user in the unused site permissions module of Safety Check.
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::TimeDelta kRevocationCleanUpThreshold;
-
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_CONSTANTS_H_

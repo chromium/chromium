@@ -51,6 +51,4 @@ const char kPermissionsPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
 // from Android builds.
 
 const char kRevokedKey[] = "revoked";
-
-const base::TimeDelta kRevocationCleanUpThreshold = base::Days(30);
 }  // namespace permissions
