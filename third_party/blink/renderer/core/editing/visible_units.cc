@@ -58,13 +58,37 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/inline_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
+
+namespace {
+
+bool IsEmptyInline(const LayoutInline& inline_object) {
+  for (const LayoutObject* curr = inline_object.FirstChild(); curr;
+       curr = curr->NextSibling()) {
+    if (curr->IsFloatingOrOutOfFlowPositioned()) {
+      continue;
+    }
+    if (const auto* inline_child = DynamicTo<LayoutInline>(curr)) {
+      if (IsEmptyInline(*inline_child)) {
+        continue;
+      }
+    }
+    if (const auto* text_child = DynamicTo<LayoutText>(curr)) {
+      if (text_child->IsAllCollapsibleWhitespace()) {
+        continue;
+      }
+    }
+    return false;
+  }
+  return true;
+}
+
+}  // anonymous namespace
 
 template <typename PositionType>
 static PositionType CanonicalizeCandidate(const PositionType& candidate) {
@@ -447,17 +471,20 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
        o = o->ChildPaintBlockedByDisplayLock()
                ? o->NextInPreOrderAfterChildren()
                : o->NextInPreOrder()) {
-    if (o->ChildPaintBlockedByDisplayLock())
+    if (o->ChildPaintBlockedByDisplayLock() || !o->NonPseudoNode()) {
       continue;
+    }
 
-    if (o->NonPseudoNode()) {
-      if ((o->IsText() && To<LayoutText>(o)->HasNonCollapsedText()) ||
-          (o->IsBox() && To<LayoutBox>(o)->PixelSnappedLogicalHeight()) ||
-          (o->IsLayoutInline() && IsEmptyInline(LineLayoutItem(o)) &&
-           // TODO(crbug.com/771398): Find alternative ways to check whether an
-           // empty LayoutInline is rendered, without checking InlineBox.
-           !To<LayoutInline>(o)->PhysicalLinesBoundingBox().IsEmpty()))
-        return true;
+    if (const auto* text = DynamicTo<LayoutText>(o);
+        text && text->HasNonCollapsedText()) {
+      return true;
+    } else if (const auto* box = DynamicTo<LayoutBox>(o);
+               box && box->PixelSnappedLogicalHeight()) {
+      return true;
+    } else if (const auto* inline_object = DynamicTo<LayoutInline>(o);
+               inline_object && IsEmptyInline(*inline_object) &&
+               !inline_object->PhysicalLinesBoundingBox().IsEmpty()) {
+      return true;
     }
   }
   return false;
