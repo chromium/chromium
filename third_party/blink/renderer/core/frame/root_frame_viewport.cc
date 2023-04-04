@@ -433,8 +433,10 @@ void RootFrameViewport::DistributeScrollBetweenViewports(
   ScrollOffset delta = offset - old_offset;
 
   if (delta.IsZero()) {
-    if (on_finish)
-      std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+    if (on_finish) {
+      std::move(on_finish).Run(
+          ScrollableArea::ScrollCompletionMode::kZeroDelta);
+    }
     return;
   }
 
@@ -572,6 +574,9 @@ ScrollResult RootFrameViewport::UserScroll(
       LayoutViewport().UserInputScrollable(kVerticalScrollbar)
           ? layout_delta.y()
           : 0);
+  ScrollOffset layout_consumed_delta =
+      LayoutViewport().GetScrollAnimator().ComputeDeltaToConsume(
+          scrollable_axis_delta);
 
   if (ScrollAnimatorEnabled()) {
     bool visual_viewport_has_running_animation =
@@ -590,9 +595,10 @@ ScrollResult RootFrameViewport::UserScroll(
 
   // If there won't be any scrolling, bail early so we don't produce any side
   // effects like cancelling existing animations.
-  if (visual_consumed_delta.IsZero() && scrollable_axis_delta.IsZero()) {
+  if (visual_consumed_delta.IsZero() && layout_consumed_delta.IsZero()) {
     if (on_finish) {
-      std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+      std::move(on_finish).Run(
+          ScrollableArea::ScrollCompletionMode::kZeroDelta);
     }
     return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
   }
@@ -610,9 +616,17 @@ ScrollResult RootFrameViewport::UserScroll(
     return visual_result;
   }
 
-  if (!scrollable_axis_delta.IsZero()) {
+  if (!layout_consumed_delta.IsZero()) {
     user_scroll_sequence_affects_layout_viewport_ = true;
   }
+
+  if (layout_consumed_delta == pixel_delta) {
+    ScrollResult layout_result =
+        LayoutViewport().GetScrollAnimator().UserScroll(
+            granularity, scrollable_axis_delta, std::move(on_finish));
+    return layout_result;
+  }
+
   auto all_done = MakeViewportScrollCompletion(std::move(on_finish));
 
   ScrollResult visual_result =

@@ -254,10 +254,12 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
   ScrollOffset scrollable_axis_delta(
       UserInputScrollable(kHorizontalScrollbar) ? pixel_delta.x() : 0,
       UserInputScrollable(kVerticalScrollbar) ? pixel_delta.y() : 0);
+  ScrollOffset delta_to_consume =
+      GetScrollAnimator().ComputeDeltaToConsume(scrollable_axis_delta);
 
-  if (scrollable_axis_delta.IsZero()) {
+  if (delta_to_consume.IsZero()) {
     std::move(run_scroll_complete_callbacks)
-        .Run(ScrollCompletionMode::kFinished);
+        .Run(ScrollCompletionMode::kZeroDelta);
     return ScrollResult(false, false, pixel_delta.x(), pixel_delta.y());
   }
 
@@ -315,7 +317,7 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   if (clamped_offset == previous_offset &&
       scroll_type != mojom::blink::ScrollType::kProgrammatic) {
     std::move(run_scroll_complete_callbacks)
-        .Run(ScrollCompletionMode::kFinished);
+        .Run(ScrollCompletionMode::kZeroDelta);
     return;
   }
 
@@ -397,7 +399,7 @@ void ScrollableArea::ProgrammaticScrollHelper(
   if (offset == GetScrollOffset()) {
     CancelProgrammaticScrollAnimation();
     if (on_finish)
-      std::move(on_finish).Run(ScrollCompletionMode::kFinished);
+      std::move(on_finish).Run(ScrollCompletionMode::kZeroDelta);
     return;
   }
 

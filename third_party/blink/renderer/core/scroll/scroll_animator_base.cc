@@ -58,7 +58,8 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   ScrollOffset new_pos = current_offset_ + consumed_delta;
   if (current_offset_ == new_pos) {
     if (on_finish) {
-      std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+      std::move(on_finish).Run(
+          ScrollableArea::ScrollCompletionMode::kZeroDelta);
     }
     return ScrollResult(false, false, delta.x(), delta.y());
   }
