@@ -866,6 +866,13 @@ BASE_FEATURE(kPrerender2Holdback,
 // and prerender) on all predictors. This is useful in comparing the impact of
 // blink::features::kPrerender2 experiment with and without them.
 
+// This Feature allows configuring preloading features via a parameter string.
+// See content/browser/preloading/preloading_config.cc to see how to use this
+// feature.
+BASE_FEATURE(kPreloadingConfig,
+             "PreloadingConfig",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Please note this feature is only used for experimental purposes, please don't
 // enable this feature by default.
 BASE_FEATURE(kPreloadingHoldback,

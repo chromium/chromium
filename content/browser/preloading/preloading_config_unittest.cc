@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

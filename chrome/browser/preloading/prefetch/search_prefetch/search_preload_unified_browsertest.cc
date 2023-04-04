@@ -109,7 +109,8 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
               {"cache_size", "1"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
+                               features::kPreloadingConfig});
   }
 
   void SetUp() override {
@@ -1143,7 +1144,8 @@ class SearchPreloadUnifiedHoldbackBrowserTest
               {"device_memory_threshold_MB", "0"}}},
             {features::kPrerender2Holdback, {{}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
+                               features::kPreloadingConfig});
   }
   ~SearchPreloadUnifiedHoldbackBrowserTest() override = default;
 
@@ -1252,7 +1254,8 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
         /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kBackForwardCache});
+                               features::kBackForwardCache,
+                               features::kPreloadingConfig});
   }
 
  private:
@@ -1531,7 +1534,8 @@ class NoCancelSearchPreloadUnifiedBrowserTest
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
         /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kBackForwardCache});
+                               features::kBackForwardCache,
+                               features::kPreloadingConfig});
   }
 
  private:
@@ -1633,7 +1637,8 @@ class SearchPreloadUnifiedFallbackBrowserTest
              {{"max_attempts_per_caching_duration", "3"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
+                               features::kPreloadingConfig});
   }
   ~SearchPreloadUnifiedFallbackBrowserTest() override = default;
 
@@ -2000,7 +2005,8 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
               {"cache_size", "4"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
+                               features::kPreloadingConfig});
   }
   ~NoCancelSearchPreloadUnifiedFallbackBrowserTest() override = default;
 

@@ -12,6 +12,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/common/content_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"

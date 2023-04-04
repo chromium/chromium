@@ -259,7 +259,8 @@ class SearchPrefetchWithoutPrefetchingBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
   SearchPrefetchWithoutPrefetchingBrowserTest() {
-    feature_list_.InitWithFeatures({}, {kSearchPrefetchServicePrefetching});
+    feature_list_.InitWithFeatures(
+        {}, {kSearchPrefetchServicePrefetching, features::kPreloadingConfig});
   }
 
   void SetUpOnMainThread() override {
@@ -323,7 +324,7 @@ class SearchPrefetchHoldbackBrowserTest : public SearchPrefetchBaseBrowserTest {
   SearchPrefetchHoldbackBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kSearchPrefetchServicePrefetching, {{"prefetch_holdback", "true"}}}},
-        {/* disabled_features */});
+        {/* disabled_features */ features::kPreloadingConfig});
   }
 
   void SetUpOnMainThread() override {
@@ -415,7 +416,8 @@ class SearchPrefetchServiceEnabledBrowserTest
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},
           {"device_memory_threshold_MB", "0"}}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPreloadingConfig};
     if (BlockOnHeadersEnabled()) {
       enabled_features.push_back({kSearchPrefetchBlockBeforeHeaders, {}});
     } else {
@@ -3139,7 +3141,7 @@ class SearchPrefetchServiceHeadStartTooLongTest
            {"device_memory_threshold_MB", "0"}}},
          {kSearchPrefetchBlockBeforeHeaders,
           {{"block_head_start_ms", "100000"}}}},
-        {});
+        {features::kPreloadingConfig});
   }
 
  private:
@@ -3200,7 +3202,7 @@ class SearchPrefetchServiceHeadStartTest
            {"cache_size", "1"},
            {"device_memory_threshold_MB", "0"}}},
          {kSearchPrefetchBlockBeforeHeaders, {{"block_head_start_ms", "10"}}}},
-        {});
+        {features::kPreloadingConfig});
   }
 
  private:
@@ -3551,7 +3553,8 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
           {"cache_size", "1"},
           {"device_memory_threshold_MB", "0"}}},
         {kSearchNavigationPrefetch, {}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPreloadingConfig};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -3915,7 +3918,8 @@ class SearchNavigationPrefetchHoldbackBrowserTest
           {"device_memory_threshold_MB", "0"},
           {"prefetch_holdback", "true"}}},
         {kSearchNavigationPrefetch, {{}}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kPreloadingConfig};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);

@@ -14,12 +14,6 @@
 
 namespace content {
 
-namespace features {
-// This Feature allows configuring preloading features via a parameter string.
-// See the .cc file to see how to use this parameter.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadingConfig);
-}  // namespace features
-
 class CONTENT_EXPORT PreloadingConfig {
  public:
   static PreloadingConfig& GetInstance();
