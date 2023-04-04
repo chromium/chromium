@@ -33,7 +33,12 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
@@ -62,9 +67,38 @@ LocationIconView::LocationIconView(
   label()->SetAutoColorReadabilityEnabled(false);
 
   SetAccessibleProperties(/*is_initialization*/ true);
+
   if (features::IsChromeRefresh2023()) {
-    ConfigureInkdropForRefresh2023(this, kColorPageInfoIconHover,
-                                   kColorPageInfoIconPressed);
+    // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
+    // you do not need to hardcode color values.
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
+    views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
+        [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
+          const SkColor pressed_color = host->GetColorProvider()->GetColor(
+              ui::kColorSysStateRippleNeutralOnSubtle);
+          const float pressed_alpha = SkColorGetA(pressed_color);
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              views::InkDrop::Get(host), host->size(),
+              host->GetLocalBounds().CenterPoint(),
+              SkColorSetA(pressed_color, SK_AlphaOPAQUE),
+              pressed_alpha / SK_AlphaOPAQUE);
+        },
+        this));
+
+    views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
+        [](views::View* host) {
+          const SkColor hover_color = host->GetColorProvider()->GetColor(
+              ui::kColorSysStateHoverDimBlendProtection);
+          const float hover_alpha = SkColorGetA(hover_color);
+          auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
+              host->size(), host->height() / 2,
+              gfx::PointF(host->GetLocalBounds().CenterPoint()),
+              SkColorSetA(hover_color, SK_AlphaOPAQUE));
+          ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
+          return ink_drop_highlight;
+        },
+        this));
   }
 
   UpdateBorder();
@@ -275,7 +309,8 @@ void LocationIconView::Update(bool suppress_animations) {
 
   if (features::IsChromeRefresh2023()) {
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
+        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
+        height() / 2));
   }
   // The label text color may have changed in response to changes in security
   // level.
