@@ -721,8 +721,10 @@ test("gpu_unittests") {
     "//url",
   ]
 
-  if (!is_cronet_build) {
-    # Cronet disables tracing (crbug.com/1400235).
+  # Cronet disables tracing (crbug.com/1400235).
+  # TODO(rasikan): Remove when unblocked by chromiumos change to add shared lib
+  # to add the shared lib to the chrome-binary-tests directory.
+  if (!is_cronet_build && is_chromeos) {
     deps += [ "//base/test:test_trace_processor" ]
   }
 
