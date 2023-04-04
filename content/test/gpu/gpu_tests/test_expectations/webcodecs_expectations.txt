@@ -73,9 +73,6 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
-# M106 is the last release that supports Android 6.0 Marshmallow
-crbug.com/1367481 [ android-marshmallow ] WebCodecs_* [ Skip ]
-
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -103,6 +100,7 @@ crbug.com/1368785 [ mac-x86_64 ] WebCodecs_EncodingRateControl_avc1.420034_prefe
 # AVC VBR seems to be unreliable on some Android devices
 crbug.com/1368785 [ android ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
 crbug.com/1368785 [ android ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
+crbug.com/1368785 [ android-nougat ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_* [ Failure ]
 
 # The following expectations are added to enable WebCodecs tests on Sherlock.
 # unexpected_pass_finder is disabled so that the tool does not automatically remove these expectations.
