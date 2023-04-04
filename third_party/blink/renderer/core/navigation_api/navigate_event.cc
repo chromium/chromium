@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigate_event.h"
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_intercept_handler.h"
@@ -17,11 +18,13 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
-#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -110,6 +113,17 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
     return;
   }
 
+  if (RuntimeEnabledFeatures::NavigateEventCommitBehaviorEnabled() &&
+      !cancelable() && options->hasCommit() &&
+      options->commit().AsEnum() ==
+          V8NavigationCommitBehavior::Enum::kAfterTransition) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "intercept() may only be called with a commit option of "
+        "\"after-transition\" when the navigate event is cancelable.");
+    return;
+  }
+
   if (!HasNavigationActions()) {
     DomWindow()->document()->AddFocusedElementChangeObserver(this);
   }
@@ -144,6 +158,23 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
     scroll_behavior_ = options->scroll();
   }
 
+  if (RuntimeEnabledFeatures::NavigateEventCommitBehaviorEnabled()) {
+    if (options->hasCommit()) {
+      if (commit_behavior_ &&
+          commit_behavior_->AsEnum() != options->commit().AsEnum()) {
+        GetExecutionContext()->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                "The \"" + options->commit().AsString() + "\" value for " +
+                    "intercept()'s commit option "
+                    "will override the previously-passed value of \"" +
+                    commit_behavior_->AsString() + "\"."));
+      }
+      commit_behavior_ = options->commit();
+    }
+  }
+
   CHECK(intercept_state_ == InterceptState::kNone ||
         intercept_state_ == InterceptState::kIntercepted);
   intercept_state_ = InterceptState::kIntercepted;
@@ -151,7 +182,62 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
     navigation_action_handlers_list_.push_back(options->handler());
 }
 
-void NavigateEvent::DoCommit() {
+void NavigateEvent::commit(ExceptionState& exception_state) {
+  if (!PerformSharedChecks("commit", exception_state)) {
+    return;
+  }
+
+  if (intercept_state_ == InterceptState::kNone) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "intercept() must be called before commit().");
+    return;
+  }
+  if (ShouldCommitImmediately()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "commit() may only be used if { commit: "
+                                      "'after-transition' } was specified.");
+  }
+  if (IsBeingDispatched()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "commit() may not be called during event dispatch");
+    return;
+  }
+  if (intercept_state_ == InterceptState::kFinished) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "commit() may not be called after transition completes.");
+    return;
+  }
+  if (intercept_state_ == InterceptState::kCommitted ||
+      intercept_state_ == InterceptState::kScrolled) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "commit() already called.");
+    return;
+  }
+  CommitNow();
+}
+
+void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
+  if (ShouldCommitImmediately()) {
+    CommitNow();
+    return;
+  }
+
+  LocalFrame* frame = DomWindow()->GetFrame();
+  frame->GetLocalFrameHostRemote().StartLoadingForAsyncNavigationApiCommit();
+  frame->Loader().Progress().ProgressStarted();
+
+  FinalizeNavigationActionPromisesList();
+}
+
+bool NavigateEvent::ShouldCommitImmediately() {
+  return !commit_behavior_ || commit_behavior_->AsEnum() ==
+                                  V8NavigationCommitBehavior::Enum::kImmediate;
+}
+
+void NavigateEvent::CommitNow() {
   CHECK_EQ(intercept_state_, InterceptState::kIntercepted);
   CHECK(!dispatch_params_->destination_item || !dispatch_params_->state_object);
 
@@ -210,7 +296,6 @@ void NavigateEvent::React(ScriptState* script_state) {
 }
 
 void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
-  CHECK_NE(intercept_state_, InterceptState::kIntercepted);
   CHECK_NE(intercept_state_, InterceptState::kFinished);
 
   LocalDOMWindow* window = DomWindow();
@@ -221,7 +306,15 @@ void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
   CHECK_EQ(this, window->navigation()->ongoing_navigate_event_);
   window->navigation()->ongoing_navigate_event_ = nullptr;
 
-  if (intercept_state_ != InterceptState::kNone) {
+  if (intercept_state_ == InterceptState::kIntercepted) {
+    if (did_fulfill) {
+      CommitNow();
+    } else {
+      DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+    }
+  }
+
+  if (intercept_state_ >= InterceptState::kCommitted) {
     PotentiallyResetTheFocus();
     if (did_fulfill) {
       PotentiallyProcessScrollBehavior();
@@ -248,12 +341,14 @@ void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
 }
 
 void NavigateEvent::FinalizeNavigationActionPromisesList() {
-  for (auto& function : navigation_action_handlers_list_) {
+  HeapVector<Member<V8NavigationInterceptHandler>> handlers_list;
+  handlers_list.swap(navigation_action_handlers_list_);
+
+  for (auto& function : handlers_list) {
     ScriptPromise result;
     if (function->Invoke(this).To(&result))
       navigation_action_promises_list_.push_back(result);
   }
-  navigation_action_handlers_list_.clear();
 }
 
 void NavigateEvent::PotentiallyResetTheFocus() {

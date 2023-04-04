@@ -3174,6 +3174,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       blink::FrameOwnerElementType owner_type,
       ukm::SourceId document_ukm_source_id) override;
+  void StartLoadingForAsyncNavigationApiCommit() override;
   void DidCommitSameDocumentNavigation(
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params)

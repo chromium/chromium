@@ -2241,6 +2241,10 @@
       status: "stable",
     },
     {
+      name: "NavigateEventCommitBehavior",
+      status: "experimental",
+    },
+    {
       name: "NavigationId",
       status: "experimental",
       origin_trial_feature_name: "SoftNavigationHeuristics",

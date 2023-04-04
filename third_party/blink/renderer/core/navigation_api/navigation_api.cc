@@ -782,7 +782,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (navigate_event->HasNavigationActions()) {
     transition_ = MakeGarbageCollected<NavigationTransition>(
         window_, navigation_type, currentEntry());
-    navigate_event->DoCommit();
+    navigate_event->MaybeCommitImmediately(script_state);
   }
 
   if (navigate_event->HasNavigationActions() ||

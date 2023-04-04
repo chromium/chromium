@@ -432,6 +432,12 @@ class BLINK_EXPORT WebLocalFrameClient {
       mojom::SameDocumentNavigationType,
       bool is_client_redirect) {}
 
+  // Called when an async same-document navigation fails before commit. This is
+  // used in the case where a same-document navigation was instructed to commit
+  // asynchronously by the navigate event, then subsequently failed before
+  // commit.
+  virtual void DidFailAsyncSameDocumentCommit() {}
+
   // Called before a frame's page is frozen.
   virtual void WillFreezePage() {}
 

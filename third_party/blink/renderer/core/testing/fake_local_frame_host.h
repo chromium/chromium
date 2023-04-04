@@ -66,6 +66,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void BubbleLogicalScrollInParentFrame(
       blink::mojom::blink::ScrollDirection direction,
       ui::ScrollGranularity granularity) override;
+  void StartLoadingForAsyncNavigationApiCommit() override {}
   void DidBlockNavigation(const KURL& blocked_url,
                           const KURL& initiator_url,
                           mojom::NavigationBlockedReason reason) override;

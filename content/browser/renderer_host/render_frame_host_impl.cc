@@ -4663,6 +4663,20 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   }
 }
 
+void RenderFrameHostImpl::StartLoadingForAsyncNavigationApiCommit() {
+  // A same document navigation commit was requested, but was deferred by script
+  // via the Navigation API in the renderer. Show loading UI while waiting for
+  // the script to undefer and allow the commit to proceed.
+  if (is_loading()) {
+    return;
+  }
+  bool was_loading =
+      frame_tree()->LoadingTree()->IsLoadingIncludingInnerFrameTrees();
+  is_loading_ = true;
+  frame_tree_node()->DidStartLoading(true /* should_show_loading_ui */,
+                                     was_loading);
+}
+
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {

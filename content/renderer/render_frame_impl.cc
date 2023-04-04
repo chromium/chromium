@@ -3091,8 +3091,9 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
         is_browser_initiated, soft_navigation_heuristics_task_id);
 
     // If `commit_status` is Ok, RunCommitSameDocumentNavigationCallback() was
-    // called in DidCommitNavigationInternal(), and no further work is needed
-    // here.
+    // called in DidCommitNavigationInternal() or the NavigationApi deferred the
+    // commit and will call DidCommitNavigationInternal() when the commit is
+    // undeferred. Either way, no further work is needed here.
     if (commit_status == blink::mojom::CommitResult::Ok) {
       return;
     }
@@ -3986,6 +3987,21 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
     observer.DidFinishSameDocumentNavigation();
 
   document_state->clear_navigation_state();
+}
+
+void RenderFrameImpl::DidFailAsyncSameDocumentCommit() {
+  // This is called when the Navigation API deferred a same-document commit,
+  // then fails the navigation without committing, so that we can run the
+  // callback if this commit was browser-initiated. If the commit is aborted
+  // due to frame detach or another navigation preempting it, NavigationState's
+  // destructor will run the callback instead.
+  DocumentState* document_state =
+      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
+  if (NavigationState* navigation_state = document_state->navigation_state()) {
+    navigation_state->RunCommitSameDocumentNavigationCallback(
+        blink::mojom::CommitResult::Aborted);
+    document_state->clear_navigation_state();
+  }
 }
 
 void RenderFrameImpl::WillFreezePage() {

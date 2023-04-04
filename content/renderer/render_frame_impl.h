@@ -566,6 +566,7 @@ class CONTENT_EXPORT RenderFrameImpl
       bool is_synchronously_committed,
       blink::mojom::SameDocumentNavigationType same_document_navigation_type,
       bool is_client_redirect) override;
+  void DidFailAsyncSameDocumentCommit() override;
   void WillFreezePage() override;
   void DidOpenDocumentInputStream(const blink::WebURL& url) override;
   void DidSetPageLifecycleState() override;

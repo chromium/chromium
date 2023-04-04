@@ -496,6 +496,8 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_mojo_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_native_scroll_behavior.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_native_scroll_behavior.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_commit_behavior.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_commit_behavior.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_focus_reset.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_history_behavior.cc",

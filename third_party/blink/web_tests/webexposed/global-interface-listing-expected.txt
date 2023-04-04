@@ -6234,6 +6234,7 @@ interface NavigateEvent : Event
     getter navigationType
     getter signal
     getter userInitiated
+    method commit
     method constructor
     method intercept
     method scroll

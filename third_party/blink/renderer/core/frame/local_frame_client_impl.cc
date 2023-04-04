@@ -423,6 +423,9 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     }
   }
 }
+void LocalFrameClientImpl::DidFailAsyncSameDocumentCommit() {
+  web_frame_->Client()->DidFailAsyncSameDocumentCommit();
+}
 
 void LocalFrameClientImpl::DispatchDidOpenDocumentInputStream(const KURL& url) {
   web_frame_->Client()->DidOpenDocumentInputStream(url);

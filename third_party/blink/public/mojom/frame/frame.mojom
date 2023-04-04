@@ -315,6 +315,12 @@ interface LocalFrameHost {
   BubbleLogicalScrollInParentFrame(ScrollDirection direction,
                                    ui.mojom.ScrollGranularity granularity);
 
+  // Sent by the renderer to indicate that a same document navigation
+  // commit was requested, but was deferred by script via the NavigationApi. The
+  // browser should show loading UI while waiting for the script to undefer and
+  // allow the commit to proceed.
+  StartLoadingForAsyncNavigationApiCommit();
+
   // Indicates an attempt by the associated frame to navigate from the
   // |initiator_url| to the |blocked_url|, but the navigation was
   // blocked because of |reason|.

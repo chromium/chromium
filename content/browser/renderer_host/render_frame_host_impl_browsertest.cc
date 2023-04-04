@@ -3144,6 +3144,105 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, navigation_observer.net_error_code());
 }
 
+// Tests that when a same-document commit is aborted in the renderer (in this
+// case, by the navigate event being cancelled), it does not leak its
+// NavigationHandle.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    AbortedSameDocumentNavigationsShouldNotLeakNavigationHandles) {
+  GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Abort the next navigation via the navigate event.
+  EXPECT_TRUE(ExecJs(root_frame_host(),
+                     "navigation.onnavigate = e => e.preventDefault()"));
+  GURL blocked_url(
+      embedded_test_server()->GetURL("foo.com", "/title1.html#blocked"));
+  NavigationHandleObserver navigation_observer(web_contents(), blocked_url);
+  EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
+  EXPECT_EQ(main_url,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(navigation_observer.is_same_document());
+
+  // Verify that the NavigationHandle / NavigationRequest didn't leak.
+  EXPECT_FALSE(root_frame_host()->HasPendingCommitNavigation());
+}
+
+// TODO(japhet): Remove this helper class and use RenderFrameHostImplBrowserTest
+// when blink::features::kNavigateEventCommitBehavior is removed.
+class RenderFrameHostImplCommitBehaviorBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplCommitBehaviorBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kNavigateEventCommitBehavior);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that when the navigation API intercepts and defers a commit, then
+// a second navigation preempts the deferred commit, no NavigationHandles are
+// leaked.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplCommitBehaviorBrowserTest,
+    DeferredAndPreemptedSameDocumentNavigationsShouldNotLeakNavigationHandles) {
+  GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Add a navigate event listener that will intercept the next navigation and
+  // defer it for 100ms, then start a new navigation to preempt it.
+  EXPECT_TRUE(ExecJs(root_frame_host(),
+                     "navigation.addEventListener('navigate',"
+                     "  e => { e.intercept({"
+                     "    commit: 'after-transition',"
+                     "    handler: () => new Promise(r => setTimeout(r, 100))"
+                     "  }); "
+                     "  setTimeout(() => navigation.navigate('#allowed'), 0);"
+                     "}, { once: true });"));
+  GURL blocked_url(
+      embedded_test_server()->GetURL("foo.com", "/title1.html#blocked"));
+  NavigationHandleObserver navigation_observer(web_contents(), blocked_url);
+  EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
+  EXPECT_TRUE(navigation_observer.is_same_document());
+
+  GURL allowed_url(
+      embedded_test_server()->GetURL("foo.com", "/title1.html#allowed"));
+  EXPECT_EQ(allowed_url,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  // Verify that the NavigationHandle / NavigationRequest didn't leak.
+  EXPECT_FALSE(root_frame_host()->HasPendingCommitNavigation());
+}
+
+// Tests that when the navigation API intercepts and defers a commit, then
+// the commit is aborted by script, no NavigationHandles are leaked.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplCommitBehaviorBrowserTest,
+    DeferredAndRejectedSameDocumentNavigationsShouldntLeakNavigationHandles) {
+  GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Add a navigate event listener that will intercept the next navigation and
+  // reject it without committing it, causing the navigation to abort.
+  EXPECT_TRUE(ExecJs(root_frame_host(),
+                     "navigation.addEventListener('navigate',"
+                     "  e => { e.intercept({"
+                     "    commit: 'after-transition',"
+                     "    handler: () => Promise.reject()"
+                     "  }); "
+                     "});"));
+  GURL blocked_url(
+      embedded_test_server()->GetURL("foo.com", "/title1.html#blocked"));
+  NavigationHandleObserver navigation_observer(web_contents(), blocked_url);
+  EXPECT_FALSE(NavigateToURL(shell(), blocked_url));
+  EXPECT_TRUE(navigation_observer.is_same_document());
+
+  // Verify that the NavigationHandle / NavigationRequest didn't leak.
+  EXPECT_FALSE(root_frame_host()->HasPendingCommitNavigation());
+}
+
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        BeforeUnloadDialogSuppressedForDiscard) {
   TestJavaScriptDialogManager dialog_manager;
