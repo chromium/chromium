@@ -3111,6 +3111,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-session-serialization-optimizations",
+    "owners": [ "fedegermi", "sdefresne", "bling-flags@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "enable-shortcut-customization",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 120

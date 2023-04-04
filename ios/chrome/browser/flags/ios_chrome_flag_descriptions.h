@@ -881,6 +881,11 @@ extern const char kEnableLensContextMenuAltTextDescription[];
 extern const char kEnableLensInOmniboxCopiedImageName[];
 extern const char kEnableLensInOmniboxCopiedImageDescription[];
 
+// Title and description for the flag to enable session serialization
+// optimizations (go/bling-session-restoration).
+extern const char kEnableSessionSerializationOptimizationsName[];
+extern const char kEnableSessionSerializationOptimizationsDescription[];
+
 // Title and description for the flag to enable the follow up of the SF Symbols.
 extern const char kSFSymbolsFollowUpName[];
 extern const char kSFSymbolsFollowUpDescription[];

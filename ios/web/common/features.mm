@@ -93,8 +93,8 @@ BASE_FEATURE(kSmoothScrollingDefault,
              "FullscreenSmoothScrollingDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableNewSessionSerialization,
-             "EnableNewSessionSerialization",
+BASE_FEATURE(kEnableSessionSerializationOptimizations,
+             "EnableSessionSerializationOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsMediaPermissionsControlEnabled() {
@@ -118,8 +118,8 @@ bool IsFullscreenAPIEnabled() {
   return false;
 }
 
-bool UseNewSessionSerialization() {
-  return base::FeatureList::IsEnabled(kEnableNewSessionSerialization);
+bool UseSessionSerializationOptimizations() {
+  return base::FeatureList::IsEnabled(kEnableSessionSerializationOptimizations);
 }
 
 }  // namespace features

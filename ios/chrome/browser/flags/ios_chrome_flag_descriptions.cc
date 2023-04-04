@@ -1014,6 +1014,13 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
 
+const char kEnableSessionSerializationOptimizationsName[] =
+    "Session Serialization Optimization";
+const char kEnableSessionSerializationOptimizationsDescription[] =
+    "Enables the use of multiple separate files to save the session state "
+    "and the ability to load only the minimum amount of data when restoring "
+    "the session from disk.";
+
 const char kSFSymbolsFollowUpName[] = "SF Symbol follow up";
 const char kSFSymbolsFollowUpDescription[] = "Change the + button.";
 

@@ -89,8 +89,8 @@ BASE_DECLARE_FEATURE(kEnableWebInspector);
 // viewport adjustment experiment is selected via command line switches.
 BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
-// Feature flag to enable the new session serialization code.
-BASE_DECLARE_FEATURE(kEnableNewSessionSerialization);
+// Feature flag to enable the session serialization optimizations.
+BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
 
 // When true, user control for camera and/or microphone access should be
 // enabled.
@@ -103,8 +103,8 @@ bool IsLoadSimulatedRequestAPIEnabled();
 // When true, the fullscreen API should be used to enable fullscreen mode.
 bool IsFullscreenAPIEnabled();
 
-// When true, the new session serialization code should be used.
-bool UseNewSessionSerialization();
+// When true, session serialization optimizations should be enabled.
+bool UseSessionSerializationOptimizations();
 
 }  // namespace features
 }  // namespace web

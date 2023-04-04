@@ -1517,6 +1517,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGroupingFrameworkForTypedSuggestionsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
+    {"enable-session-serialization-optimizations",
+     flag_descriptions::kEnableSessionSerializationOptimizationsName,
+     flag_descriptions::kEnableSessionSerializationOptimizationsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         web::features::kEnableSessionSerializationOptimizations)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
