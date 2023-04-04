@@ -73,3 +73,8 @@
 # crbug.com/1429763
 -org.chromium.chrome.browser.metrics.MainIntentBehaviorMetricsIntegrationTest.testLaunch_From_InAppActivities
 
+# crbug.com/1289810
+-org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
+
+# crbug.com/1430319
+-org.chromium.chrome.browser.ntp.NewTabPageTest.testRecordHistogramHomeButtonClick_Ntp
