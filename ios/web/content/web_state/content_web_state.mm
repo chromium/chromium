@@ -126,6 +126,10 @@ ContentWebState::~ContentWebState() {
   }
 }
 
+content::WebContents* ContentWebState::GetWebContents() {
+  return web_contents_.get();
+}
+
 WebStateDelegate* ContentWebState::GetDelegate() {
   return nullptr;
 }

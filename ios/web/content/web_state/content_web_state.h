@@ -45,6 +45,9 @@ class ContentWebState : public WebState, public content::WebContentsObserver {
 
   ~ContentWebState() override;
 
+  // Returns the WebContents owned by this ContentWebState.
+  content::WebContents* GetWebContents();
+
   // WebState implementation.
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
