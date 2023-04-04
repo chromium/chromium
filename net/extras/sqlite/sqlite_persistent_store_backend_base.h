@@ -70,14 +70,16 @@ class SQLitePersistentStoreBackendBase
 
   // |current_version_number| and |compatible_version_number| must be greater
   // than 0, as per //sql/meta_table.h. |background_task_runner| should be
-  // non-null.
+  // non-null. If |enable_exclusive_access| is true then the sqlite3 database
+  // will be opened with exclusive flag.
   SQLitePersistentStoreBackendBase(
       const base::FilePath& path,
       std::string histogram_tag,
       const int current_version_number,
       const int compatible_version_number,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> client_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      bool enable_exclusive_access);
 
   virtual ~SQLitePersistentStoreBackendBase();
 
@@ -185,6 +187,10 @@ class SQLitePersistentStoreBackendBase
 
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
+
+  // If true, then sqlite will be requested to open the file with exclusive
+  // access.
+  const bool enable_exclusive_access_;
 
   // Callback to be run before Commit.
   base::RepeatingClosure before_commit_callback_

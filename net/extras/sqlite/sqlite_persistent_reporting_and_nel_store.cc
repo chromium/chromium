@@ -115,7 +115,8 @@ class SQLitePersistentReportingAndNelStore::Backend
             kCurrentVersionNumber,
             kCompatibleVersionNumber,
             background_task_runner,
-            client_task_runner) {}
+            client_task_runner,
+            /*enable_exclusive_access=*/false) {}
 
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;

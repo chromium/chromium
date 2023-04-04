@@ -55,7 +55,8 @@ class SessionCleanupCookieStoreTest : public testing::Test {
     auto sqlite_store = base::MakeRefCounted<net::SQLitePersistentCookieStore>(
         temp_dir_.GetPath().Append(kTestCookiesFilename),
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        background_task_runner_, true, nullptr);
+        background_task_runner_, /*restore_old_session_cookies=*/true,
+        /*crypto_delegate=*/nullptr, /*enable_exclusive_access=*/false);
     store_ =
         base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store.get());
     return Load();
