@@ -9995,7 +9995,7 @@
             ]
         }
     ],
-    "PrioritizeCompositingAfterDelayTrials": [
+    "PrioritizeCompositingAfterDelay": [
         {
             "platforms": [
                 "android",
@@ -10009,10 +10009,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "PrioritizeCompositingAfter50ms2",
                     "params": {
-                        "PostFCP": "80",
-                        "PreFCP": "120"
+                        "PostFCP": "50"
                     },
                     "enable_features": [
                         "PrioritizeCompositingAfterDelayTrials"
