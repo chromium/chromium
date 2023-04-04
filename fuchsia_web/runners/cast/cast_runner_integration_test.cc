@@ -44,11 +44,13 @@
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
-#include "fuchsia_web/runners/cast/cast_runner_integration_test_base.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "fuchsia_web/runners/cast/fake_api_bindings.h"
 #include "fuchsia_web/runners/cast/fake_application_config_manager.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -404,6 +406,60 @@ class TestCastComponent {
   fuchsia::web::MessagePortPtr test_port_;
 
   base::OnceClosure on_component_destroyed_;
+};
+
+// Base class for all integration tests, parameterized on the set of
+// "features" to enable in the `cast_runner` under test.
+class CastRunnerIntegrationTest : public testing::Test {
+ protected:
+  CastRunnerIntegrationTest()
+      : CastRunnerIntegrationTest(test::kCastRunnerFeaturesNone) {}
+  explicit CastRunnerIntegrationTest(test::CastRunnerFeatures runner_features)
+      : cast_runner_(runner_features) {}
+
+  ~CastRunnerIntegrationTest() override = default;
+
+  CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
+  CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
+      delete;
+
+  // testing::Test overrides.
+  void SetUp() override {
+    static constexpr base::StringPiece kTestServerRoot(
+        "fuchsia_web/runners/cast/testdata");
+    test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
+    net::test_server::RegisterDefaultHandlers(&test_server_);
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  // Returns the services exposed by the `CastRunnerLauncher` test Realm,
+  // including those exposed by the `cast_runner` component under test.
+  const sys::ServiceDirectory& test_realm_services() {
+    return cast_runner_.exposed_services();
+  }
+
+  test::CastRunnerLauncher& cast_runner_launcher() { return cast_runner_; }
+
+  // Returns the HTTP server used to serve fake content for Cast components.
+  net::EmbeddedTestServer& test_server() { return test_server_; }
+
+  // Convenience accessors for elements managed by the launcher.
+  FakeApplicationConfigManager& app_config_manager() {
+    return cast_runner_.fake_cast_agent().app_config_manager();
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+
+  // TODO(https://crbug.com/1168538): Override the RunLoop timeout set by
+  // |task_environment_| to allow for the very high variability in web.Context
+  // launch times.
+  const base::test::ScopedRunLoopTimeout scoped_timeout_{
+      FROM_HERE, TestTimeouts::action_max_timeout()};
+
+  test::CastRunnerLauncher cast_runner_;
+  net::EmbeddedTestServer test_server_;
 };
 
 }  // namespace

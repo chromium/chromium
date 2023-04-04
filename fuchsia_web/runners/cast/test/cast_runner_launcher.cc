@@ -6,6 +6,7 @@
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
+#include <fuchsia/component/decl/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl.h>
@@ -87,25 +88,13 @@ class TestProxyLocalComponent : public component_testing::LocalComponentImpl {
 
 }  // namespace
 
-CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features)
-    : runner_features_(runner_features) {}
-
-CastRunnerLauncher::~CastRunnerLauncher() {
-  if (realm_root_.has_value()) {
-    base::RunLoop run_loop;
-    realm_root_.value().Teardown(
-        [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
-    run_loop.Run();
-  }
-}
-
-std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::Create() {
+CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   auto realm_builder = RealmBuilder::Create();
 
   static constexpr char kCastRunnerComponentName[] = "cast_runner";
   realm_builder.AddChild(kCastRunnerComponentName, "#meta/cast_runner.cm");
 
-  base::CommandLine command_line = CommandLineFromFeatures(runner_features_);
+  base::CommandLine command_line = CommandLineFromFeatures(runner_features);
   constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
   command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                 kSwitchesToCopy, std::size(kSwitchesToCopy));
@@ -175,7 +164,7 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::Create() {
             .targets = {ChildRef{kCastRunnerComponentName}}});
 
   // Either route the fake AudioDeviceEnumerator or the system one.
-  if (runner_features_ & kCastRunnerFeaturesFakeAudioDeviceEnumerator) {
+  if (runner_features & kCastRunnerFeaturesFakeAudioDeviceEnumerator) {
     static constexpr char kAudioDeviceEnumerator[] =
         "fake_audio_device_enumerator";
     realm_builder.AddLocalChild(kAudioDeviceEnumerator, []() {
@@ -336,10 +325,20 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::Create() {
     realm_builder.ReplaceRealmDecl(std::move(realm_decl));
   }
 
-  // Create the test Realm and connect to its exposed services.
+  // Create the test realm and connect to the root component's exposed services,
+  // for use by tests.
   realm_root_ = realm_builder.Build();
-  return std::make_unique<sys::ServiceDirectory>(
+  exposed_services_ = std::make_unique<sys::ServiceDirectory>(
       realm_root_->component().CloneExposedDir());
+}
+
+CastRunnerLauncher::~CastRunnerLauncher() {
+  if (realm_root_.has_value()) {
+    base::RunLoop run_loop;
+    realm_root_.value().Teardown(
+        [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
+    run_loop.Run();
+  }
 }
 
 }  // namespace test

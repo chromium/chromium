@@ -196,11 +196,7 @@ test("cast_runner_unittests") {
 }
 
 test("cast_runner_integration_tests") {
-  sources = [
-    "cast/cast_runner_integration_test.cc",
-    "cast/cast_runner_integration_test_base.cc",
-    "cast/cast_runner_integration_test_base.h",
-  ]
+  sources = [ "cast/cast_runner_integration_test.cc" ]
   data = [ "cast/testdata" ]
   deps = [
     ":cast_runner_core",
