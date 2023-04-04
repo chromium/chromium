@@ -2060,6 +2060,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-cros-diacritics-on-physical-keyboard-longpress-on-by-default",
+    "owners": ["jopalmer", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cros-first-party-vietnamese-input",
     "owners": ["jhtin", "essential-inputs-team@google.com" ],
     "expiry_milestone": 122
