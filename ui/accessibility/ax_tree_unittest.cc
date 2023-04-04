@@ -5235,7 +5235,14 @@ TEST(AXTreeTest, UnserializeErrors) {
 }
 
 #if !defined(AX_FAIL_FAST_BUILD) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
-TEST(AXTreeTest, UnserializePerformance) {
+// TODO(crbug.com/1430317): UnserializePerformance is failing on fuchsia
+// bots.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_UnserializePerformance DISABLED_UnserializePerformance
+#else
+#define MAYBE_UnserializePerformance UnserializePerformance
+#endif
+TEST(AXTreeTest, MAYBE_UnserializePerformance) {
   // Test parameters, tune per platform if needed.
   const int NUMBER_OF_CHILDREN = 800;
   const int NUMBER_OF_GRANDCHILDREN = 5;
