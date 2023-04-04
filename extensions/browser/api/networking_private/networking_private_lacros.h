@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "extensions/browser/api/networking_private/lacros_networking_private_observer.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;

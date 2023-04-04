@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 

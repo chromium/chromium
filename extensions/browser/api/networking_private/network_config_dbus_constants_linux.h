@@ -5,9 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORK_CONFIG_DBUS_CONSTANTS_LINUX_H_
 #define EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORK_CONFIG_DBUS_CONSTANTS_LINUX_H_
 
-namespace extensions {
-
-namespace networking_private {
+namespace extensions::networking_private {
 
 // Network manager API strings.
 extern const char kNetworkManagerPath[];
@@ -33,8 +31,6 @@ extern const char kNetworkManagerWpaFlagsProperty[];
 extern const char kNetworkManagerConnectionConfig80211Wireless[];
 extern const char kNetworkManagerConnectionConfigSsid[];
 
-}  // namespace networking_private
-
-}  // namespace extensions
+}  // namespace extensions::networking_private
 
 #endif  // EXTENSIONS_BROWSER_API_NETWORKING_PRIVATE_NETWORK_CONFIG_DBUS_CONSTANTS_LINUX_H_

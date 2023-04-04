@@ -43,7 +43,7 @@ class NetworkingPrivateEventRouterFactory
       NetworkingPrivateEventRouterFactory>;
 
   NetworkingPrivateEventRouterFactory();
-  ~NetworkingPrivateEventRouterFactory() override;
+  ~NetworkingPrivateEventRouterFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(

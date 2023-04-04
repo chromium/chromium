@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
@@ -481,15 +480,17 @@ void NetworkingPrivateServiceClient::AfterStartDisconnect(
 void NetworkingPrivateServiceClient::OnNetworksChangedEventOnUIThread(
     const std::vector<std::string>& network_guids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (auto& observer : network_events_observers_)
+  for (auto& observer : network_events_observers_) {
     observer.OnNetworksChangedEvent(network_guids);
+  }
 }
 
 void NetworkingPrivateServiceClient::OnNetworkListChangedEventOnUIThread(
     const std::vector<std::string>& network_guids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (auto& observer : network_events_observers_)
+  for (auto& observer : network_events_observers_) {
     observer.OnNetworkListChangedEvent(network_guids);
+  }
 }
 
 }  // namespace extensions
