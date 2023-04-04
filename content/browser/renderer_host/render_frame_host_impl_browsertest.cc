@@ -42,6 +42,7 @@
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -7536,9 +7537,12 @@ class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:
   RenderFrameHostImplBrowserTestWithBFCache() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            /*ignore_outstanding_network_request=*/false),
+            /*ignore_outstanding_network_request=*/false);
+    enabled_features.push_back({kNavigationUpdatesChildViewsVisibility, {{}}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~RenderFrameHostImplBrowserTestWithBFCache() override = default;
@@ -7582,6 +7586,84 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   EXPECT_EQ(expected_parent_ftn, rfh_a->owner_);
   EXPECT_EQ(expected_child_ftn, rfh_b->owner_);
   EXPECT_EQ(nullptr, rfh_c->owner_);
+}
+
+// Tests that when a RenderFrameHost is stored in BFCache, that the visibility
+// of its child frames are also updating. Any OOPIF should stop submitting new
+// viz::CompositorFrames while in the cache. Conversely upon being removed from
+// the BFCache, and re-navigated to, the OOPIF should once again start
+// submitting new frames.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
+                       ChildFramesHiddenWhileInBFCache) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title2.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  FrameTreeNode* expected_parent_ftn = rfh_a->frame_tree_node();
+  FrameTreeNode* expected_child_ftn = rfh_b->frame_tree_node();
+
+  // 2) Navigate OOPIF B to a page with a continuous Compositor-thread
+  // animation.
+  auto* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  RenderFrameSubmissionObserver rfso_d(child_rfh);
+  GURL url_d(embedded_test_server()->GetURL(
+      "b.com", "/rwhv_compositing_animation.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_rfh, url_d));
+
+  // 3) Navigate to C.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+
+  // Even though navigation has completed, there may still be a frame from D
+  // that is being processed by Viz, or whose RenderFrameMetadata has yet to
+  // arrive and be processed on the Browser UI thread.
+  //
+  // So we wait until the first frame submitted by C has been produced and the
+  // metadata processed on the Browser UI thread. From this point on we expect
+  // that there are no new frames submitted by D.
+  RenderFrameHostImpl* rfh_c = web_contents()->GetPrimaryMainFrame();
+  RenderFrameSubmissionObserver rfso_c = RenderFrameSubmissionObserver(rfh_c);
+  rfso_c.WaitForAnyFrameSubmission();
+  int post_nav_num_frames = rfso_d.render_frame_count();
+
+  // 4) Ensure A(B) are cached.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_c->IsInBackForwardCache());
+  EXPECT_NE(rfh_a, rfh_c);
+  EXPECT_EQ(nullptr, rfh_a->owner_);
+  EXPECT_EQ(expected_child_ftn, rfh_b->owner_);
+  EXPECT_EQ(expected_parent_ftn, rfh_c->owner_);
+
+  // Since previous content had continuous animation, wait a while and confirm
+  // no further frames were submitted. Let's wait for 10 frames at 60 Hz, to
+  // give some time for slower builds.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(160));
+    run_loop.Run();
+  }
+  int post_wait_num_frames = rfso_d.render_frame_count();
+  EXPECT_EQ(post_wait_num_frames, post_nav_num_frames);
+
+  // 5) Navigate back to A(B).
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // 6) Ensure C is cached and A's owner is updated.
+  EXPECT_TRUE(rfh_c->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(expected_parent_ftn, rfh_a->owner_);
+  EXPECT_EQ(expected_child_ftn, rfh_b->owner_);
+  EXPECT_EQ(nullptr, rfh_c->owner_);
+
+  // Ensure that the OOPIF became visible and submitted a frame. If this times
+  // out then D failed to become visible again.
+  rfso_d.WaitForAnyFrameSubmission();
 }
 
 class RenderFrameHostImplPrerenderBrowserTest
