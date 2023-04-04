@@ -549,14 +549,6 @@ views::ToggleImageButton* LoginPasswordView::TestApi::display_password_button()
   return view_->display_password_button_;
 }
 
-views::View* LoginPasswordView::TestApi::easy_unlock_icon() const {
-  return view_->easy_unlock_icon_;
-}
-
-views::View* LoginPasswordView::TestApi::capslock_icon() const {
-  return view_->capslock_icon_;
-}
-
 void LoginPasswordView::TestApi::set_immediately_hover_easy_unlock_icon() {
   view_->easy_unlock_icon_->set_immediately_hover_for_test();
 }

@@ -72,8 +72,6 @@ class ASH_EXPORT LoginPasswordView
     views::Textfield* textfield() const;
     views::View* submit_button() const;
     views::ToggleImageButton* display_password_button() const;
-    views::View* easy_unlock_icon() const;
-    views::View* capslock_icon() const;
     void set_immediately_hover_easy_unlock_icon();
 
     bool is_capslock_highlight_for_testing() {
