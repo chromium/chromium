@@ -35,6 +35,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   explicit SourceRegistration(DestinationSet);
 
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  explicit SourceRegistration(mojo::DefaultConstruct::Tag);
+
   ~SourceRegistration();
 
   SourceRegistration(const SourceRegistration&);
@@ -44,10 +48,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   SourceRegistration& operator=(SourceRegistration&&);
 
   base::Value::Dict ToJson() const;
-
-  // Creates an invalid instance for use with Mojo deserialization, which
-  // requires types to be default-constructible.
-  explicit SourceRegistration(mojo::DefaultConstruct::Tag);
 
   uint64_t source_event_id = 0;
   DestinationSet destination_set;

@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   // All parts of the URL other than the origin are ignored.
   static absl::optional<SuitableOrigin> Deserialize(base::StringPiece);
 
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  explicit SuitableOrigin(mojo::DefaultConstruct::Tag);
+
   ~SuitableOrigin();
 
   SuitableOrigin(const SuitableOrigin&);
@@ -93,14 +97,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
 
   bool IsValid() const;
 
-  // Creates an invalid instance for use with Mojo deserialization, which
-  // requires types to be default-constructible.
-  explicit SuitableOrigin(mojo::DefaultConstruct::Tag);
-
  private:
-  friend struct SourceRegistration;
-  friend struct TriggerRegistration;
-
   explicit SuitableOrigin(url::Origin);
 
   url::Origin origin_;
