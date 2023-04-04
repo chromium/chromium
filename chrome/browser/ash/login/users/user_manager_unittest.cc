@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -276,6 +277,7 @@ class UserManagerTest : public testing::Test {
   TestWallpaperController test_wallpaper_controller_;
 
   content::BrowserTaskEnvironment task_environment_;
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
   ScopedCrosSettingsTestHelper settings_helper_;
   // local_state_ should be destructed after ProfileManager.

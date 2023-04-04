@@ -79,6 +79,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -336,6 +337,7 @@ class ProfileManagerTest : public testing::Test {
       session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
