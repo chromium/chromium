@@ -1178,6 +1178,10 @@ bool Surface::HasSurfaceDelegate() const {
   return !!delegate_;
 }
 
+SurfaceDelegate* Surface::GetDelegateForTesting() {
+  return delegate_;
+}
+
 void Surface::AddSurfaceObserver(SurfaceObserver* observer) {
   observers_.AddObserver(observer);
 }
