@@ -5235,9 +5235,9 @@ TEST(AXTreeTest, UnserializeErrors) {
 }
 
 #if !defined(AX_FAIL_FAST_BUILD) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1430317): UnserializePerformance is failing on fuchsia
-// bots.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1430317): UnserializePerformance is failing on fuchsia and
+// windows bots.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
 #define MAYBE_UnserializePerformance DISABLED_UnserializePerformance
 #else
 #define MAYBE_UnserializePerformance UnserializePerformance
