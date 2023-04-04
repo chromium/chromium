@@ -896,12 +896,7 @@ CreatePositionWithAffinityForBoxAfterAdjustingOffsetForBiDi(
     return CreatePositionWithAffinityForBox(box, box->Start() + offset,
                                             should_affinity_be_downstream);
   }
-
-  const InlineBoxPosition adjusted = BidiAdjustment::AdjustForHitTest(
-      InlineBoxPosition(box, box->Start() + offset));
-  return CreatePositionWithAffinityForBox(adjusted.inline_box,
-                                          adjusted.offset_in_box,
-                                          should_affinity_be_downstream);
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace

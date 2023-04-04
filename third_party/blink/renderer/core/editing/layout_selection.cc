@@ -30,11 +30,9 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
@@ -796,20 +794,6 @@ SelectionState LayoutSelection::ComputePaintingSelectionStateForCursor(
 
   SelectionState state =
       GetPaintingSelectionStateFor(To<LayoutText>(*position.GetLayoutObject()));
-  return ComputeSelectionStateFromOffsets(state, start_offset, end_offset);
-}
-
-SelectionState LayoutSelection::ComputeSelectionStateForInlineTextBox(
-    const InlineTextBox& text_box) const {
-  AssertIsValid();
-  unsigned start_offset = static_cast<unsigned>(text_box.CaretMinOffset());
-  unsigned end_offset = static_cast<unsigned>(text_box.CaretMaxOffset());
-  // Determine the state of the overall selection, relative to the
-  // InlineTextBox. This state will allow us know which offset comparisons are
-  // valid, and determine if the selection endpoints fall within InlineTextBox.
-  const LayoutText* text = To<LayoutText>(
-      LineLayoutAPIShim::ConstLayoutObjectFrom(text_box.GetLineLayoutItem()));
-  SelectionState state = GetSelectionStateFor(*text);
   return ComputeSelectionStateFromOffsets(state, start_offset, end_offset);
 }
 

@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_rect.h"
@@ -104,20 +103,6 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
     if (auto caret_position =
             ComputeNGCaretPosition(AdjustForNGCaretPosition(adjusted)))
       return ComputeLocalCaretRect(caret_position);
-
-    const InlineBoxPosition& box_position =
-        ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted);
-
-    if (box_position.inline_box) {
-      const LayoutObject* box_layout_object =
-          LineLayoutAPIShim::LayoutObjectFrom(
-              box_position.inline_box->GetLineLayoutItem());
-      return LocalCaretRect(
-          box_layout_object,
-          box_layout_object->PhysicalLocalCaretRect(
-              box_position.inline_box, box_position.offset_in_box,
-              extra_width_to_end_of_line));
-    }
   }
 
   // DeleteSelectionCommandTest.deleteListFromTable goes here.
@@ -147,30 +132,7 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
           ComputeNGCaretPosition(AdjustForNGCaretPosition(adjusted)))
     return ComputeLocalSelectionRect(caret_position);
 
-  const InlineBoxPosition& box_position =
-      ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted);
-
-  if (!box_position.inline_box)
-    return LocalCaretRect();
-
-  LayoutObject* const layout_object = LineLayoutAPIShim::LayoutObjectFrom(
-      box_position.inline_box->GetLineLayoutItem());
-
-  LayoutRect rect = layout_object->LocalCaretRect(box_position.inline_box,
-                                                  box_position.offset_in_box);
-
-  if (rect.IsEmpty())
-    return LocalCaretRect();
-
-  const InlineBox* const box = box_position.inline_box;
-  if (layout_object->IsHorizontalWritingMode()) {
-    rect.SetY(box->Root().SelectionTop());
-    rect.SetHeight(box->Root().SelectionHeight());
-  } else {
-    rect.SetX(box->Root().SelectionTop());
-    rect.SetHeight(box->Root().SelectionHeight());
-  }
-  return LocalCaretRect(layout_object, layout_object->FlipForWritingMode(rect));
+  return LocalCaretRect();
 }
 
 }  // namespace

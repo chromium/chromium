@@ -30,46 +30,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_INLINE_BOX_POSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_INLINE_BOX_POSITION_H_
 
-#include "base/check_op.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+// TODO(1229581): Rename this file, or move stuff away. There used to be an
+// InlineBoxPosition struct here, but it was all about legacy layout.
 
 namespace blink {
-
-class InlineBox;
-enum class UnicodeBidi : unsigned;
-
-struct InlineBoxPosition {
-  STACK_ALLOCATED();
-
- public:
-  const InlineBox* inline_box;
-  int offset_in_box;
-
-  InlineBoxPosition() : inline_box(nullptr), offset_in_box(0) {}
-
-  InlineBoxPosition(const InlineBox* inline_box, int offset_in_box)
-      : inline_box(inline_box), offset_in_box(offset_in_box) {
-    DCHECK(inline_box);
-    DCHECK_GE(offset_in_box, 0);
-  }
-
-  bool operator==(const InlineBoxPosition& other) const {
-    return inline_box == other.inline_box &&
-           offset_in_box == other.offset_in_box;
-  }
-
-  bool operator!=(const InlineBoxPosition& other) const {
-    return !operator==(other);
-  }
-};
-
-CORE_EXPORT InlineBoxPosition
-ComputeInlineBoxPosition(const PositionWithAffinity&);
-CORE_EXPORT InlineBoxPosition
-ComputeInlineBoxPosition(const PositionInFlatTreeWithAffinity&);
 
 PositionWithAffinity ComputeInlineAdjustedPosition(
     const PositionWithAffinity&,
@@ -77,16 +44,6 @@ PositionWithAffinity ComputeInlineAdjustedPosition(
 PositionInFlatTreeWithAffinity ComputeInlineAdjustedPosition(
     const PositionInFlatTreeWithAffinity&,
     EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
-
-InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(
-    const PositionWithAffinity&);
-InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(
-    const PositionInFlatTreeWithAffinity&);
-
-// The print for |InlineBoxPosition| is available only for testing
-// in "blink_unittests", and implemented in
-// "core/editing/inline_box_position_test.cc".
-std::ostream& operator<<(std::ostream&, const InlineBoxPosition&);
 
 }  // namespace blink
 

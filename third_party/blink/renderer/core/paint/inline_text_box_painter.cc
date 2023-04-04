@@ -201,34 +201,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       inline_text_box_.GetLineLayoutItem().GetLayoutObject()->IsSelected();
   if (should_record_selection && paint_info.phase == PaintPhase::kForeground &&
       !is_printing) {
-    const FrameSelection& frame_selection =
-        InlineLayoutObject().GetFrame()->Selection();
-    SelectionState selection_state =
-        frame_selection.ComputeLayoutSelectionStateForInlineTextBox(
-            inline_text_box_);
-    if (SelectionBoundsRecorder::ShouldRecordSelection(frame_selection,
-                                                       selection_state)) {
-      PhysicalRect selection_rect =
-          GetSelectionRect<InlineTextBoxPainter::PaintOptions::kNormal>(
-              context, box_rect, style_to_use, style_to_use.GetFont(),
-              /* allow_empty_selection*/ true);
-
-      TextDirection direction = inline_text_box_.IsLeftToRightDirection()
-                                    ? TextDirection::kLtr
-                                    : TextDirection::kRtl;
-      // We need to account for vertical writing mode rotation - for the
-      // actual painting of the selection_rect, this is done below by
-      // concatenating a rotation matrix on the context.
-      if (!style_to_use.IsHorizontalWritingMode()) {
-        gfx::RectF rotated_selection =
-            TextPainterBase::Rotation(box_rect, TextPainterBase::kClockwise)
-                .MapRect(static_cast<gfx::RectF>(selection_rect));
-        selection_rect = PhysicalRect::EnclosingRect(rotated_selection);
-      }
-      selection_recorder.emplace(
-          selection_state, selection_rect, context.GetPaintController(),
-          direction, style_to_use.GetWritingMode(), InlineLayoutObject());
-    }
+    NOTREACHED();
   }
 
   // The text clip phase already has a DrawingRecorder. Text clips are initiated
