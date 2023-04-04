@@ -189,7 +189,6 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   void OnWidgetForDispatchMouseEvent(
       std::unique_ptr<DispatchMouseEventCallback> callback,
       std::unique_ptr<blink::WebMouseEvent> mouse_event,
-      blink::WebMouseWheelEvent* wheel_event,
       base::WeakPtr<RenderWidgetHostViewBase> target,
       absl::optional<gfx::PointF> point);
 
