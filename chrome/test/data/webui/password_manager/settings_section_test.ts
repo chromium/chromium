@@ -241,30 +241,15 @@ suite('SettingsSectionTest', function() {
         2);
   });
 
-  // Add Shortcut banner is shown and clickable if the shortcut is not yet
-  // installed.
+  // Add Shortcut banner is shown and clickable.
   test('showAddShortcutBanner', async function() {
-    loadTimeData.overrideValues({isPasswordManagerShortcutInstalled: false});
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
 
-    const addShortcutBanner =
-        settings.shadowRoot!.querySelector<HTMLElement>('#addShortcutBanner');
-    assertTrue(!!addShortcutBanner);
-
-    addShortcutBanner.click();
+    assertTrue(isVisible(settings.$.addShortcutBanner));
+    settings.$.addShortcutBanner.click();
     await passwordManager.whenCalled('showAddShortcutDialog');
-  });
-
-  // Add Shortcut banner is not shown if the shortcut is already installed.
-  test('hideAddShortcutBanner', async function() {
-    loadTimeData.overrideValues({isPasswordManagerShortcutInstalled: true});
-    const settings = document.createElement('settings-section');
-    document.body.appendChild(settings);
-    await flushTasks();
-
-    assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
   test('Password exporter element', async function() {

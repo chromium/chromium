@@ -24,6 +24,7 @@ import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
+    addShortcutBanner: CrLinkRowElement,
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
@@ -51,13 +52,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: () => [],
       },
 
-      isPasswordManagerShortcutInstalled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isPasswordManagerShortcutInstalled');
-        },
-      },
-
       // <if expr="is_win or is_macosx">
       isBiometricAuthenticationForFillingToggleVisible_: {
         type: Boolean,
@@ -82,15 +76,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private blockedSites_: BlockedSite[];
+  private hasPasswordsToExport_: boolean;
+  private trustedVaultBannerState_: TrustedVaultBannerState;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
   private setCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
-
-  private hasPasswordsToExport_: boolean;
-
-  private trustedVaultBannerState_: TrustedVaultBannerState;
 
   override connectedCallback() {
     super.connectedCallback();

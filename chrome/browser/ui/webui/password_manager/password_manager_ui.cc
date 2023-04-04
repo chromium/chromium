@@ -253,11 +253,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
           IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
 
-  source->AddBoolean("isPasswordManagerShortcutInstalled",
-                     web_app::FindInstalledAppWithUrlInScope(
-                         profile, web_ui->GetWebContents()->GetURL())
-                         .has_value());
-
   source->AddString(
       "checkupUrl",
       base::UTF8ToUTF16(
