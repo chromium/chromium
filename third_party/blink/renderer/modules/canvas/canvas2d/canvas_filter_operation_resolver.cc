@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 
 #include <stdint.h>
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -12,14 +13,18 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
+#include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_turbulence_element.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
@@ -28,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -200,6 +206,97 @@ ComponentTransferFilterOperation* ResolveComponentTransfer(
       GetComponentTransferFunction("funcA", dict, exception_state));
 }
 
+StyleColor ResolveFloodColor(ExecutionContext& execution_context,
+                             const Dictionary& dict,
+                             ExceptionState& exception_state) {
+  NonThrowableExceptionState no_throw;
+  if (!dict.HasProperty("floodColor", no_throw)) {
+    return StyleColor(Color::kBlack);
+  }
+
+  // TODO(crbug.com/1430532): CurrentColor and system colors dependeing on
+  // the color-scheme should be stored unresolved, and resolved only when the
+  // filter is associated with a context.
+  absl::optional<String> flood_color =
+      dict.Get<IDLString>("floodColor", exception_state);
+  Color parsed_color;
+  if (exception_state.HadException() || !flood_color.has_value() ||
+      !ParseCanvasColorString(*flood_color, parsed_color)) {
+    exception_state.ThrowTypeError(
+        "Invalid color value for \"floodColor\" property.");
+    return StyleColor(Color::kBlack);
+  }
+
+  return StyleColor(parsed_color);
+}
+
+DropShadowFilterOperation* ResolveDropShadow(
+    ExecutionContext& execution_context,
+    const Dictionary& dict,
+    ExceptionState& exception_state) {
+  // For checking the presence of keys.
+  NonThrowableExceptionState no_throw;
+
+  float dx = 2.0f;
+  if (dict.HasProperty("dx", no_throw)) {
+    absl::optional<float> input = dict.Get<IDLFloat>("dx", exception_state);
+    if (exception_state.HadException() || !input.has_value()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct dropShadow filter, \"dx\" must be a number.");
+      return nullptr;
+    }
+    dx = *input;
+  }
+
+  float dy = 2.0f;
+  if (dict.HasProperty("dy", no_throw)) {
+    absl::optional<float> input = dict.Get<IDLFloat>("dy", exception_state);
+    if (exception_state.HadException() || !input.has_value()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct dropShadow filter, \"dy\" must be a number.");
+      return nullptr;
+    }
+    dy = *input;
+  }
+
+  // TODO(crbug.com/1430524): `stdDeviation` should support separate X/Y values.
+  float blur = 2.0f;
+  if (dict.HasProperty("stdDeviation", no_throw)) {
+    absl::optional<float> input =
+        dict.Get<IDLFloat>("stdDeviation", exception_state);
+    if (exception_state.HadException() || !input.has_value()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct dropShadow filter, \"stdDeviation\" must be a "
+          "number.");
+      return nullptr;
+    }
+    blur = std::max(0.0f, *input);
+  }
+
+  StyleColor flood_color =
+      ResolveFloodColor(execution_context, dict, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  float opacity = 1.0f;
+  if (dict.HasProperty("floodOpacity", no_throw)) {
+    absl::optional<float> input =
+        dict.Get<IDLFloat>("floodOpacity", exception_state);
+    if (exception_state.HadException() || !input.has_value()) {
+      exception_state.ThrowTypeError(
+          "Failed to construct dropShadow filter, \"floodOpacity\" must be a "
+          "number.");
+      return nullptr;
+    }
+    opacity = *input;
+  }
+
+  return MakeGarbageCollected<DropShadowFilterOperation>(
+      ShadowData(gfx::PointF(dx, dy), blur, /*spread=*/0, ShadowStyle::kNormal,
+                 std::move(flood_color), opacity));
+}
+
 // https://drafts.fxtf.org/filter-effects/#feTurbulenceElement
 TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
                                              ExceptionState& exception_state) {
@@ -352,6 +449,11 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       if (auto* component_transfer_operation =
               ResolveComponentTransfer(filter_dict, exception_state)) {
         operations.Operations().push_back(component_transfer_operation);
+      }
+    } else if (name == "dropShadow") {
+      if (FilterOperation* drop_shadow_operation = ResolveDropShadow(
+              *execution_context, filter_dict, exception_state)) {
+        operations.Operations().push_back(drop_shadow_operation);
       }
     } else if (name == "turbulence") {
       if (auto* turbulence_operation =

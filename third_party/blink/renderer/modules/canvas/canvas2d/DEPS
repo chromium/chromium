@@ -6,6 +6,7 @@ include_rules = [
 specific_include_rules = {
     # Additional allowed includes for tests.
     ".*_test(_.*)?\.(cc|h)" : [
+        "+base/strings",
         "+components/viz",
         "+cc/test/paint_op_matchers.h",
     ]

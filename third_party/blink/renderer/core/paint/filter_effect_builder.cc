@@ -291,7 +291,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         float radius = shadow.Blur() * shorthand_scale_;
         effect = MakeGarbageCollected<FEDropShadow>(
             parent_filter, radius, radius, offset.x(), offset.y(),
-            shadow.GetColor().GetColor(), 1);
+            shadow.GetColor().GetColor(), shadow.Opacity());
         break;
       }
       case FilterOperation::OperationType::kBoxReflect: {

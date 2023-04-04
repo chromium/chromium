@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<link rel="match" href="canvas-filter-object-drop-shadow-expected.html">
+<p class="desc"> Test to ensure CanvasFilter supports dropShadow.</p>
+<canvas id="canvas" width="620" height="320"></canvas>
+<script>
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = 'teal';
+ctx.fillRect(0, 0, canvas.width, 50);
+ctx.fillRect(0, 100, canvas.width, 50);
+ctx.fillRect(0, 200, canvas.width, 50);
+
+ctx.fillStyle = 'crimson';
+
+// Parameter defaults.
+ctx.filter = new CanvasFilter({filter: "dropShadow"});
+ctx.fillRect(10, 10, 80, 80);
+
+// All parameters specified.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 15, dy: 10, stdDeviation: 5, floodColor: "purple",
+   floodOpacity: 0.7});
+ctx.fillRect(110, 10, 80, 80);
+
+// Named color.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 10, dy: 10, stdDeviation: 3,
+  floodColor: "purple"});
+ctx.fillRect(10, 110, 80, 80);
+
+// System color.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 15, dy: 10, stdDeviation: 3,
+   floodColor: "LinkText"});
+ctx.fillRect(110, 110, 80, 80);
+
+// No blur.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 10, dy: 15, stdDeviation: 0,
+   floodColor: "purple"});
+ctx.fillRect(210, 110, 80, 80);
+
+// Numerical color.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 9, dy: 12, stdDeviation: 3,
+   floodColor: "rgba(20, 50, 130, 1)"});
+ctx.fillRect(310, 110, 80, 80);
+
+// Transparent floodColor.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 15, dy: 10, stdDeviation: 3,
+   floodColor: "rgba(20, 50, 130, 0.7)"});
+ctx.fillRect(410, 110, 80, 80);
+
+// Transparent floodColor and floodOpacity.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: 15, dy: 10, stdDeviation: 3,
+   floodColor: "rgba(20, 50, 130, 0.7)", floodOpacity: 0.7});
+ctx.fillRect(510, 110, 80, 80);
+
+// Degenerate parameter values.
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: [-5], dy: [], stdDeviation: null,
+   floodColor: "purple", floodOpacity: [2]});
+ctx.fillRect(10, 210, 80, 80);
+
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: null, dy: '5', stdDeviation: -5,
+   floodColor: "purple", floodOpacity: '0.8'});
+ctx.fillRect(110, 210, 80, 80);
+
+ctx.filter = new CanvasFilter(
+  {filter: "dropShadow", dx: true, dy: ['10'], stdDeviation: false,
+   floodColor: "purple", floodOpacity: ['0.4']});
+ctx.fillRect(210, 210, 80, 80);
+
+</script>
