@@ -379,6 +379,10 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
   // Install two apps so that they will can be tracked inside GetMediaApps.
   InstallApp(kAppId1);
   InstallApp(kAppId2);
+  FakeAppInstance instance1(instance_registry_, kAppId1);
+  instance1.Start();
+  FakeAppInstance instance2(instance_registry_, kAppId2);
+  instance2.Start();
 
   // no-camera, no-mic should not start a tracking of the app.
   SetAppCapabilityAccess(kAppId1, /*is_capturing_camera=*/false,
@@ -508,6 +512,20 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
   instance2.Close();
   // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
   // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetMediaApps().empty());
+
+  // This should not add the app tracking back because there is no running
+  // instance.
+  SetAppCapabilityAccess(kAppId1, /*is_capturing_camera=*/false,
+                         /*is_capturing_microphone=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetMediaApps().empty());
+
+  // This should not add the app tracking back because there is no running
+  // instance.
+  SetAppCapabilityAccess(kAppId1, /*is_capturing_camera=*/false,
+                         /*is_capturing_microphone=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetMediaApps().empty());
 }
