@@ -941,15 +941,7 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
 
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kLoadingControl) {
-    return main_thread_scheduler_->should_prioritize_loading_with_compositing()
-               ? TaskPriority::kVeryHighPriority
-               : TaskPriority::kHighPriority;
-  }
-
-  if (task_queue->GetPrioritisationType() ==
-          MainThreadTaskQueue::QueueTraits::PrioritisationType::kLoading &&
-      main_thread_scheduler_->should_prioritize_loading_with_compositing()) {
-    return main_thread_scheduler_->compositor_priority();
+    return TaskPriority::kHighPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==

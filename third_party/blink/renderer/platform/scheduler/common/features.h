@@ -21,11 +21,6 @@ BASE_FEATURE(kBestEffortPriorityForFindInPage,
              "BlinkSchedulerBestEffortPriorityForFindInPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Prioritizes loading and compositing tasks while loading.
-BASE_FEATURE(kPrioritizeCompositingAndLoadingDuringEarlyLoading,
-             "PrioritizeCompositingAndLoadingDuringEarlyLoading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Prioritizes one BeginMainFrame after input.
 BASE_FEATURE(kPrioritizeCompositingAfterInput,
              "PrioritizeCompositingAfterInput",

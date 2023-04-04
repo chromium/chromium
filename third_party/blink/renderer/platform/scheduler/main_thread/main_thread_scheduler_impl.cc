@@ -532,10 +532,6 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           YesNoStateToString) {}
 
 MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
-  prioritize_compositing_and_loading_during_early_loading =
-      base::FeatureList::IsEnabled(
-          kPrioritizeCompositingAndLoadingDuringEarlyLoading);
-
   prioritize_compositing_after_input =
       base::FeatureList::IsEnabled(kPrioritizeCompositingAfterInput);
 
@@ -1562,12 +1558,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     new_policy.should_pause_task_queues_for_android_webview() = true;
   }
 
-  if (scheduling_settings_
-          .prioritize_compositing_and_loading_during_early_loading &&
-      current_use_case() == UseCase::kEarlyLoading) {
-    new_policy.should_prioritize_loading_with_compositing() = true;
-  }
-
   new_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
@@ -2568,10 +2558,6 @@ TaskPriority MainThreadSchedulerImpl::ComputeCompositorPriority() const {
     // Return the highest priority here otherwise consecutive heavy inputs (e.g.
     // typing) will starve rendering.
     return TaskPriority::kHighestPriority;
-  } else if (scheduling_settings_
-                 .prioritize_compositing_and_loading_during_early_loading &&
-             current_use_case() == UseCase::kEarlyLoading) {
-    return TaskPriority::kHighPriority;
   } else {
     absl::optional<TaskPriority> computed_compositor_priority =
         ComputeCompositorPriorityFromUseCase();
