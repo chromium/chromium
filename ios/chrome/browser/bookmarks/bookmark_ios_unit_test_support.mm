@@ -10,6 +10,7 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -33,6 +34,9 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   test_cbs_builder.AddTestingFactory(
       ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
       ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
+  test_cbs_builder.AddTestingFactory(
+      ManagedBookmarkServiceFactory::GetInstance(),
+      ManagedBookmarkServiceFactory::GetDefaultFactory());
 
   chrome_browser_state_ = test_cbs_builder.Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(

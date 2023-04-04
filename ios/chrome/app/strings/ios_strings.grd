@@ -450,6 +450,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_GROUP_DELETE" desc="Button to delete a folder. [Length: 30em.] [iOS only]">
         Delete Folder
       </message>
+      <message name="IDS_IOS_BOOKMARK_IN_YOUR_GOOGLE_ACCOUNT" desc="The header of the section of the bookmark list that contains bookmarks saved in the google account">
+        In Your Google Account
+      </message>
       <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]" meaning="Name of an inanimate object">
         Name
       </message>
@@ -528,7 +531,10 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_NEW_ZERO_ITEM_LABEL" desc="Text that indicates that a user has selected zero bookmarks for editing. [Length: 30em.]">
         0 selected
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in a snackbar when bookmarks are created. [Length: 30em.]">
+      <message name="IDS_IOS_BOOKMARK_ONLY_ON_THIS_DEVICE" desc="The header of the section of the bookmark list that contains bookmarks that are on this device and not shared with Google">
+        Only on this device
+      </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in an infobar when bookmarks are created. [Length: 30em.]">
         {count, plural,
         =1 {Bookmarked}
         other {Bookmarked}}

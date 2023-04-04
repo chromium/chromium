@@ -494,7 +494,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.sharedState.tableView.accessibilityIdentifier =
       kBookmarksHomeTableViewIdentifier;
   self.sharedState.tableView.estimatedRowHeight = kEstimatedRowHeight;
-  self.tableView.sectionHeaderHeight = 0;
   // Setting a sectionFooterHeight of 0 will be the same as not having a
   // footerView, which shows a cell separator for the last cell. Removing this
   // line will also create a default footer of height 30.
@@ -752,7 +751,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)handleSelectFolderForNavigation:(const bookmarks::BookmarkNode*)folder {
-  if (self.sharedState.currentlyShowingSearchResults) {
+  if (!self.sharedState.currentlyShowingSearchResults) {
+    BookmarksHomeViewController* controller =
+        [self createControllerWithDisplayedFolderNode:folder];
+    [self.navigationController pushViewController:controller animated:YES];
+    return;
+  }
     // Clear bookmark path cache.
     int64_t unusedFolderId;
     int unusedIndexPathRow;
@@ -816,11 +820,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
     [self.searchController dismissViewControllerAnimated:YES
                                               completion:completion];
-    return;
-  }
-  BookmarksHomeViewController* controller =
-      [self createControllerWithDisplayedFolderNode:folder];
-  [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)handleSelectNodesForDeletion:
@@ -1355,6 +1354,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   return [self.sharedState.tableViewModel hasItemAtIndexPath:indexPath];
 }
 
+// Whether the view is currently displaying bookmarks or folders.
 - (BOOL)hasBookmarksOrFolders {
   if (!self.sharedState.tableViewDisplayedRootNode) {
     return NO;
@@ -2306,20 +2306,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  return ChromeTableViewHeightForHeaderInSection(section);
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
     heightForRowAtIndexPath:(NSIndexPath*)indexPath {
   return UITableViewAutomaticDimension;
 }
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger sectionIdentifier = [self.sharedState.tableViewModel
-      sectionIdentifierForSectionIndex:indexPath.section];
-  if (sectionIdentifier == BookmarksHomeSectionIdentifierBookmarks) {
+  BookmarksHomeSectionIdentifier sectionIdentifier =
+      (BookmarksHomeSectionIdentifier)([self.sharedState.tableViewModel
+          sectionIdentifierForSectionIndex:indexPath.section]);
+  if (IsABookmarkNodeSectionIdentifier(sectionIdentifier)) {
     const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
     DCHECK(node);
     // If table is in edit mode, record all the nodes added to edit set.
@@ -2357,8 +2353,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger sectionIdentifier = [self.sharedState.tableViewModel
-      sectionIdentifierForSectionIndex:indexPath.section];
+  BookmarksHomeSectionIdentifier sectionIdentifier =
+      (BookmarksHomeSectionIdentifier)[self.sharedState.tableViewModel
+          sectionIdentifierForSectionIndex:indexPath.section];
   if (sectionIdentifier == BookmarksHomeSectionIdentifierBookmarks &&
       self.sharedState.currentlyInEditMode) {
     const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
