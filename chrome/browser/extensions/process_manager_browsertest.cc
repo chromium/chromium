@@ -210,7 +210,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
   // page.
   const Extension* CreateExtension(const std::string& name,
                                    bool has_background_process) {
-    std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir());
+    TestExtensionDir dir;
 
     DictionaryBuilder manifest;
     manifest.Set("name", name)
@@ -229,27 +229,27 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
     if (has_background_process) {
       manifest.Set("background",
                    DictionaryBuilder().Set("page", "bg.html").Build());
-      dir->WriteFile(FILE_PATH_LITERAL("bg.html"),
-                     "<iframe id='bgframe' src='empty.html'></iframe>");
+      dir.WriteFile(FILE_PATH_LITERAL("bg.html"),
+                    "<iframe id='bgframe' src='empty.html'></iframe>");
     }
 
-    dir->WriteFile(FILE_PATH_LITERAL("blank_iframe.html"),
-                   "<iframe id='frame0' src='about:blank'></iframe>");
+    dir.WriteFile(FILE_PATH_LITERAL("blank_iframe.html"),
+                  "<iframe id='frame0' src='about:blank'></iframe>");
 
-    dir->WriteFile(FILE_PATH_LITERAL("srcdoc_iframe.html"),
-                   "<iframe id='frame0' srcdoc='Hello world'></iframe>");
+    dir.WriteFile(FILE_PATH_LITERAL("srcdoc_iframe.html"),
+                  "<iframe id='frame0' srcdoc='Hello world'></iframe>");
 
-    dir->WriteFile(FILE_PATH_LITERAL("two_iframes.html"),
-                   "<iframe id='frame1' src='empty.html'></iframe>"
-                   "<iframe id='frame2' src='empty.html'></iframe>");
+    dir.WriteFile(FILE_PATH_LITERAL("two_iframes.html"),
+                  "<iframe id='frame1' src='empty.html'></iframe>"
+                  "<iframe id='frame2' src='empty.html'></iframe>");
 
-    dir->WriteFile(FILE_PATH_LITERAL("sandboxed.html"), "Some sandboxed page");
+    dir.WriteFile(FILE_PATH_LITERAL("sandboxed.html"), "Some sandboxed page");
 
-    dir->WriteFile(FILE_PATH_LITERAL("empty.html"), "");
+    dir.WriteFile(FILE_PATH_LITERAL("empty.html"), "");
 
-    dir->WriteManifest(manifest.ToJSON());
+    dir.WriteManifest(manifest.ToJSON());
 
-    const Extension* extension = LoadExtension(dir->UnpackedPath());
+    const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
     temp_dirs_.push_back(std::move(dir));
     return extension;
@@ -299,7 +299,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
+  std::vector<TestExtensionDir> temp_dirs_;
   base::test::ScopedFeatureList disabled_feature_list_;
 };
 

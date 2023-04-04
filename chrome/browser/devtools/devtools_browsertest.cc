@@ -4,8 +4,8 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <memory>
-#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
@@ -573,15 +573,14 @@ class DevToolsExtensionTest : public DevToolsTest {
   // listed as a devtools_page in the manifest.  If |devtools_page| is empty, a
   // non-devtools extension is created instead. |panel_iframe_src| controls the
   // src= attribute of the <iframe> element in the 'panel.html' test page.
-  extensions::TestExtensionDir* BuildExtensionForTest(
+  extensions::TestExtensionDir& BuildExtensionForTest(
       const std::string& name,
       const std::string& devtools_page,
       const std::string& panel_iframe_src) {
-    test_extension_dirs_.push_back(
-        std::make_unique<extensions::TestExtensionDir>());
-    extensions::TestExtensionDir* dir = test_extension_dirs_.back().get();
+    test_extension_dirs_.emplace_back();
+    extensions::TestExtensionDir& dir = test_extension_dirs_.back();
 
-    dir->WriteManifest(BuildExtensionManifest(name, devtools_page));
+    dir.WriteManifest(BuildExtensionManifest(name, devtools_page));
 
     GURL http_frame_url =
         embedded_test_server()->GetURL("a.com", "/popup_iframe.html");
@@ -589,36 +588,36 @@ class DevToolsExtensionTest : public DevToolsTest {
     // If this is a devtools extension, |devtools_page| will indicate which of
     // these devtools_pages will end up being used.  Different tests use
     // different devtools_pages.
-    dir->WriteFile(FILE_PATH_LITERAL("web_devtools_page.html"),
-                   "<html><body><iframe src='" + http_frame_url.spec() +
-                       "'></iframe></body></html>");
+    dir.WriteFile(FILE_PATH_LITERAL("web_devtools_page.html"),
+                  "<html><body><iframe src='" + http_frame_url.spec() +
+                      "'></iframe></body></html>");
 
-    dir->WriteFile(FILE_PATH_LITERAL("simple_devtools_page.html"),
-                   "<html><body></body></html>");
+    dir.WriteFile(FILE_PATH_LITERAL("simple_devtools_page.html"),
+                  "<html><body></body></html>");
 
-    dir->WriteFile(
+    dir.WriteFile(
         FILE_PATH_LITERAL("panel_devtools_page.html"),
         "<html><head><script "
         "src='panel_devtools_page.js'></script></head><body></body></html>");
 
-    dir->WriteFile(FILE_PATH_LITERAL("panel_devtools_page.js"),
-                   "chrome.devtools.panels.create('iframe_panel',\n"
-                   "    null,\n"
-                   "    'panel.html',\n"
-                   "    function(panel) {\n"
-                   "      chrome.devtools.inspectedWindow.eval(\n"
-                   "        'console.log(\"PASS\")');\n"
-                   "    }\n"
-                   ");\n");
+    dir.WriteFile(FILE_PATH_LITERAL("panel_devtools_page.js"),
+                  "chrome.devtools.panels.create('iframe_panel',\n"
+                  "    null,\n"
+                  "    'panel.html',\n"
+                  "    function(panel) {\n"
+                  "      chrome.devtools.inspectedWindow.eval(\n"
+                  "        'console.log(\"PASS\")');\n"
+                  "    }\n"
+                  ");\n");
 
-    dir->WriteFile(FILE_PATH_LITERAL("source.map"),
-                   R"({"version":3,"sources":["foo.js"],"mappings":"AAyCAA"})");
+    dir.WriteFile(FILE_PATH_LITERAL("source.map"),
+                  R"({"version":3,"sources":["foo.js"],"mappings":"AAyCAA"})");
 
-    dir->WriteFile(FILE_PATH_LITERAL("sidebarpane_devtools_page.html"),
-                   "<html><head><script src='sidebarpane_devtools_page.js'>"
-                   "</script></head><body></body></html>");
+    dir.WriteFile(FILE_PATH_LITERAL("sidebarpane_devtools_page.html"),
+                  "<html><head><script src='sidebarpane_devtools_page.js'>"
+                  "</script></head><body></body></html>");
 
-    dir->WriteFile(
+    dir.WriteFile(
         FILE_PATH_LITERAL("sidebarpane_devtools_page.js"),
         "chrome.devtools.panels.elements.createSidebarPane('iframe_pane',\n"
         "    function(sidebar) {\n"
@@ -628,20 +627,20 @@ class DevToolsExtensionTest : public DevToolsTest {
         "    }\n"
         ");\n");
 
-    dir->WriteFile(FILE_PATH_LITERAL("panel.html"),
-                   "<html><body><iframe src='" + panel_iframe_src +
-                       "'></iframe></body></html>");
+    dir.WriteFile(FILE_PATH_LITERAL("panel.html"),
+                  "<html><body><iframe src='" + panel_iframe_src +
+                      "'></iframe></body></html>");
 
-    dir->WriteFile(FILE_PATH_LITERAL("simple_test_page.html"),
-                   "<html><body>This is a test</body></html>");
+    dir.WriteFile(FILE_PATH_LITERAL("simple_test_page.html"),
+                  "<html><body>This is a test</body></html>");
 
     GURL web_url = embedded_test_server()->GetURL("a.com", "/title3.html");
 
-    dir->WriteFile(FILE_PATH_LITERAL("multi_frame_page.html"),
-                   "<html><body><iframe src='about:blank'>"
-                   "</iframe><iframe src='data:text/html,foo'>"
-                   "</iframe><iframe src='" +
-                       web_url.spec() + "'></iframe></body></html>");
+    dir.WriteFile(FILE_PATH_LITERAL("multi_frame_page.html"),
+                  "<html><body><iframe src='about:blank'>"
+                  "</iframe><iframe src='data:text/html,foo'>"
+                  "</iframe><iframe src='" +
+                      web_url.spec() + "'></iframe></body></html>");
     return dir;
   }
 
@@ -650,9 +649,9 @@ class DevToolsExtensionTest : public DevToolsTest {
   const Extension* LoadExtensionForTest(const std::string& name,
                                         const std::string& devtools_page,
                                         const std::string& panel_iframe_src) {
-    extensions::TestExtensionDir* dir =
+    extensions::TestExtensionDir& dir =
         BuildExtensionForTest(name, devtools_page, panel_iframe_src);
-    return LoadExtensionFromPath(dir->UnpackedPath());
+    return LoadExtensionFromPath(dir.UnpackedPath());
   }
 
   std::string BuildComponentExtension() {
@@ -664,14 +663,14 @@ class DevToolsExtensionTest : public DevToolsTest {
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(browser()->profile());
 
-    extensions::TestExtensionDir* extension_dir =
+    extensions::TestExtensionDir& extension_dir =
         BuildExtensionForTest("Component extension", "" /* devtools_page */,
                               "" /* panel_iframe_src */);
     std::string manifest = BuildExtensionManifest(
         "Component extension", "" /* devtools_page */, kPublicKey);
     component_loader->set_ignore_allowlist_for_testing(true);
     std::string extension_id =
-        component_loader->Add(manifest, extension_dir->UnpackedPath());
+        component_loader->Add(manifest, extension_dir.UnpackedPath());
     EXPECT_TRUE(extension_registry->enabled_extensions().GetByID(extension_id));
     return extension_id;
   }
@@ -691,8 +690,8 @@ class DevToolsExtensionTest : public DevToolsTest {
     return nullptr;
   }
 
-  std::vector<std::unique_ptr<extensions::TestExtensionDir>>
-      test_extension_dirs_;
+  // Use std::deque to avoid dangling references to existing elements.
+  std::deque<extensions::TestExtensionDir> test_extension_dirs_;
   const base::FilePath test_extensions_dir_;
 };
 

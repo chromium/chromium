@@ -169,7 +169,7 @@ testing::AssertionResult RequestContentScriptAPITest::CreateAndLoadExtension(
       kBackgroundScriptSource,
       kScriptMatchers[script_matcher]);
 
-  std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir);
+  auto dir = std::make_unique<TestExtensionDir>();
   dir->WriteManifest(manifest);
   dir->WriteFile(FILE_PATH_LITERAL("background.js"), background_src);
   dir->WriteFile(FILE_PATH_LITERAL("script.js"),

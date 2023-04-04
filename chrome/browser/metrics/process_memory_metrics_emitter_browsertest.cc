@@ -515,7 +515,7 @@ class ProcessMemoryMetricsEmitterTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Create an barebones extension with a background page for the given name.
   const Extension* CreateExtension(const std::string& name) {
-    auto dir = std::make_unique<TestExtensionDir>();
+    TestExtensionDir dir;
     constexpr char kManifestTemplate[] =
         R"({
              "name": "%s",
@@ -523,10 +523,10 @@ class ProcessMemoryMetricsEmitterTest
              "manifest_version": 2,
              "background": {"page": "bg.html"}
            })";
-    dir->WriteManifest(base::StringPrintf(kManifestTemplate, name.c_str()));
-    dir->WriteFile(FILE_PATH_LITERAL("bg.html"), "");
+    dir.WriteManifest(base::StringPrintf(kManifestTemplate, name.c_str()));
+    dir.WriteFile(FILE_PATH_LITERAL("bg.html"), "");
 
-    const Extension* extension = LoadExtension(dir->UnpackedPath());
+    const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
     temp_dirs_.push_back(std::move(dir));
     return extension;
@@ -534,7 +534,7 @@ class ProcessMemoryMetricsEmitterTest
 
   const Extension* CreateHostedApp(const std::string& name,
                                    const GURL& app_url) {
-    auto dir = std::make_unique<TestExtensionDir>();
+    TestExtensionDir dir;
     constexpr char kManifestTemplate[] =
         R"({
              "name": "%s",
@@ -542,11 +542,11 @@ class ProcessMemoryMetricsEmitterTest
              "manifest_version": 2,
              "app": {"urls": ["%s"], "launch": {"web_url": "%s"}}
            })";
-    dir->WriteManifest(base::StringPrintf(kManifestTemplate, name.c_str(),
-                                          app_url.spec().c_str(),
-                                          app_url.spec().c_str()));
+    dir.WriteManifest(base::StringPrintf(kManifestTemplate, name.c_str(),
+                                         app_url.spec().c_str(),
+                                         app_url.spec().c_str()));
 
-    const Extension* extension = LoadExtension(dir->UnpackedPath());
+    const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
     temp_dirs_.push_back(std::move(dir));
     return extension;
@@ -557,7 +557,7 @@ class ProcessMemoryMetricsEmitterTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
+  std::vector<TestExtensionDir> temp_dirs_;
 #endif
 };
 

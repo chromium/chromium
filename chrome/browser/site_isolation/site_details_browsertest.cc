@@ -195,7 +195,7 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
   // resources and, optionally, a background process.
   const Extension* CreateExtension(const std::string& name,
                                    bool has_background_process) {
-    std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir);
+    TestExtensionDir dir;
 
     DictionaryBuilder manifest;
     manifest.Set("name", name)
@@ -213,15 +213,15 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
           DictionaryBuilder()
               .Set("scripts", ListBuilder().Append("script.js").Build())
               .Build());
-      dir->WriteFile(FILE_PATH_LITERAL("script.js"),
-                     "console.log('" + name + " running');");
+      dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                    "console.log('" + name + " running');");
     }
 
-    dir->WriteFile(FILE_PATH_LITERAL("blank_iframe.html"),
-                   base::StringPrintf("<html><body>%s, blank iframe:"
-                                      "  <iframe width=80 height=80></iframe>"
-                                      "</body></html>",
-                                      name.c_str()));
+    dir.WriteFile(FILE_PATH_LITERAL("blank_iframe.html"),
+                  base::StringPrintf("<html><body>%s, blank iframe:"
+                                     "  <iframe width=80 height=80></iframe>"
+                                     "</body></html>",
+                                     name.c_str()));
     std::string iframe_url =
         embedded_test_server()
             ->GetURL("w.com", "/cross_site_iframe_factory.html?w")
@@ -230,22 +230,22 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
         embedded_test_server()
             ->GetURL("x.com", "/cross_site_iframe_factory.html?x")
             .spec();
-    dir->WriteFile(
+    dir.WriteFile(
         FILE_PATH_LITERAL("http_iframe.html"),
         base::StringPrintf("<html><body>%s, http:// iframe:"
                            "  <iframe width=80 height=80 src='%s'></iframe>"
                            "</body></html>",
                            name.c_str(), iframe_url.c_str()));
-    dir->WriteFile(FILE_PATH_LITERAL("two_http_iframes.html"),
-                   base::StringPrintf(
-                       "<html><body>%s, two http:// iframes:"
-                       "  <iframe width=80 height=80 src='%s'></iframe>"
-                       "  <iframe width=80 height=80 src='%s'></iframe>"
-                       "</body></html>",
-                       name.c_str(), iframe_url.c_str(), iframe_url2.c_str()));
-    dir->WriteManifest(manifest.ToJSON());
+    dir.WriteFile(FILE_PATH_LITERAL("two_http_iframes.html"),
+                  base::StringPrintf(
+                      "<html><body>%s, two http:// iframes:"
+                      "  <iframe width=80 height=80 src='%s'></iframe>"
+                      "  <iframe width=80 height=80 src='%s'></iframe>"
+                      "</body></html>",
+                      name.c_str(), iframe_url.c_str(), iframe_url2.c_str()));
+    dir.WriteManifest(manifest.ToJSON());
 
-    const Extension* extension = LoadExtension(dir->UnpackedPath());
+    const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
     temp_dirs_.push_back(std::move(dir));
     return extension;
@@ -253,7 +253,7 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
 
   const Extension* CreateHostedApp(const std::string& name,
                                    const GURL& app_url) {
-    std::unique_ptr<TestExtensionDir> dir(new TestExtensionDir);
+    TestExtensionDir dir;
 
     DictionaryBuilder manifest;
     manifest.Set("name", name)
@@ -266,9 +266,9 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
                 .Set("launch",
                      DictionaryBuilder().Set("web_url", app_url.spec()).Build())
                 .Build());
-    dir->WriteManifest(manifest.ToJSON());
+    dir.WriteManifest(manifest.ToJSON());
 
-    const Extension* extension = LoadExtension(dir->UnpackedPath());
+    const Extension* extension = LoadExtension(dir.UnpackedPath());
     EXPECT_TRUE(extension);
     temp_dirs_.push_back(std::move(dir));
     return extension;
@@ -293,7 +293,7 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
  private:
-  std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
+  std::vector<TestExtensionDir> temp_dirs_;
 };
 
 // Test the accuracy of SiteDetails process estimation, in the presence of

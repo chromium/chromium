@@ -49,22 +49,22 @@ class TestAPITest : public ExtensionApiTest {
                                                   ContextType context_type,
                                                   int manifest_version);
 
-  std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
+  std::vector<TestExtensionDir> test_dirs_;
 };
 
 const Extension* TestAPITest::LoadExtensionScriptWithContext(
     const char* background_script,
     ContextType context_type,
     int manifest_version = 2) {
-  auto test_dir = std::make_unique<TestExtensionDir>();
+  TestExtensionDir test_dir;
   const char* background_value = context_type == ContextType::kServiceWorker
                                      ? kServiceWorkerBackground
                                      : kPersistentBackground;
   const std::string manifest =
       base::StringPrintf(kManifestStub, manifest_version, background_value);
-  test_dir->WriteManifest(manifest);
-  test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), background_script);
-  const Extension* extension = LoadExtension(test_dir->UnpackedPath());
+  test_dir.WriteManifest(manifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_script);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   test_dirs_.push_back(std::move(test_dir));
   return extension;
 }
