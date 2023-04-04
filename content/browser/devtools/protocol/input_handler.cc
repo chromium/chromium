@@ -1022,6 +1022,8 @@ void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,
                                  .Build());
 }
 
+void InputHandler::DragEnded() {}
+
 Response InputHandler::SetInterceptDrags(bool enabled) {
   intercept_drags_ = enabled;
   return Response::Success();

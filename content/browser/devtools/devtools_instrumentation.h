@@ -72,11 +72,9 @@ class WebContents;
 
 struct SignedExchangeError;
 
-namespace protocol {
-namespace Audits {
+namespace protocol::Audits {
 class InspectorIssue;
-}  // namespace Audits
-}  // namespace protocol
+}  // namespace protocol::Audits
 
 namespace devtools_instrumentation {
 
@@ -278,6 +276,8 @@ void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
                        bool* intercepted);
+
+void DragEnded(FrameTreeNode& node);
 
 // Asks any interested agents to handle the given certificate error. Returns
 // |true| if the error was handled, |false| otherwise.

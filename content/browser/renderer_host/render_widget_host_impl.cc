@@ -2016,17 +2016,26 @@ void RenderWidgetHostImpl::DragSourceEndedAt(const gfx::PointF& client_point,
                                              ui::mojom::DragOperation operation,
                                              base::OnceClosure callback) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
-  if (blink_frame_widget_) {
-    blink_frame_widget_->DragSourceEndedAt(
-        ConvertWindowPointToViewport(client_point), screen_point, operation,
-        std::move(callback));
+  if (!blink_frame_widget_) {
+    return;
+  }
+  blink_frame_widget_->DragSourceEndedAt(
+      ConvertWindowPointToViewport(client_point), screen_point, operation,
+      std::move(callback));
+  if (frame_tree_) {
+    devtools_instrumentation::DragEnded(*frame_tree_->root());
   }
 }
 
 void RenderWidgetHostImpl::DragSourceSystemDragEnded() {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
-  if (blink_frame_widget_)
-    blink_frame_widget_->DragSourceSystemDragEnded();
+  if (!blink_frame_widget_) {
+    return;
+  }
+  blink_frame_widget_->DragSourceSystemDragEnded();
+  if (frame_tree_) {
+    devtools_instrumentation::DragEnded(*frame_tree_->root());
+  }
 }
 
 void RenderWidgetHostImpl::FilterDropData(DropData* drop_data) {

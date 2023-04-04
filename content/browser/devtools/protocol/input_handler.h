@@ -51,6 +51,14 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   void StartDragging(const blink::mojom::DragData& drag_data,
                      blink::DragOperationsMask drag_operations_mask,
                      bool* intercepted);
+  // DragEnded is used to inform CDP's InputHandler when a drag has ended. This
+  // can occur in two situations:
+  //
+  //  1. because of CDP (this will be implemented in another CL) and
+  //  2. because of an external source such as an external interaction to the OS
+  //     by a user.
+  //
+  void DragEnded();
 
   Response Disable() override;
 
