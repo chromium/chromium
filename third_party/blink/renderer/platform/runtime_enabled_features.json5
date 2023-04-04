@@ -1160,6 +1160,7 @@
     // `white-space` as a shorthand. crbug.com/1417543
     {
       name: "CSSWhiteSpaceShorthand",
+      status: "test",
       depends_on: ["CSSTextWrap"],
     },
     {

@@ -410,7 +410,7 @@ All changes to this list should go through Blink's feature review process: http:
     view-timeline-name
     view-transition-name
     visibility
-    white-space
+    white-space-collapse
     widows
     width
     will-change
@@ -797,6 +797,9 @@ All changes to this list should go through Blink's feature review process: http:
     view-timeline
         view-timeline-axis
         view-timeline-name
+    white-space
+        text-wrap
+        white-space-collapse
 
 [ALIASES]
     -epub-caption-side

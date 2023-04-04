@@ -629,6 +629,7 @@ webkitUserModify
 webkitUserSelect
 webkitWritingMode
 whiteSpace
+whiteSpaceCollapse
 widows
 width
 willChange

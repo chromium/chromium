@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 281 tests; 268 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 281 tests; 269 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testAccumulation function
 PASS isolation: "isolate" onto "auto"
@@ -216,7 +216,7 @@ PASS text-transform (type: discrete) has testAccumulation function
 PASS text-transform: "uppercase" onto "capitalize"
 PASS text-transform: "capitalize" onto "uppercase"
 PASS text-wrap (type: discrete) has testAccumulation function
-FAIL text-wrap: "nowrap" onto "wrap" assert_equals: The value should be nowrap at 0ms expected "nowrap" but got "wrap"
+PASS text-wrap: "nowrap" onto "wrap"
 PASS text-wrap: "wrap" onto "nowrap"
 PASS touch-action (type: discrete) has testAccumulation function
 PASS touch-action: "none" onto "auto"
