@@ -10,7 +10,7 @@
 // from Chrome, the associated ID will remain and be marked as obsolete.
 //
 // Automatically generate a corresponding Java enum:
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.omnibox.action
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox.action
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxPedalType
 enum class OmniboxPedalId {
   NONE = 0,

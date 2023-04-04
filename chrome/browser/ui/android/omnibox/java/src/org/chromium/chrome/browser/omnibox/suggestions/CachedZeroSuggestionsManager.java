@@ -26,13 +26,13 @@ import androidx.collection.ArraySet;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;

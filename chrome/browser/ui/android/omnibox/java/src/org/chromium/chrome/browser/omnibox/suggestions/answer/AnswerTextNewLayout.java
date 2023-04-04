@@ -11,11 +11,11 @@ import android.text.style.TextAppearanceSpan;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestionAnswer;
 
 /**

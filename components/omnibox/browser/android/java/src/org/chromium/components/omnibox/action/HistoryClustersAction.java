@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.R;
 
 /**

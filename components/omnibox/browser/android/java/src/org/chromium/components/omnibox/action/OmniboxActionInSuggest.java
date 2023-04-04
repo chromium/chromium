@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.R;
 

@@ -9,9 +9,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
-import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.action.OmniboxPedalType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
