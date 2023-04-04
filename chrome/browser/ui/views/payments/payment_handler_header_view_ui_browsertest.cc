@@ -210,7 +210,9 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
 
 // Test that the header and dialog heights are consistent with when there is no
 // title.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, ConsistentHeaderHeight) {
+// Flakily failing: https://crbug.com/1430351
+IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
+                       DISABLED_ConsistentHeaderHeight) {
   // Install a payment app that will open a window.
   std::string method_name;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
