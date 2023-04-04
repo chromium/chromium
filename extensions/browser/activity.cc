@@ -29,6 +29,8 @@ const char* Activity::ToString(Type type) {
       return "LIFECYCLE_MANAGEMENT";
     case MEDIA:
       return "MEDIA";
+    case MESSAGE:
+      return "MESSAGE";
     case MESSAGE_PORT:
       return "MESSAGE_PORT";
     case MODAL_DIALOG:

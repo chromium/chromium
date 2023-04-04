@@ -181,4 +181,25 @@ bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
          content::EmbeddedWorkerStatus::RUNNING;
 }
 
+bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
+                                 int64_t service_worker_version_id) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  if (!service_worker_version) {
+    return false;
+  }
+  return service_worker_version->running_status() ==
+         content::EmbeddedWorkerStatus::RUNNING;
+}
+
+void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,
+                               int64_t service_worker_version_id,
+                               base::TimeDelta delta) {
+  ServiceWorkerVersion* service_worker_version =
+      static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
+          service_worker_version_id);
+  service_worker_version->endpoint()->SetIdleDelay(delta);
+}
+
 }  // namespace content

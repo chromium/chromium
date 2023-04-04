@@ -310,20 +310,34 @@ void ExtensionMessagePort::DispatchOnDisconnect(
 }
 
 void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
+  // We increment activity for every message that passes through the channel.
+  // This is important for long-lived ports, which only keep an extension
+  // alive so long as they are being actively used.
+  IncrementLazyKeepaliveCount(Activity::MESSAGE);
   // Since we are now receiving a message, we can mark any asynchronous reply
   // that may have been pending for this port as no longer pending.
   asynchronous_reply_pending_ = false;
   SendToPort(base::BindRepeating(&ExtensionMessagePort::BuildDeliverMessageIPC,
                                  // Called synchronously.
                                  base::Unretained(this), message));
+  DecrementLazyKeepaliveCount(Activity::MESSAGE);
 }
 
-void ExtensionMessagePort::IncrementLazyKeepaliveCount() {
+void ExtensionMessagePort::IncrementLazyKeepaliveCount(
+    Activity::Type activity_type) {
   ProcessManager* pm = ProcessManager::Get(browser_context_);
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id_);
   if (host && BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
-    pm->IncrementLazyKeepaliveCount(host->extension(), Activity::MESSAGE_PORT,
+    pm->IncrementLazyKeepaliveCount(host->extension(), activity_type,
                                     PortIdToString(port_id_));
+  }
+
+  // Keep track of the background host, so when we decrement, we only do so if
+  // the host hasn't reloaded.
+  background_host_ptr_ = host;
+
+  if (!IsServiceWorkerActivity(activity_type)) {
+    return;
   }
 
   // Increment keepalive count for service workers of the extension managed by
@@ -337,22 +351,23 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount() {
         should_have_strong_keepalive()
             ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
             : content::ServiceWorkerExternalRequestTimeoutType::kDefault,
-        Activity::MESSAGE_PORT, PortIdToString(port_id_));
+        activity_type, PortIdToString(port_id_));
     if (!request_uuid.empty())
       pending_keepalive_uuids_[worker_id].push_back(request_uuid);
   }
-
-  // Keep track of the background host, so when we decrement, we only do so if
-  // the host hasn't reloaded.
-  background_host_ptr_ = host;
 }
 
-void ExtensionMessagePort::DecrementLazyKeepaliveCount() {
+void ExtensionMessagePort::DecrementLazyKeepaliveCount(
+    Activity::Type activity_type) {
   ProcessManager* pm = ProcessManager::Get(browser_context_);
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id_);
   if (host && host == background_host_ptr_) {
-    pm->DecrementLazyKeepaliveCount(host->extension(), Activity::MESSAGE_PORT,
+    pm->DecrementLazyKeepaliveCount(host->extension(), activity_type,
                                     PortIdToString(port_id_));
+    return;
+  }
+
+  if (!IsServiceWorkerActivity(activity_type)) {
     return;
   }
 
@@ -370,9 +385,8 @@ void ExtensionMessagePort::DecrementLazyKeepaliveCount() {
     }
     std::string request_uuid = std::move(iter->second.back());
     iter->second.pop_back();
-    pm->DecrementServiceWorkerKeepaliveCount(worker_id, request_uuid,
-                                             Activity::MESSAGE_PORT,
-                                             PortIdToString(port_id_));
+    pm->DecrementServiceWorkerKeepaliveCount(
+        worker_id, request_uuid, activity_type, PortIdToString(port_id_));
   }
 }
 
@@ -588,6 +602,23 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDeliverMessageIPC(
     const IPCTarget& target) {
   return std::make_unique<ExtensionMsg_DeliverMessage>(
       MSG_ROUTING_NONE, target.worker_thread_id, port_id_, message);
+}
+
+bool ExtensionMessagePort::IsServiceWorkerActivity(
+    Activity::Type activity_type) {
+  switch (activity_type) {
+    case Activity::MESSAGE:
+      return true;
+    case Activity::MESSAGE_PORT:
+      // long-lived  message channels (such as through runtime.connect()) only
+      // increment keepalive when a message is sent so that a port doesn't count
+      // as a single, long-running task.
+      return is_for_onetime_channel() || should_have_strong_keepalive();
+    default:
+      // Extension message port should not check for other activity types.
+      NOTREACHED();
+      return false;
+  }
 }
 
 }  // namespace extensions
