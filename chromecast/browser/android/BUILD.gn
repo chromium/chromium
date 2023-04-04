@@ -178,6 +178,7 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/TaskRemovedMonitorService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
 ]
 
@@ -241,6 +242,7 @@ robolectric_binary("cast_shell_junit_tests") {
     "junit/src/org/chromium/chromecast/shell/HandlerSchedulerTest.java",
     "junit/src/org/chromium/chromecast/shell/LocalBroadcastReceiverScopeTest.java",
     "junit/src/org/chromium/chromecast/shell/LogcatElisionUnitTest.java",
+    "junit/src/org/chromium/chromecast/shell/TaskRemovedMonitorServiceTest.java",
   ]
 
   srcjar_deps = [ ":cast_shell_build_config_gen" ]
