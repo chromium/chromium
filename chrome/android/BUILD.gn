@@ -2896,12 +2896,10 @@ if (current_toolchain == default_toolchain) {
     testonly = true
     sources =
         [ "javatests/src/org/chromium/chrome/test/smoke/ChromeSmokeTest.java" ]
-    data = [ "javatests/src/org/chromium/chrome/test/smoke/test.html" ]
     deps = [
       "//base:base_java_test_support",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//content/public/test/android:content_java_test_support",
-      "//net/android:net_java_test_support",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
@@ -2921,7 +2919,6 @@ if (current_toolchain == default_toolchain) {
   instrumentation_test_runner("chrome_public_smoke_test") {
     apk_under_test = ":chrome_public_apk"
     android_test_apk = ":chrome_smoke_test_apk"
-    additional_apks = [ "//net/android:net_test_support_apk" ]
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
     }
@@ -2946,7 +2943,6 @@ if (current_toolchain == default_toolchain) {
       }
     }
     android_test_apk = ":chrome_smoke_test_apk"
-    additional_apks = [ "//net/android:net_test_support_apk" ]
     never_incremental = true
     extra_args = _common_smoke_test_args
   }
