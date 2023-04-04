@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_SB_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_SB_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_H_
 
 #include <string>
 
@@ -21,28 +21,21 @@ class Clock;
 
 namespace safe_browsing {
 
-// This is a placeholder class to compile the new client files.
-// TODO(crbug.com/1322599): Rename the class name back to
-// PasswordReuseDetectionManager and delete the obsolete files in the password
-// manager directory.
-
 // TODO(https://crbug.com/1422140): Refactor the
 // password_reuse_detection_manager files. Class for managing password reuse
 // detection. Now it receives keystrokes and does nothing with them.
-// TODO(crbug.com/657041): write other features of this class when they are
-// implemented. This class is one per-tab.
-class PasswordReuseDetectionManagerSB
+// PasswordReuseDetectionManager is instantiated once one per WebContents.
+class PasswordReuseDetectionManager
     : public password_manager::PasswordReuseDetectorConsumer {
  public:
-  explicit PasswordReuseDetectionManagerSB(
+  explicit PasswordReuseDetectionManager(
       PasswordReuseDetectionManagerClient* client);
 
-  PasswordReuseDetectionManagerSB(const PasswordReuseDetectionManagerSB&) =
-      delete;
-  PasswordReuseDetectionManagerSB& operator=(
-      const PasswordReuseDetectionManagerSB&) = delete;
+  PasswordReuseDetectionManager(const PasswordReuseDetectionManager&) = delete;
+  PasswordReuseDetectionManager& operator=(
+      const PasswordReuseDetectionManager&) = delete;
 
-  ~PasswordReuseDetectionManagerSB() override;
+  ~PasswordReuseDetectionManager() override;
 
   // Updates members based on whether the user navigated to another main frame
   // or not.
@@ -100,4 +93,4 @@ class PasswordReuseDetectionManagerSB
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_SB_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_REUSE_DETECTION_MANAGER_H_

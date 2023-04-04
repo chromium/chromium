@@ -132,16 +132,6 @@ void StubPasswordManagerClient::CheckSafeBrowsingReputation(
     const GURL& frame_url) {}
 #endif
 
-void StubPasswordManagerClient::CheckProtectedPasswordEntry(
-    metrics_util::PasswordType reused_password_type,
-    const std::string& username,
-    const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-    bool password_field_exists,
-    uint64_t reused_password_hash,
-    const std::string& domain) {}
-
-void StubPasswordManagerClient::LogPasswordReuseDetectedEvent() {}
-
 ukm::SourceId StubPasswordManagerClient::GetUkmSourceId() {
   return ukm_source_id_;
 }

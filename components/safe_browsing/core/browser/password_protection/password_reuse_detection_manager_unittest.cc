@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_sb.h"
+#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,14 +60,14 @@ class MockPasswordReuseDetectionManagerClient
 #endif
 };
 
-class PasswordReuseDetectionManagerSBTest : public ::testing::Test {
+class PasswordReuseDetectionManagerTest : public ::testing::Test {
  public:
-  PasswordReuseDetectionManagerSBTest() = default;
+  PasswordReuseDetectionManagerTest() = default;
 
-  PasswordReuseDetectionManagerSBTest(
-      const PasswordReuseDetectionManagerSBTest&) = delete;
-  PasswordReuseDetectionManagerSBTest& operator=(
-      const PasswordReuseDetectionManagerSBTest&) = delete;
+  PasswordReuseDetectionManagerTest(const PasswordReuseDetectionManagerTest&) =
+      delete;
+  PasswordReuseDetectionManagerTest& operator=(
+      const PasswordReuseDetectionManagerTest&) = delete;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -77,7 +77,7 @@ class PasswordReuseDetectionManagerSBTest : public ::testing::Test {
 
 // Verify that CheckReuse is called on each key pressed event with an argument
 // equal to the last 30 keystrokes typed after the last main frame navigation.
-TEST_F(PasswordReuseDetectionManagerSBTest, CheckReuseCalled) {
+TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
   const GURL gurls[] = {GURL("https://www.example.com"),
                         GURL("https://www.otherexample.com")};
   const std::u16string input[] = {
@@ -86,7 +86,7 @@ TEST_F(PasswordReuseDetectionManagerSBTest, CheckReuseCalled) {
 
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   for (size_t test = 0; test < std::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
@@ -108,11 +108,11 @@ TEST_F(PasswordReuseDetectionManagerSBTest, CheckReuseCalled) {
 
 // Verify that the keystroke buffer is cleared after 10 seconds of user
 // inactivity.
-TEST_F(PasswordReuseDetectionManagerSBTest,
+TEST_F(PasswordReuseDetectionManagerTest,
        CheckThatBufferClearedAfterInactivity) {
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   base::SimpleTestClock clock;
   base::Time now = base::Time::Now();
@@ -130,10 +130,10 @@ TEST_F(PasswordReuseDetectionManagerSBTest,
 }
 
 // Verify that the keystroke buffer is cleared after user presses enter.
-TEST_F(PasswordReuseDetectionManagerSBTest, CheckThatBufferClearedAfterEnter) {
+TEST_F(PasswordReuseDetectionManagerTest, CheckThatBufferClearedAfterEnter) {
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   EXPECT_CALL(reuse_manager_, CheckReuse(std::u16string(u"1"), _, _));
   manager.OnKeyPressedCommitted(u"1");
@@ -149,10 +149,10 @@ TEST_F(PasswordReuseDetectionManagerSBTest, CheckThatBufferClearedAfterEnter) {
 
 // Verify that after reuse found, no reuse checking happens till next main frame
 // navigation.
-TEST_F(PasswordReuseDetectionManagerSBTest, NoReuseCheckingAfterReuseFound) {
+TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   // Simulate that reuse found.
   manager.OnReuseCheckDone(true, 0ul, absl::nullopt, {{"https://example.com"}},
@@ -169,10 +169,10 @@ TEST_F(PasswordReuseDetectionManagerSBTest, NoReuseCheckingAfterReuseFound) {
 }
 
 // Verify that keystroke buffer is cleared only on cross host navigation.
-TEST_F(PasswordReuseDetectionManagerSBTest, DidNavigateMainFrame) {
+TEST_F(PasswordReuseDetectionManagerTest, DidNavigateMainFrame) {
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   manager.DidNavigateMainFrame(GURL("https://www.example1.com/123"));
   EXPECT_CALL(reuse_manager_, CheckReuse(std::u16string(u"1"), _, _));
@@ -190,7 +190,7 @@ TEST_F(PasswordReuseDetectionManagerSBTest, DidNavigateMainFrame) {
 }
 
 // Verify that CheckReuse is called on a paste event.
-TEST_F(PasswordReuseDetectionManagerSBTest, CheckReuseCalledOnPaste) {
+TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
   const GURL gurls[] = {GURL("https://www.example.com"),
                         GURL("https://www.example.test")};
   const std::u16string input[] = {
@@ -199,7 +199,7 @@ TEST_F(PasswordReuseDetectionManagerSBTest, CheckReuseCalledOnPaste) {
 
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   for (size_t test = 0; test < std::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
@@ -217,14 +217,14 @@ TEST_F(PasswordReuseDetectionManagerSBTest, CheckReuseCalledOnPaste) {
   }
 }
 
-TEST_F(PasswordReuseDetectionManagerSBTest,
+TEST_F(PasswordReuseDetectionManagerTest,
        CheckReuseCalledOnPasteTwiceProduceNoDuplicates) {
   const GURL kURL("https://www.example.com");
   const std::u16string kInput = u"1234567890abcdefghijklmnopqrstuvxyz";
 
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
 
   manager.DidNavigateMainFrame(kURL);
   EXPECT_CALL(
@@ -253,11 +253,11 @@ TEST_F(PasswordReuseDetectionManagerSBTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordReuseDetectionManagerSBTest,
+TEST_F(PasswordReuseDetectionManagerTest,
        CheckReusedCalledWithUncommittedText) {
   EXPECT_CALL(client_, GetPasswordReuseManager())
       .WillRepeatedly(testing::Return(&reuse_manager_));
-  PasswordReuseDetectionManagerSB manager(&client_);
+  PasswordReuseDetectionManager manager(&client_);
   GURL test_url("https://www.example.com");
   manager.DidNavigateMainFrame(test_url);
 

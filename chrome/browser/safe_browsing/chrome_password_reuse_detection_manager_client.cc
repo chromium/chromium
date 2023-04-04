@@ -253,6 +253,16 @@ void ChromePasswordReuseDetectionManagerClient::PrimaryPageChanged(
                                  this);
 }
 
+void ChromePasswordReuseDetectionManagerClient::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  // TODO(https://crbug.com/1315689): In context of Phishguard, we should handle
+  // input events on subframes separately, so that we can accurately report that
+  // the password was reused on a subframe. Currently any password reuse for
+  // this WebContents will report password reuse on the main frame URL.
+  AddToWidgetInputEventObservers(render_frame_host->GetRenderWidgetHost(),
+                                 this);
+}
+
 void ChromePasswordReuseDetectionManagerClient::OnPaste() {
   std::u16string text;
   bool used_crosapi_workaround = false;

@@ -13,6 +13,7 @@
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -150,6 +151,9 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents,
       autofill::ContentAutofillClient::FromWebContents(web_contents));
+
+  // Create the password reuse detection manager for simple web view dialog.
+  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
 
   // Set this as the web modal delegate so that web dialog can appear.
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);

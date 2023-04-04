@@ -40,6 +40,7 @@
 #import "components/password_manager/ios/test_helpers.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -169,10 +170,14 @@ PasswordController* CreatePasswordController(
     password_manager::PasswordStoreInterface* store,
     MockPasswordManagerClient** weak_client) {
   auto client = std::make_unique<NiceMock<MockPasswordManagerClient>>(store);
+  auto reuse_detection_client = std::make_unique<
+      NiceMock<safe_browsing::StubPasswordReuseDetectionManagerClient>>();
   if (weak_client)
     *weak_client = client.get();
-  return [[PasswordController alloc] initWithWebState:web_state
-                                               client:std::move(client)];
+  return [[PasswordController alloc]
+          initWithWebState:web_state
+                    client:std::move(client)
+      reuseDetectionClient:std::move(reuse_detection_client)];
 }
 
 PasswordForm CreatePasswordForm(const char* origin_url,

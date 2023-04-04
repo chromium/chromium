@@ -21,6 +21,10 @@ class PasswordManagerClient;
 class PasswordManagerDriver;
 }  // namespace password_manager
 
+namespace safe_browsing {
+class PasswordReuseDetectionManagerClient;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -41,7 +45,9 @@ class AllPasswordsBottomSheetController
       password_manager::PasswordStoreInterface* store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type,
-      password_manager::PasswordManagerClient* client);
+      password_manager::PasswordManagerClient* client,
+      safe_browsing::PasswordReuseDetectionManagerClient*
+          password_reuse_detection_manager_client);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
@@ -110,9 +116,14 @@ class AllPasswordsBottomSheetController
   autofill::mojom::FocusedFieldType focused_field_type_;
 
   // The PasswordManagerClient associated with the current |web_contents_|.
-  // Used to tell `PasswordReuseDetectionManager` that a password has been
-  // reused.
+  // Used to get a pointer to a BiometricAuthenticator.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // The passwordReuseDetectionManagerClient associated with the current
+  // |web_contents_|. Used to tell `PasswordReuseDetectionManager` that a
+  // password has been reused.
+  raw_ptr<safe_browsing::PasswordReuseDetectionManagerClient>
+      password_reuse_detection_manager_client_ = nullptr;
 
   base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
       this};

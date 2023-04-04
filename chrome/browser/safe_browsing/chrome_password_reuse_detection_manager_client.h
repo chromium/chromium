@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
-#include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_sb.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -83,12 +83,13 @@ class ChromePasswordReuseDetectionManagerClient
 
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void OnPaste() override;
 
   // content::RenderWidgetHost::InputEventObserver overrides.
   void OnInputEvent(const blink::WebInputEvent&) override;
 
-  safe_browsing::PasswordReuseDetectionManagerSB
+  safe_browsing::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
   const raw_ptr<Profile> profile_;
 

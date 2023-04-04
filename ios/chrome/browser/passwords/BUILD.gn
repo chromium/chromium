@@ -59,6 +59,7 @@ source_set("passwords") {
     "//components/password_manager/ios:account_select_fill_data",
     "//components/prefs",
     "//components/safe_browsing/core/browser/password_protection",
+    "//components/safe_browsing/core/browser/password_protection:password_reuse_detection_manager_client",
     "//components/security_state/core",
     "//components/strings",
     "//components/sync",

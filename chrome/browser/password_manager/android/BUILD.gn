@@ -458,6 +458,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",
+    "//components/safe_browsing/core/browser/password_protection:test_support",
     "//components/security_state/core",
     "//components/strings:components_strings_grit",
     "//components/ukm:test_support",
