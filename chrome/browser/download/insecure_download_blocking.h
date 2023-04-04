@@ -31,6 +31,8 @@ const char* const kInsecureDownloadExtensionInitiatorInferredSecure =
     "InitiatorInferredSecure";
 const char* const kInsecureDownloadExtensionInitiatorInferredInsecure =
     "InitiatorInferredInsecure";
+const char* const kInsecureDownloadExtensionInitiatorInsecureNonUnique =
+    "InitiatorInsecureNonUnique";
 // Suffixes for histogram names.
 const char* const kInsecureDownloadHistogramTargetSecure = "DownloadSecure";
 const char* const kInsecureDownloadHistogramTargetInsecure = "DownloadInsecure";
@@ -50,7 +52,9 @@ enum class InsecureDownloadSecurityStatus {
   kInitiatorInferredInsecureFileSecure = 8,
   kInitiatorInferredInsecureFileInsecure = 9,
   kDownloadIgnored = 10,
-  kMaxValue = kDownloadIgnored,
+  kInitiatorInsecureNonUniqueFileSecure = 11,
+  kInitiatorInsecureNonUniqueFileInsecure = 12,
+  kMaxValue = kInitiatorInsecureNonUniqueFileInsecure,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and numeric

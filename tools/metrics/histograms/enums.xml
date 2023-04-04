@@ -52506,6 +52506,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9"
       label="Insecure download initiated by inferred-insecure source"/>
   <int value="10" label="Download ignored as not relevant for blocking"/>
+  <int value="11"
+      label="Insecure download initiated by insecure non-unique source"/>
+  <int value="12"
+      label="Secure download initiated by insecure non-unique source"/>
 </enum>
 
 <enum name="InsignificantPlaybackReason">

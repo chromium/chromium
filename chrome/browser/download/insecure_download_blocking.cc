@@ -20,6 +20,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -136,6 +137,16 @@ std::string GetDownloadBlockingExtensionMetricName(
           kInsecureDownloadHistogramTargetInsecure);
     case InsecureDownloadSecurityStatus::kDownloadIgnored:
       NOTREACHED();
+      break;
+    case InsecureDownloadSecurityStatus::kInitiatorInsecureNonUniqueFileSecure:
+      return GetDLBlockingHistogramName(
+          kInsecureDownloadExtensionInitiatorInsecureNonUnique,
+          kInsecureDownloadHistogramTargetSecure);
+    case InsecureDownloadSecurityStatus::
+        kInitiatorInsecureNonUniqueFileInsecure:
+      return GetDLBlockingHistogramName(
+          kInsecureDownloadExtensionInitiatorInsecureNonUnique,
+          kInsecureDownloadHistogramTargetInsecure);
   }
   NOTREACHED();
   return std::string();
@@ -144,12 +155,23 @@ std::string GetDownloadBlockingExtensionMetricName(
 // Get appropriate enum value for the initiator/download security state combo
 // for histogram reporting. |dl_secure| signifies whether the download was
 // a secure source. |inferred| is whether the initiator value is our best guess.
+// |insecure_nonunique| indicates whether the download was initiated by an
+// insecure non-unique hostname.
 InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
     absl::optional<url::Origin> initiator,
     bool dl_secure,
-    bool inferred) {
+    bool inferred,
+    bool insecure_nonunique) {
+  if (insecure_nonunique) {
+    if (dl_secure) {
+      return InsecureDownloadSecurityStatus::
+          kInitiatorInsecureNonUniqueFileSecure;
+    }
+    return InsecureDownloadSecurityStatus::
+        kInitiatorInsecureNonUniqueFileInsecure;
+  }
   if (inferred) {
-    if (initiator->GetURL().SchemeIsCryptographic()) {
+    if (network::IsUrlPotentiallyTrustworthy(initiator->GetURL())) {
       if (dl_secure) {
         return InsecureDownloadSecurityStatus::
             kInitiatorInferredSecureFileSecure;
@@ -172,7 +194,7 @@ InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
     return InsecureDownloadSecurityStatus::kInitiatorUnknownFileInsecure;
   }
 
-  if (initiator->GetURL().SchemeIsCryptographic()) {
+  if (network::IsUrlPotentiallyTrustworthy(initiator->GetURL())) {
     if (dl_secure)
       return InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure;
     return InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure;
@@ -229,6 +251,14 @@ struct InsecureDownloadData {
         (network::IsUrlPotentiallyTrustworthy(dl_url) ||
          dl_url.SchemeIsBlob() || dl_url.SchemeIsFile());
 
+    // Check if the initiator is insecure and non-unique.
+    bool insecure_nonunique = false;
+    if (initiator_.has_value() &&
+        !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL()) &&
+        net::IsHostnameNonUnique(initiator_->GetURL().host())) {
+      insecure_nonunique = true;
+    }
+
     // Configure mixed content status.
     // Some downloads don't qualify for blocking, and are thus never
     // mixed-content. At a minimum, this includes:
@@ -263,8 +293,9 @@ struct InsecureDownloadData {
       is_mixed_content_ = false;
     } else {  // Not ignorable download.
       // Record some metrics first.
-      auto security_status = GetDownloadBlockingEnum(
-          initiator_, download_delivered_securely, initiator_inferred);
+      auto security_status =
+          GetDownloadBlockingEnum(initiator_, download_delivered_securely,
+                                  initiator_inferred, insecure_nonunique);
       base::UmaHistogramEnumeration(
           GetDownloadBlockingExtensionMetricName(security_status),
           GetExtensionEnumFromString(extension_));
@@ -276,6 +307,8 @@ struct InsecureDownloadData {
                                                     item->GetUrlChain()),
           download::DownloadContentFromMimeType(item->GetMimeType(), false));
 
+      // Mixed downloads are those initiated by a secure initiator but not
+      // delivered securely.
       is_mixed_content_ = (initiator_.has_value() &&
                            initiator_->GetURL().SchemeIsCryptographic() &&
                            !download_delivered_securely);
@@ -298,9 +331,10 @@ struct InsecureDownloadData {
       // TODO(crbug.com/1352598): Add blocking metrics.
       // insecure downloads are either delivered insecurely, or we can't trust
       // who told us to download them (i.e. have an insecure initiator).
-      is_insecure_download_ = (initiator_.has_value() &&
-                               !initiator_->GetURL().SchemeIsCryptographic()) ||
-                              !download_delivered_securely;
+      is_insecure_download_ =
+          (initiator_.has_value() &&
+           !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL())) ||
+          !download_delivered_securely;
     }
   }
 
