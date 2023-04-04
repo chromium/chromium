@@ -80,13 +80,18 @@ VIZ_RESOURCE_FORMAT_EXPORT VkFormat ToVkFormat(ResourceFormat format);
 #endif
 
 // Gets the closest SkColorType for a given `format` and `plane_index`. For
-// single planar formats (eg. RGBA) the plane_index is not required and is
-// default to 0; in such cases the corresponding function with ResourceFormat is
-// called. For multiplanar formats a plane_index is required.
+// single planar formats (eg. RGBA) the plane_index can be set to 0 and the
+// corresponding function with ResourceFormat is called. For multiplanar formats
+// a plane_index is required.
 VIZ_RESOURCE_FORMAT_EXPORT SkColorType
 ToClosestSkColorType(bool gpu_compositing,
                      SharedImageFormat format,
-                     int plane_index = 0);
+                     int plane_index);
+
+// This should ideally be used for known single planar SharedImageFormats
+// which calls corresponding function with ResourceFormat.
+VIZ_RESOURCE_FORMAT_EXPORT SkColorType
+ToClosestSkColorType(bool gpu_compositing, SharedImageFormat format);
 
 }  // namespace viz
 
