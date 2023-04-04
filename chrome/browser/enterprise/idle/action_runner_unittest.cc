@@ -512,10 +512,7 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
       profile(),
       {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
        ActionType::kClearAutofill});
-  ASSERT_EQ(2u, actions.size());
-
-  ASSERT_EQ(-1, actions.top()->priority());  // ShowDialogAction
-  actions.pop();
+  ASSERT_EQ(1u, actions.size());
 
   // The callback should run with success=false.
   base::MockCallback<Action::Continuation> cb;

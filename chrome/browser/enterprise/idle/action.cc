@@ -181,7 +181,11 @@ class ClearBrowsingDataAction : public Action,
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
+#if BUILDFLAG(IS_ANDROID)
     return true;
+#else
+    return profile && ProfileHasBrowsers(profile);
+#endif
   }
 
   // content::BrowsingDataRemoverObserver::Observer:
