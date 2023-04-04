@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
@@ -30,6 +31,7 @@ struct ForceTouchpadSettingPersistence {
   bool scroll_acceleration = false;
   bool haptic_sensitivity = false;
   bool haptic_enabled = false;
+  bool three_finger_click_enabled = false;
 };
 
 mojom::TouchpadSettingsPtr GetDefaultTouchpadSettings() {
@@ -176,15 +178,6 @@ mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
   return settings;
 }
 
-bool ExistingSettingsHasValue(base::StringPiece setting_key,
-                              const base::Value::Dict* existing_settings_dict) {
-  if (!existing_settings_dict) {
-    return false;
-  }
-
-  return existing_settings_dict->Find(setting_key) != nullptr;
-}
-
 void UpdateTouchpadSettingsImpl(
     PrefService* pref_service,
     const mojom::Touchpad& touchpad,
@@ -199,88 +192,82 @@ void UpdateTouchpadSettingsImpl(
   // Populate `settings_dict` with all settings in `settings`.
   base::Value::Dict settings_dict;
 
-  // Settings should only be persisted if one or more of the following is true:
-  // - Setting was previously persisted to storage
-  // - `force_persistence` requires the setting to be persisted, this means this
-  //   device is being transitioned from the old global settings to per-device
-  //   settings and the user specified the specific value for this setting.
-  // - Setting is different than the default, which means the user manually
-  //   changed the value.
-
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingSensitivity,
-                               existing_settings_dict) ||
-      force_persistence.sensitivity ||
-      settings.sensitivity != kDefaultSensitivity) {
+  if (ShouldPersistSetting(prefs::kTouchpadSettingSensitivity,
+                           static_cast<int>(settings.sensitivity),
+                           kDefaultSensitivity, force_persistence.sensitivity,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingSensitivity, settings.sensitivity);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingReverseScrolling,
-                               existing_settings_dict) ||
-      force_persistence.reverse_scrolling ||
-      settings.reverse_scrolling != kDefaultReverseScrolling) {
+  if (ShouldPersistSetting(prefs::kTouchpadSettingReverseScrolling,
+                           settings.reverse_scrolling, kDefaultReverseScrolling,
+                           force_persistence.reverse_scrolling,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingReverseScrolling,
                       settings.reverse_scrolling);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingAccelerationEnabled,
-                               existing_settings_dict) ||
-      force_persistence.acceleration_enabled ||
-      settings.acceleration_enabled != kDefaultAccelerationEnabled) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingAccelerationEnabled,
+          settings.acceleration_enabled, kDefaultAccelerationEnabled,
+          force_persistence.acceleration_enabled, existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingAccelerationEnabled,
                       settings.acceleration_enabled);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingScrollSensitivity,
-                               existing_settings_dict) ||
-      force_persistence.scroll_sensitivity ||
-      settings.scroll_sensitivity != kDefaultSensitivity) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingScrollSensitivity,
+          static_cast<int>(settings.scroll_sensitivity), kDefaultSensitivity,
+          force_persistence.scroll_sensitivity, existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingScrollSensitivity,
                       settings.scroll_sensitivity);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingScrollAcceleration,
-                               existing_settings_dict) ||
-      force_persistence.scroll_acceleration ||
-      settings.scroll_acceleration != kDefaultScrollAcceleration) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingScrollAcceleration,
+          settings.scroll_acceleration, kDefaultScrollAcceleration,
+          force_persistence.scroll_acceleration, existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingScrollAcceleration,
                       settings.scroll_acceleration);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingTapToClickEnabled,
-                               existing_settings_dict) ||
-      force_persistence.tap_to_click_enabled ||
-      settings.tap_to_click_enabled != kDefaultTapToClickEnabled) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingTapToClickEnabled,
+          settings.tap_to_click_enabled, kDefaultTapToClickEnabled,
+          force_persistence.tap_to_click_enabled, existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingTapToClickEnabled,
                       settings.tap_to_click_enabled);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingThreeFingerClickEnabled,
-                               existing_settings_dict) ||
-      settings.three_finger_click_enabled != kDefaultThreeFingerClickEnabled) {
+  if (ShouldPersistSetting(prefs::kTouchpadSettingThreeFingerClickEnabled,
+                           settings.three_finger_click_enabled,
+                           kDefaultThreeFingerClickEnabled,
+                           force_persistence.three_finger_click_enabled,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingThreeFingerClickEnabled,
                       settings.three_finger_click_enabled);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingTapDraggingEnabled,
-                               existing_settings_dict) ||
-      force_persistence.tap_dragging_enabled ||
-      settings.tap_dragging_enabled != kDefaultTapDraggingEnabled) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingTapDraggingEnabled,
+          settings.tap_dragging_enabled, kDefaultTapDraggingEnabled,
+          force_persistence.tap_dragging_enabled, existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingTapDraggingEnabled,
                       settings.tap_dragging_enabled);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingHapticSensitivity,
-                               existing_settings_dict) ||
-      force_persistence.haptic_sensitivity ||
-      settings.haptic_sensitivity != kDefaultSensitivity) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingHapticSensitivity,
+          static_cast<int>(settings.haptic_sensitivity), kDefaultSensitivity,
+          force_persistence.haptic_sensitivity, existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingHapticSensitivity,
                       settings.haptic_sensitivity);
   }
 
-  if (ExistingSettingsHasValue(prefs::kTouchpadSettingHapticEnabled,
-                               existing_settings_dict) ||
-      force_persistence.haptic_enabled ||
-      settings.haptic_enabled != kDefaultHapticFeedbackEnabled) {
+  if (ShouldPersistSetting(
+          prefs::kTouchpadSettingHapticEnabled, settings.haptic_enabled,
+          kDefaultHapticFeedbackEnabled, force_persistence.haptic_enabled,
+          existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingHapticEnabled,
                       settings.haptic_enabled);
   }

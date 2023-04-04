@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
@@ -120,15 +121,6 @@ mojom::MouseSettingsPtr RetrieveMouseSettings(
   return settings;
 }
 
-bool ExistingSettingsHasValue(base::StringPiece setting_key,
-                              const base::Value::Dict* existing_settings_dict) {
-  if (!existing_settings_dict) {
-    return false;
-  }
-
-  return existing_settings_dict->Find(setting_key) != nullptr;
-}
-
 void UpdateMouseSettingsImpl(
     PrefService* pref_service,
     const mojom::Mouse& mouse,
@@ -143,56 +135,47 @@ void UpdateMouseSettingsImpl(
   // Populate `settings_dict` with all settings in `settings`.
   base::Value::Dict settings_dict;
 
-  // Settings should only be persisted if one or more of the following is true:
-  // - Setting was previously persisted to storage
-  // - `force_persistence` requires the setting to be persisted, this means this
-  //   device is being transitioned from the old global settings to per-device
-  //   settings and the user specified the specific value for this setting.
-  // - Setting is different than the default, which means the user manually
-  //   changed the value.
-
-  if (ExistingSettingsHasValue(prefs::kMouseSettingSwapRight,
-                               existing_settings_dict) ||
-      force_persistence.swap_right ||
-      settings.swap_right != kDefaultSwapRight) {
+  if (ShouldPersistSetting(prefs::kMouseSettingSwapRight, settings.swap_right,
+                           kDefaultSwapRight, force_persistence.swap_right,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingSwapRight, settings.swap_right);
   }
 
-  if (ExistingSettingsHasValue(prefs::kMouseSettingSensitivity,
-                               existing_settings_dict) ||
-      force_persistence.sensitivity ||
-      settings.sensitivity != kDefaultSensitivity) {
+  if (ShouldPersistSetting(prefs::kMouseSettingSensitivity,
+                           static_cast<int>(settings.sensitivity),
+                           kDefaultSensitivity, force_persistence.sensitivity,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingSensitivity, settings.sensitivity);
   }
 
-  if (ExistingSettingsHasValue(prefs::kMouseSettingReverseScrolling,
-                               existing_settings_dict) ||
-      force_persistence.reverse_scrolling ||
-      settings.reverse_scrolling != kDefaultReverseScrolling) {
+  if (ShouldPersistSetting(prefs::kMouseSettingReverseScrolling,
+                           settings.reverse_scrolling, kDefaultReverseScrolling,
+                           force_persistence.reverse_scrolling,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingReverseScrolling,
                       settings.reverse_scrolling);
   }
 
-  if (ExistingSettingsHasValue(prefs::kMouseSettingAccelerationEnabled,
-                               existing_settings_dict) ||
-      force_persistence.acceleration_enabled ||
-      settings.acceleration_enabled != kDefaultAccelerationEnabled) {
+  if (ShouldPersistSetting(
+          prefs::kMouseSettingAccelerationEnabled,
+          settings.acceleration_enabled, kDefaultAccelerationEnabled,
+          force_persistence.acceleration_enabled, existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingAccelerationEnabled,
                       settings.acceleration_enabled);
   }
 
-  if (ExistingSettingsHasValue(prefs::kMouseSettingScrollSensitivity,
-                               existing_settings_dict) ||
-      force_persistence.scroll_sensitivity ||
-      settings.scroll_sensitivity != kDefaultSensitivity) {
+  if (ShouldPersistSetting(
+          prefs::kMouseSettingScrollSensitivity,
+          static_cast<int>(settings.scroll_sensitivity), kDefaultSensitivity,
+          force_persistence.scroll_sensitivity, existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingScrollSensitivity,
                       settings.scroll_sensitivity);
   }
 
-  if (ExistingSettingsHasValue(prefs::kMouseSettingScrollAcceleration,
-                               existing_settings_dict) ||
-      force_persistence.scroll_acceleration ||
-      settings.scroll_acceleration != kDefaultScrollAcceleration) {
+  if (ShouldPersistSetting(
+          prefs::kMouseSettingScrollAcceleration, settings.scroll_acceleration,
+          kDefaultScrollAcceleration, force_persistence.scroll_acceleration,
+          existing_settings_dict)) {
     settings_dict.Set(prefs::kMouseSettingScrollAcceleration,
                       settings.scroll_acceleration);
   }
