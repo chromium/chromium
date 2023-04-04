@@ -523,6 +523,7 @@ extern const char kLauncherFilesPrivacyNotice[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLockScreenMediaControlsEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLongPressDiacriticsEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatInterval[];

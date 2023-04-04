@@ -630,6 +630,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   if (ime_menu_activated_.GetValue())
     input_method::InputMethodManager::Get()->ImeMenuActivationChanged(true);
 
+  long_press_diacritics_enabled_.Init(prefs::kLongPressDiacriticsEnabled, prefs,
+                                      callback);
   xkb_auto_repeat_enabled_.Init(prefs::kXkbAutoRepeatEnabled, prefs, callback);
   xkb_auto_repeat_delay_pref_.Init(prefs::kXkbAutoRepeatDelay, prefs, callback);
   xkb_auto_repeat_interval_pref_.Init(prefs::kXkbAutoRepeatInterval, prefs,

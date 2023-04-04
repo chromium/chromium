@@ -99454,6 +99454,7 @@ would be helpful to identify which type is being sent.
   <int value="100194"
       label="ProfileDefaultContentSettingValuesWindowPlacement"/>
   <int value="100195" label="WebauthnCablev2Pairings"/>
+  <int value="100198" label="LongPressDiacritics"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>

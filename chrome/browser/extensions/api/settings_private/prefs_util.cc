@@ -904,6 +904,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::ash::prefs::kSendFunctionKeys] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::ash::prefs::kLongPressDiacriticsEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::ash::prefs::kXkbAutoRepeatEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::ash::prefs::kXkbAutoRepeatDelay] =

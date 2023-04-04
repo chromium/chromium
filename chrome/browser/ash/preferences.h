@@ -174,6 +174,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   StringPrefMember enabled_imes_;
   BooleanPrefMember ime_menu_activated_;
 
+  BooleanPrefMember long_press_diacritics_enabled_;
   BooleanPrefMember xkb_auto_repeat_enabled_;
   IntegerPrefMember xkb_auto_repeat_delay_pref_;
   IntegerPrefMember xkb_auto_repeat_interval_pref_;

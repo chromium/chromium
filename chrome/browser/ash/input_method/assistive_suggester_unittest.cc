@@ -93,12 +93,10 @@ void SetInputMethodOptions(Profile& profile,
       std::string(kUsEnglishEngineId) +
           ".physicalKeyboardEnablePredictiveWriting",
       predictive_writing_enabled);
-  input_method_setting.SetByDottedPath(
-      std::string(kUsEnglishEngineId) +
-          ".physicalKeyboardEnableDiacriticsOnLongpress",
-      diacritics_on_longpress_enabled);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           base::Value(std::move(input_method_setting)));
+  profile.GetPrefs()->Set(::ash::prefs::kLongPressDiacriticsEnabled,
+                          base::Value(diacritics_on_longpress_enabled));
 }
 
 }  // namespace

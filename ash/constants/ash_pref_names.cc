@@ -1145,6 +1145,10 @@ const char kLauncherFilesPrivacyNotice[] =
 const char kLockScreenMediaControlsEnabled[] =
     "ash.lock_screen_media_controls_enabled";
 
+// Boolean pref which indicates if long press diacritics is in use
+const char kLongPressDiacriticsEnabled[] =
+    "settings.language.physical_keyboard_enable_diacritics_on_longpress";
+
 // Boolean pref which determines whether key repeat is enabled.
 const char kXkbAutoRepeatEnabled[] =
     "settings.language.xkb_auto_repeat_enabled_r2";

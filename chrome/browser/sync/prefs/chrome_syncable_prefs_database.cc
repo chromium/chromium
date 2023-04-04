@@ -241,6 +241,7 @@ enum {
   kWebauthnCablev2Pairings = 100195,
   kDynamicColorColorScheme = 100196,
   kDynamicColorSeedColor = 100197,
+  kLongPressDiacritics = 100198,
 };
 }  // namespace syncable_prefs_ids
 
@@ -556,6 +557,8 @@ const auto& SyncablePreferences() {
         {ash::prefs::kTouchpadSensitivity,
          {syncable_prefs_ids::kTouchpadSensitivity,
           syncer::OS_PRIORITY_PREFERENCES}},
+        {ash::prefs::kLongPressDiacriticsEnabled,
+         {syncable_prefs_ids::kLongPressDiacritics, syncer::OS_PREFERENCES}},
         {ash::prefs::kXkbAutoRepeatDelay,
          {syncable_prefs_ids::kXkbAutoRepeatDelay, syncer::OS_PREFERENCES}},
         {ash::prefs::kXkbAutoRepeatEnabled,
