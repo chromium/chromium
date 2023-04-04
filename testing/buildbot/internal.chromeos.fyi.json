@@ -1144,7 +1144,7 @@
         "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R114-15404.0.0",
+        "cros_img": "octopus-release/R114-15408.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "swarming": {},
