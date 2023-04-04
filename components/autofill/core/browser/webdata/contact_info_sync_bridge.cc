@@ -5,8 +5,8 @@
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 
 #include "base/check.h"
-#include "base/guid.h"
 #include "base/ranges/algorithm.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/base/features.h"
