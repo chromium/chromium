@@ -194,7 +194,7 @@
   {
     "name": "app-list-drag-and-drop-refactor",
     "owners": [ "anasalazar", "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 118
   },
   {
     "name": "app-management-app-details",
