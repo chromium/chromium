@@ -13,6 +13,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/views/widget/widget.h"
 
 namespace aura {
 class Window;
@@ -176,6 +177,11 @@ ASH_EXPORT SplitViewController::SnapPosition GetSnapPosition(
 // be created automatically on two windows snapped. The `split_view_divider_`
 // will show to indicate that the two windows are in a snap-group state.
 bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell();
+
+// Returns the widget init params needed to create the widget.
+views::Widget::InitParams CreateWidgetInitParams(
+    aura::Window* parent_window,
+    const std::string& widget_name);
 
 }  // namespace ash
 
