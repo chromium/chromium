@@ -37,8 +37,8 @@
       'linux-chrome': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
       'mac-chrome': 'official_goma_mac',
-      'win-chrome': 'official_goma_x86',
-      'win64-chrome': 'official_goma_x64',
+      'win-chrome': 'official_reclient_x86',
+      'win64-chrome': 'official_reclient_x64',
     },
     'chrome.pgo': {
       'android-arm32-pgo': 'official_goma_android_arm32_pgo',
@@ -46,8 +46,8 @@
       'linux-pgo': 'official_goma_linux_pgo',
       'mac-arm-pgo': 'official_goma_mac_arm_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
-      'win32-pgo': 'official_goma_x86_pgo',
-      'win64-pgo': 'official_goma_x64_pgo',
+      'win32-pgo': 'official_reclient_x86_pgo',
+      'win64-pgo': 'official_reclient_x64_pgo',
     },
     # Take care when changing any of these builders to ensure that you do not
     # include a configuration with 'chrome_with_codecs' since these builders
@@ -3330,6 +3330,22 @@
 
     'official_reclient_mac_arm': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
+    ],
+
+    'official_reclient_x64': [
+      'official', 'reclient', 'x64',
+    ],
+
+    'official_reclient_x64_pgo': [
+      'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_reclient_x86': [
+      'official', 'reclient', 'x86',
+    ],
+
+    'official_reclient_x86_pgo': [
+      'official', 'reclient', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'perfetto_release_bot_reclient': [

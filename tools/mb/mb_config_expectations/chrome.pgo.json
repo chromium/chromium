@@ -76,7 +76,7 @@
       "is_official_build": true,
       "symbol_level": 0,
       "target_cpu": "x86",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win64-pgo": {
@@ -88,7 +88,7 @@
       "is_official_build": true,
       "symbol_level": 0,
       "target_cpu": "x64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }
