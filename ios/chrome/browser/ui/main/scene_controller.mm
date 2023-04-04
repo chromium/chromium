@@ -836,12 +836,19 @@ void InjectNTP(Browser* browser) {
   Browser* mainBrowser = [self.browserViewWrangler createMainBrowser];
   CommandDispatcher* mainCommandDispatcher =
       mainBrowser->GetCommandDispatcher();
+  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
+
+  PromosManager* promosManager =
+      PromosManagerFactory::GetForBrowserState(browserState);
 
   // Add scene agents that require CommandDispatcher.
   DefaultBrowserSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
   defaultBrowserAgent.nonModalScheduler.browser = mainBrowser;
+  if (IsDefaultBrowserInPromoManagerEnabled()) {
+    defaultBrowserAgent.promosManager = promosManager;
+  }
   [self.sceneState addAgent:defaultBrowserAgent];
   if (defaultBrowserAgent.nonModalScheduler) {
     [self.sceneState addObserver:defaultBrowserAgent.nonModalScheduler];
@@ -869,7 +876,6 @@ void InjectNTP(Browser* browser) {
                     applicationCommandsHandler:applicationCommandsHandler
                    policyChangeCommandsHandler:policyChangeCommandsHandler]];
 
-  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
   PrefService* prefService = browserState->GetPrefs();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
@@ -910,9 +916,6 @@ void InjectNTP(Browser* browser) {
     [self.sceneState
         addAgent:[[PromosManagerSceneAgent alloc]
                      initWithCommandDispatcher:mainCommandDispatcher]];
-
-    PromosManager* promosManager =
-        PromosManagerFactory::GetForBrowserState(browserState);
 
     if (IsAppStoreRatingEnabled()) {
     [self.sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
@@ -1040,7 +1043,10 @@ void InjectNTP(Browser* browser) {
         currentBrowser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
   }
-  [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
+
+  if (!IsDefaultBrowserInPromoManagerEnabled()) {
+    [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
+  }
 }
 
 // Notifies the Feature Engagement Tracker that an eligibility criterion has

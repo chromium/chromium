@@ -169,4 +169,8 @@ bool UserInPromoCooldown();
 // in the NSDictionary stored under `kBrowserDefaultsKey`.
 const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
+// Return true if the default browser promo should be registered with the promo
+// manager to display a default browser promo.
+bool ShouldRegisterPromoWithPromoManager();
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

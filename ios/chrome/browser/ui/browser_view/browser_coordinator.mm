@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
@@ -107,6 +108,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
+#import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -423,6 +425,10 @@ enum class ToolbarKind {
 
 // The coordinator used for What's New feature.
 @property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
+
+// The manager used to display a default browser promo.
+@property(nonatomic, strong)
+    DefaultBrowserPromoManager* defaultBrowserPromoManager;
 
 @end
 
@@ -1254,6 +1260,9 @@ enum class ToolbarKind {
     [self.openInCoordinator stop];
     self.openInCoordinator = nil;
   }
+
+  [self.defaultBrowserPromoManager stop];
+  self.defaultBrowserPromoManager = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1648,6 +1657,10 @@ enum class ToolbarKind {
   self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
+  if (IsDefaultBrowserInPromoManagerEnabled()) {
+    [self.defaultBrowserPromoManager stop];
+    self.defaultBrowserPromoManager = nil;
+  }
 }
 
 #pragma mark - FeedCommands
@@ -1853,6 +1866,19 @@ enum class ToolbarKind {
   [self showWhatsNew];
   self.whatsNewCoordinator.promosUIHandler = self.promosManagerCoordinator;
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
+}
+
+- (void)maybeDisplayDefaultBrowserPromo {
+  if (!IsDefaultBrowserInPromoManagerEnabled()) {
+    return;
+  }
+
+  self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  self.defaultBrowserPromoManager.promosUIHandler =
+      self.promosManagerCoordinator;
+  [self.defaultBrowserPromoManager start];
 }
 
 #pragma mark - PageInfoCommands

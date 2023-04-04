@@ -14,6 +14,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -633,4 +634,17 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
   ];
 
   return keysForTesting;
+}
+
+bool ShouldRegisterPromoWithPromoManager() {
+  // Consider showing the default browser promo if (1) launch is not after a
+  // crash, (2) chrome is not likely set as default browser, (3) the user
+  // skipped first run, (4) the user is not going through the First Run screens
+  // or first run was not recent, and (5) the user has not seen any default
+  // browser promo outside of the First Run screens.
+  return GetApplicationContext()->WasLastShutdownClean() &&
+         !IsChromeLikelyDefaultBrowser() &&
+         !HasUserOpenedSettingsFromFirstRunPromo() && !UserInPromoCooldown() &&
+         (!HasUserInteractedWithTailoredFullscreenPromoBefore() ||
+          !HasUserInteractedWithFullscreenPromoBefore());
 }
