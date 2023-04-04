@@ -102,8 +102,11 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult Start %d %d %d",
-    (int) new_space.CacheSlot(), layout_results_.empty());
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult Start %d %d %d %d",
+    this->RecordReplayId(),
+    (int) new_space.CacheSlot(),
+    layout_results_.empty()
+  );
 
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == NGCacheSlot::kLayout && !layout_results_.empty();
@@ -111,7 +114,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       use_layout_cache_slot ? GetCachedLayoutResult(break_token)
                             : GetCachedMeasureResult();
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #1 %d %d %d %d",
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #1 %d %d %d %d",
     (int) new_space.CacheSlot(),
     (int) use_layout_cache_slot,
     (int) !!cached_layout_result,
@@ -145,18 +148,18 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       (break_token && break_token->IsRepeated()))
     return nullptr;
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2");
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2");
 
   if (SelfNeedsLayoutForStyle() || child_needs_layout_unless_locked ||
       NeedsSimplifiedNormalFlowLayout() ||
       (NeedsPositionedMovementLayout() &&
        !NeedsPositionedMovementLayoutOnly())) {
 
-    recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.1");
+    recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.1");
 
     if (!ChildrenInline()) {
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.1.1");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.1.1");
 
       // Check if we only need "simplified" layout. We don't abort yet, as we
       // need to check if other things (like floats) will require us to perform
@@ -164,13 +167,13 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (!NeedsSimplifiedLayoutOnly())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.1.2");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.1.2");
 
       cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
     } else if (!NeedsSimplifiedLayoutOnly() ||
                NeedsSimplifiedNormalFlowLayout()) {
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.2.1");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.2.1");
 
       // We don't regenerate any lineboxes during our "simplified" layout pass.
       // If something needs "simplified" layout within a linebox, (e.g. an
@@ -183,23 +186,23 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (!use_layout_cache_slot)
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.2.2");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.2.2");
 
       if (SelfNeedsLayout())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.2.3");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.2.3");
 
       if (!physical_fragment.HasItems())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.2.4");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.2.4");
 
       // Propagating OOF needs re-layout.
       if (physical_fragment.NeedsOOFPositionedInfoPropagation())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.2.5");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.2.5");
 
       // Any floats might need to move, causing lines to wrap differently,
       // needing re-layout, either in cached result or in new constraint space.
@@ -207,12 +210,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
           new_space.HasFloats())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.2.6");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.2.6");
 
       cache_status = NGLayoutCacheStatus::kCanReuseLines;
     } else {
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #2.3");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #2.3");
 
       cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
     }
@@ -228,7 +231,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   if (size_cache_status == NGLayoutCacheStatus::kNeedsLayout)
     return nullptr;
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #3");
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #3");
 
   // If we need simplified layout, but the cached fragment's children are not
   // valid (see comment in `SetCachedLayoutResult`), don't return the fragment,
@@ -239,7 +242,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
        cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout))
     return nullptr;
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #4");
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #4");
 
   // Update our temporary cache status, if the size cache check indicated we
   // might need simplified layout.
@@ -252,7 +255,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     if (IsLayoutReplaced())
       return nullptr;
 
-    recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #4.1");
+    recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #4.1");
 
     // Simplified layout requires children to have a cached layout result. If
     // the current box has no cached layout result, its children might not,
@@ -260,7 +263,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     if (!use_layout_cache_slot && !GetCachedLayoutResult(break_token))
       return nullptr;
 
-    recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #4.2");
+    recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #4.2");
   }
 
   LayoutUnit bfc_line_offset = new_space.BfcOffset().line_offset;
@@ -306,7 +309,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         (!are_bfc_offsets_equal || !is_exclusion_space_equal ||
          !is_margin_strut_equal || !is_clearance_offset_equal)) {
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #5.1");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #5.1");
       DCHECK(!CreatesNewFormattingContext());
 
       // If we have a different BFC offset, or exclusion space we can't perform
@@ -320,7 +323,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
           cache_status == NGLayoutCacheStatus::kCanReuseLines)
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #5.2");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #5.2");
 
       DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
 
@@ -329,12 +332,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
               &block_offset_delta, &end_margin_strut))
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #5.3");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #5.3");
     }
 
     if (UNLIKELY(new_space.HasBlockFragmentation())) {
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.1");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.1");
 
       DCHECK(old_space.HasBlockFragmentation());
 
@@ -344,7 +347,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (cache_status != NGLayoutCacheStatus::kHit)
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.2");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.2");
 
       // Miss the cache if we have nested multicol containers inside that also
       // have OOF descendants. OOFs in nested multicol containers are handled in
@@ -356,7 +359,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (UNLIKELY(physical_fragment.HasNestedMulticolsWithOOFs()))
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.3");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.3");
 
       // Any fragmented out-of-flow positioned items will be placed once we
       // reach the fragmentation context root rather than the containing block,
@@ -365,12 +368,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (physical_fragment.HasOutOfFlowFragmentChild())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.4");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.4");
 
       if (column_spanner_path || cached_layout_result->ColumnSpannerPath())
         return nullptr;
 
-      recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5");
+      recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5");
 
       // If the node didn't break into multiple fragments, we might be able to
       // re-use the result. If the fragmentainer block-size has changed, or if
@@ -380,7 +383,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (new_space.IsInitialColumnBalancingPass()) {
         if (!old_space.IsInitialColumnBalancingPass()) {
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.1");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.1");
 
           // If the previous result was generated with a known fragmentainer
           // size (i.e. not in the initial column balancing pass),
@@ -407,7 +410,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
                  new_space.FragmentainerOffset() !=
                      old_space.FragmentainerOffset()) {
 
-        recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.2");
+        recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.2");
 
         // The fragment block-offset will either change, or the fragmentainer
         // block-size has changed. If the node is fragmented, we're going to
@@ -416,7 +419,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         if (is_fragmented)
           return nullptr;
 
-        recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.3");
+        recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.3");
 
         // Fragmentation inside a nested multicol container depends on the
         // amount of remaining space in the outer fragmentation context, so if
@@ -426,7 +429,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         if (physical_fragment.IsFragmentationContextRoot())
           return nullptr;
 
-        recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.4");
+        recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.4");
 
         // If the fragment was forced to stay in a fragmentainer (even if it
         // overflowed), BlockSizeForFragmentation() cannot be used for cache
@@ -434,7 +437,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         if (cached_layout_result->IsBlockSizeForFragmentationClamped())
           return nullptr;
 
-        recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.5");
+        recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.5");
 
         // If the fragment was truncated at the fragmentation line, and since we
         // have now moved relatively to the fragmentation line, we cannot re-use
@@ -442,14 +445,14 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         if (cached_layout_result->IsTruncatedByFragmentationLine())
           return nullptr;
 
-        recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.6");
+        recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.6");
 
         // TODO(layout-dev): This likely shouldn't be scoped to just OOFs, but
         // scoping it more widely results in several perf regressions[1].
         //
         // [1] https://bugs.chromium.org/p/chromium/issues/detail?id=1362550
         if (node.IsOutOfFlowPositioned()) {
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.6.1");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.6.1");
           // If the fragmentainer size has changed, and there previously was
           // space shortage reported, we should re-run layout to avoid reporting
           // the same space shortage again.
@@ -458,7 +461,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
           if (space_shortage && *space_shortage > LayoutUnit())
             return nullptr;
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.6.2");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.6.2");
         }
 
         // Returns true if there are any floats added by |cached_layout_result|
@@ -478,7 +481,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
 
         if (!bfc_block_offset && cached_layout_result->IsSelfCollapsing()) {
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.7.1");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.7.1");
 
           // Self-collapsing blocks may have floats and OOF descendants.
           // Checking if floats cross the fragmentation line is easy enough
@@ -490,16 +493,16 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
           if (old_space.IsInitialColumnBalancingPass())
             return nullptr;
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.7.2");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.7.2");
 
           if (DoFloatsCrossFragmentationLine())
             return nullptr;
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.7.3");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.7.3");
 
         } else {
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.8.1");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.8.1");
 
           // If floats were added inside an inline formatting context, they
           // might extrude (and not included within the block-size for
@@ -507,12 +510,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
           if (physical_fragment.IsInlineFormattingContext() &&
               !is_new_formatting_context) {
 
-            recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.8.1.1");
+            recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.8.1.1");
 
             if (DoFloatsCrossFragmentationLine())
               return nullptr;
 
-            recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.8.1.2");
+            recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.8.1.2");
           }
 
           // Check if we have content which might cross the fragmentation line.
@@ -532,7 +535,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
           if (block_end_offset > new_space.FragmentainerBlockSize())
             return nullptr;
 
-          recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.8.2");
+          recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.8.2");
         }
 
         // Multi-cols behave differently between the initial column balancing
@@ -543,12 +546,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
             return nullptr;
           if (auto* block = DynamicTo<LayoutBlock>(this)) {
 
-            recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.9.1");
+            recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.9.1");
 
             if (block->IsFragmentationContextRoot())
               return nullptr;
 
-            recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #6.5.9.2");
+            recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #6.5.9.2");
           }
         }
       }
@@ -561,7 +564,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout)
     return nullptr;
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #7");
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #7");
 
   // We've performed all of the cache checks at this point. If we need
   // "simplified" layout then abort now.
@@ -570,7 +573,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       cache_status == NGLayoutCacheStatus::kCanReuseLines)
     return cached_layout_result;
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #8");
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #8");
 
   physical_fragment.CheckType();
 
@@ -631,7 +634,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   if (are_bfc_offsets_equal && is_exclusion_space_equal &&
       is_margin_strut_equal && !needs_cached_result_update) {
 
-    recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #9.1");
+    recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #9.1");
 
     // In order not to rebuild the internal derived-geometry "cache" of float
     // data, we need to move this to the new "output" exclusion space.
@@ -640,7 +643,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     return cached_layout_result;
   }
 
-  recordreplay::Assert("[RUN-1219-1440] LayoutBox::CachedLayoutResult #10");
+  recordreplay::Assert("[RUN-1219-1657] LayoutBox::CachedLayoutResult #10");
 
   const NGLayoutResult* new_result = MakeGarbageCollected<NGLayoutResult>(
       *cached_layout_result, new_space, end_margin_strut, bfc_line_offset,
