@@ -194,7 +194,15 @@ uint64_t* PaintOpWriter::WriteSize(size_t size) {
   // size_t is always serialized as uint64_t to make the serialized result
   // portable between 32bit and 64bit processes.
   uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
-  WriteSimple(static_cast<uint64_t>(size));
+  uint64_t size64 = static_cast<uint64_t>(size);
+
+  // size_t is always aligned to only 4 bytes. Avoid undefined behavior by
+  // reading as two uint32_ts and combining the result.
+  // https://crbug.com/1429994
+  uint32_t lo = static_cast<uint32_t>(size64);
+  uint32_t hi = static_cast<uint32_t>(size64 >> 32);
+  WriteSimple(lo);
+  WriteSimple(hi);
   return memory;
 }
 

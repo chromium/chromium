@@ -184,8 +184,15 @@ void PaintOpReader::ReadData(size_t bytes, void* data) {
 void PaintOpReader::ReadSize(size_t* size) {
   // size_t is always serialized as uint64_t to make the serialized result
   // portable between 32bit and 64bit processes.
-  uint64_t size64 = 0;
-  ReadSimple(&size64);
+  uint32_t lo = 0u;
+  uint32_t hi = 0u;
+  ReadSimple(&lo);
+  ReadSimple(&hi);
+
+  // size_t is always aligned to only 4 bytes. Avoid undefined behavior by
+  // reading as two uint32_ts and combining the result.
+  // https://crbug.com/1429994
+  uint64_t size64 = static_cast<uint64_t>(hi) << 32 | lo;
   *size = base::checked_cast<size_t>(size64);
 }
 
