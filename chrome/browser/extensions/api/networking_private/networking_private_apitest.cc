@@ -11,8 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/onc/onc_constants.h"

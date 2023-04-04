@@ -7,11 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "components/wifi/fake_wifi_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -20,7 +16,6 @@
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_service_client.h"
 #include "extensions/common/switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 // This tests the Windows / Mac implementation of the networkingPrivate API
 // (NetworkingPrivateServiceClient). Note, only a subset of the
@@ -29,8 +24,8 @@
 // should be kept similar to the ChromeOS (primary) implementation as much as
 // possible. See also crbug.com/460119.
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 
 using extensions::NetworkingPrivateDelegate;
 using extensions::NetworkingPrivateDelegateFactory;
@@ -43,7 +38,7 @@ namespace {
 class NetworkingPrivateServiceClientApiTest
     : public extensions::ExtensionApiTest {
  public:
-  NetworkingPrivateServiceClientApiTest() {}
+  NetworkingPrivateServiceClientApiTest() = default;
 
   NetworkingPrivateServiceClientApiTest(
       const NetworkingPrivateServiceClientApiTest&) = delete;

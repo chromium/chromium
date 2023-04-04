@@ -5,20 +5,12 @@
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 
 #include "chromeos/ash/components/network/network_connect.h"
-#include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 
-namespace chromeos {
-namespace extensions {
-
-NetworkingPrivateUIDelegateChromeOS::NetworkingPrivateUIDelegateChromeOS() {}
-
-NetworkingPrivateUIDelegateChromeOS::~NetworkingPrivateUIDelegateChromeOS() {}
+namespace chromeos::extensions {
 
 void NetworkingPrivateUIDelegateChromeOS::ShowAccountDetails(
     const std::string& guid) const {
   ash::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
 }
 
-}  // namespace extensions
-}  // namespace chromeos
+}  // namespace chromeos::extensions
