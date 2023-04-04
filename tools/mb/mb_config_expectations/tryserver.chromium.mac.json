@@ -504,6 +504,16 @@
       "use_remoteexec": true
     }
   },
+  "mac-intel-on-arm64-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_cpu": "x64",
+      "use_remoteexec": true
+    }
+  },
   "mac-inverse-fieldtrials-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

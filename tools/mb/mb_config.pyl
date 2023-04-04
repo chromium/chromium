@@ -629,6 +629,7 @@
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot_reclient',
       'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
+      'mac-intel-on-arm64-rel': 'release_bot_reclient_x64',
     },
 
     'chromium.memory': {
@@ -1316,6 +1317,7 @@
       'mac-builder-next': 'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient',
       'mac-code-coverage': 'clang_code_coverage_reclient',
       'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
+      'mac-intel-on-arm64-rel': 'release_trybot_reclient_x64',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
@@ -3538,6 +3540,10 @@
       'release_bot_reclient',
     ],
 
+    'release_bot_reclient_x64': [
+      'release_bot_reclient', 'x64',
+    ],
+
     'release_bot_x86_minimal_symbols': [
       'release_bot', 'x86', 'minimal_symbols',
     ],
@@ -3657,6 +3663,10 @@
 
     'release_trybot_reclient_cxx17_no_werror': [
       'release_trybot_reclient', 'force_cxx17', 'no_werror',
+    ],
+
+    'release_trybot_reclient_x64': [
+       'release_trybot_reclient', 'x64',
     ],
 
     'release_trybot_tsan': [

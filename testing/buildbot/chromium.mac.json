@@ -21363,6 +21363,11 @@
       "all"
     ]
   },
+  "mac-intel-on-arm64-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "mac11-arm64-rel-tests": {
     "gtest_tests": [
       {

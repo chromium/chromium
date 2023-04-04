@@ -73,6 +73,17 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac-intel-on-arm64-rel",
+    mirrors = [
+        "ci/mac-intel-on-arm64-rel",
+    ],
+    builderless = False,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "mac-fieldtrial-tester",
     mirrors = [
         "ci/mac-arm64-rel",
