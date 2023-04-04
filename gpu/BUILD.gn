@@ -721,8 +721,7 @@ test("gpu_unittests") {
     "//url",
   ]
 
-  if (!is_cronet_build) {
-    # Cronet disables tracing (crbug.com/1400235).
+  if (enable_base_tracing) {
     deps += [ "//base/test:test_trace_processor" ]
   }
 
