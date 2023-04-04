@@ -3678,6 +3678,11 @@ String AXNodeObject::TextFromDescendants(
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
   for (AXObject* child : children) {
+    if (!child || child->IsDetached()) {
+      // If this child was destroyed while processing another, the weak member
+      // will become null.
+      continue;
+    }
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
