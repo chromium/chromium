@@ -206,6 +206,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_upload_rust",
+)
+
+build_recipe(
     name = "recipe:cronet",
 )
 

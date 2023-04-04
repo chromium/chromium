@@ -165,6 +165,16 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win_upload_rust",
+    executable = "recipe:chromium_upload_rust",
+    builderless = False,
+    cores = 32,
+    os = os.WINDOWS_ANY,
+    execution_timeout = 6 * time.hour,
+    reclient_instance = None,
+)
+
+try_.builder(
     name = "win_x64_archive",
     mirrors = [
         "ci/win-archive-rel",

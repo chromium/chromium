@@ -342,6 +342,20 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac_upload_rust",
+    executable = "recipe:chromium_upload_rust",
+    builderless = False,
+    execution_timeout = 8 * time.hour,
+)
+
+try_.builder(
+    name = "mac_upload_rust_arm",
+    executable = "recipe:chromium_upload_rust",
+    builderless = False,
+    execution_timeout = 8 * time.hour,
+)
+
+try_.builder(
     name = "mac-code-coverage",
     mirrors = ["ci/mac-code-coverage"],
     execution_timeout = 20 * time.hour,
