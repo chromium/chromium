@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 
+#include <memory>
+
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "extensions/browser/extensions_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,13 +20,13 @@ class TelemetryExtensionEventRouterTest : public extensions::ExtensionsTest {
   void SetUp() override {
     extensions::ExtensionsTest::SetUp();
 
-    event_router_ = new EventRouter(browser_context());
+    event_router_ = std::make_unique<EventRouter>(browser_context());
   }
 
-  EventRouter* GetEventRouter() { return event_router_; }
+  EventRouter* GetEventRouter() { return event_router_.get(); }
 
  private:
-  raw_ptr<EventRouter> event_router_;
+  std::unique_ptr<EventRouter> event_router_;
 };
 
 TEST_F(TelemetryExtensionEventRouterTest, ResetReceiversForExtension) {
