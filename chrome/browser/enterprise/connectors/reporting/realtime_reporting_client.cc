@@ -316,12 +316,14 @@ void RealtimeReportingClient::OnCloudPolicyClientAvailable(
   VLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-absl::optional<enterprise_connectors::ReportingSettings>
+absl::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {
-  return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-             context_)
-      ->GetReportingSettings(
-          enterprise_connectors::ReportingConnector::SECURITY_EVENT);
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(context_);
+  if (!service) {
+    return absl::nullopt;
+  }
+
+  return service->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
 }
 
 void RealtimeReportingClient::ReportRealtimeEvent(
