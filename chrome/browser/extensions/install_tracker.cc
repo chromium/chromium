@@ -14,7 +14,8 @@
 namespace extensions {
 
 InstallTracker::InstallTracker(content::BrowserContext* browser_context,
-                               extensions::ExtensionPrefs* prefs) {
+                               extensions::ExtensionPrefs* prefs)
+    : browser_context_(browser_context) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context));
 
@@ -75,12 +76,12 @@ void InstallTracker::OnBeginExtensionInstall(
   }
 
   for (auto& observer : observers_)
-    observer.OnBeginExtensionInstall(params);
+    observer.OnBeginExtensionInstall(browser_context_, params);
 }
 
 void InstallTracker::OnBeginExtensionDownload(const std::string& extension_id) {
   for (auto& observer : observers_)
-    observer.OnBeginExtensionDownload(extension_id);
+    observer.OnBeginExtensionDownload(browser_context_, extension_id);
 }
 
 void InstallTracker::OnDownloadProgress(const std::string& extension_id,
@@ -92,26 +93,28 @@ void InstallTracker::OnDownloadProgress(const std::string& extension_id,
     NOTREACHED();
   }
 
-  for (auto& observer : observers_)
-    observer.OnDownloadProgress(extension_id, percent_downloaded);
+  for (auto& observer : observers_) {
+    observer.OnDownloadProgress(browser_context_, extension_id,
+                                percent_downloaded);
+  }
 }
 
 void InstallTracker::OnBeginCrxInstall(const std::string& extension_id) {
   for (auto& observer : observers_)
-    observer.OnBeginCrxInstall(extension_id);
+    observer.OnBeginCrxInstall(browser_context_, extension_id);
 }
 
 void InstallTracker::OnFinishCrxInstall(const std::string& extension_id,
                                         bool success) {
   for (auto& observer : observers_)
-    observer.OnFinishCrxInstall(extension_id, success);
+    observer.OnFinishCrxInstall(browser_context_, extension_id, success);
 }
 
 void InstallTracker::OnInstallFailure(
     const std::string& extension_id) {
   RemoveActiveInstall(extension_id);
   for (auto& observer : observers_)
-    observer.OnInstallFailure(extension_id);
+    observer.OnInstallFailure(browser_context_, extension_id);
 }
 
 void InstallTracker::Shutdown() {
@@ -122,6 +125,7 @@ void InstallTracker::Shutdown() {
     observer.OnShutdown();
   observers_.Clear();
   pref_change_registrar_.RemoveAll();
+  browser_context_ = nullptr;
 }
 
 void InstallTracker::OnExtensionInstalled(
@@ -134,7 +138,7 @@ void InstallTracker::OnExtensionInstalled(
 void InstallTracker::OnAppsReordered(
     const absl::optional<std::string>& extension_id) {
   for (auto& observer : observers_)
-    observer.OnAppsReordered(extension_id);
+    observer.OnAppsReordered(browser_context_, extension_id);
 }
 
 void InstallTracker::OnExtensionPrefChanged() {

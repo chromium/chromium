@@ -88,6 +88,10 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   typedef std::map<std::string, ActiveInstallData> ActiveInstallsMap;
   ActiveInstallsMap active_installs_;
 
+  // Safe: |this| belongs to |browser_context_| via KeyedService, and this
+  // pointer is nulled in Shutdown().
+  raw_ptr<content::BrowserContext> browser_context_;
+
   base::ObserverList<InstallObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

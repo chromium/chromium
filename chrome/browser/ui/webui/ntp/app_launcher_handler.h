@@ -90,6 +90,7 @@ class AppLauncherHandler
 
   // extensions::InstallObserver
   void OnAppsReordered(
+      content::BrowserContext* context,
       const absl::optional<std::string>& extension_id) override;
 
   // extensions::ExtensionRegistryObserver:

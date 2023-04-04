@@ -175,6 +175,7 @@ void ChromeKioskAppInstaller::FinalizeAppInstall() {
 }
 
 void ChromeKioskAppInstaller::OnFinishCrxInstall(
+    content::BrowserContext* context,
     const std::string& extension_id,
     bool success) {
   DCHECK(!install_complete_);

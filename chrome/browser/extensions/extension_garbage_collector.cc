@@ -261,11 +261,13 @@ void ExtensionGarbageCollector::OnGarbageCollectIsolatedStorageFinished() {
 }
 
 void ExtensionGarbageCollector::OnBeginCrxInstall(
+    content::BrowserContext* context,
     const std::string& extension_id) {
   crx_installs_in_progress_++;
 }
 
 void ExtensionGarbageCollector::OnFinishCrxInstall(
+    content::BrowserContext* context,
     const std::string& extension_id,
     bool success) {
   crx_installs_in_progress_--;
