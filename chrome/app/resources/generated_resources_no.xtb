@@ -641,7 +641,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1571304935088121812">Kopiér brukernavnet</translation>
 <translation id="1571738973904005196">Vis fanen <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gjest)</translation>
-<translation id="1572266655485775982">Slå på Wifi</translation>
+<translation id="1572266655485775982">Slå på wifi</translation>
 <translation id="1572876035008611720">Skriv inn e-postadressen din</translation>
 <translation id="1575741822946219011">Språk og inndatametoder</translation>
 <translation id="1576594961618857597">Hvitt standardbrukerbilde</translation>
@@ -1657,7 +1657,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2423578206845792524">Lagre &amp;bildet som...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gjest}other{Gjest (#)}}</translation>
 <translation id="2428510569851653187">Beskriv hva du holdt på med da fanen krasjet</translation>
-<translation id="2428939361789119025">Slå av Wifi</translation>
+<translation id="2428939361789119025">Slå av wifi</translation>
 <translation id="2428978615149723410">disse handlekurvene</translation>
 <translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontroller nettverkstilkoblingen din, og prøv på nytt.</translation>
 <translation id="243179355394256322">Organisasjonen din begrenser registrering av enheter til kun autoriserte brukere. Denne brukeren er ikke autorisert til å registrere enheter. Sørg for at brukeren har administratorrettigheten «Registrer Google Meet-enheter» i Brukere-delen av administrasjonskonsollen.</translation>
@@ -4510,7 +4510,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5021750053540820849">Ikke oppdatert ennå</translation>
 <translation id="5024511550058813796">Du får loggen din på alle synkroniserte enheter, slik at du kan fortsette med det du holdt på med</translation>
 <translation id="5026492829171796515">Logg på for å legge til en Google-konto</translation>
-<translation id="5026806129670917316">Slå på Wifi</translation>
+<translation id="5026806129670917316">Slå på wifi</translation>
 <translation id="5026874946691314267">Ikke vis dette igjen.</translation>
 <translation id="5027550639139316293">E-postsertifikat</translation>
 <translation id="5027562294707732951">Legg til utvidelsen</translation>

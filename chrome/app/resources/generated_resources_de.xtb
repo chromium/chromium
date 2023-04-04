@@ -1554,7 +1554,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2336228925368920074">Alle Tabs als Lesezeichen speichern...</translation>
 <translation id="2336376423977300504">Cookies immer löschen, wenn Fenster geschlossen werden</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Seiten, die du nach Ansicht von Chrome besuchen könntest, werden vorab geladen. Chrome verwendet dazu möglicherweise Cookies, sofern du diese zulässt. Außerdem verschlüsselt und sendet es Seiten unter Umständen über Google, damit deine Identität auf Websites verborgen bleibt.</translation>
+<translation id="2337236196941929873">Seiten, die du nach Einschätzung von Chrome besuchen könntest, werden vorab geladen. Chrome verwendet dazu möglicherweise Cookies, sofern du diese zulässt. Außerdem verschlüsselt und sendet es Seiten unter Umständen über Google, damit deine Identität auf Websites verborgen bleibt.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> kann nicht sicher heruntergeladen werden</translation>
 <translation id="2342180549977909852">Anstelle eines Passworts kann dein Kind eine Nummer (PIN) zum Entsperren dieses Geräts verwenden. Die PIN kann später in den Einstellungen festgelegt werden.</translation>
 <translation id="2342740338116612727">Lesezeichen hinzugefügt</translation>
@@ -6284,7 +6284,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6674571176963658787">Gib deine Passphrase ein, um die Synchronisierung zu starten</translation>
 <translation id="6675665718701918026">Zeigegerät verbunden</translation>
 <translation id="6676212663108450937">Es ist ratsam, beim Trainieren deiner Stimme Kopfhörer zu verwenden</translation>
-<translation id="6677942524382973058">Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet werden, deine Identität zu ermitteln.</translation>
+<translation id="6677942524382973058">Private State Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet werden, deine Identität zu ermitteln.</translation>
 <translation id="6678717876183468697">Abfrage-URL</translation>
 <translation id="6680442031740878064">Verfügbar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Geschwindigkeit</translation>
@@ -8403,7 +8403,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8602674530529411098">Apps (Beta)</translation>
 <translation id="8602851771975208551">Ein anderes Programm auf deinem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
 <translation id="8605428685123651449">SQLite-Speicher</translation>
-<translation id="8607326572516521315">Für die Spam- und Betrugsreduzierung werden Private Stake Tokens verwendet, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>
+<translation id="8607326572516521315">Für die Spam- und Betrugsreduzierung werden Private State Tokens verwendet, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>
 <translation id="8608618451198398104">Kerberos-Ticket hinzufügen</translation>
 <translation id="8609465669617005112">Nach oben</translation>
 <translation id="8610103157987623234">Fehlerhaftes Format. Bitte versuche es noch einmal.</translation>
@@ -8742,7 +8742,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8890170499370378450">Es können Gebühren für mobile Daten anfallen</translation>
 <translation id="8890516388109605451">Quellen</translation>
 <translation id="8890529496706615641">Das Profil konnte nicht umbenannt werden. Bitte versuche es noch einmal oder wende dich an den technischen Support.</translation>
-<translation id="8891996167592415151">Auf Grundlage deiner Interaktion mit einer Website, z. B. wenn du dich regelmäßig in einem Konto anmeldest, kann diese Website ein Private Stake Token für deinen Browser ausstellen. Wenn andere von dir besuchte Websites später dann ein gültiges Private Stake Token finden, ist die Wahrscheinlichkeit höher, dass du als Person und nicht als Bot eingestuft wirst.</translation>
+<translation id="8891996167592415151">Auf Grundlage deiner Interaktion mit einer Website, z. B. wenn du dich regelmäßig in einem Konto anmeldest, kann diese Website ein Private State Token für deinen Browser ausstellen. Wenn andere von dir besuchte Websites später dann ein gültiges Private State Token finden, ist die Wahrscheinlichkeit höher, dass du als Person und nicht als Bot eingestuft wirst.</translation>
 <translation id="8892168913673237979">Fertig!</translation>
 <translation id="8893801527741465188">Deinstallation abgeschlossen</translation>
 <translation id="8893928184421379330">Das Gerät <ph name="DEVICE_LABEL" /> wurde nicht erkannt.</translation>

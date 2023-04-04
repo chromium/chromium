@@ -978,7 +978,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7920949005883349320">Privacy and security</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
-<translation id="7939128259257418052">Export Passwords…</translation>
+<translation id="7939128259257418052">Export passwords…</translation>
 <translation id="794799177247607889">Stop logging</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="7959441099968534758">GO TO FEED</translation>

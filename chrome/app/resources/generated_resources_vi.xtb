@@ -2468,7 +2468,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="313205617302240621">Bạn quên mật khẩu?</translation>
 <translation id="3132277757485842847">Chúng tôi không thể duy trì đường kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn đang ở gần, mở khóa, đồng thời đã bật Bluetooth và Wi-Fi.</translation>
 <translation id="3132896062549112541">Quy tắc</translation>
-<translation id="3132996321662585180">Làm mới hàng ngày</translation>
+<translation id="3132996321662585180">Làm mới hằng ngày</translation>
 <translation id="3134393957315651797">Chọn trạng thái thử nghiệm cho quá trình thử nghiệm <ph name="EXPERIMENT_NAME" />. Phần mô tả thử nghiệm: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Hình đại diện màu vàng mặc định</translation>
 <translation id="3141093262818886744">Vẫn mở</translation>
@@ -4199,7 +4199,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4713409221649555176">Xoá khi bạn đóng tất cả cửa sổ</translation>
 <translation id="47158868804223727">Nhấp vào tên nhóm để mở rộng hoặc thu gọn</translation>
 <translation id="4716483597559580346">Powerwash giúp tăng cường bảo mật</translation>
-<translation id="471759229191973607">Thay đổi giao diện</translation>
+<translation id="471759229191973607">Thay đổi chủ đề</translation>
 <translation id="4722735765955348426">Mật khẩu của <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> đang chia sẻ màn hình của bạn.</translation>
 <translation id="4722989931633062466">Không được phép đưa ra lời nhắc đăng nhập qua bên thứ ba</translation>
@@ -7230,7 +7230,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> đã bị tạm dừng</translation>
 <translation id="7520766081042531487">Cổng thông tin ẩn danh: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">Hiện phím tắt</translation>
+<translation id="752098910262610337">Hiện lối tắt</translation>
 <translation id="7522255036471229694">Nói “Ok Google”</translation>
 <translation id="7523585675576642403">Đổi tên hồ sơ</translation>
 <translation id="7525067979554623046">Tạo</translation>
@@ -9122,7 +9122,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9220525904950070496">Xóa tài khoản</translation>
 <translation id="9220723036554088545">tải tệp lên</translation>
 <translation id="9220820413868316583">Nhấc ngón tay lên rồi thử lại.</translation>
-<translation id="922152298093051471">Tùy chỉnh Chrome</translation>
+<translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="9222839025964079645">Chưa nhập mật khẩu (<ph name="COUNT" />)</translation>
 <translation id="923467487918828349">Hiển thị tất cả</translation>
 <translation id="924818813611903184">Quản lý ngôn ngữ trong phần cài đặt ChromeOS</translation>
