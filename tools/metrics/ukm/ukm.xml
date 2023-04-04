@@ -738,6 +738,45 @@ be describing additional metrics about the same event.
       auction once, even if that buyer participates in multiple components.
     </summary>
   </metric>
+  <metric name="NumBidsAbortedByBidderWorkletFatalError">
+    <summary>
+      Total number of bids aborted because the BidderWorklet encountered a fatal
+      error, such as a crash, a JS fetch error, or any other fatal error -
+      excluding timeouts, which are counted by the metric below - aggregated
+      across all Owners and component auctions.
+    </summary>
+  </metric>
+  <metric name="NumBidsAbortedByBuyerCumulativeTimeout">
+    <summary>
+      Total number of InterestGroups aborted because the per-buyer cumulative
+      timeout was reached, aggregated across all Owners and component auctions.
+    </summary>
+  </metric>
+  <metric name="NumBidsFilteredByPerBuyerLimits">
+    <summary>
+      Total number of InterestGroups filtered as per-buyer limits are applied,
+      aggregated across all Owners and component auctions.
+    </summary>
+  </metric>
+  <metric name="NumBidsFilteredDuringInterestGroupLoad">
+    <summary>
+      Total number of InterestGroups filtered based on priority during the
+      loading of InterestGroups, aggregated across all Owners and component
+      auctions. This specifically excludes InterestGroups filtered during load
+      for other reasons, such as failing to satisfy requested seller
+      capabilities.
+    </summary>
+  </metric>
+  <metric name="NumBidsFilteredDuringReprioritization">
+    <summary>
+      Total number of InterestGroups filtered during bid reprioritization, which
+      happens once bidding signals are available, aggregated across all Owners
+      and component auctions. Related to UMA metric,
+      Ads.InterestGroup.Auction.BidFiltered, except that it's aggregated. To
+      determine the fraction of bids filtered, compare this against the
+      NumInterestGroups metric.
+    </summary>
+  </metric>
   <metric name="NumDistinctOwnersWithInterestGroups">
     <summary>
       The number of buyers with InterestGroups participating in an auction,

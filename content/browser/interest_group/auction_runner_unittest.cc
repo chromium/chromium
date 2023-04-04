@@ -1898,6 +1898,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumDistinctOwnersWithInterestGroupsName,
                 Entry::kNumSellersWithBiddersName,
                 Entry::kNumBidderWorkletsName,
+                Entry::kNumBidsAbortedByBuyerCumulativeTimeoutName,
+                Entry::kNumBidsAbortedByBidderWorkletFatalErrorName,
+                Entry::kNumBidsFilteredDuringInterestGroupLoadName,
+                Entry::kNumBidsFilteredDuringReprioritizationName,
+                Entry::kNumBidsFilteredByPerBuyerLimitsName,
                 Entry::kKAnonymityBidModeName,
                 Entry::kNumInterestGroupsWithNoBidsName,
                 Entry::kNumInterestGroupsWithOnlyNonKAnonBidName,
@@ -1951,6 +1956,35 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return *this;
     }
 
+    MetricsExpectations& SetNumBidsAbortedByBuyerCumulativeTimeout(
+        int64_t value) {
+      num_bids_aborted_by_buyer_cumulative_timeout = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumBidsAbortedByBidderWorkletFatalError(
+        int64_t value) {
+      num_bids_aborted_by_bidder_worklet_fatal_error = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumBidsFilteredDuringInterestGroupLoad(
+        int64_t value) {
+      num_bids_filtered_during_interest_group_load = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumBidsFilteredDuringReprioritization(
+        int64_t value) {
+      num_bids_filtered_during_reprioritization = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumBidsFilteredByPerBuyerLimits(int64_t value) {
+      num_bids_filtered_by_per_buyer_limits = value;
+      return *this;
+    }
+
     MetricsExpectations& SetNumInterestGroupsWithNoBids(int64_t value) {
       num_interest_groups_with_no_bids = value;
       return *this;
@@ -1980,6 +2014,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     absl::optional<int64_t> num_sellers;
     int64_t num_distinct_owners = 0;
     int64_t num_bidder_worklets = 0;
+    int64_t num_bids_aborted_by_buyer_cumulative_timeout = 0;
+    int64_t num_bids_aborted_by_bidder_worklet_fatal_error = 0;
+    int64_t num_bids_filtered_during_interest_group_load = 0;
+    int64_t num_bids_filtered_during_reprioritization = 0;
+    int64_t num_bids_filtered_by_per_buyer_limits = 0;
     int64_t num_interest_groups_with_no_bids = 0;
     int64_t num_interest_groups_with_only_non_k_anon_bid = 0;
     int64_t num_interest_groups_with_same_bid_for_k_anon_and_non_k_anon = 0;
@@ -2068,6 +2107,28 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         ukm_metrics,
         HasMetric(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName));
     EXPECT_THAT(ukm_metrics, HasMetric(UkmEntry::kEndToEndLatencyInMillisName));
+
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumBidsAbortedByBuyerCumulativeTimeoutName,
+                    expectations.num_bids_aborted_by_buyer_cumulative_timeout));
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(
+            UkmEntry::kNumBidsAbortedByBidderWorkletFatalErrorName,
+            expectations.num_bids_aborted_by_bidder_worklet_fatal_error));
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumBidsFilteredDuringInterestGroupLoadName,
+                    expectations.num_bids_filtered_during_interest_group_load));
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(
+                    UkmEntry::kNumBidsFilteredDuringReprioritizationName,
+                    expectations.num_bids_filtered_during_reprioritization));
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(UkmEntry::kNumBidsFilteredByPerBuyerLimitsName,
+                           expectations.num_bids_filtered_by_per_buyer_limits));
 
     EXPECT_THAT(
         ukm_metrics,
@@ -4275,6 +4336,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(1)
                    .SetNumInterestGroupsWithNoBids(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 
@@ -4484,6 +4546,7 @@ TEST_F(AuctionRunnerTest, NoBids) {
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(2)
                    .SetNumInterestGroupsWithNoBids(2));
 }
 
@@ -7535,6 +7598,7 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(2)
                    .SetNumInterestGroupsWithNoBids(2));
 }
 
@@ -7648,6 +7712,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
                      .SetNumOwnersAndDistinctOwners(2)
                      .SetNumSellers(1)
                      .SetNumBidderWorklets(2)
+                     .SetNumBidsAbortedByBidderWorkletFatalError(1)
                      .SetNumInterestGroupsWithNoBids(1)
                      .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   }
@@ -7791,6 +7856,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(2)
                    .SetNumInterestGroupsWithNoBids(2));
 }
 
@@ -7906,6 +7972,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(2)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(1)
                    .SetNumInterestGroupsWithNoBids(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
@@ -9163,6 +9230,14 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeouts) {
                   "https://adplatform.com/offers.js perBuyerCumulativeTimeout "
                   "exceeded during bid generation."));
   EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+
+  CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
+                   .SetNumInterestGroups(1)
+                   .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumSellers(1)
+                   .SetNumBidderWorklets(1)
+                   .SetNumBidsAbortedByBuyerCumulativeTimeout(1)
+                   .SetNumInterestGroupsWithNoBids(1));
 }
 
 // Test the case where the perBuyerCumulativeTimeout expires during the
@@ -9222,6 +9297,13 @@ TEST_F(AuctionRunnerTest,
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                   .SetNumInterestGroups(1)
+                   .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumSellers(1)
+                   .SetNumBidderWorklets(1)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
 // Test the case where a pending promise delays the start of the
@@ -9415,6 +9497,14 @@ TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeoutsAllBuyersTimeout) {
                   "https://anotheradthing.com/bids.js "
                   "perBuyerCumulativeTimeout exceeded during bid generation."));
   EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+
+  CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
+                   .SetNumInterestGroups(1)
+                   .SetNumOwnersAndDistinctOwners(1)
+                   .SetNumSellers(1)
+                   .SetNumBidderWorklets(1)
+                   .SetNumBidsAbortedByBuyerCumulativeTimeout(1)
+                   .SetNumInterestGroupsWithNoBids(1));
 }
 
 // Auction with only one interest group participating. The priority calculated
@@ -9452,7 +9542,8 @@ TEST_F(AuctionRunnerTest, PriorityVectorFiltersOnlyGroup) {
                    .SetNumInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(0)
-                   .SetNumBidderWorklets(0));
+                   .SetNumBidderWorklets(0)
+                   .SetNumBidsFilteredDuringInterestGroupLoad(1));
 }
 
 // Check that when the priority vector calculation results in a zero priority,
@@ -9539,6 +9630,7 @@ TEST_F(AuctionRunnerTest, EmptyPriorityVector) {
                      .SetNumOwnersAndDistinctOwners(1)
                      .SetNumSellers(1)
                      .SetNumBidderWorklets(1)
+                     .SetNumBidsFilteredByPerBuyerLimits(1)
                      .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
   }
 }
@@ -9598,6 +9690,7 @@ TEST_F(AuctionRunnerTest, PriorityVector) {
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
@@ -9645,6 +9738,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredDuringReprioritization(1)
                    .SetNumInterestGroupsWithNoBids(1));
 }
 
@@ -9744,6 +9838,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredDuringReprioritization(2)
                    .SetNumInterestGroupsWithNoBids(2));
 }
 
@@ -9811,6 +9906,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsFilteredDuringReprioritization(1)
                    .SetNumInterestGroupsWithNoBids(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
@@ -9879,6 +9975,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
+                   .SetNumBidsFilteredDuringReprioritization(1)
                    .SetNumInterestGroupsWithNoBids(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
@@ -9938,6 +10035,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
@@ -9995,6 +10093,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorNoGroupFiltered) {
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
@@ -10045,6 +10144,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsPriorityVectorBasePriority) {
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
@@ -10097,6 +10197,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
@@ -10144,6 +10245,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(1));
 }
 
@@ -10207,6 +10309,8 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(1)
+                   .SetNumBidsFilteredByPerBuyerLimits(1)
                    .SetNumInterestGroupsWithNoBids(1));
 }
 
@@ -10256,6 +10360,7 @@ TEST_F(AuctionRunnerTest,
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(1)
+                   .SetNumBidsAbortedByBidderWorkletFatalError(2)
                    .SetNumInterestGroupsWithNoBids(2));
 }
 

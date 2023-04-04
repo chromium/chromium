@@ -515,6 +515,8 @@ class InterestGroupAuction::BuyerHelper
         // TODO(mmenke): If we can make this the standard behavior for the
         // `priority` field as well, the API would be more consistent.
         if (priority < 0) {
+          auction_->auction_metrics_recorder_
+              ->RecordBidFilteredDuringInterestGroupLoad();
           continue;
         }
       }
@@ -610,6 +612,10 @@ class InterestGroupAuction::BuyerHelper
            !interest_group.priority_vector->empty())
               ? state->calculated_priority
               : absl::optional<double>());
+      if (*new_priority < 0) {
+        auction_->auction_metrics_recorder_
+            ->RecordBidFilteredDuringReprioritization();
+      }
     }
     OnBiddingSignalsReceivedInternal(state, new_priority,
                                      std::move(resume_generate_bid_callback));
@@ -838,6 +844,8 @@ class InterestGroupAuction::BuyerHelper
       // sufficient.
       CloseBidStatePipes(*bid_states_[i]);
     }
+    auction_->auction_metrics_recorder_->RecordBidsFilteredByPerBuyerLimits(
+        bid_states_.size() - size_limit_);
     bid_states_.resize(size_limit_);
 
     // Restore the origin grouping within lowest priority band among the
@@ -852,6 +860,9 @@ class InterestGroupAuction::BuyerHelper
       BidState* bid_state,
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors) {
+    auction_->auction_metrics_recorder_
+        ->RecordBidAbortedByBidderWorkletFatalError();
+
     // Add error(s) directly to error list.
     if (fatal_error_type ==
         AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
@@ -1032,8 +1043,9 @@ class InterestGroupAuction::BuyerHelper
   }
 
   // Invoked when OnBiddingSignalsReceived() has been called for `state`, or
-  // with a negative priority when the worklet process has an error and is
-  // waiting on the OnBiddingSignalsReceived() invocation.
+  // with a negative priority when the worklet process has an error, or the
+  // buyer reaches their cumulative timeout, and is still waiting on the
+  // OnBiddingSignalsReceived() invocation.
   void OnBiddingSignalsReceivedInternal(
       BidState* state,
       absl::optional<double> new_priority,
@@ -1374,6 +1386,8 @@ class InterestGroupAuction::BuyerHelper
       }
     }
 
+    auction_->auction_metrics_recorder_
+        ->RecordBidsAbortedByBuyerCumulativeTimeout(pending_bids.size());
     for (auto* pending_bid : pending_bids) {
       // Fail bids individually, with errors. This does potentially do extra
       // work over just failing the entire auction directly, but ensures there's
