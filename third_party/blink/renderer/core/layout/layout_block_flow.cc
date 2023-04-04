@@ -112,6 +112,47 @@ bool LayoutBlockFlow::IsInitialLetterBox() const {
          !StyleRef().InitialLetter().IsNormal();
 }
 
+void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
+  NOT_DESTROYED();
+  DCHECK(!NeedsLayout());
+  DCHECK(!ChildPrePaintBlockedByDisplayLock());
+
+  if (PhysicalFragmentCount()) {
+    // TODO(crbug.com/1144203): This should compute in the stitched coordinate
+    // system, but overflows in the block direction is converted to the inline
+    // direction in the multicol container. Just unite overflows in the inline
+    // direction only for now.
+    for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+      if (const NGFragmentItems* items = fragment.Items()) {
+        PhysicalRect children_rect;
+        for (NGInlineCursor cursor(fragment, *items); cursor;
+             cursor.MoveToNextSkippingChildren()) {
+          const NGFragmentItem* child = cursor.CurrentItem();
+          DCHECK(child);
+          if (child->HasSelfPaintingLayer()) {
+            continue;
+          }
+          PhysicalRect child_rect = child->InkOverflow();
+          if (!child_rect.IsEmpty()) {
+            child_rect.offset += child->OffsetInContainerFragment();
+            children_rect.Unite(child_rect);
+          }
+        }
+        AddContentsVisualOverflow(children_rect);
+      } else if (fragment.HasFloatingDescendantsForPaint()) {
+        AddVisualOverflowFromFloats(fragment);
+      }
+    }
+  } else {
+    for (RootInlineBox* curr = FirstRootBox(); curr;
+         curr = curr->NextRootBox()) {
+      LayoutRect visual_overflow =
+          curr->VisualOverflowRect(curr->LineTop(), curr->LineBottom());
+      AddContentsVisualOverflow(visual_overflow);
+    }
+  }
+}
+
 DISABLE_CFI_PERF
 void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
@@ -401,6 +442,16 @@ void LayoutBlockFlow::DeleteLineBoxTree() {
   NOT_DESTROYED();
 
   line_boxes_.DeleteLineBoxTree();
+}
+
+bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
+  NOT_DESTROYED();
+  // The 'text-indent' only affects a line if it is the first formatted
+  // line of an element. For example, the first line of an anonymous block
+  // box is only affected if it is the first child of its parent element.
+  // https://drafts.csswg.org/css-text-3/#text-indent-property
+  return !IsAnonymousBlock() || !PreviousSibling() || IsFlexItemIncludingNG() ||
+         IsGridItemIncludingNG();
 }
 
 int LayoutBlockFlow::LineCount(
@@ -985,6 +1036,20 @@ void LayoutBlockFlow::ChildBecameNonInline(LayoutObject*) {
   // |this| may be dead here
 }
 
+bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
+  NOT_DESTROYED();
+  const LayoutObject* object_to_check = this;
+  if (IsAnonymousBlock()) {
+    const LayoutObject* parent = Parent();
+    if (!parent || !parent->BehavesLikeBlockContainer()) {
+      return false;
+    }
+    object_to_check = parent;
+  }
+  return object_to_check->HasNonVisibleOverflow() &&
+         object_to_check->StyleRef().TextOverflow() != ETextOverflow::kClip;
+}
+
 LayoutUnit LayoutBlockFlow::LogicalLeftOffsetForPositioningFloat(
     LayoutUnit logical_top,
     LayoutUnit fixed_offset,
@@ -1165,6 +1230,49 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
 
   DCHECK(!multi_column_flow_thread_);
   multi_column_flow_thread_ = flow_thread;
+}
+
+void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
+  NOT_DESTROYED();
+  DCHECK(ChildrenInline());
+
+  const auto fragments = PhysicalFragments();
+  if (!fragments.IsEmpty()) {
+    DCHECK(!FirstRootBox());
+    for (const NGPhysicalBoxFragment& fragment : fragments) {
+      NGInlineCursor first_line(fragment);
+      if (!first_line) {
+        continue;
+      }
+      first_line.MoveToFirstLine();
+      if (!first_line) {
+        continue;
+      }
+      if (first_line.Current().UsesFirstLineStyle()) {
+        // Mark all descendants of the first line if first-line style.
+        for (NGInlineCursor descendants = first_line.CursorForDescendants();
+             descendants; descendants.MoveToNext()) {
+          const NGFragmentItem* item = descendants.Current().Item();
+          if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+            descendants.MoveToNextSkippingChildren();
+            continue;
+          }
+          LayoutObject* layout_object = item->GetMutableLayoutObject();
+          DCHECK(layout_object);
+          layout_object->StyleRef().ClearCachedPseudoElementStyles();
+          layout_object->SetShouldDoFullPaintInvalidation();
+        }
+        StyleRef().ClearCachedPseudoElementStyles();
+        SetShouldDoFullPaintInvalidation();
+        return;
+      }
+    }
+    return;
+  }
+
+  if (RootInlineBox* first_root_box = FirstRootBox()) {
+    first_root_box->SetShouldDoFullPaintInvalidationForFirstLine();
+  }
 }
 
 RecalcLayoutOverflowResult
