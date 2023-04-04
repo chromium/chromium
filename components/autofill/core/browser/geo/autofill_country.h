@@ -37,10 +37,10 @@ class AutofillCountry {
   // Autofill relies on libaddressinput for its address format.
   // AddressFormatExtensions are used to extend this format on a country-by-
   // country basis. This is needed because while some field types are not
-  // strictly required for a valid address, we nonetheless see them in practise
+  // strictly required for a valid address, we nonetheless see them in practice
   // and want to offer filling support.
   // This struct defines that a certain `type` is considered part of the address
-  // format in Autofill, specifies its `label` and placment after the existing
+  // format in Autofill, specifies its `label` and placement after the existing
   // type `placed_after` in the settings-UI.
   // `large_sized` indicates if the field stretches the entire line (true) or
   // half the line (false).

@@ -9,6 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -42,6 +45,41 @@ constexpr auto kRequiredFieldMapping =
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_LINE1},
          {::i18n::addressinput::AddressField::POSTAL_CODE,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_ZIP}});
+
+// Autofill is experimenting with a looser set of requirements based on a newer
+// version of libaddressinput. If the experiment is successful, those
+// requirements will become the default ones. For now the differences are
+// hardcoded using that map.
+// Set of countries where the current autofill country-specific address import
+// requirements differ from the updated ones.
+constexpr auto kAddressRequirementExceptionCountries =
+    base::MakeFixedFlatSet<base::StringPiece>(
+        {"AF", "AI", "AL", "AM", "AR", "AZ", "BA", "BB", "BD", "BG", "BH", "BM",
+         "BN", "BS", "BT", "CC", "CL", "CO", "CR", "CV", "CX", "CY", "DO", "DZ",
+         "EC", "EH", "ET", "FO", "GE", "GN", "GT", "GW", "HM", "HR", "HT", "ID",
+         "IE", "IL", "IR", "IS", "JO", "KE", "KG", "KH", "KI", "KP", "KW", "KZ",
+         "LA", "LB", "LK", "LR", "LS", "MA", "MC", "MD", "ME", "MG", "MK", "MM",
+         "MN", "MT", "MU", "MV", "MZ", "NA", "NE", "NF", "NG", "NI", "NP", "OM",
+         "PA", "PE", "PK", "PY", "RS", "SA", "SC", "SI", "SN", "SR", "SZ", "TH",
+         "TJ", "TM", "TN", "TV", "TZ", "UY", "UZ", "VA", "VC"});
+
+// Gets the country-specific field requirements for address import.
+RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
+    const std::string& country_code) {
+  if (kAddressRequirementExceptionCountries.contains(country_code) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillUseUpdatedRequiredFieldsForAddressImport)) {
+    if (country_code == "CO" || country_code == "ID" || country_code == "CR") {
+      return ADDRESS_REQUIRES_LINE1_STATE;
+    } else {
+      return ADDRESS_REQUIRES_LINE1_CITY;
+    }
+  } else {
+    return CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
+        country_code);
+  }
+}
+
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
@@ -54,16 +92,15 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
                       ? country_data_map->GetCountryCodeForAlias(country_code)
                       : country_code;
 
-  // Acquire the country address data.
   required_fields_for_address_import_ =
-      country_data_map->GetRequiredFieldsForAddressImport(country_code_);
+      GetRequiredFieldsForAddressImport(country_code_);
 
   // Translate the country name by the supplied local.
   if (locale)
     name_ = l10n_util::GetDisplayNameForCountry(country_code_, *locale);
 }
 
-AutofillCountry::~AutofillCountry() {}
+AutofillCountry::~AutofillCountry() = default;
 
 // static
 const std::string AutofillCountry::CountryCodeForLocale(
@@ -142,7 +179,7 @@ AutofillCountry::address_format_extensions() const {
 
 bool AutofillCountry::IsAddressFieldSettingAccessible(
     AddressField address_field) const {
-  // Check if `address_field` is part of libaddressinputs native address format
+  // Check if `address_field` is part of libaddressinput's native address format
   // or part of the Autofill's address extensions.
   return ::i18n::addressinput::IsFieldUsed(address_field, country_code_) ||
          base::Contains(

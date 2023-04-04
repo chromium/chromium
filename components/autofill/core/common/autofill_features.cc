@@ -626,6 +626,13 @@ BASE_FEATURE(kAutofillLogUKMEventsWithSampleRate,
              "AutofillLogUKMEventsWithSampleRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Autofill is experimenting with an updated set of country specific rules.
+// Controls whether we use the current country-specific address import field
+// requirements or the updated ones.
+BASE_FEATURE(kAutofillUseUpdatedRequiredFieldsForAddressImport,
+             "AutofillUseUpdatedRequiredFieldsForAddressImport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether virtual card suggestions are shown on the touch to fill
 // surface for credit cards on Android.
 BASE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid,
