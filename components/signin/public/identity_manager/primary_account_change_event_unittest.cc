@@ -15,8 +15,8 @@ using State = signin::PrimaryAccountChangeEvent::State;
 class PrimaryAccountChangeEventTest : public testing::Test {
  public:
   PrimaryAccountChangeEventTest() {
-    CoreAccountInfo account_info1 = GetCoreAccountInfoFrom("account1@test.com");
-    CoreAccountInfo account_info2 = GetCoreAccountInfoFrom("account2@test.com");
+    CoreAccountInfo account_info1 = GetCoreAccountInfoFrom("account1");
+    CoreAccountInfo account_info2 = GetCoreAccountInfoFrom("account2");
 
     empty_not_required_ = State(CoreAccountInfo(), ConsentLevel::kSignin);
     account1_not_required_ = State(account_info1, ConsentLevel::kSignin);
@@ -32,11 +32,11 @@ class PrimaryAccountChangeEventTest : public testing::Test {
   State account2_sync_;
 
  private:
-  CoreAccountInfo GetCoreAccountInfoFrom(const char* account_name) {
+  CoreAccountInfo GetCoreAccountInfoFrom(const char* gaia_id) {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId(account_name);
-    account_info.gaia = account_info.email = account_name;
-
+    account_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
+    account_info.gaia = gaia_id;
+    account_info.email = std::string(gaia_id) + "@gmail.com";
     return account_info;
   }
 };

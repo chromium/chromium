@@ -5229,7 +5229,7 @@ TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
 TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   // Set up some sync transport opt-ins in the prefs.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
-      prefs_.get(), CoreAccountId("account1"), true);
+      prefs_.get(), CoreAccountId::FromGaiaId("account1"), true);
   EXPECT_FALSE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 
   // Simulate that the cookies get cleared by the user.

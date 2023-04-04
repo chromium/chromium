@@ -210,7 +210,7 @@ class MockChromePasswordProtectionService
   }
   void SetAccountInfo(const std::string& username) {
     AccountInfo account_info;
-    account_info.account_id = CoreAccountId("account_id");
+    account_info.account_id = CoreAccountId::FromGaiaId("gaia");
     account_info.email = username;
     account_info.gaia = "gaia";
     account_info_ = account_info;

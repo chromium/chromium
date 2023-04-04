@@ -604,7 +604,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
 
   CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  EXPECT_EQ(primary_account_id, CoreAccountId(kTestGaiaId));
+  EXPECT_EQ(primary_account_id, CoreAccountId::FromGaiaId(kTestGaiaId));
   EXPECT_EQ(primary_account_id, primary_account_info.account_id);
 
   EXPECT_EQ(primary_account_id, identity_manager()->GetPrimaryAccountId(
@@ -674,13 +674,14 @@ TEST_F(IdentityManagerTest,
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_EQ(kTestGaiaId, primary_account_info.gaia);
   EXPECT_EQ(kTestEmail, primary_account_info.email);
-  EXPECT_EQ(CoreAccountId(kTestGaiaId), primary_account_info.account_id);
+  EXPECT_EQ(CoreAccountId::FromGaiaId(kTestGaiaId),
+            primary_account_info.account_id);
   EXPECT_EQ(primary_account_info,
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
   CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  EXPECT_EQ(primary_account_id, CoreAccountId(kTestGaiaId));
+  EXPECT_EQ(primary_account_id, CoreAccountId::FromGaiaId(kTestGaiaId));
   EXPECT_EQ(primary_account_id,
             identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin));
 }
@@ -1710,7 +1711,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnRefreshTokenRemovalOfUnknownAccount) {
   // IdentityManager passes on the callback in this case.
   token_service()->set_all_credentials_loaded_for_testing(false);
 
-  CoreAccountId dummy_account_id("dummy_account");
+  CoreAccountId dummy_account_id = CoreAccountId::FromGaiaId("dummy_account");
 
   base::RunLoop run_loop;
   token_service()->RevokeCredentials(dummy_account_id);
@@ -2013,7 +2014,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
 }
 
 TEST_F(IdentityManagerTest, CallbackSentOnSuccessfulAdditionOfAccountToCookie) {
-  const CoreAccountId kTestAccountId("account_id");
+  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
 
   CoreAccountId account_from_add_account_to_cookie_completed_callback;
   GoogleServiceAuthError error_from_add_account_to_cookie_completed_callback;
@@ -2036,7 +2037,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnSuccessfulAdditionOfAccountToCookie) {
 }
 
 TEST_F(IdentityManagerTest, CallbackSentOnFailureAdditionOfAccountToCookie) {
-  const CoreAccountId kTestAccountId("account_id");
+  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
 
   CoreAccountId account_from_add_account_to_cookie_completed_callback;
   GoogleServiceAuthError error_from_add_account_to_cookie_completed_callback;
@@ -2062,8 +2063,9 @@ TEST_F(IdentityManagerTest, CallbackSentOnFailureAdditionOfAccountToCookie) {
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnSetAccountsInCookieCompleted_Success) {
-  const CoreAccountId kTestAccountId("account_id");
-  const CoreAccountId kTestAccountId2("account_id2");
+  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId kTestAccountId2 =
+      CoreAccountId::FromGaiaId("account_id2");
   const std::vector<std::pair<CoreAccountId, std::string>> accounts = {
       {kTestAccountId, kTestAccountId.ToString()},
       {kTestAccountId2, kTestAccountId2.ToString()}};
@@ -2091,8 +2093,9 @@ TEST_F(IdentityManagerTest,
 
 TEST_F(IdentityManagerTest,
        CallbackSentOnSetAccountsInCookieCompleted_Failure) {
-  const CoreAccountId kTestAccountId("account_id");
-  const CoreAccountId kTestAccountId2("account_id2");
+  const CoreAccountId kTestAccountId = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId kTestAccountId2 =
+      CoreAccountId::FromGaiaId("account_id2");
   const std::vector<std::pair<CoreAccountId, std::string>> accounts = {
       {kTestAccountId, kTestAccountId.ToString()},
       {kTestAccountId2, kTestAccountId2.ToString()}};

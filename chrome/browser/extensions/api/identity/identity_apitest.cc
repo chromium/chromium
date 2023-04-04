@@ -3241,7 +3241,7 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
 
   void SetCachedToken(const IdentityTokenCacheValue& token_data) {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId("test@example.com");
+    account_info.account_id = CoreAccountId::FromGaiaId("test_gaia");
     account_info.gaia = "test_gaia";
     account_info.email = "test@example.com";
     ExtensionTokenKey key(kExtensionId, account_info,
@@ -3251,7 +3251,7 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
 
   const IdentityTokenCacheValue& GetCachedToken() {
     CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId("test@example.com");
+    account_info.account_id = CoreAccountId::FromGaiaId("test_gaia");
     account_info.gaia = "test_gaia";
     account_info.email = "test@example.com";
     ExtensionTokenKey key(kExtensionId, account_info,

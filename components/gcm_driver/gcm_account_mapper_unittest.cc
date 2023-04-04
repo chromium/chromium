@@ -280,11 +280,11 @@ class GCMAccountMapperTest : public testing::Test {
 };
 
 GCMAccountMapperTest::GCMAccountMapperTest()
-    : kAccountId("acc_id"),
-      kAccountId1("acc_id1"),
-      kAccountId2("acc_id2"),
-      kAccountId3("acc_id3"),
-      kAccountId4("acc_id4") {
+    : kAccountId(CoreAccountId::FromGaiaId("acc_id")),
+      kAccountId1(CoreAccountId::FromGaiaId("acc_id1")),
+      kAccountId2(CoreAccountId::FromGaiaId("acc_id2")),
+      kAccountId3(CoreAccountId::FromGaiaId("acc_id3")),
+      kAccountId4(CoreAccountId::FromGaiaId("acc_id4")) {
   Restart();
 }
 

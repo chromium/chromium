@@ -147,10 +147,10 @@ class InstrumentedGaiaCookieManagerService : public GaiaCookieManagerService {
 class GaiaCookieManagerServiceTest : public testing::Test {
  public:
   GaiaCookieManagerServiceTest()
-      : account_id1_(kAccountId1),
-        account_id2_(kAccountId2),
-        account_id3_(kAccountId3),
-        account_id4_(kAccountId4),
+      : account_id1_(CoreAccountId::FromGaiaId(kAccountId1)),
+        account_id2_(CoreAccountId::FromGaiaId(kAccountId2)),
+        account_id3_(CoreAccountId::FromGaiaId(kAccountId3)),
+        account_id4_(CoreAccountId::FromGaiaId(kAccountId4)),
         no_error_(GoogleServiceAuthError::NONE),
         error_(GoogleServiceAuthError::SERVICE_ERROR),
         canceled_(GoogleServiceAuthError::REQUEST_CANCELED) {

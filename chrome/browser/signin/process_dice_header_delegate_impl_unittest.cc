@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,15 +94,17 @@ class ProcessDiceHeaderDelegateImplTest
   ProcessDiceHeaderDelegateImplTest()
       : enable_sync_called_(false),
         show_error_called_(false),
-        account_id_("12345"),
         email_("foo@bar.com"),
-        auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {}
+        auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
+    account_id_ = CoreAccountId::FromGaiaId("12345");
+  }
 
-  ~ProcessDiceHeaderDelegateImplTest() override {}
+  ~ProcessDiceHeaderDelegateImplTest() override = default;
 
   void AddAccount(bool is_primary) {
-    if (!identity_test_environment_profile_adaptor_)
+    if (!identity_test_environment_profile_adaptor_) {
       InitializeIdentityTestEnvironment();
+    }
     if (is_primary) {
       identity_test_environment_profile_adaptor_->identity_test_env()
           ->SetPrimaryAccount(email_, signin::ConsentLevel::kSync);

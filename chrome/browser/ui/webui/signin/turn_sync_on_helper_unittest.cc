@@ -590,7 +590,9 @@ class TurnSyncOnHelperTest : public testing::Test {
     signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
   }
 
-  void UseInvalidAccount() { account_id_ = CoreAccountId("invalid_account"); }
+  void UseInvalidAccount() {
+    account_id_ = CoreAccountId::FromGaiaId("invalid_account_gaia_id");
+  }
 
   void SetExpectationsForSyncStartupCompleted(Profile* profile) {
     syncer::MockSyncService* mock_sync_service = GetMockSyncService(profile);

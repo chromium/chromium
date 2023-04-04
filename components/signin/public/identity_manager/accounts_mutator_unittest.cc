@@ -445,15 +445,15 @@ TEST_F(AccountsMutatorTest, RemoveAccount_NonExistingAccount) {
       }));
 
   accounts_mutator()->RemoveAccount(
-      CoreAccountId(kTestGaiaId),
+      CoreAccountId::FromGaiaId(kTestGaiaId),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.RunUntilIdle();
 
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(
-      CoreAccountId(kTestGaiaId)));
+      CoreAccountId::FromGaiaId(kTestGaiaId)));
   EXPECT_FALSE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          CoreAccountId(kTestGaiaId)));
+          CoreAccountId::FromGaiaId(kTestGaiaId)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0U);
 }
 

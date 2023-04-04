@@ -78,7 +78,8 @@ class ConsentAuditorImplTest : public testing::Test {
   // Fake account ID for testing.
   const CoreAccountId kAccountId;
 
-  ConsentAuditorImplTest() : kAccountId("testing_account_id") {}
+  ConsentAuditorImplTest()
+      : kAccountId(CoreAccountId::FromGaiaId("testing_account_id")) {}
 
   void SetUp() override {
     CreateConsentAuditorImpl(std::make_unique<FakeConsentSyncBridge>());

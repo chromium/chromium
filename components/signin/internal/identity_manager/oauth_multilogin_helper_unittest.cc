@@ -13,6 +13,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -23,12 +24,10 @@ namespace signin {
 
 namespace {
 
-const CoreAccountId kAccountId("account_id_1");
-const CoreAccountId kAccountId2("account_id_2");
-const char kGaiaId[] = "gaia_id_1";
-const char kGaiaId2[] = "gaia_id_2";
-const char kAccessToken[] = "access_token_1";
-const char kAccessToken2[] = "access_token_2";
+constexpr char kGaiaId[] = "gaia_id_1";
+constexpr char kGaiaId2[] = "gaia_id_2";
+constexpr char kAccessToken[] = "access_token_1";
+constexpr char kAccessToken2[] = "access_token_2";
 
 const char kExternalCcResult[] = "youtube:OK";
 
@@ -160,7 +159,8 @@ class MockCookieManager
 
 class MockTokenService : public FakeProfileOAuth2TokenService {
  public:
-  MockTokenService(PrefService* prefs) : FakeProfileOAuth2TokenService(prefs) {}
+  explicit MockTokenService(PrefService* prefs)
+      : FakeProfileOAuth2TokenService(prefs) {}
 
   MOCK_METHOD2(InvalidateTokenForMultilogin,
                void(const CoreAccountId& account_id, const std::string& token));
@@ -173,9 +173,10 @@ class OAuthMultiloginHelperTest
       public AccountsCookieMutator::PartitionDelegate {
  public:
   OAuthMultiloginHelperTest()
-      : test_signin_client_(&pref_service_),
-        mock_token_service_(&pref_service_) {
-  }
+      : kAccountId(CoreAccountId::FromGaiaId(kGaiaId)),
+        kAccountId2(CoreAccountId::FromGaiaId(kGaiaId2)),
+        test_signin_client_(&pref_service_),
+        mock_token_service_(&pref_service_) {}
 
   ~OAuthMultiloginHelperTest() override = default;
 
@@ -235,6 +236,8 @@ class OAuthMultiloginHelperTest
     return &mock_cookie_manager_;
   }
 
+  const CoreAccountId kAccountId;
+  const CoreAccountId kAccountId2;
   base::test::TaskEnvironment task_environment_;
 
   bool callback_called_ = false;

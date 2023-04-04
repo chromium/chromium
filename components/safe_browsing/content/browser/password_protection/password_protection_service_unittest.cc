@@ -1131,7 +1131,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
 
   // Initiate a saved password entry request (w/ no sync password).
   AccountInfo account_info;
-  account_info.account_id = CoreAccountId("account_id");
+  account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
   account_info.gaia = "gaia";
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
@@ -1356,7 +1356,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSignedIn())
       .WillRepeatedly(Return(true));
   AccountInfo account_info;
-  account_info.account_id = CoreAccountId("account_id");
+  account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
   account_info.gaia = "gaia";
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
@@ -1507,7 +1507,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSignedIn())
       .WillRepeatedly(Return(true));
   AccountInfo account_info;
-  account_info.account_id = CoreAccountId("account_id");
+  account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
   account_info.gaia = "gaia";
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
