@@ -201,7 +201,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   builder->Add("deviceRequisitionSharkPromptText",
                IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
 
-  builder->Add("welcomeScreenQuickStart", IDS_LOGIN_GET_STARTED);
+  builder->Add("welcomeScreenQuickStart", IDS_LOGIN_QUICK_START_SETUP);
 }
 
 void WelcomeScreenHandler::DeclareJSCallbacks() {
@@ -226,8 +226,9 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   // For the case 2) we might just skip this setup - welcome screen is not
   // needed anymore.
 
-  if (user_manager::UserManager::Get()->IsUserLoggedIn())
+  if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return;
+  }
 
   const std::string application_locale =
       g_browser_process->GetApplicationLocale();
@@ -238,8 +239,9 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 
   base::Value::List language_list = language_list_.Clone();
 
-  if (language_list.empty())
+  if (language_list.empty()) {
     language_list = GetMinimalUILanguageList();
+  }
 
   dict->Set("languageList", std::move(language_list));
   dict->Set("inputMethodsList", GetAndActivateLoginKeyboardLayouts(

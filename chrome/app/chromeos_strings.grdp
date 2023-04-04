@@ -1287,6 +1287,9 @@
   <message name="IDS_LOGIN_GET_STARTED" desc="A label on the button. Used on the welcome screen (the first one on OOBE) and on the marketing optin screen (the last one in OOBE).">
     Get started
   </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP" desc="A label on the button. Used on multiple screens in OOBE to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
+    Set up with Android phone
+  </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
     Swipe up to get started
   </message>
