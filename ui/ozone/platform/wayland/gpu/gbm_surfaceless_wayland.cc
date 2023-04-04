@@ -160,8 +160,10 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
         {overlay_plane_data, nullptr, buf_id, surface_scale_factor()});
   } else {
     std::vector<gfx::GpuFence> acquire_fences;
-    if (gpu_fence)
+    if (gpu_fence &&
+        (buffer_manager_->supports_acquire_fence() || use_egl_fence_sync_)) {
       acquire_fences.push_back(std::move(*gpu_fence));
+    }
 
     frame->schedule_planes_succeeded = image->ScheduleOverlayPlane(
         widget_, overlay_plane_data, std::move(acquire_fences), {});
