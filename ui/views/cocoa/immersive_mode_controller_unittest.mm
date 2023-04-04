@@ -379,7 +379,7 @@ TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
 }
 
-// Test ImmersiveModeTabbedController construction and destruction.
+// Test ImmersiveModeTabbedController reveal lock tests.
 TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
   // Controller under test.
   auto immersive_mode_controller =
@@ -397,6 +397,21 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
   EXPECT_FALSE(browser().toolbar.visible);
   immersive_mode_controller->RevealLock();
   EXPECT_TRUE(browser().toolbar.visible);
+  immersive_mode_controller->RevealUnlock();
+  EXPECT_FALSE(browser().toolbar.visible);
+
+  // Make sure the visibility state doesn't change while a reveal lock is
+  // active.
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAlways);
+  EXPECT_TRUE(browser().toolbar.visible);
+  immersive_mode_controller->RevealLock();
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAutohide);
+  EXPECT_TRUE(browser().toolbar.visible);
+
+  // Make sure the visibility state updates after the last reveal lock has
+  // been released.
   immersive_mode_controller->RevealUnlock();
   EXPECT_FALSE(browser().toolbar.visible);
 }

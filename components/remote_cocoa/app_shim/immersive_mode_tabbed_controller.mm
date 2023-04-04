@@ -111,6 +111,14 @@ void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(
     mojom::ToolbarVisibilityStyle style) {
+  // Don't make changes when a reveal lock is active. Do update the
+  // `last_used_style` so the style will be updated once all outstanding reveal
+  // locks are released.
+  if (reveal_lock_count() > 0) {
+    set_last_used_style(style);
+    return;
+  }
+
   // TODO(https://crbug.com/1426944): A NSTitlebarAccessoryViewController hosted
   // in the titlebar, as opposed to above or below it, does not hide/show when
   // using the `hidden` property. Instead we must entirely remove the view
