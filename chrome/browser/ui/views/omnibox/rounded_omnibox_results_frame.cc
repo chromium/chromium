@@ -16,7 +16,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -180,7 +179,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   // Use rounded corners.
   bool cr23_expanded_shape =
       base::FeatureList::IsEnabled(omnibox::kExpandedStateShape) ||
-      base::FeatureList::IsEnabled(features::kChromeRefresh2023);
+      base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella);
   int corner_radius =
       cr23_expanded_shape
           ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
@@ -240,7 +239,7 @@ gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
   if (ui::TouchUiController::Get()->touch_ui()) {
     return gfx::Insets::TLBR(6, 1, 5, 1);
   } else if (base::FeatureList::IsEnabled(omnibox::kExpandedStateHeight) ||
-             base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+             base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella)) {
     return gfx::Insets::VH(5, 6);
   }
   return gfx::Insets::VH(4, 6);
