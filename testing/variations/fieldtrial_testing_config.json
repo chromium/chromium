@@ -431,6 +431,26 @@
             ]
         }
     ],
+    "AndroidTabGroupsContinuation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_WithLowEndAndAccessibility",
+                    "params": {
+                        "gts-accessibility-list-mode": "false",
+                        "gts-accessibility-support": "true",
+                        "gts-low-end-support": "true"
+                    },
+                    "enable_features": [
+                        "TabGroupsContinuationAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidTabSelectionEditorV2": [
         {
             "platforms": [
@@ -5699,25 +5719,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GpuCleanupInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GridAndGroupAndroidM5": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_launch_bug_fix": "true",
-                        "enable_launch_polish": "true"
-                    },
-                    "enable_features": [
-                        "TabGroupsContinuationAndroid"
                     ]
                 }
             ]
