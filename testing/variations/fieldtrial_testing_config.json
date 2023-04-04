@@ -13251,28 +13251,6 @@
             ]
         }
     ],
-    "UserMediaCaptureOnFocus": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "UserMediaCaptureOnFocus",
-                    "enable_features": [
-                        "UserMediaCaptureOnFocus"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ConcurrentSparkplug": [
         {
             "platforms": [
