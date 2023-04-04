@@ -23,21 +23,23 @@ def _builder_ref_to_builder_id(ref):
         builder = builder,
     )
 
-def _target_builder(*, builder, dimensions = {}, testers = None):
+def _target_builder(*, builder, dimensions = None, testers = None):
     """Details for a target builder for a polymorphic launcher.
 
     Args:
         builder: (str) The bucket-qualified reference to the builder that
             performs the polymoprhic runs.
-        dimensions: (dict[str, str]) Additional dimensions to set for the target
-            builder. Any dimensions specified here will override dimensions on
-            the runner builder. An empty dimension value will remove the
-            dimension when the runner builder is triggered for the target
-            builder.
+        dimensions: (dimensions.dimensions) Additional dimensions to set for the
+            target builder. Any dimensions specified here will override
+            dimensions on the runner builder. An empty dimension value will
+            remove the dimension when the runner builder is triggered for the
+            target builder.
         testers: (list[str]) An optional list of testers to restrict the
             operation to. If not specified, then the operation will include all
             testers that are triggered by the target builder.
     """
+    if dimensions:
+        dimensions = dimensions.resolve(*builder.split("/"))
     return struct(
         builder = builder,
         dimensions = dimensions,
