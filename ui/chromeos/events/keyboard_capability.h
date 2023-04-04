@@ -227,11 +227,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
   // Check if a specific key event exists on a given keyboard.
-  bool HasKeyEvent(const KeyboardCode& key_code,
-                   const InputDevice& keyboard) const;
+  bool HasKeyEvent(const KeyboardCode& key_code, const InputDevice& keyboard);
 
   // Check if any of the connected keyboards has a specific key event.
-  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code) const;
+  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code);
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() {
     return keyboard_info_map_;

@@ -350,7 +350,7 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 }
 
 bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
-                                     const InputDevice& keyboard) const {
+                                     const InputDevice& keyboard) {
   // Handle top row keys.
   if (IsTopRowKey(key_code)) {
     KeyboardTopRowLayout layout =
@@ -374,12 +374,19 @@ bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
     return HasSixPackKey(keyboard);
   }
 
+  // Handle assistant key.
+  if (key_code == KeyboardCode::VKEY_ASSISTANT) {
+    const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
+    return keyboard_info &&
+           keyboard_info->event_device_info->HasKeyEvent(KEY_ASSISTANT);
+  }
+
   // TODO(zhangwenyu): check other specific keys, e.g. assistant key.
   return true;
 }
 
 bool KeyboardCapability::HasKeyEventOnAnyKeyboard(
-    const KeyboardCode& key_code) const {
+    const KeyboardCode& key_code) {
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (HasKeyEvent(key_code, keyboard)) {

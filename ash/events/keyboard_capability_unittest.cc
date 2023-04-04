@@ -534,4 +534,25 @@ TEST_P(KeyEventTest, TestHasKeyEvent) {
   }
 }
 
+TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
+  // Add a fake kEveKeyboard keyboard, which has the assistant key.
+  const ui::InputDevice test_keyboard_1 =
+      AddFakeKeyboardInfoToKeyboardCapability(
+          kDeviceId1, ui::kEveKeyboard,
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
+
+  EXPECT_TRUE(keyboard_capability_->HasKeyEvent(
+      ui::KeyboardCode::VKEY_ASSISTANT, test_keyboard_1));
+
+  // Add a fake kDrallionKeyboard keyboard, which does not have the assistant
+  // key.
+  const ui::InputDevice test_keyboard_2 =
+      AddFakeKeyboardInfoToKeyboardCapability(
+          kDeviceId1, ui::kDrallionKeyboard,
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
+
+  EXPECT_FALSE(keyboard_capability_->HasKeyEvent(
+      ui::KeyboardCode::VKEY_ASSISTANT, test_keyboard_2));
+}
+
 }  // namespace ash
