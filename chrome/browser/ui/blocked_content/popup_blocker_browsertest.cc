@@ -668,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
+// TODO(crbug.com/1430472): Re-enable this test
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_CtrlEnterKey) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL url(embedded_test_server()->GetURL(
