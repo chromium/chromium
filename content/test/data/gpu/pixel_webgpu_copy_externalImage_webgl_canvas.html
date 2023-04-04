@@ -47,7 +47,7 @@
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, glCanvas,
-                                           {useImport: false, isWebGLCanvas: true});
+                                           {isWebGLCanvas: true});
 
         waitForFinish();
       };

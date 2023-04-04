@@ -438,23 +438,6 @@ class PixelTestPages():
         video_frame_query_params = '?sourceType=sw_decoder'
 
       return [
-          PixelTestPage('pixel_webgpu_import_webgl_canvas.html',
-                        base_name + '_WebGPUImportWebGLCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args),
-          PixelTestPage('pixel_webgpu_import_2d_canvas.html',
-                        base_name + '_WebGPUImport2DCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args),
-          PixelTestPage('pixel_webgpu_import_2d_canvas.html',
-                        base_name + '_WebGPUImportUnaccelerated2DCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args +
-                        [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-          PixelTestPage('pixel_webgpu_import_webgpu_canvas.html',
-                        base_name + '_WebGPUImportWebGPUCanvas',
-                        test_rect=[0, 0, 400, 200],
-                        browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_import_video_frame.html' +
                         video_frame_query_params,
                         base_name + '_WebGPUImportVideoFrame',

@@ -740,7 +740,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createShaderModule
 [Worker]     method createTexture
 [Worker]     method destroy
-[Worker]     method experimentalImportTexture
 [Worker]     method importExternalTexture
 [Worker]     method popErrorScope
 [Worker]     method pushErrorScope

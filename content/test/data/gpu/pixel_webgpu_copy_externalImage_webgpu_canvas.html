@@ -99,7 +99,7 @@
 
       const renderCallback = function() {
         webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, gpuCanvasSource,
-                                           {useImport: false, isWebGLCanvas: false});
+                                           {isWebGLCanvas: false});
 
         waitForFinish();
       };

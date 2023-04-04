@@ -2961,7 +2961,6 @@ interface GPUDevice : EventTarget
     method createShaderModule
     method createTexture
     method destroy
-    method experimentalImportTexture
     method importExternalTexture
     method popErrorScope
     method pushErrorScope

@@ -3711,12 +3711,6 @@
       public: true,
     },
     {
-      // Requires both WebGPU and --enable-experimental-web-platform-features
-      name: "WebGPUImportTexture",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "WebGPUWebCodecs",
       base_feature: "none",
       origin_trial_feature_name: "WebGPUWebCodecs",
