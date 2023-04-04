@@ -83,6 +83,17 @@ void BucketManagerHost::OpenBucket(const std::string& name,
                      std::move(callback)));
 }
 
+void BucketManagerHost::GetBucketForDevtools(
+    const std::string& name,
+    GetBucketForDevtoolsCallback callback) {
+  GetQuotaManagerProxy()->GetBucketByNameUnsafe(
+      storage_key_, name, blink::mojom::StorageType::kTemporary,
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&BucketManagerHost::DidGetBucket,
+                     weak_factory_.GetWeakPtr(), receivers_.current_context(),
+                     std::move(callback)));
+}
+
 void BucketManagerHost::Keys(KeysCallback callback) {
   GetQuotaManagerProxy()->GetBucketsForStorageKey(
       storage_key_, blink::mojom::StorageType::kTemporary,
@@ -142,11 +153,11 @@ void BucketManagerHost::DidGetBucket(
         case storage::QuotaError::kInvalidExpiration:
           return blink::mojom::BucketError::kInvalidExpiration;
         case storage::QuotaError::kNone:
-        case storage::QuotaError::kNotFound:
         case storage::QuotaError::kEntryExistsError:
         case storage::QuotaError::kFileOperationError:
           NOTREACHED();
           ABSL_FALLTHROUGH_INTENDED;
+        case storage::QuotaError::kNotFound:
         case storage::QuotaError::kDatabaseError:
         case storage::QuotaError::kUnknownError:
           return blink::mojom::BucketError::kUnknown;
