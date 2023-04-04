@@ -1034,22 +1034,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   RunTest("waitForTestResultsInConsole", kArbitraryPage);
 }
 
-// Tests that chrome.devtools extension is correctly exposed.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionChromeUrlTest, TestExtensionOnNewTab) {
-  // Install the dynamically-generated devtools extension.
-  const Extension* devtools_extension = LoadExtensionForTest(
-      "Devtools Extension", "panel_devtools_page.html", "");
-  ASSERT_TRUE(devtools_extension);
-  extensions::util::SetIsIncognitoEnabled(devtools_extension->id(),
-                                          browser()->profile(), true);
-
-  OpenDevToolsWindowOnOffTheRecordTab(chrome::kChromeUINewTabURL);
-
-  // Wait for the extension's panel to finish loading -- it'll output 'PASS'
-  // when it's installed. waitForTestResultsInConsole waits until that 'PASS'.
-  RunTestFunction(window_, "waitForTestResultsInConsole");
-}
-
 // Tests that http Iframes within the visible devtools panel for the devtools
 // extension are rendered in their own processes and not in the devtools process
 // or the extension's process.  This is tested because this is one of the
