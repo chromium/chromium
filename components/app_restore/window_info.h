@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_APP_RESTORE_WINDOW_INFO_H_
 #define COMPONENTS_APP_RESTORE_WINDOW_INFO_H_
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -47,7 +47,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
   absl::optional<int32_t> desk_id;
 
   // Virtual desk guid.
-  base::GUID desk_guid;
+  base::Uuid desk_guid;
 
   // Current bounds in screen in coordinates. If the window has restore bounds,
   // then this contains the restore bounds.

@@ -327,7 +327,7 @@ void FullRestoreSaveHandler::SaveWindowInfo(
 }
 
 void FullRestoreSaveHandler::SaveRemovingDeskGuid(
-    const base::GUID& removing_desk_guid) {
+    const base::Uuid& removing_desk_guid) {
   profile_path_to_restore_data_[active_profile_path_].set_removing_desk_guid(
       removing_desk_guid);
 

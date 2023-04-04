@@ -220,12 +220,12 @@ absl::optional<ui::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
              : absl::nullopt;
 }
 
-base::GUID GetGuidValueFromDict(const base::Value::Dict& dict,
+base::Uuid GetGuidValueFromDict(const base::Value::Dict& dict,
                                 const std::string& key_name) {
   if (const std::string* value = dict.FindString(key_name)) {
-    return base::GUID::ParseCaseInsensitive(*value);
+    return base::Uuid::ParseCaseInsensitive(*value);
   }
-  return base::GUID();
+  return base::Uuid();
 }
 
 }  // namespace
@@ -541,7 +541,7 @@ void AppRestoreData::ModifyThemeColor(uint32_t window_primary_color,
 void AppRestoreData::ClearWindowInfo() {
   activation_index.reset();
   desk_id.reset();
-  desk_guid = base::GUID();
+  desk_guid = base::Uuid();
   current_bounds.reset();
   window_state_type.reset();
   pre_minimized_show_state_type.reset();

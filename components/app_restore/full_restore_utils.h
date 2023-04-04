@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "ui/base/class_property.h"
 #include "ui/views/widget/widget.h"
 
@@ -81,7 +81,7 @@ void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
 // Invoked when a desk is being removed. `removing_desk_guid` is the GUID for
 // the removing desk.
 COMPONENT_EXPORT(APP_RESTORE)
-void SaveRemovingDeskGuid(const base::GUID& removing_desk_guid);
+void SaveRemovingDeskGuid(const base::Uuid& removing_desk_guid);
 
 // Invoked when desk removal is completed. The desk is either fully closed or
 // the removal has been undone. In either case, the full restore service should

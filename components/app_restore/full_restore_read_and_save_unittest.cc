@@ -74,8 +74,8 @@ constexpr char kLacrosWindowId[] = "123";
 constexpr uint32_t kBrowserSessionId = 56;
 
 // Randomly generated desk GUID to test saving removing desk GUID.
-const base::GUID kRemovingDeskGuid = base::GUID::GenerateRandomV4();
-const base::GUID kNonRemovingDeskGuid = base::GUID::GenerateRandomV4();
+const base::Uuid kRemovingDeskGuid = base::Uuid::GenerateRandomV4();
+const base::Uuid kNonRemovingDeskGuid = base::Uuid::GenerateRandomV4();
 
 }  // namespace
 
@@ -343,7 +343,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       int32_t id,
       int32_t index,
       ash::AppType app_type = ash::AppType::BROWSER,
-      base::GUID desk_guid = base::GUID()) {
+      base::Uuid desk_guid = base::Uuid()) {
     std::unique_ptr<aura::Window> window(
         aura::test::CreateTestWindowWithId(id, nullptr));
     app_restore::WindowInfo window_info;

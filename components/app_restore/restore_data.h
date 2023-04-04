@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
 
@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
     return app_id_to_launch_list_;
   }
 
-  void set_removing_desk_guid(const base::GUID& removing_desk_guid) {
+  void set_removing_desk_guid(const base::Uuid& removing_desk_guid) {
     removing_desk_guid_ = removing_desk_guid;
   }
 
@@ -210,7 +210,7 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
 
   // The GUID of a desk that is being removed. This will only be valid if a desk
   // is in the process of being removed.
-  base::GUID removing_desk_guid_;
+  base::Uuid removing_desk_guid_;
 };
 
 }  // namespace app_restore

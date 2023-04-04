@@ -66,9 +66,9 @@ constexpr int32_t kDeskId2 = 2;
 constexpr int32_t kDeskId3 =
     aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
 
-const base::GUID kDeskGuid1 = base::GUID::GenerateRandomV4();
-const base::GUID kDeskGuid2 = base::GUID::GenerateRandomV4();
-const base::GUID kDeskGuid3 = base::GUID();
+const base::Uuid kDeskGuid1 = base::Uuid::GenerateRandomV4();
+const base::Uuid kDeskGuid2 = base::Uuid::GenerateRandomV4();
+const base::Uuid kDeskGuid3 = base::Uuid();
 
 constexpr gfx::Rect kCurrentBounds1(11, 21, 111, 121);
 constexpr gfx::Rect kCurrentBounds2(31, 41, 131, 141);
@@ -243,7 +243,7 @@ class RestoreDataTest : public testing::Test {
       int32_t activation_index,
       int32_t first_non_pinned_tab_index,
       int32_t desk_id,
-      const base::GUID& desk_guid,
+      const base::Uuid& desk_guid,
       const gfx::Rect& current_bounds,
       chromeos::WindowStateType window_state_type,
       ui::WindowShowState pre_minimized_show_state_type,
