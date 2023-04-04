@@ -33,12 +33,23 @@ export class PageToolbarElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+
+      hasSearch: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
   onMenuTap_() {
     this.dispatchEvent(
         new CustomEvent('menu-tap', {bubbles: true, composed: true}));
+  }
+
+  shouldHideTitle_() {
+    // Hide the title when a search bar is present and the side nav is hidden.
+    return this.isNarrow && this.hasSearch;
   }
 }
 

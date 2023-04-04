@@ -44,8 +44,8 @@ export function pageToolbarTestSuite() {
       assertTrue(isVisible(/** @type {!HTMLElement} */ (
           pageToolbarElement.shadowRoot.querySelector('#title'))));
       const expectedTitle = 'title';
-      const actualTitle =
-          pageToolbarElement.shadowRoot.querySelector('#title').textContent;
+      const actualTitle = pageToolbarElement.shadowRoot.querySelector('#title')
+                              .textContent.trim();
       assertEquals(expectedTitle, actualTitle);
     });
   });

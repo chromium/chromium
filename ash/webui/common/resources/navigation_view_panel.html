@@ -107,6 +107,7 @@
       <page-toolbar
           title="[[title]]"
           is-narrow="[[!showNav]]"
+          has-search="[[hasSearch]]"
           exportparts="title">
         <slot slot="toolbar-main" name="toolbar-main"></slot>
       </page-toolbar>
@@ -144,5 +145,5 @@
     </div>
   </template>
 
-  <div id="navigationBody" class="right-aligned"></div>
+  <div id="navigationBody" class="right-aligned" part="nav-body"></div>
 </div>
