@@ -14,8 +14,7 @@ namespace ash {
 // This class captures hotspot and wifi state changes from HotspotController and
 // HotspotStateHandler and relays them to its observers.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
-    : public HotspotStateHandler::Observer,
-      public HotspotController::Observer {
+    : public HotspotController::Observer {
  public:
   HotspotEnabledStateNotifier();
   HotspotEnabledStateNotifier(const HotspotEnabledStateNotifier&) = delete;
@@ -23,25 +22,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
       delete;
   ~HotspotEnabledStateNotifier() override;
 
-  void Init(HotspotStateHandler* hotspot_state_handler,
-            HotspotController* hotspot_controller);
+  void Init(HotspotController* hotspot_controller);
 
   void ObserveEnabledStateChanges(
       mojo::PendingRemote<hotspot_config::mojom::HotspotEnabledStateObserver>
           observer);
 
  private:
-  HotspotEnabledStateNotifier(HotspotStateHandler* hotspot_state_handler,
-                              HotspotController* hotspot_controller);
-  // HotspotStateHandler::Observer:
-  void OnHotspotStatusChanged() override;
+  HotspotEnabledStateNotifier(HotspotController* hotspot_controller);
 
   // HotspotController::Observer:
   void OnHotspotTurnedOn(bool wifi_turned_off) override;
   void OnHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) override;
 
-  HotspotStateHandler* hotspot_state_handler_;
   HotspotController* hotspot_controller_;
   mojo::RemoteSet<hotspot_config::mojom::HotspotEnabledStateObserver>
       observers_;

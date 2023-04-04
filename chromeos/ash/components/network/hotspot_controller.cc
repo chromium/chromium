@@ -209,14 +209,8 @@ void HotspotController::CompleteCurrentRequest(
   if (result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
     if (current_request_->enabled) {
       NotifyHotspotTurnedOn(current_request_->wifi_turned_off);
-      for (auto& observer : observer_list_) {
-        observer.OnHotspotTurnedOn(current_request_->wifi_turned_off);
-      }
     } else {
       NotifyHotspotTurnedOff(current_request_->disable_reason.value());
-      for (auto& observer : observer_list_) {
-        observer.OnHotspotTurnedOff(current_request_->disable_reason.value());
-      }
     }
   }
   std::move(current_request_->callback).Run(result);
@@ -276,6 +270,19 @@ void HotspotController::OnDisableHotspotCompleteForRestart(
     return;
   }
   EnableHotspot(base::DoNothing());
+}
+
+void HotspotController::NotifyHotspotTurnedOn(bool wifi_turned_off) {
+  for (auto& observer : observer_list_) {
+    observer.OnHotspotTurnedOn(current_request_->wifi_turned_off);
+  }
+}
+
+void HotspotController::NotifyHotspotTurnedOff(
+    hotspot_config::mojom::DisableReason disable_reason) {
+  for (auto& observer : observer_list_) {
+    observer.OnHotspotTurnedOff(disable_reason);
+  }
 }
 
 }  //  namespace ash

@@ -29,8 +29,7 @@ namespace ash {
 // Enable or disable requests are queued and executes one request at a time in
 // order.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
-    : public TechnologyStateController::HotspotOperationDelegate,
-      public hotspot_config::HotspotEnabledStateProvider {
+    : public TechnologyStateController::HotspotOperationDelegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -44,7 +43,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   HotspotController();
   HotspotController(const HotspotController&) = delete;
   HotspotController& operator=(const HotspotController&) = delete;
-  ~HotspotController() override;
+  virtual ~HotspotController();
 
   void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
             HotspotStateHandler* hotspot_state_handler,
@@ -118,6 +117,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   bool IsCurrentRequestAlreadyFulfilled();
   void CompleteCurrentRequest(
       hotspot_config::mojom::HotspotControlResult result);
+  void NotifyHotspotTurnedOn(bool wifi_turned_off);
+  void NotifyHotspotTurnedOff(
+      hotspot_config::mojom::DisableReason disable_reason);
 
   std::unique_ptr<HotspotControlRequest> current_request_;
   base::queue<std::unique_ptr<HotspotControlRequest>> queued_requests_;

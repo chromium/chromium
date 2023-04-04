@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_configuration_handler.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
+#include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
@@ -83,6 +84,7 @@ NetworkHandler::NetworkHandler()
     hotspot_state_handler_.reset(new HotspotStateHandler());
     hotspot_controller_.reset(new HotspotController());
     hotspot_configuration_handler_.reset(new HotspotConfigurationHandler());
+    hotspot_enabled_state_notifier_.reset(new HotspotEnabledStateNotifier());
     hotspot_metrics_helper_.reset(new HotspotMetricsHelper());
   }
   if (NetworkCertLoader::IsInitialized()) {
@@ -152,10 +154,11 @@ void NetworkHandler::Init() {
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
     hotspot_configuration_handler_->Init(hotspot_controller_.get());
+    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
     hotspot_metrics_helper_->Init(
         hotspot_capabilities_provider_.get(), hotspot_state_handler_.get(),
         hotspot_controller_.get(), hotspot_configuration_handler_.get(),
-        network_state_handler_.get());
+        hotspot_enabled_state_notifier_.get(), network_state_handler_.get());
   }
   managed_cellular_pref_handler_->Init(network_state_handler_.get());
   esim_policy_login_metrics_logger_->Init(
@@ -310,6 +313,10 @@ HotspotConfigurationHandler* NetworkHandler::hotspot_configuration_handler() {
 
 HotspotStateHandler* NetworkHandler::hotspot_state_handler() {
   return hotspot_state_handler_.get();
+}
+
+HotspotEnabledStateNotifier* NetworkHandler::hotspot_enabled_state_notifier() {
+  return hotspot_enabled_state_notifier_.get();
 }
 
 ManagedCellularPrefHandler* NetworkHandler::managed_cellular_pref_handler() {

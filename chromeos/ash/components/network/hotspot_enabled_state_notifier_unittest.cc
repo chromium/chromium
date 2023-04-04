@@ -47,8 +47,7 @@ class HotspotEnabledStateNotifierTest : public ::testing::Test {
                               technology_state_controller_.get());
     hotspot_enabled_state_notifier_ =
         std::make_unique<HotspotEnabledStateNotifier>();
-    hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),
-                                          hotspot_controller_.get());
+    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
     SetReadinessCheckResultReady();
   }
 

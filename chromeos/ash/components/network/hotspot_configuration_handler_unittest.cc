@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
+#include "chromeos/ash/components/network/hotspot_enabled_state_notifier.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -86,6 +87,9 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
+    hotspot_enabled_state_notifier_ =
+        std::make_unique<HotspotEnabledStateNotifier>();
+    hotspot_enabled_state_notifier_->Init(hotspot_controller_.get());
     hotspot_configuration_handler_ =
         std::make_unique<HotspotConfigurationHandler>();
     hotspot_configuration_handler_->AddObserver(&observer_);
@@ -96,6 +100,7 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
   void TearDown() override {
     network_state_test_helper_.ClearDevices();
     network_state_test_helper_.ClearServices();
+    hotspot_enabled_state_notifier_.reset();
     hotspot_configuration_handler_->RemoveObserver(&observer_);
     hotspot_configuration_handler_.reset();
     hotspot_controller_.reset();
@@ -108,7 +113,7 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
   void SetupObserver() {
     hotspot_enabled_state_observer_ =
         std::make_unique<hotspot_config::HotspotEnabledStateTestObserver>();
-    hotspot_controller_->ObserveEnabledStateChanges(
+    hotspot_enabled_state_notifier_->ObserveEnabledStateChanges(
         hotspot_enabled_state_observer_->GenerateRemote());
   }
 
@@ -160,6 +165,7 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
+  std::unique_ptr<HotspotEnabledStateNotifier> hotspot_enabled_state_notifier_;
   std::unique_ptr<hotspot_config::HotspotEnabledStateTestObserver>
       hotspot_enabled_state_observer_;
   TestObserver observer_;

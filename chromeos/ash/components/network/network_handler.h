@@ -35,6 +35,7 @@ class HotspotConfigurationHandler;
 class HotspotController;
 class HotspotMetricsHelper;
 class HotspotStateHandler;
+class HotspotEnabledStateNotifier;
 class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandlerImpl;
@@ -117,6 +118,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   HotspotController* hotspot_controller();
   HotspotConfigurationHandler* hotspot_configuration_handler();
   HotspotStateHandler* hotspot_state_handler();
+  HotspotEnabledStateNotifier* hotspot_enabled_state_notifier();
   NetworkStateHandler* network_state_handler();
   NetworkDeviceHandler* network_device_handler();
   NetworkProfileHandler* network_profile_handler();
@@ -168,6 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotConfigurationHandler> hotspot_configuration_handler_;
+  std::unique_ptr<HotspotEnabledStateNotifier> hotspot_enabled_state_notifier_;
   std::unique_ptr<HotspotMetricsHelper> hotspot_metrics_helper_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>
       esim_policy_login_metrics_logger_;
