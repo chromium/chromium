@@ -19,8 +19,8 @@ bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
       !in.ReadHost(&out->csp_source.host)) {
     return false;
   }
-  return (out->csp_source.scheme.length() != 0) &&
-         (out->csp_source.host.length() != 0);
+  // For local files the host might be empty, but the scheme cannot be.
+  return out->csp_source.scheme.length() != 0;
 }
 
 bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
