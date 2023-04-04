@@ -6516,13 +6516,6 @@ const char kLacrosColorManagementDescription[] =
     "When enabled, this should allow for HDR content to be displayed on "
     "compatible devices.";
 
-const char kLinkCapturingAutoDisplayIntentPickerName[] =
-    "Enable auto-display of intent picker bubble";
-const char kLinkCapturingAutoDisplayIntentPickerDescription[] =
-    "When enabled, the intent picker bubble will automatically display when "
-    "clicking a link which can be opened in installed apps. Only applies when "
-    "'Enable updated link capturing UI' is enabled.";
-
 const char kLinkCapturingInfoBarName[] = "Enable link capturing info bar";
 const char kLinkCapturingInfoBarDescription[] =
     "Enables an info bar which appears when launching a web app through the "
