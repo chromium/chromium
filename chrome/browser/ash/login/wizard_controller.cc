@@ -407,8 +407,6 @@ WizardController::WizardController(WizardContext* wizard_context)
       wizard_context_(wizard_context) {
   wizard_context_->skip_post_login_screens_for_tests =
       switches::ShouldSkipOobePostLogin();
-  wizard_context_->is_add_person_flow =
-      StartupUtils::IsOobeCompleted() && StartupUtils::IsDeviceOwned();
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (accessibility_manager) {
     // accessibility_manager could be null in Tests.
@@ -449,6 +447,9 @@ void WizardController::Init(OobeScreenId first_screen) {
     UpdateOobeConfiguration();
     is_out_of_box_ = true;
   }
+
+  wizard_context_->is_add_person_flow =
+      oobe_complete && StartupUtils::IsDeviceOwned();
 
   // This is a hacky way to check for local state corruption, because
   // it depends on the fact that the local state is loaded

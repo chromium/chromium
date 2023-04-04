@@ -34,7 +34,6 @@ ash::ArcTermsOfServiceScreenView* GetScreenView() {
 }
 
 ash::ConsolidatedConsentScreen* GetConsolidatedConsentScreen() {
-  // TODO: Inject testing instance.
   auto* host = ash::LoginDisplayHost::default_host();
   DCHECK(host);
   DCHECK(host->GetWizardController());

@@ -425,6 +425,12 @@ void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
   metrics_service->UpdateCurrentUserMetricsConsent(is_enabled);
 }
 
+void ConsolidatedConsentScreen::NotifyConsolidatedConsentAcceptForTesting() {
+  for (auto& observer : observer_list_) {
+    observer.OnConsolidatedConsentAccept();
+  }
+}
+
 void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
                                          bool enable_backup_restore,
                                          bool enable_location_services,
