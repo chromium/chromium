@@ -17,7 +17,7 @@
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
 // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
 // we should remove this #if.
-#include "third_party/puffin/puffin/src/include/puffin/puffpatch.h"
+#include "third_party/puffin/src/include/puffin/puffpatch.h"
 #endif
 
 namespace update_client {
