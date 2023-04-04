@@ -7,10 +7,7 @@
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
-#include "third_party/blink/renderer/core/layout/layout_inside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
-#include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
@@ -42,10 +39,6 @@ LayoutUnit DisclosureSymbolSize(const ComputedStyle& style) {
 ListMarker::ListMarker() : marker_text_type_(kNotText) {}
 
 const ListMarker* ListMarker::Get(const LayoutObject* marker) {
-  if (auto* outside_marker = DynamicTo<LayoutOutsideListMarker>(marker))
-    return &outside_marker->Marker();
-  if (auto* inside_marker = DynamicTo<LayoutInsideListMarker>(marker))
-    return &inside_marker->Marker();
   if (auto* ng_outside_marker = DynamicTo<LayoutNGOutsideListMarker>(marker))
     return &ng_outside_marker->Marker();
   if (auto* ng_inside_marker = DynamicTo<LayoutNGInsideListMarker>(marker))
@@ -59,13 +52,13 @@ ListMarker* ListMarker::Get(LayoutObject* marker) {
 }
 
 LayoutObject* ListMarker::MarkerFromListItem(const LayoutObject* list_item) {
-  if (auto* legacy_list_item = DynamicTo<LayoutListItem>(list_item))
-    return legacy_list_item->Marker();
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item->Marker();
   return nullptr;
 }
 
+// TODO(1229581): Return LayoutNGListItem instead, and get rid of
+// ListItemBlockFlow() and ListItemValue().
 LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* list_item = marker.GetNode()->parentNode()->GetLayoutObject();
@@ -78,8 +71,6 @@ LayoutBlockFlow* ListMarker::ListItemBlockFlow(
     const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* list_item = ListItem(marker);
-  if (auto* legacy_list_item = DynamicTo<LayoutListItem>(list_item))
-    return legacy_list_item;
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item;
   NOTREACHED();
@@ -87,8 +78,6 @@ LayoutBlockFlow* ListMarker::ListItemBlockFlow(
 }
 
 int ListMarker::ListItemValue(const LayoutObject& list_item) const {
-  if (auto* legacy_list_item = DynamicTo<LayoutListItem>(list_item))
-    return legacy_list_item->Value();
   if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
     return ng_list_item->Value();
   NOTREACHED();
@@ -273,6 +262,8 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     if (!child) {
       LayoutListMarkerImage* image =
           LayoutListMarkerImage::CreateAnonymous(&marker.GetDocument());
+      // TODO(1229581): The IsLayoutNGObjectForListMarkerImage should no longer
+      // be necessary. It can be assumed to always be true.
       if (marker.IsLayoutNGListMarker())
         image->SetIsLayoutNGObjectForListMarkerImage(true);
       scoped_refptr<const ComputedStyle> image_style =

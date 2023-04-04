@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
-#include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
@@ -135,11 +134,6 @@ class StyleEngineTest : public PageTestBase {
 
   String GetListMarkerText(LayoutObject* list_item) {
     LayoutObject* marker = ListMarker::MarkerFromListItem(list_item);
-    if (auto* legacy_marker = DynamicTo<LayoutListMarker>(marker)) {
-      const CounterStyle& counter_style = legacy_marker->GetCounterStyle();
-      return counter_style.GetPrefix() + legacy_marker->GetText() +
-             counter_style.GetSuffix();
-    }
     return ListMarker::Get(marker)->GetTextChild(*marker).GetText();
   }
 

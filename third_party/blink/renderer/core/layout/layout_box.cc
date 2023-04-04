@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -3811,39 +3810,6 @@ void LayoutBox::UpdateLogicalWidth() {
   SetMarginEnd(computed_values.margins_.end_);
 }
 
-static float GetMaxWidthListMarker(const LayoutBox* layout_object) {
-#if DCHECK_IS_ON()
-  DCHECK(layout_object);
-  Node* parent_node = layout_object->GeneratingNode();
-  DCHECK(parent_node);
-  DCHECK(IsA<HTMLOListElement>(parent_node) ||
-         IsA<HTMLUListElement>(parent_node));
-  DCHECK_NE(layout_object->StyleRef().TextAutosizingMultiplier(), 1);
-#endif
-  float max_width = 0;
-  for (LayoutObject* child = layout_object->SlowFirstChild(); child;
-       child = child->NextSibling()) {
-    if (!child->IsListItem())
-      continue;
-
-    auto* list_item = To<LayoutBox>(child);
-    for (LayoutObject* item_child = list_item->SlowFirstChild(); item_child;
-         item_child = item_child->NextSibling()) {
-      if (!item_child->IsListMarkerForNormalContent())
-        continue;
-      auto* item_marker = To<LayoutBox>(item_child);
-      // Make sure to compute the autosized width.
-      if (item_marker->NeedsLayout())
-        item_marker->UpdateLayout();
-      max_width = std::max<float>(
-          max_width,
-          To<LayoutListMarker>(item_marker)->LogicalWidth().ToFloat());
-      break;
-    }
-  }
-  return max_width;
-}
-
 LayoutUnit LayoutBox::ContainerWidthInInlineDirection() const {
   NOT_DESTROYED();
   LayoutBlock* cb = ContainingBlock();
@@ -3994,25 +3960,6 @@ void LayoutBox::ComputeLogicalWidth(
     } else {
       computed_values.margins_.end_ =
           new_margin_total - computed_values.margins_.start_;
-    }
-  }
-
-  if (style_to_use.TextAutosizingMultiplier() != 1 &&
-      style_to_use.MarginStart().IsFixed()) {
-    Node* parent_node = GeneratingNode();
-    if (parent_node && (IsA<HTMLOListElement>(*parent_node) ||
-                        IsA<HTMLUListElement>(*parent_node))) {
-      // Make sure the markers in a list are properly positioned (i.e. not
-      // chopped off) when autosized.
-      const float adjusted_margin =
-          (1 - 1.0 / style_to_use.TextAutosizingMultiplier()) *
-          GetMaxWidthListMarker(this);
-      bool has_inverted_direction = cb->StyleRef().IsLeftToRightDirection() !=
-                                    StyleRef().IsLeftToRightDirection();
-      if (has_inverted_direction)
-        computed_values.margins_.end_ += adjusted_margin;
-      else
-        computed_values.margins_.start_ += adjusted_margin;
     }
   }
 }

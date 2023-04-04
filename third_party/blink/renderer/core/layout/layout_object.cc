@@ -79,8 +79,6 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
-#include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
@@ -94,7 +92,9 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -358,7 +358,15 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     image->SetStyleInternal(nullptr);
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
-    return LayoutObjectFactory::CreateListMarker(*element, style);
+    const Node* parent = element->parentNode();
+    const ComputedStyle* parent_style = parent->GetComputedStyle();
+    bool is_inside =
+        parent_style->ListStylePosition() == EListStylePosition::kInside ||
+        (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement());
+    if (is_inside) {
+      return MakeGarbageCollected<LayoutNGInsideListMarker>(element);
+    }
+    return MakeGarbageCollected<LayoutNGOutsideListMarker>(element);
   }
 
   switch (style.Display()) {
@@ -2392,8 +2400,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
         // do special painting (e.g. fraction bar).
         (IsText() && !IsBR() && To<LayoutText>(this)->HasInlineFragments()) ||
         (IsSVG() && StyleRef().IsFillColorCurrentColor()) ||
-        (IsSVG() && StyleRef().IsStrokeColorCurrentColor()) ||
-        IsListMarkerForNormalContent() || IsMathML()) {
+        (IsSVG() && StyleRef().IsStrokeColorCurrentColor()) || IsMathML()) {
       diff.SetNeedsSimplePaintInvalidation();
     }
   }
@@ -4228,20 +4235,6 @@ bool LayoutObject::GetImageAnimationPolicy(
     return false;
   policy = GetDocument().GetSettings()->GetImageAnimationPolicy();
   return true;
-}
-
-bool LayoutObject::IsInsideListMarker() const {
-  NOT_DESTROYED();
-  return (IsListMarkerForNormalContent() &&
-          To<LayoutListMarker>(this)->IsInside()) ||
-         IsInsideListMarkerForCustomContent();
-}
-
-bool LayoutObject::IsOutsideListMarker() const {
-  NOT_DESTROYED();
-  return (IsListMarkerForNormalContent() &&
-          !To<LayoutListMarker>(this)->IsInside()) ||
-         IsOutsideListMarkerForCustomContent();
 }
 
 void LayoutObject::ImageChanged(ImageResourceContent* image,

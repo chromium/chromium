@@ -520,12 +520,6 @@ ALWAYS_INLINE WTF::unicode::CharDirection InlineIterator::Direction() const {
   if (UChar32 c = CurrentCodepoint())
     return WTF::unicode::Direction(c);
 
-  if (line_layout_item_ && line_layout_item_.IsListMarker()) {
-    return line_layout_item_.StyleRef().IsLeftToRightDirection()
-               ? WTF::unicode::kLeftToRight
-               : WTF::unicode::kRightToLeft;
-  }
-
   return WTF::unicode::kOtherNeutral;
 }
 

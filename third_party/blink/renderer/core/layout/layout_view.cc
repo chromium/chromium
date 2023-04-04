@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
@@ -1018,10 +1017,7 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
 
   for (LayoutObject* layout_object = start; layout_object;
        layout_object = layout_object->NextInPreOrder(stay_within)) {
-    if (auto* list_item = DynamicTo<LayoutListItem>(layout_object)) {
-      list_item->UpdateCounterStyle();
-    } else if (auto* ng_list_item =
-                   DynamicTo<LayoutNGListItem>(layout_object)) {
+    if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(layout_object)) {
       ng_list_item->UpdateCounterStyle();
     } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
       counter->UpdateCounter();

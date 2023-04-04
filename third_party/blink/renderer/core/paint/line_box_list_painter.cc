@@ -44,7 +44,7 @@ void BuildBackplate(const InlineFlowBox* box,
   for (InlineBox* child = box->FirstChild(); child;
        child = child->NextOnLine()) {
     LineLayoutItem layout_item = child->GetLineLayoutItem();
-    if (layout_item.IsText() || layout_item.IsListMarker()) {
+    if (layout_item.IsText()) {
       if (layout_item.IsText()) {
         String child_text =
             To<InlineTextBox>(child)->GetLineLayoutItem().GetText();

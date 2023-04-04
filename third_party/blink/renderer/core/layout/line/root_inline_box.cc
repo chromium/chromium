@@ -428,9 +428,7 @@ InlineBox* RootInlineBox::ClosestLeafChildForLogicalLeftPosition(
       (!only_editable_leaves || IsEditableLeaf(first_leaf)))
     return first_leaf;
 
-  // Avoid returning a list marker when possible.
   if (left_position <= first_leaf->LogicalLeft() &&
-      !first_leaf->GetLineLayoutItem().IsListMarker() &&
       (!only_editable_leaves || IsEditableLeaf(first_leaf))) {
     // The leftPosition coordinate is less or equal to left edge of the
     // firstLeaf. Return it.
@@ -438,7 +436,6 @@ InlineBox* RootInlineBox::ClosestLeafChildForLogicalLeftPosition(
   }
 
   if (left_position >= last_leaf->LogicalRight() &&
-      !last_leaf->GetLineLayoutItem().IsListMarker() &&
       (!only_editable_leaves || IsEditableLeaf(last_leaf))) {
     // The leftPosition coordinate is greater or equal to right edge of the
     // lastLeaf. Return it.
@@ -448,8 +445,7 @@ InlineBox* RootInlineBox::ClosestLeafChildForLogicalLeftPosition(
   InlineBox* closest_leaf = nullptr;
   for (InlineBox* leaf = first_leaf; leaf;
        leaf = leaf->NextLeafChildIgnoringLineBreak()) {
-    if (!leaf->GetLineLayoutItem().IsListMarker() &&
-        (!only_editable_leaves || IsEditableLeaf(leaf))) {
+    if (!only_editable_leaves || IsEditableLeaf(leaf)) {
       closest_leaf = leaf;
       if (left_position < leaf->LogicalRight()) {
         // The x coordinate is less than the right edge of the box.

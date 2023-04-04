@@ -885,10 +885,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGFrameSet);
   }
-  bool IsInsideListMarkerForCustomContent() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectInsideListMarker);
-  }
   bool IsLayoutNGBlockFlow() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGBlockFlow);
@@ -925,14 +921,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableCol);
   }
-  bool IsListItem() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectListItem);
-  }
-  bool IsListMarkerForNormalContent() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectListMarker);
-  }
   bool IsListMarkerImage() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectListMarkerImage);
@@ -948,10 +936,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool IsMedia() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectMedia);
-  }
-  bool IsOutsideListMarkerForCustomContent() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectOutsideListMarker);
   }
   bool IsProgress() const {
     NOT_DESTROYED();
@@ -2739,8 +2723,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and the <ol>.
   bool AffectsWhitespaceSiblings() const {
     NOT_DESTROYED();
-    return !IsFloatingOrOutOfFlowPositioned() &&
-           !IsLayoutNGOutsideListMarker() && !IsOutsideListMarker();
+    return !IsFloatingOrOutOfFlowPositioned() && !IsLayoutNGOutsideListMarker();
   }
 
   // Not returning StyleRef().BoxReflect() because some objects ignore the
@@ -2822,39 +2805,23 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return false;
   }
 
+  // TODO(1229581): Rename this function.
   bool IsListItemIncludingNG() const {
     NOT_DESTROYED();
-    return IsListItem() || IsLayoutNGListItem();
+    return IsLayoutNGListItem();
   }
 
-  // There 5 different types of list markers:
-  // * LayoutListMarker (LayoutBox): for both outside and inside markers with
-  //   'content: normal', in legacy layout.
-  // * LayoutInsideListMarker (LayoutInline): for non-normal inside markers in
-  //   legacy layout.
-  // * LayoutOutsideListMarker (LayoutBlockFlow): for non-normal outside markers
-  //   in legacy layout.
-  // * LayoutNGInsideListMarker (LayoutInline): for inside markers in LayoutNG.
+  // There 2 different types of list markers:
+  // * LayoutNGInsideListMarker (LayoutInline): for inside markers
   // * LayoutNGOutsideListMarker (LayoutNGBlockFlowMixin<LayoutBlockFlow>):
-  //   for outside markers in LayoutNG.
+  //   for outside markers.
 
-  // Legacy marker with inside position, normal or not.
-  bool IsInsideListMarker() const;
-  // Legacy marker with outside position, normal or not.
-  bool IsOutsideListMarker() const;
-  // Any kind of legacy list marker.
-  bool IsListMarker() const {
-    NOT_DESTROYED();
-    return IsListMarkerForNormalContent() ||
-           IsInsideListMarkerForCustomContent() ||
-           IsOutsideListMarkerForCustomContent();
-  }
   // Any kind of LayoutBox list marker.
+  // TODO(1229581): Remove this function. Just use
+  // IsLayoutNGOutsideListMarker().
   bool IsBoxListMarkerIncludingNG() const {
     NOT_DESTROYED();
-    return IsListMarkerForNormalContent() ||
-           IsOutsideListMarkerForCustomContent() ||
-           IsLayoutNGOutsideListMarker();
+    return IsLayoutNGOutsideListMarker();
   }
   // Any kind of LayoutNG list marker.
   bool IsLayoutNGListMarker() const {
@@ -2862,9 +2829,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsLayoutNGInsideListMarker() || IsLayoutNGOutsideListMarker();
   }
   // Any kind of list marker.
+  // TODO(1229581): Remove this function.
   bool IsListMarkerIncludingAll() const {
     NOT_DESTROYED();
-    return IsListMarker() || IsLayoutNGListMarker();
+    return IsLayoutNGListMarker();
   }
 
   // ImageResourceObserver override.
@@ -3567,9 +3535,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectFrame,
     kLayoutObjectIFrame,
     kLayoutObjectImage,
-    kLayoutObjectInsideListMarker,
-    kLayoutObjectListItem,
-    kLayoutObjectListMarker,
     kLayoutObjectListMarkerImage,
     kLayoutObjectMathML,
     kLayoutObjectMathMLRoot,
@@ -3591,7 +3556,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGTextControlMultiLine,
     kLayoutObjectNGTextControlSingleLine,
     kLayoutObjectNGView,
-    kLayoutObjectOutsideListMarker,
     kLayoutObjectProgress,
     kLayoutObjectQuote,
     kLayoutObjectReplaced,

@@ -164,8 +164,6 @@ class LineLayoutItem {
 
   bool IsLayoutInline() const { return layout_object_->IsLayoutInline(); }
 
-  bool IsListMarker() const { return layout_object_->IsListMarker(); }
-
   bool IsAtomicInlineLevel() const {
     return layout_object_->IsAtomicInlineLevel();
   }

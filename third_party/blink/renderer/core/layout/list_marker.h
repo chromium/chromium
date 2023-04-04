@@ -12,14 +12,12 @@
 namespace blink {
 
 class CounterStyle;
-class LayoutListItem;
 class LayoutNGListItem;
 class LayoutTextFragment;
 
 // This class holds code shared among all classes for list markers, for both
 // legacy layout and LayoutNG.
 class CORE_EXPORT ListMarker {
-  friend class LayoutListItem;
   friend class LayoutNGListItem;
 
  public:

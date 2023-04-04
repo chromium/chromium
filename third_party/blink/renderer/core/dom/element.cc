@@ -3920,27 +3920,6 @@ void Element::RebuildFirstLetterLayoutTree() {
 
 void Element::RebuildMarkerLayoutTree(WhitespaceAttacher& whitespace_attacher) {
   if (PseudoElement* marker = GetPseudoElement(kPseudoIdMarker)) {
-    // In legacy layout, we need to reattach a marker in this case:
-    //
-    // <ol><li id="outer"><div id="inner">0</div></li></ol>
-    // <script>outer.offsetTop; inner.style.display = "inline";</script>
-    //
-    // An outside marker must be aligned with the 1st line box in the
-    // list item, so legacy layout will insert it inside #inner.
-    // But when #inner becomes inline, the LayoutBlockFlow is destroyed,
-    // so we need to reinsert it.
-    //
-    // TODO: SetNeedsReattachLayoutTree() should not be called at this point.
-    // The layout tree rebuilding for markers should be done similarly to how
-    // it is done for ::first-letter.
-    if (LayoutObject* layout_object = GetLayoutObject()) {
-      if (layout_object->IsListItem() && !marker->GetLayoutObject()) {
-        StyleEngine::AllowMarkForReattachFromRebuildLayoutTreeScope scope(
-            GetDocument().GetStyleEngine());
-        marker->SetNeedsReattachLayoutTree();
-      }
-    }
-
     if (marker->NeedsRebuildLayoutTree(whitespace_attacher)) {
       marker->RebuildLayoutTree(whitespace_attacher);
     }

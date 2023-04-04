@@ -30,7 +30,6 @@ class LayoutObjectFactory {
   // case the LayoutObject created will be anonymous. The |style| reference
   // passed will only be used to determine which object type to create.
   static LayoutBlockFlow* CreateBlockFlow(Node&, const ComputedStyle&);
-  static LayoutObject* CreateListMarker(Node&, const ComputedStyle&);
 };
 
 }  // namespace blink

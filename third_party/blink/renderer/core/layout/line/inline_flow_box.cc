@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_inline.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
@@ -223,9 +222,6 @@ void InlineFlowBox::AddToLine(InlineBox* child) {
                     .Style(IsFirstLineStyle())
                     ->BoxShadow() ||
                 child->BoxModelObject().HasSelfPaintingLayer() ||
-                (child->GetLineLayoutItem().IsListMarker() &&
-                 !LineLayoutListMarker(child->GetLineLayoutItem())
-                      .IsInside()) ||
                 child->GetLineLayoutItem()
                     .Style(IsFirstLineStyle())
                     ->HasBorderImageOutsets() ||
@@ -521,33 +517,6 @@ void InlineFlowBox::PlaceBoxRangeInInlineDirection(
         if (KnownToHaveNoOverflow())
           max_logical_right = std::max(logical_left, max_logical_right);
         logical_left += flow->MarginLogicalRight();
-      } else if (!curr->GetLineLayoutItem().IsListMarker() ||
-                 LineLayoutListMarker(curr->GetLineLayoutItem()).IsInside()) {
-        // The box can have a different writing-mode than the overall line, so
-        // this is a bit complicated. Just get all the physical margin and
-        // overflow values by hand based off |isHorizontal|.
-        LineLayoutBoxModel box = curr->BoxModelObject();
-        LayoutUnit logical_left_margin;
-        LayoutUnit logical_right_margin;
-        if (IsHorizontal()) {
-          logical_left_margin = box.MarginLeft();
-          logical_right_margin = box.MarginRight();
-        } else {
-          logical_left_margin = box.MarginTop();
-          logical_right_margin = box.MarginBottom();
-        }
-
-        logical_left += logical_left_margin;
-        curr->SetLogicalLeft(logical_left);
-        if (KnownToHaveNoOverflow())
-          min_logical_left = std::min(logical_left, min_logical_left);
-        logical_left += curr->LogicalWidth();
-        if (KnownToHaveNoOverflow())
-          max_logical_right = std::max(logical_left, max_logical_right);
-        logical_left += logical_right_margin;
-        // If we encounter any space after this inline block then ensure it is
-        // treated as the space between two words.
-        needs_word_spacing = true;
       }
     }
   }
@@ -1533,11 +1502,7 @@ LayoutUnit InlineFlowBox::PlaceEllipsisBox(bool ltr,
     if (curr_result != -1 && result == -1)
       result = curr_result;
 
-    // List markers will sit outside the box so don't let them contribute
-    // width.
-    LayoutUnit box_width = box->GetLineLayoutItem().IsListMarker()
-                               ? LayoutUnit()
-                               : box->LogicalWidth();
+    LayoutUnit box_width = box->LogicalWidth();
     if (ltr) {
       visible_left_edge += box_width;
       box = box->NextOnLine();

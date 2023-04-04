@@ -41,8 +41,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
-#include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
@@ -264,30 +262,6 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
     const auto& c = To<LayoutNGTableCell>(o);
     ts << " [r=" << c.RowIndex() << " c=" << c.AbsoluteColumnIndex()
        << " rs=" << c.ResolvedRowSpan() << " cs=" << c.ColSpan() << "]";
-  }
-
-  if (o.IsListMarkerForNormalContent()) {
-    String text = To<LayoutListMarker>(o).GetText();
-    if (!text.empty()) {
-      if (text.length() != 1) {
-        text = QuoteAndEscapeNonPrintables(text);
-      } else {
-        switch (text[0]) {
-          case kBulletCharacter:
-            text = "bullet";
-            break;
-          case kBlackSquareCharacter:
-            text = "black square";
-            break;
-          case kWhiteBulletCharacter:
-            text = "white bullet";
-            break;
-          default:
-            text = QuoteAndEscapeNonPrintables(text);
-        }
-      }
-      ts << ": " << text;
-    }
   }
 
   if (behavior & kLayoutAsTextShowIDAndClass) {
@@ -938,8 +912,6 @@ String MarkerTextForListItem(Element* element) {
   LayoutObject* marker = ListMarker::MarkerFromListItem(layout_object);
   if (ListMarker* list_marker = ListMarker::Get(marker))
     return list_marker->MarkerTextWithoutSuffix(*marker);
-  if (marker && marker->IsListMarkerForNormalContent())
-    return To<LayoutListMarker>(marker)->GetText();
   return String();
 }
 

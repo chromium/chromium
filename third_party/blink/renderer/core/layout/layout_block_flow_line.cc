@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/bidi_run_for_line.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -286,12 +285,6 @@ RootInlineBox* LayoutBlockFlow::ConstructLine(BidiRunList<BidiRun>& bidi_runs,
   for (BidiRun* r = bidi_runs.FirstRun(); r; r = r->Next()) {
     // Create a box for our object.
     bool is_only_run = (run_count == 1);
-    if (run_count == 2 && !r->line_layout_item_.IsListMarker()) {
-      is_only_run =
-          (!StyleRef().IsLeftToRightDirection() ? bidi_runs.LastRun()
-                                                : bidi_runs.FirstRun())
-              ->line_layout_item_.IsListMarker();
-    }
 
     if (line_info.IsEmpty())
       continue;
@@ -1295,9 +1288,6 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
   LayoutUnit inline_max;
   LayoutUnit inline_min;
 
-  if (IsListItem())
-    To<LayoutListItem>(this)->UpdateMarkerTextIfNeeded();
-
   const ComputedStyle& style_to_use = StyleRef();
 
   // If we are at the start of a line, we want to ignore all white-space.
@@ -1397,8 +1387,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
         }
       }
 
-      if (!child->IsLayoutInline() && !child->IsText() &&
-          !child->IsOutsideListMarker()) {
+      if (!child->IsLayoutInline() && !child->IsText()) {
         // Case (2). Inline replaced elements and floats.
         // Go ahead and terminate the current line as far as
         // minwidth is concerned.

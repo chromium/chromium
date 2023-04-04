@@ -27,7 +27,6 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/line/inline_iterator.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
@@ -627,21 +626,7 @@ inline void BreakingContext::HandleReplaced() {
       block_.MarginStartForChild(replaced_box) +
       block_.MarginEndForChild(replaced_box) +
       InlineLogicalWidthFromAncestorsIfNeeded(current_.GetLineLayoutItem());
-  if (current_.GetLineLayoutItem().IsListMarker()) {
-    if (block_style_->CollapseWhiteSpace() &&
-        ShouldSkipWhitespaceAfterStartObject(
-            block_, current_.GetLineLayoutItem(), line_midpoint_state_)) {
-      // Like with inline flows, we start ignoring spaces to make sure that any
-      // additional spaces we see will be discarded.
-      current_character_is_space_ = true;
-      is_space_or_other_space_separator_ = true;
-      ignoring_spaces_ = true;
-    }
-    if (LineLayoutListMarker(current_.GetLineLayoutItem()).IsInside())
-      width_.AddUncommittedWidth(replaced_logical_width.ToFloat());
-  } else {
-    width_.AddUncommittedWidth(replaced_logical_width.ToFloat());
-  }
+  width_.AddUncommittedWidth(replaced_logical_width.ToFloat());
   // Update prior line break context characters, using U+FFFD (OBJECT
   // REPLACEMENT CHARACTER) for replaced element.
   layout_text_info_.line_break_iterator_.UpdatePriorContext(
@@ -1583,13 +1568,6 @@ inline void BreakingContext::CommitAndUpdateLineBreakIfNeeded() {
 
   if (!current_.GetLineLayoutItem().IsFloatingOrOutOfFlowPositioned()) {
     last_object_ = current_.GetLineLayoutItem();
-    if (last_object_.IsAtomicInlineLevel() && auto_wrap_ &&
-        (!last_object_.IsListMarker() ||
-         LineLayoutListMarker(last_object_).IsInside()) &&
-        !last_object_.IsRubyRun()) {
-      width_.Commit();
-      line_break_.MoveToStartOf(next_object_);
-    }
   }
 }
 

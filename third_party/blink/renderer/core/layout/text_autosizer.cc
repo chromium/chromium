@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
@@ -453,9 +452,6 @@ float TextAutosizer::Inflate(LayoutObject* parent,
       child = run->FirstChild();
       behavior = kDescendToInnerBlocks;
     }
-  } else if (parent->IsListMarker()) {
-    // The list item already applied the multiplier to the marker, keep it.
-    return multiplier;
   } else if (parent->IsLayoutBlock() &&
              (parent->ChildrenInline() || behavior == kDescendToInnerBlocks)) {
     child = To<LayoutBlock>(parent)->FirstChild();
@@ -506,7 +502,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     ApplyMultiplier(parent, 1, layouter);
   }
 
-  if (parent->IsListItemIncludingNG()) {
+  if (parent->IsLayoutNGListItem()) {
     float list_item_multiplier = ClusterMultiplier(cluster);
     ApplyMultiplier(parent, list_item_multiplier, layouter);
 
@@ -514,11 +510,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     // that you have a list item for a form inside it. The list marker then ends
     // up inside the form and when we try to get the clusterMultiplier we have
     // the wrong cluster root to work from and get the wrong value.
-    LayoutObject* marker = nullptr;
-    if (parent->IsListItem())
-      marker = To<LayoutListItem>(parent)->Marker();
-    else if (parent->IsLayoutNGListItem())
-      marker = To<LayoutNGListItem>(parent)->Marker();
+    LayoutObject* marker = To<LayoutNGListItem>(parent)->Marker();
 
     // A LayoutNGOutsideListMarker has a text child that needs its font
     // multiplier updated. Just mark the entire subtree, to make sure we get to

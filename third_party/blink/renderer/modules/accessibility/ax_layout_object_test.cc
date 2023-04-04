@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 
@@ -13,8 +12,6 @@ namespace blink {
 class AXLayoutObjectTest : public AccessibilityTest {
  protected:
   static LayoutObject* GetListMarker(const LayoutObject& list_item) {
-    if (list_item.IsListItem())
-      return To<LayoutListItem>(list_item).Marker();
     if (list_item.IsLayoutNGListItem())
       return To<LayoutNGListItem>(list_item).Marker();
     NOTREACHED();

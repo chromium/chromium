@@ -295,10 +295,9 @@ bool InlineBox::CanAccommodateEllipsis(bool ltr,
                                        LayoutUnit block_edge,
                                        LayoutUnit ellipsis_width) const {
   // Non-atomic inline-level elements can always accommodate an ellipsis.
-  // Skip list markers and try the next box.
-  if (!GetLineLayoutItem().IsAtomicInlineLevel() ||
-      GetLineLayoutItem().IsListMarker())
+  if (!GetLineLayoutItem().IsAtomicInlineLevel()) {
     return true;
+  }
 
   LayoutRect box_rect(X(), LayoutUnit(), logical_width_, LayoutUnit(10));
   LayoutRect ellipsis_rect(ltr ? block_edge - ellipsis_width : block_edge,
