@@ -698,7 +698,57 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 self._expand('platform/test-mac-mac10.11/'
                              'one/flaky-fail-expected.wav')))
 
-    def test_detect_flaky_baseline_using_hashes(self):
+    def test_detect_flaky_but_within_existing_fuzzy_params(self):
+        self._write('two/image-fail.html',
+                    '<meta name="fuzzy" content="0-5;0-100">')
+        result = WebTestResult('two/image-fail.html', {
+            'actual': 'FAIL FAIL FAIL',
+            'is_unexpected': True,
+        }, {
+            'actual_image': [
+                Artifact('https://results.usercontent.cr.dev/1/actual_image',
+                         '5a428fb'),
+                Artifact('https://results.usercontent.cr.dev/2/actual_image',
+                         '928ba6e'),
+                Artifact('https://results.usercontent.cr.dev/3/actual_image',
+                         '398c8be'),
+            ],
+        })
+        self.tool.web.get_binary.side_effect = lambda url: {
+            # The contents encode a total pixels different "distance" (i.e.,
+            # assume total pixel differences also hold pairwise).
+            'https://results.usercontent.cr.dev/1/actual_image': b'100',
+            'https://results.usercontent.cr.dev/2/actual_image': b'200',
+            'https://results.usercontent.cr.dev/3/actual_image': b'300',
+        }[url]
+        self.tool.results_fetcher.set_results(
+            Build('MOCK Try Mac', 4000, 'Build-2'),
+            WebTestResults([result], step_name='blink_web_tests (with patch)'))
+
+        with mock.patch.object(self._test_port,
+                               'diff_image',
+                               side_effect=self._diff_image) as diff_image:
+            exit_code = self.command.execute(
+                self.command_options(builders=['MOCK Try Mac']),
+                ['two/image-fail.html'], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Rebaselining two/image-fail.html\n',
+        ])
+        # Image diffing is relatively expensive. Verify that the minimal number
+        # of calls is made to get all mutual differences.
+        self.assertEqual(diff_image.call_count, 3)
+        # The second retry's image must be selected because it's the only one
+        # that is within the fuzzy range of the other retries. The other retries
+        # need at least 200 total pixels different allowed to be selected.
+        self.assertEqual(
+            self._read('platform/test-mac-mac10.11/'
+                       'two/image-fail-expected.png'), '200')
+
+    def test_detect_flaky_beyond_existing_fuzzy_params(self):
+        self._write('two/image-fail.html',
+                    '<meta name="fuzzy" content="0-5;0-99">')
         result = WebTestResult('two/image-fail.html', {
             'actual': 'FAIL FAIL',
             'is_unexpected': True,
@@ -710,12 +760,20 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                          '928ba6e'),
             ],
         })
+        self.tool.web.get_binary.side_effect = lambda url: {
+            'https://results.usercontent.cr.dev/1/actual_image': b'100',
+            'https://results.usercontent.cr.dev/2/actual_image': b'200',
+        }[url]
         self.tool.results_fetcher.set_results(
             Build('MOCK Try Mac', 4000, 'Build-2'),
             WebTestResults([result], step_name='blink_web_tests (with patch)'))
-        exit_code = self.command.execute(
-            self.command_options(builders=['MOCK Try Mac']),
-            ['two/image-fail.html'], self.tool)
+
+        with mock.patch.object(self._test_port,
+                               'diff_image',
+                               side_effect=self._diff_image) as diff_image:
+            exit_code = self.command.execute(
+                self.command_options(builders=['MOCK Try Mac']),
+                ['two/image-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: All builds finished.\n',
@@ -726,11 +784,18 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             '/mock-checkout/third_party/blink/web_tests/TestExpectations:\n'
             '[ Mac10.11 ] two/image-fail.html [ Failure ]  # Flaky output\n',
         ])
-        self.tool.web.get_binary.assert_not_called()
+        self.assertEqual(diff_image.call_count, 1)
         self.assertFalse(
             self.tool.filesystem.exists(
                 self._expand('platform/test-mac-mac10.11/'
                              'two/image-fail-expected.png')))
+
+    def _diff_image(self, expected, actual):
+        stats = {
+            'totalPixels': abs(int(actual) - int(expected)),
+            'maxDifference': 1,
+        }
+        return b'diff', stats, None
 
     def test_execute_missing_results_with_fill_missing_continues(self):
         self.tool.results_fetcher.set_results(

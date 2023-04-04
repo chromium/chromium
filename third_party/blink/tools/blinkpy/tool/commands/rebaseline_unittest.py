@@ -146,11 +146,11 @@ class BaseTestCase(unittest.TestCase):
         # ports and real ports. Since only "test" ports are used in this class,
         # we can make the default port also a "test" port.
         self.original_port_factory_get = self.tool.port_factory.get
-        test_port = self.tool.port_factory.get('test')
+        self._test_port = self.tool.port_factory.get('test')
 
         def get_test_port(port_name=None, options=None, **kwargs):
             if not port_name:
-                return test_port
+                return self._test_port
             return self.original_port_factory_get(port_name, options, **kwargs)
 
         self._mocks = contextlib.ExitStack()

@@ -40,6 +40,7 @@ from typing import (
     List,
     NamedTuple,
     Set,
+    Tuple,
 )
 from urllib.parse import urlparse
 
@@ -723,18 +724,36 @@ class RebaselineFailure(Exception):
         self.reason = reason
 
 
-class BaselineCache:
-    """An in-memory cache keyed on a baseline's hash digest.
+class BaselineLoader:
+    """Selects a usable baseline from a list of artifacts.
 
-    Baselines likely to be identical (e.g., for a virtual and its base test) are
-    downloaded together. The cache takes advantage of this temporal locality.
-
-    For simplicity, the cache is not bounded. It's the caller's responsibility
-    to `clear()` the cache as needed.
+    This class encompasses:
+     1. In-memory baseline caching, keyed on the content's hash digest.
+        Baselines likely to be identical (e.g., for a virtual and its base
+        test) are downloaded together. The cache takes advantage of this
+        temporal locality. For simplicity, the cache is not bounded. It's the
+        caller's responsibility to `clear()` the cache as needed.
+     2. Finding a "good" baseline for fuzzy-matched pixel tests according to
+        some heuristics. See `choose_valid_baseline(...)` for details.
     """
     def __init__(self, host: Host):
-        self._host, self._digests_to_contents = host, {}
+        self._host = host
+        self._default_port = host.port_factory.get()
+        self._digests_to_contents = {}
+        # Image diff statistics are commutative. By canonicalizing the
+        # (expected, actual) argument order and caching the result, we can
+        # avoid invoking `image_diff` a second time unnecessarily when the
+        # arguments are swapped.
+        make_cached = functools.lru_cache(maxsize=128)
+        self._diff_image = make_cached(self._default_port.diff_image)
         self.stats = BaselineCacheStatistics()
+
+    def _image_diff_stats(self, actual: bytes, expected: bytes):
+        # By definition, an image has zero diff with itself.
+        if actual == expected:
+            return {'maxDifference': 0, 'totalPixels': 0}
+        _, stats, _ = self._diff_image(*sorted([actual, expected]))
+        return stats
 
     def _fetch_contents(self, url: str) -> bytes:
         # Assume this is a local file.
@@ -760,6 +779,99 @@ class BaselineCache:
             contents = self._fetch_contents(artifact.url)
         self.stats.record(len(contents), hit)
         return contents
+
+    def choose_valid_baseline(self, artifacts: List[Artifact], test_name: str,
+                              suffix: str) -> bytes:
+        """Choose a baseline that would have allowed the observed runs to pass.
+
+        Usually, this means returning the contents of a non-flaky artifact
+        (i.e., has identical contents across all retries). However, for flaky
+        fuzzy-matched pixel tests, we can return an image that would have
+        matched all observed retries under existing fuzzy parameters.
+
+        Raises:
+            RebaselineFailure: If a test cannot be rebaselined (e.g., flakiness
+                outside fuzzy parameters).
+        """
+        assert artifacts
+        contents_by_run = {
+            artifact: self.load(artifact)
+            for artifact in artifacts
+        }
+        contents = set(contents_by_run.values())
+        if len(contents) > 1:
+            if suffix == 'png':
+                # Because we only rebaseline tests that only had unexpected
+                # failures, a test using fuzzy matching can only reach this
+                # point if every retry's image fell outside the acceptable
+                # range with the current baseline.
+                return self._find_fuzzy_matching_baseline(
+                    test_name, contents_by_run)
+            raise RebaselineFailure(RebaselineFailureReason.FLAKY_OUTPUT)
+        return contents.pop()
+
+    def _find_fuzzy_matching_baseline(
+        self,
+        test_name: str,
+        contents_by_run: Dict[Artifact, bytes],
+    ) -> bytes:
+        max_diff_range, total_pixels_range = (
+            self._default_port.get_wpt_fuzzy_metadata(test_name))
+        # No fuzzy parameters present.
+        if not max_diff_range or not total_pixels_range:
+            raise RebaselineFailure(RebaselineFailureReason.FLAKY_OUTPUT)
+
+        max_diff_min, max_diff_max = max_diff_range
+        total_pixels_min, total_pixels_max = total_pixels_range
+        # The fuzzy parameters must allow the chosen baseline to match itself.
+        # Rebaselining a pixel test with nonzero parameter minimums doesn't make
+        # sense because any `actual_image` you select as the new baseline will
+        # not match if that actual output is seen again.
+        if max_diff_min > 0 or total_pixels_min > 0:
+            raise RebaselineFailure(RebaselineFailureReason.FLAKY_OUTPUT)
+
+        match_criteria = {}
+        for artifact, contents in contents_by_run.items():
+            max_diff_needed, total_pixels_needed = (
+                self._find_needed_fuzzy_params(contents, contents_by_run))
+            fuzzy_mismatch = (max_diff_needed > max_diff_max
+                              or total_pixels_needed > total_pixels_max)
+            match_criteria[artifact] = (fuzzy_mismatch, total_pixels_needed,
+                                        max_diff_needed)
+
+        chosen_artifact = min(match_criteria, key=match_criteria.get)
+        fuzzy_mismatch, _, _ = match_criteria[chosen_artifact]
+        if fuzzy_mismatch:
+            # TODO(crbug.com/1426622): Here, the existing parameters are
+            # insufficient for ensuring the test would have passed consistently.
+            # Consider suggesting new fuzzy parameters before suggesting
+            # TestExpectations, using the tight bounds in
+            # `match_criteria[chosen_artifact]`.
+            raise RebaselineFailure(RebaselineFailureReason.FLAKY_OUTPUT)
+        return contents_by_run[chosen_artifact]
+
+    def _find_needed_fuzzy_params(
+        self,
+        candidate: bytes,
+        contents_by_run: Dict[Artifact, bytes],
+    ) -> Tuple[int, int]:
+        """Find parameters needed to fuzzily match every observed image.
+
+        Arguments:
+            candidate: A candidate baseline that every other run's image will
+                be diffed against.
+
+        Returns:
+            The minimum (maxDifference, totalPixels) parameters needed.
+        """
+        max_diff_max = total_pixels_max = 0
+        for artifact, run_contents in contents_by_run.items():
+            stats = self._image_diff_stats(candidate, run_contents)
+            if not stats:
+                continue
+            max_diff_max = max(max_diff_max, stats['maxDifference'])
+            total_pixels_max = max(total_pixels_max, stats['totalPixels'])
+        return max_diff_max, total_pixels_max
 
     def clear(self):
         self._digests_to_contents.clear()
@@ -791,12 +903,12 @@ class Worker:
         self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
         self._fs = self._connection.host.filesystem
-        self._baseline_cache = BaselineCache(self._host)
+        self._baseline_loader = BaselineLoader(self._host)
 
     def stop(self):
-        if hasattr(self, '_baseline_cache'):
+        if hasattr(self, '_baseline_loader'):
             self._connection.post('report_baseline_cache_stats',
-                                  self._baseline_cache.stats)
+                                  self._baseline_loader.stats)
 
     def handle(self, name: str, source: str, *args):
         response = self._commands[name](*args)
@@ -819,45 +931,18 @@ class Worker:
 
     def _download_baselines(self,
                             group: RebaselineGroup) -> RebaselineFailures:
-        self._baseline_cache.clear()
+        self._baseline_loader.clear()
         rebaseline_failures = {}
         for task, result in group.items():
             for suffix, artifacts in result.baselines_by_suffix().items():
                 try:
-                    contents = self._load_and_check_baseline(artifacts)
+                    contents = self._baseline_loader.choose_valid_baseline(
+                        artifacts, task.test, suffix)
                     self._write_baseline(task, suffix, artifacts[0].url,
                                          contents)
                 except RebaselineFailure as error:
                     rebaseline_failures[task] = error.reason
         return rebaseline_failures
-
-    def _load_and_check_baseline(self, artifacts: List[Artifact]) -> bytes:
-        # Because we only rebaseline tests that only had unexpected failures, a
-        # test using fuzzy matching can only reach this point if every retry
-        # fell outside the acceptable range.
-        #
-        # TODO(crbug.com/1282507): Try to rebaseline a fuzzy-matched test using
-        # one of the outputs such that all retries would have passed with
-        # existing fuzzy parameters. Using a "median" image as the baseline is
-        # best for this.
-        #
-        # TODO(crbug.com/1426622): Also, if the existing parameters are
-        # insufficient, consider suggesting fuzzy parameter adjustments before
-        # suggesting TestExpectations. This will require fitting the spread of
-        # the new images.
-        assert artifacts
-        digests = {
-            artifact.digest
-            for artifact in artifacts if artifact.digest
-        }
-        if len(digests) > 1:
-            # If we can already conclude the output is flaky, take this early
-            # out to avoid fetching any artifacts.
-            raise RebaselineFailure(RebaselineFailureReason.FLAKY_OUTPUT)
-        contents = set(map(self._baseline_cache.load, artifacts))
-        if len(contents) > 1:
-            raise RebaselineFailure(RebaselineFailureReason.FLAKY_OUTPUT)
-        return contents.pop()
 
     def _write_baseline(self, task: RebaselineTask, suffix: str, source: str,
                         contents: bytes):
