@@ -537,6 +537,7 @@
       "lock_screen_extension",
       "offscreen_extension",
       "unblessed_extension",
+      "user_script",
       "web_page"
     ],
     "matches": ["<all_urls>"]
@@ -587,6 +588,7 @@
       "lock_screen_extension",
       "offscreen_extension",
       "unblessed_extension",
+      "user_script",
       "content_script"
     ]
   },
@@ -607,6 +609,7 @@
       "lock_screen_extension",
       "offscreen_extension",
       "unblessed_extension",
+      "user_script",
       "content_script"
     ]
   },
@@ -626,6 +629,7 @@
       "lock_screen_extension",
       "offscreen_extension",
       "unblessed_extension",
+      "user_script",
       "web_page"
     ],
     "matches": ["<all_urls>"]

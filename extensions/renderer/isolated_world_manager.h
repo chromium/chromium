@@ -10,6 +10,7 @@
 
 #include "base/sequence_checker.h"
 #include "extensions/common/mojom/execution_world.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class InjectionHost;
 
@@ -44,6 +45,10 @@ class IsolatedWorldManager {
   // Returns the id of the injection host associated with the given `world_id`
   // or an empty string if none exists.
   std::string GetHostIdForIsolatedWorld(int world_id);
+
+  // Returns the execution world for the given `world_id`, if any exists.
+  absl::optional<mojom::ExecutionWorld> GetExecutionWorldForIsolatedWorld(
+      int world_id);
 
   // Removes all isolated worlds associated with the given `host_id`, if any
   // exist.

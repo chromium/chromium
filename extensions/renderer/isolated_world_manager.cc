@@ -36,6 +36,14 @@ std::string IsolatedWorldManager::GetHostIdForIsolatedWorld(int world_id) {
   return iter != isolated_worlds_.end() ? iter->second.host_id : std::string();
 }
 
+absl::optional<mojom::ExecutionWorld>
+IsolatedWorldManager::GetExecutionWorldForIsolatedWorld(int world_id) {
+  auto iter = isolated_worlds_.find(world_id);
+  return iter != isolated_worlds_.end() ? absl::optional<mojom::ExecutionWorld>(
+                                              iter->second.execution_world)
+                                        : absl::nullopt;
+}
+
 void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -48,7 +56,10 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     const InjectionHost& injection_host,
     mojom::ExecutionWorld execution_world) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(mojom::ExecutionWorld::kIsolated, execution_world);
+  static_assert(
+      static_cast<int>(mojom::ExecutionWorld::kMaxValue) == 2,
+      "You've added a new execution world! Does this code need to be updated?");
+  CHECK_NE(mojom::ExecutionWorld::kMain, execution_world);
 
   static int g_next_isolated_world_id =
       ExtensionsRendererClient::Get()->GetLowestIsolatedWorldId();

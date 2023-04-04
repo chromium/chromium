@@ -8,4 +8,5 @@ module extensions.mojom;
 enum ExecutionWorld {
   kIsolated = 0,
   kMain = 1,
+  kUserScript = 2,
 };

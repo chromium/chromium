@@ -257,6 +257,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   const mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
   switch (execution_world) {
     case mojom::ExecutionWorld::kIsolated:
+    case mojom::ExecutionWorld::kUserScript:
       world_id =
           IsolatedWorldManager::GetInstance().GetOrCreateIsolatedWorldForHost(
               *injection_host_, execution_world);
