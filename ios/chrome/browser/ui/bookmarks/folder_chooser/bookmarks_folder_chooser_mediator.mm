@@ -109,6 +109,7 @@ using bookmarks::BookmarkNode;
 #pragma mark - BookmarksFolderChooserDataSource
 
 - (id<BookmarksFolderChooserSubDataSource>)accountDataSource {
+  DCHECK([self shouldShowAccountBookmarks]);
   return _accountDataSource;
 }
 
@@ -120,12 +121,10 @@ using bookmarks::BookmarkNode;
   return bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
 }
 
-// TODO(crbug.com/1420237): Update this logic when two bookmark models are
-// available.
 - (BOOL)shouldShowAccountBookmarks {
   if (!base::FeatureList::IsEnabled(
           bookmarks::kEnableBookmarksAccountStorage)) {
-    return false;
+    return NO;
   }
 
   BOOL isSignedIn =
