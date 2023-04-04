@@ -21,6 +21,7 @@ polymer_element_files = [
   "calibration_component_chip.js",
   "icons.js",
   "critical_error_page.js",
+  "diagnostic_page.js",
   "hardware_error_page.js",
   "onboarding_choose_destination_page.js",
   "onboarding_choose_wp_disable_method_page.js",
@@ -95,6 +96,7 @@ js_type_check("closure_compile_module") {
     ":base_page",
     ":calibration_component_chip",
     ":critical_error_page",
+    ":diagnostic_page",
     ":fake_shimless_rma_service",
     ":hardware_error_page",
     ":mojo_interface_provider",
@@ -130,6 +132,7 @@ js_type_check("closure_compile_module") {
 js_library("shimless_rma") {
   deps = [
     ":critical_error_page",
+    ":diagnostic_page",
     ":hardware_error_page",
     ":mojo_interface_provider",
     ":onboarding_choose_destination_page",
@@ -174,6 +177,16 @@ js_library("base_page") {
 }
 
 js_library("critical_error_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("diagnostic_page") {
   deps = [
     ":base_page",
     ":mojo_interface_provider",

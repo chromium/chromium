@@ -372,6 +372,8 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "osUpdateEnabled",
       base::FeatureList::IsEnabled(features::kShimlessRMAOsUpdate));
+  html_source->AddBoolean("diagnosticPageEnabled",
+                          features::IsShimlessRMADiagnosticPageEnabled());
 }
 
 }  // namespace
