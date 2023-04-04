@@ -191,9 +191,7 @@ public class StartSurfaceTestUtils {
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), getStartSurfaceLayoutType());
 
-        if (getStartSurfaceLayoutType() == LayoutType.START_SURFACE) {
-            onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
-        }
+        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
     }
 
     /**
@@ -226,9 +224,7 @@ public class StartSurfaceTestUtils {
         waitForLayoutVisible(layoutChangedCallbackHelper, currentlyActiveLayout, cta,
                 getStartSurfaceLayoutType());
 
-        if (getStartSurfaceLayoutType() == LayoutType.START_SURFACE) {
-            onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
-        }
+        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
     }
 
     /**
