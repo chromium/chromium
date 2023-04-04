@@ -212,28 +212,6 @@ exploits will be effective at scale.
 Even so,
 [we might want to consider teaching CORB about Flash flavour of CORS](https://crbug.com/816318).
 
-##### All Frames In A `<webview>` Run In The Same Process
-
-[`<webview>`s run in a separate renderer
-process](https://developer.chrome.com/apps/tags/webview), but that single
-process hosts all frames in the `<webview>` (even with Strict Site Isolation
-enabled elsewhere in Chrome). Extra work is needed to fix this.
-
-Mitigating factors:
-
-* `<webview>` is available only to Web UI and Chrome Apps (which are deprecated
-  outside of Chrome OS).
-* `<webview>` contents are in a separate storage partition (separate from the
-  normal profile and from the Chrome App using the `<webview>` tag). The Chrome
-  App is also in an additional separate storage partition.
-
-Chrome WebUI pages must not, and Chrome Apps should not, use `<webview>` for
-hosting arbitrary web pages. They must only allow a single trustworthy page or
-set of pages. The user already has to trust the Chrome App to do the right thing
-(there is no Omnibox, for example) and only take the user to safe sites. If we
-can’t enforce this programmatically, we may consider enforcing it through code
-review.
-
 ##### Android `WebView`
 
 Android `WebView`s run in their own process as of Android O, so the hosting

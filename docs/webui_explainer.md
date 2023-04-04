@@ -1181,8 +1181,7 @@ avoid making the policy more permissive than strictly necessary.
 
 Alternatively, a `<webview>` tag can be used, which runs in a separate
 StoragePartition, a separate frame tree, and restricts postMessage communication
-by default. However, `<webview>` does not support Site Isolation and
-therefore it is not advisable to use for any sensitive content.
+by default. Note that `<webview>` is only available on desktop platforms.
 
 ## JavaScript Error Reporting
 

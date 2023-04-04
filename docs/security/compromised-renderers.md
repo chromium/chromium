@@ -61,8 +61,6 @@ from each other and from other sites.
 **Known gaps in protection**:
 - No form of Site Isolation is active in Android WebView.
   See also https://crbug.com/769449.
-- No form of Site Isolation is active in content hosted within
-  `<webview>` HTML tags.  See also https://crbug.com/614463.
 - Frames with `<iframe sandbox>` attribute are not isolated
   from their non-opaque precursor origin.
   See also https://crbug.com/510122.
