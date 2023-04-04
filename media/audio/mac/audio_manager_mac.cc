@@ -1031,6 +1031,10 @@ base::SingleThreadTaskRunner* AudioManagerMac::GetTaskRunner() const {
   return AudioManagerBase::GetTaskRunner();
 }
 
+void AudioManagerMac::StopAmplitudePeakTrace() {
+  TraceAmplitudePeak(/*trace_start=*/false);
+}
+
 bool AudioManagerMac::IsOnBatteryPower() const {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return power_observer_->IsOnBatteryPower();

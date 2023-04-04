@@ -35,6 +35,11 @@ AmplitudePeakDetector::AmplitudePeakDetector(PeakDetectedCB peak_detected_cb)
 
 AmplitudePeakDetector::~AmplitudePeakDetector() = default;
 
+void AmplitudePeakDetector::SetIsTracingEnabledForTests(
+    bool is_tracing_enabled) {
+  is_tracing_enabled_ = is_tracing_enabled;
+}
+
 void AmplitudePeakDetector::FindPeak(const void* data,
                                      int frames,
                                      int bytes_per_sample) {
@@ -63,11 +68,12 @@ bool IsDataLoud(const T* audio_data,
                 const T min_loudness,
                 const T max_loudness) {
   int n = 0;
-  while (n++ < frames) {
+  do {
     if (audio_data[n] < min_loudness || audio_data[n] > max_loudness) {
       return true;
     }
-  }
+  } while (++n < frames);
+
   return false;
 }
 

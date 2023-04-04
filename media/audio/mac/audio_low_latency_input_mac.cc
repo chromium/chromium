@@ -189,6 +189,9 @@ AUAudioInputStream::AUAudioInputStream(
       last_sample_time_(0.0),
       last_number_of_frames_(0),
       glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(manager_),
+                                         /*trace_start=*/true)),
       log_callback_(log_callback) {
   DCHECK(manager_);
   CHECK(log_callback_ != AudioManager::LogCallback());
@@ -1126,8 +1129,12 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   capture_time -= AudioTimestampHelper::FramesToTime(fifo_.GetAvailableFrames(),
                                                      format_.mSampleRate);
 
+  const int bytes_per_sample = format_.mBitsPerChannel / 8;
+
+  peak_detector_.FindPeak(audio_data, number_of_frames, bytes_per_sample);
+
   // Copy captured (and interleaved) data into FIFO.
-  fifo_.Push(audio_data, number_of_frames, format_.mBitsPerChannel / 8);
+  fifo_.Push(audio_data, number_of_frames, bytes_per_sample);
 
   // Consume and deliver the data when the FIFO has a block of available data.
   while (fifo_.available_blocks()) {

@@ -52,6 +52,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/mac/audio_manager_mac.h"
 #include "media/audio/system_glitch_reporter.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
@@ -267,6 +268,8 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Used to accumulate glitches to be passed to the AudioInputCallback.
   AudioGlitchInfo::Accumulator glitch_accumulator_;
+
+  AmplitudePeakDetector peak_detector_;
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;

@@ -277,6 +277,11 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
     source_ = callback;
   }
 
+#if BUILDFLAG(IS_MAC)
+  peak_detector_ = std::make_unique<AmplitudePeakDetector>(base::BindRepeating(
+      &AUHALStreamClient::StopAmplitudePeakTrace, base::Unretained(client_)));
+#endif
+
   OSStatus result = AudioOutputUnitStart(audio_unit_->audio_unit());
   if (result == noErr)
     return;
@@ -333,6 +338,10 @@ void AUHALStream::Stop() {
     last_number_of_frames_ = 0;
     audio_fifo_.reset();
   }
+
+#if BUILDFLAG(IS_MAC)
+  peak_detector_.reset();
+#endif
 
   stopped_ = true;
 }
@@ -398,6 +407,10 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
     audio_fifo_->Consume(output_bus_.get(), output_bus_->frames());
   else
     ProvideInput(0, output_bus_.get());
+
+#if BUILDFLAG(IS_MAC)
+  peak_detector_->FindPeak(output_bus_.get());
+#endif
 
   last_number_of_frames_ = number_of_frames;
 
