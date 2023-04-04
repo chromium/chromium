@@ -62,4 +62,9 @@ absl::optional<ui::ColorId> ComboboxModel::GetDropdownBackgroundColorIdAt(
   return absl::nullopt;
 }
 
+absl::optional<ui::ColorId>
+ComboboxModel::GetDropdownSelectedBackgroundColorIdAt(size_t index) const {
+  return absl::nullopt;
+}
+
 }  // namespace ui

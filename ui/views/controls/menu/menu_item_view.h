@@ -168,7 +168,8 @@ class VIEWS_EXPORT MenuItemView : public View {
       Type type,
       ui::MenuSeparatorType separator_style,
       absl::optional<ui::ColorId> submenu_background_color = absl::nullopt,
-      absl::optional<ui::ColorId> foreground_color = absl::nullopt);
+      absl::optional<ui::ColorId> foreground_color = absl::nullopt,
+      absl::optional<ui::ColorId> selected_color_id = absl::nullopt);
 
   // Remove the specified item from the menu. |item| will be deleted when
   // ChildrenChanged() is invoked.
@@ -558,6 +559,10 @@ class VIEWS_EXPORT MenuItemView : public View {
     foreground_color_id_ = foreground_color_id;
   }
 
+  void SetSelectedColorId(absl::optional<ui::ColorId> selected_color_id) {
+    selected_color_id_ = selected_color_id;
+  }
+
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
@@ -688,6 +693,7 @@ class VIEWS_EXPORT MenuItemView : public View {
                                       : IDS_NEW_BADGE);
 
   absl::optional<ui::ColorId> foreground_color_id_;
+  absl::optional<ui::ColorId> selected_color_id_;
 };
 
 }  // namespace views

@@ -362,7 +362,8 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     Type type,
     ui::MenuSeparatorType separator_style,
     absl::optional<ui::ColorId> submenu_background_color,
-    absl::optional<ui::ColorId> foreground_color) {
+    absl::optional<ui::ColorId> foreground_color,
+    absl::optional<ui::ColorId> selected_color_id) {
   DCHECK_NE(type, Type::kEmpty);
   if (!submenu_) {
     CreateSubmenu();
@@ -390,6 +391,7 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   item->SetMinorIcon(minor_icon);
   item->SetIcon(icon);
   item->SetForegroundColorId(foreground_color);
+  item->SetSelectedColorId(selected_color_id);
   if (type == Type::kSubMenu || type == Type::kActionableSubMenu)
     item->CreateSubmenu();
   if (type == Type::kHighlighted) {
@@ -1078,14 +1080,15 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
 void MenuItemView::PaintBackground(gfx::Canvas* canvas,
                                    PaintMode mode,
                                    bool paint_as_selected) {
-  if (type_ == Type::kHighlighted || is_alerted_) {
+  if (type_ == Type::kHighlighted || is_alerted_ ||
+      (paint_as_selected && selected_color_id_.has_value())) {
     SkColor color = gfx::kPlaceholderColor;
 
     ui::ColorProvider* color_provider = GetColorProvider();
-    if (type_ == Type::kHighlighted) {
-      const ui::ColorId color_id =
+    if (type_ == Type::kHighlighted || selected_color_id_.has_value()) {
+      const ui::ColorId color_id = selected_color_id_.value_or(
           paint_as_selected ? ui::kColorMenuItemBackgroundSelected
-                            : ui::kColorMenuItemBackgroundHighlighted;
+                            : ui::kColorMenuItemBackgroundHighlighted);
       color = color_provider->GetColor(color_id);
     } else {
       const auto* animation = GetMenuController()->GetAlertAnimation();
@@ -1178,6 +1181,14 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   // Use a custom color if provided by the controller. If the item is selected,
   // use the default color.
   if (!paint_as_selected && foreground_color_id_.has_value()) {
+    return GetColorProvider()->GetColor(foreground_color_id_.value());
+  }
+
+  // If the menu item is highlighted and a custom selected color and foreground
+  // color have been set, use the custom foreground color. Otherwise, use the
+  // default color.
+  if (paint_as_selected && selected_color_id_.has_value() &&
+      foreground_color_id_.has_value()) {
     return GetColorProvider()->GetColor(foreground_color_id_.value());
   }
 

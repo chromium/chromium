@@ -455,6 +455,47 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
       PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
 }
 
+// Provides assertion coverage for painting with custom colors.
+// icons.
+TEST_F(MenuItemViewPaintUnitTest, CustomColorAssertionCoverage) {
+  auto AddItem = [this](auto label, auto submenu_background_color,
+                        auto foreground_color, auto selected_color) {
+    menu_item_view()->AddMenuItemAt(
+        0, 1000, label, std::u16string(), std::u16string(), ui::ImageModel(),
+        ui::ImageModel(), views::MenuItemView::Type::kNormal,
+        ui::NORMAL_SEPARATOR, submenu_background_color, foreground_color,
+        selected_color);
+  };
+  ui::ColorId background_color = ui::kColorComboboxBackground;
+  ui::ColorId foreground_color = ui::kColorDropdownForeground;
+  ui::ColorId selected_color = ui::kColorMenuItemForegroundHighlighted;
+  AddItem(u"No custom colors", absl::nullopt, absl::nullopt, absl::nullopt);
+  AddItem(u"No selected color", background_color, foreground_color,
+          absl::nullopt);
+  AddItem(u"No foreground color", background_color, absl::nullopt,
+          selected_color);
+  AddItem(u"No background color", absl::nullopt, foreground_color,
+          selected_color);
+  AddItem(u"No background or foreground", absl::nullopt, absl::nullopt,
+          selected_color);
+  AddItem(u"No background or selected", absl::nullopt, foreground_color,
+          absl::nullopt);
+  AddItem(u"No foreground or selected", background_color, absl::nullopt,
+          absl::nullopt);
+  AddItem(u"All colors", background_color, foreground_color, selected_color);
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  SkBitmap bitmap;
+  gfx::Size size = menu_item_view()->GetMirroredBounds().size();
+  ui::CanvasPainter canvas_painter(&bitmap, size, 1.f, SK_ColorTRANSPARENT,
+                                   false);
+  menu_item_view()->GetSubmenu()->Paint(
+      PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
+}
+
 // Verifies a call to MenuItemView::OnPaint() doesn't trigger a call to
 // MenuItemView::submenu_arrow_image_view_::SchedulePaint(). This is a
 // regression test for https://crbug.com/1245854.
