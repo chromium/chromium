@@ -814,6 +814,20 @@ const char kMerchantWidePromotionsDescription[] =
 const char kCodeBasedRBDName[] = "Code-based RBD";
 const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
 
+const char kCompressionDictionaryTransportName[] =
+    "Compression dictionary transport";
+const char kCompressionDictionaryTransportDescription[] =
+    "Enables compression dictionary transport features. Requires "
+    "chrome://flags/#enable-compression-dictionary-transport-backend to be "
+    "enabled.";
+
+const char kCompressionDictionaryTransportBackendName[] =
+    "Compression dictionary transport backend";
+const char kCompressionDictionaryTransportBackendDescription[] =
+    "Enables the backend of compression dictionary transport features. "
+    "Requires chrome://flags/#enable-compression-dictionary-transport to be "
+    "enabled for testing the feature.";
+
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
 const char kForceColorProfileRec2020[] = "ITU-R BT.2020";

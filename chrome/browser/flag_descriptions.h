@@ -441,6 +441,12 @@ extern const char kMerchantWidePromotionsDescription[];
 extern const char kCodeBasedRBDName[];
 extern const char kCodeBasedRBDDescription[];
 
+extern const char kCompressionDictionaryTransportName[];
+extern const char kCompressionDictionaryTransportDescription[];
+
+extern const char kCompressionDictionaryTransportBackendName[];
+extern const char kCompressionDictionaryTransportBackendDescription[];
+
 extern const char kUseDMSAAForTilesName[];
 extern const char kUseDMSAAForTilesDescription[];
 

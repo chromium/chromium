@@ -527,6 +527,11 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         features::kBackForwardCacheSendNotRestoredReasons);
   }
 
+  if (trial_name == "CompressionDictionaryTransport") {
+    return base::FeatureList::IsEnabled(
+        features::kCompressionDictionaryTransport);
+  }
+
   return true;
 }
 
