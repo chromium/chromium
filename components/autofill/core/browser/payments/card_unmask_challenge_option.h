@@ -21,7 +21,9 @@ enum class CardUnmaskChallengeOptionType {
   kSmsOtp = 1,
   // CVC authentication.
   kCvc = 2,
-  kMaxValue = kCvc,
+  // Email OTP authentication.
+  kEmailOtp = 3,
+  kMaxValue = kEmailOtp,
 };
 
 // Indicates the position of the CVC, for example the front or back of the

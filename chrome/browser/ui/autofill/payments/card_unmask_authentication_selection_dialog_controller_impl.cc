@@ -169,6 +169,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
         // Show the OTP pending dialog.
         dialog_view_->UpdateContent();
         break;
+      case CardUnmaskChallengeOptionType::kEmailOtp:
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;
@@ -204,6 +205,7 @@ ui::ImageModel CardUnmaskAuthenticationSelectionDialogControllerImpl::
     case CardUnmaskChallengeOptionType::kSmsOtp:
       return ui::ImageModel::FromVectorIcon(vector_icons::kSmsIcon);
     case CardUnmaskChallengeOptionType::kCvc:
+    case CardUnmaskChallengeOptionType::kEmailOtp:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return ui::ImageModel();
@@ -222,6 +224,7 @@ std::u16string CardUnmaskAuthenticationSelectionDialogControllerImpl::
     case CardUnmaskChallengeOptionType::kCvc:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AUTHENTICATION_MODE_SECURITY_CODE);
+    case CardUnmaskChallengeOptionType::kEmailOtp:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return std::u16string();
@@ -251,6 +254,7 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
     case CardUnmaskChallengeOptionType::kCvc:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE);
+    case CardUnmaskChallengeOptionType::kEmailOtp:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       return std::u16string();
