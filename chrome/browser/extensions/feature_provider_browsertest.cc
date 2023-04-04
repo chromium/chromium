@@ -5,11 +5,11 @@
 #include "extensions/common/features/feature_provider.h"
 
 #include "base/test/bind.h"
+#include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/complex_feature.h"
-#include "extensions/common/features/features_test_utils.h"
 #include "extensions/test/test_extensions_client.h"
 
 namespace extensions {
@@ -26,7 +26,7 @@ using FeatureProviderBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
                        VerifyRequiresDelegatedAvailabilityCheckFeatures) {
   const std::vector<const char*> expected_delegated_features =
-      features_test_utils::GetExpectedDelegatedFeaturesForTest();
+      extension_test_util::GetExpectedDelegatedFeaturesForTest();
   const FeatureProvider* api_provider = FeatureProvider::GetAPIFeatures();
   const FeatureMap& feature_map = api_provider->GetAllFeatures();
   for (const auto& it : feature_map) {

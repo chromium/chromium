@@ -334,6 +334,7 @@ static_library("common_lib") {
     ]
     deps += [
       "//chrome/common/apps/platform_apps",
+      "//chrome/common/controlled_frame",
       "//components/app_constants",
     ]
     public_deps += [

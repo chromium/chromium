@@ -1466,6 +1466,7 @@ void Dispatcher::EnableCustomElementAllowlist() {
   blink::WebCustomElement::AddEmbedderCustomElementName("appview");
   blink::WebCustomElement::AddEmbedderCustomElementName("extensionoptions");
   blink::WebCustomElement::AddEmbedderCustomElementName("webview");
+  delegate_->EnableCustomElementAllowlist();
 }
 
 void Dispatcher::UpdateAllBindings() {

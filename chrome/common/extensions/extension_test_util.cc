@@ -95,4 +95,11 @@ void SetGalleryUpdateURL(const GURL& new_url) {
   extensions::ExtensionsClient::Get()->InitializeWebStoreUrls(command_line);
 }
 
+std::vector<const char*> GetExpectedDelegatedFeaturesForTest() {
+  return {
+      "chromeWebViewInternal", "controlledFrameInternal", "guestViewInternal",
+      "webRequestInternal",    "webViewInternal",
+  };
+}
+
 }  // namespace extension_test_util

@@ -34,6 +34,7 @@ class ChromeExtensionsDispatcherDelegate
   void InitializeBindingsSystem(
       extensions::Dispatcher* dispatcher,
       extensions::NativeExtensionBindingsSystem* bindings_system) override;
+  void EnableCustomElementAllowlist() override;
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_DISPATCHER_DELEGATE_H_

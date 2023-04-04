@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "extensions/common/manifest.h"
@@ -55,6 +56,8 @@ scoped_refptr<extensions::Extension> LoadManifest(const std::string& dir,
                                                   const std::string& test_file);
 
 void SetGalleryUpdateURL(const GURL& new_url);
+
+std::vector<const char*> GetExpectedDelegatedFeaturesForTest();
 
 }  // namespace extension_test_util
 

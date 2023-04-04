@@ -38,8 +38,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/common/extensions/extension_test_util.h"
 #include "extensions/common/extensions_client.h"
-#include "extensions/common/features/features_test_utils.h"
 #endif
 
 using ChromeContentRendererClientSearchBoxTest = ChromeRenderViewTest;
@@ -211,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(ChromeContentRendererClientBrowserTest,
   {
     const auto& map =
         extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
-    EXPECT_EQ(4u, map.size());
-    for (const auto* feature : extensions::features_test_utils::
-             GetExpectedDelegatedFeaturesForTest()) {
+    EXPECT_EQ(5u, map.size());
+    for (const auto* feature :
+         extension_test_util::GetExpectedDelegatedFeaturesForTest()) {
       EXPECT_EQ(1u, map.count(feature));
     }
   }

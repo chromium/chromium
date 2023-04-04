@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
+#include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "extensions/common/extensions_client.h"
 
@@ -19,10 +20,8 @@
 // This list should stay in sync with GetExpectedDelegatedFeaturesForTest().
 base::span<const char* const> GetControlledFrameFeatureList() {
   constexpr const char* feature_list[] = {
-      "chromeWebViewInternal",
-      "guestViewInternal",
-      "webRequestInternal",
-      "webViewInternal",
+      "controlledFrameInternal", "chromeWebViewInternal", "guestViewInternal",
+      "webRequestInternal",      "webViewInternal",
   };
   return base::make_span(feature_list);
 }
@@ -46,6 +45,8 @@ void EnsureExtensionsClientInitialized(
         std::move(delegated_availability_map));
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
+    extensions_client->AddAPIProvider(
+        std::make_unique<controlled_frame::ControlledFrameAPIProvider>());
 #if BUILDFLAG(IS_CHROMEOS)
     extensions_client->AddAPIProvider(
         std::make_unique<chromeos::ChromeOSSystemExtensionsAPIProvider>());
