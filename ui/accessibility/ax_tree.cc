@@ -1427,17 +1427,66 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // because deleting nodes can cause events to be fired, which will need to
   // access the root, and therefore the BrowserAccessibilityManager needs to be
   // aware of any newly created root as soon as possible.
-  for (AXNodeID node_id : update_state.new_node_ids) {
-    AXNode* node = GetFromId(node_id);
-    if (node)
-      NotifyNodeHasBeenReparentedOrCreated(node, &update_state);
-  }
+  if (features::IsUnserializeOptimizationsEnabled()) {
+    // Construct lists of nodes to minimize GetFromID and IsReparented calls.
+    // TODO(mschillaci): Move to AXTreeUpdateState to remove this layer's pass.
+    std::vector<AXNode*> reparented_nodes_to_notify;
+    std::vector<AXNode*> created_nodes_to_notify;
+    for (AXNodeID node_id : update_state.new_node_ids) {
+      AXNode* node = GetFromId(node_id);
+      if (!node || node->id() == kInvalidAXNodeID) {
+        continue;
+      }
 
-  // Now that the unignored cached values are up to date, notify observers of
-  // the nodes that were deleted from the tree but not reparented.
-  for (AXNodeID node_id : update_state.removed_node_ids) {
-    if (!update_state.IsCreatedNode(node_id))
-      NotifyNodeHasBeenDeleted(node_id);
+      if (update_state.IsReparentedNode(node)) {
+        reparented_nodes_to_notify.emplace_back(node);
+      } else {
+        created_nodes_to_notify.emplace_back(node);
+      }
+    }
+
+    std::vector<AXNodeID> deleted_nodes_to_notify;
+    for (AXNodeID node_id : update_state.removed_node_ids) {
+      if (node_id == kInvalidAXNodeID) {
+        continue;
+      }
+      if (!update_state.IsCreatedNode(node_id)) {
+        deleted_nodes_to_notify.emplace_back(node_id);
+      }
+    }
+
+    // Notify observers of all reparented and created nodes.
+    for (AXTreeObserver& observer : observers_) {
+      for (AXNode* node : reparented_nodes_to_notify) {
+        observer.OnNodeReparented(this, node);
+      }
+      for (AXNode* node : created_nodes_to_notify) {
+        observer.OnNodeCreated(this, node);
+      }
+    }
+
+    // Now that the unignored cached values are up to date, notify observers of
+    // the nodes that were deleted from the tree but not reparented.
+    for (AXTreeObserver& observer : observers_) {
+      for (AXNodeID node_id : deleted_nodes_to_notify) {
+        observer.OnNodeDeleted(this, node_id);
+      }
+    }
+  } else {
+    for (AXNodeID node_id : update_state.new_node_ids) {
+      AXNode* node = GetFromId(node_id);
+      if (node) {
+        NotifyNodeHasBeenReparentedOrCreated(node, &update_state);
+      }
+    }
+
+    // Now that the unignored cached values are up to date, notify observers of
+    // the nodes that were deleted from the tree but not reparented.
+    for (AXNodeID node_id : update_state.removed_node_ids) {
+      if (!update_state.IsCreatedNode(node_id)) {
+        NotifyNodeHasBeenDeleted(node_id);
+      }
+    }
   }
 
   // Now that the unignored cached values are up to date, notify observers of
