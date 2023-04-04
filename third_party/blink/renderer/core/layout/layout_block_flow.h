@@ -293,7 +293,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
 
-  void SimplifiedNormalFlowInlineLayout();
   RecalcLayoutOverflowResult RecalcInlineChildrenLayoutOverflow();
   void RecalcInlineChildrenVisualOverflow();
 

@@ -1167,36 +1167,6 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   multi_column_flow_thread_ = flow_thread;
 }
 
-void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {
-  NOT_DESTROYED();
-  DCHECK(ChildrenInline());
-  HeapLinkedHashSet<Member<RootInlineBox>> line_boxes;
-  ClearCollectionScope<HeapLinkedHashSet<Member<RootInlineBox>>> scope(
-      &line_boxes);
-  for (InlineWalker walker(LineLayoutBlockFlow(this)); !walker.AtEnd();
-       walker.Advance()) {
-    LayoutObject* o = walker.Current().GetLayoutObject();
-    if (!o->IsOutOfFlowPositioned() &&
-        (o->IsAtomicInlineLevel() || o->IsFloating())) {
-      o->LayoutIfNeeded();
-      if (To<LayoutBox>(o)->InlineBoxWrapper()) {
-        RootInlineBox& box = To<LayoutBox>(o)->InlineBoxWrapper()->Root();
-        line_boxes.insert(&box);
-      }
-    } else if (o->IsText() ||
-               (o->IsLayoutInline() && !walker.AtEndOfInline())) {
-      o->ClearNeedsLayout();
-    }
-  }
-
-  // FIXME: Glyph overflow will get lost in this case, but not really a big
-  // deal.
-  GlyphOverflowAndFallbackFontsMap text_box_data_map;
-  for (auto box : line_boxes) {
-    box->ComputeOverflow(box->LineTop(), box->LineBottom(), text_box_data_map);
-  }
-}
-
 RecalcLayoutOverflowResult
 LayoutBlockFlow::RecalcInlineChildrenLayoutOverflow() {
   NOT_DESTROYED();
