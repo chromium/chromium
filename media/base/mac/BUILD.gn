@@ -14,8 +14,8 @@ source_set("mac") {
   sources = [
     "color_space_util_mac.h",
     "color_space_util_mac.mm",
-    "video_frame_mac.cc",
     "video_frame_mac.h",
+    "video_frame_mac.mm",
     "videotoolbox_helpers.cc",
     "videotoolbox_helpers.h",
   ]

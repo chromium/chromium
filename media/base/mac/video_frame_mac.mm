@@ -52,12 +52,24 @@ bool IsAcceptableCvPixelFormat(VideoPixelFormat format, OSType cv_format) {
 }
 
 bool CvPixelBufferHasColorSpace(CVPixelBufferRef pixel_buffer) {
-  return CVBufferGetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
-                               nullptr) &&
-         CVBufferGetAttachment(pixel_buffer, kCVImageBufferTransferFunctionKey,
-                               nullptr) &&
-         CVBufferGetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
-                               nullptr);
+  if (@available(macOS 12, iOS 15, *)) {
+    return CVBufferHasAttachment(pixel_buffer,
+                                 kCVImageBufferColorPrimariesKey) &&
+           CVBufferHasAttachment(pixel_buffer,
+                                 kCVImageBufferTransferFunctionKey) &&
+           CVBufferHasAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey);
+  } else {
+#if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    return CVBufferGetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
+                                 nullptr) &&
+           CVBufferGetAttachment(pixel_buffer,
+                                 kCVImageBufferTransferFunctionKey, nullptr) &&
+           CVBufferGetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey,
+                                 nullptr);
+#else
+    return false;
+#endif
+  }
 }
 
 void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
@@ -90,8 +102,9 @@ void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
 MEDIA_EXPORT base::ScopedCFTypeRef<CVPixelBufferRef>
 WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   base::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
-  if (!frame)
+  if (!frame) {
     return pixel_buffer;
+  }
 
   const gfx::Rect& visible_rect = frame->visible_rect();
   bool crop_needed = visible_rect != gfx::Rect(frame->coded_size());
@@ -139,10 +152,12 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
 
   // If the frame is backed by a GPU buffer, but needs cropping, map it and
   // and handle like a software frame. There is no memcpy here.
-  if (frame->HasGpuMemoryBuffer())
+  if (frame->HasGpuMemoryBuffer()) {
     frame = ConvertToMemoryMappedFrame(std::move(frame));
-  if (!frame)
+  }
+  if (!frame) {
     return pixel_buffer;
+  }
 
   // VideoFrame only supports YUV formats and most of them are 'YVU' ordered,
   // which CVPixelBuffer does not support. This means we effectively can only
