@@ -6451,6 +6451,48 @@
             ]
         }
     ],
+    "IOSFeedInvisibleForegroundRefresh": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_app_close_foreground_20230405",
+                    "params": {
+                        "EnableFeedAppCloseBackgroundRefresh": "false",
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "EnableFeedSessionCloseForegroundRefresh": "false"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh"
+                    ]
+                },
+                {
+                    "name": "Enabled_app_close_background_20230405",
+                    "params": {
+                        "EnableFeedAppCloseBackgroundRefresh": "true",
+                        "EnableFeedAppCloseForegroundRefresh": "false",
+                        "EnableFeedSessionCloseForegroundRefresh": "false"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh"
+                    ]
+                },
+                {
+                    "name": "Enabled_session_close_foreground_20230405",
+                    "params": {
+                        "EnableFeedAppCloseBackgroundRefresh": "false",
+                        "EnableFeedAppCloseForegroundRefresh": "false",
+                        "EnableFeedSessionCloseForegroundRefresh": "true"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFeedSyncPromoFastFollows": [
         {
             "platforms": [
