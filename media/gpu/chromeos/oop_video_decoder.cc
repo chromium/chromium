@@ -384,6 +384,8 @@ void OOPVideoDecoder::Initialize(const VideoDecoderConfig& config,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
+  initialized_for_protected_content_ = config.is_encrypted();
+
   init_cb_ = std::move(init_cb);
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
@@ -741,6 +743,22 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   }
   frame->set_timestamp(it->second);
 
+  // Validate protected content metadata.
+  if (!initialized_for_protected_content_ &&
+      (frame->metadata().protected_video || frame->metadata().hw_protected)) {
+    VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
+                "was not configured for protected content";
+    Stop();
+    return;
+  }
+  if (initialized_for_protected_content_ &&
+      (!frame->metadata().protected_video || !frame->metadata().hw_protected)) {
+    VLOGF(2) << "Received a frame with unexpected metadata from a decoder that "
+                "was configured for protected content";
+    Stop();
+    return;
+  }
+
   // The destruction observer will be called after the client releases the
   // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
   // the WeakPtr is dereferenced on the correct sequence.
@@ -764,6 +782,18 @@ void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!has_error_);
+
+  // Note: the remote video decoder may be of a newer version than us (see e.g.,
+  // go/lacros-version-skew-guide). Therefore, we may get the default
+  // WaitingReason::kNoCdm if the value received over mojo is unrecognized. It's
+  // not expected that we'll ever use WaitingReason::kNoCdm for anything
+  // legitimate in ChromeOS, so if we receive that for any reason, the remote
+  // decoder is either misbehaving or too new.
+  if (reason == WaitingReason::kNoCdm) {
+    VLOGF(2) << "Received an unexpected WaitingReason";
+    Stop();
+    return;
+  }
 
   if (waiting_cb_)
     waiting_cb_.Run(reason);

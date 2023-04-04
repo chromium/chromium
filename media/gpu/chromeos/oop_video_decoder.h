@@ -180,6 +180,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   std::unique_ptr<mojo::Receiver<stable::mojom::StableCdmContext>>
       stable_cdm_context_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  bool initialized_for_protected_content_
+      GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   VideoDecoderType remote_decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VideoDecoderType::kUnknown;

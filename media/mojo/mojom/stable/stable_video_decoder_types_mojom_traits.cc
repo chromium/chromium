@@ -1158,6 +1158,11 @@ bool StructTraits<media::stable::mojom::SupportedVideoDecoderConfigDataView,
   if (!input.ReadCodedSizeMax(&output->coded_size_max))
     return false;
 
+  if (input.require_encrypted() && !input.allow_encrypted()) {
+    // Inconsistent information.
+    return false;
+  }
+
   output->allow_encrypted = input.allow_encrypted();
   output->require_encrypted = input.require_encrypted();
 
@@ -1702,6 +1707,12 @@ bool StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
   output->power_efficient = true;
+
+  if (output->hw_protected && !output->protected_video) {
+    // According to the VideoFrameMetadata documentation, |hw_protected| is only
+    // valid if |protected_video| is set to true.
+    return false;
+  }
 
   return true;
 }
