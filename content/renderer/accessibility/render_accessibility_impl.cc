@@ -929,9 +929,10 @@ void RenderAccessibilityImpl::OnPluginRootNodeUpdated() {
     return;
 
   MarkWebAXObjectDirty(obj, /* subtree */ false);
-  if (serialize_post_lifecycle_) {
-    ScheduleImmediateAXUpdate();
-  }
+  // Schedule an update immediately whenever the PDF root in PDF accessibility
+  // tree changes. It is needed to ensure that changes (e.g. bounds) in PDF
+  // accessibility tree are serialized.
+  ScheduleImmediateAXUpdate();
 }
 
 void RenderAccessibilityImpl::ShowPluginContextMenu() {
