@@ -127,18 +127,6 @@
       'ios_runtime_cache_15_5',
     ],
   },
-  'SIM_IPAD_AIR_3RD_GEN_14_5': {
-    'args': [
-      '--platform',
-      'iPad Air (3rd generation)',
-      '--version',
-      '14.5'
-    ],
-    'identifier': 'iPad Air (3rd generation) 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
-    ],
-  },
   'SIM_IPAD_AIR_3RD_GEN_16_2': {
     'args': [
       '--platform',
@@ -292,18 +280,6 @@
     'identifier': 'iPhone SE (3rd generation) 16.2',
     'mixins': [
       'ios_runtime_cache_16_2',
-    ],
-  },
-  'SIM_IPHONE_X_14_5': {
-    'args': [
-      '--platform',
-      'iPhone X',
-      '--version',
-      '14.5',
-    ],
-    'identifier': 'iPhone X 14.5',
-    'mixins': [
-      'ios_runtime_cache_14_5',
     ],
   },
   'SIM_IPHONE_X_15_5': {
