@@ -630,6 +630,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                                  const volatile GLbyte* mailboxes);
   void DoWritePixelsINTERNAL(GLint x_offset,
                              GLint y_offset,
+                             GLint plane_index,
                              GLuint src_width,
                              GLuint src_height,
                              GLuint row_bytes,
@@ -1912,6 +1913,7 @@ void RasterDecoderImpl::DoCopySharedImageINTERNAL(
 
 void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                                               GLint y_offset,
+                                              GLint plane_index,
                                               GLuint src_width,
                                               GLuint src_height,
                                               GLuint row_bytes,

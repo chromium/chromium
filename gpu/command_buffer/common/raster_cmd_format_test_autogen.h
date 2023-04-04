@@ -383,25 +383,27 @@ TEST_F(RasterFormatTest, WritePixelsINTERNALImmediate) {
   };
   cmds::WritePixelsINTERNALImmediate& cmd =
       *GetBufferAs<cmds::WritePixelsINTERNALImmediate>();
-  void* next_cmd = cmd.Set(
-      &cmd, static_cast<GLint>(11), static_cast<GLint>(12),
-      static_cast<GLuint>(13), static_cast<GLuint>(14), static_cast<GLuint>(15),
-      static_cast<GLuint>(16), static_cast<GLuint>(17), static_cast<GLint>(18),
-      static_cast<GLuint>(19), static_cast<GLuint>(20), data);
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+                           static_cast<GLint>(13), static_cast<GLuint>(14),
+                           static_cast<GLuint>(15), static_cast<GLuint>(16),
+                           static_cast<GLuint>(17), static_cast<GLuint>(18),
+                           static_cast<GLint>(19), static_cast<GLuint>(20),
+                           static_cast<GLuint>(21), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::WritePixelsINTERNALImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
             cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLint>(11), cmd.x_offset);
   EXPECT_EQ(static_cast<GLint>(12), cmd.y_offset);
-  EXPECT_EQ(static_cast<GLuint>(13), cmd.src_width);
-  EXPECT_EQ(static_cast<GLuint>(14), cmd.src_height);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.row_bytes);
-  EXPECT_EQ(static_cast<GLuint>(16), cmd.src_sk_color_type);
-  EXPECT_EQ(static_cast<GLuint>(17), cmd.src_sk_alpha_type);
-  EXPECT_EQ(static_cast<GLint>(18), cmd.shm_id);
-  EXPECT_EQ(static_cast<GLuint>(19), cmd.shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(20), cmd.pixels_offset);
+  EXPECT_EQ(static_cast<GLint>(13), cmd.plane_index);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.src_width);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.src_height);
+  EXPECT_EQ(static_cast<GLuint>(16), cmd.src_row_bytes);
+  EXPECT_EQ(static_cast<GLuint>(17), cmd.src_sk_color_type);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.src_sk_alpha_type);
+  EXPECT_EQ(static_cast<GLint>(19), cmd.shm_id);
+  EXPECT_EQ(static_cast<GLuint>(20), cmd.shm_offset);
+  EXPECT_EQ(static_cast<GLuint>(21), cmd.pixels_offset);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
