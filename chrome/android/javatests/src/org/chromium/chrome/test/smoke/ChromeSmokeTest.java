@@ -14,6 +14,7 @@ import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -30,6 +31,7 @@ import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
+import org.chromium.net.test.EmbeddedTestServerRule;
 
 import java.util.concurrent.Callable;
 
@@ -39,8 +41,9 @@ import java.util.concurrent.Callable;
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ChromeSmokeTest {
-    private static final String DATA_URL = "data:,Hello";
-    private static final String ACTIVITY_NAME = "org.chromium.chrome.browser.ChromeTabbedActivity";
+    private static final String ACTIVITY_NAME = "com.google.android.apps.chrome.IntentDispatcher";
+    private static final String TEST_PAGE =
+            "/chrome/android/javatests/src/org/chromium/chrome/test/smoke/test.html";
 
     public static final long TIMEOUT_MS = 20000L;
     public static final long UI_CHECK_INTERVAL = 1000L;
@@ -49,6 +52,9 @@ public class ChromeSmokeTest {
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
     @Rule
     public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
+
+    @ClassRule
+    public static EmbeddedTestServerRule sEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     private static Runnable toNotSatisfiedRunnable(
             Callable<Boolean> criteria, String failureReason) {
@@ -163,9 +169,12 @@ public class ChromeSmokeTest {
     }
 
     @Test
-    public void testHello() {
+    public void testHello() throws Exception {
         Context context = InstrumentationRegistry.getContext();
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(DATA_URL));
+        String url = sEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setComponent(new ComponentName(mPackageName, ACTIVITY_NAME));
         context.startActivity(intent);
@@ -179,7 +188,9 @@ public class ChromeSmokeTest {
         navigateThroughFRE();
 
         // FRE should be over and we should be shown the url we requested.
-        IUi2Locator dataUrlText = Ui2Locators.withText(DATA_URL);
+        assert url.startsWith("http://");
+        String urlWithoutScheme = url.substring(7);
+        IUi2Locator dataUrlText = Ui2Locators.withText(urlWithoutScheme);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(dataUrlText);
     }
 }
