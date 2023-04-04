@@ -31,6 +31,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   static const char kClassicName[];
   static const uint32_t kPasskey;
   static const uint32_t kHeadsetClassOfDevice;
+  static const uint32_t kKeyboardClassofDevice;
 
   // Fake overrides.
   void Init(dbus::Bus* bus,

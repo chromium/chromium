@@ -534,6 +534,21 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
   EXPECT_FALSE(paired2->IsBondedImpl());
 }
 
+TEST_F(BluetoothFlossTest, TestIsConnectable) {
+  InitializeAndEnableAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kPhoneAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_TRUE(device->IsConnectable());
+
+  // HID devices shouldn't be connectable
+  device = adapter_->GetDevice(FakeFlossAdapterClient::kKeyboardAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsConnectable());
+}
+
 TEST_F(BluetoothFlossTest, DisabledAdapterClearsDevices) {
   InitializeAndEnableAdapter();
   DiscoverDevices();

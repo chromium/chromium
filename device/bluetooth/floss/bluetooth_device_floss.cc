@@ -152,9 +152,17 @@ bool BluetoothDeviceFloss::IsGattConnected() const {
 }
 
 bool BluetoothDeviceFloss::IsConnectable() const {
-  // Mark all devices as connectable for now.
-  // TODO(b/211126690): Implement based on supported profiles.
-  return true;
+  // Mimic current BlueZ behavior that Non-HID is connectable
+  switch (GetDeviceType()) {
+    case device::BluetoothDeviceType::PERIPHERAL:
+    case device::BluetoothDeviceType::JOYSTICK:
+    case device::BluetoothDeviceType::KEYBOARD:
+    case device::BluetoothDeviceType::MOUSE:
+    case device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO:
+      return false;
+    default:
+      return true;
+  }
 }
 
 bool BluetoothDeviceFloss::IsConnecting() const {
