@@ -1641,7 +1641,6 @@ NodeListsNodeData& ContainerNode::EnsureNodeLists() {
 Element* ContainerNode::GetAutofocusDelegate() const {
   Element* element = ElementTraversal::Next(*this, this);
   while (element) {
-    // TODO(jarhar): Add this to the HTML spec as a followup to the popover PR
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       if (DynamicTo<HTMLDialogElement>(html_element) ||
           html_element->HasPopoverAttribute()) {
