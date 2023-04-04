@@ -20,7 +20,7 @@ promise_test(async () => {
   const ancestorKey = token();
 
   let url0 = generateURL("resources/run-url-selection-operation-limit-inner.https.html", [ancestorKey]);
-  url0.searchParams.append("bits", "6");
+  url0.searchParams.append("bits", "24");
   attachIFrame(url0);
   const result0 = await nextValueFromServer(ancestorKey);
   assert_equals(result0, "run_url_selection_limit_inner_loaded");
@@ -31,7 +31,7 @@ promise_test(async () => {
   assert_equals(result1, "run_url_selection_limit_inner_loaded");
 
   let url2 = generateURL("resources/run-url-selection-operation-limit-inner.https.html", [ancestorKey]);
-  url2.searchParams.append("bits", "3");
+  url2.searchParams.append("bits", "12");
   url2 = getOtherOriginURL(url2);
   attachIFrame(url2);
   const result2 = await nextValueFromServer(ancestorKey);

@@ -17,7 +17,7 @@ promise_test(async () => {
 
   await sharedStorage.worklet.addModule("../shared_storage/resources/simple-module.js");
 
-  for (let i = 0; i < 2; ++i) {
+  for (let i = 0; i < 8; ++i) {
     let config = await sharedStorage.selectURL(
       "test-url-selection-operation", urls,
       {data: {'mockResult': 1}, keepAlive: true, resolveToConfig: true});
