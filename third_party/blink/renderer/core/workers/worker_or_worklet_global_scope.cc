@@ -565,6 +565,14 @@ String WorkerOrWorkletGlobalScope::GetAcceptLanguages() const {
   return web_worker_fetch_context_->GetAcceptLanguages();
 }
 
+void WorkerOrWorkletGlobalScope::OnConsoleApiMessage(
+    mojom::ConsoleMessageLevel level,
+    const String& message,
+    SourceLocation* location) {
+  reporting_proxy_.ReportConsoleMessage(
+      mojom::ConsoleMessageSource::kConsoleApi, level, message, location);
+}
+
 void WorkerOrWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(inside_settings_resource_fetcher_);
   visitor->Trace(resource_fetchers_);

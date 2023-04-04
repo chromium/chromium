@@ -11,6 +11,8 @@ blink_modules_sources("services") {
   ]
 
   sources = [
+    "shared_storage_operation_definition.cc",
+    "shared_storage_operation_definition.h",
     "shared_storage_worklet_global_scope.cc",
     "shared_storage_worklet_global_scope.h",
     "shared_storage_worklet_messaging_proxy.cc",

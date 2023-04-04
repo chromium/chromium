@@ -32,12 +32,16 @@ namespace blink {
 
 struct GlobalScopeCreationParams;
 class ModuleScriptDownloader;
+class SharedStorageOperationDefinition;
+class V8NoArgumentConstructor;
 
 // mojom::SharedStorageWorkletService implementation. Responsible for
 // handling worklet operations. This object lives on the worklet thread.
 class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     : public WorkletGlobalScope,
       public mojom::SharedStorageWorkletService {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   SharedStorageWorkletGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params,
@@ -48,7 +52,16 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
       base::OnceClosure disconnect_handler);
 
+  // SharedStorageWorkletGlobalScope IDL
+  void Register(const String& name,
+                V8NoArgumentConstructor* operation_ctor,
+                ExceptionState&);
+
   // WorkletGlobalScope implementation:
+  void OnConsoleApiMessage(mojom::ConsoleMessageLevel level,
+                           const String& message,
+                           SourceLocation* location) override;
+
   bool IsSharedStorageWorkletGlobalScope() const override { return true; }
 
   WorkletToken GetWorkletToken() const override { return token_; }
@@ -86,6 +99,14 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       std::unique_ptr<std::string> response_body,
       std::string error_message);
 
+  // Performs preliminary checks that are common to `RunURLSelectionOperation`
+  // `RunOperation`. On success, sets `operation_definition` to the registered
+  // operation. On failure, sets `error_message` to the error to be returned.
+  bool PerformCommonOperationChecks(
+      const std::string& operation_name,
+      std::string& error_message,
+      SharedStorageOperationDefinition*& operation_definition);
+
   network::mojom::RequestDestination GetDestination() const override {
     // Not called as the current implementation uses the custom module script
     // loader.
@@ -97,6 +118,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     return network::mojom::RequestDestination::kEmpty;
   }
 
+  bool module_script_loaded_ = false;
+
   // `receiver_`'s disconnect handler explicitly deletes the worklet thread
   // object that owns this service, thus deleting `this` upon disconnect. To
   // ensure that the worklet thread object and this service are not leaked,
@@ -105,6 +128,10 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   HeapMojoReceiver<mojom::SharedStorageWorkletService,
                    SharedStorageWorkletGlobalScope>
       receiver_{this, this};
+
+  // The map from the registered operation names to their definition.
+  HeapHashMap<String, Member<SharedStorageOperationDefinition>>
+      operation_definition_map_;
 
   std::unique_ptr<ModuleScriptDownloader> module_script_downloader_;
 
