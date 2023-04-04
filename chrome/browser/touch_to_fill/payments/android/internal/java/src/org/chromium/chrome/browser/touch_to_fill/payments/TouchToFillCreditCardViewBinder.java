@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
@@ -71,6 +72,7 @@ class TouchToFillCreditCardViewBinder {
 
     /** Binds the item view to the model properties. */
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
+        TextView cardName = view.findViewById(R.id.card_name);
         if (propertyKey == CARD_ICON_ID) {
             ImageView icon = view.findViewById(R.id.favicon);
             int iconId = model.get(CARD_ICON_ID);
@@ -79,8 +81,12 @@ class TouchToFillCreditCardViewBinder {
             // constructor if the card issuer is unknown.
             icon.setImageDrawable(
                     iconId != 0 ? AppCompatResources.getDrawable(view.getContext(), iconId) : null);
+        } else if (propertyKey == NETWORK_NAME) {
+            if (!model.get(NETWORK_NAME).isEmpty()) {
+                cardName.setContentDescription(
+                        model.get(CARD_NAME) + " " + model.get(NETWORK_NAME));
+            }
         } else if (propertyKey == CARD_NAME) {
-            TextView cardName = view.findViewById(R.id.card_name);
             cardName.setText(model.get(CARD_NAME));
         } else if (propertyKey == CARD_NUMBER) {
             TextView cardNumber = view.findViewById(R.id.card_number);
@@ -133,9 +139,9 @@ class TouchToFillCreditCardViewBinder {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
-        } else if (propertyKey == CARD_ICON_ID || propertyKey == CARD_NAME
-                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION
-                || propertyKey == VIRTUAL_CARD_LABEL) {
+        } else if (propertyKey == CARD_ICON_ID || propertyKey == NETWORK_NAME
+                || propertyKey == CARD_NAME || propertyKey == CARD_NUMBER
+                || propertyKey == CARD_EXPIRATION || propertyKey == VIRTUAL_CARD_LABEL) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

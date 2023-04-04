@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TOUCH_TO_FILL_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
@@ -72,9 +73,11 @@ import java.util.stream.StreamSupport;
 @Batch(Batch.PER_CLASS)
 public class TouchToFillCreditCardControllerRobolectricTest {
     private static final CreditCard VISA = createCreditCard(
-            "Visa", "4111111111111111", "5", "2050", true, "Visa", "• • • • 1111", 0);
-    private static final CreditCard MASTER_CARD = createCreditCard(
-            "MasterCard", "5555555555554444", "8", "2050", true, "MasterCard", "• • • • 4444", 0);
+            "Visa", "4111111111111111", "5", "2050", true, "Visa", "• • • • 1111", 0, "visa");
+    private static final CreditCard NICKNAMED_VISA = createCreditCard(
+            "Visa", "4111111111111111", "5", "2050", true, "Best Card", "• • • • 1111", 0, "visa");
+    private static final CreditCard MASTER_CARD = createCreditCard("MasterCard", "5555555555554444",
+            "8", "2050", true, "MasterCard", "• • • • 4444", 0, "mastercard");
     private static final CreditCard VIRTUAL_CARD = createVirtualCreditCard(/* name= */ "Visa",
             /* number= */ "4111111111111111", /* month */ "5", /* year */ "2050",
             /* network= */ "Visa", /* iconId= */ 0, /* cardNameForAutofillDisplay= */ "Visa",
@@ -292,6 +295,28 @@ public class TouchToFillCreditCardControllerRobolectricTest {
         ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
         getModelsOfType(itemList, FILL_BUTTON).get(0).get(ON_CLICK_ACTION).run();
         verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
+    }
+
+    @Test
+    public void testCardModelForNicknamedCardContainsANetworkName() {
+        mCoordinator.showSheet(new CreditCard[] {NICKNAMED_VISA}, false);
+
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+
+        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, NICKNAMED_VISA);
+        assertTrue(cardModel.isPresent());
+        assertEquals("visa", cardModel.get().get(NETWORK_NAME));
+    }
+
+    @Test
+    public void testCardModelForACardWithoutANicknameDoesNotContainANetworkName() {
+        mCoordinator.showSheet(new CreditCard[] {VISA}, false);
+
+        ModelList itemList = mTouchToFillCreditCardModel.get(SHEET_ITEMS);
+
+        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, VISA);
+        assertTrue(cardModel.isPresent());
+        assertTrue(cardModel.get().get(NETWORK_NAME).isEmpty());
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

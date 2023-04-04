@@ -43,6 +43,8 @@ class TouchToFillCreditCardProperties {
     static class CreditCardProperties {
         static final PropertyModel.ReadableIntPropertyKey CARD_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("card_icon_id");
+        static final PropertyModel.ReadableObjectPropertyKey<String> NETWORK_NAME =
+                new PropertyModel.ReadableObjectPropertyKey<>("network_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("card_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NUMBER =
@@ -54,7 +56,7 @@ class TouchToFillCreditCardProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
 
-        static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, CARD_NAME, CARD_NUMBER,
+        static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, NETWORK_NAME, CARD_NAME, CARD_NUMBER,
                 CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION};
 
         private CreditCardProperties() {}
