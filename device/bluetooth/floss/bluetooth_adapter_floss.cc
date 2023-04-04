@@ -85,6 +85,33 @@ bool DeviceNeedsToReadProperties(device::BluetoothDevice* device) {
 
 }  // namespace
 
+// Empty delegate for BLE scanning used during discovery.
+class BleDelegateForDiscovery
+    : public device::BluetoothLowEnergyScanSession::Delegate {
+ public:
+  BleDelegateForDiscovery() = default;
+  ~BleDelegateForDiscovery() override = default;
+
+  base::WeakPtr<BleDelegateForDiscovery> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // Empty device::BluetoothLowEnergyScanSession::Delegate overrides
+  void OnSessionStarted(
+      device::BluetoothLowEnergyScanSession* scan_session,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+          error_code) override {}
+  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
+                     device::BluetoothDevice* device) override {}
+  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
+                    device::BluetoothDevice* device) override {}
+  void OnSessionInvalidated(
+      device::BluetoothLowEnergyScanSession* scan_session) override {}
+
+ private:
+  base::WeakPtrFactory<BleDelegateForDiscovery> weak_ptr_factory_{this};
+};
+
 // According to the Bluetooth spec, these are the min and max values possible
 // for advertising interval. Core 5.3 Spec, Vol 4, Part E, Section 7.8.5.
 constexpr uint16_t kMinIntervalMs = 20;
@@ -98,6 +125,8 @@ scoped_refptr<BluetoothAdapterFloss> BluetoothAdapterFloss::CreateAdapter() {
 BluetoothAdapterFloss::BluetoothAdapterFloss() {
   ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   socket_thread_ = device::BluetoothSocketThread::Get();
+
+  le_discovery_session_delegate_ = std::make_unique<BleDelegateForDiscovery>();
 }
 
 BluetoothAdapterFloss::~BluetoothAdapterFloss() {
@@ -466,7 +495,8 @@ void BluetoothAdapterFloss::OnStartDiscovery(
     BLUETOOTH_LOG(ERROR) << adapter_path
                          << ": Failed to start discovery: " << ret.error();
     std::move(callback).Run(true, TranslateDiscoveryErrorToUMA(ret.error()));
-
+    // Clear any LE discovery session if starting discovery failed.
+    le_discovery_session_.reset(nullptr);
     return;
   }
 
@@ -589,6 +619,12 @@ void BluetoothAdapterFloss::DiscoveringChanged(bool discovering) {
   } else {
     for (auto& observer : observers_) {
       observer.AdapterDiscoveringChanged(this, discovering);
+    }
+
+    // No active discovery sessions and we stopped discovering. Make sure the LE
+    // session is also stopped.
+    if (!discovering) {
+      le_discovery_session_.reset(nullptr);
     }
   }
 }
@@ -1318,6 +1354,12 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   for (auto& observer : observers_)
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
+
+  // We are currently in an LE discovery session. Also emit a DeviceFound event
+  // since we have updated data for this device.
+  if (le_discovery_session_) {
+    AdapterFoundDevice(device_ptr->AsFlossDeviceId());
+  }
 }
 
 void BluetoothAdapterFloss::AdvertisementFound(uint8_t scanner_id,
@@ -1402,6 +1444,16 @@ void BluetoothAdapterFloss::StartScanWithFilter(
 
   BLUETOOTH_LOG(EVENT) << __func__;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // First start LE scan before discovery
+  if (!le_discovery_session_) {
+    le_discovery_session_ = StartLowEnergyScanSession(
+        nullptr, static_cast<BleDelegateForDiscovery*>(
+                     le_discovery_session_delegate_.get())
+                     ->GetWeakPtr());
+  }
+#endif
+
   // TODO(b/192251662) - Support scan filtering. For now, start scanning with no
   // filters in place.
   FlossDBusManager::Get()->GetAdapterClient()->StartDiscovery(
@@ -1442,6 +1494,9 @@ void BluetoothAdapterFloss::StopScan(DiscoverySessionResultCallback callback) {
   FlossDBusManager::Get()->GetAdapterClient()->CancelDiscovery(
       base::BindOnce(&BluetoothAdapterFloss::OnStopDiscovery,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  // Deleting the scan session will stop any active scanning.
+  le_discovery_session_.reset(nullptr);
 }
 
 void BluetoothAdapterFloss::OnRegisterScanner(
