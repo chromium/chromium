@@ -24,12 +24,6 @@ class WolvicContentBrowserClient;
 class WolvicContentClient;
 class WolvicContentMainDelegate;
 
-__attribute__((visibility("default"))) WolvicContentMainDelegate*
-GetWolvicContentMainDelegate();
-__attribute__((visibility("default"))) jobject CreateWebContents(
-    JNIEnv* env,
-    WolvicContentMainDelegate* delegate);
-
 class WolvicContentMainDelegate : public ContentMainDelegate {
  public:
   explicit WolvicContentMainDelegate();
@@ -39,6 +33,8 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
       delete;
 
   ~WolvicContentMainDelegate() override;
+
+  static WolvicContentMainDelegate* Get();
 
   // ContentMainDelegate implementation:
   absl::optional<int> BasicStartupComplete() override;
@@ -58,15 +54,14 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
 
   static void InitializeResourceBundle();
 
-  friend WolvicContentMainDelegate* GetWolvicContentMainDelegate();
-  friend jobject CreateWebContents(JNIEnv* env,
-                                   WolvicContentMainDelegate* delegate);
-
   WolvicBrowserContext* browser_context();
 
   PrefService* GetPrefs() { return local_state_.get(); }
 
  protected:
+  friend base::android::ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
+      JNIEnv* env);
+
   void CreateFeatureListAndFieldTrials();
   std::unique_ptr<PrefService> CreateLocalState();
   void SetUpFieldTrials();
@@ -77,8 +72,6 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
   std::unique_ptr<ContentRendererClient> renderer_client_;
   std::unique_ptr<ContentUtilityClient> utility_client_;
   std::unique_ptr<WolvicContentClient> content_client_;
-
-  std::vector<std::unique_ptr<WebContents>> web_contents_list_;
 };
 
 }  // namespace content

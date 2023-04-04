@@ -18,6 +18,7 @@ shared_library("libcontent_native") {
   testonly = true
   sources = [
     "../content/shell/browser/shell_paths.cc",
+    "browser/tab_jni.cc",
     "wolvic_browser_context.cc",
     "wolvic_browser_context.h",
     "wolvic_content_browser_client.cc",
@@ -32,6 +33,7 @@ shared_library("libcontent_native") {
   ]
   deps = [
     ":content_native_lib",
+    ":jni_headers",
     "//components/crash/content/browser",
     "//media",
     "//skia",
@@ -157,10 +159,25 @@ jinja_template("content_manifest") {
   output = "$root_gen_dir/wolvic/AndroidManifest.xml"
 }
 
+generate_jni("jni_headers") {
+  sources = [ "java/org/chromium/wolvic/Tab.java" ]
+}
+
+android_library("jni_java") {
+  sources = [ "java/org/chromium/wolvic/Tab.java" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//content/public/android:content_full_java",
+  ]
+}
+
 dist_aar("content_aar") {
   testonly = true
   deps = [
     ":content_manifest",
+    ":jni_java",
     ":libcontent_native",
     "//base",
     "//base:base_java",
@@ -204,6 +221,7 @@ dist_aar("content_aar") {
     "org/chromium/service_manager/mojom/*.class",
     "org/chromium/services/*.class",
     "org/chromium/url/*.class",
+    "org/chromium/wolvic/*.class",
   ]
   resource_included_patterns = [ "*/content/public/*" ]
   jar_excluded_patterns = [

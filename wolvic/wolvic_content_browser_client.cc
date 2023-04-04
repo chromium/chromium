@@ -34,7 +34,7 @@ std::string WolvicContentBrowserClient::GetUserAgent() {
 
 std::string WolvicContentBrowserClient::GetUserAgentBasedOnPolicy(
     content::BrowserContext* context) {
-  auto* delegate = GetWolvicContentMainDelegate();
+  auto* delegate = WolvicContentMainDelegate::Get();
 
   const PrefService* prefs = delegate->GetPrefs();
   embedder_support::ForceMajorVersionToMinorPosition
