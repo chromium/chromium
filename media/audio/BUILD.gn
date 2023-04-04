@@ -168,6 +168,8 @@ source_set("audio") {
     sources += [
       "mac/audio_auhal_mac.cc",
       "mac/audio_auhal_mac.h",
+      "mac/audio_input_mac.cc",
+      "mac/audio_input_mac.h",
       "mac/core_audio_util_mac.cc",
       "mac/core_audio_util_mac.h",
       "mac/scoped_audio_unit.cc",
@@ -184,8 +186,6 @@ source_set("audio") {
     sources += [
       "mac/audio_device_listener_mac.cc",
       "mac/audio_device_listener_mac.h",
-      "mac/audio_input_mac.cc",
-      "mac/audio_input_mac.h",
       "mac/audio_low_latency_input_mac.cc",
       "mac/audio_low_latency_input_mac.h",
       "mac/audio_manager_mac.cc",
@@ -201,7 +201,11 @@ source_set("audio") {
       "ios/audio_manager_ios.cc",
       "ios/audio_manager_ios.h",
       "ios/audio_private_api.h",
+      "ios/audio_session_manager_ios.h",
+      "ios/audio_session_manager_ios.mm",
     ]
+
+    frameworks += [ "AVFoundation.framework" ]
   }
 
   if (is_win) {
@@ -447,9 +451,12 @@ source_set("unit_tests") {
     deps += [ "//ui/gl" ]
   }
 
+  if (is_apple) {
+    sources += [ "mac/audio_auhal_mac_unittest.cc" ]
+  }
+
   if (is_mac) {
     sources += [
-      "mac/audio_auhal_mac_unittest.cc",
       "mac/audio_device_listener_mac_unittest.cc",
       "mac/audio_low_latency_input_mac_unittest.cc",
       "mac/audio_manager_mac_unittest.cc",
