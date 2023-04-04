@@ -23,6 +23,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -926,8 +927,20 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
     return false;
 
   PathPrefixProcessFilter path_prefix_filter(target->DirName());
-  return base::CleanupProcesses(kLegacyExeName, kShutdownWaitSeconds, -1,
-                                &path_prefix_filter);
+
+  base::ProcessIterator iter(&path_prefix_filter);
+  base::flat_set<std::wstring> process_names_to_cleanup;
+  for (const base::ProcessEntry* entry = iter.NextProcessEntry(); entry;
+       entry = iter.NextProcessEntry()) {
+    process_names_to_cleanup.insert(entry->exe_file());
+  }
+
+  for (const auto& exe_file : process_names_to_cleanup) {
+    base::CleanupProcesses(exe_file, kShutdownWaitSeconds, -1,
+                           &path_prefix_filter);
+  }
+
+  return true;
 }
 
 absl::optional<base::CommandLine> CommandLineForLegacyFormat(
