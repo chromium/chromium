@@ -1306,6 +1306,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.GuestZram.ReclaimedProcess" units="count"
+    expires_after="2023-10-01">
+  <owner>hungmn@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Number of reclaimed process. Counted when there is a successful guest zram
+    reclaim.
+  </summary>
+</histogram>
+
+<histogram name="Arc.GuestZram.SuccessfulReclaim" enum="Boolean"
+    expires_after="2023-10-01">
+  <owner>hungmn@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Outcome of an ARC Guest Zram reclaim operation. True if at least one process
+    was successfully reclaimed, false otherwise.
+  </summary>
+</histogram>
+
+<histogram name="Arc.GuestZram.TotalReclaimTime" units="ms"
+    expires_after="2023-10-01">
+  <owner>hungmn@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Elapsed time to reclaim memory from all processs. Recorded only when there
+    is a successful guest zram reclaim.
+  </summary>
+</histogram>
+
+<histogram name="Arc.GuestZram.UnreclaimedProcess" units="count"
+    expires_after="2023-10-01">
+  <owner>hungmn@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Number of unreclaimed process. Counted when there is a successful guest zram
+    reclaim.
+  </summary>
+</histogram>
+
 <histogram name="Arc.IconLoadFromFileTime.compressedFirst5" units="ms"
     expires_after="2021-03-11">
   <owner>khmel@google.com</owner>
