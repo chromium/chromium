@@ -727,7 +727,7 @@ class DriveIntegrationService::BulkPinningPrefUpdater
   }
 
   void OnProgress(const Progress& progress) override {
-    if (progress.IsStoppedOrError()) {
+    if (progress.IsError()) {
       VLOG(1) << "Disabling bulk pinning preference";
       pref_service_->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
                                 false);

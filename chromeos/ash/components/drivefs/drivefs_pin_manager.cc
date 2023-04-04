@@ -356,9 +356,8 @@ bool Progress::HasEnoughFreeSpace() const {
   return enough;
 }
 
-bool Progress::IsStoppedOrError() const {
+bool Progress::IsError() const {
   switch (stage) {
-    case Stage::kStopped:
     case Stage::kCannotGetFreeSpace:
     case Stage::kCannotListFiles:
     case Stage::kNotEnoughSpace:
@@ -369,6 +368,7 @@ bool Progress::IsStoppedOrError() const {
     case Stage::kPaused:
     case Stage::kSuccess:
     case Stage::kSyncing:
+    case Stage::kStopped:
       return false;
   }
 
@@ -634,7 +634,7 @@ void PinManager::Start() {
 void PinManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!progress_.IsStoppedOrError()) {
+  if (!progress_.IsError()) {
     VLOG(1) << "Stopping";
     Complete(Stage::kStopped);
   }
