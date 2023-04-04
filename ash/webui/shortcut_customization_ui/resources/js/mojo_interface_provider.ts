@@ -89,8 +89,7 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   addAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
-    // TODO(cambickel) Replace with real mojo method.
-    return this.fakeProvider.addAccelerator(source, action, accelerator);
+    return this.remote.addAccelerator(source, action, accelerator);
   }
 
   removeAccelerator(

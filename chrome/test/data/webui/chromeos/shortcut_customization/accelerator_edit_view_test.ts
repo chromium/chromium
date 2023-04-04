@@ -72,7 +72,8 @@ suite('acceleratorEditViewTest', function() {
     assertFalse(isVisible(getElementById('cancelButtonContainer')));
   });
 
-  test('DetectShortcutConflict', async () => {
+  // TODO(jimmyxgong): Re-enable test when ReplaceAcceleratorApi is implemented.
+  test.skip('DetectShortcutConflict', async () => {
     const acceleratorInfo = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*key=*/ 221,

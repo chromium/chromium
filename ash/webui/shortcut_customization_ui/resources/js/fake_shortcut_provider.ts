@@ -96,10 +96,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   addAccelerator(
       _source: AcceleratorSource, _actionId: number,
       _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
-    // Always return kSuccess in this fake.
-    const result = new AcceleratorResultData();
-    result.result = AcceleratorConfigResult.kSuccess;
-    this.methods.setResult('addAccelerator', {result});
     return this.methods.resolveMethod('addAccelerator');
   }
 
@@ -158,6 +154,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   setFakeHasLauncherButton(hasLauncherButton: boolean): void {
     this.methods.setResult('hasLauncherButton', {hasLauncherButton});
+  }
+
+  setFakeAddAcceleratorResult(result: AcceleratorResultData): void {
+    this.methods.setResult('addAccelerator', {result});
   }
 
   // Sets up an observer for methodName.
