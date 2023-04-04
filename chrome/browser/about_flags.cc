@@ -7676,7 +7676,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"shimless-rma-diagnostic-page",
      flag_descriptions::kShimlessRMADiagnosticPageName,
      flag_descriptions::kShimlessRMADiagnosticPageDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kShimlessRMADisableDarkMode)},
+     FEATURE_VALUE_TYPE(ash::features::kShimlessRMADiagnosticPage)},
     {"shortcut-customization-jelly",
      flag_descriptions::kShortcutCustomizationJellyName,
      flag_descriptions::kShortcutCustomizationJellyDescription, kOsCrOS,
