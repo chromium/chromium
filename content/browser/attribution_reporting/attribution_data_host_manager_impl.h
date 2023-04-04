@@ -155,21 +155,18 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void ParseSource(base::flat_set<SourceRegistrations>::iterator,
                    attribution_reporting::SuitableOrigin reporting_origin,
-                   const RegistrarAndHeader&);
-  void OnSourceParsed(
-      SourceRegistrationsId,
-      base::FunctionRef<void(const SourceRegistrations&)> handle_result);
-  void OnWebSourceParsed(
-      SourceRegistrationsId,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      const std::string& header_value,
-      data_decoder::DataDecoder::ValueOrError result);
+                   RegistrarAndHeader);
+  void HandleNextWebDecode(const SourceRegistrations&);
+  void OnWebSourceParsed(SourceRegistrationsId,
+                         data_decoder::DataDecoder::ValueOrError result);
 
 #if BUILDFLAG(IS_ANDROID)
+  void HandleNextOsDecode(const SourceRegistrations&);
+
   using OsParseResult =
       base::expected<net::structured_headers::ParameterizedItem, std::string>;
   void OnOsSourceParsed(SourceRegistrationsId, OsParseResult);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void MaybeOnRegistrationsFinished(
       base::flat_set<SourceRegistrations>::const_iterator);
