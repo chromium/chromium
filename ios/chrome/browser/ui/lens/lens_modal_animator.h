@@ -6,9 +6,19 @@
 #define IOS_CHROME_BROWSER_UI_LENS_LENS_MODAL_ANIMATOR_H_
 
 #import <UIKit/UIKit.h>
+#import "base/ios/block_types.h"
+
+enum class LensInputSelectionPresentationStyle;
 
 @interface LensModalAnimator : NSObject <UIViewControllerTransitioningDelegate,
                                          UIViewControllerAnimatedTransitioning>
+
+// The presentation style.
+@property(nonatomic, assign)
+    LensInputSelectionPresentationStyle presentationStyle;
+
+// The completion block.
+@property(nonatomic, strong) ProceduralBlock presentationCompletion;
 
 @end
 

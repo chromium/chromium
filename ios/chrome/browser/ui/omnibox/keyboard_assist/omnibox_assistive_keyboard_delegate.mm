@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -60,8 +61,12 @@
 
 - (void)keyboardAccessoryLensTapped {
   base::RecordAction(base::UserMetricsAction("MobileCustomRowLensSearch"));
-  [self.lensCommandsHandler
-      openInputSelectionForEntrypoint:LensEntrypoint::Keyboard];
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::Keyboard
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self.lensCommandsHandler openLensInputSelection:command];
 }
 
 - (void)keyPressed:(NSString*)title {

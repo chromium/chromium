@@ -14,12 +14,31 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// Closes the active WebState in `browser` (if non-null).
+void CloseActiveWebStateInBrowser(base::WeakPtr<Browser> weak_browser) {
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    return;
+  }
+
+  WebStateList* web_state_list = browser->GetWebStateList();
+  const int tab_close_index = web_state_list->active_index();
+  DCHECK_NE(tab_close_index, WebStateList::kInvalidIndex);
+  web_state_list->CloseWebStateAt(tab_close_index,
+                                  WebStateList::CLOSE_USER_ACTION);
+}
+
+}  // namespace
 
 LensBrowserAgent::LensBrowserAgent(Browser* browser) : browser_(browser) {
   browser->AddObserver(this);
@@ -41,17 +60,19 @@ void LensBrowserAgent::GoBackToLensViewFinder() const {
     return;
   }
 
+  base::WeakPtr<Browser> weak_browser = browser_->AsWeakPtr();
+  ProceduralBlock completion = ^{
+    CloseActiveWebStateInBrowser(weak_browser);
+  };
+
   id<LensCommands> lens_commands_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), LensCommands);
-  [lens_commands_handler
-      openInputSelectionForEntrypoint:lens_entrypoint.value()];
-
-  // Since the user is returning to the camera experience that opened the
-  // tab in the first place, close the tab.
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  const int index = web_state_list->active_index();
-  DCHECK_NE(index, WebStateList::kInvalidIndex);
-  web_state_list->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:lens_entrypoint.value()
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromLeft
+      presentationCompletion:completion];
+  [lens_commands_handler openLensInputSelection:command];
 }
 
 #pragma mark - Private

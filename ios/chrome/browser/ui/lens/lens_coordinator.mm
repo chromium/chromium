@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -149,7 +150,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       }));
 }
 
-- (void)openInputSelectionForEntrypoint:(LensEntrypoint)entrypoint {
+- (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
   // Cancel any omnibox editing.
   Browser* browser = self.browser;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
@@ -163,6 +164,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
 
   // Create a Lens configuration for this request.
+  const LensEntrypoint entrypoint = command.entryPoint;
   ChromeBrowserState* browserState = browser->GetBrowserState();
   const bool isIncognito = browserState->IsOffTheRecord();
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
@@ -210,6 +212,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   // modal dismiss animations.
   const LensModalAnimator* transitionAnimator = self.transitionAnimator;
   DCHECK(transitionAnimator);
+  transitionAnimator.presentationStyle = command.presentationStyle;
+  transitionAnimator.presentationCompletion = command.presentationCompletion;
   [viewController setTransitioningDelegate:transitionAnimator];
 
   [viewController
