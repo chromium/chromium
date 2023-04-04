@@ -2764,6 +2764,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveZoomLevel) {
   EXPECT_EQ(1u, levels.size());
   EXPECT_EQ("chrome", levels[0].scheme);
   EXPECT_EQ("print", levels[0].host);
+
+  zoom_map->SetClockForTesting(base::DefaultClock::GetInstance());
 }
 #endif
 
