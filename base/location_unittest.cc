@@ -31,10 +31,8 @@ TEST(LocationTest, CurrentYieldsCorrectValue) {
   Location here = WhereAmI();
   EXPECT_NE(here.program_counter(), WhereAmI().program_counter());
   EXPECT_THAT(here.file_name(), ::testing::EndsWith("location_unittest.cc"));
-#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
   EXPECT_EQ(here.line_number(), previous_line + 1);
   EXPECT_STREQ("TestBody", here.function_name());
-#endif
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)

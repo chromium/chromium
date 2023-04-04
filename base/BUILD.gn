@@ -58,11 +58,6 @@ if (is_win) {
 }
 
 declare_args() {
-  # Indicates if the Location object contains the source code information
-  # (file, function, line). False means only the program counter (and currently
-  # file name) is saved.
-  enable_location_source = true
-
   # Unsafe developer build. Has developer-friendly features that may weaken or
   # disable security measures like sandboxing or ASLR.
   # IMPORTANT: Unsafe developer builds should never be distributed to end users.
@@ -2486,7 +2481,6 @@ buildflag_header("debugging_buildflags") {
 
   flags = [
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
-    "ENABLE_LOCATION_SOURCE=$enable_location_source",
     "ENABLE_PROFILING=$enable_profiling",
     "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
     "UNSAFE_DEVELOPER_BUILD=$is_unsafe_developer_build",
