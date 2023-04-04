@@ -40,6 +40,12 @@ enum AnnotationType {
   // User notes are private notes that a user can make and save on pages they
   // browse. See //components/user_notes
   kUserNote,
+
+  // Finds text in the document. See //chrome/browser/companion/text_finder.
+  // The Chrome Companion uses this type of annotation agent to check if a
+  // given text exists in the document, and immediately disconnects the agent
+  // upon finishing searching to remove the visual highlight effect.
+  kTextFinder,
 };
 
 // RAII wrapper for managing a single annotation in the renderer from the
