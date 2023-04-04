@@ -24,7 +24,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
+    SHARED_IMAGE_USAGE_WEBGL1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -184,6 +185,9 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
+  // Disable tex storage for shared images created in drawing buffer for webgl1
+  // context. crbug.com/1429675.
+  const bool disable_tex_storage = (usage & SHARED_IMAGE_USAGE_WEBGL1);
   DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
   const bool for_framebuffer_attachment =
@@ -196,7 +200,8 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       use_passthrough_);
   result->InitializeGLTexture(GetFormatInfo(format), pixel_data,
-                              progress_reporter_, framebuffer_attachment_angle);
+                              progress_reporter_, framebuffer_attachment_angle,
+                              disable_tex_storage);
 
   return std::move(result);
 }

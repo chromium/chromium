@@ -70,14 +70,20 @@ enum SharedImageUsage : uint32_t {
   // Image will be used as a WebGPU storage texture.
   SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 19,
 
+  // Image was created on a webgl1 context. Note that this usage flag is added
+  // to handle cases when WEBGL1 back buffer shared image mailbox is created on
+  // a GLES3 context resulting in GLES2(WEBGL1)<->GLES3 format compatibility
+  // checks to fail. crbug.com/1429675 for more details.
+  SHARED_IMAGE_USAGE_WEBGL1 = 1 << 20,
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE,
+  LAST_CLIENT_USAGE =
+      SHARED_IMAGE_USAGE_WEBGL1,  // SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 20,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 21,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
