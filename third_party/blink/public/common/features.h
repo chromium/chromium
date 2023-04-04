@@ -592,6 +592,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFCPOnlyOnSuccessfulCommit);
 // of additional element tag tyeps, instead of just <div> and <iframe>.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureExperimentalSubtypes);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRegisterJSSourceLocationBlockingBFCache);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLAccess);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);

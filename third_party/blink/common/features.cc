@@ -1264,6 +1264,12 @@ BASE_FEATURE(kRegionCaptureExperimentalSubtypes,
              "RegionCaptureExperimentalSubtypes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Source Location blocking BFCache is captured
+// to send it to the browser.
+BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
+             "RegisterJSSourceLocationBlockingBFCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allow access to WebSQL APIs.
 BASE_FEATURE(kWebSQLAccess, "kWebSQLAccess", base::FEATURE_ENABLED_BY_DEFAULT);
 

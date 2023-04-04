@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "v8/include/v8-isolate.h"
 
@@ -16,16 +17,11 @@ namespace blink {
 
 namespace {
 
-// When enabled, Source Location blocking BFCache is captured
-// to send it to the browser.
-BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
-             "RegisterJSSourceLocationBlockingBFCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Returns whether features::kRegisterJSSourceLocationBlockingBFCache is
 // enabled.
 bool IsRegisterJSSourceLocationBlockingBFCache() {
-  return base::FeatureList::IsEnabled(kRegisterJSSourceLocationBlockingBFCache);
+  return base::FeatureList::IsEnabled(
+      blink::features::kRegisterJSSourceLocationBlockingBFCache);
 }
 
 }  // namespace
