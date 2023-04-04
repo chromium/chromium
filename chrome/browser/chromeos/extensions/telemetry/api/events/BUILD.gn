@@ -35,6 +35,8 @@ source_set("event_router") {
     "event_observation_crosapi.h",
     "event_router.cc",
     "event_router.h",
+    "remote_event_service_strategy.cc",
+    "remote_event_service_strategy.h",
   ]
 
   deps = [
@@ -46,6 +48,14 @@ source_set("event_router") {
     "//extensions/common",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
 
   public_deps = [ "//extensions/browser" ]
 }

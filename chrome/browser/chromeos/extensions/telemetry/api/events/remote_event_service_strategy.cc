@@ -1,0 +1,85 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
+
+#include <memory>
+
+#include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
+#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/telemetry_extension/telemetry_event_service_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG (IS_CHROMEOS_LACROS)
+
+namespace chromeos {
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class RemoteEventServiceStrategyAsh : public RemoteEventServiceStrategy {
+ public:
+  RemoteEventServiceStrategyAsh()
+      : event_service_(ash::TelemetryEventServiceAsh::Factory::Create(
+            remote_event_service_.BindNewPipeAndPassReceiver())) {}
+
+  ~RemoteEventServiceStrategyAsh() override = default;
+
+  // RemoteEventServiceStrategy:
+  mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService()
+      override {
+    return remote_event_service_;
+  }
+
+ private:
+  mojo::Remote<crosapi::mojom::TelemetryEventService> remote_event_service_;
+
+  std::unique_ptr<crosapi::mojom::TelemetryEventService> event_service_;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class RemoteEventServiceStrategyLacros : public RemoteEventServiceStrategy {
+ public:
+  RemoteEventServiceStrategyLacros() = default;
+
+  ~RemoteEventServiceStrategyLacros() override = default;
+
+  // RemoteEventServiceStrategy:
+  mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService()
+      override {
+    return LacrosService::Get()
+        ->GetRemote<crosapi::mojom::TelemetryEventService>();
+  }
+};
+#endif  // BUILDFLAG (IS_CHROMEOS_LACROS)
+
+}  // namespace
+
+// static
+std::unique_ptr<RemoteEventServiceStrategy>
+RemoteEventServiceStrategy::Create() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<RemoteEventServiceStrategyAsh>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!LacrosService::Get()
+           ->IsAvailable<crosapi::mojom::TelemetryEventService>()) {
+    return nullptr;
+  }
+  return std::make_unique<RemoteEventServiceStrategyLacros>();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  NOTREACHED();
+}
+
+RemoteEventServiceStrategy::RemoteEventServiceStrategy() = default;
+RemoteEventServiceStrategy::~RemoteEventServiceStrategy() = default;
+
+}  // namespace chromeos
