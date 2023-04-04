@@ -85,7 +85,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 tabSwitcherViewHolder, scrimCoordinator);
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
-        mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
+        mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), host, this,
                 mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);
         mJankTracker = jankTracker;
         mScrimCoordinator = scrimCoordinator;

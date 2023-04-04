@@ -46,6 +46,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
@@ -78,6 +79,8 @@ public class StripLayoutHelperTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private View mInteractingTabView;
+    @Mock
+    private LayoutManagerHost mManagerHost;
     @Mock
     private LayoutUpdateHost mUpdateHost;
     @Mock
@@ -1904,7 +1907,7 @@ public class StripLayoutHelperTest {
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
         LocalizationUtils.setRtlForTesting(rtl);
         final StripLayoutHelper stripLayoutHelper = new StripLayoutHelper(
-                mActivity, mUpdateHost, mRenderHost, incognito, mModelSelectorBtn);
+                mActivity, mManagerHost, mUpdateHost, mRenderHost, incognito, mModelSelectorBtn);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;

@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
@@ -49,6 +50,8 @@ public class StripLayoutHelperManagerTest {
     public JniMocker mJniMocker = new JniMocker();
     @Mock
     private TabStripSceneLayer.Natives mTabStripSceneMock;
+    @Mock
+    private LayoutManagerHost mManagerHost;
     @Mock
     private LayoutUpdateHost mUpdateHost;
     @Mock
@@ -82,8 +85,8 @@ public class StripLayoutHelperManagerTest {
     }
 
     private void initializeTest() {
-        mStripLayoutHelperManager = new StripLayoutHelperManager(
-                mContext, mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mLifecycleDispatcher);
+        mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
+                mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mLifecycleDispatcher);
     }
 
     @Test
