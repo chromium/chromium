@@ -23,17 +23,20 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
@@ -45,13 +48,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
 
 /**
  * A prompt that bugs users to enter their CVC when unmasking a Wallet instrument (credit card).
  */
-public class CardUnmaskPrompt
-        implements TextWatcher, OnClickListener, ModalDialogProperties.Controller {
+public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
+                                         ModalDialogProperties.Controller,
+                                         CompoundButton.OnCheckedChangeListener {
     private static CardUnmaskObserverForTest sObserverForTest;
 
     private final CardUnmaskPromptDelegate mDelegate;
@@ -85,6 +91,23 @@ public class CardUnmaskPrompt
     private boolean mDidFocusOnMonth;
     private boolean mDidFocusOnYear;
     private boolean mDidFocusOnCvc;
+
+    /**
+     * Used to record the CheckBox status. This definition should be in sync
+     * with the histogram enum `CheckBoxStatus`.
+     * These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    @IntDef({CheckBoxStatus.NOT_SHOWN, CheckBoxStatus.UNCHECKED, CheckBoxStatus.CHECKED,
+            CheckBoxStatus.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface CheckBoxStatus {
+        int NOT_SHOWN = 0;
+        int UNCHECKED = 1;
+        int CHECKED = 2;
+
+        int NUM_ENTRIES = 3;
+    }
 
     /**
      * An interface to handle the interaction with an CardUnmaskPrompt object.
@@ -193,6 +216,8 @@ public class CardUnmaskPrompt
             mUseScreenlockCheckbox.setVisibility(View.GONE);
             mUseScreenlockCheckbox.setChecked(false);
         }
+        logCheckBoxInitialStateStats(mUseScreenlockCheckbox.isChecked());
+        mUseScreenlockCheckbox.setOnCheckedChangeListener(this);
         mControlsContainer = (ViewGroup) mMainView.findViewById(R.id.controls_container);
         mVerificationOverlay = mMainView.findViewById(R.id.verification_overlay);
         mVerificationProgressBar =
@@ -379,7 +404,7 @@ public class CardUnmaskPrompt
     /**
      * Validates the values of the input fields to determine whether the submit button should be
      * enabled. Also displays a detailed error message and highlights the fields for which the value
-     * is wrong. Finally checks whether the focuse should move to the next field.
+     * is wrong. Finally checks whether the focus should move to the next field.
      */
     private void validate() {
         @ErrorType int errorType = getExpirationAndCvcErrorType();
@@ -520,7 +545,7 @@ public class CardUnmaskPrompt
 
     /**
      * Sets the enabled state of the main contents, and hides or shows the verification overlay.
-     * @param enabled True if the inputs should be useable, false if the verification overlay
+     * @param enabled True if the inputs should be usable, false if the verification overlay
      *        obscures them.
      */
     private void setInputsEnabled(boolean enabled) {
@@ -571,6 +596,19 @@ public class CardUnmaskPrompt
         mNoRetryErrorMessage.announceForAccessibility(message);
     }
 
+    private void logCheckBoxInitialStateStats(boolean isChecked) {
+        if (mUseScreenlockCheckbox.getVisibility() == View.VISIBLE) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Autofill.CardUnmask.ScreenLockCheckBox.InitialState",
+                    isChecked ? CheckBoxStatus.CHECKED : CheckBoxStatus.UNCHECKED,
+                    CheckBoxStatus.NUM_ENTRIES);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Autofill.CardUnmask.ScreenLockCheckBox.InitialState", CheckBoxStatus.NOT_SHOWN,
+                    CheckBoxStatus.NUM_ENTRIES);
+        }
+    }
+
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
@@ -587,6 +625,12 @@ public class CardUnmaskPrompt
     public void onDismiss(PropertyModel model, int dismissalCause) {
         mDelegate.dismissed();
         mDialogModel = null;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+        RecordHistogram.recordBooleanHistogram(
+                "Autofill.CardUnmask.ScreenLockCheckBox.UserChecked", isChecked);
     }
 
     @VisibleForTesting

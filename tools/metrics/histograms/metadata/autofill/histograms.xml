@@ -985,6 +985,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CardUnmask.ScreenLockCheckBox.InitialState"
+    enum="CheckBoxStatus" expires_after="2024-03-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>longsheng@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the initial state of the ScreenLockCheckBox. The ScreenLockCheckBox
+    is the checkbox shown to the user as part of the CardUnmaskPrompt. This
+    histogram will be logged only when the CardUnmaskPrompt is initialized. This
+    is only available on Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CardUnmask.ScreenLockCheckBox.UserChecked"
+    enum="Boolean" expires_after="2024-03-01">
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>longsheng@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the check/uncheck action from users on the ScreenLockCheckBox. The
+    ScreenLockCheckBox is the checkbox shown to the user as part of the
+    CardUnmaskPrompt. This histogram will be updated whenever the user
+    clicks/unclicks the checkbox. This is only available on Android.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Result"
     enum="AutofillCardUnmaskAuthenticationSelectionDialogResult"
     expires_after="2023-08-20">
