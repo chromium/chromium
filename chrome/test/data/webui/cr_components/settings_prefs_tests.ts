@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CrSettingsPrefs, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 
-import {FakeSettingsPrivate} from './fake_settings_private.js';
-import {prefsTestCases} from './prefs_test_cases.js';
+import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+
+import {prefsTestCases} from './settings_prefs_test_cases.js';
 
 // clang-format on
 

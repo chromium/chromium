@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
+import {assertEquals, assertNotEquals} from './chai_assert.js';
+import {TestBrowserProxy} from './test_browser_proxy.js';
+import {FakeChromeEvent} from './fake_chrome_event.js';
 // clang-format on
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */

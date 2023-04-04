@@ -8,8 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {NetworkPredictionOptions, PreloadingPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 
 suite('PreloadingPage', function() {
   function getFakePrefs() {

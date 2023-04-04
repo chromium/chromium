@@ -913,8 +913,6 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['PaymentsSectionUpi', 'payments_section_upi_test.js'],
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
- ['Prefs', 'prefs_tests.js'],
- ['PrefUtil', 'pref_util_tests.js'],
  ['PreloadingPage', 'preloading_page_test.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
  ['RecentSitePermissions', 'recent_site_permissions_test.js'],
