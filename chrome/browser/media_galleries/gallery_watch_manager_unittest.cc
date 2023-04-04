@@ -104,6 +104,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
       manager_->RemoveObserver(profile_.get());
     }
     manager_.reset();
+    monitor_ = nullptr;
 
     // The TestingProfile must be destroyed before the TestingBrowserProcess
     // because TestingProfile uses TestingBrowserProcess in its destructor.
@@ -182,7 +183,10 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
     pending_loop_ = loop;
   }
 
-  void ShutdownProfile() { profile_.reset(nullptr); }
+  void ShutdownProfile() {
+    gallery_prefs_ = nullptr;
+    profile_.reset();
+  }
 
  private:
   // GalleryWatchManagerObserver implementation.
@@ -190,12 +194,14 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
                         MediaGalleryPrefId gallery_id) override {
     EXPECT_TRUE(expect_gallery_changed_);
     pending_loop_->Quit();
+    pending_loop_ = nullptr;
   }
 
   void OnGalleryWatchDropped(const std::string& extension_id,
                              MediaGalleryPrefId gallery_id) override {
     EXPECT_TRUE(expect_gallery_watch_dropped_);
     pending_loop_->Quit();
+    pending_loop_ = nullptr;
   }
 
   std::unique_ptr<GalleryWatchManager> manager_;
