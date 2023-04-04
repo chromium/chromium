@@ -83,6 +83,8 @@ static_library("internal") {
     "execution/processing/feature_list_query_processor.h",
     "execution/processing/feature_processor_state.cc",
     "execution/processing/feature_processor_state.h",
+    "execution/processing/processing_utils.cc",
+    "execution/processing/processing_utils.h",
     "execution/processing/query_processor.h",
     "execution/processing/sql_feature_processor.cc",
     "execution/processing/sql_feature_processor.h",

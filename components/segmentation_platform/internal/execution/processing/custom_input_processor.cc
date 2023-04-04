@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/execution/processing/processing_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -33,11 +34,6 @@ absl::optional<int> GetArgAsInt(
     return absl::optional<int>();
 
   return absl::optional<int>(value);
-}
-
-int ProcessOsVersionString(std::string os_version) {
-  // TODO(ritikagup@) : Add the implementation logic here.
-  return 0;
 }
 
 }  // namespace
@@ -303,7 +299,7 @@ bool CustomInputProcessor::AddDeviceOSVersionNumber(
     return false;
   }
   std::string os_version = base::SysInfo::OperatingSystemVersion();
-  int device_os_version = ProcessOsVersionString(os_version);
+  int device_os_version = processing::ProcessOsVersionString(os_version);
   out_tensor.emplace_back(device_os_version);
   return true;
 }
