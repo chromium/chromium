@@ -213,6 +213,8 @@ class WebAppShortcutCreator {
   // services, sorted by preference.
   std::vector<base::FilePath> GetAppBundlesById() const;
 
+  std::string GetAppBundleId() const;
+
   bool CreateShortcuts(ShortcutCreationReason creation_reason,
                        ShortcutLocations creation_locations);
 
