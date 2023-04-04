@@ -455,5 +455,8 @@ crbug.com/1310040 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligib
 
 crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 
+crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
+crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
+
 # crbug.com/1339051: some ref tests generate output with minor differences.
 crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure ]
