@@ -26,74 +26,9 @@
 
 namespace ash {
 
-PrivacyIndicatorsNotificationDelegate::PrivacyIndicatorsNotificationDelegate(
-    absl::optional<base::RepeatingClosure> launch_app,
-    absl::optional<base::RepeatingClosure> launch_settings)
-    : launch_app_callback_(launch_app),
-      launch_settings_callback_(launch_settings) {
-  UpdateButtonIndices();
-}
+namespace {
 
-PrivacyIndicatorsNotificationDelegate::
-    ~PrivacyIndicatorsNotificationDelegate() = default;
-
-void PrivacyIndicatorsNotificationDelegate::SetLaunchAppCallback(
-    const base::RepeatingClosure& launch_app) {
-  launch_app_callback_ = launch_app;
-  UpdateButtonIndices();
-}
-
-void PrivacyIndicatorsNotificationDelegate::SetLaunchSettingsCallback(
-    const base::RepeatingClosure& launch_settings) {
-  launch_settings_callback_ = launch_settings;
-  UpdateButtonIndices();
-}
-
-void PrivacyIndicatorsNotificationDelegate::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
-  // Click on the notification body is no-op.
-  if (!button_index)
-    return;
-
-  if (*button_index == launch_app_button_index_) {
-    DCHECK(launch_app_callback_);
-    launch_app_callback_->Run();
-    return;
-  }
-
-  if (*button_index == launch_settings_button_index_) {
-    DCHECK(launch_settings_callback_);
-    launch_settings_callback_->Run();
-  }
-}
-
-void PrivacyIndicatorsNotificationDelegate::UpdateButtonIndices() {
-  int current_index = 0;
-  if (launch_app_callback_) {
-    launch_app_button_index_ = current_index++;
-  }
-
-  if (launch_settings_callback_) {
-    launch_settings_button_index_ = current_index;
-  }
-}
-
-void ASH_EXPORT UpdatePrivacyIndicators(
-    const std::string& app_id,
-    absl::optional<std::u16string> app_name,
-    bool is_camera_used,
-    bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
-  ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
-                                      is_microphone_used, delegate);
-  UpdatePrivacyIndicatorsView(app_id, is_camera_used, is_microphone_used);
-}
-
-std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
-  return kPrivacyIndicatorsNotificationIdPrefix + app_id;
-}
-
+// Create a notification with the customized metadata for privacy indicators.
 std::unique_ptr<message_center::Notification>
 CreatePrivacyIndicatorsNotification(
     const std::string& app_id,
@@ -159,6 +94,8 @@ CreatePrivacyIndicatorsNotification(
   return notification;
 }
 
+// Adds, updates, or removes the privacy notification associated with the given
+// `app_id`.
 void ModifyPrivacyIndicatorsNotification(
     const std::string& app_id,
     absl::optional<std::u16string> app_name,
@@ -189,6 +126,7 @@ void ModifyPrivacyIndicatorsNotification(
   message_center->AddNotification(std::move(notification));
 }
 
+// Updates the `PrivacyIndicatorsTrayItemView` across all status area widgets.
 void UpdatePrivacyIndicatorsView(const std::string& app_id,
                                  bool is_camera_used,
                                  bool is_microphone_used) {
@@ -215,6 +153,77 @@ void UpdatePrivacyIndicatorsView(const std::string& app_id,
 
     privacy_indicators_view->Update(app_id, is_camera_used, is_microphone_used);
   }
+}
+
+}  // namespace
+
+PrivacyIndicatorsNotificationDelegate::PrivacyIndicatorsNotificationDelegate(
+    absl::optional<base::RepeatingClosure> launch_app_callback,
+    absl::optional<base::RepeatingClosure> launch_settings_settings)
+    : launch_app_callback_(launch_app_callback),
+      launch_settings_callback_(launch_settings_settings) {
+  UpdateButtonIndices();
+}
+
+PrivacyIndicatorsNotificationDelegate::
+    ~PrivacyIndicatorsNotificationDelegate() = default;
+
+void PrivacyIndicatorsNotificationDelegate::SetLaunchAppCallback(
+    const base::RepeatingClosure& launch_app_callback) {
+  launch_app_callback_ = launch_app_callback;
+  UpdateButtonIndices();
+}
+
+void PrivacyIndicatorsNotificationDelegate::SetLaunchSettingsCallback(
+    const base::RepeatingClosure& launch_settings_settings) {
+  launch_settings_callback_ = launch_settings_settings;
+  UpdateButtonIndices();
+}
+
+void PrivacyIndicatorsNotificationDelegate::Click(
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
+  // Click on the notification body is no-op.
+  if (!button_index) {
+    return;
+  }
+
+  if (*button_index == launch_app_button_index_) {
+    DCHECK(launch_app_callback_);
+    launch_app_callback_->Run();
+    return;
+  }
+
+  if (*button_index == launch_settings_button_index_) {
+    DCHECK(launch_settings_callback_);
+    launch_settings_callback_->Run();
+  }
+}
+
+void PrivacyIndicatorsNotificationDelegate::UpdateButtonIndices() {
+  int current_index = 0;
+  if (launch_app_callback_) {
+    launch_app_button_index_ = current_index++;
+  }
+
+  if (launch_settings_callback_) {
+    launch_settings_button_index_ = current_index;
+  }
+}
+
+void ASH_EXPORT UpdatePrivacyIndicators(
+    const std::string& app_id,
+    absl::optional<std::u16string> app_name,
+    bool is_camera_used,
+    bool is_microphone_used,
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
+  ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
+                                      is_microphone_used, delegate);
+  UpdatePrivacyIndicatorsView(app_id, is_camera_used, is_microphone_used);
+}
+
+std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
+  return kPrivacyIndicatorsNotificationIdPrefix + app_id;
 }
 
 void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
