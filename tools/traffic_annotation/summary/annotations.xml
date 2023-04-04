@@ -89,7 +89,7 @@ Refer to README.md for content description and update process.
  <item id="ftl_messaging_client_send_messages" added_in_milestone="86" content_hash_code="006864f3" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_registration_manager" added_in_milestone="86" content_hash_code="00bff9a1" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_registration_manager.cc" />
  <item id="gaia_auth_check_connection_info" added_in_milestone="62" content_hash_code="036b0bb8" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
- <item id="gaia_auth_exchange_device_id" added_in_milestone="62" content_hash_code="03afe09b" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
+ <item id="gaia_auth_exchange_device_id" added_in_milestone="62" content_hash_code="02eb801a" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_fetch_for_uber" added_in_milestone="62" content_hash_code="01ab5779" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_list_accounts" added_in_milestone="62" content_hash_code="0595471e" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
  <item id="gaia_auth_log_out" added_in_milestone="62" content_hash_code="056ee739" os_list="linux,windows,chromeos,android" file_path="google_apis/gaia/gaia_auth_fetcher.cc" />
