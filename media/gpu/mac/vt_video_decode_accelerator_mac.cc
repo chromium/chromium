@@ -44,7 +44,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/limits.h"
 #include "media/base/mac/color_space_util_mac.h"
@@ -537,11 +536,6 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   }
   NOTREACHED();
   return gfx::BufferFormat::RGBA_8888;
-}
-
-bool MultiPlaneFormatForHardwareVideoEnabled() {
-  return base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
-         base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 
 }  // namespace
@@ -2235,7 +2229,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
   const gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
   std::vector<gfx::BufferPlane> planes;
-  if (MultiPlaneFormatForHardwareVideoEnabled()) {
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     planes.push_back(gfx::BufferPlane::DEFAULT);
   } else {
     switch (picture_format_) {
@@ -2282,7 +2276,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
       gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
       bool success;
-      if (MultiPlaneFormatForHardwareVideoEnabled()) {
+      if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
         success = shared_image_stub->CreateSharedImage(
             mailbox, std::move(handle), si_format_, frame_size, color_space,
             kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage);
@@ -2362,7 +2356,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   picture.set_read_lock_fences_enabled(true);
   if (frame.hdr_metadata)
     picture.set_hdr_metadata(frame.hdr_metadata);
-  if (MultiPlaneFormatForHardwareVideoEnabled()) {
+  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     picture.set_shared_image_format_type(
         SharedImageFormatType::kSharedImageFormat);
   }
