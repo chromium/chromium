@@ -29,7 +29,7 @@ class AUHALStream;
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
 class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
-                                     public AudioIOStreamClient {
+                                     public AUHALStreamClient {
  public:
   AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
@@ -80,7 +80,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   // for real streams and not for fake or mocked streams.
   void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
                                           AudioDeviceID device_id) override;
-  void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) override;
 
   // Changes the I/O buffer size for |device_id| if |desired_buffer_size| is
   // lower than the current device buffer size. The buffer size can also be

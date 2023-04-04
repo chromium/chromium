@@ -50,11 +50,10 @@ class AudioPullFifo;
 
 // A callback implementation for allowing this code to be used by both
 // AudioManagerIOS and AudioManagerMac.
-class AudioIOStreamClient {
+class AUHALStreamClient {
  public:
   virtual void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
                                                   AudioDeviceID device_id) = 0;
-  virtual void ReleaseInputStreamUsingRealDevice(AudioInputStream* stream) = 0;
   virtual bool MaybeChangeBufferSize(AudioDeviceID device_id,
                                      AudioUnit audio_unit,
                                      AudioUnitElement element,
@@ -100,7 +99,7 @@ class AUHALStream : public AudioOutputStream {
   // |client| creates this object.
   // |device| is the CoreAudio device to use for the stream.
   // It will often be the default output device.
-  AUHALStream(AudioIOStreamClient* client,
+  AUHALStream(AUHALStreamClient* client,
               const AudioParameters& params,
               AudioDeviceID device,
               const AudioManager::LogCallback& log_callback);
@@ -159,7 +158,7 @@ class AUHALStream : public AudioOutputStream {
   void UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp);
 
   // Our creator, the audio manager needs to be notified when we close.
-  const raw_ptr<AudioIOStreamClient> client_;
+  const raw_ptr<AUHALStreamClient> client_;
 
   const AudioParameters params_;
 

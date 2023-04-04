@@ -260,13 +260,7 @@ TEST_F(AudioInputTest, OpenStopAndClose) {
 
 // Test a normal recording sequence using an AudioInputStream.
 // Very simple test which starts capturing and verifies that recording starts.
-// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_Record DISABLED_Record
-#else
-#define MAYBE_Record Record
-#endif
-TEST_F(AudioInputTest, MAYBE_Record) {
+TEST_F(AudioInputTest, Record) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
   MakeAudioInputStreamOnAudioThread();
 

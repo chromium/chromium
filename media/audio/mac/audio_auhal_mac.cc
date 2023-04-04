@@ -162,7 +162,7 @@ void ReportFramesRequestedUma(int number_of_frames_requested) {
 
 }  // namespace
 
-AUHALStream::AUHALStream(AudioIOStreamClient* client,
+AUHALStream::AUHALStream(AUHALStreamClient* client,
                          const AudioParameters& params,
                          AudioDeviceID device,
                          const AudioManager::LogCallback& log_callback)
