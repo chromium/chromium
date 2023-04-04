@@ -8,10 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Browser;
@@ -26,7 +29,8 @@ class View;
 class SearchCompanionSidePanelCoordinator
     : public BrowserUserData<SearchCompanionSidePanelCoordinator>,
       public content::WebContentsObserver,
-      public TabStripModelObserver {
+      public TabStripModelObserver,
+      public TemplateURLServiceObserver {
  public:
   explicit SearchCompanionSidePanelCoordinator(Browser* browser);
   SearchCompanionSidePanelCoordinator(
@@ -35,10 +39,7 @@ class SearchCompanionSidePanelCoordinator
       const SearchCompanionSidePanelCoordinator&) = delete;
   ~SearchCompanionSidePanelCoordinator() override;
 
-  static bool IsSupported(Profile* profile);
-
-  void CreateAndRegisterEntriesForExistingWebContents(
-      TabStripModel* tab_strip_model);
+  static bool IsSupported(Profile* profile, bool include_dsp_check = true);
 
   bool Show();
   BrowserView* GetBrowserView();
@@ -53,11 +54,11 @@ class SearchCompanionSidePanelCoordinator
       const TabStripSelectionChange& selection) override;
 
  private:
-  raw_ptr<Browser> browser_;
-  std::u16string name_;
-  const gfx::VectorIcon& icon_;
-
   friend class BrowserUserData<SearchCompanionSidePanelCoordinator>;
+
+  void CreateAndRegisterEntriesForExistingWebContents(
+      TabStripModel* tab_strip_model);
+  void DeregisterEntriesForExistingWebContents(TabStripModel* tab_strip_model);
 
   std::unique_ptr<SidePanelEntry> CreateCompanionEntry();
 
@@ -72,6 +73,18 @@ class SearchCompanionSidePanelCoordinator
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
+
+  raw_ptr<Browser> browser_;
+  std::u16string name_;
+  const gfx::VectorIcon& icon_;
+  bool dsp_is_google_ = false;
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      template_url_service_observation_{this};
 
   BROWSER_USER_DATA_KEY_DECL();
 };

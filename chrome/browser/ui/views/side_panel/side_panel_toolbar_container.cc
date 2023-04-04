@@ -168,10 +168,20 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   auto* search_companion_coordinator =
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view_->browser());
-  auto button = std::make_unique<PinnedSidePanelToolbarButton>(
-      browser_view_, SidePanelEntry::Id::kSearchCompanion,
-      search_companion_coordinator->name(),
-      search_companion_coordinator->icon());
+  AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
+                          search_companion_coordinator->name(),
+                          search_companion_coordinator->icon());
+}
+
+void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
+    SidePanelEntry::Id id,
+    std::u16string name,
+    const gfx::VectorIcon& icon) {
+  if (HasPinnedEntryButtonFor(id)) {
+    return;
+  }
+  auto button = std::make_unique<PinnedSidePanelToolbarButton>(browser_view_,
+                                                               id, name, icon);
   ObserveButton(button.get());
   pinned_button_visibility_change_subscription_ =
       button->AddVisibleChangedCallback(base::BindRepeating(
@@ -181,6 +191,26 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
 
   ReorderViews();
   UpdatePinnedButtonsVisibility();
+}
+
+void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
+    SidePanelEntry::Id id) {
+  if (!HasPinnedEntryButtonFor(id)) {
+    return;
+  }
+  const auto iter = base::ranges::find(
+      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+  DCHECK(iter != pinned_entry_buttons_.end());
+  RemoveChildView(*iter);
+  pinned_entry_buttons_.erase(iter);
+  pinned_button_visibility_change_subscription_ =
+      base::CallbackListSubscription();
+}
+
+bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {
+  const auto iter = base::ranges::find(
+      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+  return iter != pinned_entry_buttons_.end();
 }
 
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {

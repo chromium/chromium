@@ -35,6 +35,12 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
   // Creates any pinned side panel entry toolbar buttons.
   void CreatePinnedEntryButtons();
 
+  void AddPinnedEntryButtonFor(SidePanelEntry::Id id,
+                               std::u16string name,
+                               const gfx::VectorIcon& icon);
+  void RemovePinnedEntryButtonFor(SidePanelEntry::Id id);
+  bool HasPinnedEntryButtonFor(SidePanelEntry::Id id);
+
   void UpdateSidePanelContainerButtonsState();
 
   bool IsActiveEntryPinnedAndVisible();
