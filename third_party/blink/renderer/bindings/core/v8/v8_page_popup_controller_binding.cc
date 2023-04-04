@@ -21,15 +21,16 @@ namespace {
 void PagePopupControllerAttributeGetter(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
-  DOMWindow* impl = V8Window::ToImpl(holder);
-  PagePopupController* cpp_value = nullptr;
-  if (LocalFrame* frame = To<LocalDOMWindow>(impl)->GetFrame())
-    cpp_value = PagePopupController::From(*frame->GetPage());
+  LocalFrame* frame = To<LocalDOMWindow>(V8Window::ToImpl(holder))->GetFrame();
+  if (!frame) {
+    V8SetReturnValue(info, v8::Null(info.GetIsolate()));
+    return;
+  }
   V8SetReturnValue(
-      info,
-      ToV8Traits<PagePopupController>::ToV8(
-          ScriptState::From(info.GetIsolate()->GetCurrentContext()), cpp_value)
-          .ToLocalChecked());
+      info, ToV8Traits<PagePopupController>::ToV8(
+                ScriptState::From(info.GetIsolate()->GetCurrentContext()),
+                PagePopupController::From(*frame->GetPage()))
+                .ToLocalChecked());
 }
 
 void PagePopupControllerAttributeGetterCallback(
