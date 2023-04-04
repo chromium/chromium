@@ -73,8 +73,7 @@ bool compare_candidate_index(const TraceEvent* lhs, const TraceEvent* rhs) {
 
 }  // namespace
 
-// TODO(crbug.com/1369012, crbug.com/1426420): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   Start();
@@ -105,15 +104,27 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
     waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                    TimingField::kLargestContentfulPaint);
 
-    // std::string function_name = base::StringPrintf("run_test%zu()", i);
+    // The AddMinimumLargestContentfulPaintImageExpectation method adds an
+    // expected number of actual LCP updates that do change the LCP candidate
+    // value.
+    // For example, when i is 1, which is the second test, there are 2 images
+    // added. The first added image updates the LCP candidate value once. The
+    // second added, because it is larger than the first added, it should also
+    // update the LCP candidate value. Therefore we should see 2 LCP updates
+    // before the test waiter can exit the waiting.
+    waiter->AddMinimumLargestContentfulPaintImageExpectation(i + 1);
+
     content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
     EXPECT_EQ("", result.error);
+
     const auto& list = result.value.GetList();
     EXPECT_EQ(1u, list.size());
     ASSERT_TRUE(list[0].is_dict());
+
     const std::string* url = list[0].GetDict().FindString("url");
     EXPECT_TRUE(url);
     EXPECT_EQ(*url, expected_url[i]);
+
     lcp_timestamps[i] = list[0].GetDict().FindDouble("time");
     EXPECT_TRUE(lcp_timestamps[i].has_value());
 
