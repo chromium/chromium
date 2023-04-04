@@ -32,6 +32,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
     : public TechnologyStateController::HotspotOperationDelegate,
       public hotspot_config::HotspotEnabledStateProvider {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnHotspotTurnedOn(bool wifi_turned_off) = 0;
+
+    virtual void OnHotspotTurnedOff(
+        hotspot_config::mojom::DisableReason disable_reason) = 0;
+  };
   HotspotController();
   HotspotController(const HotspotController&) = delete;
   HotspotController& operator=(const HotspotController&) = delete;
@@ -58,8 +67,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // Set whether Hotspot should be allowed/disallowed by policy.
   void SetPolicyAllowHotspot(bool allow_hotspot);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+  bool HasObserver(Observer* observer) const;
+
  private:
   friend class HotspotControllerTest;
+  friend class HotspotEnabledStateNotifierTest;
 
   // Represents hotspot enable or disable control request parameters. Requests
   // are queued and processed one at a time.
@@ -112,6 +126,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
   TechnologyStateController* technology_state_controller_ = nullptr;
 
+  base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotController> weak_ptr_factory_{this};
 };
 

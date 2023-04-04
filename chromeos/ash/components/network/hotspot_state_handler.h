@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Return the latest hotspot state
   const hotspot_config::mojom::HotspotState& GetHotspotState() const;
 
+  // Returns the reason for hotspot being disabled.
+  const hotspot_config::mojom::DisableReason& GetDisableReason() const;
+
   // Return the latest hotspot active client count
   size_t GetHotspotActiveClientCount() const;
 
@@ -73,6 +76,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
 
   hotspot_config::mojom::HotspotState hotspot_state_ =
       hotspot_config::mojom::HotspotState::kDisabled;
+
+  hotspot_config::mojom::DisableReason disable_reason_;
 
   size_t active_client_count_ = 0;
 
