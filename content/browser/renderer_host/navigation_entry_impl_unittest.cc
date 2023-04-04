@@ -96,14 +96,21 @@ TEST_F(NavigationEntryTest, NavigationEntryURLs) {
   entry1_->SetURL(GURL("http://www.google.com"));
   EXPECT_EQ(GURL("http://www.google.com"), entry1_->GetURL());
   EXPECT_EQ(GURL("http://www.google.com"), entry1_->GetVirtualURL());
-  EXPECT_EQ(u"www.google.com", entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"google.com", entry1_->GetTitleForDisplay());
+
+  // https:// should be omitted from displayed titles as well
+  entry1_->SetURL(GURL("https://www.chromium.org/robots.txt"));
+  EXPECT_EQ(GURL("https://www.chromium.org/robots.txt"), entry1_->GetURL());
+  EXPECT_EQ(GURL("https://www.chromium.org/robots.txt"),
+            entry1_->GetVirtualURL());
+  EXPECT_EQ(u"chromium.org/robots.txt", entry1_->GetTitleForDisplay());
 
   // Setting URL with RTL characters causes it to be wrapped in an LTR
   // embedding.
   entry1_->SetURL(GURL("http://www.xn--rgba6eo.com"));
   EXPECT_EQ(
       u"\x202a"
-      u"www.\x062c\x0648\x062c\x0644"
+      u"\x062c\x0648\x062c\x0644"
       u".com\x202c",
       entry1_->GetTitleForDisplay());
 
