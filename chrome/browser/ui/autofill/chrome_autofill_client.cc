@@ -110,6 +110,7 @@
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/infobars/autofill_credit_card_filling_infobar.h"
 #include "chrome/browser/ui/android/infobars/autofill_offer_notification_infobar.h"
+#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
@@ -994,7 +995,11 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
   if (features::IsAutofillManualFallbackEnabled() ||
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableManualFallbackForVirtualCards)) {
-    (new AutofillSnackbarControllerImpl(web_contents()))->Show();
+    if (!autofill_snackbar_controller_impl_) {
+      autofill_snackbar_controller_impl_ =
+          std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+    }
+    autofill_snackbar_controller_impl_->Show();
   }
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
