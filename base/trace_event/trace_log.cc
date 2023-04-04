@@ -970,6 +970,7 @@ void TraceLog::InitializePerfettoIfNeeded() {
   perfetto::TracingInitArgs init_args;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
   init_args.platform = perfetto_platform;
+  init_args.disallow_merging_with_system_tracks = true;
   perfetto::Tracing::Initialize(init_args);
   TrackEvent::Register();
 }

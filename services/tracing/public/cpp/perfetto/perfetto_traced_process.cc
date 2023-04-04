@@ -307,6 +307,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.supports_multiple_data_source_instances = false;
   init_args.shmem_batch_commits_duration_ms = 1000;
   init_args.use_monotonic_clock = true;
+  init_args.disallow_merging_with_system_tracks = true;
 // TODO(eseckler): Not yet supported on Android to avoid binary size regression
 // of the consumer IPC messages. We'll need a way to exclude them.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
