@@ -138,7 +138,7 @@ class AccountSelectionMediator {
                 boolean isSingleAccountChooser = mAccounts.size() == 1;
                 View focusView = continueButton.isShown() && !isSingleAccountChooser
                         ? continueButton
-                        : contentView.findViewById(R.id.header_title);
+                        : contentView.findViewById(R.id.header);
                 focusView.requestFocus();
                 focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
             }
