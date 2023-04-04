@@ -1057,26 +1057,17 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
         // has its own scrollbar change detection mechanism.
         UpdateScrollDimensions();
       } else {
-        if (PreventRelayoutScope::RelayoutIsPrevented()) {
-          // We're not doing re-layout right now, but we still want to
-          // add the scrollbar to the logical width now, to facilitate parent
-          // layout.
-          GetLayoutBox()->UpdateLogicalWidth();
-          PreventRelayoutScope::SetBoxNeedsLayout(
-              *this, had_horizontal_scrollbar, had_vertical_scrollbar);
+        in_overflow_relayout_ = true;
+        SubtreeLayoutScope layout_scope(*GetLayoutBox());
+        layout_scope.SetNeedsLayout(
+            GetLayoutBox(), layout_invalidation_reason::kScrollbarChanged);
+        if (auto* block = DynamicTo<LayoutBlock>(GetLayoutBox())) {
+          block->UpdateBlockLayout(true);
         } else {
-          in_overflow_relayout_ = true;
-          SubtreeLayoutScope layout_scope(*GetLayoutBox());
-          layout_scope.SetNeedsLayout(
-              GetLayoutBox(), layout_invalidation_reason::kScrollbarChanged);
-          if (auto* block = DynamicTo<LayoutBlock>(GetLayoutBox())) {
-            block->UpdateBlockLayout(true);
-          } else {
-            GetLayoutBox()->UpdateLayout();
-          }
-          in_overflow_relayout_ = false;
-          scrollbar_manager_.DestroyDetachedScrollbars();
+          GetLayoutBox()->UpdateLayout();
         }
+        in_overflow_relayout_ = false;
+        scrollbar_manager_.DestroyDetachedScrollbars();
       }
     }
   } else if (!HasScrollbar() && resizer_will_change) {
@@ -2695,70 +2686,6 @@ void PaintLayerScrollableArea::ScrollbarManager::Trace(
   visitor->Trace(scrollable_area_);
   visitor->Trace(h_bar_);
   visitor->Trace(v_bar_);
-}
-
-int PaintLayerScrollableArea::PreventRelayoutScope::count_ = 0;
-SubtreeLayoutScope*
-    PaintLayerScrollableArea::PreventRelayoutScope::layout_scope_ = nullptr;
-bool PaintLayerScrollableArea::PreventRelayoutScope::relayout_needed_ = false;
-
-PaintLayerScrollableArea::PreventRelayoutScope::PreventRelayoutScope(
-    SubtreeLayoutScope& layout_scope) {
-  if (!count_) {
-    DCHECK(!layout_scope_);
-    DCHECK(NeedsRelayoutList().empty());
-    layout_scope_ = &layout_scope;
-  }
-  count_++;
-}
-
-PaintLayerScrollableArea::PreventRelayoutScope::~PreventRelayoutScope() {
-  if (--count_ == 0) {
-    if (relayout_needed_) {
-      for (auto scrollable_area : NeedsRelayoutList()) {
-        DCHECK(scrollable_area->NeedsRelayout());
-        LayoutBox* box = scrollable_area->GetLayoutBox();
-        layout_scope_->SetNeedsLayout(
-            box, layout_invalidation_reason::kScrollbarChanged);
-        scrollable_area->SetNeedsRelayout(false);
-      }
-
-      NeedsRelayoutList().clear();
-    }
-    layout_scope_ = nullptr;
-  }
-}
-
-void PaintLayerScrollableArea::PreventRelayoutScope::SetBoxNeedsLayout(
-    PaintLayerScrollableArea& scrollable_area,
-    bool had_horizontal_scrollbar,
-    bool had_vertical_scrollbar) {
-  DCHECK(count_);
-  DCHECK(layout_scope_);
-  if (scrollable_area.NeedsRelayout())
-    return;
-  scrollable_area.SetNeedsRelayout(true);
-  scrollable_area.SetHadHorizontalScrollbarBeforeRelayout(
-      had_horizontal_scrollbar);
-  scrollable_area.SetHadVerticalScrollbarBeforeRelayout(had_vertical_scrollbar);
-
-  relayout_needed_ = true;
-  NeedsRelayoutList().push_back(&scrollable_area);
-}
-
-void PaintLayerScrollableArea::PreventRelayoutScope::ResetRelayoutNeeded() {
-  DCHECK_EQ(count_, 0);
-  DCHECK(NeedsRelayoutList().empty());
-  relayout_needed_ = false;
-}
-
-HeapVector<Member<PaintLayerScrollableArea>>&
-PaintLayerScrollableArea::PreventRelayoutScope::NeedsRelayoutList() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapVector<Member<PaintLayerScrollableArea>>>,
-      needs_relayout_list,
-      (MakeGarbageCollected<HeapVector<Member<PaintLayerScrollableArea>>>()));
-  return *needs_relayout_list;
 }
 
 int PaintLayerScrollableArea::FreezeScrollbarsScope::count_ = 0;

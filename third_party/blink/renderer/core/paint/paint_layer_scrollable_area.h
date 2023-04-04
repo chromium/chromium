@@ -69,7 +69,6 @@ class LayoutCustomScrollbarPart;
 struct PaintInvalidatorContext;
 class PaintLayer;
 class ScrollingCoordinator;
-class SubtreeLayoutScope;
 
 struct CORE_EXPORT PaintLayerScrollableAreaRareData final
     : public GarbageCollected<PaintLayerScrollableAreaRareData> {
@@ -181,34 +180,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   };
 
  public:
-  // If a PreventRelayoutScope object is alive, updateAfterLayout() will not
-  // re-run box layout as a result of adding or removing scrollbars.
-  // Instead, it will mark the PLSA as needing relayout of its box.
-  // When the last PreventRelayoutScope object is popped off the stack,
-  // box().setNeedsLayout(), and box().scrollbarsChanged() for LayoutBlock's,
-  // will be called as appropriate for all marked PLSA's.
-  class PreventRelayoutScope {
-    STACK_ALLOCATED();
-
-   public:
-    explicit PreventRelayoutScope(SubtreeLayoutScope&);
-    ~PreventRelayoutScope();
-
-    static bool RelayoutIsPrevented() { return count_; }
-    static void SetBoxNeedsLayout(PaintLayerScrollableArea&,
-                                  bool had_horizontal_scrollbar,
-                                  bool had_vertical_scrollbar);
-    static bool RelayoutNeeded() { return count_ == 0 && relayout_needed_; }
-    static void ResetRelayoutNeeded();
-
-   private:
-    static HeapVector<Member<PaintLayerScrollableArea>>& NeedsRelayoutList();
-
-    static int count_;
-    static SubtreeLayoutScope* layout_scope_;
-    static bool relayout_needed_;
-  };
-
   // If a FreezeScrollbarScope object is alive, updateAfterLayout() will not
   // recompute the existence of overflow:auto scrollbars.
   class FreezeScrollbarsScope {
