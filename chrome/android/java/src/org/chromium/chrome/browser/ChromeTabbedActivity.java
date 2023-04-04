@@ -1522,7 +1522,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     int shortcutSource = intent.getIntExtra(
                             WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
                     LaunchMetrics.recordHomeScreenLaunchIntoTab(url, shortcutSource);
-                    if (fromAppWidget && url.startsWith(UrlConstants.CHROME_DINO_URL)) {
+                    if (fromAppWidget && UrlConstants.CHROME_DINO_URL.equals(url)) {
                         RecordUserAction.record("QuickActionSearchWidget.StartDinoGame");
                     }
                     break;

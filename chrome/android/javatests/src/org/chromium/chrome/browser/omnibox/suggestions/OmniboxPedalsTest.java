@@ -531,7 +531,7 @@ public class OmniboxPedalsTest {
             Tab tab = sActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(
-                    tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.CHROME_DINO_URL));
+                    tab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));
         });
 
         histogramWatcher.assertExpected();

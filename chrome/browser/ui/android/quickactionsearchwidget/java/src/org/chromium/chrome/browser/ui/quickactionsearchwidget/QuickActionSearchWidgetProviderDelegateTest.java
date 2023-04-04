@@ -192,9 +192,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
      * Test copy of {@link QuickActionSearchWidgetProvider#createDinoIntent}.
      */
     private static Intent createDinoIntent(final Context context) {
-        String chromeDinoUrl = UrlConstants.CHROME_DINO_URL + "/";
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(chromeDinoUrl));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(UrlConstants.CHROME_DINO_URL));
         intent.setComponent(new ComponentName(context, ChromeLauncherActivity.class));
         intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, true);

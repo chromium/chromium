@@ -155,14 +155,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
 
     /** Returns an intent to launch a new tab with chrome://dino/ URL. */
     private @NonNull Intent createDinoIntent() {
-        // We concatenate the forward slash to the URL since if a Dino tab already exists, we would
-        // like to reuse it. In order to determine if there is an existing Dino tab,
-        // ChromeTabbedActivity will check by comparing URLs of existing tabs to the URL of our
-        // intent. If there is an existing Dino tab, it would have a forward slash appended to the
-        // end of its URL, so our URL must have a forward slash to match.
-        String chromeDinoUrl = UrlConstants.CHROME_DINO_URL + "/";
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(chromeDinoUrl));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(UrlConstants.CHROME_DINO_URL));
         intent.setComponent(
                 new ComponentName(mActivity.getApplicationContext(), ChromeLauncherActivity.class));
         intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);

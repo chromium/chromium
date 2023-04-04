@@ -250,7 +250,7 @@ public class ActionChipsDelegateImplUnitTest {
 
         var intent = mShadowActivity.getNextStartedActivity();
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        assertEquals(UrlConstants.CHROME_DINO_URL + "/", intent.getDataString());
+        assertEquals(UrlConstants.CHROME_DINO_URL, intent.getDataString());
         assertTrue(
                 intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
 
