@@ -41,6 +41,7 @@
   </if>
   <if expr="is_android">
     <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER" file="autofill/cc-generic.png" />
+    <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_CAPITALONE" file="autofill/cc-generic.png" />
   </if>
 
   <if expr="not is_android and _google_chrome">
