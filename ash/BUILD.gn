@@ -867,6 +867,8 @@ component("ash") {
     "user_education/holding_space_tour/holding_space_tour_controller.h",
     "user_education/tutorial_controller.cc",
     "user_education/tutorial_controller.h",
+    "user_education/user_education_constants.cc",
+    "user_education/user_education_constants.h",
     "user_education/user_education_controller.cc",
     "user_education/user_education_controller.h",
     "user_education/user_education_delegate.h",
