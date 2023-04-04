@@ -26143,6 +26143,14 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="57" label="Capture test protocol button clicked"/>
   <int value="58" label="Breakpoint removed from remove button"/>
   <int value="59" label="Breakpoint group expanded state changed"/>
+  <int value="60" label="Header overrides '.headers' file created"/>
+  <int value="61" label="Header overrides enable editing clicked"/>
+  <int value="62" label="Header overrides header added"/>
+  <int value="63" label="Header overrides header edited"/>
+  <int value="64" label="Header overrides header removed"/>
+  <int value="65" label="Header overrides '.headers' file edited"/>
+  <int value="66" label="Local overrides enabled"/>
+  <int value="67" label="Local overrides disabled"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
