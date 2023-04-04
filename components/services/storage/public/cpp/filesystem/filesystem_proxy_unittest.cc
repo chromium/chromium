@@ -323,13 +323,7 @@ TEST_P(FilesystemProxyTest, MAYBE_OpenFileAppendOnly) {
   EXPECT_EQ(kData + kMoreData, ReadFileContentsAtPath(kFile3));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314076): Re-enable when DeleteFile works on Fuchsia.
-#define MAYBE_DeleteFile DISABLED_DeleteFile
-#else
-#define MAYBE_DeleteFile DeleteFile
-#endif
-TEST_P(FilesystemProxyTest, MAYBE_DeleteFile) {
+TEST_P(FilesystemProxyTest, DeleteFile) {
   FileErrorOr<base::File> file =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
   ASSERT_TRUE(file.has_value());
@@ -357,15 +351,7 @@ TEST_P(FilesystemProxyTest, CreateAndRemoveDirectory) {
   EXPECT_TRUE(proxy().DeleteFile(kNewDirectoryName));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314076): Re-enable when DeleteFileFailsOnSubDirectory works
-// on Fuchsia.
-#define MAYBE_DeleteFileFailsOnSubDirectory \
-  DISABLED_DeleteFileFailsOnSubDirectory
-#else
-#define MAYBE_DeleteFileFailsOnSubDirectory DeleteFileFailsOnSubDirectory
-#endif
-TEST_P(FilesystemProxyTest, MAYBE_DeleteFileFailsOnSubDirectory) {
+TEST_P(FilesystemProxyTest, DeleteFileFailsOnSubDirectory) {
   // kDir1 has a subdirectory kDir1Dir1, which DeleteFile can't remove.
   EXPECT_TRUE(proxy().PathExists(kDir1));
   EXPECT_FALSE(proxy().DeleteFile(kDir1));
