@@ -988,8 +988,6 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
 
   multi_profile_user_controller_->RemoveCachedValues(account_id.GetUserEmail());
 
-  EasyUnlockService::ResetLocalStateForUser(account_id);
-
   ChromeUserManager::RemoveNonCryptohomeData(account_id);
 }
 

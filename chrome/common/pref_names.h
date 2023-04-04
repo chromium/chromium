@@ -979,7 +979,6 @@ extern const char kLacrosDataBackwardMigrationMode[];
 extern const char kCryptAuthDeviceId[];
 extern const char kCryptAuthInstanceId[];
 extern const char kCryptAuthInstanceIdToken[];
-extern const char kEasyUnlockHardlockState[];
 
 extern const char kRecoveryComponentNeedsElevation[];
 

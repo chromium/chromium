@@ -2917,9 +2917,6 @@ const char kCryptAuthDeviceId[] = "easy_unlock.device_id";
 const char kCryptAuthInstanceId[] = "cryptauth.instance_id";
 const char kCryptAuthInstanceIdToken[] = "cryptauth.instance_id_token";
 
-// A dictionary that maps user id to hardlock state.
-const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
-
 // Boolean that indicates whether elevation is needed to recover Chrome upgrade.
 const char kRecoveryComponentNeedsElevation[] =
     "recovery_component.needs_elevation";
