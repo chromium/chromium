@@ -8204,6 +8204,7 @@ test("unit_tests") {
         "../browser/ash/login/easy_unlock/easy_unlock_notification_controller_unittest.cc",
         "../browser/ash/login/easy_unlock/easy_unlock_service_regular_unittest.cc",
         "../browser/ash/login/easy_unlock/smartlock_feature_usage_metrics_unittest.cc",
+        "../browser/ash/policy/enrollment/auto_enrollment_controller_unittest.cc",
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
