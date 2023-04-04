@@ -720,7 +720,7 @@ crbug.com/1429731 [ chromeos chromeos-board-kevin no-passthrough ] conformance/u
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1429948 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
+crbug.com/1429948 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #
