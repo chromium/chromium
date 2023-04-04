@@ -487,12 +487,14 @@ class WPTResultsProcessor:
                 result.unexpected = False
             if result.actual not in {ResultType.Pass, ResultType.Skip}:
                 self.has_regressions = True
-        self.sink.report_individual_test_result(
-            test_name_prefix=self.test_name_prefix,
-            result=result,
-            artifact_output_dir=self.fs.dirname(self.artifacts_dir),
-            expectations=None,
-            test_file_location=result.file_path)
+        if not self.run_info.get('used_upstream'):
+            # We only need Wpt report when run with upstream
+            self.sink.report_individual_test_result(
+                test_name_prefix=self.test_name_prefix,
+                result=result,
+                artifact_output_dir=self.fs.dirname(self.artifacts_dir),
+                expectations=None,
+                test_file_location=result.file_path)
         _log.debug(
             'Reported result for %s, iteration %d (actual: %s, '
             'expected: %s, artifacts: %s)', result.name, self._iteration,
