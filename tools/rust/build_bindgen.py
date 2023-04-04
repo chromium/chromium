@@ -30,8 +30,8 @@ from update import (RmTree)
 
 # The git hash to use. This is the `v0.60.0` tag.
 BINDGEN_GIT_VERSION = '355181134094202e0caae60c1fbf145d8e6ca84b'
-# TODO(crbug.com/1428298): Mirror to Git-on-Borg.
-BINDGEN_GIT_REPO = 'https://github.com/rust-lang/rust-bindgen'
+BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
+                    'github.com/rust-lang/rust-bindgen')
 
 BINDGEN_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain-intermediate',
                                'bindgen-src')
