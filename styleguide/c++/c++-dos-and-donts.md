@@ -54,6 +54,18 @@ operations, or both (a non-declared pair will be implicitly deleted).  Always
 declare or delete both construction and assignment, not just one (which can
 introduce subtle bugs).
 
+```cpp
+class TypeName {
+ public:
+  TypeName(int arg);
+  ...
+  TypeName(const TypeName&) = delete;
+  TypeName& operator=(const TypeName&) = delete;
+  ...
+  ~TypeName();
+}
+```
+
 ## Variable initialization
 
 There are myriad ways to initialize variables in C++11.  Prefer the following
