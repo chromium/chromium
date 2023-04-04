@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "extensions/common/mojom/execution_world.mojom.h"
 
 class InjectionHost;
 
@@ -44,18 +45,28 @@ class IsolatedWorldManager {
   // or an empty string if none exists.
   std::string GetHostIdForIsolatedWorld(int world_id);
 
-  // Removes the isolated world associated with the given `host_id`, if any
-  // exists.
-  void RemoveIsolatedWorld(const std::string& host_id);
+  // Removes all isolated worlds associated with the given `host_id`, if any
+  // exist.
+  void RemoveIsolatedWorlds(const std::string& host_id);
 
   // Returns the id of the isolated world associated with the given
   // `injection_host`.  If none exists, creates a new world for it associated
   // with the host's name and CSP.
-  int GetOrCreateIsolatedWorldForHost(const InjectionHost& injection_host);
+  int GetOrCreateIsolatedWorldForHost(const InjectionHost& injection_host,
+                                      mojom::ExecutionWorld execution_world);
 
  private:
-  // A map between injection host ID and isolated world ID.
-  using IsolatedWorldMap = std::map<std::string, int>;
+  struct IsolatedWorldInfo {
+    // The id of the injection host the world is associated with. For
+    // extensions, this is the extension ID.
+    std::string host_id;
+    // The execution world for the isolated world. Currently, this is restricted
+    // to mojom::ExecutionWorld::kIsolated.
+    mojom::ExecutionWorld execution_world;
+  };
+
+  // A map between the isolated world ID and injection host ID.
+  using IsolatedWorldMap = std::map<int, IsolatedWorldInfo>;
 
   IsolatedWorldMap isolated_worlds_;
 

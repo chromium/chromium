@@ -1146,7 +1146,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // If the extension is later reloaded with a different set of permissions,
   // we'd like it to get a new isolated world ID, so that it can pick up the
   // changed origin allowlist.
-  IsolatedWorldManager::GetInstance().RemoveIsolatedWorld(extension_id);
+  IsolatedWorldManager::GetInstance().RemoveIsolatedWorlds(extension_id);
 
   // Inform the bindings system that the contexts will be removed to allow time
   // to clear out context-specific data, and then remove the contexts

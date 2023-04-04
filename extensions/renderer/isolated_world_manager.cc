@@ -7,7 +7,11 @@
 #include <map>
 #include <string>
 
+#include "base/check.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
+#include "extensions/common/mojom/execution_world.mojom.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/injection_host.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
@@ -28,32 +32,38 @@ IsolatedWorldManager& IsolatedWorldManager::GetInstance() {
 std::string IsolatedWorldManager::GetHostIdForIsolatedWorld(int world_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const auto& entry : isolated_worlds_) {
-    if (entry.second == world_id) {
-      return entry.first;
-    }
-  }
-  return std::string();
+  auto iter = isolated_worlds_.find(world_id);
+  return iter != isolated_worlds_.end() ? iter->second.host_id : std::string();
 }
 
-void IsolatedWorldManager::RemoveIsolatedWorld(const std::string& host_id) {
+void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  isolated_worlds_.erase(host_id);
+  base::EraseIf(isolated_worlds_, [&host_id](const auto& entry) {
+    return entry.second.host_id == host_id;
+  });
 }
 
 int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
-    const InjectionHost& injection_host) {
+    const InjectionHost& injection_host,
+    mojom::ExecutionWorld execution_world) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(mojom::ExecutionWorld::kIsolated, execution_world);
 
   static int g_next_isolated_world_id =
       ExtensionsRendererClient::Get()->GetLowestIsolatedWorldId();
 
   int world_id = 0;
-  const std::string& key = injection_host.id().id;
-  auto iter = isolated_worlds_.find(key);
+  const std::string& host_id = injection_host.id().id;
+
+  auto iter = base::ranges::find_if(
+      isolated_worlds_, [host_id, execution_world](const auto& entry) {
+        return entry.second.host_id == host_id &&
+               entry.second.execution_world == execution_world;
+      });
+
   if (iter != isolated_worlds_.end()) {
-    world_id = iter->second;
+    world_id = iter->first;
   } else {
     world_id = g_next_isolated_world_id++;
     // This map will tend to pile up over time, but realistically, you're never
@@ -61,20 +71,22 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     // TODO(crbug/1429408): Are we sure about that? Processes can stick around
     // awhile.... (and this could be affected by introducing user script
     // worlds).
-    isolated_worlds_[key] = world_id;
+    IsolatedWorldInfo& info = isolated_worlds_[world_id];
+    info.host_id = host_id;
+    info.execution_world = execution_world;
   }
 
   blink::WebIsolatedWorldInfo info;
   info.security_origin = blink::WebSecurityOrigin::Create(injection_host.url());
   info.human_readable_name = blink::WebString::FromUTF8(injection_host.name());
-  info.stable_id = blink::WebString::FromUTF8(key);
+  info.stable_id = blink::WebString::FromUTF8(host_id);
 
   const std::string* csp = injection_host.GetContentSecurityPolicy();
   if (csp) {
     info.content_security_policy = blink::WebString::FromUTF8(*csp);
   }
 
-  // Even though there may be an existing world for this `injection_host`'s key,
+  // Even though there may be an existing world for this `injection_host`'s id,
   // the properties may have changed (e.g. due to an extension update).
   // Overwrite any existing entries.
   blink::SetIsolatedWorldInfo(world_id, info);

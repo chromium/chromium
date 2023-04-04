@@ -254,11 +254,12 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
           : blink::mojom::EvaluationTiming::kSynchronous;
 
   int32_t world_id = blink::kMainDOMWorldId;
-  switch (injector_->GetExecutionWorld()) {
+  const mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
+  switch (execution_world) {
     case mojom::ExecutionWorld::kIsolated:
       world_id =
           IsolatedWorldManager::GetInstance().GetOrCreateIsolatedWorldForHost(
-              *injection_host_);
+              *injection_host_, execution_world);
       if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
           log_activity_) {
         DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
