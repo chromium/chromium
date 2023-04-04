@@ -34,6 +34,7 @@ class TabStyleViews : public TabStyle {
   // Factory function allows to experiment with different variations on tab
   // style at runtime or via flag.
   static std::unique_ptr<TabStyleViews> CreateForTab(Tab* tab);
+  static std::unique_ptr<TabStyleViews> Create();
 
   ~TabStyleViews() override;
 
