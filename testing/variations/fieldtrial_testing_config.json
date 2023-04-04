@@ -8085,11 +8085,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "NetworkServiceSandbox"
+                        "NetworkServiceSandbox",
+                        "NetworkServiceSyscallFilter"
                     ],
                     "disable_features": [
-                        "NetworkServiceFileAllowlist",
-                        "NetworkServiceSyscallFilter"
+                        "NetworkServiceFileAllowlist"
                     ]
                 }
             ]
