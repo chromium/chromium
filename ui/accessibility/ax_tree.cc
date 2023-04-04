@@ -1489,6 +1489,48 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     }
   }
 
+  // The implementation for notifying node attributes changed is separated
+  // into different methods to reduce complexity. This block will return
+  // after execution if the feature flag is enabled.
+  // TODO(mschillaci): Consider moving this into a helper class.
+  if (features::IsUnserializeOptimizationsEnabled()) {
+    for (AXTreeObserver& observer : observers_) {
+      DCHECK(!GetTreeUpdateInProgressState());
+      for (AXNodeID changed_id : update_state.node_data_changed_ids) {
+        AXNode* node = GetFromId(changed_id);
+        DCHECK(node);
+        DCHECK(node->id() != kInvalidAXNodeID);
+
+        // If the node exists and is in the old data map, then the node data
+        // may have changed unless this is a new root.
+        const bool is_new_root =
+            update_state.root_will_be_created && changed_id == update.root_id;
+        if (!is_new_root) {
+          auto it = update_state.old_node_id_to_data.find(changed_id);
+          if (it != update_state.old_node_id_to_data.end()) {
+            NotifyNodeAttributesHaveBeenChangedOptimized(
+                node, update_state, observer,
+                update_state.old_tree_data ? &update_state.old_tree_data.value()
+                                           : nullptr,
+                it->second,
+                update_state.new_tree_data ? &update_state.new_tree_data.value()
+                                           : nullptr,
+                node->data());
+          }
+        }
+        // |OnNodeChanged| should be fired for all nodes that have been updated.
+        observer.OnNodeChanged(this, node);
+      }
+    }
+    // Finally, notify all observers the update is finished and return.
+    for (AXTreeObserver& observer : observers_) {
+      observer.OnAtomicUpdateFinished(this, root_->id() != old_root_id,
+                                      changes);
+    }
+
+    return true;
+  }  // End |kAccessibilityUnserializeOptimization| impl.
+
   // Now that the unignored cached values are up to date, notify observers of
   // node changes.
   for (AXNodeID changed_id : update_state.node_data_changed_ids) {
@@ -2152,6 +2194,113 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
         for (AXTreeObserver& observer : observers_)
           observer.OnStringListAttributeChanged(this, node, attr,
                                                 old_stringlist, new_stringlist);
+      };
+  CallIfAttributeValuesChanged(old_data.stringlist_attributes,
+                               new_data.stringlist_attributes,
+                               std::vector<std::string>(), stringlist_callback);
+}
+
+void AXTree::NotifyNodeAttributesHaveBeenChangedOptimized(
+    AXNode* node,
+    AXTreeUpdateState& update_state,
+    AXTreeObserver& observer,
+    const AXTreeData* optional_old_tree_data,
+    const AXNodeData& old_data,
+    const AXTreeData* optional_new_tree_data,
+    const AXNodeData& new_data) {
+  // Only called during |kAccessibilityUnserializeOptimizations| experiment.
+  CHECK(features::IsUnserializeOptimizationsEnabled());
+
+  // Do not fire generated events for initial empty document:
+  // The initial empty document and changes to it are uninteresting. It is a
+  // bit of a hack that may not need to exist in the future
+  // TODO(accessibility) Find a way to remove the initial empty document and the
+  // need for this special case.
+  if (node->GetRole() == ax::mojom::Role::kRootWebArea &&
+      old_data.child_ids.empty() && !node->GetParentCrossingTreeBoundary()) {
+    return;
+  }
+
+  observer.OnNodeDataChanged(this, old_data, new_data);
+
+  if (old_data.role != new_data.role) {
+    observer.OnRoleChanged(this, node, old_data.role, new_data.role);
+  }
+
+  if (base::Contains(update_state.ignored_state_changed_ids, new_data.id)) {
+    observer.OnIgnoredChanged(this, node, node->IsIgnored());
+  }
+
+  if (old_data.state != new_data.state) {
+    for (int32_t i = static_cast<int32_t>(ax::mojom::State::kNone) + 1;
+         i <= static_cast<int32_t>(ax::mojom::State::kMaxValue); ++i) {
+      ax::mojom::State state = static_cast<ax::mojom::State>(i);
+      // The ignored state has been already handled via `OnIgnoredChanged`.
+      if (state == ax::mojom::State::kIgnored) {
+        continue;
+      }
+
+      if (old_data.HasState(state) != new_data.HasState(state)) {
+        observer.OnStateChanged(this, node, state, new_data.HasState(state));
+      }
+    }
+  }
+
+  auto string_callback = [this, node, &observer](
+                             ax::mojom::StringAttribute attr,
+                             const std::string& old_string,
+                             const std::string& new_string) {
+    DCHECK_NE(old_string, new_string);
+    observer.OnStringAttributeChanged(this, node, attr, old_string, new_string);
+  };
+  CallIfAttributeValuesChanged(old_data.string_attributes,
+                               new_data.string_attributes, std::string(),
+                               string_callback);
+
+  auto bool_callback = [this, node, &observer](ax::mojom::BoolAttribute attr,
+                                               const bool& old_bool,
+                                               const bool& new_bool) {
+    DCHECK_NE(old_bool, new_bool);
+    observer.OnBoolAttributeChanged(this, node, attr, new_bool);
+  };
+  CallIfAttributeValuesChanged(old_data.bool_attributes,
+                               new_data.bool_attributes, false, bool_callback);
+
+  auto float_callback = [this, node, &observer](ax::mojom::FloatAttribute attr,
+                                                const float& old_float,
+                                                const float& new_float) {
+    DCHECK_NE(old_float, new_float);
+    observer.OnFloatAttributeChanged(this, node, attr, old_float, new_float);
+  };
+  CallIfAttributeValuesChanged(old_data.float_attributes,
+                               new_data.float_attributes, 0.0f, float_callback);
+
+  auto int_callback = [this, node, &observer](ax::mojom::IntAttribute attr,
+                                              const int& old_int,
+                                              const int& new_int) {
+    DCHECK_NE(old_int, new_int);
+    observer.OnIntAttributeChanged(this, node, attr, old_int, new_int);
+  };
+  CallIfAttributeValuesChanged(old_data.int_attributes, new_data.int_attributes,
+                               0, int_callback);
+
+  auto intlist_callback = [this, node, &observer](
+                              ax::mojom::IntListAttribute attr,
+                              const std::vector<int32_t>& old_intlist,
+                              const std::vector<int32_t>& new_intlist) {
+    observer.OnIntListAttributeChanged(this, node, attr, old_intlist,
+                                       new_intlist);
+  };
+  CallIfAttributeValuesChanged(old_data.intlist_attributes,
+                               new_data.intlist_attributes,
+                               std::vector<int32_t>(), intlist_callback);
+
+  auto stringlist_callback =
+      [this, node, &observer](ax::mojom::StringListAttribute attr,
+                              const std::vector<std::string>& old_stringlist,
+                              const std::vector<std::string>& new_stringlist) {
+        observer.OnStringListAttributeChanged(this, node, attr, old_stringlist,
+                                              new_stringlist);
       };
   CallIfAttributeValuesChanged(old_data.stringlist_attributes,
                                new_data.stringlist_attributes,
