@@ -145,6 +145,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
+    enum="GwpAsanCrashAnalysisResult" expires_after="2023-09-27">
+  <owner>glazunov@google.com</owner>
+  <owner>mpdenton@chromium.org</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    Reports the GWP-ASan crash analysis result. That can either be a
+    determination that the crash was related to GWP-ASan, not related to
+    GWP-ASan, or an error making that determination. Recorded with every crash.
+  </summary>
+  <token key="Allocator">
+    <variant name="Malloc"/>
+    <variant name="PartitionAlloc"/>
+  </token>
+</histogram>
+
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
     enum="HttpsFirstModeNavigationEvent" expires_after="2023-09-10">
   <owner>cthomp@chromium.org</owner>

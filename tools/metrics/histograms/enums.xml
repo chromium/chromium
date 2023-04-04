@@ -48765,6 +48765,39 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="FirstChildGuest"/>
 </enum>
 
+<enum name="GwpAsanCrashAnalysisResult">
+  <int value="0" label="The crash is not caused by GWP-ASan"/>
+  <int value="1" label="The crash is caused by GWP-ASan"/>
+  <int value="2" label="The ProcessMemory from the snapshot was null"/>
+  <int value="3"
+      label="Failed to read the crashing process' memory of the global
+             allocator"/>
+  <int value="4"
+      label="The crashing process' global allocator members failed sanity
+             checks"/>
+  <int value="5" label="Failed to read crash stack traces"/>
+  <int value="6" label="The ExceptionSnapshot CPU context was null"/>
+  <int value="7"
+      label="The crashing process' bitness does not match the crash handler"/>
+  <int value="8" label="The allocator computed an invalid slot index"/>
+  <int value="9" label="Failed to read the process' SlotMetadata"/>
+  <int value="10"
+      label="The allocator stored an invalid metadata index for a given slot"/>
+  <int value="11" label="The computed metadata index was outdated"/>
+  <int value="12"
+      label="Failed to read the crashing process' slot to metadata mapping"/>
+  <int value="13" label="The crash is caused by the Lightweight UAF Detector"/>
+  <int value="14"
+      label="Failed to read the crashing process' memory of the Lightweight
+             UAF Detector metadata store"/>
+  <int value="15"
+      label="The computed lightweight metadata index was invalid or outdated"/>
+  <int value="16"
+      label="The crashing process' architecture does not match the crash
+             handler"/>
+  <int value="17" label="Found conflicting lightweight metadata IDs"/>
+</enum>
+
 <enum name="GzipEncodingFixupResult">
   <int value="0" label="Gzip encoding left as-is"/>
   <int value="1" label="MIME type indicated GZIP content"/>
