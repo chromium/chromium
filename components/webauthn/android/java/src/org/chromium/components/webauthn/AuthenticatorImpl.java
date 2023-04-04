@@ -253,7 +253,7 @@ public final class AuthenticatorImpl implements Authenticator {
     /**
      * Callbacks for receiving responses from the internal handlers.
      */
-    public void onRegisterResponse(Integer status, MakeCredentialAuthenticatorResponse response) {
+    public void onRegisterResponse(int status, MakeCredentialAuthenticatorResponse response) {
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 
@@ -263,7 +263,7 @@ public final class AuthenticatorImpl implements Authenticator {
         close();
     }
 
-    public void onSignResponse(Integer status, GetAssertionAuthenticatorResponse response) {
+    public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
         // In case mojo pipe is closed due to the page begin destroyed while waiting for response.
         if (!mIsOperationPending) return;
 

@@ -245,15 +245,14 @@ public class Fido2CredentialRequestTest {
 
         AuthenticatorCallback() {}
 
-        public void onRegisterResponse(
-                Integer status, MakeCredentialAuthenticatorResponse response) {
+        public void onRegisterResponse(int status, MakeCredentialAuthenticatorResponse response) {
             assert mStatus == null;
             mStatus = status;
             mMakeCredentialResponse = response;
             unblock();
         }
 
-        public void onSignResponse(Integer status, GetAssertionAuthenticatorResponse response) {
+        public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
             assert mStatus == null;
             mStatus = status;
             mGetAssertionAuthenticatorResponse = response;
@@ -265,7 +264,7 @@ public class Fido2CredentialRequestTest {
             unblock();
         }
 
-        public void onError(Integer status) {
+        public void onError(int status) {
             assert mStatus == null;
             mStatus = status;
             unblock();
