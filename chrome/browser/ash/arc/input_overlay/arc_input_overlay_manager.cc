@@ -205,10 +205,7 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
 }
 
 void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
-  UnRegisterWindow(window);
-  input_overlay_enabled_windows_.erase(window);
-  loading_data_windows_.erase(window);
-  RemoveWindowObservation(window);
+  UnregisterAndRemoveObservation(window);
 }
 
 void ArcInputOverlayManager::OnWindowAddedToRootWindow(aura::Window* window) {
@@ -228,6 +225,15 @@ void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
   // There might be child window surface removing, we don't unregister window
   // until the top_level_window is removed from the root.
   UnRegisterWindow(window);
+}
+
+void ArcInputOverlayManager::OnWindowParentChanged(aura::Window* window,
+                                                   aura::Window* parent) {
+  // Ignore if |parent| is a container.
+  if (!parent || parent != parent->GetToplevelWindow()) {
+    return;
+  }
+  UnregisterAndRemoveObservation(window);
 }
 
 void ArcInputOverlayManager::Shutdown() {
@@ -312,6 +318,14 @@ void ArcInputOverlayManager::RemoveWindowObservation(aura::Window* window) {
   if (window_observations_.IsObservingSource(window)) {
     window_observations_.RemoveObservation(window);
   }
+}
+
+void ArcInputOverlayManager::UnregisterAndRemoveObservation(
+    aura::Window* window) {
+  UnRegisterWindow(window);
+  input_overlay_enabled_windows_.erase(window);
+  loading_data_windows_.erase(window);
+  RemoveWindowObservation(window);
 }
 
 // static

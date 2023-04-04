@@ -69,6 +69,8 @@ class ArcInputOverlayManager : public KeyedService,
   void OnWindowAddedToRootWindow(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -93,6 +95,7 @@ class ArcInputOverlayManager : public KeyedService,
 
   // Remove |window| from observation list.
   void RemoveWindowObservation(aura::Window* window);
+  void UnregisterAndRemoveObservation(aura::Window* window);
   // Read default data.
   static std::unique_ptr<TouchInjector> ReadDefaultData(
       std::unique_ptr<TouchInjector> touch_injector);
