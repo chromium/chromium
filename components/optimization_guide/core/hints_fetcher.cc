@@ -107,10 +107,6 @@ HintsFetcher::~HintsFetcher() {
     if (hints_fetched_callback_)
       std::move(hints_fetched_callback_).Run(absl::nullopt);
 
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::HINTS,
-        optimization_guide_logger_,
-        "No hints fetched: HintsFetcher ActiveRequestCanceled");
     base::UmaHistogramExactLinear(
         "OptimizationGuide.HintsFetcher.GetHintsRequest."
         "ActiveRequestCanceled." +
