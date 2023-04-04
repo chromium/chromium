@@ -43,8 +43,7 @@ void MediaSourceRegistryImpl::Init() {
   DVLOG(1) << __func__ << " instance=" << &instance;
 }
 
-void MediaSourceRegistryImpl::RegisterURL(SecurityOrigin*,
-                                          const KURL& url,
+void MediaSourceRegistryImpl::RegisterURL(const KURL& url,
                                           URLRegistrable* registrable) {
   base::AutoLock lock(map_lock_);
 

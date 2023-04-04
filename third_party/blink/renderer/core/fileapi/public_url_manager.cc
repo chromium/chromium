@@ -159,8 +159,8 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   if (is_stopped_)
     return String();
 
-  SecurityOrigin* origin = GetExecutionContext()->GetMutableSecurityOrigin();
-  const KURL& url = BlobURL::CreatePublicURL(origin);
+  const KURL& url =
+      BlobURL::CreatePublicURL(GetExecutionContext()->GetSecurityOrigin());
   DCHECK(!url.IsEmpty());
   const String& url_string = url.GetString();
 
@@ -213,12 +213,15 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
     registrable->CloneMojoBlob(std::move(blob_receiver));
   } else {
     URLRegistry* registry = &registrable->Registry();
-    registry->RegisterURL(origin, url, registrable);
+    registry->RegisterURL(url, registrable);
     url_to_registry_.insert(url_string, registry);
   }
 
-  if (origin->SerializesAsNull())
-    BlobURLNullOriginMap::GetInstance()->Add(url, origin);
+  SecurityOrigin* mutable_origin =
+      GetExecutionContext()->GetMutableSecurityOrigin();
+  if (mutable_origin->SerializesAsNull()) {
+    BlobURLNullOriginMap::GetInstance()->Add(url, mutable_origin);
+  }
 
   return url_string;
 }

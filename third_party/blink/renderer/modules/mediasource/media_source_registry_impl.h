@@ -37,7 +37,7 @@ class MediaSourceRegistryImpl final : public MediaSourceRegistry {
   // called from either the main thread or a dedicated worker thread.
   // Regardless, must be called on the thread which created the URLRegistrable
   // (the MediaSourceAttachment).
-  void RegisterURL(SecurityOrigin*, const KURL&, URLRegistrable*) override
+  void RegisterURL(const KURL&, URLRegistrable*) override
       LOCKS_EXCLUDED(map_lock_);
 
   // UnregisterURL removes the corresponding scoped_refptr and KURL from
