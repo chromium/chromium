@@ -86,11 +86,11 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
 }
 
 LayoutObject* MathMLPaddedElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+    const ComputedStyle& style) {
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      !style.IsDisplayMathType() || legacy == LegacyLayout::kForce)
-    return MathMLElement::CreateLayoutObject(style, legacy);
+      !style.IsDisplayMathType()) {
+    return MathMLElement::CreateLayoutObject(style);
+  }
   return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);
 }
 

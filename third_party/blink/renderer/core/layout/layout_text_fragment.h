@@ -46,21 +46,16 @@ class CORE_EXPORT LayoutTextFragment : public LayoutNGText {
   static LayoutTextFragment* Create(Node*,
                                     const String&,
                                     int start_offset,
-                                    int length,
-                                    LegacyLayout);
-  static LayoutTextFragment* CreateAnonymous(PseudoElement&,
-                                             const String&,
-                                             LegacyLayout);
+                                    int length);
+  static LayoutTextFragment* CreateAnonymous(PseudoElement&, const String&);
   static LayoutTextFragment* CreateAnonymous(PseudoElement&,
                                              const String&,
                                              unsigned start,
-                                             unsigned length,
-                                             LegacyLayout);
+                                             unsigned length);
   static LayoutTextFragment* CreateAnonymous(Document&,
                                              const String&,
                                              unsigned start,
-                                             unsigned length,
-                                             LegacyLayout);
+                                             unsigned length);
 
   void Trace(Visitor*) const override;
 

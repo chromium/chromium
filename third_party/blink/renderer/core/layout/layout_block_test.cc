@@ -22,8 +22,7 @@ class LayoutBlockTest : public RenderingTest {};
 
 TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
   const ComputedStyle& style = GetDocument().GetStyleResolver().InitialStyle();
-  LayoutObject* obj = LayoutBlockFlow::CreateAnonymous(&GetDocument(), &style,
-                                                       LegacyLayout::kAuto);
+  LayoutObject* obj = LayoutBlockFlow::CreateAnonymous(&GetDocument(), &style);
   obj->SetStyle(nullptr, LayoutObject::ApplyStyleChanges::kNo);
   EXPECT_FALSE(obj->Style());
   EXPECT_THAT(obj->DecoratedName().Ascii(),

@@ -38,7 +38,7 @@ class HTMLLegendElement final : public HTMLElement {
 
  private:
   void DetachLayoutTree(bool performing_reattach) override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 };
 
 }  // namespace blink

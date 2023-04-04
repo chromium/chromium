@@ -40,77 +40,52 @@ inline Element* GetElementForLayoutObject(Node& node) {
 }
 
 template <typename BaseType, typename NGType, typename LegacyType = BaseType>
-inline BaseType* CreateObject(Node& node,
-                              LegacyLayout legacy,
-                              bool disable_ng_for_type = false) {
+inline BaseType* CreateObject(Node& node, bool disable_ng_for_type = false) {
   Element* element = GetElementForLayoutObject(node);
-  bool force_legacy = false;
-
-  // If no reason has been found for disabling NG for this particular type,
-  // check if the NG feature is enabled at all, before considering creating an
-  // NG object.
-  if (!disable_ng_for_type) {
-    // The last thing to check is whether we should force legacy layout. This
-    // happens when the NG feature is enabled for the object in question, but
-    // we're dealing with something that isn't implemented in NG yet (such as
-    // editing or multicol). We then need to force legacy layout for the entire
-    // subtree.
-    force_legacy = legacy == LegacyLayout::kForce;
-
-    if (!force_legacy)
-      return MakeGarbageCollected<NGType>(element);
-  }
-  BaseType* new_object = MakeGarbageCollected<LegacyType>(element);
-  if (force_legacy)
-    new_object->SetForceLegacyLayout();
-  return new_object;
+  return MakeGarbageCollected<NGType>(element);
 }
 
 }  // anonymous namespace
 
 LayoutBlockFlow* LayoutObjectFactory::CreateBlockFlow(
     Node& node,
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+    const ComputedStyle& style) {
   if (style.Display() == EDisplay::kListItem &&
       node.GetPseudoId() != kPseudoIdBackdrop) {
     // Create a LayoutBlockFlow with a ListItemOrdinal and maybe a ::marker.
     // ::backdrop is excluded since it's not tree-abiding, and ListItemOrdinal
     // needs to traverse the tree.
     return CreateObject<LayoutBlockFlow, LayoutNGListItem, LayoutListItem>(
-        node, legacy);
+        node);
   }
 
   // Create a plain LayoutBlockFlow
-  return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow>(node, legacy);
+  return CreateObject<LayoutBlockFlow, LayoutNGBlockFlow>(node);
 }
 
-LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
-                                                    const ComputedStyle& style,
-                                                    LegacyLayout legacy) {
+LayoutObject* LayoutObjectFactory::CreateListMarker(
+    Node& node,
+    const ComputedStyle& style) {
   const Node* parent = node.parentNode();
   const ComputedStyle* parent_style = parent->GetComputedStyle();
 
-  if (legacy == LegacyLayout::kForce) {
-    NOTREACHED();
-  }
   bool is_inside =
       parent_style->ListStylePosition() == EListStylePosition::kInside ||
       (IsA<HTMLLIElement>(parent) && !parent_style->IsInsideListElement());
   if (style.ContentBehavesAsNormal()) {
     if (is_inside) {
       return CreateObject<LayoutObject, LayoutNGInsideListMarker,
-                          LayoutListMarker>(node, legacy);
+                          LayoutListMarker>(node);
     }
     return CreateObject<LayoutObject, LayoutNGOutsideListMarker,
-                        LayoutListMarker>(node, legacy);
+                        LayoutListMarker>(node);
   }
   if (is_inside) {
     return CreateObject<LayoutObject, LayoutNGInsideListMarker,
-                        LayoutInsideListMarker>(node, legacy);
+                        LayoutInsideListMarker>(node);
   }
   return CreateObject<LayoutObject, LayoutNGOutsideListMarker,
-                      LayoutOutsideListMarker>(node, legacy);
+                      LayoutOutsideListMarker>(node);
 }
 
 }  // namespace blink

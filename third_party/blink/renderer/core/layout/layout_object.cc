@@ -330,8 +330,7 @@ ASSERT_SIZE(LayoutObject, SameSizeAsLayoutObject);
 bool LayoutObject::affects_parent_block_ = false;
 
 LayoutObject* LayoutObject::CreateObject(Element* element,
-                                         const ComputedStyle& style,
-                                         LegacyLayout legacy) {
+                                         const ComputedStyle& style) {
   DCHECK(IsAllowedToModifyLayoutTreeStructure(element->GetDocument()));
 
   // Minimal support for content properties replacing an entire element.
@@ -359,7 +358,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     image->SetStyleInternal(nullptr);
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
-    return LayoutObjectFactory::CreateListMarker(*element, style, legacy);
+    return LayoutObjectFactory::CreateListMarker(*element, style);
   }
 
   switch (style.Display()) {
@@ -372,7 +371,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kFlowRoot:
     case EDisplay::kInlineBlock:
     case EDisplay::kListItem:
-      return LayoutObjectFactory::CreateBlockFlow(*element, style, legacy);
+      return LayoutObjectFactory::CreateBlockFlow(*element, style);
     case EDisplay::kTable:
     case EDisplay::kInlineTable:
       return MakeGarbageCollected<LayoutNGTable>(element);
@@ -4948,29 +4947,6 @@ void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
 #if DCHECK_IS_ON()
   InvalidateVisualOverflow();
 #endif
-}
-
-bool LayoutObject::ForceLegacyLayoutForChildren() const {
-  NOT_DESTROYED();
-  if (bitfields_.ForceLegacyLayout())
-    return true;
-
-  // For container queries, we may end up marking an element for forcing legacy
-  // layout without re-attaching the container itself because we are performing
-  // layout for the container when this is detected. Descendants should still
-  // have legacy forced.
-  //
-  // We skip over anonymous ancestors to do the check because anonymous children
-  // may need to be kept in sync with its parent (For instance LayoutFlowThread
-  // for multicol), in which case the ForceLegacyLayout flag matches the
-  // size container LayoutObject flag and not the element flag.
-  const LayoutObject* non_anonymous =
-      IsAnonymous() ? NonAnonymousAncestor() : this;
-  if (!non_anonymous)
-    return false;
-  if (Element* element = DynamicTo<Element>(non_anonymous->GetNode()))
-    return element->ShouldForceLegacyLayout();
-  return false;
 }
 
 void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {

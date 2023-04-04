@@ -27,8 +27,7 @@ namespace blink {
 SVGTextElement::SVGTextElement(Document& doc)
     : SVGTextPositioningElement(svg_names::kTextTag, doc) {}
 
-LayoutObject* SVGTextElement::CreateLayoutObject(const ComputedStyle& style,
-                                                 LegacyLayout legacy) {
+LayoutObject* SVGTextElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutNGSVGText>(this);
 }
 

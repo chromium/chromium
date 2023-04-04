@@ -232,12 +232,6 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   if (owner->HasSubtreeChangeListenerRegistered())
     new_child->RegisterSubtreeChangeListenerOnDescendants(true);
 
-  if (UNLIKELY(!new_child->IsLayoutNGObject())) {
-    if (owner->ForceLegacyLayoutForChildren()) {
-      new_child->SetForceLegacyLayout();
-    }
-  }
-
   // Mark the ancestor chain for paint invalidation checking.
   owner->SetShouldCheckForPaintInvalidation();
 

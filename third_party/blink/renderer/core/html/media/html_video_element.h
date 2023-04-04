@@ -180,7 +180,7 @@ class CORE_EXPORT HTMLVideoElement final
   void ContextDestroyed() final;
 
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AttachLayoutTree(AttachContext&) override;
   void UpdatePosterImage();
   void ParseAttribute(const AttributeModificationParams&) override;

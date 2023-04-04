@@ -39,8 +39,7 @@ void SVGSymbolElement::SvgAttributeChanged(
     InvalidateInstances();
 }
 
-LayoutObject* SVGSymbolElement::CreateLayoutObject(const ComputedStyle&,
-                                                   LegacyLayout) {
+LayoutObject* SVGSymbolElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
 }
 

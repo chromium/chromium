@@ -15,7 +15,6 @@ class ComputedStyle;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutObject;
-enum class LegacyLayout;
 class Node;
 
 // Helper class for creation of certain LayoutObject-derived objects that may
@@ -30,12 +29,8 @@ class LayoutObjectFactory {
   // LayoutObject. Otherwise it will be assumed to be a Document node, in which
   // case the LayoutObject created will be anonymous. The |style| reference
   // passed will only be used to determine which object type to create.
-  static LayoutBlockFlow* CreateBlockFlow(Node&,
-                                          const ComputedStyle&,
-                                          LegacyLayout);
-  static LayoutObject* CreateListMarker(Node&,
-                                        const ComputedStyle&,
-                                        LegacyLayout);
+  static LayoutBlockFlow* CreateBlockFlow(Node&, const ComputedStyle&);
+  static LayoutObject* CreateListMarker(Node&, const ComputedStyle&);
 };
 
 }  // namespace blink

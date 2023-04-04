@@ -846,9 +846,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // function also doesn't handle the default association between a tag
   // and its renderer (e.g. <iframe> creates a LayoutIFrame even if the
   // initial 'display' value is inline).
-  static LayoutObject* CreateObject(Element*,
-                                    const ComputedStyle&,
-                                    LegacyLayout);
+  static LayoutObject* CreateObject(Element*, const ComputedStyle&);
 
   bool IsPseudoElement() const {
     NOT_DESTROYED();
@@ -1462,11 +1460,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.IsInLayoutNGInlineFormattingContext();
   }
-  bool ForceLegacyLayout() const {
-    NOT_DESTROYED();
-    return bitfields_.ForceLegacyLayout();
-  }
-  bool ForceLegacyLayoutForChildren() const;
   bool IsAtomicInlineLevel() const {
     NOT_DESTROYED();
     return bitfields_.IsAtomicInlineLevel();
@@ -2132,11 +2125,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   virtual void ClearFirstInlineFragmentItemIndex() { NOT_DESTROYED(); }
   virtual void SetFirstInlineFragmentItemIndex(wtf_size_t) { NOT_DESTROYED(); }
-  void SetForceLegacyLayout() {
-    NOT_DESTROYED();
-    DCHECK(!IsLayoutNGObject());
-    bitfields_.SetForceLegacyLayout(true);
-  }
 
   void SetHasBoxDecorationBackground(bool);
 
@@ -3965,7 +3953,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_box_(false),
           is_inline_(true),
           is_in_layout_ng_inline_formatting_context_(false),
-          force_legacy_layout_(false),
           is_atomic_inline_level_(false),
           horizontal_writing_mode_(true),
           has_layer_(false),
@@ -4139,10 +4126,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // legacy.
     ADD_BOOLEAN_BITFIELD(is_in_layout_ng_inline_formatting_context_,
                          IsInLayoutNGInlineFormattingContext);
-
-    // Set if we're to force legacy layout (i.e. disable LayoutNG) on this
-    // object, and all descendants.
-    ADD_BOOLEAN_BITFIELD(force_legacy_layout_, ForceLegacyLayout);
 
     // This boolean is set if the element is an atomic inline-level box.
     //

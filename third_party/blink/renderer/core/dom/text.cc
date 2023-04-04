@@ -328,8 +328,7 @@ static bool IsSVGText(Text* text) {
          !IsA<SVGForeignObjectElement>(*parent_or_shadow_host_node);
 }
 
-LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
-                                         LegacyLayout legacy) {
+LayoutText* Text::CreateTextLayoutObject() {
   if (IsSVGText(this))
     return MakeGarbageCollected<LayoutSVGInlineText>(this, data());
   return MakeGarbageCollected<LayoutNGText>(this, data());

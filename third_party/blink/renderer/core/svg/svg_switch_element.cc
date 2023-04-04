@@ -32,8 +32,7 @@ SVGSwitchElement::SVGSwitchElement(Document& document)
   UseCounter::Count(document, WebFeature::kSVGSwitchElement);
 }
 
-LayoutObject* SVGSwitchElement::CreateLayoutObject(const ComputedStyle&,
-                                                   LegacyLayout) {
+LayoutObject* SVGSwitchElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
 }
 

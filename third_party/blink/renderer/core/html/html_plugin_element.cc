@@ -347,13 +347,13 @@ void HTMLPlugInElement::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::DetachLayoutTree(performing_reattach);
 }
 
-LayoutObject* HTMLPlugInElement::CreateLayoutObject(const ComputedStyle& style,
-                                                    LegacyLayout legacy) {
+LayoutObject* HTMLPlugInElement::CreateLayoutObject(
+    const ComputedStyle& style) {
   // Fallback content breaks the DOM->layoutObject class relationship of this
   // class and all superclasses because createObject won't necessarily return
   // a LayoutEmbeddedObject or LayoutEmbeddedContent.
   if (UseFallbackContent())
-    return LayoutObject::CreateObject(this, style, legacy);
+    return LayoutObject::CreateObject(this, style);
 
   if (IsImageType()) {
     LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);

@@ -309,7 +309,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     child->Destroy();
 
   auto* const new_text = LayoutTextFragment::CreateAnonymous(
-      marker.GetDocument(), StringImpl::empty_, 0, 0, LegacyLayout::kAuto);
+      marker.GetDocument(), StringImpl::empty_, 0, 0);
   new_text->SetStyle(std::move(text_style));
   marker.AddChild(new_text);
   marker_text_type_ = kUnresolved;

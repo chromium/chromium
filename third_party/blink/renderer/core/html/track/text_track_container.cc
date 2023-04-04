@@ -104,9 +104,9 @@ void TextTrackContainer::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
-LayoutObject* TextTrackContainer::CreateLayoutObject(const ComputedStyle& style,
-                                                     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+LayoutObject* TextTrackContainer::CreateLayoutObject(
+    const ComputedStyle& style) {
+  return LayoutObjectFactory::CreateBlockFlow(*this, style);
 }
 
 void TextTrackContainer::ObserveSizeChanges(Element& element) {

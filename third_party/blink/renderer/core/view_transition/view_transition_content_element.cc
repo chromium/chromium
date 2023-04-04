@@ -38,8 +38,7 @@ void ViewTransitionContentElement::SetIntrinsicSize(
 }
 
 LayoutObject* ViewTransitionContentElement::CreateLayoutObject(
-    const ComputedStyle&,
-    LegacyLayout) {
+    const ComputedStyle&) {
   return MakeGarbageCollected<LayoutViewTransitionContent>(this);
 }
 

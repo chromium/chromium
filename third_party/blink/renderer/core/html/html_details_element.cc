@@ -77,9 +77,9 @@ void HTMLDetailsElement::DispatchPendingEvent(
     GetDocument().SetToggleDuringParsing(false);
 }
 
-LayoutObject* HTMLDetailsElement::CreateLayoutObject(const ComputedStyle& style,
-                                                     LegacyLayout legacy) {
-  return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+LayoutObject* HTMLDetailsElement::CreateLayoutObject(
+    const ComputedStyle& style) {
+  return LayoutObjectFactory::CreateBlockFlow(*this, style);
 }
 
 // Creates shadow DOM:

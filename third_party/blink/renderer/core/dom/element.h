@@ -594,7 +594,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void AttachLayoutTree(AttachContext&) override;
   void DetachLayoutTree(bool performing_reattach = false) override;
 
-  virtual LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout);
+  virtual LayoutObject* CreateLayoutObject(const ComputedStyle&);
   virtual bool LayoutObjectIsNeeded(const DisplayStyle&) const;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const;
 
@@ -970,20 +970,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // sent at all.
   virtual bool IsDisabledFormControl() const { return false; }
 
-  // Return true if we should force legacy layout on this element and all
-  // descendants. Note that even if this element returns true, it's not implied
-  // that all descendants will return the same. Once an element needs to force
-  // legacy layout, though, the layout engine knows that it will have to perform
-  // legacy layout on the entire subtree, unless this is overridden by
-  // ShouldForceNGLayout().
-  bool ShouldForceLegacyLayout() const {
-    if (!HasRareData())
-      return false;
-    return StyleShouldForceLegacyLayout() || ShouldForceLegacyLayoutForChild();
-  }
-
-  void ResetForceLegacyLayoutForPrinting();
-
   void SetCustomElementDefinition(CustomElementDefinition*);
   CustomElementDefinition* GetCustomElementDefinition() const;
   // https://dom.spec.whatwg.org/#concept-element-is-value
@@ -1302,12 +1288,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // are met.
   void HideNonce();
 
-  // Adjust the state of legacy layout forcing for this element (and its
-  // subtree). Input is the state inherited from the parent element. Output will
-  // be modified if required by this element.
-  void AdjustForceLegacyLayout(const ComputedStyle*,
-                               bool* should_force_legacy_layout);
-
   // Mark for style invalidation/recalc for :lang() selectors to pick up the
   // changes.
   void LangAttributeChanged();
@@ -1554,57 +1534,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachAttrNodeFromElementWithValue(Attr*, const AtomicString& value);
   void DetachAttrNodeAtIndex(Attr*, wtf_size_t index);
 
-  // Return whether the computed style of this element causes need for legacy
-  // layout.
-  bool StyleShouldForceLegacyLayout() const {
-    if (!HasRareData())
-      return false;
-    return StyleShouldForceLegacyLayoutInternal();
-  }
-  bool StyleShouldForceLegacyLayoutInternal() const;
-  void SetStyleShouldForceLegacyLayout(bool force) {
-    if (!force && !HasRareData())
-      return;
-    SetStyleShouldForceLegacyLayoutInternal(force);
-  }
   FRIEND_TEST_ALL_PREFIXES(LayoutNGTextCombineTest, LegacyQuote);
-  void SetStyleShouldForceLegacyLayoutInternal(bool);
-
-  // Return whether this element needs legacy layout because of a child.
-  bool ShouldForceLegacyLayoutForChild() const {
-    if (!HasRareData())
-      return false;
-    return ShouldForceLegacyLayoutForChildInternal();
-  }
-  bool ShouldForceLegacyLayoutForChildInternal() const;
-  void SetShouldForceLegacyLayoutForChild(bool force) {
-    if (!force && !HasRareData())
-      return;
-    SetShouldForceLegacyLayoutForChildInternal(force);
-  }
-  void SetShouldForceLegacyLayoutForChildInternal(bool);
-
-  // Update ForceLegacyLayout flags for this element, and for ancestors, if
-  // necessary. We cannot establish a ForceLegacyLayout subtree at an arbitrary
-  // element; it needs to be a block formatting context root.
-  // Returns true if we need to reattach this element or any ancestor element.
-  bool UpdateForceLegacyLayout(const ComputedStyle& new_style,
-                               const ComputedStyle* old_style);
-
-  // If this element requires legacy layout, and we can't tell for sure that it
-  // is going to establish a new formatting context, we need to force legacy
-  // layout on ancestors until we reach one that we're sure that will establish
-  // a new formatting context. LayoutNG and legacy layout cannot cooperate
-  // within a formatting context.
-  // Returns true if we need to reattach this element or any ancestor element.
-  bool ForceLegacyLayoutInFormattingContext(const ComputedStyle& new_style);
-
-  // If this element requires legacy layout, and we're inside a fragmentation
-  // context, we need to force legacy layout for the entire fragmentation
-  // context. LayoutNG block fragmentation and legacy block fragmentation cannot
-  // cooperate within a fragmentation context.
-  // Returns true if we need to reattach this element or any ancestor element.
-  bool ForceLegacyLayoutInFragmentationContext(const ComputedStyle& new_style);
 
   void SynchronizeContentAttributeAndElementReference(
       const QualifiedName& name);

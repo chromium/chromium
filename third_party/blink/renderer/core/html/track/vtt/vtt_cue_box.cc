@@ -149,19 +149,18 @@ void VTTCueBox::ApplyCSSProperties(
   snap_to_lines_position_ = display_parameters.snap_to_lines_position;
 }
 
-LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
-                                            LegacyLayout legacy) {
+LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style) {
   // If WebVTT Regions are used, the regular WebVTT layout algorithm is no
   // longer necessary, since cues having the region parameter set do not have
   // any positioning parameters. Also, in this case, the regions themselves
   // have positioning information.
   if (IsInRegion())
-    return HTMLDivElement::CreateLayoutObject(style, legacy);
+    return HTMLDivElement::CreateLayoutObject(style);
 
   // We create a standard block-flow container.
   // See the comment in vtt_cue_layout_algorithm.h about how we adjust
   // VTTCueBox positions.
-  return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+  return LayoutObjectFactory::CreateBlockFlow(*this, style);
 }
 
 Node::InsertionNotificationRequest VTTCueBox::InsertedInto(

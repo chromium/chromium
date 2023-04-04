@@ -455,8 +455,7 @@ void HTMLPortalElement::ParseAttribute(
   }
 }
 
-LayoutObject* HTMLPortalElement::CreateLayoutObject(const ComputedStyle& style,
-                                                    LegacyLayout) {
+LayoutObject* HTMLPortalElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutIFrame>(this);
 }
 

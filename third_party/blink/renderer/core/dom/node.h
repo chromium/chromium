@@ -136,17 +136,6 @@ enum class SlotChangeType {
 
 enum class CloneChildrenFlag { kSkip, kClone, kCloneWithShadows };
 
-// Whether or not to force creation of a legacy layout object (i.e. disallow
-// LayoutNG).
-enum class LegacyLayout {
-  // Allow LayoutNG, if nothing else is preventing it (runtime feature disabled,
-  // specific object type not yet implemented, Element says no, etc.)
-  kAuto,
-
-  // Force legacy layout object creation.
-  kForce
-};
-
 // LinkHighlight determines the largest enclosing node with hand cursor set.
 enum class LinkHighlightCandidate {
   // This node is with hand cursor set.
@@ -750,8 +739,6 @@ class CORE_EXPORT Node : public EventTarget {
     bool use_previous_in_flow = false;
     // True if the next_sibling member is up-to-date, even if it is nullptr.
     bool next_sibling_valid = false;
-    // True if we need to force legacy layout objects for the entire subtree.
-    bool force_legacy_layout = false;
 
     AttachContext() {}
   };

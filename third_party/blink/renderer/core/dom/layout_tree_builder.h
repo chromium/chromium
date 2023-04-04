@@ -108,16 +108,13 @@ class LayoutTreeBuilderForElement : public LayoutTreeBuilder<Element> {
  public:
   LayoutTreeBuilderForElement(Element&,
                               Node::AttachContext&,
-                              const ComputedStyle*,
-                              LegacyLayout legacy);
+                              const ComputedStyle*);
 
   void CreateLayoutObject();
 
  private:
   LayoutObject* ParentLayoutObject() const;
   LayoutObject* NextLayoutObject() const;
-
-  LegacyLayout legacy_;
 };
 
 class LayoutTreeBuilderForText : public LayoutTreeBuilder<Text> {

@@ -34,8 +34,7 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
                                             MutableCSSPropertyValueSet*) final;
   TokenContent ParseTokenContent();
   absl::optional<TokenContent> token_content_;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout legacy) final;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) final;
 };
 
 template <>

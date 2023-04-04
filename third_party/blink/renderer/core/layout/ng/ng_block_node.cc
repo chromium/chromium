@@ -1221,8 +1221,6 @@ NGBlockNode NGBlockNode::GetFieldsetContent() const {
 }
 
 bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {
-  if (box.ForceLegacyLayout())
-    return false;
   return box.IsLayoutNGObject() || box.IsLayoutReplaced();
 }
 

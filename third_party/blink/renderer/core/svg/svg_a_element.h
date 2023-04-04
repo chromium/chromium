@@ -44,7 +44,7 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;

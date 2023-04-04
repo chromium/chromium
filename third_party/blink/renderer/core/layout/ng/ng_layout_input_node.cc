@@ -111,13 +111,7 @@ bool NGLayoutInputNode::IsPaginatedRoot() const {
   if (!IsBlock())
     return false;
   const auto* view = DynamicTo<LayoutNGView>(box_.Get());
-  if (!view || !view->IsFragmentationContextRoot())
-    return false;
-  if (const LayoutObject* child = view->FirstChild()) {
-    if (child->ForceLegacyLayout())
-      return false;
-  }
-  return true;
+  return view && view->IsFragmentationContextRoot();
 }
 
 NGBlockNode NGLayoutInputNode::ListMarkerBlockNodeIfListItem() const {

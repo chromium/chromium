@@ -61,12 +61,11 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
   }
 }
 
-LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style,
-                                                LegacyLayout legacy) {
+LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style) {
   if (style.ContentBehavesAsNormal())
     return MakeGarbageCollected<LayoutBR>(*this);
 
-  return LayoutObject::CreateObject(this, style, legacy);
+  return LayoutObject::CreateObject(this, style);
 }
 
 }  // namespace blink

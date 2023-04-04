@@ -51,8 +51,7 @@ class HiddenInputType final : public InputType, private InputTypeView {
   const AtomicString& FormControlType() const override;
   bool ShouldSaveAndRestoreFormControlState() const override;
   bool SupportsValidation() const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout) const override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) const override;
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   bool LayoutObjectIsNeeded() override;
   ValueMode GetValueMode() const override;

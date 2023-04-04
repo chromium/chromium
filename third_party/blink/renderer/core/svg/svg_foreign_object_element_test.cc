@@ -29,8 +29,7 @@ TEST_F(SVGForeignObjectElementTest, NoLayoutObjectInNonRendered) {
   EXPECT_FALSE(foreign_object->GetLayoutObject());
 
   const ComputedStyle& style = GetDocument().GetStyleResolver().InitialStyle();
-  LayoutObject* layout_object =
-      foreign_object->CreateLayoutObject(style, LegacyLayout::kAuto);
+  LayoutObject* layout_object = foreign_object->CreateLayoutObject(style);
   EXPECT_FALSE(layout_object);
 }
 

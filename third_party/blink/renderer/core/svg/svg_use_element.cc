@@ -502,8 +502,7 @@ void SVGUseElement::DetachShadowTree() {
   shadow_root.RemoveChildren(kOmitSubtreeModifiedEvent);
 }
 
-LayoutObject* SVGUseElement::CreateLayoutObject(const ComputedStyle& style,
-                                                LegacyLayout) {
+LayoutObject* SVGUseElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
 }
 

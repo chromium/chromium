@@ -50,7 +50,7 @@ class HTMLDetailsElement final : public HTMLElement {
  private:
   void DispatchPendingEvent(const AttributeModificationReason);
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool IsInteractiveContent() const override;

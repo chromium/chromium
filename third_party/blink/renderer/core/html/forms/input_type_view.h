@@ -57,7 +57,6 @@ class HTMLFormElement;
 class HTMLInputElement;
 class KeyboardEvent;
 class LayoutObject;
-enum class LegacyLayout;
 class MouseEvent;
 class TextControlInnerEditorElement;
 
@@ -109,8 +108,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   void DispatchSimulatedClickIfActive(KeyboardEvent&) const;
 
   virtual void SubtreeHasChanged();
-  virtual LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                           LegacyLayout) const;
+  virtual LayoutObject* CreateLayoutObject(const ComputedStyle&) const;
   virtual void AdjustStyle(ComputedStyleBuilder&) {}
   virtual ControlPart AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();

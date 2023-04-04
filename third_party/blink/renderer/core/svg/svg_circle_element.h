@@ -52,7 +52,7 @@ class SVGCircleElement final : public SVGGeometryElement {
 
   bool SelfHasRelativeLengths() const override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   Member<SVGAnimatedLength> cx_;
   Member<SVGAnimatedLength> cy_;

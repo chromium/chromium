@@ -28,8 +28,7 @@ namespace blink {
 SVGDefsElement::SVGDefsElement(Document& document)
     : SVGGraphicsElement(svg_names::kDefsTag, document) {}
 
-LayoutObject* SVGDefsElement::CreateLayoutObject(const ComputedStyle&,
-                                                 LegacyLayout) {
+LayoutObject* SVGDefsElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
 }
 

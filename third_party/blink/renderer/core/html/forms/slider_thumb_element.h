@@ -62,7 +62,7 @@ class SliderThumbElement final : public HTMLDivElement {
   bool IsSliderThumbElement() const override { return true; }
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AdjustStyle(ComputedStyleBuilder&) final;
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
   bool IsDisabledFormControl() const override;
@@ -103,7 +103,7 @@ class SliderContainerElement final : public HTMLDivElement {
   void RemoveAllEventListeners() override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   const AtomicString& ShadowPseudoId() const override;
   Direction GetDirection(LayoutPoint&, LayoutPoint&);
   bool CanSlide();

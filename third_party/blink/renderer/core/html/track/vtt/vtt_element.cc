@@ -144,15 +144,14 @@ void VTTElement::Trace(Visitor* visitor) const {
   Element::Trace(visitor);
 }
 
-LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style,
-                                             LegacyLayout legacy) {
+LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style) {
   switch (web_vtt_node_type_) {
     case kVTTNodeTypeRuby:
       return MakeGarbageCollected<LayoutRubyAsInline>(this);
     case kVTTNodeTypeRubyText:
       return MakeGarbageCollected<LayoutNGRubyText>(this);
   }
-  return LayoutObject::CreateObject(this, style, legacy);
+  return LayoutObject::CreateObject(this, style);
 }
 
 }  // namespace blink

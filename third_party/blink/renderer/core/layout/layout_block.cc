@@ -1715,9 +1715,6 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
           .CreateAnonymousStyleBuilderWithDisplay(parent->StyleRef(),
                                                   new_display);
 
-  LegacyLayout legacy =
-      parent->ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
-
   parent->UpdateAnonymousChildStyle(nullptr, new_style_builder);
   scoped_refptr<const ComputedStyle> new_style = new_style_builder.TakeStyle();
 
@@ -1733,8 +1730,8 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);
-    layout_block = LayoutObjectFactory::CreateBlockFlow(parent->GetDocument(),
-                                                        *new_style, legacy);
+    layout_block =
+        LayoutObjectFactory::CreateBlockFlow(parent->GetDocument(), *new_style);
   }
   layout_block->SetDocumentForAnonymous(&parent->GetDocument());
   layout_block->SetStyle(std::move(new_style));

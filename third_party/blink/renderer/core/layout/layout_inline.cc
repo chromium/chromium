@@ -402,7 +402,6 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
   // |before_child| to the anonymous block. The anonymous block may need to be
   // split if |before_child| is not the first child.
   if (before_child && before_child->Parent() != this) {
-    DCHECK(!ForceLegacyLayout());
     DCHECK(before_child->Parent()->IsBlockInInline());
     DCHECK(IsA<LayoutBlockFlow>(before_child->Parent()));
     DCHECK_EQ(before_child->Parent()->Parent(), this);
@@ -417,7 +416,6 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 
 void LayoutInline::AddChildAsBlockInInline(LayoutObject* new_child,
                                            LayoutObject* before_child) {
-  DCHECK(!ForceLegacyLayout());
   DCHECK(!new_child->IsInline());
   LayoutBlockFlow* anonymous_box;
   if (!before_child) {
@@ -468,12 +466,8 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren()
   // for continuations.
   new_style_builder.SetDirection(containing_block->StyleRef().Direction());
 
-  LegacyLayout legacy = containing_block->ForceLegacyLayout()
-                            ? LegacyLayout::kForce
-                            : LegacyLayout::kAuto;
-
-  return LayoutBlockFlow::CreateAnonymous(
-      &GetDocument(), new_style_builder.TakeStyle(), legacy);
+  return LayoutBlockFlow::CreateAnonymous(&GetDocument(),
+                                          new_style_builder.TakeStyle());
 }
 
 LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
@@ -481,7 +475,6 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
   NOT_DESTROYED();
   DCHECK(box_to_split->IsBlockInInline());
   DCHECK(IsA<LayoutBlockFlow>(box_to_split));
-  DCHECK(!ForceLegacyLayout());
   return CreateAnonymousContainerForBlockChildren();
 }
 

@@ -44,12 +44,11 @@ HTMLProgressElement::HTMLProgressElement(Document& document)
 HTMLProgressElement::~HTMLProgressElement() = default;
 
 LayoutObject* HTMLProgressElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+    const ComputedStyle& style) {
   if (!style.HasEffectiveAppearance()) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kProgressElementWithNoneAppearance);
-    return LayoutObject::CreateObject(this, style, legacy);
+    return LayoutObject::CreateObject(this, style);
   }
   UseCounter::Count(GetDocument(),
                     WebFeature::kProgressElementWithProgressBarAppearance);

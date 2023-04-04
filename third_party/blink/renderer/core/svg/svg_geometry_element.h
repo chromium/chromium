@@ -74,7 +74,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
  private:
   bool IsSVGGeometryElement() const final { return true; }
   virtual float ComputePathLength() const;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   Member<SVGAnimatedNumber> path_length_;
 };

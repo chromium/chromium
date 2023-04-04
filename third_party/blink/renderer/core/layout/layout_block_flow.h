@@ -86,8 +86,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void Trace(Visitor*) const override;
 
   static LayoutBlockFlow* CreateAnonymous(Document*,
-                                          scoped_refptr<const ComputedStyle>,
-                                          LegacyLayout);
+                                          scoped_refptr<const ComputedStyle>);
 
   bool IsLayoutBlockFlow() const final {
     NOT_DESTROYED();

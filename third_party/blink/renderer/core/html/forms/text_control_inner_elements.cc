@@ -122,8 +122,7 @@ void TextControlInnerEditorElement::FocusChanged() {
 }
 
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
+    const ComputedStyle&) {
   return MakeGarbageCollected<LayoutNGTextControlInnerEditor>(this);
 }
 

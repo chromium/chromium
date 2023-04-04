@@ -30,8 +30,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   void SetUp() override {
     RenderingTest::SetUp();
     style_ = &GetDocument().GetStyleResolver().InitialStyle();
-    block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_,
-                                                   LegacyLayout::kAuto);
+    block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     items_ = MakeGarbageCollected<HeapVector<NGInlineItem>>();
     anonymous_objects_ =
         MakeGarbageCollected<HeapVector<Member<LayoutObject>>>();
@@ -74,15 +73,15 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   }
 
   void AppendAtomicInline(NGInlineItemsBuilder* builder) {
-    LayoutBlockFlow* layout_block_flow = LayoutBlockFlow::CreateAnonymous(
-        &GetDocument(), style_, LegacyLayout::kAuto);
+    LayoutBlockFlow* layout_block_flow =
+        LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendAtomicInline(layout_block_flow);
   }
 
   void AppendBlockInInline(NGInlineItemsBuilder* builder) {
-    LayoutBlockFlow* layout_block_flow = LayoutBlockFlow::CreateAnonymous(
-        &GetDocument(), style_, LegacyLayout::kAuto);
+    LayoutBlockFlow* layout_block_flow =
+        LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendBlockInInline(layout_block_flow);
   }

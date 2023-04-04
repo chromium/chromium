@@ -249,8 +249,7 @@ void SVGGeometryElement::GeometryAttributeChanged() {
   }
 }
 
-LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&,
-                                                     LegacyLayout) {
+LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&) {
   // By default, any subclass is expected to do path-based drawing.
   return MakeGarbageCollected<LayoutSVGPath>(this);
 }

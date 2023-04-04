@@ -148,7 +148,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void AttachLayoutTree(AttachContext& context) override;
   bool SupportsFocus() const override;
 

@@ -186,8 +186,7 @@ bool SVGImageElement::SelfHasRelativeLengths() const {
          height_->CurrentValue()->IsRelative();
 }
 
-LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&,
-                                                  LegacyLayout) {
+LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGImage>(this);
 }
 

@@ -3237,14 +3237,9 @@ void StyleEngine::ReattachContainerSubtree(Element& container) {
   // cannot re-attach the fieldset itself in this case since we are in the
   // process of laying it out. Instead we re-attach all children, which should
   // be sufficient.
-  //
-  // The other case where the query container is marked for re-attachment is
-  // when one of the descendants requires a legacy box tree and the container is
-  // the closest formatting context.
 
   DCHECK(container.NeedsReattachLayoutTree());
-  DCHECK(DynamicTo<HTMLFieldSetElement>(container) ||
-         container.ShouldForceLegacyLayout());
+  DCHECK(DynamicTo<HTMLFieldSetElement>(container));
 
   base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
   container.ReattachLayoutTreeChildren(base::PassKey<StyleEngine>());

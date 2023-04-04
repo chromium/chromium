@@ -62,7 +62,7 @@ class VTTCueBox final : public HTMLDivElement {
                               base::PassKey<VttCueLayoutAlgorithm>) const;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   InsertionNotificationRequest InsertedInto(
       ContainerNode& insertion_point) override;
   void RemovedFrom(ContainerNode& insertion_point) override;

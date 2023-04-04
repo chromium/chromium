@@ -52,8 +52,8 @@ void HTMLLegendElement::DetachLayoutTree(bool performing_reattach) {
   HTMLElement::DetachLayoutTree(performing_reattach);
 }
 
-LayoutObject* HTMLLegendElement::CreateLayoutObject(const ComputedStyle& style,
-                                                    LegacyLayout legacy) {
+LayoutObject* HTMLLegendElement::CreateLayoutObject(
+    const ComputedStyle& style) {
   // Count text-align property which does not mapped from 'align' content
   // attribute. See crbug.com/880822 and |HTMLElement::
   // CollectStyleForPresentationAttribute()|.
@@ -78,7 +78,7 @@ LayoutObject* HTMLLegendElement::CreateLayoutObject(const ComputedStyle& style,
   if (should_count)
     UseCounter::Count(GetDocument(), WebFeature::kTextAlignSpecifiedToLegend);
 
-  return HTMLElement::CreateLayoutObject(style, legacy);
+  return HTMLElement::CreateLayoutObject(style);
 }
 
 }  // namespace blink

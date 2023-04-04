@@ -34,9 +34,9 @@ HTMLSummaryElement::HTMLSummaryElement(Document& document)
     : HTMLElement(html_names::kSummaryTag, document) {
 }
 
-LayoutObject* HTMLSummaryElement::CreateLayoutObject(const ComputedStyle& style,
-                                                     LegacyLayout legacy) {
-  // See: crbug.com/603928 - We manually check for other dislay types, then
+LayoutObject* HTMLSummaryElement::CreateLayoutObject(
+    const ComputedStyle& style) {
+  // See: crbug.com/603928 - We manually check for other display types, then
   // fallback to a regular LayoutBlockFlow as "display: inline;" should behave
   // as an "inline-block".
   EDisplay display = style.Display();
@@ -44,8 +44,8 @@ LayoutObject* HTMLSummaryElement::CreateLayoutObject(const ComputedStyle& style,
       display == EDisplay::kGrid || display == EDisplay::kInlineGrid ||
       display == EDisplay::kLayoutCustom ||
       display == EDisplay::kInlineLayoutCustom)
-    return LayoutObject::CreateObject(this, style, legacy);
-  return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+    return LayoutObject::CreateObject(this, style);
+  return LayoutObjectFactory::CreateBlockFlow(*this, style);
 }
 
 HTMLDetailsElement* HTMLSummaryElement::DetailsElement() const {
