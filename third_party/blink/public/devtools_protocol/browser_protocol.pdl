@@ -1679,7 +1679,7 @@ experimental domain CSS
       # Parent stylesheet's origin.
       StyleSheetOrigin origin
       # Associated style declaration.
-      optional CSSStyle style
+      CSSStyle style
 
   # CSS position-fallback rule representation.
   type CSSPositionFallbackRule extends object

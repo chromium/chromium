@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
@@ -429,6 +430,9 @@ class InspectorCSSAgent::ModifyRuleAction final
       return style_sheet_->BuildObjectForStyle(style_rule->style());
     if (auto* keyframe_rule = DynamicTo<CSSKeyframeRule>(rule))
       return style_sheet_->BuildObjectForStyle(keyframe_rule->style());
+    if (auto* try_rule = DynamicTo<CSSTryRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(try_rule->style());
+    }
     return nullptr;
   }
 
