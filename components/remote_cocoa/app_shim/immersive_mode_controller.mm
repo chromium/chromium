@@ -98,6 +98,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 @interface ImmersiveModeTitlebarViewController
     : NSTitlebarAccessoryViewController {
   base::OnceClosure _view_will_appear_callback;
+  base::scoped_nsobject<NSView> _blank_separator_view;
 }
 @end
 
@@ -107,6 +108,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
     (base::OnceClosure)view_will_appear_callback {
   if ((self = [super init])) {
     _view_will_appear_callback = std::move(view_will_appear_callback);
+    _blank_separator_view.reset([[NSView alloc] init]);
   }
   return self;
 }
@@ -134,6 +136,13 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
     self.hidden = YES;
     self.hidden = NO;
   }
+}
+
+// This is a private API method that will be used on macOS 11+.
+// Remove a small 1px blur between the overlay view and tabbed overlay view by
+// returning a blank NSView.
+- (NSView*)separatorView {
+  return _blank_separator_view;
 }
 
 @end
