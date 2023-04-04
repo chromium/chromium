@@ -265,14 +265,14 @@ async function buildChromiumSymbols(options) {
   }
 
   await buildSymbolsArchive(
-    `${buildId}-buildkite`,
+    `${buildId}`,
     path.join("out", "Release"),
     libraries,
     pdbs
   );
 
   log(`ChromiumSymbols Done`);
-  return `${buildId}-buildkite`;
+  return `${buildId}`;
 }
 
 
@@ -357,7 +357,7 @@ function computeBuildId(
       ? runtimeDate
       : driverDate;
 
-  return `${currentPlatform()}-${runtimeName}-${date}-${runtimeRevision}-${driverRevision}`;
+  return `${currentPlatform()}-${runtimeName}-${date}-${runtimeRevision}-${driverRevision}-buildkite`;
 }
 
 async function buildSymbolsArchive(

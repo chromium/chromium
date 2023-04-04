@@ -22,6 +22,8 @@ syncRepo(path.join(chromium, "third_party", "boringssl", "src"), deps.boringssl)
 const dockerArgs = [
   "run",
   "-e",
+  "BUILDKITE",
+  "-e",
   "GOMA_SERVER_HOST=simpsonite.goma.engflow.com",
   "-e",
   "GOMACTL_USE_PROXY=false",
