@@ -10,10 +10,12 @@
 #include <limits>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
@@ -358,7 +360,9 @@ class DiscardableImageGenerator {
 
 }  // namespace
 
-DiscardableImageMap::DiscardableImageMap() = default;
+DiscardableImageMap::DiscardableImageMap() {
+  DETACH_FROM_SEQUENCE(images_rtree_sequence_checker_);
+}
 DiscardableImageMap::~DiscardableImageMap() = default;
 
 void DiscardableImageMap::Generate(const PaintOpBuffer& paint_op_buffer,
@@ -372,18 +376,15 @@ void DiscardableImageMap::Generate(const PaintOpBuffer& paint_op_buffer,
   DiscardableImageGenerator generator(bounds.right(), bounds.bottom(),
                                       paint_op_buffer);
   image_id_to_rects_ = generator.TakeImageIdToRectsMap();
+  images_ = generator.TakeImages();
   animated_images_metadata_ = generator.TakeAnimatedImagesMetadata();
   paint_worklet_inputs_ = generator.TakePaintWorkletInputs();
   decoding_mode_map_ = generator.TakeDecodingModeMap();
   contains_hbd_images_ = generator.contains_hbd_images();
   content_color_usage_ = generator.content_color_usage();
-  auto images = generator.TakeImages();
-  images_rtree_.Build(
-      images,
-      [](const std::vector<std::pair<DrawImage, gfx::Rect>>& items,
-         size_t index) { return items[index].second; },
-      [](const std::vector<std::pair<DrawImage, gfx::Rect>>& items,
-         size_t index) { return items[index].first; });
+  DCHECK_CALLED_ON_VALID_SEQUENCE(images_rtree_sequence_checker_);
+  CHECK(!images_rtree_);
+  DETACH_FROM_SEQUENCE(images_rtree_sequence_checker_);
 }
 
 base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
@@ -394,7 +395,18 @@ DiscardableImageMap::TakeDecodingModeMap() {
 void DiscardableImageMap::GetDiscardableImagesInRect(
     const gfx::Rect& rect,
     std::vector<const DrawImage*>* images) const {
-  images_rtree_.SearchRefs(rect, images);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(images_rtree_sequence_checker_);
+  if (!images_rtree_) {
+    images_rtree_ = std::make_unique<RTree<const DrawImage*>>();
+
+    images_rtree_->Build(
+        images_,
+        [](const std::vector<std::pair<DrawImage, gfx::Rect>>& items,
+           size_t index) { return items[index].second; },
+        [](const std::vector<std::pair<DrawImage, gfx::Rect>>& items,
+           size_t index) { return &items[index].first; });
+  }
+  images_rtree_->Search(rect, images);
 }
 
 const DiscardableImageMap::Rects& DiscardableImageMap::GetRectsForImage(
@@ -407,7 +419,10 @@ const DiscardableImageMap::Rects& DiscardableImageMap::GetRectsForImage(
 void DiscardableImageMap::Reset() {
   image_id_to_rects_.clear();
   image_id_to_rects_.shrink_to_fit();
-  images_rtree_.Reset();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(images_rtree_sequence_checker_);
+  images_rtree_.reset();
+  images_.clear();
+  DETACH_FROM_SEQUENCE(images_rtree_sequence_checker_);
 }
 
 DiscardableImageMap::AnimatedImageMetadata::AnimatedImageMetadata(
