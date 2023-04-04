@@ -6604,6 +6604,10 @@ crbug.com/1399780 external/wpt/content-security-policy/embedded-enforcement/subs
 # TODO(crbug.com/1403877): Deflake this test.
 virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failure Pass ]
 
+crbug.com/1423234 virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators.sub.https.html?cross-site-1 [ Failure ]
+crbug.com/1423234 virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators.sub.https.html?cross-site-2 [ Failure ]
+crbug.com/1423234 virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators.sub.https.html?same-site [ Failure ]
+
 # TODO(crbug.com/1419063): Deflake.
 http/tests/media/media-load-nonmedia-crossorigin.html [ Failure Pass ]
 
