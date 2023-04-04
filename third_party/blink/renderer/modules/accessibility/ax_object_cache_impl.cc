@@ -2203,8 +2203,9 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
          "serialization, because the ancestor may have already been "
          "visited. Reaching this line indicates that AXObjectCacheImpl did "
          "not handle a signal and call ChildrenChanged() earlier."
-      << "\nChild: " << obj->ToString(true)
-      << "\nParent: " << obj->CachedParentObject()->ToString(true)
+      << "\nChild: " << obj->ToString(true) << "\nParent: "
+      << (obj->CachedParentObject() ? obj->CachedParentObject()->ToString(true)
+                                    : "")
       << "\nAncestor: " << ax_ancestor->ToString(true);
 }
 
