@@ -133,9 +133,7 @@ void DevToolsAgentHost::StartRemoteDebuggingServer(
     const base::FilePath& debug_frontend_dir) {
   DevToolsManagerDelegate* delegate =
       DevToolsManager::GetInstance()->delegate();
-  if (!delegate) {
-    return;
-  }
+  CHECK(delegate);
   SetDevToolsHttpHandler(std::make_unique<DevToolsHttpHandler>(
       delegate, std::move(server_socket_factory), active_port_output_directory,
       debug_frontend_dir));
