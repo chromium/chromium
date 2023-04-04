@@ -25,34 +25,6 @@ namespace gpu {
 
 namespace {
 
-bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
-                     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "GetBuffer failed with error " << std::hex << hr;
-    return false;
-  }
-  DCHECK(d3d11_texture);
-
-  Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target;
-  hr = d3d11_device->CreateRenderTargetView(d3d11_texture.Get(), nullptr,
-                                            &render_target);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "CreateRenderTargetView failed with error " << std::hex << hr;
-    return false;
-  }
-  DCHECK(render_target);
-
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
-  d3d11_device->GetImmediateContext(&d3d11_device_context);
-  DCHECK(d3d11_device_context);
-
-  float color_rgba[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-  d3d11_device_context->ClearRenderTargetView(render_target.Get(), color_rgba);
-  return true;
-}
-
 // Formats supported by CreateSharedImage() with no GpuMemoryBufferHandle.
 DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
@@ -220,6 +192,37 @@ bool D3DImageBackingFactory::IsSwapChainSupported() {
          gl::DXGISwapChainTearingSupported();
 }
 
+// static
+bool D3DImageBackingFactory::ClearBackBufferToOpaque(
+    Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "GetBuffer failed: " << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  DCHECK(d3d11_texture);
+
+  Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target;
+  hr = d3d11_device->CreateRenderTargetView(d3d11_texture.Get(), nullptr,
+                                            &render_target);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "CreateRenderTargetView failed: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  DCHECK(render_target);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
+  d3d11_device->GetImmediateContext(&d3d11_device_context);
+  DCHECK(d3d11_device_context);
+
+  d3d11_device_context->ClearRenderTargetView(render_target.Get(),
+                                              SkColors::kBlack.vec());
+  return true;
+}
+
 D3DImageBackingFactory::SwapChainBackings
 D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                         const Mailbox& back_buffer_mailbox,
@@ -296,8 +299,9 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
 
   // Explicitly clear front and back buffers to ensure that there are no
   // uninitialized pixels.
-  if (!ClearBackBuffer(swap_chain, d3d11_device_))
+  if (!ClearBackBufferToOpaque(swap_chain, d3d11_device_)) {
     return {nullptr, nullptr};
+  }
 
   DXGI_PRESENT_PARAMETERS params = {};
   params.DirtyRectsCount = 0;
@@ -308,8 +312,9 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
 
-  if (!ClearBackBuffer(swap_chain, d3d11_device_))
+  if (!ClearBackBufferToOpaque(swap_chain, d3d11_device_)) {
     return {nullptr, nullptr};
+  }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
   hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_texture));
