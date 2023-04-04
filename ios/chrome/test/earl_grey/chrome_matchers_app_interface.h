@@ -560,6 +560,10 @@
 // carousel.
 + (id<GREYMatcher>)downloadsDestinationButton;
 
+// Returns matcher for the What's New destination button in the overflow menu
+// carousel.
++ (id<GREYMatcher>)whatsNewDestinationButton;
+
 #pragma mark - Overflow Menu Actions
 
 // Returns matcher for the settings action button in the overflow menu

@@ -690,6 +690,9 @@ id<GREYMatcher> SiteInfoDestinationButton();
 // Returns a matcher for the settings destination button in the overflow menu.
 id<GREYMatcher> SettingsDestinationButton();
 
+// Returns a matcher for the What's New destination button in the overflow menu.
+id<GREYMatcher> WhatsNewDestinationButton();
+
 #pragma mark - Overflow Menu Actions
 
 // Returns a matcher for the settings action button in the overflow menu.

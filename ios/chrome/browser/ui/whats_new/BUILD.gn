@@ -67,6 +67,7 @@ source_set("util") {
     "whats_new_util.mm",
   ]
   deps = [
+    ":constants",
     ":feature_flags",
     "//base",
     "//ios/chrome/browser/application_context",
@@ -75,4 +76,14 @@ source_set("util") {
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/shared/public/features",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
 }

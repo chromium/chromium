@@ -1114,6 +1114,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kToolsMenuSiteInformation);
 }
 
++ (id<GREYMatcher>)whatsNewDestinationButton {
+  return grey_accessibilityID(kToolsMenuWhatsNewId);
+}
+
 #pragma mark - Overflow Menu Actions
 
 + (id<GREYMatcher>)settingsActionButton {

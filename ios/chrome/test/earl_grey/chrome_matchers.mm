@@ -719,6 +719,10 @@ id<GREYMatcher> SettingsDestinationButton() {
   return [ChromeMatchersAppInterface settingsDestinationButton];
 }
 
+id<GREYMatcher> WhatsNewDestinationButton() {
+  return [ChromeMatchersAppInterface whatsNewDestinationButton];
+}
+
 #pragma mark - Overflow Menu Actions
 
 id<GREYMatcher> SettingsActionButton() {

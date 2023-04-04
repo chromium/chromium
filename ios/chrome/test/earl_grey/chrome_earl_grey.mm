@@ -1355,8 +1355,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 #pragma mark - Default Utilities (EG2)
 
 - (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName {
-  return [ChromeEarlGreyAppInterface setUserDefaultObject:value
-                                                   forKey:defaultName];
+  [ChromeEarlGreyAppInterface setUserDefaultObject:value forKey:defaultName];
+}
+
+- (void)removeUserDefaultObjectForKey:(NSString*)key {
+  [ChromeEarlGreyAppInterface removeUserDefaultObjectForKey:key];
 }
 
 #pragma mark - Pref Utilities (EG2)
