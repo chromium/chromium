@@ -140,10 +140,6 @@ class BASE_EXPORT TraceEvent {
                : nullptr;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  void SendToATrace();
-#endif
-
  private:
   void InitArgs(TraceArguments* args);
 

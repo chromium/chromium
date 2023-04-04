@@ -2423,7 +2423,6 @@ component("base") {
         "trace_event/cpufreq_monitor_android.h",
         "trace_event/java_heap_dump_provider_android.cc",
         "trace_event/java_heap_dump_provider_android.h",
-        "trace_event/trace_event_android.cc",
       ]
     }
 
@@ -4016,7 +4015,6 @@ test("base_unittests") {
       sources += [
         "trace_event/cpufreq_monitor_android_unittest.cc",
         "trace_event/java_heap_dump_provider_android_unittest.cc",
-        "trace_event/trace_event_android_unittest.cc",
       ]
     }
 

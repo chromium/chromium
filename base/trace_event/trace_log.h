@@ -134,14 +134,6 @@ class BASE_EXPORT TraceLog :
   // implement the TRACE_EVENT_IS_NEW_TRACE() primitive.
   int GetNumTracesRecorded();
 
-#if BUILDFLAG(IS_ANDROID)
-  void StartATrace(const std::string& category_filter);
-  void StopATrace();
-  void AddClockSyncMetadataEvent();
-  void SetupATraceStartupTrace(const std::string& category_filter);
-  absl::optional<TraceConfig> TakeATraceStartupConfig();
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Enabled state listeners give a callback when tracing is enabled or
   // disabled. This can be used to tie into other library's tracing systems
   // on-demand.

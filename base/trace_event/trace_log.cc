@@ -1781,16 +1781,11 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
                          bind_id, args, flags);
     }
 
-#if BUILDFLAG(IS_ANDROID)
-      trace_event->SendToATrace();
-#endif
-
-      if (trace_options() & kInternalEchoToConsole) {
-        console_message = EventToConsoleMessage(
-            phase == TRACE_EVENT_PHASE_COMPLETE ? TRACE_EVENT_PHASE_BEGIN
-                                                : phase,
-            timestamp, trace_event);
-      }
+    if (trace_options() & kInternalEchoToConsole) {
+      console_message = EventToConsoleMessage(
+          phase == TRACE_EVENT_PHASE_COMPLETE ? TRACE_EVENT_PHASE_BEGIN : phase,
+          timestamp, trace_event);
+    }
   }
 
   if (!console_message.empty())
@@ -1925,9 +1920,6 @@ void TraceLog::UpdateTraceEventDurationExplicit(
       DCHECK(trace_event->phase() == TRACE_EVENT_PHASE_COMPLETE);
 
       trace_event->UpdateDuration(now, thread_now);
-#if BUILDFLAG(IS_ANDROID)
-      trace_event->SendToATrace();
-#endif
     }
 
     if (trace_options() & kInternalEchoToConsole) {

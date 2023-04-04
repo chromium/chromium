@@ -92,10 +92,6 @@ TraceStartupConfig::TraceStartupConfig() {
     DCHECK(!IsTracingStartupForDuration());
     DCHECK_EQ(SessionOwner::kBackgroundTracing, session_owner_);
     CHECK(GetResultFile().empty());
-  } else if (EnableFromATrace()) {
-    DCHECK(IsEnabled());
-    DCHECK_EQ(SessionOwner::kSystemTracing, session_owner_);
-    CHECK(GetResultFile().empty());
   }
 }
 
@@ -221,24 +217,6 @@ bool TraceStartupConfig::EnableFromCommandLine() {
 
   is_enabled_ = true;
   return true;
-}
-
-bool TraceStartupConfig::EnableFromATrace() {
-#if BUILDFLAG(IS_ANDROID)
-  auto atrace_config =
-      base::trace_event::TraceLog::GetInstance()->TakeATraceStartupConfig();
-  if (!atrace_config)
-    return false;
-  trace_config_ = *atrace_config;
-  is_enabled_ = true;
-  // We only support ATrace-initiated startup tracing together with the system
-  // service, because DevTools and background tracing generally use Chrome
-  // command line flags to control startup tracing instead of ATrace.
-  session_owner_ = SessionOwner::kSystemTracing;
-  return true;
-#else   // BUILDFLAG(IS_ANDROID)
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool TraceStartupConfig::EnableFromConfigFile() {

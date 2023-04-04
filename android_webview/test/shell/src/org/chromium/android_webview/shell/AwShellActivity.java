@@ -84,8 +84,7 @@ public class AwShellActivity extends Activity {
         if (CommandLine.getInstance().hasSwitch(AwShellSwitches.ENABLE_ATRACE)) {
             Log.e(TAG, "To trace the test shell, run \"atrace webview\"");
         }
-        TraceEvent.maybeEnableEarlyTracing(
-                TraceEvent.ATRACE_TAG_WEBVIEW, /*readCommandLine=*/false);
+        TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/false);
 
         setContentView(R.layout.testshell_activity);
 

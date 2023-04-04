@@ -25,6 +25,7 @@ import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
 import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
+import org.chromium.services.tracing.TracingServiceFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 
 /**
@@ -403,6 +404,9 @@ public final class ProductionSupportedFlagList {
                     "Enables the new base-url inheritance behavior for about:blank and "
                             + "about:srcdoc pages loaded in a webview."),
             Flag.baseFeature("MojoIpcz"),
+            Flag.baseFeature(TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
+                    "When enabled, WebView exports trace events to the Android Perfetto service."
+                            + " This works only for Android Q+."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

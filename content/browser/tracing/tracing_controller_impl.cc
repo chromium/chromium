@@ -458,10 +458,6 @@ bool TracingControllerImpl::StopTracing(
     return false;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_ANDROID)
-  base::trace_event::TraceLog::GetInstance()->AddClockSyncMetadataEvent();
-#endif
-
   // Setting the argument filter is no longer supported just in the TraceConfig;
   // clients of the TracingController that need filtering need to pass that
   // option to StopTracing directly as an argument. This is due to Perfetto-
