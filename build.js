@@ -80,18 +80,21 @@ let driverString = "";
 for (let i = 0; i < driverContents.length; i++) {
   driverString += `\\${driverContents[i].toString(8)}`;
 }
+
+const buildkiteSuffix = process.env["BUILDKITE"] ? "-buildkite" : "";
+const buildId = `${computeBuildId(driverDate, driverRevision)}${buildkiteSuffix}`;
+
 fs.writeFileSync(
   `${__dirname}/base/record_replay_driver.cc`,
   `
 namespace recordreplay {
   char gRecordReplayDriver[] = "${driverString}";
   int gRecordReplayDriverSize = ${driverContents.length};
-  char gBuildId[] = "${computeBuildId(driverDate, driverRevision)}";
+  char gBuildId[] = "${buildId}";
 }
 `
 );
 
-console.log(`Preparing...`);
 const useGoma = !process.env.NO_GOMA;
 const goma_ctl = currentPlatform() == "windows" ? "goma_ctl.bat" : "goma_ctl";
 if (useGoma) {
