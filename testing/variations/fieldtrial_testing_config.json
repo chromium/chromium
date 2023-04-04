@@ -6225,6 +6225,21 @@
             ]
         }
     ],
+    "IOSBrowserEditMenuMetrics": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSBrowserEditMenuMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCredentialProviderExtensionPromo": [
         {
             "platforms": [
