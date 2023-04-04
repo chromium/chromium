@@ -111,6 +111,7 @@ class RecoveryComponentActionHandler : public update_client::ActionHandler {
 
   virtual base::CommandLine MakeCommandLine(
       const base::FilePath& unpack_path) const = 0;
+  virtual void PrepareFiles(const base::FilePath& unpack_path) const = 0;
   virtual void Elevate(Callback callback) = 0;
 
   void Unpack();
