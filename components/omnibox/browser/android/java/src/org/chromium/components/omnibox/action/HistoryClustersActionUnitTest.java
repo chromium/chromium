@@ -6,7 +6,6 @@ package org.chromium.components.omnibox.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
-import org.chromium.components.browser_ui.styles.R;
 
 /**
  * Tests for {@link HistoryClustersAction}.
@@ -23,10 +21,9 @@ import org.chromium.components.browser_ui.styles.R;
 @Config(manifest = Config.NONE)
 public class HistoryClustersActionUnitTest {
     @Test
-    public void getIcon_returnsExpectedIcon() {
+    public void creation_usesExpectedIcon() {
         var action = new HistoryClustersAction("hint", "query");
-        assertEquals(R.drawable.ic_journeys, action.getIcon().iconRes);
-        assertTrue(action.getIcon().tintWithTextColor);
+        assertEquals(HistoryClustersAction.JOURNEYS_ICON, action.icon);
     }
 
     @Test
@@ -59,12 +56,7 @@ public class HistoryClustersActionUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> HistoryClustersAction.from(
-                                new OmniboxAction(OmniboxActionType.HISTORY_CLUSTERS, "") {
-                                    @Override
-                                    public ChipIcon getIcon() {
-                                        return null;
-                                    }
-                                }));
+                                new OmniboxAction(OmniboxActionType.HISTORY_CLUSTERS, "", null)));
     }
 
     @Test

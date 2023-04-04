@@ -473,7 +473,11 @@ if (is_android) {
       "android/java/res/drawable-xxxhdpi/omnibox_https_valid_arrow.png",
       "android/java/res/drawable-xxxhdpi/omnibox_info.png",
       "android/java/res/drawable-xxxhdpi/omnibox_not_secure_warning.png",
+      "android/java/res/drawable/action_call.xml",
+      "android/java/res/drawable/action_directions.xml",
+      "android/java/res/drawable/action_web.xml",
       "android/java/res/values/colors.xml",
+      "android/java/res/values/drawables.xml",
     ]
     deps = [
       "//components/browser_ui/strings/android:browser_ui_strings_grd",
@@ -532,7 +536,6 @@ if (is_android) {
       ":junit_test_support",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
-      "//third_party/android_deps:com_google_guava_guava_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/junit:junit",
       "//url:gurl_junit_shadows",

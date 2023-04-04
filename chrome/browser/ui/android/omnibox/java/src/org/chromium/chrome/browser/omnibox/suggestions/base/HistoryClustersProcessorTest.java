@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.ShadowGURL;
@@ -102,7 +102,7 @@ public class HistoryClustersProcessorTest {
                 propertyModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
         SuggestionDrawableState sds = propertyModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(sds);
-        assertEquals(R.drawable.ic_journeys, sds.resourceId);
+        assertEquals(R.drawable.action_journeys, sds.resourceId);
 
         mProcessor.onUrlFocusChange(false);
         watcher.assertExpected();

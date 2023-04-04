@@ -5,7 +5,7 @@
 package org.chromium.components.omnibox.action;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
@@ -16,8 +16,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
-import org.chromium.components.browser_ui.styles.R;
 import org.chromium.components.omnibox.EntityInfoProto;
+
+import java.util.List;
 
 /**
  * Tests for {@link OmniboxActionInSuggest}.
@@ -25,14 +26,37 @@ import org.chromium.components.omnibox.EntityInfoProto;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OmniboxActionInSuggestUnitTest {
+    private static final List<Integer> sKnownActionTypes =
+            List.of(EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
+                    EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE,
+                    EntityInfoProto.ActionInfo.ActionType.WEBSITE_VALUE);
     private static final EntityInfoProto.ActionInfo EMPTY_INFO =
             EntityInfoProto.ActionInfo.getDefaultInstance();
 
     @Test
-    public void getIcon_returnsValidIcon() {
-        var action = new OmniboxActionInSuggest("hint", EMPTY_INFO);
-        assertEquals(R.drawable.fre_product_logo, action.getIcon().iconRes);
-        assertFalse(action.getIcon().tintWithTextColor);
+    public void creation_usesCustomIconForKnownActionTypes() {
+        for (var kesemActionType : sKnownActionTypes) {
+            var proto = EntityInfoProto.ActionInfo.newBuilder()
+                                .setActionType(EntityInfoProto.ActionInfo.ActionType.forNumber(
+                                        kesemActionType))
+                                .build();
+
+            var action = new OmniboxActionInSuggest("hint", proto);
+            assertNotEquals(OmniboxAction.DEFAULT_ICON, action.icon);
+        }
+    }
+
+    @Test
+    public void creation_usesFallbackIconForUnknownActionTypes() {
+        for (var kesemActionType : EntityInfoProto.ActionInfo.ActionType.values()) {
+            if (sKnownActionTypes.contains(kesemActionType.getNumber())) continue;
+
+            var proto =
+                    EntityInfoProto.ActionInfo.newBuilder().setActionType(kesemActionType).build();
+
+            var action = new OmniboxActionInSuggest("hint", proto);
+            assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
+        }
     }
 
     @Test
@@ -60,11 +84,6 @@ public class OmniboxActionInSuggestUnitTest {
     }
 
     @Test
-    public void creation_failsWithNoActionInfo() {
-        assertThrows(AssertionError.class, () -> new OmniboxActionInSuggest("hint", null));
-    }
-
-    @Test
     public void safeCasting_assertsWithNull() {
         assertThrows(AssertionError.class, () -> OmniboxActionInSuggest.from(null));
     }
@@ -73,13 +92,8 @@ public class OmniboxActionInSuggestUnitTest {
     public void safeCasting_assertsWithWrongClassType() {
         assertThrows(AssertionError.class,
                 ()
-                        -> OmniboxActionInSuggest.from(
-                                new OmniboxAction(OmniboxActionType.ACTION_IN_SUGGEST, "hint") {
-                                    @Override
-                                    public ChipIcon getIcon() {
-                                        return null;
-                                    }
-                                }));
+                        -> OmniboxActionInSuggest.from(new OmniboxAction(
+                                OmniboxActionType.ACTION_IN_SUGGEST, "hint", null)));
     }
 
     @Test

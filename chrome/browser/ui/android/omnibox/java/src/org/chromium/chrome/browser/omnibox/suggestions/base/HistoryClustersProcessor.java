@@ -84,7 +84,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
                 () -> onJourneysSuggestionClicked(pedal, position));
         SuggestionDrawableState sds =
-                SuggestionDrawableState.Builder.forDrawableRes(mContext, pedal.getIcon().iconRes)
+                SuggestionDrawableState.Builder.forDrawableRes(mContext, pedal.icon.iconRes)
                         .setAllowTint(true)
                         .build();
         model.set(BaseSuggestionViewProperties.ICON, sds);

@@ -77,7 +77,6 @@ public class ActionChipsProcessor {
         modelList.add(new ListItem(ActionChipsProperties.ViewType.HEADER, new PropertyModel()));
 
         for (OmniboxAction chip : actionChipList) {
-            final var chipIcon = chip.getIcon();
             final var chipModel =
                     new PropertyModel.Builder(ChipProperties.ALL_KEYS)
                             .with(ChipProperties.TEXT, chip.hint)
@@ -86,8 +85,8 @@ public class ActionChipsProcessor {
                                             R.string.accessibility_omnibox_pedal, chip.hint))
                             .with(ChipProperties.ENABLED, true)
                             .with(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position))
-                            .with(ChipProperties.ICON, chipIcon.iconRes)
-                            .with(ChipProperties.APPLY_ICON_TINT, chipIcon.tintWithTextColor)
+                            .with(ChipProperties.ICON, chip.icon.iconRes)
+                            .with(ChipProperties.APPLY_ICON_TINT, chip.icon.tintWithTextColor)
                             .build();
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
