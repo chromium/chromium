@@ -144,8 +144,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) final {
-    // For anonymous iframe:
-    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
+    // For https_server()
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -2260,6 +2259,23 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kDanglingMarkupInTarget, 2);
   CheckCounter(WebFeature::kDanglingMarkupInTargetNotEndsWithGT, 2);
   CheckCounter(WebFeature::kDanglingMarkupInTargetNotEndsWithNewLineOrGT, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       DocumentOpenAliasedOriginDocumentDomain) {
+  GURL url = https_server().GetURL("sub.a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = location.href;
+    iframe.onload = () => {
+      iframe.contentDocument.write("<div></div>");
+      document.domain = "a.test";
+    };
+    document.body.appendChild(iframe);
+  )"));
+
+  CheckCounter(WebFeature::kDocumentOpenAliasedOriginDocumentDomain, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

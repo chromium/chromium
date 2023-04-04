@@ -3327,11 +3327,16 @@ void Document::open(LocalDOMWindow* entered_window,
       Loader()->DidOpenDocumentInputStream(new_url);
 
     if (dom_window_ != entered_window) {
+      // 2023-03-28: Page use is 0.1%. Too much for a removal.
+      // https://chromestatus.com/metrics/feature/timeline/popularity/4374
       CountUse(WebFeature::kDocumentOpenDifferentWindow);
 
       if ((dom_window_->GetSecurityContext().GetSandboxFlags() |
            entered_window->GetSandboxFlags()) !=
           dom_window_->GetSecurityContext().GetSandboxFlags()) {
+        // 2023-03-28. Page use is 0.000005%. Most of the days, it is not even
+        //             recorded. Ready for removal!
+        // https://chromestatus.com/metrics/feature/timeline/popularity/4375
         CountUse(WebFeature::kDocumentOpenMutateSandbox);
       }
 
@@ -3365,6 +3370,11 @@ void Document::open(LocalDOMWindow* entered_window,
 
         dom_window_->GetSecurityContext().SetSecurityOrigin(
             entered_window->GetMutableSecurityOrigin());
+
+        // The SecurityOrigin is now shared in between two different window. It
+        // means mutating one can have side effect on the other.
+        entered_window->GetMutableSecurityOrigin()
+            ->set_aliased_by_document_open();
       }
 
       // Question: Should we remove the inheritance of the CookieURL via
@@ -6002,7 +6012,13 @@ void Document::setDomain(const String& raw_domain,
         GetFrame()->IsCrossOriginToNearestMainFrame();
     bool was_cross_origin_to_parent_frame =
         GetFrame()->IsCrossOriginToParentOrOuterDocument();
-    dom_window_->GetMutableSecurityOrigin()->SetDomainFromDOM(new_domain);
+    SecurityOrigin* security_origin = dom_window_->GetMutableSecurityOrigin();
+    security_origin->SetDomainFromDOM(new_domain);
+    if (security_origin->aliased_by_document_open()) {
+      UseCounter::Count(*this,
+                        WebFeature::kDocumentOpenAliasedOriginDocumentDomain);
+    }
+
     bool is_cross_origin_to_nearest_main_frame =
         GetFrame()->IsCrossOriginToNearestMainFrame();
     if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler()) {

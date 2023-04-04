@@ -3873,6 +3873,7 @@ enum WebFeature {
   kPrivateNetworkAccessPreflightWarning = 4532,
   kCSSGetComputedAnimationDurationZero = 4533,
   kCSSGetComputedWebkitFontSmoothingAnimationDurationZero = 4534,
+  kDocumentOpenAliasedOriginDocumentDomain = 4535,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

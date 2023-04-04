@@ -42002,6 +42002,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4533" label="CSSGetComputedAnimationDurationZero"/>
   <int value="4534"
       label="CSSGetComputedWebkitFontSmoothingAnimationDurationZero"/>
+  <int value="4535" label="DocumentOpenAliasedOriginDocumentDomain"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
