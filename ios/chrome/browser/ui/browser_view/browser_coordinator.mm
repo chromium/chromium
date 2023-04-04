@@ -133,6 +133,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
@@ -284,6 +285,10 @@ enum class ToolbarKind {
 
 // Presents a QLPreviewController in order to display USDZ format 3D models.
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
+
+// Coordinator in charge of the presenting autofill options in a bottom sheet.
+@property(nonatomic, strong) PasswordSuggestionBottomSheetCoordinator*
+    passwordSuggestionBottomSheetCoordinator;
 
 // Coordinator-ish provider for context menus.
 @property(nonatomic, strong)
@@ -556,6 +561,9 @@ enum class ToolbarKind {
 
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator = nil;
+
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -1027,6 +1035,9 @@ enum class ToolbarKind {
 
   /* passwordSettingsCoordinator is created and started by a delegate method */
 
+  /* passwordSuggestionBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
+
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
 
   /* PriceNotificationsViewCoordinator is created and started by a
@@ -1155,6 +1166,9 @@ enum class ToolbarKind {
 
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator = nil;
+
+  [self.passwordSuggestionBottomSheetCoordinator stop];
+  self.passwordSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -1383,8 +1397,13 @@ enum class ToolbarKind {
 #pragma mark - PasswordBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
-  // TODO(crbug.com/1422362): This will be implemented as soon as the
-  // Password Bottom Sheet's coordinator class lands.
+  self.passwordSuggestionBottomSheetCoordinator =
+      [[PasswordSuggestionBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                              params:params
+                            delegate:self.viewController];
+  [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
 #pragma mark - BrowserCoordinatorCommands

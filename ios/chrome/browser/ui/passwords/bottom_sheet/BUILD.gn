@@ -6,6 +6,8 @@ source_set("bottom_sheet") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_suggestion_bottom_sheet_consumer.h",
+    "password_suggestion_bottom_sheet_coordinator.h",
+    "password_suggestion_bottom_sheet_coordinator.mm",
     "password_suggestion_bottom_sheet_delegate.h",
     "password_suggestion_bottom_sheet_mediator.h",
     "password_suggestion_bottom_sheet_mediator.mm",
@@ -18,7 +20,9 @@ source_set("bottom_sheet") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/autofill/bottom_sheet",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords:password_controller_delegate",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",

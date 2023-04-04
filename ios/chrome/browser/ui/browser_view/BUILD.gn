@@ -159,6 +159,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/page_info:coordinator",
     "//ios/chrome/browser/ui/page_info/requirements",
     "//ios/chrome/browser/ui/passwords",
+    "//ios/chrome/browser/ui/passwords/bottom_sheet",
     "//ios/chrome/browser/ui/popup_menu",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/price_notifications",
