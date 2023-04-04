@@ -42,6 +42,9 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       OnSettingsAndAlbumsFetchedCallback callback) override;
   void FetchWeather(FetchWeatherCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
+  std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
+      AmbientVideo video) const override;
+  const char* GetPromoBannerUrl() const override;
 
   // Simulate to reply the request of FetchSettingsAndAlbums().
   // If |success| is true, will return fake data.

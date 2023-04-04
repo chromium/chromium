@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/ash_public_export.h"
@@ -146,6 +147,14 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.
   virtual const std::array<const char*, 2>& GetBackupPhotoUrls() const = 0;
+
+  // Returns the preview image urls for the video screen saver.
+  virtual std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
+      AmbientVideo video) const = 0;
+
+  // Returns the promo banner url to highlight time-of-day wallpapers and screen
+  // saver feature.
+  virtual const char* GetPromoBannerUrl() const = 0;
 };
 
 }  // namespace ash

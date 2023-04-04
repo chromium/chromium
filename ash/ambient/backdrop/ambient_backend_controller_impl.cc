@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
+#include "chromeos/assistant/internal/ambient/utils.h"
 #include "chromeos/assistant/internal/proto/backdrop/backdrop.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -488,6 +489,16 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
 const std::array<const char*, 2>&
 AmbientBackendControllerImpl::GetBackupPhotoUrls() const {
   return chromeos::ambient::kBackupPhotoUrls;
+}
+
+std::array<const char*, 2>
+AmbientBackendControllerImpl::GetTimeOfDayVideoPreviewImageUrls(
+    AmbientVideo video) const {
+  return chromeos::ambient::GetTimeOfDayVideoPreviewImageUrls(video);
+}
+
+const char* AmbientBackendControllerImpl::GetPromoBannerUrl() const {
+  return chromeos::ambient::kTimeOfDayBannerImageUrl;
 }
 
 void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
