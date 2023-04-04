@@ -122,8 +122,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
   DCHECK(NeedsLayout());
   DCHECK(IsInlineBlockOrInlineTable() || !IsInline());
 
-  ClearOffsetMappingIfNeeded();
-
   SubtreeLayoutScope layout_scope(*this);
 
   bool logical_width_changed = UpdateLogicalWidthAndColumnWidth();
@@ -1165,18 +1163,8 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
 
   flow_thread->Populate();
 
-  LayoutBlockFlowRareData& rare_data = EnsureRareData();
-  DCHECK(!rare_data.multi_column_flow_thread_);
-  rare_data.multi_column_flow_thread_ = flow_thread;
-}
-
-LayoutBlockFlow::LayoutBlockFlowRareData& LayoutBlockFlow::EnsureRareData() {
-  NOT_DESTROYED();
-  if (rare_data_)
-    return *rare_data_;
-
-  rare_data_ = MakeGarbageCollected<LayoutBlockFlowRareData>(this);
-  return *rare_data_;
+  DCHECK(!multi_column_flow_thread_);
+  multi_column_flow_thread_ = flow_thread;
 }
 
 void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {
@@ -1514,39 +1502,6 @@ void LayoutBlockFlow::InvalidateDisplayItemClients(
   NOT_DESTROYED();
   BlockFlowPaintInvalidator(*this).InvalidateDisplayItemClients(
       invalidation_reason);
-}
-
-LayoutBlockFlow::LayoutBlockFlowRareData::LayoutBlockFlowRareData(
-    const LayoutBlockFlow* block) {}
-
-LayoutBlockFlow::LayoutBlockFlowRareData::~LayoutBlockFlowRareData() = default;
-
-void LayoutBlockFlow::LayoutBlockFlowRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(multi_column_flow_thread_);
-  visitor->Trace(offset_mapping_);
-}
-
-void LayoutBlockFlow::ClearOffsetMappingIfNeeded() {
-  NOT_DESTROYED();
-  DCHECK(!IsLayoutNGObject());
-  if (!rare_data_)
-    return;
-  rare_data_->offset_mapping_.Clear();
-}
-
-const NGOffsetMapping* LayoutBlockFlow::GetOffsetMapping() const {
-  NOT_DESTROYED();
-  DCHECK(!IsLayoutNGObject());
-  CHECK(!SelfNeedsLayout());
-  CHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
-  return rare_data_ ? rare_data_->offset_mapping_ : nullptr;
-}
-
-void LayoutBlockFlow::SetOffsetMapping(NGOffsetMapping* offset_mapping) {
-  NOT_DESTROYED();
-  DCHECK(!IsLayoutNGObject());
-  DCHECK(offset_mapping);
-  EnsureRareData().offset_mapping_ = offset_mapping;
 }
 
 }  // namespace blink

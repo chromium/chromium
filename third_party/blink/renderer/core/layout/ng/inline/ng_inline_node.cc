@@ -1002,22 +1002,9 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
     return nullptr;
   }
 
-  // If |layout_block_flow| is LayoutNG, compute from |NGInlineNode|.
-  if (layout_block_flow->IsLayoutNGObject()) {
-    NGInlineNode node(layout_block_flow);
-    CHECK(node.IsPrepareLayoutFinished());
-    return node.ComputeOffsetMappingIfNeeded();
-  }
-
-  // If this is not LayoutNG, compute the offset mapping and store into
-  // |LayoutBlockFlowRareData|.
-  if (const NGOffsetMapping* mapping = layout_block_flow->GetOffsetMapping())
-    return mapping;
-  NGInlineNodeData* data = MakeGarbageCollected<NGInlineNodeData>();
-  ComputeOffsetMapping(layout_block_flow, data);
-  NGOffsetMapping* const mapping = data->offset_mapping.Release();
-  layout_block_flow->SetOffsetMapping(mapping);
-  return mapping;
+  NGInlineNode node(layout_block_flow);
+  CHECK(node.IsPrepareLayoutFinished());
+  return node.ComputeOffsetMappingIfNeeded();
 }
 
 // Depth-first-scan of all LayoutInline and LayoutText nodes that make up this

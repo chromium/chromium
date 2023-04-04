@@ -53,7 +53,6 @@ class LineLayoutState;
 class LineWidth;
 class LayoutMultiColumnFlowThread;
 class MarginInfo;
-class NGOffsetMapping;
 class NGPhysicalFragment;
 
 struct NGInlineNodeData;
@@ -246,12 +245,11 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   LayoutMultiColumnFlowThread* MultiColumnFlowThread() const {
     NOT_DESTROYED();
-    return rare_data_ ? rare_data_->multi_column_flow_thread_ : nullptr;
+    return multi_column_flow_thread_;
   }
   void ResetMultiColumnFlowThread() {
     NOT_DESTROYED();
-    if (rare_data_)
-      rare_data_->multi_column_flow_thread_ = nullptr;
+    multi_column_flow_thread_ = nullptr;
   }
 
   // Return true if this block establishes a fragmentation context root (e.g. a
@@ -444,44 +442,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                       unsigned expansion_opportunity_count);
 
  public:
-  struct FloatWithRect {
-    DISALLOW_NEW();
-    explicit FloatWithRect(LayoutBox* f)
-        : object(f), rect(f->FrameRect()), ever_had_layout(f->EverHadLayout()) {
-      rect.Expand(f->MarginBoxOutsets());
-    }
-
-    void Trace(Visitor* visitor) const { visitor->Trace(object); }
-
-    Member<LayoutBox> object;
-    LayoutRect rect;
-    bool ever_had_layout;
-  };
-
-  // Allocated only when some of these fields have non-default values
-  struct LayoutBlockFlowRareData final
-      : public GarbageCollected<LayoutBlockFlowRareData> {
-   public:
-    explicit LayoutBlockFlowRareData(const LayoutBlockFlow* block);
-    LayoutBlockFlowRareData(const LayoutBlockFlowRareData&) = delete;
-    LayoutBlockFlowRareData& operator=(const LayoutBlockFlowRareData&) = delete;
-    ~LayoutBlockFlowRareData();
-
-    void Trace(Visitor*) const;
-
-    Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
-
-    // |offset_mapping_| is used only for legacy layout tree for caching offset
-    // mapping for |NGInlineNode::GetOffsetMapping()|.
-    // TODO(yosin): Once we have no legacy support, we should get rid of
-    // |offset_mapping_| here.
-    Member<NGOffsetMapping> offset_mapping_;
-  };
-
-  void ClearOffsetMappingIfNeeded();
-  const NGOffsetMapping* GetOffsetMapping() const;
-  void SetOffsetMapping(NGOffsetMapping*);
-
   bool ShouldTruncateOverflowingText() const;
 
  protected:
@@ -495,11 +455,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                             // flow.  For example, <div>Hello<br>world.</div>
                             // will have two total lines for the <div>.
 
-  LayoutBlockFlowRareData& EnsureRareData();
+  Member<LayoutMultiColumnFlowThread> multi_column_flow_thread_;
 
  protected:
-  Member<LayoutBlockFlowRareData> rare_data_;
-
   friend class MarginInfo;
   friend class LineWidth;  // needs to know FloatingObject
 
@@ -585,8 +543,5 @@ struct DowncastTraits<LayoutBlockFlow> {
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::LayoutBlockFlow::FloatWithRect)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BLOCK_FLOW_H_

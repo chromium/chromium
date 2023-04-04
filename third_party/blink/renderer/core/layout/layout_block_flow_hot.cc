@@ -53,7 +53,7 @@ void LayoutBlockFlow::MarkAllDescendantsWithFloatsForLayout(
 
 void LayoutBlockFlow::Trace(Visitor* visitor) const {
   visitor->Trace(line_boxes_);
-  visitor->Trace(rare_data_);
+  visitor->Trace(multi_column_flow_thread_);
   LayoutBlock::Trace(visitor);
 }
 
