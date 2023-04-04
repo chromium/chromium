@@ -1403,6 +1403,14 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
+  if (const auto* box = GetLayoutBox()) {
+    // A child layer of a <frameset> might have no physical fragments. We can
+    // skip such layer. See ClearNeedsLayoutOnHiddenFrames().
+    if (box->PhysicalFragmentCount() == 0) {
+      return nullptr;
+    }
+  }
+
   if (!IsSelfPaintingLayer() && !HasSelfPaintingLayerDescendant())
     return nullptr;
 
