@@ -82,6 +82,7 @@ class FeedStream : public FeedApi,
     virtual TabGroupEnabledState GetTabGroupEnabledState() = 0;
     virtual void ClearAll() = 0;
     virtual AccountInfo GetAccountInfo() = 0;
+    virtual bool IsSigninAllowed() = 0;
     // Returns true if Sync is enabled for the user. If the user is not signed
     // in it also returns false.
     virtual bool IsSyncOn() = 0;
@@ -244,6 +245,7 @@ class FeedStream : public FeedApi,
 
   void PrefetchImage(const GURL& url);
 
+  bool IsSigninAllowed() const { return delegate_->IsSigninAllowed(); }
   bool IsSignedIn() const { return !delegate_->GetAccountInfo().IsEmpty(); }
   bool IsSyncOn() const { return delegate_->IsSyncOn(); }
   AccountInfo GetAccountInfo() const { return delegate_->GetAccountInfo(); }
@@ -466,6 +468,7 @@ class FeedStream : public FeedApi,
   BooleanPrefMember has_stored_data_;
   BooleanPrefMember snippets_enabled_by_policy_;
   BooleanPrefMember articles_list_visible_;
+  BooleanPrefMember signin_allowed_;
 
   // State loaded at startup:
   feedstore::Metadata metadata_;

@@ -37,7 +37,9 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/core/v2/wire_response_translator.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -478,6 +480,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   TabGroupEnabledState GetTabGroupEnabledState() override;
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;
+  bool IsSigninAllowed() override;
   bool IsSyncOn() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
@@ -536,6 +539,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;
   AccountInfo account_info_ = TestAccountInfo();
+  bool is_signin_allowed_ = true;
   bool is_sync_on_ = false;
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;

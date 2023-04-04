@@ -26,6 +26,7 @@ message ChromeSignInStatus {
     NOT_SIGNED_IN = 1;
     SIGNED_IN_WITHOUT_SYNC = 2;
     SYNCED = 3;
+    SIGNIN_DISALLOWED_BY_CONFIG = 4;
   }
   optional SignInStatus sign_in_status = 1;
 }

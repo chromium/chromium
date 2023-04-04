@@ -45,6 +45,7 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -864,6 +865,7 @@ void FeedApiTest::SetUp() {
 
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
   feed::RegisterProfilePrefs(profile_prefs_.registry());
+  profile_prefs_.registry()->RegisterBooleanPref(::prefs::kSigninAllowed, true);
   metrics_reporter_ = std::make_unique<TestMetricsReporter>(&profile_prefs_);
 
   shared_url_loader_factory_ =
@@ -899,6 +901,9 @@ bool FeedApiTest::IsOffline() {
 }
 AccountInfo FeedApiTest::GetAccountInfo() {
   return account_info_;
+}
+bool FeedApiTest::IsSigninAllowed() {
+  return is_signin_allowed_;
 }
 bool FeedApiTest::IsSyncOn() {
   return is_sync_on_;
