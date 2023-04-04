@@ -86,6 +86,8 @@ android_library("net_java_test_support") {
     "//third_party/junit",
   ]
   srcjar_deps = [ ":net_java_test_support_enums_srcjar" ]
+  mergeable_android_manifests =
+      [ "../test/android/javatests/AndroidManifest_client.xml" ]
 }
 
 android_library("net_java_test_support_provider") {
