@@ -367,7 +367,7 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
   return remote.get();
 }
 
-void ExtensionWebContentsObserver::OnWindowIdChanged(const SessionID& id) {
+void ExtensionWebContentsObserver::OnWindowIdChanged(SessionID id) {
   web_contents()->ForEachRenderFrameHost(
       [&id, this](content::RenderFrameHost* rfh) {
         auto* local_frame = GetLocalFrame(rfh);

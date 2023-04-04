@@ -171,7 +171,7 @@ Browser::Type SessionServiceBase::GetBrowserTypeFromWebContents(
 }
 
 void SessionServiceBase::SetWindowVisibleOnAllWorkspaces(
-    const SessionID& window_id,
+    SessionID window_id,
     bool visible_on_all_workspaces) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -185,15 +185,14 @@ void SessionServiceBase::ResetFromCurrentBrowsers() {
     ScheduleResetCommands();
 }
 
-void SessionServiceBase::SetTabWindow(const SessionID& window_id,
-                                      const SessionID& tab_id) {
+void SessionServiceBase::SetTabWindow(SessionID window_id, SessionID tab_id) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
   ScheduleCommand(sessions::CreateSetTabWindowCommand(window_id, tab_id));
 }
 
-void SessionServiceBase::SetWindowBounds(const SessionID& window_id,
+void SessionServiceBase::SetWindowBounds(SessionID window_id,
                                          const gfx::Rect& bounds,
                                          ui::WindowShowState show_state) {
   if (!ShouldTrackChangesToWindow(window_id))
@@ -203,7 +202,7 @@ void SessionServiceBase::SetWindowBounds(const SessionID& window_id,
       sessions::CreateSetWindowBoundsCommand(window_id, bounds, show_state));
 }
 
-void SessionServiceBase::SetWindowWorkspace(const SessionID& window_id,
+void SessionServiceBase::SetWindowWorkspace(SessionID window_id,
                                             const std::string& workspace) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -212,8 +211,8 @@ void SessionServiceBase::SetWindowWorkspace(const SessionID& window_id,
       sessions::CreateSetWindowWorkspaceCommand(window_id, workspace));
 }
 
-void SessionServiceBase::SetTabIndexInWindow(const SessionID& window_id,
-                                             const SessionID& tab_id,
+void SessionServiceBase::SetTabIndexInWindow(SessionID window_id,
+                                             SessionID tab_id,
                                              int new_index) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -279,7 +278,7 @@ void SessionServiceBase::TabRestored(WebContents* tab, bool pinned) {
   command_storage_manager()->StartSaveTimer();
 }
 
-void SessionServiceBase::SetSelectedTabInWindow(const SessionID& window_id,
+void SessionServiceBase::SetSelectedTabInWindow(SessionID window_id,
                                                 int index) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -294,8 +293,8 @@ void SessionServiceBase::SetSelectedTabInWindow(const SessionID& window_id,
 }
 
 void SessionServiceBase::SetTabExtensionAppID(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const std::string& extension_app_id) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -304,8 +303,8 @@ void SessionServiceBase::SetTabExtensionAppID(
       sessions::CreateSetTabExtensionAppIDCommand(tab_id, extension_app_id));
 }
 
-void SessionServiceBase::SetLastActiveTime(const SessionID& window_id,
-                                           const SessionID& tab_id,
+void SessionServiceBase::SetLastActiveTime(SessionID window_id,
+                                           SessionID tab_id,
                                            base::TimeTicks last_active_time) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -323,7 +322,7 @@ void SessionServiceBase::GetLastSession(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SessionServiceBase::SetWindowAppName(const SessionID& window_id,
+void SessionServiceBase::SetWindowAppName(SessionID window_id,
                                           const std::string& app_name) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -331,8 +330,8 @@ void SessionServiceBase::SetWindowAppName(const SessionID& window_id,
   ScheduleCommand(sessions::CreateSetWindowAppNameCommand(window_id, app_name));
 }
 
-void SessionServiceBase::SetPinnedState(const SessionID& window_id,
-                                        const SessionID& tab_id,
+void SessionServiceBase::SetPinnedState(SessionID window_id,
+                                        SessionID tab_id,
                                         bool is_pinned) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -360,8 +359,8 @@ void SessionServiceBase::OnErrorWritingSessionCommands() {
 }
 
 void SessionServiceBase::SetTabUserAgentOverride(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const sessions::SerializedUserAgentOverride& user_agent_override) {
   // This is overridden by session_service implementation.
   // We still need it here because we derive from
@@ -370,8 +369,8 @@ void SessionServiceBase::SetTabUserAgentOverride(
   return;
 }
 
-void SessionServiceBase::SetSelectedNavigationIndex(const SessionID& window_id,
-                                                    const SessionID& tab_id,
+void SessionServiceBase::SetSelectedNavigationIndex(SessionID window_id,
+                                                    SessionID tab_id,
                                                     int index) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
@@ -390,8 +389,8 @@ void SessionServiceBase::SetSelectedNavigationIndex(const SessionID& window_id,
 }
 
 void SessionServiceBase::UpdateTabNavigation(
-    const SessionID& window_id,
-    const SessionID& tab_id,
+    SessionID window_id,
+    SessionID tab_id,
     const SerializedNavigationEntry& navigation) {
   if (!ShouldTrackURLForRestore(navigation.virtual_url()) ||
       !ShouldTrackChangesToWindow(window_id)) {
@@ -406,8 +405,8 @@ void SessionServiceBase::UpdateTabNavigation(
   ScheduleCommand(CreateUpdateTabNavigationCommand(tab_id, navigation));
 }
 
-void SessionServiceBase::TabNavigationPathPruned(const SessionID& window_id,
-                                                 const SessionID& tab_id,
+void SessionServiceBase::TabNavigationPathPruned(SessionID window_id,
+                                                 SessionID tab_id,
                                                  int index,
                                                  int count) {
   if (!ShouldTrackChangesToWindow(window_id))
@@ -443,9 +442,8 @@ void SessionServiceBase::TabNavigationPathPruned(const SessionID& window_id,
       sessions::CreateTabNavigationPathPrunedCommand(tab_id, index, count));
 }
 
-void SessionServiceBase::TabNavigationPathEntriesDeleted(
-    const SessionID& window_id,
-    const SessionID& tab_id) {
+void SessionServiceBase::TabNavigationPathEntriesDeleted(SessionID window_id,
+                                                         SessionID tab_id) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -494,7 +492,7 @@ void SessionServiceBase::OnGotSessionCommands(
 }
 
 void SessionServiceBase::BuildCommandsForTab(
-    const SessionID& window_id,
+    SessionID window_id,
     WebContents* tab,
     int index_in_window,
     absl::optional<tab_groups::TabGroupId> group,
@@ -505,7 +503,7 @@ void SessionServiceBase::BuildCommandsForTab(
 
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab);
-  const SessionID& session_id(session_tab_helper->session_id());
+  const SessionID session_id(session_tab_helper->session_id());
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetTabWindowCommand(window_id, session_id));
 
@@ -679,8 +677,7 @@ void SessionServiceBase::ScheduleCommand(
   DidScheduleCommand();
 }
 
-bool SessionServiceBase::ShouldTrackChangesToWindow(
-    const SessionID& window_id) const {
+bool SessionServiceBase::ShouldTrackChangesToWindow(SessionID window_id) const {
   return windows_tracking_.find(window_id) != windows_tracking_.end();
 }
 
@@ -708,12 +705,12 @@ SessionServiceBase::GetCommandStorageManagerForTest() {
 }
 
 void SessionServiceBase::SetAvailableRangeForTest(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::pair<int, int>& range) {
   tab_to_available_range_[tab_id] = range;
 }
 
-bool SessionServiceBase::GetAvailableRangeForTest(const SessionID& tab_id,
+bool SessionServiceBase::GetAvailableRangeForTest(SessionID tab_id,
                                                   std::pair<int, int>* range) {
   auto i = tab_to_available_range_.find(tab_id);
   if (i == tab_to_available_range_.end())

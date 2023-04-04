@@ -93,50 +93,49 @@ class SessionService : public SessionServiceBase {
 
   // Sets a tab's group ID, if any. Note that a group can't be split between
   // multiple windows.
-  void SetTabGroup(const SessionID& window_id,
-                   const SessionID& tab_id,
+  void SetTabGroup(SessionID window_id,
+                   SessionID tab_id,
                    absl::optional<tab_groups::TabGroupId> group);
 
   // Updates the metadata associated with a tab group. |window_id| should be
   // the window where the group currently resides. Note that a group can't be
   // split between multiple windows.
-  void SetTabGroupMetadata(const SessionID& window_id,
+  void SetTabGroupMetadata(SessionID window_id,
                            const tab_groups::TabGroupId& group_id,
                            const tab_groups::TabGroupVisualData* visual_data);
 
-  void AddTabExtraData(const SessionID& window_id,
-                       const SessionID& tab_id,
+  void AddTabExtraData(SessionID window_id,
+                       SessionID tab_id,
                        const char* key,
                        const std::string data);
 
-  void AddWindowExtraData(const SessionID& window_id,
+  void AddWindowExtraData(SessionID window_id,
                           const char* key,
                           const std::string data);
 
-  void TabClosed(const SessionID& window_id, const SessionID& tab_id) override;
+  void TabClosed(SessionID window_id, SessionID tab_id) override;
 
   // Notification a window has opened.
   void WindowOpened(Browser* browser) override;
 
   // Notification the window is about to close.
-  void WindowClosing(const SessionID& window_id) override;
+  void WindowClosing(SessionID window_id) override;
 
   // Notification a window has finished closing.
-  void WindowClosed(const SessionID& window_id) override;
+  void WindowClosed(SessionID window_id) override;
 
   // Sets the type of window. In order for the contents of a window to be
   // tracked SetWindowType must be invoked with a type we track
   // (ShouldRestoreOfWindowType returns true).
-  void SetWindowType(const SessionID& window_id, Browser::Type type) override;
+  void SetWindowType(SessionID window_id, Browser::Type type) override;
 
-  void SetWindowUserTitle(const SessionID& window_id,
-                          const std::string& user_title);
+  void SetWindowUserTitle(SessionID window_id, const std::string& user_title);
 
   // CommandStorageManagerDelegate:
   void OnErrorWritingSessionCommands() override;
 
-  void SetTabUserAgentOverride(const SessionID& window_id,
-                               const SessionID& tab_id,
+  void SetTabUserAgentOverride(SessionID window_id,
+                               SessionID tab_id,
                                const sessions::SerializedUserAgentOverride&
                                    user_agent_override) override;
 
@@ -175,7 +174,7 @@ class SessionService : public SessionServiceBase {
   // direction from the current navigation index).
   // A pair is added to tab_to_available_range indicating the range of
   // indices that were written.
-  void BuildCommandsForTab(const SessionID& window_id,
+  void BuildCommandsForTab(SessionID window_id,
                            content::WebContents* tab,
                            int index_in_window,
                            absl::optional<tab_groups::TabGroupId> group,
@@ -197,7 +196,7 @@ class SessionService : public SessionServiceBase {
   // match |window_id| with our profile. A trackable window is a window from
   // which |ShouldRestoreWindowOfType| returns true. See
   // |ShouldRestoreWindowOfType| for details.
-  bool HasOpenTrackableBrowsers(const SessionID& window_id) const;
+  bool HasOpenTrackableBrowsers(SessionID window_id) const;
 
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   void RebuildCommandsIfRequired() override;

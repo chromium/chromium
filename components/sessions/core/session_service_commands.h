@@ -25,89 +25,87 @@ class SessionCommand;
 // The following functions create sequentialized change commands which are
 // used to reconstruct the current/previous session state.
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateSetSelectedTabInWindowCommand(const SessionID& window_id, int index);
+CreateSetSelectedTabInWindowCommand(SessionID window_id, int index);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabWindowCommand(
-    const SessionID& window_id,
-    const SessionID& tab_id);
+    SessionID window_id,
+    SessionID tab_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateSetTabIndexInWindowCommand(const SessionID& tab_id, int new_index);
+CreateSetTabIndexInWindowCommand(SessionID tab_id, int new_index);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabClosedCommand(
     SessionID tab_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateWindowClosedCommand(
     SessionID tab_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateSetSelectedNavigationIndexCommand(const SessionID& tab_id, int index);
+CreateSetSelectedNavigationIndexCommand(SessionID tab_id, int index);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     SessionWindow::WindowType type);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     absl::optional<tab_groups::TabGroupId> group);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateTabGroupMetadataUpdateCommand(
     const tab_groups::TabGroupId group,
     const tab_groups::TabGroupVisualData* visual_data);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     bool is_pinned);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateSessionStorageAssociatedCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& session_storage_persistent_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetActiveWindowCommand(
-    const SessionID& window_id);
+    SessionID window_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateTabNavigationPathPrunedCommand(const SessionID& tab_id,
-                                     int index,
-                                     int count);
+CreateTabNavigationPathPrunedCommand(SessionID tab_id, int index, int count);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateUpdateTabNavigationCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const sessions::SerializedNavigationEntry& navigation);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateSetTabExtensionAppIDCommand(const SessionID& tab_id,
+CreateSetTabExtensionAppIDCommand(SessionID tab_id,
                                   const std::string& extension_id);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
 CreateSetTabUserAgentOverrideCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const SerializedUserAgentOverride& user_agent_override);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& app_name);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& user_title);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     base::TimeTicks last_active_time);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& workspace);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand>
-CreateSetWindowVisibleOnAllWorkspacesCommand(const SessionID& window_id,
+CreateSetWindowVisibleOnAllWorkspacesCommand(SessionID window_id,
                                              bool visible_on_all_workspaces);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& guid);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::map<std::string, std::string>& data);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateAddTabExtraDataCommand(
-    const SessionID& tab_id,
+    SessionID tab_id,
     const std::string& key,
     const std::string& data);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateAddWindowExtraDataCommand(
-    const SessionID& window_id,
+    SessionID window_id,
     const std::string& key,
     const std::string& data);
 

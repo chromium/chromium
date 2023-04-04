@@ -109,12 +109,12 @@ void RestoreBrowserState(
 }
 
 std::vector<std::unique_ptr<sessions::SessionCommand>>
-BuildCommandsForTabConfiguration(const SessionID& browser_session_id,
+BuildCommandsForTabConfiguration(SessionID browser_session_id,
                                  TabImpl* tab,
                                  int index_in_browser) {
   DCHECK(tab);
   std::vector<std::unique_ptr<sessions::SessionCommand>> result;
-  const SessionID& tab_id = GetSessionIDForTab(tab);
+  const SessionID tab_id = GetSessionIDForTab(tab);
   result.push_back(
       sessions::CreateSetTabWindowCommand(browser_session_id, tab_id));
 
@@ -146,7 +146,7 @@ BuildCommandsForTabConfiguration(const SessionID& browser_session_id,
   return result;
 }
 
-const SessionID& GetSessionIDForTab(Tab* tab) {
+SessionID GetSessionIDForTab(Tab* tab) {
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(
           static_cast<TabImpl*>(tab)->web_contents());

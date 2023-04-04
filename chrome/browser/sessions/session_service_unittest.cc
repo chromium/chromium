@@ -111,8 +111,8 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     helper_.SetService(nullptr);
   }
 
-  void UpdateNavigation(const SessionID& window_session_id,
-                        const SessionID& tab_id,
+  void UpdateNavigation(SessionID window_session_id,
+                        SessionID tab_id,
                         const SerializedNavigationEntry& navigation,
                         bool select) {
     service()->UpdateTabNavigation(window_session_id, tab_id, navigation);
@@ -178,12 +178,11 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     return tab->pinned;
   }
 
-  void CreateAndWriteSessionWithTwoWindows(
-      const SessionID& window2_id,
-      const SessionID& tab1_id,
-      const SessionID& tab2_id,
-      SerializedNavigationEntry* nav1,
-      SerializedNavigationEntry* nav2) {
+  void CreateAndWriteSessionWithTwoWindows(SessionID window2_id,
+                                           SessionID tab1_id,
+                                           SessionID tab2_id,
+                                           SerializedNavigationEntry* nav1,
+                                           SerializedNavigationEntry* nav2) {
     *nav1 = ContentTestHelper::CreateNavigation("http://google.com", "abc");
     *nav2 = ContentTestHelper::CreateNavigation("http://google2.com", "abcd");
 

@@ -37,18 +37,18 @@ class SessionServiceBaseTestHelper {
  public:
   void SaveNow();
 
-  void PrepareTabInWindow(const SessionID& window_id,
-                          const SessionID& tab_id,
+  void PrepareTabInWindow(SessionID window_id,
+                          SessionID tab_id,
                           int visual_index,
                           bool select);
 
-  void SetTabExtensionAppID(const SessionID& window_id,
-                            const SessionID& tab_id,
+  void SetTabExtensionAppID(SessionID window_id,
+                            SessionID tab_id,
                             const std::string& extension_app_id);
 
   void SetTabUserAgentOverride(
-      const SessionID& window_id,
-      const SessionID& tab_id,
+      SessionID window_id,
+      SessionID tab_id,
       const sessions::SerializedUserAgentOverride& user_agent_override);
 
   // Reads the contents of the last session.
@@ -56,8 +56,8 @@ class SessionServiceBaseTestHelper {
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID* active_window_id);
 
-  void AssertTabEquals(const SessionID& window_id,
-                       const SessionID& tab_id,
+  void AssertTabEquals(SessionID window_id,
+                       SessionID tab_id,
                        int visual_index,
                        int nav_index,
                        size_t nav_count,
@@ -84,9 +84,8 @@ class SessionServiceBaseTestHelper {
 
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner();
 
-  void SetAvailableRange(const SessionID& tab_id,
-                         const std::pair<int, int>& range);
-  bool GetAvailableRange(const SessionID& tab_id, std::pair<int, int>* range);
+  void SetAvailableRange(SessionID tab_id, const std::pair<int, int>& range);
+  bool GetAvailableRange(SessionID tab_id, std::pair<int, int>* range);
 
  protected:
   explicit SessionServiceBaseTestHelper(SessionServiceBase* base);

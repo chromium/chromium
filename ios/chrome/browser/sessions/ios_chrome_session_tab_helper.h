@@ -18,11 +18,11 @@ class IOSChromeSessionTabHelper
   ~IOSChromeSessionTabHelper() override;
 
   // Returns the identifier used by session restore for this tab.
-  const SessionID& session_id() const { return session_id_; }
+  SessionID session_id() const { return session_id_; }
 
   // Identifier of the window the tab is in.
-  void SetWindowID(const SessionID& id);
-  const SessionID& window_id() const { return window_id_; }
+  void SetWindowID(SessionID id);
+  SessionID window_id() const { return window_id_; }
 
  private:
   explicit IOSChromeSessionTabHelper(web::WebState* web_state);

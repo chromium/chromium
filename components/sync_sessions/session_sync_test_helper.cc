@@ -43,7 +43,7 @@ void SessionSyncTestHelper::AddWindowSpecifics(
   window->set_window_id(window_id.id());
   window->set_selected_tab_index(0);
   window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
-  for (const SessionID& tab_id : tab_list) {
+  for (const SessionID tab_id : tab_list) {
     window->add_tab(tab_id.id());
   }
 }
@@ -73,7 +73,7 @@ void SessionSyncTestHelper::VerifySyncedSession(
     ASSERT_EQ(0, win_ptr->selected_tab_index);
     ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, win_ptr->type);
     int j = 0;
-    for (const SessionID& tab_id : window) {
+    for (const SessionID tab_id : window) {
       sessions::SessionTab* tab = win_ptr->tabs[j].get();
       ASSERT_EQ(tab_id, tab->tab_id);
       ASSERT_EQ(1U, tab->navigations.size());

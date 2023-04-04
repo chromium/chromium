@@ -31,12 +31,12 @@ void RestoreBrowserState(
 // Creates and returns the minimal set of SessionCommands to configure a tab.
 // This does not include any navigations.
 std::vector<std::unique_ptr<sessions::SessionCommand>>
-BuildCommandsForTabConfiguration(const SessionID& browser_session_id,
+BuildCommandsForTabConfiguration(SessionID browser_session_id,
                                  TabImpl* tab,
                                  int index_in_browser);
 
 // Convenience to return the SessionID for a Tab.
-const SessionID& GetSessionIDForTab(Tab* tab);
+SessionID GetSessionIDForTab(Tab* tab);
 
 }  // namespace weblayer
 

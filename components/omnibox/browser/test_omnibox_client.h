@@ -30,7 +30,7 @@ class TestOmniboxClient : public OmniboxClient {
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   bool IsPasteAndGoEnabled() const override;
-  const SessionID& GetSessionID() const override;
+  SessionID GetSessionID() const override;
   void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   TemplateURLService* GetTemplateURLService() override;
