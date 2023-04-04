@@ -46,13 +46,16 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
 
   // All blocking database accesses will be performed on
   // |background_task_runner|, while |client_task_runner| is used to invoke
-  // callbacks.
+  // callbacks. If |enable_exclusive_access| is set to true then sqlite will
+  // be asked to open the database with flag `exclusive=1`. In practice, this is
+  // only respected on Windows.
   SQLitePersistentCookieStore(
       const base::FilePath& path,
       const scoped_refptr<base::SequencedTaskRunner>& client_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       bool restore_old_session_cookies,
-      CookieCryptoDelegate* crypto_delegate);
+      CookieCryptoDelegate* crypto_delegate,
+      bool enable_exclusive_access);
 
   SQLitePersistentCookieStore(const SQLitePersistentCookieStore&) = delete;
   SQLitePersistentCookieStore& operator=(const SQLitePersistentCookieStore&) =

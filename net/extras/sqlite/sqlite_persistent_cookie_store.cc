@@ -257,13 +257,15 @@ class SQLitePersistentCookieStore::Backend
           scoped_refptr<base::SequencedTaskRunner> client_task_runner,
           scoped_refptr<base::SequencedTaskRunner> background_task_runner,
           bool restore_old_session_cookies,
-          CookieCryptoDelegate* crypto_delegate)
+          CookieCryptoDelegate* crypto_delegate,
+          bool enable_exclusive_access)
       : SQLitePersistentStoreBackendBase(path,
                                          /* histogram_tag = */ "Cookie",
                                          kCurrentVersionNumber,
                                          kCompatibleVersionNumber,
                                          std::move(background_task_runner),
-                                         std::move(client_task_runner)),
+                                         std::move(client_task_runner),
+                                         enable_exclusive_access),
         restore_old_session_cookies_(restore_old_session_cookies),
         crypto_(crypto_delegate) {}
 
@@ -1719,12 +1721,14 @@ SQLitePersistentCookieStore::SQLitePersistentCookieStore(
     const scoped_refptr<base::SequencedTaskRunner>& client_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     bool restore_old_session_cookies,
-    CookieCryptoDelegate* crypto_delegate)
+    CookieCryptoDelegate* crypto_delegate,
+    bool enable_exclusive_access)
     : backend_(base::MakeRefCounted<Backend>(path,
                                              client_task_runner,
                                              background_task_runner,
                                              restore_old_session_cookies,
-                                             crypto_delegate)) {}
+                                             crypto_delegate,
+                                             enable_exclusive_access)) {}
 
 void SQLitePersistentCookieStore::DeleteAllInList(
     const std::list<CookieOrigin>& cookies) {

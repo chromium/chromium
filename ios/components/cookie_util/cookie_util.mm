@@ -49,7 +49,8 @@ scoped_refptr<net::SQLitePersistentCookieStore> CreatePersistentCookieStore(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-          restore_old_session_cookies, crypto_delegate));
+          restore_old_session_cookies, crypto_delegate,
+          /*enable_exclusive_access=*/false));
 }
 
 // Creates a CookieMonster configured by `config`.
