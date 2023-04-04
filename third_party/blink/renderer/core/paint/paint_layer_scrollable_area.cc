@@ -1070,8 +1070,6 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
           layout_scope.SetNeedsLayout(
               GetLayoutBox(), layout_invalidation_reason::kScrollbarChanged);
           if (auto* block = DynamicTo<LayoutBlock>(GetLayoutBox())) {
-            block->ScrollbarsChanged(horizontal_scrollbar_should_change,
-                                     vertical_scrollbar_should_change);
             block->UpdateBlockLayout(true);
           } else {
             GetLayoutBox()->UpdateLayout();
@@ -1303,18 +1301,8 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
       !needs_vertical_scrollbar)
     return;
 
-  bool horizontal_scrollbar_changed =
-      SetHasHorizontalScrollbar(needs_horizontal_scrollbar);
-  bool vertical_scrollbar_changed =
-      SetHasVerticalScrollbar(needs_vertical_scrollbar);
-
-  auto* layout_block = DynamicTo<LayoutBlock>(GetLayoutBox());
-  if (layout_block &&
-      (horizontal_scrollbar_changed || vertical_scrollbar_changed)) {
-    layout_block->ScrollbarsChanged(
-        horizontal_scrollbar_changed, vertical_scrollbar_changed,
-        LayoutBlock::ScrollbarChangeContext::kStyleChange);
-  }
+  SetHasHorizontalScrollbar(needs_horizontal_scrollbar);
+  SetHasVerticalScrollbar(needs_vertical_scrollbar);
 
   if (HorizontalScrollbar())
     HorizontalScrollbar()->StyleChanged();
@@ -1736,16 +1724,16 @@ CompositorElementId PaintLayerScrollableArea::GetScrollCornerElementId() const {
       scrollable_element_id, CompositorElementIdNamespace::kScrollCorner);
 }
 
-bool PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
+void PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
   if (IsHorizontalScrollbarFrozen())
-    return false;
+    return;
 
   if (has_scrollbar == HasHorizontalScrollbar())
-    return false;
+    return;
 
   // when scrollbar-width is "none", the scrollbar will not be displayed
   if (GetLayoutBox()->StyleRef().ScrollbarWidth() == EScrollbarWidth::kNone)
-    return false;
+    return;
 
   SetScrollbarNeedsPaintInvalidation(kHorizontalScrollbar);
 
@@ -1765,26 +1753,25 @@ bool PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
   // Force an update since we know the scrollbars have changed things.
   if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
     GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
-  return true;
 }
 
-bool PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
+void PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
   if (IsVerticalScrollbarFrozen())
-    return false;
+    return;
 
   if (GetLayoutBox()->GetDocument().IsVerticalScrollEnforced()) {
     // When the policy is enforced the contents of document cannot be scrolled.
     // This would make rendering a scrollbar look strange
     // (https://crbug.com/898151).
-    return false;
+    return;
   }
 
   if (has_scrollbar == HasVerticalScrollbar())
-    return false;
+    return;
 
   // when scrollbar-width is "none", the scrollbar will not be displayed
   if (GetLayoutBox()->StyleRef().ScrollbarWidth() == EScrollbarWidth::kNone)
-    return false;
+    return;
 
   SetScrollbarNeedsPaintInvalidation(kVerticalScrollbar);
 
@@ -1804,7 +1791,6 @@ bool PaintLayerScrollableArea::SetHasVerticalScrollbar(bool has_scrollbar) {
   // Force an update since we know the scrollbars have changed things.
   if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
     GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
-  return true;
 }
 
 int PaintLayerScrollableArea::VerticalScrollbarWidth(
@@ -2734,18 +2720,6 @@ PaintLayerScrollableArea::PreventRelayoutScope::~PreventRelayoutScope() {
         LayoutBox* box = scrollable_area->GetLayoutBox();
         layout_scope_->SetNeedsLayout(
             box, layout_invalidation_reason::kScrollbarChanged);
-        if (auto* layout_block = DynamicTo<LayoutBlock>(box)) {
-          bool horizontal_scrollbar_changed =
-              scrollable_area->HasHorizontalScrollbar() !=
-              scrollable_area->HadHorizontalScrollbarBeforeRelayout();
-          bool vertical_scrollbar_changed =
-              scrollable_area->HasVerticalScrollbar() !=
-              scrollable_area->HadVerticalScrollbarBeforeRelayout();
-          if (horizontal_scrollbar_changed || vertical_scrollbar_changed) {
-            layout_block->ScrollbarsChanged(horizontal_scrollbar_changed,
-                                            vertical_scrollbar_changed);
-          }
-        }
         scrollable_area->SetNeedsRelayout(false);
       }
 

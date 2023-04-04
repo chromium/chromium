@@ -305,9 +305,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  void UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
-                                             LayoutBox&);
-
   LayoutUnit LogicalRightOffsetForLine(
       LayoutUnit logical_top,
       LayoutUnit fixed_offset,

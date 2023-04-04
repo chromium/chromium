@@ -368,8 +368,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   void UpdateFromStyle() override;
 
-  bool UpdateLogicalWidthAndColumnWidth() override;
-
   Member<LocalFrameView> frame_view_;
 
   // The page size.

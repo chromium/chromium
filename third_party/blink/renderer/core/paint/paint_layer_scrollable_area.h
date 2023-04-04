@@ -698,9 +698,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool TryRemovingAutoScrollbars(const bool& needs_horizontal_scrollbar,
                                  const bool& needs_vertical_scrollbar);
 
-  // Returns true iff scrollbar existence changed.
-  bool SetHasHorizontalScrollbar(bool has_scrollbar);
-  bool SetHasVerticalScrollbar(bool has_scrollbar);
+  void SetHasHorizontalScrollbar(bool has_scrollbar);
+  void SetHasVerticalScrollbar(bool has_scrollbar);
 
   void UpdateScrollCornerStyle();
 

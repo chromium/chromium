@@ -971,14 +971,6 @@ PhysicalRect LayoutView::DebugRect() const {
                                 ViewHeight(kIncludeScrollbars)));
 }
 
-bool LayoutView::UpdateLogicalWidthAndColumnWidth() {
-  NOT_DESTROYED();
-  bool relayout_children = LayoutBlockFlow::UpdateLogicalWidthAndColumnWidth();
-  // When we're printing, the size of LayoutView is changed outside of layout,
-  // so we'll fail to detect any changes here. Just return true.
-  return relayout_children || ShouldUsePrintingLayout();
-}
-
 CompositingReasons LayoutView::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
   // TODO(lfg): Audit for portals

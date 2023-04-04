@@ -159,9 +159,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   SubtreeLayoutScope layout_scope(*this);
 
-  bool logical_width_changed = UpdateLogicalWidthAndColumnWidth();
-  relayout_children |= logical_width_changed;
-
   TextAutosizer::LayoutScope text_autosizer_layout_scope(this, &layout_scope);
 
   bool intrinsic_logical_widths_were_dirty = IntrinsicLogicalWidthsDirty();
@@ -175,7 +172,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
       // potential infinite loop, run layout again with auto scrollbars frozen
       // in their current state.
       PaintLayerScrollableArea::FreezeScrollbarsScope freeze_scrollbars;
-      relayout_children |= UpdateLogicalWidthAndColumnWidth();
       LayoutChildren(relayout_children, layout_scope);
     }
 
@@ -341,7 +337,6 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
     child->SetShouldCheckForPaintInvalidation();
 
     LayoutBox* box = To<LayoutBox>(child);
-    UpdateBlockChildDirtyBitsBeforeLayout(relayout_children, *box);
 
     if (box->IsOutOfFlowPositioned()) {
       box->ContainingBlock()->InsertPositionedObject(box);
@@ -529,15 +524,6 @@ void LayoutBlockFlow::WillBeDestroyed() {
   line_boxes_.DeleteLineBoxes();
 
   LayoutBlock::WillBeDestroyed();
-}
-
-void LayoutBlockFlow::UpdateBlockChildDirtyBitsBeforeLayout(
-    bool relayout_children,
-    LayoutBox& child) {
-  NOT_DESTROYED();
-  if (auto* placeholder = DynamicTo<LayoutMultiColumnSpannerPlaceholder>(child))
-    placeholder->MarkForLayoutIfObjectInFlowThreadNeedsLayout();
-  LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(relayout_children, child);
 }
 
 void LayoutBlockFlow::UpdateStaticInlinePositionForChild(

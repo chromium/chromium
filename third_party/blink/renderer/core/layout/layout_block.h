@@ -188,11 +188,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);
 
-  void NotifyScrollbarThicknessChanged() {
-    NOT_DESTROYED();
-    width_available_to_children_changed_ = true;
-  }
-
   // Return true if this is the anonymous child wrapper of an NG fieldset
   // container. Such a wrapper holds all the fieldset contents. Only the
   // rendered legend is laid out on the outside, although the layout object
@@ -274,11 +269,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     NOT_DESTROYED();
     child.SetMarginAfter(value, Style());
   }
-
-  enum ScrollbarChangeContext { kStyleChange, kLayout };
-  virtual void ScrollbarsChanged(bool horizontal_scrollbar_changed,
-                                 bool vertical_scrollbar_changed,
-                                 ScrollbarChangeContext = kLayout);
 
   LayoutUnit AvailableLogicalWidthForContent() const {
     NOT_DESTROYED();
@@ -424,9 +414,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 
-  void UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
-                                             LayoutBox&);
-
   // TODO(jchaffraix): We should rename this function as inline-flex and
   // inline-grid as also covered.
   // Alternatively it should be removed as we clarify the meaning of
@@ -487,7 +474,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // End helper functions and structs used by layoutBlockChildren.
 
   void RemoveFromGlobalMaps();
-  bool WidthAvailableToChildrenHasChanged();
 
  protected:
   // Adjust from painting offsets to the local coords of this layoutObject
@@ -500,14 +486,10 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   PositionWithAffinity PositionForPointIfOutsideAtomicInlineLevel(
       const PhysicalOffset&) const;
 
-  virtual bool UpdateLogicalWidthAndColumnWidth();
-
   LayoutObjectChildList children_;
 
   // Note these quirk values can't be put in LayoutBlockRareData since they are
   // set too frequently.
-  unsigned width_available_to_children_changed_ : 1;
-  unsigned height_available_to_children_changed_ : 1;
   unsigned descendants_with_floats_marked_for_layout_ : 1;
 
   unsigned has_positioned_objects_ : 1;

@@ -109,8 +109,6 @@ TrackedContainerMap& GetPositionedContainerMap() {
 
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
-      width_available_to_children_changed_(false),
-      height_available_to_children_changed_(false),
       descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
       has_svg_text_descendants_(false) {
@@ -163,25 +161,6 @@ void LayoutBlock::StyleWillChange(StyleDifference diff,
   NOT_DESTROYED();
   SetIsAtomicInlineLevel(new_style.IsDisplayInlineType());
   LayoutBox::StyleWillChange(diff, new_style);
-}
-
-enum LogicalExtent { kLogicalWidth, kLogicalHeight };
-static bool BorderOrPaddingLogicalDimensionChanged(
-    const ComputedStyle& old_style,
-    const ComputedStyle& new_style,
-    LogicalExtent logical_extent) {
-  if (new_style.IsHorizontalWritingMode() ==
-      (logical_extent == kLogicalWidth)) {
-    return old_style.BorderLeftWidth() != new_style.BorderLeftWidth() ||
-           old_style.BorderRightWidth() != new_style.BorderRightWidth() ||
-           old_style.PaddingLeft() != new_style.PaddingLeft() ||
-           old_style.PaddingRight() != new_style.PaddingRight();
-  }
-
-  return old_style.BorderTopWidth() != new_style.BorderTopWidth() ||
-         old_style.BorderBottomWidth() != new_style.BorderBottomWidth() ||
-         old_style.PaddingTop() != new_style.PaddingTop() ||
-         old_style.PaddingBottom() != new_style.PaddingBottom();
 }
 
 // Compute a local version of the "font size scale factor" used by SVG
@@ -241,18 +220,6 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
     text_autosizer->Record(this);
 
   PropagateStyleToAnonymousChildren();
-
-  // It's possible for our border/padding to change, but for the overall logical
-  // width or height of the block to end up being the same. We keep track of
-  // this change so in layoutBlock, we can know to set relayoutChildren=true.
-  width_available_to_children_changed_ |=
-      old_style && NeedsLayout() &&
-      (diff.NeedsFullLayout() || BorderOrPaddingLogicalDimensionChanged(
-                                     *old_style, new_style, kLogicalWidth));
-  height_available_to_children_changed_ |=
-      old_style && diff.NeedsFullLayout() && NeedsLayout() &&
-      BorderOrPaddingLogicalDimensionChanged(*old_style, new_style,
-                                             kLogicalHeight);
 
   if (diff.TransformChanged() && has_svg_text_descendants_) {
     const double new_squared_scale = ComputeSquaredLocalFontSizeScalingFactor(
@@ -414,38 +381,6 @@ void LayoutBlock::UpdateLayout() {
   // children.
   if (HasControlClip() && HasLayoutOverflow())
     ClearLayoutOverflow();
-
-  height_available_to_children_changed_ = false;
-}
-
-bool LayoutBlock::WidthAvailableToChildrenHasChanged() {
-  NOT_DESTROYED();
-  // TODO(robhogan): Does m_widthAvailableToChildrenChanged always get reset
-  // when it needs to?
-  bool width_available_to_children_has_changed =
-      width_available_to_children_changed_;
-  width_available_to_children_changed_ = false;
-
-  // If we use border-box sizing, have percentage padding, and our parent has
-  // changed width then the width available to our children has changed even
-  // though our own width has remained the same.
-  // TODO(mstensho): NeedsPreferredWidthsRecalculation() is used here to check
-  // if we have percentage padding, which is rather non-obvious. That method
-  // returns true in other cases as well.
-  width_available_to_children_has_changed |=
-      StyleRef().BoxSizing() == EBoxSizing::kBorderBox &&
-      NeedsPreferredWidthsRecalculation() &&
-      View()->GetLayoutState()->ContainingBlockLogicalWidthChanged();
-
-  return width_available_to_children_has_changed;
-}
-
-DISABLE_CFI_PERF
-bool LayoutBlock::UpdateLogicalWidthAndColumnWidth() {
-  NOT_DESTROYED();
-  LayoutUnit old_width = LogicalWidth();
-  UpdateLogicalWidth();
-  return old_width != LogicalWidth() || WidthAvailableToChildrenHasChanged();
 }
 
 void LayoutBlock::UpdateBlockLayout(bool) {
@@ -579,45 +514,6 @@ void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
       AddLayoutOverflowFromChild(*positioned_object,
                                  ToLayoutSize(positioned_object->Location()));
     }
-  }
-}
-
-static inline bool ChangeInAvailableLogicalHeightAffectsChild(
-    LayoutBlock* parent,
-    LayoutBox& child) {
-  if (parent->StyleRef().BoxSizing() != EBoxSizing::kBorderBox)
-    return false;
-  return parent->StyleRef().IsHorizontalWritingMode() &&
-         !child.StyleRef().IsHorizontalWritingMode();
-}
-
-void LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
-                                                        LayoutBox& child) {
-  NOT_DESTROYED();
-  if (child.IsOutOfFlowPositioned()) {
-    // It's rather useless to mark out-of-flow children at this point. We may
-    // not be their containing block (and if we are, it's just pure luck), so
-    // this would be the wrong place for it. Furthermore, it would cause trouble
-    // for out-of-flow descendants of column spanners, if the containing block
-    // is outside the spanner but inside the multicol container.
-    return;
-  }
-
-  // FIXME: Technically percentage height objects only need a relayout if
-  // their percentage isn't going to be turned into an auto value. Add a
-  // method to determine this, so that we can avoid the relayout.
-  bool has_relative_logical_height =
-      child.HasRelativeLogicalHeight() ||
-      (child.IsAnonymous() && HasRelativeLogicalHeight()) ||
-      child.StretchesToViewport();
-  if (relayout_children ||
-      (has_relative_logical_height && !IsA<LayoutView>(this)) ||
-      (height_available_to_children_changed_ &&
-       ChangeInAvailableLogicalHeightAffectsChild(this, child))) {
-    if (child.IsLayoutNGObject())
-      child.SetSelfNeedsLayoutForAvailableSpace(true);
-    else
-      child.SetChildNeedsLayout(kMarkOnlyThis);
   }
 }
 
@@ -1075,14 +971,6 @@ void LayoutBlock::OffsetForContents(PhysicalOffset& offset) const {
   NOT_DESTROYED();
   if (IsScrollContainer())
     offset += PhysicalOffset(PixelSnappedScrolledContentOffset());
-}
-
-void LayoutBlock::ScrollbarsChanged(bool horizontal_scrollbar_changed,
-                                    bool vertical_scrollbar_changed,
-                                    ScrollbarChangeContext context) {
-  NOT_DESTROYED();
-  width_available_to_children_changed_ |= vertical_scrollbar_changed;
-  height_available_to_children_changed_ |= horizontal_scrollbar_changed;
 }
 
 MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
