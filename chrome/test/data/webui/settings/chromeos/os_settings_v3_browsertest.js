@@ -476,6 +476,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_privacy_page/smart_privacy_subpage_tests.js'
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
+ ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],

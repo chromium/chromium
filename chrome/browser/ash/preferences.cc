@@ -569,6 +569,12 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kUsbDetectorNotificationEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kShowTouchpadScrollScreenEnabled, true);
+
+  // Settings HaTS survey prefs for Settings and Settings Search features.
+  registry->RegisterInt64Pref(::prefs::kHatsOsSettingsSearchSurveyCycleEndTs,
+                              0);
+  registry->RegisterBooleanPref(::prefs::kHatsOsSettingsSearchSurveyIsSelected,
+                                false);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

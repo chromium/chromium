@@ -63,7 +63,7 @@ enum OsSettingSearchBoxUserAction {
   CLICKED_OUT_OF_SEARCH_BOX = 1,
 }
 
-interface OsSettingsSearchBoxElement {
+export interface OsSettingsSearchBoxElement {
   $: {
     search: CrToolbarSearchFieldElement,
     searchResultList: IronListElement,
@@ -72,7 +72,7 @@ interface OsSettingsSearchBoxElement {
 
 const OsSettingsSearchBoxElementBase = I18nMixin(PolymerElement);
 
-class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
+export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     implements SearchResultsObserverInterface,
                PersonalizationSearchResultsObserverInterface {
   static get is() {

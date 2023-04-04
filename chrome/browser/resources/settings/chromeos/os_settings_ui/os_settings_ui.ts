@@ -41,6 +41,7 @@ import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_hats_browser_proxy.js';
 import {getTemplate} from './os_settings_ui.html.js';
 
 declare global {
@@ -179,6 +180,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
+  private osSettingsHatsBrowserProxy_: OsSettingsHatsBrowserProxy;
+  private boundTriggerSettingsHats_: () => void;
 
   constructor() {
     super();
@@ -192,6 +195,11 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.scrollEndDebouncer_ = null;
 
     Router.getInstance().initializeRouteFromUrl();
+
+    this.osSettingsHatsBrowserProxy_ =
+        OsSettingsHatsBrowserProxyImpl.getInstance();
+
+    this.boundTriggerSettingsHats_ = this.triggerSettingsHats_.bind(this);
   }
 
   override ready() {
@@ -263,6 +271,13 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
         drawer.cancel();
       });
     });
+
+    this.addEventListener(
+        'search-changed',
+        () => {
+          this.osSettingsHatsBrowserProxy_.settingsUsedSearch();
+        },
+        /*AddEventListenerOptions=*/ {once: true});
   }
 
   override connectedCallback() {
@@ -315,6 +330,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     window.addEventListener('focus', recordPageFocus);
     window.addEventListener('blur', recordPageBlur);
 
+    window.addEventListener('blur', this.boundTriggerSettingsHats_);
+
     // Clicks need to be captured because unlike focus/blur to the settings
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
@@ -325,6 +342,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
     window.removeEventListener('focus', recordPageFocus);
     window.removeEventListener('blur', recordPageBlur);
+    window.removeEventListener('blur', this.boundTriggerSettingsHats_);
     window.removeEventListener('click', recordClick);
     Router.getInstance().resetRouteForTesting();
   }
@@ -491,6 +509,10 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     const METRIC_NAME = 'ChromeOS.Settings.TimeUntilInteractive';
     const timeMs = Math.round(window.performance.now());
     chrome.metricsPrivate.recordTime(METRIC_NAME, timeMs);
+  }
+
+  private triggerSettingsHats_(): void {
+    this.osSettingsHatsBrowserProxy_.sendSettingsHats();
   }
 }
 

@@ -1102,6 +1102,16 @@ const char kEduCoexistenceArcMigrationCompleted[] =
 
 // Dictionary pref for shared extension storage for device pin.
 const char kSharedStorage[] = "shared_storage";
+
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent OS Settings Search survey cycle.
+const char kHatsOsSettingsSearchSurveyCycleEndTs[] =
+    "hats_os_settings_search_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the OS Settings
+// Search survey.
+const char kHatsOsSettingsSearchSurveyIsSelected[] =
+    "hats_os_settings_search_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

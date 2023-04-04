@@ -600,6 +600,10 @@ BASE_FEATURE(kHappinessTrackingGeneralCamera,
 BASE_FEATURE(kHappinessTrackingPrivacyHubBaseline,
              "HappinessTrackingPrivacyHubBaseline",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for OS Settings Search survey.
+BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
+             "HappinessTrackingOsSettingsSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

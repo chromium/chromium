@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -149,6 +150,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ash::personalization_app::PersonalizationAppManagerFactory::GetInstance();
   ash::quick_start::QuickStartConnectivityServiceFactory::GetInstance();
   ash::quick_unlock::QuickUnlockFactory::GetInstance();
+  ash::settings::OsSettingsHatsManagerFactory::GetInstance();
   ash::settings::OsSettingsManagerFactory::GetInstance();
   AuthPolicyCredentialsManagerFactory::GetInstance();
   ax::AccessibilityServiceRouterFactory::EnsureFactoryBuilt();
