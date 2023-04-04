@@ -517,6 +517,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
+    units="number of boot attempts" expires_after="2023-10-06">
+  <owner>kendraketsui@google.com</owner>
+  <owner>mutexlox@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records number of boot attempts on a device since receiving a variations
+    safe seed from Chrome. This value is reported every time a device boots.
+  </summary>
+</histogram>
+
 <histogram name="Platform.FileSystem.ErrorCount" units="errors"
     expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
