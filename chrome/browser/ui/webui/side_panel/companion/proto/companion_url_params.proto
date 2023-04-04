@@ -9,6 +9,10 @@ package companion.proto;
 
 // Information passed to the server side to make a decision on whether or not to
 // show various promos.
+// Keep this file in sync with
+// google3/lens/web/standalone/companion/proto/companion_url_params.proto
+
+// Next ID: 4
 message PromoState {
   // Number of times the user has denied various promo requests in past.
   int32 signin_promo_denial_count = 1;
@@ -18,7 +22,8 @@ message PromoState {
 
 // This proto file is shared between Chrome and Server side and used to pack the
 // URL query params for the companion URL request.
-message QueryParams {
+// Next ID: 6
+message CompanionUrlParams {
   // URL of the main contents. Empty, if MSBB is off.
   string page_url = 1;
 
