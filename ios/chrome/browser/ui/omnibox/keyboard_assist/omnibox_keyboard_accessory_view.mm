@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/common/button_configuration_util.h"
@@ -143,7 +144,8 @@
   UIColor* kTitleColorStateNormal = [UIColor colorWithWhite:0.0 alpha:1.0];
   UIColor* kTitleColorStateHighlighted = [UIColor colorWithWhite:0.0 alpha:0.3];
 
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+  UIButton* button =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
   [button setTitleColor:kTitleColorStateNormal forState:UIControlStateNormal];
   [button setTitleColor:kTitleColorStateHighlighted
                forState:UIControlStateHighlighted];
