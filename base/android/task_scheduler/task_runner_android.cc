@@ -34,12 +34,13 @@ TaskRunnerAndroid::UiThreadTaskRunnerCallback& GetUiThreadTaskRunnerCallback() {
 
 void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
                  const std::string& runnable_class_name) {
-  // JNIEnv is thread specific, but we don't know which thread we'll be run on
-  // so we must look it up.
-  std::string event_name = base::StrCat({"JniPostTask: ", runnable_class_name});
   TRACE_EVENT("toplevel", nullptr, [&](::perfetto::EventContext& ctx) {
+    std::string event_name =
+        base::StrCat({"JniPostTask: ", runnable_class_name});
     ctx.event()->set_name(event_name.c_str());
   });
+  // JNIEnv is thread specific, but we don't know which thread we'll be run on
+  // so we must look it up.
   JNI_Runnable::Java_Runnable_run(base::android::AttachCurrentThread(), task);
 }
 
