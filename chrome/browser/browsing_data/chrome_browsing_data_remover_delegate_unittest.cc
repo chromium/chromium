@@ -885,6 +885,8 @@ class RemoveDownloadsTester {
   RemoveDownloadsTester& operator=(const RemoveDownloadsTester&) = delete;
 
   ~RemoveDownloadsTester() {
+    // Drop unowned reference before service destroys it.
+    chrome_download_manager_delegate_ = nullptr;
     service_->SetDownloadManagerDelegateForTesting(nullptr);
   }
 
