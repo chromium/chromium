@@ -100,9 +100,9 @@ class ArcInputOverlayManager : public KeyedService,
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when finishing reading default data.
   void OnFinishReadDefaultData(std::unique_ptr<TouchInjector> touch_injector);
-  // Called when receiving app category from ARC.
-  void OnReceiveAppCategory(std::unique_ptr<TouchInjector> touch_injector,
-                            arc::mojom::AppCategory category);
+  // Called after checking if GIO is applicable.
+  void OnDidCheckGioApplicable(std::unique_ptr<TouchInjector> touch_injector,
+                               bool is_gio_applicable);
   // Read customized data. Customized data will overrides the default data if
   // there is any.
   void ReadCustomizedData(const std::string& package_name,
@@ -149,10 +149,6 @@ class ArcInputOverlayManager : public KeyedService,
   std::unique_ptr<DisplayOverlayController> display_overlay_controller_;
   std::unique_ptr<DataController> data_controller_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  // Point at the ARC mojom connection holder. This manager has the same
-  // lifecycle with ARC session and the |connection_|.
-  arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
-      connection_ = nullptr;
 
   // TODO(b/253646354): This can be removed when removing the flag.
   bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();

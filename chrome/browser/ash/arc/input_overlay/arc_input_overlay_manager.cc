@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
@@ -370,27 +371,32 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
       return;
     }
 
-    // ARC is only allowed for the primary user.
-    auto* profile = ProfileManager::GetPrimaryUserProfile();
-    DCHECK(arc::IsArcAllowedForProfile(profile));
-    connection_ = ArcAppListPrefs::Get(profile)->app_connection_holder();
-    if (!connection_) {
+    // Check if GIO is applicable from mojom instance.
+    auto* arc_service_manager = arc::ArcServiceManager::Get();
+    if (!arc_service_manager) {
+      LOG(ERROR) << "Failed to get ArcServiceManager";
       ResetForPendingTouchInjector(std::move(touch_injector));
-      LOG(ERROR) << "Unable to get access to GetAppCategory for nullptr "
-                    "|connection_|.";
       return;
     }
-    auto* app_instance =
-        ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
-    if (!app_instance) {
+    auto* compatibility_mode =
+        arc_service_manager->arc_bridge_service()->compatibility_mode();
+    if (!compatibility_mode || !compatibility_mode->IsConnected()) {
+      LOG(ERROR) << "No supported Android connection.";
+      ResetForPendingTouchInjector(std::move(touch_injector));
+      return;
+    }
+    auto* instance =
+        ARC_GET_INSTANCE_FOR_METHOD(compatibility_mode, IsGioApplicable);
+    if (!instance) {
+      LOG(ERROR) << "IsGioApplicable method for ARC is not available";
       ResetForPendingTouchInjector(std::move(touch_injector));
       return;
     }
 
-    VLOG(2) << "Fetch app category of package: " << package_name;
-    app_instance->GetAppCategory(
+    VLOG(2) << "Check if GIO applicable on package: " << package_name;
+    instance->IsGioApplicable(
         package_name,
-        base::BindOnce(&ArcInputOverlayManager::OnReceiveAppCategory,
+        base::BindOnce(&ArcInputOverlayManager::OnDidCheckGioApplicable,
                        Unretained(this), std::move(touch_injector)));
   } else {
     if (!data_controller_) {
@@ -408,11 +414,10 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
   }
 }
 
-void ArcInputOverlayManager::OnReceiveAppCategory(
+void ArcInputOverlayManager::OnDidCheckGioApplicable(
     std::unique_ptr<TouchInjector> touch_injector,
-    arc::mojom::AppCategory category) {
-  VLOG(2) << "ARC app category is: " << category;
-  if (category != arc::mojom::AppCategory::kGame) {
+    bool is_gio_applicable) {
+  if (!is_gio_applicable) {
     ResetForPendingTouchInjector(std::move(touch_injector));
     return;
   }

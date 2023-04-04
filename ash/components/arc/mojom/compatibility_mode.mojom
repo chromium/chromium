@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module arc.mojom;
 
@@ -30,9 +30,14 @@ enum ArcResizeLockState {
 // mode to Android.
 // Compatibility mode is a special set of WM policies to enforce restrictions
 // on apps that are not optimized for large screens.
-// Next Method ID: 1
+// Next Method ID: 2
 interface CompatibilityModeInstance {
   // Synchronizes the resize lock state of the given package name to Android.
   SetResizeLockState@0(string package_name,
                        ArcResizeLockState state);
+
+  // Queries whether GIO is applicable for |package_name|. It returns true if
+  // |package_name| is a game app and doesn't have GIO opt-out.
+  [MinVersion=1] IsGioApplicable@1(string package_name) =>
+    (bool is_gio_applicable);
 };
