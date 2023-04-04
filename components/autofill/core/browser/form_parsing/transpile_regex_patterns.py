@@ -73,9 +73,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
           r'(^|_)([a-z])', lambda matched: matched.group(2).upper(),
           json.lower())
     cpp_enum_values = [json_to_cpp_constant_symbol(c) for c in json_enum_values]
-    return (f'DenseSet<{cpp_enum_type}, '\
-            f'/*kMaxValue=*/{cpp_enum_type}::kMaxValue, '\
-            f'/*packed=*/true>{{' + ','.join(cpp_enum_values) + f'}}')
+    return f'DenseSet<{cpp_enum_type}>{{' + ','.join(cpp_enum_values) + f'}}'
 
   # Maps a list of strings to a DenseSet<MatchAttribute> expression.
   # The strings must be the names of MatchAttribute constants, e.g., NAME.

@@ -92,10 +92,8 @@ struct MatchingPattern {
   const char16_t* positive_pattern;
   const char16_t* negative_pattern;
   const float positive_score = 1.1;
-  const DenseSet<MatchAttribute, MatchAttribute::kMaxValue, /*packed=*/true>
-      match_field_attributes;
-  const DenseSet<MatchFieldType, MatchFieldType::kMaxValue, /*packed=*/true>
-      match_field_input_types;
+  const DenseSet<MatchAttribute> match_field_attributes;
+  const DenseSet<MatchFieldType> match_field_input_types;
 };
 #pragma pack(pop)
 
