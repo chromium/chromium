@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,10 +69,19 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
 
 PromosManagerImpl::PromosManagerImpl(PrefService* local_state,
                                      base::Clock* clock,
-                                     feature_engagement::Tracker* tracker)
-    : local_state_(local_state), clock_(clock), tracker_(tracker) {
+                                     feature_engagement::Tracker* tracker,
+                                     PromosManagerEventExporter* event_exporter)
+    : local_state_(local_state),
+      clock_(clock),
+      tracker_(tracker),
+      event_exporter_(event_exporter) {
   DCHECK(local_state_);
   DCHECK(clock_);
+  if (ShouldPromosManagerUseFET()) {
+    tracker_->AddOnInitializedCallback(base::BindOnce(
+        &PromosManagerImpl::OnFeatureEngagementTrackerInitialized,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 PromosManagerImpl::~PromosManagerImpl() = default;
@@ -102,6 +112,9 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
   impression.Set(promos_manager::kImpressionPromoKey,
                  promos_manager::NameForPromo(promo));
   impression.Set(promos_manager::kImpressionDayKey, TodaysDay());
+  impression.Set(
+      promos_manager::kImpressionFeatureEngagementMigrationCompletedKey,
+      ShouldPromosManagerUseFET());
 
   ScopedListPrefUpdate update(local_state_,
                               prefs::kIosPromosManagerImpressions);
@@ -118,6 +131,16 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
   if (base::Contains(single_display_active_promos_, promo) ||
       base::Contains(single_display_pending_promos_, promo)) {
     DeregisterPromo(promo);
+  }
+}
+
+void PromosManagerImpl::OnFeatureEngagementTrackerInitialized(bool success) {
+  CHECK(ShouldPromosManagerUseFET());
+  if (success) {
+    // Loading the tracker may cause event migration to take place, so re-load
+    // the impressions in case they have changed.
+    impression_history_ = ImpressionHistory(
+        local_state_->GetList(prefs::kIosPromosManagerImpressions));
   }
 }
 
@@ -184,6 +207,9 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
 
 void PromosManagerImpl::InitializePromoConfigs(PromoConfigsSet promo_configs) {
   promo_configs_ = std::move(promo_configs);
+  if (event_exporter_) {
+    event_exporter_->InitializePromoConfigs(promo_configs);
+  }
 }
 
 // Determines which promo to display next.
@@ -244,24 +270,13 @@ std::vector<promos_manager::Impression> PromosManagerImpl::ImpressionHistory(
   for (size_t i = 0; i < stored_impression_history.size(); ++i) {
     const base::Value::Dict& stored_impression =
         stored_impression_history[i].GetDict();
-    const std::string* stored_promo =
-        stored_impression.FindString(promos_manager::kImpressionPromoKey);
-    absl::optional<int> stored_day =
-        stored_impression.FindInt(promos_manager::kImpressionDayKey);
-
-    // Skip malformed impression history. (This should almost never happen.)
-    if (!stored_promo || !stored_day.has_value())
+    absl::optional<promos_manager::Impression> impression =
+        promos_manager::ImpressionFromDict(stored_impression);
+    if (!impression) {
       continue;
+    }
 
-    absl::optional<promos_manager::Promo> promo =
-        promos_manager::PromoForName(*stored_promo);
-
-    // Skip malformed impression history. (This should almost never happen.)
-    if (!promo.has_value())
-      continue;
-
-    impression_history.push_back(
-        promos_manager::Impression(promo.value(), stored_day.value()));
+    impression_history.push_back(impression.value());
   }
 
   return impression_history;

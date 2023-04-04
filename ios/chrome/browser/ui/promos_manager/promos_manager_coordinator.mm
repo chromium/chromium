@@ -129,24 +129,7 @@
 #pragma mark - Public
 
 - (void)start {
-  if (ShouldPromosManagerUseFET()) {
-    // Wait to present a promo until the feature engagement tracker database
-    // is fully initialized.
-    __weak __typeof(self) weakSelf = self;
-    void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
-      if (!successfullyLoaded) {
-        return;
-      }
-      [weakSelf displayPromoIfAvailable];
-    };
-
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
-  } else {
-    [self displayPromoIfAvailable];
-  }
+  [self displayPromoIfAvailable];
 }
 
 - (void)stop {
@@ -155,6 +138,27 @@
 }
 
 - (void)displayPromoIfAvailable {
+  if (ShouldPromosManagerUseFET()) {
+    // Wait to present a promo until the feature engagement tracker database
+    // is fully initialized.
+    __weak __typeof(self) weakSelf = self;
+    void (^onInitializedBlock)(bool) = ^(bool successfullyLoaded) {
+      if (!successfullyLoaded) {
+        return;
+      }
+      [weakSelf displayPromoCallback];
+    };
+
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
+  } else {
+    [self displayPromoCallback];
+  }
+}
+
+- (void)displayPromoCallback {
   absl::optional<promos_manager::Promo> nextPromoForDisplay =
       [self.mediator nextPromoForDisplay];
 

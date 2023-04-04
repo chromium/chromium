@@ -150,6 +150,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/promos_manager:event_exporter_factory",
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
     "//ios/chrome/browser/reading_list",
