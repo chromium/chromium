@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -15,116 +12,4 @@ source_set("structs") {
     "assistive_suggestions.h",
     "autocorrect.h",
   ]
-}
-
-source_set("rulebased") {
-  sources = [
-    "rulebased/def/ar.cc",
-    "rulebased/def/ar.h",
-    "rulebased/def/bn_phone.cc",
-    "rulebased/def/bn_phone.h",
-    "rulebased/def/ckb_ar.cc",
-    "rulebased/def/ckb_ar.h",
-    "rulebased/def/ckb_en.cc",
-    "rulebased/def/ckb_en.h",
-    "rulebased/def/deva_phone.cc",
-    "rulebased/def/deva_phone.h",
-    "rulebased/def/ethi.cc",
-    "rulebased/def/ethi.h",
-    "rulebased/def/fa.cc",
-    "rulebased/def/fa.h",
-    "rulebased/def/gu_phone.cc",
-    "rulebased/def/gu_phone.h",
-    "rulebased/def/hi_inscript.cc",
-    "rulebased/def/hi_inscript.h",
-    "rulebased/def/km.cc",
-    "rulebased/def/km.h",
-    "rulebased/def/kn_phone.cc",
-    "rulebased/def/kn_phone.h",
-    "rulebased/def/lo.cc",
-    "rulebased/def/lo.h",
-    "rulebased/def/ml_phone.cc",
-    "rulebased/def/ml_phone.h",
-    "rulebased/def/my.cc",
-    "rulebased/def/my.h",
-    "rulebased/def/my_myansan.cc",
-    "rulebased/def/my_myansan.h",
-    "rulebased/def/ne_inscript.cc",
-    "rulebased/def/ne_inscript.h",
-    "rulebased/def/ne_phone.cc",
-    "rulebased/def/ne_phone.h",
-    "rulebased/def/ru_phone_aatseel.cc",
-    "rulebased/def/ru_phone_aatseel.h",
-    "rulebased/def/ru_phone_yazhert.cc",
-    "rulebased/def/ru_phone_yazhert.h",
-    "rulebased/def/si.cc",
-    "rulebased/def/si.h",
-    "rulebased/def/ta_inscript.cc",
-    "rulebased/def/ta_inscript.h",
-    "rulebased/def/ta_itrans.cc",
-    "rulebased/def/ta_itrans.h",
-    "rulebased/def/ta_phone.cc",
-    "rulebased/def/ta_phone.h",
-    "rulebased/def/ta_tamil99.cc",
-    "rulebased/def/ta_tamil99.h",
-    "rulebased/def/ta_typewriter.cc",
-    "rulebased/def/ta_typewriter.h",
-    "rulebased/def/te_phone.cc",
-    "rulebased/def/te_phone.h",
-    "rulebased/def/th.cc",
-    "rulebased/def/th.h",
-    "rulebased/def/th_pattajoti.cc",
-    "rulebased/def/th_pattajoti.h",
-    "rulebased/def/th_tis.cc",
-    "rulebased/def/th_tis.h",
-    "rulebased/def/us.cc",
-    "rulebased/def/us.h",
-    "rulebased/def/vi_tcvn.cc",
-    "rulebased/def/vi_tcvn.h",
-    "rulebased/def/vi_telex.cc",
-    "rulebased/def/vi_telex.h",
-    "rulebased/def/vi_viqr.cc",
-    "rulebased/def/vi_viqr.h",
-    "rulebased/def/vi_vni.cc",
-    "rulebased/def/vi_vni.h",
-    "rulebased/engine.cc",
-    "rulebased/engine.h",
-    "rulebased/rules_data.cc",
-    "rulebased/rules_data.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/ash/services/ime/public/mojom:mojom",
-    "//third_party/re2",
-  ]
-}
-
-source_set("rulebased_unit_tests") {
-  testonly = true
-  deps = [
-    ":rulebased",
-    "//base",
-    "//chromeos/ash/services/ime/public/mojom:mojom_shared_cpp_sources",
-    "//testing/gmock",
-    "//testing/gtest:gtest",
-  ]
-  sources = [ "rulebased/rulebased_unittest.cc" ]
-}
-
-if (use_fuzzing_engine_with_lpm) {
-  fuzzable_proto_library("rulebased_fuzzer_proto") {
-    sources = [ "rulebased/rulebased_fuzzer.proto" ]
-  }
-
-  fuzzer_test("rulebased_fuzzer") {
-    sources = [ "rulebased/rulebased_fuzzer.cc" ]
-    seed_corpus = "rulebased/test_data"
-    deps = [
-      ":rulebased",
-      ":rulebased_fuzzer_proto",
-      "//base",
-      "//third_party/libprotobuf-mutator",
-    ]
-  }
 }

@@ -18,7 +18,6 @@
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
-#include "chromeos/ash/services/ime/rule_based_engine.h"
 #include "mojo/public/c/system/thunks.h"
 
 namespace ash {
@@ -74,7 +73,6 @@ void ImeService::BindInputEngineManager(
 void ImeService::ResetAllBackendConnections() {
   decoder_engine_.reset();
   system_engine_.reset();
-  connection_factory_.reset();
 }
 
 void ImeService::ConnectToImeEngine(
@@ -92,8 +90,7 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if ((connection_factory_ && connection_factory_->IsConnected()) ||
-      (system_engine_ && system_engine_->IsConnected())) {
+  if (system_engine_ && system_engine_->IsConnected()) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
@@ -109,28 +106,14 @@ void ImeService::ConnectToImeEngine(
 
 void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
-    mojom::ConnectionTarget connection_target,
     InitializeConnectionFactoryCallback callback) {
   ResetAllBackendConnections();
 
-  switch (connection_target) {
-    case mojom::ConnectionTarget::kRulebasedEngine: {
-      connection_factory_ = std::make_unique<RuleBasedEngineConnectionFactory>(
-          std::move(connection_factory));
-      std::move(callback).Run(/*success=*/true);
-      break;
-    }
-    case mojom::ConnectionTarget::kImeServiceLib: {
-      system_engine_ = std::make_unique<SystemEngine>(
-          this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
-      bool bound =
-          system_engine_->BindConnectionFactory(std::move(connection_factory));
-      std::move(callback).Run(bound);
-      break;
-    }
-    default:
-      break;
-  }
+  system_engine_ = std::make_unique<SystemEngine>(
+      this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
+  bool bound =
+      system_engine_->BindConnectionFactory(std::move(connection_factory));
+  std::move(callback).Run(bound);
 }
 
 const char* ImeService::GetImeBundleDir() {

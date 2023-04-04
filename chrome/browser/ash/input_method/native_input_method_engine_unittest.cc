@@ -231,7 +231,6 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
 
   void InitializeConnectionFactory(
       mojo::PendingReceiver<ime::mojom::ConnectionFactory> connection_factory,
-      ime::mojom::ConnectionTarget connection_target,
       InitializeConnectionFactoryCallback callback) override {
     fake_connection_factory_.Bind(std::move(connection_factory));
     std::move(callback).Run(/*bound=*/true);

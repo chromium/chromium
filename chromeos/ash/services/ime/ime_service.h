@@ -18,8 +18,6 @@
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
-#include "chromeos/ash/services/ime/rule_based_engine.h"
-#include "chromeos/ash/services/ime/rule_based_engine_connection_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -84,7 +82,6 @@ class ImeService : public mojom::ImeService,
       ConnectToImeEngineCallback callback) override;
   void InitializeConnectionFactory(
       mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
-      mojom::ConnectionTarget connection_target,
       InitializeConnectionFactoryCallback callback) override;
 
   // ImeCrosPlatform overrides:
@@ -115,15 +112,13 @@ class ImeService : public mojom::ImeService,
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // For the duration of this ImeService's lifetime, there should be one and
-  // only one of these backend connections (represented as "engine" or "factory"
-  // instances) at any point in time.
+  // only one of these backend connections (represented as "engine" instances)
+  // at any point in time.
   // TODO(b/214153032): Rename to better reflect what these represent:
   //     decoder_engine_     --> proto_mode_shared_lib_engine_
   //     system_engine_      --> mojo_mode_shared_lib_engine_
-  //     connection_factory_ --> rule_based_engine_mojo_connection_factory_
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<SystemEngine> system_engine_;
-  std::unique_ptr<RuleBasedEngineConnectionFactory> connection_factory_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;

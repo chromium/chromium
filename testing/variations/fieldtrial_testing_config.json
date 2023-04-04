@@ -7975,21 +7975,6 @@
             ]
         }
     ],
-    "MigrateRuleBasedInputMethods": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MigrateRuleBasedInputMethods"
-                    ]
-                }
-            ]
-        }
-    ],
     "MmapSafeBrowsingDatabase": [
         {
             "platforms": [
