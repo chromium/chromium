@@ -178,6 +178,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, BigDelete);
   FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, BigImport);
   FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, HashRangeWraparound);
+  FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, ResizeErrorHandling);
 
   // Keeps the result of loading the table from the database file to the UI
   // thread.
@@ -335,17 +336,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
                                   const uint8_t salt[LINK_SALT_LENGTH],
                                   base::MappedReadOnlyRegion* memory);
 
-  // A wrapper for CreateURLTable, this will allocate a new table, initialized
-  // to empty. The caller is responsible for saving the shared memory pointer
-  // and handles before this call (they will be replaced with new ones) and
-  // releasing them later. This is designed for callers that make a new table
-  // and then copy values from the old table to the new one, then release the
-  // old table.
-  //
-  // Returns true on success. On failure, the old table will be restored. The
-  // caller should not attemp to release the pointer/handle in this case.
-  bool BeginReplaceURLTable(int32_t num_entries);
-
   // unallocates the Fingerprint table
   void FreeURLTable();
 
@@ -484,6 +474,10 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // history if we have an error opening the file. This is used for testing,
   // will be false in production.
   const bool suppress_rebuild_ = false;
+
+  // Set to fail CreateURLTable(), to simulate shared memory allocation failure.
+  // This is used for testing, will be false in production.
+  static bool fail_table_creation_for_testing_;
 
   base::WeakPtrFactory<VisitedLinkWriter> weak_ptr_factory_{this};
 };

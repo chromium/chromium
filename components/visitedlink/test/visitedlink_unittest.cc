@@ -578,6 +578,31 @@ TEST_F(VisitedLinkTest, HashRangeWraparound) {
   ASSERT_TRUE(writer_->IsVisited(kFingerprint1));
 }
 
+TEST_F(VisitedLinkTest, ResizeErrorHandling) {
+  // Create a small database.
+  const int32_t initial_size = 17;
+  ASSERT_TRUE(InitVisited(initial_size, true, true));
+
+  // Add test URL.
+  GURL url = TestURL(0);
+  writer_->AddURL(url);
+
+  // Simulate shared memory allocation failure, causing CreateURLTable() to
+  // fail.
+  VisitedLinkWriter::fail_table_creation_for_testing_ = true;
+
+  // Expect resize to fail silently.
+  const int32_t new_size = 23;
+  writer_->ResizeTable(new_size);
+
+  // Restore global state for subsequent tests.
+  VisitedLinkWriter::fail_table_creation_for_testing_ = false;
+
+  // Verify contents.
+  ASSERT_EQ(writer_->GetUsedCount(), 1);
+  ASSERT_TRUE(writer_->IsVisited(url));
+}
+
 class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
  public:
   VisitCountingContext()
