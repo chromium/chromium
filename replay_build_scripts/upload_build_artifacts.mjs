@@ -265,14 +265,14 @@ async function buildChromiumSymbols(options) {
   }
 
   await buildSymbolsArchive(
-    buildId,
+    `${buildId}-buildkite`,
     path.join("out", "Release"),
     libraries,
     pdbs
   );
 
   log(`ChromiumSymbols Done`);
-  return buildId;
+  return `${buildId}-buildkite`;
 }
 
 
