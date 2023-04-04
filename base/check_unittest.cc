@@ -420,8 +420,12 @@ TEST(CheckDeathTest, OstreamVsToString) {
       got_log_message = true;                                                  \
       EXPECT_EQ(severity, logging::LOG_ERROR);                                 \
       EXPECT_EQ(str.substr(message_start), (msg));                             \
-      EXPECT_STREQ(expected_file, file);                                       \
-      EXPECT_EQ(expected_line, line);                                          \
+      if (std::string(expected_file) != "") {                                  \
+        EXPECT_STREQ(expected_file, file);                                     \
+      }                                                                        \
+      if (expected_line != -1) {                                               \
+        EXPECT_EQ(expected_line, line);                                        \
+      }                                                                        \
       return true;                                                             \
     });                                                                        \
     expr;                                                                      \
@@ -463,12 +467,28 @@ TEST(CheckDeathTest, NotReached) {
   // Expect a DCHECK with streamed params intact.
   EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
 #elif CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+  // This block makes sure that base::Location::Current() returns non-dummy
+  // values for file_name() and line_number(). This is necessary to avoid a
+  // false negative inside EXPECT_LOG_ERROR_WITH_FILENAME() where we exhonorate
+  // the NOTREACHED() macro below even though it didn't provide the expected
+  // filename and line numbers.
+  // See EXPECT_LOG_ERROR_WITH_FILENAME() for the exclusion of "" and -1.
+  ASSERT_NE(base::Location::Current().file_name(), nullptr);
+  EXPECT_STRNE(base::Location::Current().file_name(), "");
+  EXPECT_NE(base::Location::Current().line_number(), -1);
   // Expect LOG(ERROR) that looks like CHECK(false) with streamed params intact.
-  EXPECT_LOG_ERROR(__LINE__, NOTREACHED() << "foo",
-                   "Check failed: false. foo\n");
+  // Note that this implementation uses base::Location::Current() which doesn't
+  // match __FILE__ (strips ../../ prefix) and __LINE__ (uses __builtin_LINE()).
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number(),
+                                 NOTREACHED() << "foo",
+                                 "Check failed: false. foo\n");
 #else
-  // Expect LOG(ERROR) that looks like CHECK(false) without file, line or
-  // streamed params.
+  // Expect LOG(ERROR) that looks like CHECK(false) without file or line intact.
+  // We use `""` and `-1` to not expect a specific filename or line number.
+  // The actual location comes from
+  // logging::NotReachedError::TriggerNotReached() but we have no good way of
+  // asserting what that filename or line number is from here.
   EXPECT_LOG_ERROR_WITH_FILENAME("", -1, NOTREACHED() << "foo",
                                  "Check failed: false. \n");
 #endif
