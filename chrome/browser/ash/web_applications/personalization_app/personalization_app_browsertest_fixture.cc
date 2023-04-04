@@ -20,8 +20,11 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
+#include "content/public/browser/web_ui.h"
+#include "url/gurl.h"
 
 namespace ash::personalization_app {
 
@@ -61,6 +64,8 @@ void PersonalizationAppBrowserTestFixture::SetUpInProcessBrowserTestFixture() {
 }
 
 void PersonalizationAppBrowserTestFixture::SetUpOnMainThread() {
+  WallpaperControllerClientImpl::Get()->SetWallpaperFetcherDelegateForTesting(
+      std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
   MojoWebUIBrowserTest::SetUpOnMainThread();
   test_factory_.AddFactoryOverride(kChromeUIPersonalizationAppHost,
                                    &test_web_ui_provider_);

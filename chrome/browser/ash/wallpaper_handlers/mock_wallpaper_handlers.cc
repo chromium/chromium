@@ -64,20 +64,38 @@ backdrop::Image GenerateFakeBackdropImage(const std::string& collection_id,
   return image;
 }
 
+ash::personalization_app::mojom::GooglePhotosPhotoPtr
+CreateFakeGooglePhotosPhoto(const std::string& id) {
+  auto photo = ash::personalization_app::mojom::GooglePhotosPhoto::New();
+  photo->id = id;
+  photo->name = id;
+  photo->dedup_key = id;
+  photo->url = GURL(kDataUrlPrefix + id);
+  return photo;
+}
+
 ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
-CreateFakeGooglePhotosPhotosResponse() {
+CreateFakeGooglePhotosPhotosResponse(
+    const absl::optional<std::string>& item_id) {
   auto response =
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
   std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr> photos;
-  for (auto i = 0; i < 3; i++) {
-    auto photo = ash::personalization_app::mojom::GooglePhotosPhoto::New();
-    std::string id = base::StringPrintf("fake_google_photos_photo_id_%i", i);
-    photo->id = id;
-    photo->name = id;
-    photo->dedup_key = id;
-    photo->url = GURL(kDataUrlPrefix + base::NumberToString(i));
-    photos.push_back(std::move(photo));
+  if (item_id.has_value()) {
+    // Request for a specific photo with matching id.
+    photos.push_back(CreateFakeGooglePhotosPhoto(item_id.value()));
+  } else {
+    // Request for list of photos.
+    for (auto i = 0; i < 3; i++) {
+      auto photo = ash::personalization_app::mojom::GooglePhotosPhoto::New();
+      std::string id = base::StringPrintf("fake_google_photos_photo_id_%i", i);
+      photo->id = id;
+      photo->name = id;
+      photo->dedup_key = id;
+      photo->url = GURL(kDataUrlPrefix + base::NumberToString(i));
+      photos.push_back(std::move(photo));
+    }
   }
+
   response->photos = std::move(photos);
   response->resume_token = absl::nullopt;
   return response;
@@ -236,13 +254,11 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
           [](const absl::optional<std::string>& item_id,
              const absl::optional<std::string>& album_id,
              const absl::optional<std::string>& resume_token, bool shuffle,
-             base::OnceCallback<void(ash::personalization_app::mojom::
-                                         FetchGooglePhotosPhotosResponsePtr)>
-                 callback) {
+             base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback),
-                               CreateFakeGooglePhotosPhotosResponse()));
+                               CreateFakeGooglePhotosPhotosResponse(item_id)));
           });
 
   ON_CALL(*this, ParseResponse)
