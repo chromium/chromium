@@ -4,6 +4,3 @@ toyoshim@chromium.org
 ricea@chromium.org
 ksakamoto@chromium.org
 horo@chromium.org
-
-per-file web_transport_browsertest.cc=ricea@chromium.org
-per-file web_transport_browsertest.cc=vasilvv@chromium.org
