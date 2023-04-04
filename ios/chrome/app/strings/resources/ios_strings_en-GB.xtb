@@ -177,6 +177,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2218443599109088993">Zoom out</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
 <translation id="2239626343334228536">Clearing browsing data…</translation>
+<translation id="22508856139286506">Dismissed warnings (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → History</translation>
 <translation id="2256933947031277845">Your organisation allows you to sign in only with certain accounts.</translation>
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
@@ -1032,7 +1033,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7920949005883349320">Privacy and security</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
-<translation id="7939128259257418052">Export Passwords…</translation>
+<translation id="7939128259257418052">Export passwords…</translation>
 <translation id="794799177247607889">Stop logging</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="7959441099968534758">GO TO FEED</translation>

@@ -1348,6 +1348,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4274173425554582601">Máy tính và đồ điện tử</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4277028893293644418">Đặt lại mật khẩu</translation>
+<translation id="4277937682389409325">Địa chỉ tại địa phương</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
 <translation id="4281998142035485137">{0,plural, =1{Mở tệp bảo mật?}other{Mở các tệp bảo mật?}}</translation>
 <translation id="4282346679996504092">Thông báo về sản phẩm này đã bị tắt và dấu trang đã bị xoá</translation>
@@ -3360,7 +3361,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9213433120051936369">Tùy chỉnh giao diện</translation>
 <translation id="9215416866750762878">Một ứng dụng hiện không cho Chrome kết nối an toàn với trang web này</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
-<translation id="922152298093051471">Tùy chỉnh Chrome</translation>
+<translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="936602727769022409">Bạn có thể mất quyền truy cập vào Tài khoản Google của mình. Chromium khuyên bạn nên đổi mật khẩu ngay bây giờ. Bạn sẽ được yêu cầu đăng nhập.</translation>
 <translation id="937457230470581909">Sở thú, thuỷ cung và khu bảo tồn</translation>

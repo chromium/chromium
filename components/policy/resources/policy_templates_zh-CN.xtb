@@ -568,6 +568,11 @@
 
       如果此政策未设置或已停用，系统会禁止用户级云政策与任何其他来源的政策合并。</translation>
 <translation id="152657506688053119">默认搜索服务提供商的备选网址列表</translation>
+<translation id="152740744678799092">如果此政策已启用，当用户在地址栏中输入非网址的文字时，系统将会执行默认搜索。若要指定默认搜索引擎，请设置其余的默认搜索政策。如果您将这些政策留空，用户可自行选择默认搜索引擎。如果此政策已停用，当用户在地址栏中输入非网址的文字时，系统将不会执行任何搜索。<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />不支持“已停用”值。
+
+      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您不设置此政策，系统将启用默认搜索引擎，而且用户可以设置搜索引擎列表。
+
+      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="1530812829012954197">总是通过托管浏览器呈现以下网址格式</translation>
 <translation id="1542491165152947087">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
 <translation id="1547424904796464052">固件映像的十六进制编码 SHA-256 哈希。</translation>

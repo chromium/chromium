@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> đã được đẩy ra.</translation>
 <translation id="2307462900900812319">Định cấu hình mạng</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Không tìm thấy tiện ích có mã nhận dạng <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Hãy liên hệ với quản trị viên của bạn.}other{Không tìm thấy các tiện ích có mã nhận dạng <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Hãy liên hệ với quản trị viên của bạn.}}</translation>
 <translation id="2325650632570794183">Loại tệp này không được hỗ trợ. Vui lòng truy cập Cửa hàng Chrome trực tuyến để tìm ứng dụng có thể mở loại tệp này.</translation>
 <translation id="2326539130272988168">Tiếng Bungary</translation>
 <translation id="2337715497728194187">Chia sẻ với Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Không bảo mật</translation>
 <translation id="3291218047831493686">Kết nối với mạng này để thay đổi chế độ cài đặt khóa SIM</translation>
 <translation id="3293023191599135697">Không hỗ trợ mạng WEP</translation>
+<translation id="3295006446256079333">Phương tiện này</translation>
 <translation id="3295357220137379386">Thiết bị đang bận</translation>
 <translation id="3296763833017966289">Tiếng Georgia</translation>
 <translation id="3307875152560779385">Tiếng Ukraina</translation>

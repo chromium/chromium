@@ -452,6 +452,7 @@
 <translation id="3493531032208478708">Сунушталган мазмун жөнүндө <ph name="BEGIN_LINK" />көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">Жарымына чейин ачылган кирүү процессинин ылдыйкы экраны жарымына чейин ачылды.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Эң эскилери боюнча иргөө</translation>
 <translation id="3507132249039706973">Стандарттуу коргоо күйүк</translation>
 <translation id="3509330069915219067">Оффлайн. Chrome жаңыртууларды текшере алган жок</translation>
 <translation id="3513704683820682405">Кошумчаланган чындык</translation>
@@ -568,6 +569,7 @@
 <translation id="4177222230309051052">Бардык кыстамаларды алыңыз</translation>
 <translation id="4177501066905053472">Жарнамалардын темалары</translation>
 <translation id="4181841719683918333">Тилдер</translation>
+<translation id="4188221736490993796">Я-А тартибинде иргөө</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
 <translation id="4196597275619698563">Карта түзүү</translation>
 <translation id="4198423547019359126">Жүктөп алуу үчүн жеткиликтүү орун жок</translation>
@@ -633,6 +635,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
 <translation id="4572422548854449519">Башкарылган аккаунтка кириңиз</translation>
 <translation id="4576892426230499203">Башка текшерүү жолун колдонуп көрүңүз</translation>
+<translation id="4577115723294378384">А-Я тартибинде иргөө</translation>
 <translation id="4578289292431526768">Кеттик!</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# мүнөт мурун}other{# мүнөт мурун}}</translation>
 <translation id="4587589328781138893">Сайттар</translation>
@@ -656,6 +659,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4689792375321623175">Google аркылуу сүрөттөн издөө <ph name="BEGIN_NEW" />Жаңылык<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кештелген сүрөттөр жана файлдар</translation>
+<translation id="4710167854527459075">Эң жаңылары боюнча иргөө</translation>
 <translation id="4719927025381752090">Которуу сунушталсын</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> менен ачуу</translation>
 <translation id="47217992755561375">Мыкты сайттарды караңыз</translation>
@@ -825,6 +829,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5561162485081632007">Кооптуу нерселер орун алганда аларды аныктап, сизге кабарлап турат</translation>
 <translation id="5561549206367097665">Тармак күтүлүүдө…</translation>
 <translation id="5568069709869097550">Аккаунтка кирбей жатат</translation>
+<translation id="557018954714092179">Жаңы папка түзүү</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" /> бул сүрөттү издөө</translation>
 <translation id="5581519193887989363">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK1" />жөндөөлөрдөн<ph name="END_LINK1" /> ар дайым тандай аласыз.</translation>
 <translation id="5590372121997663538">Бул компьютерди эстеп калуу</translation>
@@ -929,6 +934,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6138832295072039549">Сайттын параметрлерин бул жерден өзгөртүңүз</translation>
 <translation id="6140709049082532940">Жакшыртылган коргоо:</translation>
 <translation id="6140912465461743537">Өлкө/Дубан</translation>
+<translation id="6148266338772765473">Шилтемени чыгарып салуу</translation>
 <translation id="6150320133806434356">Кыстарма сакталды</translation>
 <translation id="6154478581116148741">Жөндөөлөргө өтүп, экрандын кулпусун коюңуз да, ушул түзмөктөгү сырсөздөрүңүздү экспорттоңуз</translation>
 <translation id="6159729262978459665">Шайкештирилген бардык түзмөктөрүңүздөгү таржымал тазаланат.</translation>
@@ -1020,6 +1026,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6590680911007613645">Сактап жаткан сырсөзүңүз <ph name="SITE" /> вебсайтындагы сырсөзгө дал келиши керек</translation>
 <translation id="6593061639179217415">Компьютер версиясы</translation>
 <translation id="6594121454516132231">Chrome ачык тармакты коргоодо сайттарга кайчылаш көз салуудан кантип коргой турганын көрүңүз</translation>
+<translation id="6594347733515723558">Параметр-ди иргөө/көрүү</translation>
 <translation id="6595046016124923392">Сүрөттөмөлөрдү жакшыртуу үчүн сүрөттөр Google'га жөнөтүлөт.</translation>
 <translation id="6600954340915313787">Chrome'го көчүрүлдү</translation>
 <translation id="661266467055912436">Сиз жана башкалар үчүн Интернеттеги коопсуздукту арттырат.</translation>

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">惑星</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> が取り外されました。</translation>
 <translation id="2307462900900812319">ネットワークを設定</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}other{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}}</translation>
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
 <translation id="2326539130272988168">ブルガリア語</translation>
 <translation id="2337715497728194187">Bruschetta と共有</translation>

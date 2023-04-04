@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="110724200315609752">ប្ដូរទៅ "វិនដូផ្សេង​ដែល​កំពុងបើក"</translation>
 <translation id="1112015203684611006">បានបរាជ័យក្នុងការបោះពុម្ព</translation>
+<translation id="1118266931011974190">ក្រោយពេល <ph name="THRESHOLD" /> ថ្ងៃ</translation>
 <translation id="1125564390852150847">បង្កើតផ្ទាំងថ្មី</translation>
 <translation id="1126013303640354461">វិធីបង់ប្រាក់ និង​អាសយដ្ឋាន​មក​ពី Google Pay នឹង​មិន​ត្រូវ​បានអ៊ីនគ្រីបទេ។ ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតពី Chrome នឹង​មិន​ធ្វើ​សមកាលកម្មទេ។
 មាន​តែ​អ្នក​ដែលមាន​ឃ្លា​សម្ងាត់​​របស់​អ្នក​ប៉ុណ្ណោះ​ទើប​អាច​អាន​ទិន្នន័យ​ដែល​អ៊ីនគ្រីប​របស់​អ្នកបាន។ ឃ្លា​សម្ងាត់​មិន​ត្រូវ​បាន​ផ្ញើ​ ឬ​រក្សាទុក​ដោយ Google ទេ។ ប្រសិនបើ​អ្នក​ភ្លេច​ឃ្លា​សម្ងាត់​របស់​អ្នក ឬ​ចង់​ផ្លាស់ប្ដូរ​ការកំណត់​នេះ អ្នក​នឹង​ត្រូវ​កំណត់​ការ​ធ្វើសមកាលកម្ម​ឡើងវិញ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@
 <translation id="2218443599109088993">បង្រួម</translation>
 <translation id="2230173723195178503">បាន​ផ្ទុក​គេហទំព័រ​</translation>
 <translation id="2239626343334228536">កំពុង​សម្អាតទិន្នន័យរុករក...</translation>
+<translation id="22508856139286506">បានច្រានចោលសារ​ប្រុងប្រយ័ត្ន (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">ម៉ឺនុយ → ប្រវត្តិ</translation>
 <translation id="2256933947031277845">ស្ថាប័នរបស់អ្នក​អនុញ្ញាតឱ្យអ្នក​ចូលដោយប្រើ​គណនីជាក់លាក់​តែប៉ុណ្ណោះ។</translation>
 <translation id="225943865679747347">កំហុសឆ្គងលេខកូដ៖ <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@
 <translation id="2626236249646841566">សូម​ពិនិត្យមើល​ការតភ្ជាប់​របស់អ្នក រួចសាកល្បង​ចូលគណនី​ម្ដងទៀត។</translation>
 <translation id="2637313651144986786">ស្វែងរកផ្ទាំង...</translation>
 <translation id="2647269890314209800">ខូគីកំពុងត្រូវបានប្រើ</translation>
+<translation id="2648721026697078500">កុំ​ផ្លាស់​ទី</translation>
 <translation id="2648803196158606475">លុបធាតុដែលបានអាន</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2664621323652615289">បញ្ឈប់</translation>
@@ -346,6 +349,7 @@
 <translation id="3305294846493618482">ច្រើន​ទៀត</translation>
 <translation id="3311748811247479259">បិទ</translation>
 <translation id="3324193307694657476">អាសយដ្ឋាន 2</translation>
+<translation id="3328459813621383194">ផ្លាស់​ទី​ផ្ទាំង​ដែល​អសកម្ម</translation>
 <translation id="3328801116991980348">ព័ត៌មានគេហទំព័រ</translation>
 <translation id="3371831930909698441">មាន​មុខងារ​បកប្រែ។ ជម្រើសមាននៅជិត​ផ្នែកខាងក្រោមបំផុត​របស់អេក្រង់។</translation>
 <translation id="3377063233124932127">ឥឡូវនេះ ចំណាំ ពាក្យសម្ងាត់ និង​អ្វីៗជាច្រើនទៀត​ដែលបានរក្សាទុក​របស់អ្នក​ស្ថិតនៅខាងលើគេបំផុត។</translation>
@@ -510,6 +514,7 @@
 <translation id="452750746583162491">ពិនិត្យមើល​ទិន្នន័យ​ដែលបានធ្វើសមកាលកម្មរបស់អ្នក</translation>
 <translation id="4536418791685807335">សាកល្បងព្យាយាមចូលម្តងទៀត</translation>
 <translation id="4540780316273593836">មានអ្វីមួយ​ខុសប្រក្រតី</translation>
+<translation id="4550040941166547650">តែ​នៅ​លើ​ឧបករណ៍​នេះ​ប៉ុណ្ណោះ</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{បិទ​ផ្ទាំង​​អសកម្ម {COUNT} ឬ?}other{បិទ​ផ្ទាំង​​អសកម្ម {COUNT} ឬ?}}</translation>
 <translation id="457386861538956877">ច្រើនទៀត...</translation>
 <translation id="4587235830039045480">រក្សាទុកពាក្យសម្ងាត់នៅក្នុងគណនី Google របស់អ្នក</translation>
@@ -763,6 +768,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6193424046394092997">{count,plural, =1{បានដាក់ចំណាំទៅ {title}}other{បានដាក់ចំណាំទៅ {title}}}</translation>
 <translation id="6196207969502475924">ស្វែងរកដោយសម្លេង</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{បិទផ្ទាំង {COUNT}}other{បិទផ្ទាំង {COUNT}}}</translation>
+<translation id="6210079381482819663">ផ្ទាំង​ដែល​មិនបានប្រើ​រយៈពេល <ph name="THRESHOLD" /> ថ្ងៃឡើងទៅ​ត្រូវ​បាន​ផ្លាស់ទី​មក​ទីនេះ។ អ្នក​អាច​ផ្លាស់ប្ដូរ​លក្ខណៈ​នេះ​​បានគ្រប់​ពេល​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="6213567400989743524">បានច្រានចោលសារប្រយ័ត្ន</translation>
 <translation id="6219550825416862075">សូមស្វាគមន៍សម្រាប់ការវិលត្រឡប់មកវិញ!</translation>
 <translation id="6219688215832490856">កុំ​បកប្រែ​ឱ្យសោះ</translation>
@@ -1058,6 +1064,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8059533439631660104">បង្រួមផ្នែកនេះ</translation>
 <translation id="8065292699993359127">បើក URL នៅក្នុង Chrome ក្នុងមុខងារឯកជន</translation>
 <translation id="806745655614357130">រក្សាទិន្នន័យរបស់ខ្ញុំដាច់ដោយឡែកពីគ្នា</translation>
+<translation id="8069394452933076548">ជ្រើសរើស​ពេលណាត្រូវផ្លាស់ទី​ផ្ទាំង​ដែល​មិន​បាន​ប្រើ​ថ្មីៗ​នេះ​ទៅ​ផ្នែក​ផ្ទាំង​​អសកម្ម។</translation>
 <translation id="8073670137947914548">បានបញ្ចប់​ការទាញយក</translation>
 <translation id="8073872304774253879">ធ្វើឱ្យ​ការស្វែងរក និង​ការរុករក​ប្រសើរ​ជាងមុន</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
@@ -1201,6 +1208,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9055772144595778347">មិនអាចចូលបានទេ</translation>
 <translation id="9055960261314198756">ការការពារ​កម្រិត​ខ្ពស់ត្រូវបានបិទ</translation>
 <translation id="9057972802061533987">មិនអាច​តាមដានបានទេ។ មានអ្វីមួយខុសប្រក្រតី។</translation>
+<translation id="9061495354530850708">នៅ​ក្នុង​គណនី Google របស់​អ្នក</translation>
 <translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9068336935206019333">បើក​នៅ​ក្នុង​មុខងារ​ឯកជន​របស់ Chrome</translation>
 <translation id="9079935439869366234">សម្គាល់ថាមិនទាន់អានទាំងអស់</translation>

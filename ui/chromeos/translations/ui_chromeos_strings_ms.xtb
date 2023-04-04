@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />telah dikeluarkan.</translation>
 <translation id="2307462900900812319">Konfigurasikan rangkaian</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Sambungan dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat dikesan. Hubungi pentadbir anda.}other{Sambungan dengan ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> tidak dapat dikesan. Hubungi pentadbir anda.}}</translation>
 <translation id="2325650632570794183">Jenis fail ini tidak disokong. Sila lawati Kedai Web Chrome untuk mendapatkan apl yang boleh membuka jenis fail ini.</translation>
 <translation id="2326539130272988168">Bulgaria</translation>
 <translation id="2337715497728194187">Kongsi dengan Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Tidak selamat</translation>
 <translation id="3291218047831493686">Sambung kepada rangkaian ini untuk menukar tetapan kunci SIM</translation>
 <translation id="3293023191599135697">Rangkaian WEP tidak disokong</translation>
+<translation id="3295006446256079333">Kelantangan ini</translation>
 <translation id="3295357220137379386">Peranti sibuk</translation>
 <translation id="3296763833017966289">Bahasa Georgia</translation>
 <translation id="3307875152560779385">Ukraine</translation>

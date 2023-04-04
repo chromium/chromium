@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">سیاره</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> خارج شد.</translation>
 <translation id="2307462900900812319">پیکربندی شبکه</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{افزونه‌ای با شناسه <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}one{افزونه‌ای با شناسه <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}other{افزونه‌هایی با شناسه‌های <ph name="BEGIN_LIST" /><ph name="END_LIST" /> پیدا نشد. با سرپرست تماس بگیرید.}}</translation>
 <translation id="2325650632570794183">‏این نوع فایل پشتیبانی نمی‌شود. لطفاً به «نت‌بازار Chrome» بروید تا برنامه‌ای را پیدا کنید که بتواند این نوع فایل را باز کند.</translation>
 <translation id="2326539130272988168">بلغاری</translation>
 <translation id="2337715497728194187">‏هم‌رسانی با Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">ناامن</translation>
 <translation id="3291218047831493686">برای تغییر دادن تنظیم قفل سیم‌کارت، به این شبکه متصل شوید</translation>
 <translation id="3293023191599135697">‏از شبکه‌های WEP پشتیبانی نمی‌شود</translation>
+<translation id="3295006446256079333">این حجم</translation>
 <translation id="3295357220137379386">دستگاه مشغول است</translation>
 <translation id="3296763833017966289">گرجستانی</translation>
 <translation id="3307875152560779385">اوکراینی</translation>

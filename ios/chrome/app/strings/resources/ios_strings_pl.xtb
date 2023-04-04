@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Przełącz na otwarte okno</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
+<translation id="1118266931011974190">Po <ph name="THRESHOLD" /> dniach</translation>
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
 <translation id="1126013303640354461">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, musisz zresetować synchronizację. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2218443599109088993">Pomniejsz</translation>
 <translation id="2230173723195178503">Wczytano stronę internetową</translation>
 <translation id="2239626343334228536">Czyszczę dane przeglądania…</translation>
+<translation id="22508856139286506">Zamknięte ostrzeżenia (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historia</translation>
 <translation id="2256933947031277845">Twoja organizacja pozwala logować się tylko na określone konta.</translation>
 <translation id="225943865679747347">Kod błędu: <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2626236249646841566">Sprawdź połączenie i zaloguj się ponownie.</translation>
 <translation id="2637313651144986786">Wyszukaj karty...</translation>
 <translation id="2647269890314209800">Pliki cookie w użyciu</translation>
+<translation id="2648721026697078500">Nigdy nie przenoś</translation>
 <translation id="2648803196158606475">Usuń przeczytane</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2664621323652615289">Zatrzymaj</translation>
@@ -346,6 +349,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3305294846493618482">więcej</translation>
 <translation id="3311748811247479259">Wyłączono</translation>
 <translation id="3324193307694657476">Adres 2</translation>
+<translation id="3328459813621383194">Przenieś nieaktywne karty</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
 <translation id="3377063233124932127">Zapisane zakładki, hasła i inne elementy będą widoczne u góry.</translation>
@@ -510,6 +514,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4536418791685807335">Spróbuj zalogować się jeszcze raz.</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
+<translation id="4550040941166547650">Tylko na tym urządzeniu</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Zamknąć {COUNT} nieaktywną kartę?}few{Zamknąć {COUNT} nieaktywne karty?}many{Zamknąć {COUNT} nieaktywnych kart?}other{Zamknąć {COUNT} nieaktywnej karty?}}</translation>
 <translation id="457386861538956877">Więcej</translation>
 <translation id="4587235830039045480">Zapisz hasło na koncie Google</translation>
@@ -763,6 +768,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6193424046394092997">{count,plural, =1{Dodano do zakładek w folderze {title}}few{Dodano do zakładek w folderze {title}}many{Dodano do zakładek w folderze {title}}other{Dodano do zakładek w folderze {title}}}</translation>
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
+<translation id="6210079381482819663">Tutaj są przenoszone karty nieużywane przez co najmniej <ph name="THRESHOLD" /> dni. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Zamknięte ostrzeżenia</translation>
 <translation id="6219550825416862075">Witamy z powrotem</translation>
 <translation id="6219688215832490856">Nigdy nie tłumacz</translation>
@@ -1058,6 +1064,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8065292699993359127">Otwórz adresy URL w Chrome w trybie incognito</translation>
 <translation id="806745655614357130">Przechowuj dane oddzielnie</translation>
+<translation id="8069394452933076548">Wybierz, kiedy nieużywane karty mają być przenoszone do sekcji kart nieaktywnych.</translation>
 <translation id="8073670137947914548">Pobieranie zakończone</translation>
 <translation id="8073872304774253879">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8076492880354921740">Karty</translation>
@@ -1201,6 +1208,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9055772144595778347">Nie można zalogować</translation>
 <translation id="9055960261314198756">Silniejsza ochrona jest wyłączona</translation>
 <translation id="9057972802061533987">Nie udało się dodać do obserwowanych. Coś poszło nie tak.</translation>
+<translation id="9061495354530850708">Na Twoim koncie Google</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9068336935206019333">Otwórz w Chrome w trybie incognito</translation>
 <translation id="9079935439869366234">Oznacz wszystkie jako nieprzeczytane</translation>

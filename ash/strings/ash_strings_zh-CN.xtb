@@ -575,6 +575,7 @@
 <translation id="3659814201068740063">电量还剩大约 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 请为设备接通电源。</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="3666266999138159418">滑动即可隐藏浮动窗口</translation>
 <translation id="367531336287639526">选择地址栏左侧的第一个图标</translation>
 <translation id="3679827876008292680">转到窗口中的最后一个标签页</translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>

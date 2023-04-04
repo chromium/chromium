@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="110724200315609752">رفتن به پنجره باز</translation>
 <translation id="1112015203684611006">چاپ انجام نشد.</translation>
+<translation id="1118266931011974190">پس‌از <ph name="THRESHOLD" /> روز</translation>
 <translation id="1125564390852150847">ایجاد برگه جدید</translation>
 <translation id="1126013303640354461">‏روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
 فقط شخصی که گذرعبارت شما را داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google‌ ارسال یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت خود را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@
 <translation id="2218443599109088993">کوچک کردن</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
 <translation id="2239626343334228536">درحال پاک کردن داده‌های محصول مرور…</translation>
+<translation id="22508856139286506">هشدارهای ردشده (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">منو ← سابقه</translation>
 <translation id="2256933947031277845">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است.</translation>
 <translation id="225943865679747347">کد خطا: <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@
 <translation id="2626236249646841566">اتصال خود را بررسی کنید و دوباره به سیستم وارد شوید.</translation>
 <translation id="2637313651144986786">جستجوی برگه‌ها…</translation>
 <translation id="2647269890314209800">کوکی‌های درحال استفاده</translation>
+<translation id="2648721026697078500">هرگز منتقل نشود</translation>
 <translation id="2648803196158606475">حذف خوانده‌شده‌ها</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2664621323652615289">توقف</translation>
@@ -346,6 +349,7 @@
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3311748811247479259">خاموش</translation>
 <translation id="3324193307694657476">آدرس ۲</translation>
+<translation id="3328459813621383194">انتقال برگه‌های غیرفعال</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="3377063233124932127">اکنون نشانک‌ها، گذرواژه‌ها، و دیگر موارد ذخیره‌شده در بالا نمایش داده می‌شوند.</translation>
@@ -510,6 +514,7 @@
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4536418791685807335">دوباره برای ورود به سیستم تلاش کنید.</translation>
 <translation id="4540780316273593836">مشکلی رخ داد</translation>
+<translation id="4550040941166547650">فقط در «این دستگاه»</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} برگه غیرفعال بسته شود؟}one{{COUNT} برگه غیرفعال بسته شود؟}other{{COUNT} برگه غیرفعال بسته شود؟}}</translation>
 <translation id="457386861538956877">بیشتر...</translation>
 <translation id="4587235830039045480">‏گذرواژه را در «حساب Google» خود ذخیره کنید</translation>
@@ -763,6 +768,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6193424046394092997">{count,plural, =1{نشانک‌گذاری‌شده در {title}}one{نشانک‌گذاری‌شده در {title}}other{نشانک‌گذاری‌شده در {title}}}</translation>
 <translation id="6196207969502475924">جستجوی گفتاری</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{بستن {COUNT} برگه}one{بستن {COUNT} برگه}other{بستن {COUNT} برگه}}</translation>
+<translation id="6210079381482819663">برگه‌هایی که <ph name="THRESHOLD" /> روز یا بیشتر استفاده نشده‌اند به اینجا منتقل می‌شوند. هرزمان بخواهید می‌توانید آن را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> تغییر دهید.</translation>
 <translation id="6213567400989743524">هشدارهای ردشده</translation>
 <translation id="6219550825416862075">مجدداً خوش آمدید</translation>
 <translation id="6219688215832490856">هرگز ترجمه نشود</translation>
@@ -1058,6 +1064,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8059533439631660104">بخش را کوچک می‌کند.</translation>
 <translation id="8065292699993359127">‏باز کردن نشانی‌های وب در Chrome در حالت «ناشناس»</translation>
 <translation id="806745655614357130">داده‌های من مجزا باشد</translation>
+<translation id="8069394452933076548">انتخاب کنید برگه‌هایی که اخیراً از آن‌ها استفاده نشده است چه‌موقع به بخش برگه غیرفعال منتقل شوند.</translation>
 <translation id="8073670137947914548">بارگیری به پایان رسید</translation>
 <translation id="8073872304774253879">بهبود جستجوها و مرور</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
@@ -1201,6 +1208,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9055772144595778347">امکان ورود به سیستم وجود ندارد</translation>
 <translation id="9055960261314198756">«محافظت بهبودیافته» خاموش است</translation>
 <translation id="9057972802061533987">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
+<translation id="9061495354530850708">‏در «حساب Google» شما</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9068336935206019333">‏باز کردن در حالت ناشناس Chrome</translation>
 <translation id="9079935439869366234">علامت‌گذاری همه موارد به‌‌عنوان خوانده‌شده</translation>

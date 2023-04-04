@@ -492,7 +492,7 @@
 <translation id="4420409367264901497">Изменить закладку</translation>
 <translation id="4442550905108052454">Откройте приложение <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Добавление языка</translation>
-<translation id="4461286950227634995">Предлагать сохр. паролей</translation>
+<translation id="4461286950227634995">Предлагать сохранять пароли</translation>
 <translation id="4462491365653392320">Отслеживать цены на вкладках</translation>
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469418912670346607">Продолжить настройку</translation>
@@ -1180,6 +1180,7 @@
 <translation id="891658175948553296">Выделите текст на сайте.</translation>
 <translation id="8917490105272468696">Включить функцию</translation>
 <translation id="8928133177108699615">Версия для компьютера</translation>
+<translation id="8934982071228289624">Чтобы сохранить этот пароль в аккаунте, задайте код-пароль на устройстве.</translation>
 <translation id="894191600409472540">Создайте надежные пароли</translation>
 <translation id="8952559610785099500">Добавление пароля</translation>
 <translation id="8953046091948372197">Здесь будут показаны ваши пароли.</translation>

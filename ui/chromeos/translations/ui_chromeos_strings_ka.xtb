@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">პლანეტა</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ამოღებულია.</translation>
 <translation id="2307462900900812319">ქსელის კონფიგურაცია</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{გაფართოება ID-ით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}other{გაფართოებები ID-ებით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}}</translation>
 <translation id="2325650632570794183">ამ ფაილის ტიპი ვერ მოძებნა. გთხოვთ ეწვიოთ Chrome Web Store, რათა იპოვოთ ამ ფაილის გამხსნელი აპლიკაცია.</translation>
 <translation id="2326539130272988168">ბულგარული</translation>
 <translation id="2337715497728194187">Bruschetta-თი გაზიარება</translation>

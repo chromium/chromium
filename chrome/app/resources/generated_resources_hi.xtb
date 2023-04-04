@@ -2251,6 +2251,7 @@
 <translation id="2886119409731773154">इसमें 30 मिनट लग सकते हैं</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> और <ph name="NUMBER_OF_DEVICES" /> अन्य</translation>
+<translation id="2889043468805635730">कोई समस्या नहीं मिली</translation>
 <translation id="2889064240420137087">इनके साथ लिंक खोलें...</translation>
 <translation id="2891566119238851894">साइड पैनल में सर्च टूलबार चालू करें. साइड पैनल में सर्च टूलबार बंद है.</translation>
 <translation id="2891922230654533301">क्या आप <ph name="APP_NAME" /> में साइन इन करने के लिए अपना डिवाइस इस्तेमाल करना चाहते हैं?</translation>
@@ -3348,6 +3349,7 @@
 <translation id="3861977424605124250">शुरुआती पेज पर दिखाएं</translation>
 <translation id="386239283124269513">&amp;ग्रुप को पहले जैसा करना</translation>
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
+<translation id="3866142613641074814">आपके पासवर्ड के असुरक्षित होने का खतरा है</translation>
 <translation id="3866249974567520381">वर्णन</translation>
 <translation id="3867134342671430205">डिसप्ले को एक से दूसरी जगह ले जाने के लिए, उसे खींचें और छोड़ें या ऐरो बटन इस्तेमाल करें</translation>
 <translation id="3867944738977021751">प्रमाणपत्र फ़ील्ड</translation>
@@ -8685,6 +8687,7 @@
 <translation id="866611985033792019">ईमेल उपयोगकर्ताओं की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> को फिर से अनुमतियां दी गईं</translation>
 <translation id="8666759526542103597">ब्राउज़र के हिसाब से दिलचस्पी के मुताबिक विज्ञापन के बारे में जानकारी</translation>
+<translation id="8667261224612332309">आपके पास ऐसे पासवर्ड हैं जिन्हें बेहतर बनाया जा सकता है</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है और आपका माउस कर्सर बंद कर दिया गया है.</translation>
 <translation id="8667760277771450375">हम ऐसे उपाय खोज रहे हैं जिनसे क्रॉस साइट ट्रैकिंग को कम किया जा सके. साथ ही, जिनसे स्पैम वाले विज्ञापन और धोखाधड़ी पर रोक लगाने में, साइटों की मदद की जा सके.</translation>
 <translation id="8668378421690365723">इस वजह से हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं.</translation>
@@ -9015,6 +9018,7 @@
 <translation id="8953476467359856141">चार्ज करते समय</translation>
 <translation id="895347679606913382">प्रारंभ कर रहा है...</translation>
 <translation id="8957757410289731985">प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
+<translation id="8959144235813727886">साइटें और ऐप्लिकेशन</translation>
 <translation id="895944840846194039">JavaScript मेमोरी</translation>
 <translation id="8960208913905765425">'हाज़िर जवाब' का यूनिट कन्वर्ज़न</translation>
 <translation id="8960638196855923532">अब आपके पास अपने फ़ोन की सूचनाएं और ऐप्लिकेशन देखने का विकल्प है</translation>

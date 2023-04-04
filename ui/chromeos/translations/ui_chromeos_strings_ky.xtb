@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> чыгарылды.</translation>
 <translation id="2307462900900812319">Тармакты конфигурациялоо</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификатору бар кеңейтүү табылбай жатат. Администраторуңуз менен байланышыңыз.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> идентификаторлору бар кеңейтүүлөр табылбай жатат. Администраторуңуз менен байланышыңыз.}}</translation>
 <translation id="2325650632570794183">Мындай файл түрү колдоого алынбайт. Бул файлдын түрүн ача алган колдонмону табуу үчүн Chrome Желе дүкөнүнө кириңиз.</translation>
 <translation id="2326539130272988168">Болгарча</translation>
 <translation id="2337715497728194187">Bruschetta аркылуу бөлүшүү</translation>

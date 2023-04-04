@@ -6199,7 +6199,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6463795194797719782">편집(&amp;E)</translation>
 <translation id="6464825623202322042">이 기기</translation>
 <translation id="6465841119675156448">인터넷 사용 안함</translation>
-<translation id="6466258437571594570">사이트에서 사용자를 방해하여 알림 전송을 허용하도록 요청할 수 없음</translation>
+<translation id="6466258437571594570">사이트에서 알림 전송 허용을 요청할 때 사용자를 방해할 수 없음</translation>
 <translation id="6466988389784393586">모든 북마크 열기(&amp;O)</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> 스캔</translation>
 <translation id="6467304607960172345">전체 화면 동영상 최적화</translation>
@@ -7476,7 +7476,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7615807797520072741">기존 Chrome으로 재설정</translation>
 <translation id="7616214729753637086">기기 등록 중...</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
-<translation id="7617648809369507487">눈에 띄지 않는 메시지 사용</translation>
+<translation id="7617648809369507487">조용한 메시지 전송 사용</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
 <translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
 <translation id="7622114377921274169">충전 중</translation>

@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> je izbačen.</translation>
 <translation id="2307462900900812319">Konfiguriši mrežu</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nismo uspeli da pronađemo dodatak sa ID-om <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Obratite se administratoru.}one{Nismo uspeli da pronađemo dodatke sa ID-ovima <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Obratite se administratoru.}few{Nismo uspeli da pronađemo dodatke sa ID-ovima <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Obratite se administratoru.}other{Nismo uspeli da pronađemo dodatke sa ID-ovima <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Obratite se administratoru.}}</translation>
 <translation id="2325650632570794183">Ovaj tip datoteke nije podržan. Posetite Chrome veb-prodavnicu i pronađite aplikaciju koja može da otvara ovaj tip datoteke.</translation>
 <translation id="2326539130272988168">bugarski</translation>
 <translation id="2337715497728194187">Delite sa virtuelnom mašinom Bruschetta</translation>

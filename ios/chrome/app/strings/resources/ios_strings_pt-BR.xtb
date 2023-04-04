@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Mudar para janela aberta</translation>
 <translation id="1112015203684611006">Falha na impressão.</translation>
+<translation id="1118266931011974190">Após <ph name="THRESHOLD" /> dias</translation>
 <translation id="1125564390852150847">Criar nova guia</translation>
 <translation id="1126013303640354461">As formas de pagamento e os endereços do Google Pay não vão ser criptografados. O histórico de navegação do Chrome não será sincronizado.
 Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa senha não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, vai ser necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2626236249646841566">Verifique sua conexão e tente fazer login novamente.</translation>
 <translation id="2637313651144986786">Pesquisar guias…</translation>
 <translation id="2647269890314209800">Cookies em uso</translation>
+<translation id="2648721026697078500">Nunca mover</translation>
 <translation id="2648803196158606475">Excluir lidas</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2664621323652615289">Parar</translation>
@@ -346,6 +348,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativada</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
+<translation id="3328459813621383194">Mover guias inativas</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3371831930909698441">Tradução disponível. Opções disponíveis perto da parte inferior da tela.</translation>
 <translation id="3377063233124932127">Agora seus favoritos, senhas e outros itens salvos estão na parte de cima.</translation>
@@ -510,6 +513,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4536418791685807335">Tente fazer login novamente.</translation>
 <translation id="4540780316273593836">Ocorreu um erro</translation>
+<translation id="4550040941166547650">Somente neste dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fechar {COUNT} guia inativa?}one{Fechar {COUNT} guia inativa?}other{Fechar {COUNT} guias inativas?}}</translation>
 <translation id="457386861538956877">Mais...</translation>
 <translation id="4587235830039045480">Salve a senha na sua Conta do Google</translation>
@@ -763,6 +767,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6193424046394092997">{count,plural, =1{Adicionado aos favoritos em {title}}one{Adicionado aos favoritos em {title}}other{Adicionados aos favoritos em {title}}}</translation>
 <translation id="6196207969502475924">Pesquisa por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} guia}one{Fechar {COUNT} guia}other{Fechar {COUNT} guias}}</translation>
+<translation id="6210079381482819663">As guias não usadas há <ph name="THRESHOLD" /> dias ou mais são movidas para cá. É possível mudar isso a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Avisos dispensados</translation>
 <translation id="6219550825416862075">Que bom que você voltou</translation>
 <translation id="6219688215832490856">Nunca traduzir</translation>
@@ -932,8 +937,8 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7136892417564438900">A câmera não está disponível</translation>
 <translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7172852049901402487">Manter suas senhas protegidas contra problemas de segurança</translation>
-<translation id="7173114856073700355">Abrir "Configurações"</translation>
+<translation id="7172852049901402487">Mantenha suas senhas protegidas contra problemas de segurança</translation>
+<translation id="7173114856073700355">Configurações</translation>
 <translation id="7189598951263744875">Compartilhar...</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Falar as respostas</translation>
@@ -1058,6 +1063,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8059533439631660104">Recolhe a seção.</translation>
 <translation id="8065292699993359127">Abrir URLs na navegação anônima do Chrome</translation>
 <translation id="806745655614357130">Manter meus dados separados</translation>
+<translation id="8069394452933076548">Escolha quando as guias que não foram usadas recentemente serão movidas para a seção de guias inativas.</translation>
 <translation id="8073670137947914548">Download concluído</translation>
 <translation id="8073872304774253879">Melhorar as pesquisas e a navegação</translation>
 <translation id="8076492880354921740">Guias</translation>
@@ -1201,6 +1207,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9055772144595778347">Não é possível fazer login</translation>
 <translation id="9055960261314198756">A proteção reforçada está desativada</translation>
 <translation id="9057972802061533987">Não foi possível seguir. Algo deu errado.</translation>
+<translation id="9061495354530850708">Na sua Conta do Google</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9068336935206019333">Abrir na navegação anônima do Chrome</translation>
 <translation id="9079935439869366234">Marcar todas as entradas como não lidas</translation>

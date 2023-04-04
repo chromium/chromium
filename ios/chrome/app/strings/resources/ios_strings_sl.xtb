@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Preklop na odprto okno</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
+<translation id="1118266931011974190">Po toliko dneh: <ph name="THRESHOLD" /></translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1126013303640354461">Plačilna sredstva in naslovi iz Googla Pay ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, morate ponastaviti sinhronizacijo. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2626236249646841566">Preverite povezavo in se poskusite znova prijaviti.</translation>
 <translation id="2637313651144986786">Iskanje zavihkov …</translation>
 <translation id="2647269890314209800">Piškotki v uporabi</translation>
+<translation id="2648721026697078500">Nikoli ne premakni</translation>
 <translation id="2648803196158606475">Izbriši prebrano</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2664621323652615289">Ustavi</translation>
@@ -346,6 +348,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3305294846493618482">več</translation>
 <translation id="3311748811247479259">Izklopljeno</translation>
 <translation id="3324193307694657476">Naslov 2</translation>
+<translation id="3328459813621383194">Premikanje neaktivnih zavihkov</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="3371831930909698441">Prevod je na voljo. Možnosti so na voljo pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Zdaj so shranjeni zaznamki, gesla in drugo na vrhu.</translation>
@@ -510,6 +513,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Prišlo je do napake</translation>
+<translation id="4550040941166547650">Samo v tej napravi</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Želite zapreti {COUNT} neaktiven zavihek?}one{Želite zapreti {COUNT} neaktiven zavihek?}two{Želite zapreti {COUNT} neaktivna zavihka?}few{Želite zapreti {COUNT} neaktivne zavihke?}other{Želite zapreti {COUNT} neaktivnih zavihkov?}}</translation>
 <translation id="457386861538956877">Več ...</translation>
 <translation id="4587235830039045480">Shranjevanje gesla v račun Google</translation>
@@ -763,6 +767,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6193424046394092997">{count,plural, =1{Zaznamek ustvarjen v mapi {title}}one{Zaznamki ustvarjeni v mapi {title}}two{Zaznamki ustvarjeni v mapi {title}}few{Zaznamki ustvarjeni v mapi {title}}other{Zaznamki ustvarjeni v mapi {title}}}</translation>
 <translation id="6196207969502475924">Glasovno iskanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zapri {COUNT} zavihek}one{Zapri {COUNT} zavihek}two{Zapri {COUNT} zavihka}few{Zapri {COUNT} zavihke}other{Zapri {COUNT} zavihkov}}</translation>
+<translation id="6210079381482819663">Sem so premaknjeni zavihki, ki jih ne uporabljate najmanj toliko dni: <ph name="THRESHOLD" />. To lahko kadar koli spremenite v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Opuščena opozorila</translation>
 <translation id="6219550825416862075">Dobrodošli nazaj</translation>
 <translation id="6219688215832490856">Nikoli ne prevedi</translation>
@@ -1058,6 +1063,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8059533439631660104">Strni razdelek.</translation>
 <translation id="8065292699993359127">Odprite URL-je v Chromu v anonimnem načinu</translation>
 <translation id="806745655614357130">Podatki naj bodo ločeni</translation>
+<translation id="8069394452933076548">Izberite, kdaj se zavihki, ki niso bili nedavno uporabljeni, premaknejo v razdelek neaktivnih zavihkov.</translation>
 <translation id="8073670137947914548">Prenos je končan</translation>
 <translation id="8073872304774253879">Izboljšanje iskanja in brskanja</translation>
 <translation id="8076492880354921740">Zavihki</translation>
@@ -1201,6 +1207,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9055772144595778347">Prijava ni mogoča</translation>
 <translation id="9055960261314198756">Izboljšana zaščita je izklopljena</translation>
 <translation id="9057972802061533987">Ni mogoče spremljati. Prišlo je do napake.</translation>
+<translation id="9061495354530850708">V računu Google</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9068336935206019333">Odpri v anonimnem oknu v Chromu</translation>
 <translation id="9079935439869366234">Označi vse kot neprebrano</translation>

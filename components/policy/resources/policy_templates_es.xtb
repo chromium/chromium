@@ -571,6 +571,11 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se le asigna ningún valor a esta política o se le asigna el valor "Disabled", las políticas basadas en la nube a nivel de usuario no se podrán fusionar con las políticas de ninguna otra fuente.</translation>
 <translation id="152657506688053119">Lista de URL alternativas para el proveedor de búsquedas predeterminado</translation>
+<translation id="152740744678799092">Si se habilita esta política, se realizará una búsqueda predeterminada cuando el usuario introduzca texto que no sea una URL en la barra de direcciones. Para especificar el proveedor de búsqueda predeterminado, define el resto de las políticas de búsqueda predeterminadas. Si dejas vacías esas políticas, el usuario podrá elegir el proveedor predeterminado. Si se inhabilita esta política, no se realizará ninguna búsqueda cuando el usuario introduzca texto que no sea una URL en la barra de direcciones. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> no admite que se defina esta política como inhabilitada.
+
+      Si asignas un valor a esta política, el usuario no podrá cambiarlo en <ph name="PRODUCT_NAME" />. Si no le asignas ningún valor, el proveedor de búsqueda predeterminado estará activado y el usuario podrá establecer la lista de proveedores de búsqueda.
+
+      En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en Gestión en la nube del navegador Chrome. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="1547424904796464052">Hash SHA-256 codificado en formato hexadecimal de la imagen de firmware.</translation>
