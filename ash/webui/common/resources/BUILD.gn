@@ -307,7 +307,15 @@ generate_grd("build_grd") {
     "network_health/test_warning.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  public_deps = [ ":preprocess" ]
+  deps = [
+    ":build_html_css_wrapper_files_grdp",
+    ":build_ts",
+    ":preprocess",
+    "//third_party/cros-components:cros_components_grdp",
+    "//third_party/material_web_components:build_lit_grdp",
+    "//third_party/material_web_components:build_mwc_grdp",
+  ]
+
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ]) +
       filter_include(get_target_outputs(":preprocess"), [ "*.manifest" ])
@@ -315,13 +323,12 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "ash/common"
 
-  deps = [
-    ":build_html_css_wrapper_files_grdp",
-    ":build_ts",
-    ":preprocess",
+  grdp_files = [
+    "$root_gen_dir/third_party/material_web_components/lit_resources.grdp",
+    "$root_gen_dir/third_party/material_web_components/mwc_resources.grdp",
+    "$target_gen_dir/html_css_wrapper_files_resources.grdp",
+    "$root_gen_dir/third_party/cros-components/resources.grdp",
   ]
-
-  grdp_files = [ "$target_gen_dir/html_css_wrapper_files_resources.grdp" ]
 }
 
 grit("resources") {
