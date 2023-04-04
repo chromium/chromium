@@ -112,12 +112,9 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(
                     });
 }
 
-static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jname,
-    jlong id,
-    jlong time_ns) {
-  std::string name = ConvertJavaStringToUTF8(env, jname);
+static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(JNIEnv* env,
+                                                         jlong id,
+                                                         jlong time_ns) {
   TRACE_EVENT_END(internal::kJavaTraceCategory,
                   perfetto::Track(static_cast<uint64_t>(id)));
 }
