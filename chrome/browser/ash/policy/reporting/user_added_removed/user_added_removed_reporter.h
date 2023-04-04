@@ -42,10 +42,14 @@ class UserAddedRemovedReporter
   // the reporter is created.
   void ProcessRemoveUserCache();
 
+  // Processes the removed user.
+  void ProcessRemovedUser(base::StringPiece user_email,
+                          user_manager::UserRemovalReason reason);
+
   // ManagedSessionService::Observer overrides.
   // Check if login was to a new account.
   void OnLogin(Profile* profile) override;
-  // Track that a user will be deleted. This should be done before users are
+  // Track that a user will be removed. This should be done before users are
   // removed so that it can be checked if they are affiliated.
   void OnUserToBeRemoved(const AccountId& account_id) override;
   // Report that a user has been removed.
@@ -61,7 +65,7 @@ class UserAddedRemovedReporter
 
   // Maps a user's email to if they are affiliated. This is needed to determine
   // if their email may be reported.
-  base::flat_map<AccountId, bool> users_to_be_deleted_;
+  base::flat_map<AccountId, bool> users_to_be_removed_;
 
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>
