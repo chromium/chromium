@@ -125,7 +125,7 @@ ResultExpr RestrictSetSockoptForNetworkService() {
       Switch(optname)
           .Cases({IP_RECVERR, IPV6_MTU_DISCOVER, IPV6_MULTICAST_LOOP,
                   IPV6_MULTICAST_HOPS, IPV6_MULTICAST_IF, IPV6_JOIN_GROUP,
-                  IPV6_LEAVE_GROUP, IPV6_TCLASS},
+                  IPV6_LEAVE_GROUP, IPV6_TCLASS, IPV6_V6ONLY},
                  Allow())
           .Default(CrashSIGSYSSockopt());
   ResultExpr tcp_optname_switch =
