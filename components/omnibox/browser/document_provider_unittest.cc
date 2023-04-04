@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -407,7 +408,15 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
   EXPECT_FALSE(provider_->backoff_for_session_);
 }
 
-TEST_F(DocumentProviderTest, ProductDescriptionStringsAndAccessibleLabels) {
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#define MAYBE_ProductDescriptionStringsAndAccessibleLabels \
+  DISABLED_ProductDescriptionStringsAndAccessibleLabels
+#else
+#define MAYBE_ProductDescriptionStringsAndAccessibleLabels \
+  ProductDescriptionStringsAndAccessibleLabels
+#endif
+TEST_F(DocumentProviderTest,
+       MAYBE_ProductDescriptionStringsAndAccessibleLabels) {
   // Dates are kept > 1 year in the past since
   // See comments for GenerateLastModifiedString in this file for references.
   const std::string kGoodJSONResponseWithMimeTypes = base::StringPrintf(

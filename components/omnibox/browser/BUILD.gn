@@ -744,6 +744,7 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//build:blink_buildflags",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/dom_distiller/core:core",

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -122,6 +123,15 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
+  if (is_ios && use_blink) {
+    sources -= [
+      "fill_js_unittest.mm",
+      "form_activity_tab_helper_unittest.mm",
+      "form_unittest.mm",
+    ]
+  }
 }
 if (is_ios) {
   fuzzer_test("form_activity_tab_helper_fuzzer") {

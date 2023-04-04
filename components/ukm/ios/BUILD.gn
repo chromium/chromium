@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 assert(target_os == "ios")
 
 group("ios") {
@@ -48,4 +50,9 @@ source_set("unit_tests") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
+  if (is_ios && use_blink) {
+    sources -= [ "ukm_url_recorder_unittest.mm" ]
+  }
 }
