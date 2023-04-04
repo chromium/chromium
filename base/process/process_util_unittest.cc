@@ -101,7 +101,6 @@ const char kSignalFileTerm[] = "TerminatedChildProcess.die";
 
 #if BUILDFLAG(IS_FUCHSIA)
 const char kSignalFileClone[] = "ClonedDir.die";
-const char kDataDirHasStaged[] = "DataDirHasStaged.die";
 const char kFooDirHasStaged[] = "FooDirHasStaged.die";
 #endif
 
@@ -242,28 +241,16 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusExit) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-MULTIPROCESS_TEST_MAIN(CheckDataDirHasStaged) {
-  if (!PathExists(FilePath("/data/staged"))) {
-    return 1;
-  }
-  WaitToDie(ProcessUtilTest::GetSignalFilePath(kDataDirHasStaged).c_str());
-  return kSuccess;
+MULTIPROCESS_TEST_MAIN(ShouldNotBeLaunched) {
+  return 1;
 }
 
-// Test transferred paths override cloned paths.
-TEST_F(ProcessUtilTest, HandleTransfersOverrideClones) {
-  const std::string signal_file = GetSignalFilePath(kDataDirHasStaged);
-  remove(signal_file.c_str());
-
-  // Create a tempdir with "staged" as its contents.
-  ScopedTempDir tmpdir_with_staged;
-  ASSERT_TRUE(tmpdir_with_staged.CreateUniqueTempDir());
-  {
-    FilePath staged_file_path = tmpdir_with_staged.GetPath().Append("staged");
-    File staged_file(staged_file_path, File::FLAG_CREATE | File::FLAG_WRITE);
-    ASSERT_TRUE(staged_file.created());
-    staged_file.Close();
-  }
+// Test that duplicate transfer & cloned paths cause the launch to fail.
+// TODO(fxbug.dev/124840): Re-enable once the platform behaviour is fixed.
+TEST_F(ProcessUtilTest, DISABLED_DuplicateTransferAndClonePaths_Fail) {
+  // Create a tempdir to transfer a duplicate "/data".
+  ScopedTempDir tmpdir;
+  ASSERT_TRUE(tmpdir.CreateUniqueTempDir());
 
   LaunchOptions options;
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
@@ -274,18 +261,36 @@ TEST_F(ProcessUtilTest, HandleTransfersOverrideClones) {
   options.paths_to_clone.push_back(FilePath("/tmp"));
   options.paths_to_transfer.push_back(
       {FilePath(kPersistedDataDirectoryPath),
-       OpenDirectoryHandle(FilePath(tmpdir_with_staged.GetPath()))
-           .TakeChannel()
-           .release()});
+       OpenDirectoryHandle(tmpdir.GetPath()).TakeChannel().release()});
 
-  // Verify from that "/data/staged" exists from the child process' perspective.
-  Process process(SpawnChildWithOptions("CheckDataDirHasStaged", options));
-  ASSERT_TRUE(process.IsValid());
-  SignalChildren(signal_file.c_str());
+  // Verify that the process fails to launch.
+  Process process(SpawnChildWithOptions("ShouldNotBeLaunched", options));
+  ASSERT_FALSE(process.IsValid());
+}
 
-  int exit_code = 42;
-  EXPECT_TRUE(process.WaitForExit(&exit_code));
-  EXPECT_EQ(kSuccess, exit_code);
+// Test that attempting to transfer/clone to a path (e.g. "/data"), and also to
+// a sub-path of that path (e.g. "/data/staged"), causes the process launch to
+// fail.
+// TODO(fxbug.dev/124840): Re-enable once the platform behaviour is fixed.
+TEST_F(ProcessUtilTest, DISABLED_OverlappingPaths_Fail) {
+  // Create a tempdir to transfer to a sub-directory path.
+  ScopedTempDir tmpdir;
+  ASSERT_TRUE(tmpdir.CreateUniqueTempDir());
+
+  LaunchOptions options;
+  options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
+
+  // Attach the tempdir to "data", but also try to duplicate the existing "data"
+  // directory.
+  options.paths_to_clone.push_back(FilePath(kPersistedDataDirectoryPath));
+  options.paths_to_clone.push_back(FilePath("/tmp"));
+  options.paths_to_transfer.push_back(
+      {FilePath(kPersistedDataDirectoryPath).Append("staged"),
+       OpenDirectoryHandle(tmpdir.GetPath()).TakeChannel().release()});
+
+  // Verify that the process fails to launch.
+  Process process(SpawnChildWithOptions("ShouldNotBeLaunched", options));
+  ASSERT_FALSE(process.IsValid());
 }
 
 MULTIPROCESS_TEST_MAIN(CheckMountedDir) {
