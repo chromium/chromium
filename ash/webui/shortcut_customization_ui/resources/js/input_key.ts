@@ -85,6 +85,7 @@ export class InputKeyElement extends InputKeyElementBase {
       key: {
         type: String,
         value: '',
+        reflectToAttribute: true,
       },
 
       keyState: {
