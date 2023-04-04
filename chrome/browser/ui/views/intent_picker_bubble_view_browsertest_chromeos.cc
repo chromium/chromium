@@ -1281,8 +1281,15 @@ class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
 // Simulates prerendering an app URL that the user has opted into always
 // launching an app window for. In this case, the prerender should be canceled
 // and the app shouldn't be opened.
+// TODO(https://crbug.com/1428425): flakily times out
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_AppLaunchURLCancelsPrerendering \
+  DISABLED_AppLaunchURLCancelsPrerendering
+#else
+#define MAYBE_AppLaunchURLCancelsPrerendering AppLaunchURLCancelsPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
-                       AppLaunchURLCancelsPrerendering) {
+                       MAYBE_AppLaunchURLCancelsPrerendering) {
   // Prerendering is currently limited to same-origin pages so we need to start
   // it from an arbitrary page on the same origin, rather than about:blank.
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
