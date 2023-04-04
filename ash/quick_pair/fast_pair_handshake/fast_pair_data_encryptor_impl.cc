@@ -209,5 +209,34 @@ void FastPairDataEncryptorImpl::QuickPairProcessStoppedOnPasskey(
       << shutdown_reason;
 }
 
+std::vector<uint8_t> FastPairDataEncryptorImpl::CreateAdditionalDataPacket(
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& additional_data) {
+  const std::vector<uint8_t> encrypted_additional_data =
+      fast_pair_encryption::EncryptAdditionalData(secret_key_, nonce,
+                                                  additional_data);
+  const std::array<uint8_t, fast_pair_encryption::kHmacSizeBytes> hmac =
+      fast_pair_encryption::GenerateHmacSha256(secret_key_, nonce,
+                                               encrypted_additional_data);
+
+  // Packet Structure (bytes): [First 8 bytes HMAC (8) | Nonce (8) | Encrypted
+  // Additional Data (n)].
+  int additional_data_packet_size = kHmacAdditionalDataPacketSizeBytes +
+                                    kNonceSizeBytes +
+                                    encrypted_additional_data.size();
+  std::vector<uint8_t> additional_data_packet;
+  additional_data_packet.reserve(additional_data_packet_size);
+  additional_data_packet.insert(
+      additional_data_packet.end(), hmac.begin(),
+      std::next(hmac.begin(), kHmacAdditionalDataPacketSizeBytes));
+  additional_data_packet.insert(additional_data_packet.end(), nonce.begin(),
+                                nonce.end());
+  additional_data_packet.insert(additional_data_packet.end(),
+                                encrypted_additional_data.begin(),
+                                encrypted_additional_data.end());
+  additional_data_packet.shrink_to_fit();
+  return additional_data_packet;
+}
+
 }  // namespace quick_pair
 }  // namespace ash

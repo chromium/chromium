@@ -36,5 +36,11 @@ void FakeFastPairDataEncryptor::ParseDecryptedPasskey(
   std::move(callback).Run(passkey_);
 }
 
+std::vector<uint8_t> FakeFastPairDataEncryptor::CreateAdditionalDataPacket(
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& additional_data) {
+  return additional_data_packet_encrypted_bytes_;
+}
+
 }  // namespace quick_pair
 }  // namespace ash

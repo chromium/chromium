@@ -62,22 +62,22 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
         bool has_retryable_error);
   };
 
+  // FastPairDataEncryptor
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override;
-
   const absl::optional<std::array<uint8_t, kPublicKeyByteSize>>& GetPublicKey()
       override;
-
   void ParseDecryptedResponse(
       const std::vector<uint8_t>& encrypted_response_bytes,
       base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
           callback) override;
-
   void ParseDecryptedPasskey(
       const std::vector<uint8_t>& encrypted_passkey_bytes,
       base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
           callback) override;
-
+  std::vector<uint8_t> CreateAdditionalDataPacket(
+      std::array<uint8_t, kNonceSizeBytes> nonce,
+      const std::vector<uint8_t>& additional_data) override;
   ~FastPairDataEncryptorImpl() override;
 
  protected:
