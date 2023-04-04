@@ -25,9 +25,12 @@ const char kDefaultGeolocationProviderUrl[] =
 }  // namespace
 
 SimpleGeolocationProvider::SimpleGeolocationProvider(
+    const Delegate* delegate,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     const GURL& url)
-    : shared_url_loader_factory_(std::move(factory)), url_(url) {}
+    : delegate_(delegate),
+      shared_url_loader_factory_(std::move(factory)),
+      url_(url) {}
 
 SimpleGeolocationProvider::~SimpleGeolocationProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -43,9 +46,11 @@ void SimpleGeolocationProvider::RequestGeolocation(
   auto cell_vector = std::make_unique<CellTowerVector>();
   auto wifi_vector = std::make_unique<WifiAccessPointVector>();
 
-  // Mostly necessary for testing and rare cases where NetworkHandler is not
-  // initialized: in that case, calls to Get() will fail.
-  if (send_wifi_access_points || send_cell_towers) {
+  // Geolocation permission is required to access Wi-Fi and cellular signals.
+  if ((send_wifi_access_points || send_cell_towers) &&
+      delegate_->IsPreciseGeolocationAllowed()) {
+    // Mostly necessary for testing and rare cases where NetworkHandler is not
+    // initialized: in that case, calls to Get() will fail.
     GeolocationHandler* geolocation_handler = geolocation_handler_;
     if (!geolocation_handler)
       geolocation_handler = NetworkHandler::Get()->geolocation_handler();

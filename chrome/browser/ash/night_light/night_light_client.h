@@ -30,6 +30,7 @@ class NightLightClient : public ash::NightLightController::Observer,
                          public ash::system::TimezoneSettings::Observer {
  public:
   explicit NightLightClient(
+      const SimpleGeolocationProvider::Delegate* delegate,
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
   NightLightClient(const NightLightClient&) = delete;

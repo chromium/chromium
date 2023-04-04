@@ -6,12 +6,17 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/astro.h"
 
 namespace ash {
@@ -39,7 +44,8 @@ constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 GeolocationController::GeolocationController(
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : factory_(factory.get()),
-      provider_(std::move(factory),
+      provider_(this,
+                std::move(factory),
                 SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()) {
@@ -90,6 +96,25 @@ void GeolocationController::TimezoneChanged(const icu::TimeZone& timezone) {
 void GeolocationController::SuspendDone(base::TimeDelta sleep_duration) {
   if (sleep_duration >= kNextRequestDelayAfterSuccess)
     ScheduleNextRequest(base::Seconds(0));
+}
+
+bool GeolocationController::IsPreciseGeolocationAllowed() const {
+  // There's no dedicated enterprise policy for geolocation, therefore it's
+  // not restricted.
+  // TODO(b/260330795): Introduce a cloud policy to control geolocation access
+  // levels.
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
+    return true;
+  }
+
+  // Regular user:
+  // Precise geolocation is disabled on log-in screen.
+  // Inside a user session follow the primary user's choice.
+  PrefService* primary_user_prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+
+  return primary_user_prefs &&
+         primary_user_prefs->GetBoolean(prefs::kUserGeolocationAllowed);
 }
 
 // static

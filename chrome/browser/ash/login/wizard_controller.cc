@@ -2176,6 +2176,7 @@ void WizardController::StartTimezoneResolve() {
 
   auto& testing_factory = GetSharedURLLoaderFactoryForTesting();
   geolocation_provider_ = std::make_unique<SimpleGeolocationProvider>(
+      g_browser_process->platform_part()->GetTimezoneResolverManager(),
       testing_factory ? testing_factory
                       : g_browser_process->shared_url_loader_factory(),
       SimpleGeolocationProvider::DefaultGeolocationProviderURL());

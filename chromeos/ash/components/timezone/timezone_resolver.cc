@@ -263,6 +263,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
     const TimeZoneResolver* resolver)
     : resolver_(resolver),
       geolocation_provider_(
+          resolver->delegate_,
           resolver->shared_url_loader_factory(),
           SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       timezone_provider_(resolver->shared_url_loader_factory(),
@@ -385,11 +386,6 @@ base::WeakPtr<TimeZoneResolver::TimeZoneResolverImpl>
 TimeZoneResolver::TimeZoneResolverImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
-
-// ------------------------------------------------------------------------
-// TimeZoneResolver::Delegate implementation
-TimeZoneResolver::Delegate::Delegate() = default;
-TimeZoneResolver::Delegate::~Delegate() = default;
 
 // ------------------------------------------------------------------------
 // TimeZoneResolver implementation

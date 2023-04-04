@@ -46,13 +46,12 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   // This sets primary_user_prefs_.
   void SetPrimaryUserPrefs(PrefService* pref_service);
 
-  // TimeZoneResolver::Delegate overrides:
-  bool ShouldSendWiFiGeolocationData() override;
+  // TimeZoneResolver::Delegate:
+  bool ShouldSendWiFiGeolocationData() const override;
+  bool ShouldSendCellularGeolocationData() const override;
+  bool IsPreciseGeolocationAllowed() const override;
 
-  // TimeZoneResolver::Delegate overrides:
-  bool ShouldSendCellularGeolocationData() override;
-
-  // Starts or stops TimezoneResolver according to currect settings.
+  // Starts or stops TimezoneResolver according to current settings.
   void UpdateTimezoneResolver();
 
   void AddObserver(Observer* observer);

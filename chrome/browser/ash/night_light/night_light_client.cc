@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -28,8 +29,10 @@ constexpr base::TimeDelta kNextRequestDelayAfterSuccess = base::Days(1);
 }  // namespace
 
 NightLightClient::NightLightClient(
+    const SimpleGeolocationProvider::Delegate* delegate,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : provider_(
+          delegate,
           std::move(factory),
           ash::SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       night_light_controller_(ash::NightLightController::GetInstance()),
