@@ -177,8 +177,8 @@
             <include name="IDR_HANGUL_MANIFEST" file="resources\chromeos\input_method\hangul_manifest.json" type="BINDATA" />
           </else>
         </if>
-        <include name="IDR_BRAILLE_MANIFEST" file="resources\chromeos\accessibility\braille_ime_manifest.json" type="BINDATA" />
 
+        <include name="IDR_BRAILLE_MANIFEST" file="resources\chromeos\accessibility\braille_ime\manifest.json" type="BINDATA" />
         <include name="IDR_SMB_SHARES_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_share_dialog_container.html" type="chrome_html" />
         <include name="IDR_SMB_SHARES_DIALOG_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\smb_shares\smb_share_dialog.js" use_base_dir="false" type="chrome_html" />
         <include name="IDR_SMB_CREDENTIALS_DIALOG_CONTAINER_HTML" file="resources\chromeos\smb_shares\smb_credentials_dialog_container.html" type="chrome_html" />

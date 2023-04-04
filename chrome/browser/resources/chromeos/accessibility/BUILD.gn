@@ -15,7 +15,6 @@ accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
 group("build") {
   deps = [
     ":accessibility_strings",
-    ":braille_ime_manifest",
     ":chromevox_guest_manifest",
     ":chromevox_manifest",
     "chromevox:build",
@@ -37,14 +36,6 @@ group("build") {
       "switch_access:build",
     ]
   }
-}
-
-# The Braille IME manifest is not compiled
-copy("braille_ime_manifest") {
-  sources = [ "braille_ime_manifest.json" ]
-  outputs = [
-    "$root_out_dir/resources/chromeos/accessibility/braille_ime_manifest.json",
-  ]
 }
 
 template("manifest") {
