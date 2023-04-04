@@ -66,8 +66,6 @@ struct BLINK_COMMON_EXPORT
       const blink::FencedFrame::SharedStorageBudgetMetadata& input);
   static bool top_navigated(
       const blink::FencedFrame::SharedStorageBudgetMetadata& input);
-  static bool report_event_called(
-      const blink::FencedFrame::SharedStorageBudgetMetadata& input);
 
   static bool Read(blink::mojom::SharedStorageBudgetMetadataDataView data,
                    blink::FencedFrame::SharedStorageBudgetMetadata* out_data);

@@ -367,13 +367,6 @@ const base::FeatureParam<int>
         &kSharedStorageSelectURLLimit,
         "SharedStorageSelectURLBitBudgetPerOriginPerPageLoad", 6};
 
-BASE_FEATURE(kSharedStorageReportEventLimit,
-             "SharedStorageReportEventLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kSharedStorageReportEventBitBudgetPerPageLoad = {
-    &kSharedStorageReportEventLimit,
-    "SharedStorageReportEventBitBudgetPerPageLoad", 9};
-
 BASE_FEATURE(kPrerender2SequentialPrerendering,
              "Prerender2SequentialPrerendering",
              base::FEATURE_ENABLED_BY_DEFAULT);
