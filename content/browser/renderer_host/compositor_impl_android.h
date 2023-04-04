@@ -76,8 +76,6 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   static bool IsInitialized();
 
-  void MaybeCompositeNow();
-
   // ui::ResourceProvider implementation.
   cc::UIResourceId CreateUIResource(cc::UIResourceClient* client) override;
   void DeleteUIResource(cc::UIResourceId resource_id) override;
