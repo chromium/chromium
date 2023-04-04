@@ -210,6 +210,10 @@ class WebClient {
   // possible.
   virtual bool IsMixedContentAutoupgradeEnabled(
       web::BrowserState* browser_state) const;
+
+  // Returns true if browser lockdown mode is enabled. Default return value is
+  // false.
+  virtual bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state);
 };
 
 }  // namespace web
