@@ -13686,6 +13686,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootAudioFlexibleLoopback",
+                        "SpeakOnMuteEnabled",
+                        "SystemLiveCaption",
                         "VideoConference"
                     ]
                 }
