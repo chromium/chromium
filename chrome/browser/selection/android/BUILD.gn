@@ -27,6 +27,7 @@ android_library("javatests") {
     "//chrome/android:chrome_java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/selection/android:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/widget/android:java",

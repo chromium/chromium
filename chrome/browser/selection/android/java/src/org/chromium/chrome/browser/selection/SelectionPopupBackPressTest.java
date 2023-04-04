@@ -106,6 +106,34 @@ public class SelectionPopupBackPressTest {
         Assert.assertTrue("Tab should be observed.", found);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"TextInput", "SmartSelection"})
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testBackPressHandlerOnWebContentChanged() throws ExecutionException {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        final SelectionPopupBackPressHandler selectionPopupHandler =
+                (SelectionPopupBackPressHandler) activity.getBackPressManagerForTesting()
+                        .getHandlersForTesting()[BackPressHandler.Type.SELECTION_POPUP];
+        Assert.assertNotNull(
+                "Back press handler should be initialized and registered.", selectionPopupHandler);
+        Tab tab1 = activity.getActivityTab();
+        var observers =
+                TestThreadUtils.runOnUiThreadBlocking(() -> TabTestUtils.getTabObservers(tab1));
+        boolean found = find(observers, selectionPopupHandler);
+        Assert.assertTrue("Tab should be observed.", found);
+
+        // Create a new tab such that back press handler is observing a new web content.
+        mActivityTestRule.loadUrlInNewTab(TEST_PAGE);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> selectionPopupHandler.onContentChanged(tab1));
+
+        var controller = TestThreadUtils.runOnUiThreadBlocking(
+                () -> SelectionPopupController.fromWebContents(tab1.getWebContents()));
+        Assert.assertEquals(controller, selectionPopupHandler.getPopupControllerForTesting());
+    }
+
     private void testBackPressClearSelectionInternal() throws TimeoutException {
         mActivityTestRule.startMainActivityWithURL(TEST_PAGE);
         DOMUtils.longPressNodeByJs(mActivityTestRule.getWebContents(),
