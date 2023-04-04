@@ -27,6 +27,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -873,8 +874,8 @@ TEST_F(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
 using ArcOobeOptInActiveInTest = ArcOobeTest;
 
 TEST_F(ArcOobeOptInActiveInTest, OobeOptInActive) {
-  // OOBE OptIn is active in case of OOBE controller is alive and the ARC ToS
-  // screen is currently showing.
+  // OOBE OptIn is active in case of OOBE controller is alive and the
+  // Consolidated Consent screen is currently showing.
   LogIn();
   EXPECT_FALSE(IsArcOobeOptInActive());
   CreateLoginDisplayHost();
@@ -890,9 +891,10 @@ TEST_F(ArcOobeOptInActiveInTest, OobeOptInActive) {
   user_manager::KnownUser(g_browser_process->local_state())
       .SetOnboardingCompletedVersion(account_id, version_info::GetVersion());
   EXPECT_FALSE(IsArcOobeOptInActive());
-  // ARC ToS wizard but Onboarding flow completed.
+
+  // Consolidated Consent wizard but Onboarding flow completed.
   login_display_host()->StartWizard(
-      ash::ArcTermsOfServiceScreenView::kScreenId);
+      ash::ConsolidatedConsentScreenView::kScreenId);
   EXPECT_FALSE(IsArcOobeOptInActive());
 }
 
