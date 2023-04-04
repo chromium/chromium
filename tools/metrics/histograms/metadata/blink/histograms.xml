@@ -2742,8 +2742,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.UserInteraction.MaxEventDuration.{InteractionType}"
-    units="ms" expires_after="2023-05-17">
+    units="ms" expires_after="never">
+<!-- expires-never: Supports guardrail metric debugging -->
+
   <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The duration of a single user interaction:
