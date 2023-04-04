@@ -57,7 +57,7 @@ bool GetSystemTouchpadTapToClick() {
 
 // Set "owner.touchpad.enable_tap_to_click" preference.
 void SetOwnerTouchpadEnableTapToClick(bool val) {
-  g_browser_process->local_state()->SetBoolean(::prefs::kOwnerTapToClickEnabled,
+  g_browser_process->local_state()->SetBoolean(prefs::kOwnerTapToClickEnabled,
                                                val);
 }
 

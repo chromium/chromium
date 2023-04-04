@@ -682,6 +682,9 @@ extern const char kOwnerPrimaryMouseButtonRight[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOwnerPrimaryPointingStickButtonRight[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOwnerTapToClickEnabled[];
+
 }  // namespace prefs
 }  // namespace ash
 

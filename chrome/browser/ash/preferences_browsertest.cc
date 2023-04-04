@@ -145,7 +145,7 @@ class PreferencesTest : public LoginManagerTest {
 
   void CheckLocalStateCorrespondsToPrefs(PrefService* prefs) {
     PrefService* local_state = g_browser_process->local_state();
-    EXPECT_EQ(local_state->GetBoolean(::prefs::kOwnerTapToClickEnabled),
+    EXPECT_EQ(local_state->GetBoolean(prefs::kOwnerTapToClickEnabled),
               prefs->GetBoolean(prefs::kTapToClickEnabled));
     EXPECT_EQ(local_state->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight),
               prefs->GetBoolean(prefs::kPrimaryMouseButtonRight));

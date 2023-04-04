@@ -2421,9 +2421,6 @@ const char kAppActivityTimes[] = "device_status.app_activity_times";
 // server.
 const char kUserActivityTimes[] = "consumer_device_status.activity_times";
 
-// Copy of owner tap-to-click option to use on login screen.
-const char kOwnerTapToClickEnabled[] = "owner.touchpad.enable_tap_to_click";
-
 // The length of device uptime after which an automatic reboot is scheduled,
 // expressed in seconds.
 const char kUptimeLimit[] = "automatic_reboot.uptime_limit";

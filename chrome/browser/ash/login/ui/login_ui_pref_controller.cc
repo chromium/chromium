@@ -29,7 +29,7 @@ LoginUIPrefController::LoginUIPrefController() {
           &LoginUIPrefController::UpdatePrimaryPointingStickButtonRight,
           weak_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
-      ::prefs::kOwnerTapToClickEnabled,
+      prefs::kOwnerTapToClickEnabled,
       base::BindRepeating(&LoginUIPrefController::UpdateTapToClickEnabled,
                           weak_factory_.GetWeakPtr()));
   if (prefs->GetAllPrefStoresInitializationStatus() ==
@@ -60,7 +60,7 @@ void LoginUIPrefController::UpdatePrimaryPointingStickButtonRight() {
 void LoginUIPrefController::UpdateTapToClickEnabled() {
   system::InputDeviceSettings::Get()->SetTapToClick(
       g_browser_process->local_state()->GetBoolean(
-          ::prefs::kOwnerTapToClickEnabled));
+          prefs::kOwnerTapToClickEnabled));
 }
 
 void LoginUIPrefController::InitOwnerPreferences(bool success) {
