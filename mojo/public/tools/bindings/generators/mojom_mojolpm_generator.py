@@ -199,6 +199,8 @@ class Generator(CppGenerator):
         "cpp_wrapper_param_type": self._GetCppWrapperParamType,
         "cpp_wrapper_proto_type": self._GetCppWrapperProtoType,
         "cpp_wrapper_type": self._GetCppWrapperType,
+        "default_value": self._DefaultValue,
+        "default_constructor_args": self._DefaultConstructorArgs,
         "enum_field_name": self._EnumFieldName,
         "get_name_for_kind": self._GetNameForKind,
         "get_qualified_name_for_kind": self._GetQualifiedNameForKind,
@@ -208,6 +210,7 @@ class Generator(CppGenerator):
         "proto_id": self._GetProtoId,
         "is_array_kind": mojom.IsArrayKind,
         "is_bool_kind": mojom.IsBoolKind,
+        "is_default_constructible": self._IsDefaultConstructible,
         "is_enum_kind": mojom.IsEnumKind,
         "is_double_kind": mojom.IsDoubleKind,
         "is_float_kind": mojom.IsFloatKind,
@@ -465,6 +468,11 @@ class Generator(CppGenerator):
       i = value + 1
 
     return False
+
+  def _DefaultConstructorArgs(self, kind):
+    if not self._IsDefaultConstructible(kind):
+      return "mojo::internal::DefaultConstructTag()"
+    return ""
 
   def _EnumFieldName(self, name, kind):
     # The WebFeature enum has entries that differ only by the casing of the

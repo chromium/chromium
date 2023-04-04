@@ -12,10 +12,10 @@
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
 {%-     if param|is_nullable_value_kind_packed_field %}
 {%-       if param|is_primary_nullable_value_kind_packed_field %}
-  {{param.original_field.kind|cpp_wrapper_call_type}} p_{{param.original_field.name}} = mojo::DefaultConstructTraits::CreateInstance<{{param.original_field.kind|cpp_wrapper_call_type}}>();
+  {{param.original_field.kind|cpp_wrapper_call_type}} p_{{param.original_field.name}}{};
 {%-       endif %}
 {%-     else %}
-  {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}} = mojo::DefaultConstructTraits::CreateInstance<{{param.field.kind|cpp_wrapper_call_type}}>();
+  {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}}{ {{- param.field|default_value -}} };
 {%-     endif %}
 {%-   endfor %}
   {{struct.name}}DataView input_data_view({{params}}, {{message}});

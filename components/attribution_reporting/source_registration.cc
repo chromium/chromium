@@ -61,7 +61,7 @@ void RecordSourceRegistrationError(mojom::SourceRegistrationError error) {
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError2", error);
 }
 
-SourceRegistration::SourceRegistration() = default;
+SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag) {}
 
 SourceRegistration::SourceRegistration(DestinationSet destination_set)
     : destination_set(std::move(destination_set)) {}

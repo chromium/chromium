@@ -11,14 +11,11 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
-
-namespace mojo {
-struct DefaultConstructTraits;
-}  // namespace mojo
 
 namespace net {
 class SchemefulSite;
@@ -96,14 +93,13 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
 
   bool IsValid() const;
 
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  explicit SuitableOrigin(mojo::DefaultConstruct::Tag);
+
  private:
   friend struct SourceRegistration;
   friend struct TriggerRegistration;
-  friend mojo::DefaultConstructTraits;
-
-  // Creates an invalid instance for use with Mojo deserialization, which
-  // requires types to be default-constructible.
-  SuitableOrigin();
 
   explicit SuitableOrigin(url::Origin);
 

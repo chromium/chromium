@@ -98,6 +98,8 @@ DestinationSet::DestinationSet(Destinations destinations)
   DCHECK(DestinationsValid(destinations_));
 }
 
+DestinationSet::DestinationSet(mojo::DefaultConstruct::Tag) {}
+
 DestinationSet::DestinationSet() = default;
 
 DestinationSet::~DestinationSet() = default;

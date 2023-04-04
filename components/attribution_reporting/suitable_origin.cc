@@ -49,7 +49,7 @@ absl::optional<SuitableOrigin> SuitableOrigin::Deserialize(
   return Create(GURL(str));
 }
 
-SuitableOrigin::SuitableOrigin() {
+SuitableOrigin::SuitableOrigin(mojo::DefaultConstruct::Tag) {
   DCHECK(!IsValid());
 }
 

@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -19,10 +20,6 @@ struct SourceRegistration;
 namespace base {
 class Value;
 }  // namespace base
-
-namespace mojo {
-struct DefaultConstructTraits;
-}  // namespace mojo
 
 namespace net {
 class SchemefulSite;
@@ -56,9 +53,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) DestinationSet {
 
   base::Value ToJson() const;
 
+  explicit DestinationSet(mojo::DefaultConstruct::Tag);
+
  private:
   friend attribution_reporting::SourceRegistration;
-  friend mojo::DefaultConstructTraits;
 
   DestinationSet();
   explicit DestinationSet(Destinations);

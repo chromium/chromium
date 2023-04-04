@@ -16,11 +16,8 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace mojo {
-struct DefaultConstructTraits;
-}  // namespace mojo
 
 namespace attribution_reporting {
 
@@ -48,6 +45,10 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   base::Value::Dict ToJson() const;
 
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  explicit SourceRegistration(mojo::DefaultConstruct::Tag);
+
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
   absl::optional<base::TimeDelta> expiry;
@@ -58,13 +59,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   absl::optional<uint64_t> debug_key;
   AggregationKeys aggregation_keys;
   bool debug_reporting = false;
-
- private:
-  friend mojo::DefaultConstructTraits;
-
-  // Creates an invalid instance for use with Mojo deserialization, which
-  // requires types to be default-constructible.
-  SourceRegistration();
 };
 
 }  // namespace attribution_reporting

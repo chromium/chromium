@@ -48,7 +48,7 @@ TEST_F(DefaultConstructTest, Echo) {
 
 // Ensures that a non-typemapped type with a field typemapped to a type without
 // a public default constructor initializes that field using
-// `mojo::DefaultConstructTraits::CreateInstance()` (crbug.com/1385587). Note
+// `mojo::internal::DefaultConstructTraits::Create()` (crbug.com/1385587). Note
 // that the generated Mojo code wouldn't even compile without the accompanying
 // fix, so this test just covers the runtime behavior.
 TEST_F(DefaultConstructTest, TypeWithPrivatelyDefaultConstructibleField) {
