@@ -413,6 +413,16 @@ message OBSOLETE_StartUpUrlsProto {
   repeated string OBSOLETE_start_up_urls = 1 [deprecated = true];
 }
 
+message DeviceLoginScreenGeolocationAccessLevelProto {
+  enum GeolocationAccessLevel {
+    DISALLOWED = 0;
+    ALLOWED = 1;
+  }
+
+  optional GeolocationAccessLevel geolocation_access_level = 1
+      [default = ALLOWED];
+}
+
 message SystemTimezoneProto {
   // Specifies an owner-determined timezone that applies to the login screen and
   // all users. Valid values are listed in "timezone_settings.cc". Additionally,
@@ -1991,4 +2001,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceScreensaverLoginScreenImagesProto
       device_screensaver_login_screen_images = 145;
   optional DeviceSystemAecEnabledProto device_system_aec_enabled = 146;
+  optional DeviceLoginScreenGeolocationAccessLevelProto
+      device_login_screen_geolocation_access_level = 147;
 }

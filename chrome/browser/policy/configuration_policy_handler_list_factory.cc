@@ -168,6 +168,7 @@
 #include "chrome/browser/ash/policy/handlers/lacros_selection_policy_handler.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
+#include "chrome/browser/policy/device_login_screen_geolocation_access_level_policy_handler.h"
 #include "chrome/browser/policy/os_color_mode_policy_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -2453,6 +2454,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ash::platform_keys::KeyPermissionsPolicyHandler>(
           chrome_schema));
   handlers->AddHandler(std::make_unique<DefaultGeolocationPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<DeviceLoginScreenGeolocationAccessLevelPolicyHandler>());
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kNoteTakingAppsLockScreenAllowlist,
       prefs::kNoteTakingAppsLockScreenAllowlist, false /*allow_wildcards*/));

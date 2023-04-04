@@ -1003,8 +1003,11 @@ const char kUserCameraAllowed[] = "ash.user.camera_allowed";
 // A boolean pref indicating whether the microphone is allowed to be used.
 const char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
 
-// A boolean pref indicating whether the geolocation is allowed to be used.
+// A boolean pref indicating whether the geolocation is allowed for the user.
 const char kUserGeolocationAllowed[] = "ash.user.geolocation_allowed";
+// An enum pref indicating whether the geolocation is allowed outside user
+// session. Values are from PrivacyHubController::AccessLevel.
+const char kDeviceGeolocationAllowed[] = "ash.device.geolocation_allowed";
 
 // A boolean pref which determines whether tap-dragging is enabled.
 const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";

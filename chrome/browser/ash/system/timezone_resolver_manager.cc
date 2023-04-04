@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -221,19 +222,15 @@ bool TimeZoneResolverManager::ShouldSendCellularGeolocationData() const {
 }
 
 bool TimeZoneResolverManager::IsPreciseGeolocationAllowed() const {
-  // There's no dedicated enterprise policy for geolocation, therefore it's
-  // not restricted.
-  // TODO(b/260330795): Introduce a cloud policy to control geolocation access
-  // levels.
-  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
-    return true;
+  // Follow device preference on log-in screen.
+  if (!primary_user_prefs_) {
+    return g_browser_process->local_state()->GetInteger(
+               ash::prefs::kDeviceGeolocationAllowed) ==
+           static_cast<int>(PrivacyHubController::AccessLevel::kAllowed);
   }
 
-  // Regular user case:
-  // Precise geolocation is disabled on log-in screen.
-  // Inside a user session follow the primary user's choice.
-  return primary_user_prefs_ &&
-         primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
+  // Inside user session check geolocation user preference.
+  return primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
 }
 
 // static
