@@ -3546,6 +3546,9 @@ extern const char kShimlessRMADisableDarkModeDescription[];
 extern const char kShimlessRMADiagnosticPageName[];
 extern const char kShimlessRMADiagnosticPageDescription[];
 
+extern const char kShortcutCustomizationJellyName[];
+extern const char kShortcutCustomizationJellyDescription[];
+
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];

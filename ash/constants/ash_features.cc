@@ -1946,6 +1946,12 @@ BASE_FEATURE(kShimlessRMADiagnosticPage,
              "ShimlessRMADiagnosticPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the jelly colors will be used in the shortcut customization app.
+// Requires jelly-colors flag to also be enabled.
+BASE_FEATURE(kShortcutCustomizationJelly,
+             "ShortcutCustomizationJelly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables a toggle to enable Bluetooth debug logs.
 BASE_FEATURE(kShowBluetoothDebugLogToggle,
              "ShowBluetoothDebugLogToggle",
@@ -2870,6 +2876,11 @@ bool IsJellyEnabledForPrintManagement() {
 bool IsJellyEnabledForOsFeedback() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kOsFeedbackJelly);
+}
+
+bool IsJellyEnabledForShortcutCustomization() {
+  return chromeos::features::IsJellyEnabled() &&
+         base::FeatureList::IsEnabled(kShortcutCustomizationJelly);
 }
 
 bool IsKeyboardBacklightToggleEnabled() {

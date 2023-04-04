@@ -6162,6 +6162,12 @@ const char kShimlessRMADiagnosticPageDescription[] =
     "Enable the diagnostic page in Shimless RMA for showing detailed device "
     "information";
 
+const char kShortcutCustomizationJellyName[] =
+    "Enable jelly colors for the Shortcut Customization App";
+const char kShortcutCustomizationJellyDescription[] =
+    "Enable jelly colors for the Shortcut Customization App. Requires "
+    "jelly-colors flag to be enabled.";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

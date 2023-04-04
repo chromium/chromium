@@ -58761,6 +58761,7 @@ from previous Chrome versions.
   <int value="-1691668194" label="enable-new-bookmark-apps"/>
   <int value="-1691602043" label="DisableOfficeEditingComponentApp:enabled"/>
   <int value="-1691281364" label="enable-notification-action-icons"/>
+  <int value="-1690359116" label="ShortcutCustomizationJelly:enabled"/>
   <int value="-1688631209"
       label="AutofillEnableRankingFormulaAddressProfiles:enabled"/>
   <int value="-1687407363" label="KaleidoscopeModule:disabled"/>
@@ -61666,6 +61667,7 @@ from previous Chrome versions.
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
+  <int value="-112971292" label="ShortcutCustomizationJelly:disabled"/>
   <int value="-112707644" label="pervasive-system-accent-color"/>
   <int value="-112459802" label="WebXrRenderPath:enabled"/>
   <int value="-112335255" label="FormControlsRefresh:enabled"/>
