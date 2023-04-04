@@ -84,7 +84,7 @@ type DuplexCapability = {
   option: DuplexOption[],
 }&CapabilityWithReset;
 
-type PageOrientationOption = {
+export type PageOrientationOption = {
   type?: string,
 }&OptionWithDefault;
 

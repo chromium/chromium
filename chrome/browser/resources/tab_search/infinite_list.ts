@@ -404,7 +404,8 @@ export class InfiniteList extends PolymerElement {
       // selectable items' length, we need to check if the selected index is
       // still valid and if not adjust it.
       const selector = this.$.selector;
-      if (selector.selected >= this.selectableIndexToItemIndex_!.size()) {
+      if ((selector.selected as number) >=
+          this.selectableIndexToItemIndex_!.size()) {
         selector.selected = this.selectableIndexToItemIndex_!.size() - 1;
       }
 

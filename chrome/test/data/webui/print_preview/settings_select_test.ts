@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import {PrintPreviewModelElement, PrintPreviewSettingsSelectElement} from 'chrome://print/print_preview.js';
+import {PrintPreviewModelElement, PrintPreviewSettingsSelectElement, SelectOption} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -71,7 +71,7 @@ suite('SettingsSelectTest', function() {
         {name: 'lime', color: 'green', size: 3},
         {name: 'orange', color: 'orange', size: 5, is_default: true},
       ],
-    };
+    } as {option: Array<SelectOption & {color: string, size: number}>};
     flush();
     const option0 = JSON.stringify(settingsSelect.capability!.option[0]!);
     const option1 = JSON.stringify(settingsSelect.capability!.option[1]!);
