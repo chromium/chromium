@@ -36,6 +36,9 @@ class ASH_EXPORT WallpaperControllerTestApi {
   // colors.
   void SetCalculatedColors(const WallpaperCalculatedColors& calculated_colors);
 
+  // Set `calculated_colors` back to nullopt.
+  void ResetCalculatedColors();
+
   // Set a default wallpaper info to simplify testing.
   void SetDefaultWallpaper(const AccountId& account_id);
 

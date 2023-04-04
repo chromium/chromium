@@ -1228,10 +1228,16 @@ TEST_F(WallpaperControllerTest, ProminentColor_ClearedBetweenUsers) {
 
   TestWallpaperControllerObserver observer(controller_);
 
+  // No notifications should have occurred yet.
+  EXPECT_EQ(0, observer.colors_changed_count());
+
   // Show wallpaper for account 1.
   controller_->ShowUserWallpaper(kAccountId1,
                                  user_manager::UserType::USER_TYPE_REGULAR);
   task_environment()->RunUntilIdle();
+
+  // Should have received a notification for the cached colors.
+  EXPECT_EQ(1, observer.colors_changed_count());
 
   // Verify that we can retrieve the prominent color.
   EXPECT_EQ(SK_ColorGREEN, controller_->GetProminentColor(
@@ -1242,13 +1248,15 @@ TEST_F(WallpaperControllerTest, ProminentColor_ClearedBetweenUsers) {
   controller_->ShowUserWallpaper(kAccountId2,
                                  user_manager::UserType::USER_TYPE_REGULAR);
   task_environment()->RunUntilIdle();
-  // Since account 2 has not cached colors, the prominent color should be
-  // invalid.
+  // Since account 2 has not cached colors and wallpaper decoding is disabled,
+  // the prominent color should be invalid.
   EXPECT_EQ(
       kInvalidWallpaperColor,
       controller_->GetProminentColor({color_utils::LumaRange::DARK,
                                       color_utils::SaturationRange::VIBRANT}));
-  EXPECT_EQ(2, observer.colors_changed_count());
+  // We got one notification for the first user but nothing after because the
+  // wallpaper color hasn't been computed yet.
+  EXPECT_EQ(1, observer.colors_changed_count());
 }
 
 TEST_F(WallpaperControllerTest,
