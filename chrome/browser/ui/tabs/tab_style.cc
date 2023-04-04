@@ -22,10 +22,6 @@ int GetSeparatorHeight() {
 
 TabStyle::~TabStyle() = default;
 
-float TabStyle::GetSelectedTabOpacity() const {
-  return kDefaultSelectedTabOpacity;
-}
-
 // static
 int TabStyle::GetStandardWidth() {
   // The standard tab width is 240 DIP including both separators.
@@ -48,11 +44,6 @@ int TabStyle::GetTabOverlap() {
 // static
 int TabStyle::GetDragHandleExtension(int height) {
   return (height - GetSeparatorHeight()) / 2 - 1;
-}
-
-// static
-gfx::Insets TabStyle::GetTabInternalPadding() {
-  return gfx::Insets::VH(0, GetCornerRadius());
 }
 
 // static

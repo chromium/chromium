@@ -50,6 +50,27 @@ class TabStyleViews : public TabStyle {
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
 
+  // Returns the insets to use for laying out tab contents.
+  virtual gfx::Insets GetContentsInsets() const = 0;
+
+  // Returns the z-value of the tab, which should be used to paint them in
+  // ascending order. Return values are in the range (0,
+  // TabStyle::GetMaximumZValue()).
+  virtual float GetZValue() const = 0;
+
+  // Returns whichever of (active, inactive) the tab appears more like given the
+  // active opacity.
+  virtual TabActive GetApparentActiveState() const = 0;
+
+  // Returns the current opacity of the "active" portion of the tab's state.
+  virtual float GetActiveOpacity() const = 0;
+
+  // Derives and returns colors for the tab. See TabColors, above.
+  virtual TabColors CalculateColors() const = 0;
+
+  // Opacity of the active tab background painted over inactive selected tabs.
+  virtual float GetSelectedTabOpacity() const = 0;
+
   // Sets the center of the radial highlight in the hover animation.
   virtual void SetHoverLocation(const gfx::Point& location) = 0;
 

@@ -97,6 +97,7 @@ class GM2TabStyle : public TabStyleViews {
   float GetActiveOpacity() const override;
   TabActive GetApparentActiveState() const override;
   TabStyle::TabColors CalculateColors() const override;
+  float GetSelectedTabOpacity() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
   void SetHoverLocation(const gfx::Point& location) override;
   void ShowHover(ShowHoverStyle style) override;
@@ -483,6 +484,10 @@ TabStyle::TabColors GM2TabStyle::CalculateColors() const {
                                      : kColorTabCloseButtonFocusRingInactive;
   return {foreground_color, background_color, focus_ring_color,
           close_button_focus_ring_color};
+}
+
+float GM2TabStyle::GetSelectedTabOpacity() const {
+  return kDefaultSelectedTabOpacity;
 }
 
 void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {

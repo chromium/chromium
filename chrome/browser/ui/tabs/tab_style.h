@@ -102,27 +102,6 @@ class TabStyle {
   TabStyle& operator=(const TabStyle&) = delete;
   virtual ~TabStyle();
 
-  // Returns the insets to use for laying out tab contents.
-  virtual gfx::Insets GetContentsInsets() const = 0;
-
-  // Returns the z-value of the tab, which should be used to paint them in
-  // ascending order. Return values are in the range (0,
-  // TabStyle::GetMaximumZValue()).
-  virtual float GetZValue() const = 0;
-
-  // Returns the current opacity of the "active" portion of the tab's state.
-  virtual float GetActiveOpacity() const = 0;
-
-  // Returns whichever of (active, inactive) the tab appears more like given the
-  // active opacity.
-  virtual TabActive GetApparentActiveState() const = 0;
-
-  // Derives and returns colors for the tab. See TabColors, above.
-  virtual TabColors CalculateColors() const = 0;
-
-  // Opacity of the active tab background painted over inactive selected tabs.
-  virtual float GetSelectedTabOpacity() const;
-
   // Returns the preferred width of a single Tab, assuming space is
   // available.
   static int GetStandardWidth();
@@ -132,11 +111,6 @@ class TabStyle {
 
   // Returns the overlap between adjacent tabs.
   static int GetTabOverlap();
-
-  // Get the space only partially occupied by a tab that we should
-  // consider to be padding rather than part of the body of the tab for
-  // interaction purposes.
-  static gfx::Insets GetTabInternalPadding();
 
   // Gets the size of the separator drawn between tabs, if any.
   static gfx::Size GetSeparatorSize();
