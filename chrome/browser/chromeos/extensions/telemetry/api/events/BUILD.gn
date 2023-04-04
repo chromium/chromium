@@ -33,6 +33,8 @@ source_set("event_router") {
   sources = [
     "event_observation_crosapi.cc",
     "event_observation_crosapi.h",
+    "event_router.cc",
+    "event_router.h",
   ]
 
   deps = [
@@ -120,13 +122,17 @@ source_set("unit_tests") {
 
 source_set("extensions_unittests") {
   testonly = true
-  sources = [ "event_observation_crosapi_unittest.cc" ]
+  sources = [
+    "event_observation_crosapi_unittest.cc",
+    "event_router_unittest.cc",
+  ]
 
   deps = [
     ":event_router",
     "//base/test:test_support",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
