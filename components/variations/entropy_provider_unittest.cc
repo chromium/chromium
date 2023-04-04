@@ -12,10 +12,10 @@
 #include <memory>
 #include <numeric>
 
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,7 +73,7 @@ class TrialEntropyGenerator {
 };
 
 // An TrialEntropyGenerator that uses the SHA1EntropyProvider with the high
-// entropy source (random GUID with 128 bits of entropy + 13 additional bits of
+// entropy source (random UUID with 128 bits of entropy + 13 additional bits of
 // entropy corresponding to a low entropy source).
 class SHA1EntropyGenerator : public TrialEntropyGenerator {
  public:
@@ -87,12 +87,13 @@ class SHA1EntropyGenerator : public TrialEntropyGenerator {
   ~SHA1EntropyGenerator() override {}
 
   double GenerateEntropyValue() const override {
-    // Use a random GUID + 13 additional bits of entropy to match how the
+    // Use a random UUID + 13 additional bits of entropy to match how the
     // SHA1EntropyProvider is used in metrics_service.cc.
     const int low_entropy_source =
         static_cast<uint16_t>(base::RandInt(0, kMaxLowEntropySize - 1));
     const std::string high_entropy_source =
-        base::GenerateGUID() + base::NumberToString(low_entropy_source);
+        base::Uuid::GenerateRandomV4().AsLowercaseString() +
+        base::NumberToString(low_entropy_source);
     return GenerateSHA1Entropy(high_entropy_source, trial_name_);
   }
 
