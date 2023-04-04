@@ -28,9 +28,21 @@ component("platform") {
     sources += [ "socket_utils_posix.cc" ]
   }
 
+  if (is_win || is_mac || (is_posix && !is_nacl && !is_ios)) {
+    public += [ "platform_channel_server.h" ]
+    sources += [ "platform_channel_server.cc" ]
+  }
+
   if (is_win) {
     public += [ "platform_handle_security_util_win.h" ]
-    sources += [ "platform_handle_security_util_win.cc" ]
+    sources += [
+      "platform_channel_server_win.cc",
+      "platform_handle_security_util_win.cc",
+    ]
+  } else if (is_mac) {
+    sources += [ "platform_channel_server_mac.cc" ]
+  } else if (is_posix && !is_nacl) {
+    sources += [ "platform_channel_server_posix.cc" ]
   }
 
   public_deps = [
