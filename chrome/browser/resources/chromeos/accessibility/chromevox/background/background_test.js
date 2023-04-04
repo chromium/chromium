@@ -1441,58 +1441,48 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EditableKeyCommand', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(crbug.com/935678): Test times out flakily in MSAN builds.
-TEST_F_WITH_PREAMBLE(
-    `
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_TextSelectionAndLiveRegion DISABLED_TextSelectionAndLiveRegion
-#else
-#define MAYBE_TextSelectionAndLiveRegion TextSelectionAndLiveRegion
-#endif
-`,
-    'ChromeVoxBackgroundTest', 'MAYBE_TextSelectionAndLiveRegion', function() {
-      this.newCallback(async () => {
-        BaseAutomationHandler.announceActions = true;
-        const mockFeedback = this.createMockFeedback();
-        const root = await this.runWithLoadedTree(`
-      <p>start</p>
-      <div><input value="test" type="text"></input></div>
-      <div id="live" aria-live="assertive"></div>
-      <script>
-        const input = document.querySelector('input');
-        const [div, live] = document.querySelectorAll('div');
-        let clicks = 0;
-        div.addEventListener('click', function() {
-          clicks++;
-          if (clicks == 1) {
-            live.textContent = 'go';
-          } else if (clicks == 2) {
-            input.selectionStart = 1;
-            live.textContent = 'queued';
-          } else {
-            input.selectionStart = 2;
-            live.textContent = 'interrupted';
-          }
-        });
-      </script>
-    `);
-        const textField = root.find({role: RoleType.TEXT_FIELD});
-        const div = textField.parent;
-        mockFeedback.call(focus(textField))
-            .expectSpeech('Edit text')
-            .call(doDefault(div))
-            .expectSpeechWithQueueMode('go', QueueMode.CATEGORY_FLUSH)
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'TextSelectionAndLiveRegion', async function() {
+      BaseAutomationHandler.announceActions = true;
+      const mockFeedback = this.createMockFeedback();
+      const root = await this.runWithLoadedTree(`
+  <p>start</p>
+  <div><input value="test" type="text"></input></div>
+  <div id="live" aria-live="assertive"></div>
+  <script>
+    const input = document.querySelector('input');
+    const [div, live] = document.querySelectorAll('div');
+    let clicks = 0;
+    div.addEventListener('click', function() {
+      clicks++;
+      if (clicks == 1) {
+        live.textContent = 'go';
+      } else if (clicks == 2) {
+        input.selectionStart = 1;
+        live.textContent = 'queued';
+      } else {
+        input.selectionStart = 2;
+        live.textContent = 'interrupted';
+      }
+    });
+  </script>
+      `);
+      const textField = root.find({role: RoleType.TEXT_FIELD});
+      const div = textField.parent;
+      mockFeedback.call(focus(textField))
+          .expectSpeech('Edit text')
+          .call(doDefault(div))
+          .expectSpeechWithQueueMode('go', QueueMode.CATEGORY_FLUSH)
 
-            .call(doDefault(div))
-            .expectSpeechWithQueueMode('queued', QueueMode.QUEUE)
-            .expectSpeechWithQueueMode('e', QueueMode.CATEGORY_FLUSH)
+          .call(doDefault(div))
+          .expectSpeechWithQueueMode('queued', QueueMode.QUEUE)
+          .expectSpeechWithQueueMode('e', QueueMode.CATEGORY_FLUSH)
 
-            .call(doDefault(div))
-            .expectSpeechWithQueueMode('interrupted', QueueMode.QUEUE)
-            .expectSpeechWithQueueMode('s', QueueMode.CATEGORY_FLUSH);
+          .call(doDefault(div))
+          .expectSpeechWithQueueMode('interrupted', QueueMode.QUEUE)
+          .expectSpeechWithQueueMode('s', QueueMode.CATEGORY_FLUSH);
 
-        await mockFeedback.replay();
-      })();
+      await mockFeedback.replay();
     });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'TableColumnHeaders', async function() {
