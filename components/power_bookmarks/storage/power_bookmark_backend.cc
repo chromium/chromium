@@ -130,7 +130,7 @@ bool PowerBookmarkBackend::UpdatePower(std::unique_ptr<Power> power) {
   return CommitAndNotify(*transaction);
 }
 
-bool PowerBookmarkBackend::DeletePower(const base::GUID& guid) {
+bool PowerBookmarkBackend::DeletePower(const base::Uuid& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto transaction = db_->BeginTransaction();

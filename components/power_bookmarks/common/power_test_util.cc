@@ -13,7 +13,7 @@ std::unique_ptr<Power> MakePower(
     std::unique_ptr<sync_pb::PowerEntity> power_specifics) {
   std::unique_ptr<Power> power =
       std::make_unique<Power>(std::move(power_specifics));
-  power->set_guid(base::GUID::GenerateRandomV4());
+  power->set_guid(base::Uuid::GenerateRandomV4());
   power->set_url(url);
   power->set_power_type(power_type);
   power->set_time_modified(time_modified);

@@ -12,7 +12,7 @@ Power::Power(std::unique_ptr<sync_pb::PowerEntity> power_entity) {
 }
 
 Power::Power(const sync_pb::PowerBookmarkSpecifics& specifics) {
-  guid_ = base::GUID::ParseLowercase(specifics.guid());
+  guid_ = base::Uuid::ParseLowercase(specifics.guid());
   url_ = GURL(specifics.url());
   power_type_ = specifics.power_type();
 

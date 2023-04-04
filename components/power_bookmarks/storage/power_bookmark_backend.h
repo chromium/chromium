@@ -76,7 +76,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
   bool UpdatePower(std::unique_ptr<Power> power);
   // Delete the given `guid` in the database, if it exists. Returns whether
   // the operation was successful.
-  bool DeletePower(const base::GUID& guid);
+  bool DeletePower(const base::Uuid& guid);
   // Delete all powers for the given `url`. Success of the operation is
   // returned through the given `callback`. Use `power_type` to restrict which
   // type is deleted or use POWER_TYPE_UNSPECIFIED to delete everything.

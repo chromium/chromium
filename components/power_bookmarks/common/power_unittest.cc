@@ -4,8 +4,8 @@
 
 #include "components/power_bookmarks/common/power.h"
 
-#include "base/guid.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,7 +14,7 @@ namespace power_bookmarks {
 namespace {
 sync_pb::PowerBookmarkSpecifics CreatePowerBookmarkSpecifics() {
   sync_pb::PowerBookmarkSpecifics specifics;
-  specifics.set_guid(base::GUID::GenerateRandomV4().AsLowercaseString());
+  specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   specifics.set_url("http://google.com/");
   specifics.set_power_type(sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   specifics.set_creation_time_usec(
@@ -30,7 +30,7 @@ TEST(PowerTest, CreateFromSpecifics) {
   sync_pb::PowerBookmarkSpecifics specifics = CreatePowerBookmarkSpecifics();
   Power power(specifics);
 
-  EXPECT_EQ(power.guid(), base::GUID::ParseLowercase(specifics.guid()));
+  EXPECT_EQ(power.guid(), base::Uuid::ParseLowercase(specifics.guid()));
   EXPECT_EQ(power.url().spec(), specifics.url());
   EXPECT_EQ(power.power_type(), specifics.power_type());
   EXPECT_EQ(power.time_added(),

@@ -10,11 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/power_bookmarks/common/power_bookmark_observer.h"
@@ -116,7 +116,7 @@ class PowerBookmarkService : public KeyedService,
   // Delete the given `guid` in the database, if it exists. Success of the
   // operation is returned through the given `callback`.
   // TODO(crbug.com/1378793): Encapsulate the storage key if possible.
-  void DeletePower(const base::GUID& guid, SuccessCallback callback);
+  void DeletePower(const base::Uuid& guid, SuccessCallback callback);
 
   // Delete all powers for the given `url`. Success of the operation is
   // returned through the given `callback`. Use `power_type` to restrict which

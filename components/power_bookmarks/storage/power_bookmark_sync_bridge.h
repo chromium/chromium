@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_SYNC_BRIDGE_H_
 #define COMPONENTS_POWER_BOOKMARKS_STORAGE_POWER_BOOKMARK_SYNC_BRIDGE_H_
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {

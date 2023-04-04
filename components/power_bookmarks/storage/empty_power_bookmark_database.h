@@ -38,7 +38,7 @@ class EmptyPowerBookmarkDatabase : public PowerBookmarkDatabase {
       const SearchParams& search_params) override;
   bool CreatePower(std::unique_ptr<Power> power) override;
   std::unique_ptr<Power> UpdatePower(std::unique_ptr<Power> power) override;
-  bool DeletePower(const base::GUID& guid) override;
+  bool DeletePower(const base::Uuid& guid) override;
   bool DeletePowersForURL(
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
