@@ -24,9 +24,9 @@ class KeyDerivationParams;
 // the cloud. This implementation does not support server authentication or
 // assisted key derivation.
 //
-// To store secrets securely, use the |Permute| method to derive a lookup name
-// for your secret (basically a map key), and |Encrypt| and |Decrypt| to store
-// and retrieve the secret.
+// To store secrets securely, use the |GetKeyName| method to derive a lookup
+// name for your secret (basically a map key), and |Encrypt| and |Decrypt| to
+// store and retrieve the secret.
 //
 // https://www.cl.cam.ac.uk/~drt24/nigori/nigori-overview.pdf
 class Nigori {
