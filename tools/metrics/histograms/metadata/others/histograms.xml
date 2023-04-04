@@ -12391,20 +12391,23 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.JS.Behaviour"
-    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2022-07-24">
-  <owner>mythria@chromium.org</owner>
-  <owner>v8-team@google.com</owner>
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2024-04-03">
+  <owner>awillia@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     The behaviour of site isolated javascript code cache recorded for each cache
     transaction. It records if the request was serviced and if serviced how it
     was serviced for ex: hit, miss, update.
+
+    Warning: this histogram was expired from 2022-07-24 to 2023-04-03; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.JS.FetchCodeCache" units="ms"
     expires_after="2023-08-20">
   <owner>yhirano@chromium.org</owner>
-  <owner>loading-dev@google.com</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     The amount of time spent to fetch a code cache. Recorded only for a JS code
     cache, and recorded only when a non-empty code cache is found.
@@ -12452,12 +12455,16 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.WASM.Behaviour"
-    enum="SiteIsolatedCodeCacheWASMBehaviour" expires_after="2020-04-19">
-  <owner>bbudge@chromium.org</owner>
+    enum="SiteIsolatedCodeCacheWASMBehaviour" expires_after="2024-04-03">
+  <owner>awillia@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
   <summary>
     The behaviour of site isolated web assembly code cache recorded for each
     cache transaction during WASM compilation. It records if the request was
     serviced and if serviced how it was serviced for ex: hit, miss, update.
+
+    Warning: this histogram was expired from 2020-04-19 to 2023-04-03; data may
+    be missing.
   </summary>
 </histogram>
 
