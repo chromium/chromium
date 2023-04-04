@@ -9,20 +9,30 @@ def _dimensions(**kwargs):
 
     Args:
         **kwargs: The dimensions to be included. If the dimension value is a
-            struct, it must have a dimension field which will provide the actual
-            dimension value.
+            struct, it must have a get_dimension attribute which can be called
+            with the bucket and builder as positional arguments to get the
+            actual dimension value.
+
+    Returns:
+        A struct with a resolve attribute that can be called with the bucket and
+        builder as positional arguments to get dict of dimension values.
     """
 
-    def to_dimension(val):
-        if type(val) == type(struct()):
-            val = val.dimension
-        if val == False:
-            val = 0
-        elif val == True:
-            val = 1
-        return str(val)
+    def resolve(bucket, builder):
+        def to_dimension(val):
+            if type(val) == type(struct()):
+                val = val.get_dimension(bucket, builder)
+            if val == False:
+                val = 0
+            elif val == True:
+                val = 1
+            return str(val)
 
-    return {k: to_dimension(v) for k, v in kwargs.items() if v != None}
+        return {k: to_dimension(v) for k, v in kwargs.items() if v != None}
+
+    return struct(
+        resolve = resolve,
+    )
 
 dimensions = struct(
     dimensions = _dimensions,
