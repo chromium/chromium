@@ -442,11 +442,9 @@ BUILDERS = {
     'android-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
             'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
@@ -506,11 +504,9 @@ BUILDERS = {
     'android-builder-perf-pgo': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
             'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
@@ -528,11 +524,9 @@ BUILDERS = {
     'android_arm64-builder-perf': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
             'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
@@ -599,11 +593,9 @@ BUILDERS = {
     'android_arm64-builder-perf-pgo': {
         'additional_compile_targets': [
             'microdump_stackwalk',
-            'chrome_apk',
             'system_webview_google_apk',
             'android_tools',
             'cc_perftests',
-            'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
