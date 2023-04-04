@@ -1168,7 +1168,7 @@ TEST_F(DlpRulesManagerImplTest, TestOrderSameLevelPrinting) {
   rule_metadata.obfuscated_id.clear();
 }
 
-// TODO(b/269610458): Enable the test on Lacrod.
+// TODO(b/269610458): Enable the test on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests creation and deletion of DataTransferDlpController.
 TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
@@ -1214,6 +1214,13 @@ TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
   // should be instantiated.
   UpdatePolicyPref({rule1, rule2});
   EXPECT_TRUE(DataTransferDlpController::HasInstance());
+
+  // See call to PostTask in a test above for more detail.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  chromeos::DlpClient::Shutdown();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
