@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,6 +46,24 @@ TEST_F(BookmarksEditorViewControllerTest, Metrics) {
   [controller keyCommand_close];
 
   EXPECT_EQ(user_action_tester.GetActionCount(user_action), 1);
+}
+
+// Regression test for See crbug.com/1429435
+// Checks sync can safely occurs before the view is loaded.
+TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
+  BookmarksEditorViewController* controller =
+      [[BookmarksEditorViewController alloc] initWithBrowser:browser_.get()];
+
+  const bookmarks::BookmarkNode* mobile_node = bookmark_model_->mobile_node();
+  const bookmarks::BookmarkNode* bookmark = AddBookmark(mobile_node, @"foo");
+  BookmarksEditorMediator* mediator =
+      [[BookmarksEditorMediator alloc] initWithBookmarkModel:bookmark_model_
+                                                    bookmark:bookmark
+                                                       prefs:nullptr
+                                            syncSetupService:nullptr
+                                                 syncService:nullptr];
+  controller.mutator = mediator;
+  [controller updateSync];
 }
 
 }  // namespace

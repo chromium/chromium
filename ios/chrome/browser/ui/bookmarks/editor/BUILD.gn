@@ -81,6 +81,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "bookmarks_editor_view_controller_unittest.mm" ]
   deps = [
+    ":editor",
     ":editor_ui",
     "//base",
     "//base/test:test_support",
