@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/pickle.h"
 #include "base/token.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -810,7 +810,7 @@ void CreateTabsAndWindows(
         SessionID::id_type tab_id = -1;
         std::string guid;
         if (!it.ReadInt(&tab_id) || !it.ReadString(&guid) ||
-            !base::IsValidGUID(guid)) {
+            !base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
           VLOG(1) << "Failed reading command " << command->id();
           return;
         }
