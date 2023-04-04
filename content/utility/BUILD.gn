@@ -49,6 +49,7 @@ source_set("utility") {
     "//content/child",
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
+    "//content/public/common:content_descriptor_keys",
     "//content/services/auction_worklet",
     "//content/services/shared_storage_worklet",
     "//device/vr/buildflags",

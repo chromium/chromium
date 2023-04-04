@@ -11,7 +11,8 @@
 namespace network {
 
 COMPONENT_EXPORT(NETWORK_SERVICE)
-bool NetworkPreSandboxHook(sandbox::policy::SandboxLinux::Options options);
+bool NetworkPreSandboxHook(std::vector<std::string> network_context_parent_dirs,
+                           sandbox::policy::SandboxLinux::Options options);
 
 }  // namespace network
 

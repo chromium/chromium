@@ -26,6 +26,14 @@ BASE_FEATURE(kNetworkServiceSandbox,
 BASE_FEATURE(kNetworkServiceSyscallFilter,
              "NetworkServiceSyscallFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables a fine-grained file path allowlist for the network service.
+// Only has an effect if IsNetworkSandboxEnabled() returns true.
+// If the network service sandbox is enabled and |kNetworkServiceFileAllowlist|
+// is disabled, a file path allowlist will still be applied, but the policy will
+// allow everything.
+BASE_FEATURE(kNetworkServiceFileAllowlist,
+             "NetworkServiceFileAllowlist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
