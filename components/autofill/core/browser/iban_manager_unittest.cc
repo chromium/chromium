@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/iban_manager.h"
 
-#include "base/guid.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -93,7 +93,7 @@ class IBANManagerTest : public testing::Test {
   // Sets up the TestPersonalDataManager with an IBAN.
   IBAN SetUpIBAN(base::StringPiece16 value, base::StringPiece16 nickname) {
     IBAN iban;
-    std::string guid = base::GenerateGUID();
+    std::string guid = base::GenerateUuid();
     iban.set_guid(guid);
     iban.set_value(std::u16string(value));
     iban.set_nickname(std::u16string(nickname));

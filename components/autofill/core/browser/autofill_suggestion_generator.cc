@@ -8,10 +8,10 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/guid.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -396,7 +396,7 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
 
 int AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(
     const Suggestion::BackendId& cc_or_address_backend_id) {
-  if (!base::IsValidGUID(*cc_or_address_backend_id)) {
+  if (!base::IsValidUuid(*cc_or_address_backend_id)) {
     return 0;
   }
 

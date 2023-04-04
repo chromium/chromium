@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -179,7 +179,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   all_card_ptrs.reserve(kNumCards);
   for (size_t i = 0; i < kNumCards; ++i) {
     constexpr base::TimeDelta k30Days = base::Days(30);
-    all_card_data.emplace_back(base::GenerateGUID(), "https://example.com");
+    all_card_data.emplace_back(base::GenerateUuid(), "https://example.com");
     if (i < 5) {
       all_card_data.back().set_use_date(kNow - (i + i + 1) * k30Days);
       test::SetCreditCardInfo(&all_card_data.back(), "Clyde Barrow",
@@ -614,7 +614,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   auto MakeIBAN = [](const std::u16string& value,
                      const std::u16string& nickname) {
-    IBAN iban(base::GenerateGUID());
+    IBAN iban(base::GenerateUuid());
     iban.set_value(value);
     if (!nickname.empty())
       iban.set_nickname(nickname);

@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,13 +34,13 @@ std::u16string GetIbanValueGroupedByFour(const IBAN& iban,
 
 TEST(IBANTest, AssignmentOperator) {
   // Creates two IBANs with different parameters.
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::GenerateUuid();
   IBAN iban_0;
   iban_0.set_guid(guid);
   iban_0.set_nickname(u"Nickname 0");
   iban_0.set_value(u"DE91 1000 0000 0123 4567 89");
   IBAN iban_1;
-  guid = base::GenerateGUID();
+  guid = base::GenerateUuid();
   iban_1.set_guid(guid);
   iban_1.set_nickname(u"Nickname 1");
   iban_1.set_value(u"IE64 IRCE 9205 0112 3456 78");
@@ -64,7 +64,7 @@ TEST(IBANTest, GetMetadata) {
 // and newlines with whitespace, replace multiple spaces into a single one
 // and trim leading/trailing whitespace.
 TEST(IBANTest, SetNickname) {
-  IBAN iban(base::GenerateGUID());
+  IBAN iban(base::GenerateUuid());
 
   // Normal input nickname.
   iban.set_nickname(u"My doctor's IBAN");
@@ -92,7 +92,7 @@ TEST(IBANTest, SetNickname) {
 }
 
 TEST(IBANTest, SetValue) {
-  IBAN iban(base::GenerateGUID());
+  IBAN iban(base::GenerateUuid());
 
   // Verify middle whitespace was removed.
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
@@ -112,7 +112,7 @@ TEST(IBANTest, SetValue) {
 }
 
 TEST(IBANTest, SetRawData) {
-  IBAN iban(base::GenerateGUID());
+  IBAN iban(base::GenerateUuid());
 
   // Verify RawInfo can be correctly set and read.
   iban.SetRawInfoWithVerificationStatus(IBAN_VALUE,
@@ -124,7 +124,7 @@ TEST(IBANTest, SetRawData) {
 TEST(IBANTest, GetObfuscatedStringForValue_ValidIbanValue) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
-  IBAN iban(base::GenerateGUID());
+  IBAN iban(base::GenerateUuid());
 
   iban.set_value(u"CH5604835012345678009");
 

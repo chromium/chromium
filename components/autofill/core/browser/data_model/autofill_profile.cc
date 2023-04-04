@@ -11,7 +11,6 @@
 #include <ostream>
 #include <set>
 
-#include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
@@ -22,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -222,7 +222,7 @@ AutofillProfile::AutofillProfile(const std::string& guid,
 
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
-    : AutofillDataModel(base::GenerateGUID(), std::string()),
+    : AutofillDataModel(base::GenerateUuid(), std::string()),
       company_(this),
       phone_number_(this),
       server_id_(server_id),
@@ -233,7 +233,7 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
 }
 
 AutofillProfile::AutofillProfile(Source source)
-    : AutofillProfile(base::GenerateGUID(), std::string(), source) {}
+    : AutofillProfile(base::GenerateUuid(), std::string(), source) {}
 
 AutofillProfile::AutofillProfile()
     : AutofillProfile(Source::kLocalOrSyncable) {}
@@ -1164,7 +1164,7 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   AutofillProfile account_profile = *this;
   // Since GUIDs are assumed to be unique across all profile sources, a new GUID
   // is assigned.
-  account_profile.set_guid(base::GenerateGUID());
+  account_profile.set_guid(base::GenerateUuid());
   account_profile.source_ = Source::kAccount;
   // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
   account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
