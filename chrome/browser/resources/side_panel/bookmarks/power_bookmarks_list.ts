@@ -642,6 +642,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     return false;
   }
 
+  private shouldShowEmptySearchState_() {
+    return this.hasActiveLabels_() || !!this.searchQuery_;
+  }
+
   private shouldHideHeader_(): boolean {
     return this.hasActiveLabels_() || !!this.searchQuery_ ||
         this.hasNoBookmarks_();
@@ -897,6 +901,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private getEmptyTitle_(): string {
     if (this.guestMode_) {
       return loadTimeData.getString('emptyTitleGuest');
+    } else if (this.shouldShowEmptySearchState_()) {
+      return loadTimeData.getString('emptyTitleSearch');
     } else {
       return loadTimeData.getString('emptyTitle');
     }
@@ -905,9 +911,22 @@ export class PowerBookmarksListElement extends PolymerElement {
   private getEmptyBody_(): string {
     if (this.guestMode_) {
       return loadTimeData.getString('emptyBodyGuest');
+    } else if (this.shouldShowEmptySearchState_()) {
+      return loadTimeData.getString('emptyBodySearch');
     } else {
       return loadTimeData.getString('emptyBody');
     }
+  }
+
+  private getEmptyImagePath_(): string {
+    return this.shouldShowEmptySearchState_() ? '' :
+                                                './images/bookmarks_empty.svg';
+  }
+
+  private getEmptyImagePathDark_(): string {
+    return this.shouldShowEmptySearchState_() ?
+        '' :
+        './images/bookmarks_empty_dark.svg';
   }
 
   /**
