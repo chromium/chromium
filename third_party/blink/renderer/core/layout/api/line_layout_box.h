@@ -56,10 +56,6 @@ class LineLayoutBox : public LineLayoutBoxModel {
     return ToBox()->DeprecatedFlipForWritingMode(point);
   }
 
-  void MoveWithEdgeOfInlineContainerIfNecessary(bool is_horizontal) {
-    ToBox()->MoveWithEdgeOfInlineContainerIfNecessary(is_horizontal);
-  }
-
   void Move(const LayoutUnit& width, const LayoutUnit& height) {
     ToBox()->Move(width, height);
   }

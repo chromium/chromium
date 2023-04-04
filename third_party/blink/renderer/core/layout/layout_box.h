@@ -1096,9 +1096,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   enum PageBoundaryRule { kAssociateWithFormerPage, kAssociateWithLatterPage };
 
-  void PositionLineBox(InlineBox*);
-  void MoveWithEdgeOfInlineContainerIfNecessary(bool is_horizontal);
-
   virtual InlineBox* CreateInlineBox();
   void DirtyLineBoxes(bool full_layout);
 
@@ -1293,7 +1290,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContainingBlockLogicalHeightForContent(
       AvailableLogicalHeightType) const;
 
-  LayoutUnit ContainingBlockAvailableLineWidth() const;
   LayoutUnit PerpendicularContainingBlockLogicalHeight() const;
 
   virtual void UpdateLogicalWidth();
@@ -1343,9 +1339,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // <input>s, legends, and floating/compact elements do this.
   bool SizesLogicalWidthToFitContent(const Length& logical_width) const;
 
-  LayoutUnit ShrinkLogicalWidthToAvoidFloats(LayoutUnit child_margin_start,
-                                             LayoutUnit child_margin_end,
-                                             const LayoutBlockFlow* cb) const;
   bool AutoWidthShouldFitContent() const;
 
   LayoutUnit ComputeLogicalWidthUsing(

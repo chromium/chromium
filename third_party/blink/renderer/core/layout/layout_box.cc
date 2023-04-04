@@ -3034,63 +3034,6 @@ PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
   return clip_rect;
 }
 
-static LayoutUnit PortionOfMarginNotConsumedByFloat(LayoutUnit child_margin,
-                                                    LayoutUnit content_side,
-                                                    LayoutUnit offset) {
-  if (child_margin <= 0)
-    return LayoutUnit();
-  LayoutUnit content_side_with_margin = content_side + child_margin;
-  if (offset > content_side_with_margin)
-    return child_margin;
-  return offset - content_side;
-}
-
-LayoutUnit LayoutBox::ShrinkLogicalWidthToAvoidFloats(
-    LayoutUnit child_margin_start,
-    LayoutUnit child_margin_end,
-    const LayoutBlockFlow* cb) const {
-  NOT_DESTROYED();
-  LayoutUnit logical_top_position = LogicalTop();
-  LayoutUnit start_offset_for_content = cb->StartOffsetForContent();
-  LayoutUnit end_offset_for_content = cb->EndOffsetForContent();
-
-  // NOTE: This call to LogicalHeightForChild is bad, as it may contain data
-  // from a previous layout.
-  LayoutUnit logical_height = cb->LogicalHeightForChild(*this);
-  LayoutUnit start_offset_for_avoiding_floats =
-      cb->StartOffsetForAvoidingFloats(logical_top_position, logical_height);
-  LayoutUnit end_offset_for_avoiding_floats =
-      cb->EndOffsetForAvoidingFloats(logical_top_position, logical_height);
-
-  // If there aren't any floats constraining us then allow the margins to
-  // shrink/expand the width as much as they want.
-  if (start_offset_for_content == start_offset_for_avoiding_floats &&
-      end_offset_for_content == end_offset_for_avoiding_floats)
-    return cb->AvailableLogicalWidthForAvoidingFloats(logical_top_position,
-                                                      logical_height) -
-           child_margin_start - child_margin_end;
-
-  LayoutUnit width = cb->AvailableLogicalWidthForAvoidingFloats(
-      logical_top_position, logical_height);
-  width -= std::max(LayoutUnit(), child_margin_start);
-  width -= std::max(LayoutUnit(), child_margin_end);
-
-  // We need to see if margins on either the start side or the end side can
-  // contain the floats in question. If they can, then just using the line width
-  // is inaccurate. In the case where a float completely fits, we don't need to
-  // use the line offset at all, but can instead push all the way to the content
-  // edge of the containing block. In the case where the float doesn't fit, we
-  // can use the line offset, but we need to grow it by the margin to reflect
-  // the fact that the margin was "consumed" by the float. Negative margins
-  // aren't consumed by the float, and so we ignore them.
-  width += PortionOfMarginNotConsumedByFloat(child_margin_start,
-                                             start_offset_for_content,
-                                             start_offset_for_avoiding_floats);
-  width += PortionOfMarginNotConsumedByFloat(
-      child_margin_end, end_offset_for_content, end_offset_for_avoiding_floats);
-  return width;
-}
-
 LayoutUnit LayoutBox::ContainingBlockLogicalHeightForGetComputedStyle() const {
   NOT_DESTROYED();
   if (HasOverrideContainingBlockContentLogicalHeight())
@@ -3127,17 +3070,6 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForContent(
 
   LayoutBlock* cb = ContainingBlock();
   return cb->AvailableLogicalHeight(height_type);
-}
-
-LayoutUnit LayoutBox::ContainingBlockAvailableLineWidth() const {
-  NOT_DESTROYED();
-  LayoutBlock* cb = ContainingBlock();
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(cb);
-  if (child_block_flow) {
-    return child_block_flow->AvailableLogicalWidthForAvoidingFloats(
-        LogicalTop(), AvailableLogicalHeight(kIncludeMarginBorderPadding));
-  }
-  return LayoutUnit();
 }
 
 LayoutUnit LayoutBox::PerpendicularContainingBlockLogicalHeight() const {
@@ -3578,55 +3510,6 @@ const FragmentData* LayoutBox::FragmentDataFromPhysicalFragment(
   }
   NOTREACHED();
   return fragment_data;
-}
-
-void LayoutBox::PositionLineBox(InlineBox* box) {
-  NOT_DESTROYED();
-  if (IsOutOfFlowPositioned()) {
-    // Cache the x position only if we were an INLINE type originally.
-    bool originally_inline = StyleRef().IsOriginalDisplayInlineType();
-    if (originally_inline) {
-      // The value is cached in the xPos of the box.  We only need this value if
-      // our object was inline originally, since otherwise it would have ended
-      // up underneath the inlines.
-      RootInlineBox& root = box->Root();
-      root.Block().SetStaticInlinePositionForChild(LineLayoutBox(this),
-                                                   box->LogicalLeft());
-    } else {
-      // Our object was a block originally, so we make our normal flow position
-      // be just below the line box (as though all the inlines that came before
-      // us got wrapped in an anonymous block, which is what would have happened
-      // had we been in flow). This value was cached in the y() of the box.
-      Layer()->SetStaticBlockPosition(box->LogicalTop());
-    }
-
-    if (Container()->IsLayoutInline())
-      MoveWithEdgeOfInlineContainerIfNecessary(box->IsHorizontal());
-
-    // Nuke the box.
-    box->Remove(kDontMarkLineBoxes);
-    box->Destroy();
-  } else if (IsAtomicInlineLevel()) {
-    SetLocationAndUpdateOverflowControlsIfNeeded(box->Location());
-    SetInlineBoxWrapper(box);
-  }
-}
-
-void LayoutBox::MoveWithEdgeOfInlineContainerIfNecessary(bool is_horizontal) {
-  NOT_DESTROYED();
-  DCHECK(IsOutOfFlowPositioned());
-  DCHECK(Container()->IsLayoutInline());
-  DCHECK(Container()->CanContainOutOfFlowPositionedElement(
-      StyleRef().GetPosition()));
-  // If this object is inside a relative positioned inline and its inline
-  // position is an explicit offset from the edge of its container then it will
-  // need to move if its inline container has changed width. We do not track if
-  // the width has changed but if we are here then we are laying out lines
-  // inside it, so it probably has - mark our object for layout so that it can
-  // move to the new offset created by the new width.
-  if (!NormalChildNeedsLayout() &&
-      !StyleRef().HasStaticInlinePosition(is_horizontal))
-    SetChildNeedsLayout(kMarkOnlyThis);
 }
 
 void LayoutBox::DeleteLineBoxWrapper() {

@@ -50,8 +50,6 @@ class NGPhysicalFragment;
 
 struct NGInlineNodeData;
 
-enum IndentTextOrNot { kDoNotIndentText, kIndentText };
-
 // LayoutBlockFlow is the class that implements a block container in CSS 2.1.
 // http://www.w3.org/TR/CSS21/visuren.html#block-boxes
 //
@@ -80,88 +78,16 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return true;
   }
 
-  void UpdateBlockLayout(bool relayout_children) override;
+  void UpdateBlockLayout(bool relayout_children) override {
+    NOT_DESTROYED();
+    NOTREACHED_NORETURN();
+  }
 
   void ComputeVisualOverflow(bool recompute_floats) override;
 
   void DeleteLineBoxTree();
 
   bool CanContainFirstFormattedLine() const;
-
-  LayoutUnit AvailableLogicalWidthForLine(
-      LayoutUnit position,
-      IndentTextOrNot indent_text,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return (LogicalRightOffsetForLine(position, indent_text, logical_height) -
-            LogicalLeftOffsetForLine(position, indent_text, logical_height))
-        .ClampNegativeToZero();
-  }
-  LayoutUnit LogicalRightOffsetForLine(
-      LayoutUnit position,
-      IndentTextOrNot indent_text,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return LogicalRightOffsetForLine(position, LogicalRightOffsetForContent(),
-                                     indent_text, logical_height);
-  }
-  LayoutUnit LogicalLeftOffsetForLine(
-      LayoutUnit position,
-      IndentTextOrNot indent_text,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return LogicalLeftOffsetForLine(position, LogicalLeftOffsetForContent(),
-                                    indent_text, logical_height);
-  }
-  LayoutUnit StartOffsetForLine(
-      LayoutUnit position,
-      IndentTextOrNot indent_text,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForLine(position, indent_text, logical_height)
-               : LogicalWidth() - LogicalRightOffsetForLine(
-                                      position, indent_text, logical_height);
-  }
-
-  LayoutUnit AvailableLogicalWidthForAvoidingFloats(
-      LayoutUnit position,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return (LogicalRightOffsetForAvoidingFloats(position, logical_height) -
-            LogicalLeftOffsetForAvoidingFloats(position, logical_height))
-        .ClampNegativeToZero();
-  }
-  LayoutUnit LogicalLeftOffsetForAvoidingFloats(
-      LayoutUnit position,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return LogicalLeftOffsetForContent();
-  }
-  LayoutUnit LogicalRightOffsetForAvoidingFloats(
-      LayoutUnit position,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return LogicalRightOffsetForContent();
-  }
-  LayoutUnit StartOffsetForAvoidingFloats(
-      LayoutUnit position,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForAvoidingFloats(position, logical_height)
-               : LogicalWidth() - LogicalRightOffsetForAvoidingFloats(
-                                      position, logical_height);
-  }
-  LayoutUnit EndOffsetForAvoidingFloats(
-      LayoutUnit position,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return !StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForAvoidingFloats(position, logical_height)
-               : LogicalWidth() - LogicalRightOffsetForAvoidingFloats(
-                                      position, logical_height);
-  }
 
   const LineBoxList& LineBoxes() const {
     NOT_DESTROYED();
@@ -212,11 +138,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void ChildBecameFloatingOrOutOfFlow(LayoutBox* child);
   void CollapseAnonymousBlockChild(LayoutBlockFlow* child);
-
-  void SetStaticInlinePositionForChild(LayoutBox&, LayoutUnit inline_position);
-  void UpdateStaticInlinePositionForChild(LayoutBox&,
-                                          LayoutUnit logical_top,
-                                          IndentTextOrNot = kDoNotIndentText);
 
   static bool ShouldSkipCreatingRunsForObject(LineLayoutItem obj) {
     return obj.IsFloating() || (obj.IsOutOfFlowPositioned() &&
@@ -305,27 +226,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  LayoutUnit LogicalRightOffsetForLine(
-      LayoutUnit logical_top,
-      LayoutUnit fixed_offset,
-      IndentTextOrNot apply_text_indent,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return AdjustLogicalRightOffsetForLine(fixed_offset, apply_text_indent);
-  }
-  LayoutUnit LogicalLeftOffsetForLine(
-      LayoutUnit logical_top,
-      LayoutUnit fixed_offset,
-      IndentTextOrNot apply_text_indent,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    NOT_DESTROYED();
-    return AdjustLogicalLeftOffsetForLine(fixed_offset, apply_text_indent);
-  }
-
-  void SetLogicalLeftForChild(LayoutBox& child, LayoutUnit logical_left);
-  void SetLogicalTopForChild(LayoutBox& child, LayoutUnit logical_top);
-  void DetermineLogicalLeftPositionForChild(LayoutBox& child);
-
   void AddOutlineRects(Vector<PhysicalRect>&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
@@ -340,35 +240,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                        HitTestPhase) override;
 
  private:
-  void ResetLayout();
-  void LayoutChildren(bool relayout_children, SubtreeLayoutScope&);
-  void LayoutBlockChildren(bool relayout_children,
-                           SubtreeLayoutScope&,
-                           LayoutUnit before_edge,
-                           LayoutUnit after_edge);
-
-  bool PositionAndLayoutOnceIfNeeded(LayoutBox& child,
-                                     LayoutUnit new_logical_top);
-
-  void LayoutBlockChild(LayoutBox& child);
-  void AdjustPositionedBlock(LayoutBox& child);
-
-  LayoutUnit LogicalRightOffsetForPositioningFloat(
-      LayoutUnit logical_top,
-      LayoutUnit fixed_offset,
-      LayoutUnit* height_remaining) const;
-  LayoutUnit LogicalLeftOffsetForPositioningFloat(
-      LayoutUnit logical_top,
-      LayoutUnit fixed_offset,
-      LayoutUnit* height_remaining) const;
-
-  LayoutUnit AdjustLogicalRightOffsetForLine(
-      LayoutUnit offset_from_floats,
-      IndentTextOrNot apply_text_indent) const;
-  LayoutUnit AdjustLogicalLeftOffsetForLine(
-      LayoutUnit offset_from_floats,
-      IndentTextOrNot apply_text_indent) const;
-
   void DirtyLinesFromChangedChild(
       LayoutObject* child,
       MarkingBehavior marking_behaviour = kMarkContainerChain) override {

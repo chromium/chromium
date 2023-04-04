@@ -91,36 +91,6 @@ class LineLayoutBlockFlow : public LineLayoutBox {
                                                          replaced_height);
   }
 
-  void SetStaticInlinePositionForChild(LineLayoutBox box,
-                                       LayoutUnit inline_position) {
-    ToBlockFlow()->SetStaticInlinePositionForChild(
-        *To<LayoutBox>(box.GetLayoutObject()), inline_position);
-  }
-
-  void UpdateStaticInlinePositionForChild(
-      LineLayoutBox box,
-      LayoutUnit logical_top,
-      IndentTextOrNot indent_text = kDoNotIndentText) {
-    ToBlockFlow()->UpdateStaticInlinePositionForChild(
-        *To<LayoutBox>(box.GetLayoutObject()), logical_top, indent_text);
-  }
-
-  LayoutUnit LogicalRightOffsetForLine(
-      LayoutUnit position,
-      IndentTextOrNot indent_text,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    return ToBlockFlow()->LogicalRightOffsetForLine(position, indent_text,
-                                                    logical_height);
-  }
-
-  LayoutUnit LogicalLeftOffsetForLine(
-      LayoutUnit position,
-      IndentTextOrNot indent_text,
-      LayoutUnit logical_height = LayoutUnit()) const {
-    return ToBlockFlow()->LogicalLeftOffsetForLine(position, indent_text,
-                                                   logical_height);
-  }
-
   LayoutUnit LogicalWidth() { return ToBlockFlow()->LogicalWidth(); }
 
   LineBoxList* LineBoxes() { return ToBlockFlow()->LineBoxes(); }
