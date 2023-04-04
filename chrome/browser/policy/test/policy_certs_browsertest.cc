@@ -343,7 +343,7 @@ class MultiProfilePolicyProviderHelper {
         profile_manager->GenerateNextProfileDirectoryPath();
     // Create an additional profile.
     profile_2_ =
-        profiles::testing::CreateProfileSync(profile_manager, path_profile);
+        &profiles::testing::CreateProfileSync(profile_manager, path_profile);
 
     // Make sure second profile creation does what we think it does.
     ASSERT_TRUE(profile_1() != profile_2());

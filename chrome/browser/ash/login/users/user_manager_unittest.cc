@@ -535,7 +535,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       false /* browser_restart */, false /* is_child */);
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* const profile = profiles::testing::CreateProfileSync(
+  Profile& profile = profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
       ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
 
@@ -544,7 +544,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   // The user is not allowed to lock the screen.
-  profile->GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
+  profile.GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
   EXPECT_FALSE(user_manager::UserManager::Get()->CanCurrentUserLock());
   EXPECT_EQ(0U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 

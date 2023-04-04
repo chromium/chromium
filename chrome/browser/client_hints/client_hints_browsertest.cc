@@ -947,7 +947,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     base::FilePath new_path =
         profile_manager->GenerateNextProfileDirectoryPath();
 
-    return profiles::testing::CreateProfileSync(profile_manager, new_path);
+    return &profiles::testing::CreateProfileSync(profile_manager, new_path);
   }
 
  protected:

@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   // Create an additional profile.
   base::FilePath new_profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  [[maybe_unused]] Profile* new_profile =
+  [[maybe_unused]] Profile& new_profile =
       profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
 
   base::FilePath current_profile_path = browser()->profile()->GetPath();
@@ -387,9 +387,9 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   // Deleting the main profile on Lacros is not allwed.
   // Set the current profile to the new profile.
   new_last_used_path = browser()->profile()->GetPath();
-  ASSERT_EQ(Browser::GetCreationStatusForProfile(new_profile),
+  ASSERT_EQ(Browser::GetCreationStatusForProfile(&new_profile),
             Browser::CreationStatus::kOk);
-  Browser* browser = Browser::Create(Browser::CreateParams(new_profile, true));
+  Browser* browser = Browser::Create(Browser::CreateParams(&new_profile, true));
   BrowserList::SetLastActive(browser);
   EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), browser);
   EXPECT_EQ(ProfileManager::GetLastUsedProfile()->GetPath(), new_profile_path);
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lacros main profile should never be deleted.
   // Use a secondary profile.
-  Profile* profile = profiles::testing::CreateProfileSync(
+  Profile* profile = &profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
       g_browser_process->profile_manager()->GenerateNextProfileDirectoryPath());
 #else

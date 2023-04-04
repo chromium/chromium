@@ -38,7 +38,7 @@ using ::testing::StrictMock;
 // Creates a new profile from the UI thread.
 Profile* CreateProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return profiles::testing::CreateProfileSync(
+  return &profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
 }
 

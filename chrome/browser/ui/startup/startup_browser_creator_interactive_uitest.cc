@@ -43,16 +43,16 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
 
   // Create 4 profiles, they will be scheduled for destruction when the last
   // browser window they are associated to will be closed.
-  Profile* profile_1 = profiles::testing::CreateProfileSync(
+  Profile& profile_1 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->user_data_dir().Append(
                            FILE_PATH_LITERAL("New Profile 1")));
-  Profile* profile_2 = profiles::testing::CreateProfileSync(
+  Profile& profile_2 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->user_data_dir().Append(
                            FILE_PATH_LITERAL("New Profile 2")));
-  Profile* profile_3 = profiles::testing::CreateProfileSync(
+  Profile& profile_3 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->user_data_dir().Append(
                            FILE_PATH_LITERAL("New Profile 3")));
-  Profile* profile_4 = profiles::testing::CreateProfileSync(
+  Profile& profile_4 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->user_data_dir().Append(
                            FILE_PATH_LITERAL("New Profile 4")));
 
@@ -60,22 +60,22 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   pref_urls.urls.push_back(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
-  SessionStartupPref::SetStartupPref(profile_1, pref_urls);
-  SessionStartupPref::SetStartupPref(profile_2, pref_urls);
-  SessionStartupPref::SetStartupPref(profile_3, pref_urls);
-  SessionStartupPref::SetStartupPref(profile_4, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_1, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_2, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_3, pref_urls);
+  SessionStartupPref::SetStartupPref(&profile_4, pref_urls);
 
   // Do a simple non-process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
 
   StartupBrowserCreator browser_creator;
   std::vector<Profile*> last_opened_profiles;
-  last_opened_profiles.push_back(profile_1);
-  last_opened_profiles.push_back(profile_2);
-  last_opened_profiles.push_back(profile_3);
-  last_opened_profiles.push_back(profile_4);
+  last_opened_profiles.push_back(&profile_1);
+  last_opened_profiles.push_back(&profile_2);
+  last_opened_profiles.push_back(&profile_3);
+  last_opened_profiles.push_back(&profile_4);
   browser_creator.Start(dummy, profile_manager->user_data_dir(),
-                        {profile_2, StartupProfileMode::kBrowserWindow},
+                        {&profile_2, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
 
   while (!browser_creator.ActivatedProfile())
@@ -84,24 +84,24 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   Browser* new_browser = nullptr;
 
   // The last used profile (the profile_2 in this case) must be active.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_2));
-  new_browser = chrome::FindBrowserWithProfile(profile_2);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_2));
+  new_browser = chrome::FindBrowserWithProfile(&profile_2);
   ASSERT_TRUE(new_browser);
   EXPECT_TRUE(new_browser->window()->IsActive());
 
   // All other profiles browser should not be active.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_1));
-  new_browser = chrome::FindBrowserWithProfile(profile_1);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_1));
+  new_browser = chrome::FindBrowserWithProfile(&profile_1);
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_3));
-  new_browser = chrome::FindBrowserWithProfile(profile_3);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_3));
+  new_browser = chrome::FindBrowserWithProfile(&profile_3);
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 
-  ASSERT_EQ(1u, chrome::GetBrowserCount(profile_4));
-  new_browser = chrome::FindBrowserWithProfile(profile_4);
+  ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_4));
+  new_browser = chrome::FindBrowserWithProfile(&profile_4);
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 }

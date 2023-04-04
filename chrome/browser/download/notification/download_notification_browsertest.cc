@@ -1238,12 +1238,12 @@ class MultiProfileDownloadNotificationTest
     user_manager::UserManager::Get()->SaveUserDisplayName(
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
-    Profile* profile = profiles::testing::CreateProfileSync(
+    Profile& profile = profiles::testing::CreateProfileSync(
         g_browser_process->profile_manager(),
         ash::ProfileHelper::GetProfilePathByUserIdHash(info.hash));
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
+        IdentityManagerFactory::GetForProfile(&profile);
     if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
       signin::MakePrimaryAccountAvailable(identity_manager, info.email,
                                           signin::ConsentLevel::kSync);

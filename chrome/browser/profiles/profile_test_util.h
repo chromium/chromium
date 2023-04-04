@@ -22,7 +22,7 @@ namespace profiles::testing {
 
 // Helper to call `ProfileManager::CreateProfileAsync` synchronously during
 // tests. Returns the created `Profile`.
-Profile* CreateProfileSync(ProfileManager* profile_manager,
+Profile& CreateProfileSync(ProfileManager* profile_manager,
                            const base::FilePath& path);
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -710,10 +710,9 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
   base::FilePath other_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   // Create an additional profile.
-  Profile* profile =
+  Profile& profile =
       profiles::testing::CreateProfileSync(profile_manager, other_path);
-  ASSERT_TRUE(profile);
-  CreateBrowser(profile);
+  CreateBrowser(&profile);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

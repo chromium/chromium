@@ -149,12 +149,13 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
 // startup.
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, PRE_EditProfile_NotLoaded) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* secondary_profile = profiles::testing::CreateProfileSync(
+  Profile& secondary_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  chrome::NewEmptyWindow(secondary_profile);
+  chrome::NewEmptyWindow(&secondary_profile);
   // Let the browser window fully open before closing it.
-  if (chrome::GetBrowserCount(secondary_profile) == 0)
+  if (chrome::GetBrowserCount(&secondary_profile) == 0) {
     ui_test_utils::WaitForBrowserToOpen();
+  }
   // Close all browsers to avoid restoring profiles on the next startup.
   CloseAllBrowsers();
 }

@@ -36,7 +36,7 @@ namespace {
 Profile* CreateProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
-  return profiles::testing::CreateProfileSync(profile_manager, new_path);
+  return &profiles::testing::CreateProfileSync(profile_manager, new_path);
 }
 
 // An observer returns back to test code after brower window associated with

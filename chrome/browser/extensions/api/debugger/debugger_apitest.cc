@@ -484,7 +484,7 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
     DebuggerApiTest::SetUpOnMainThread();
     profile_manager_ = g_browser_process->profile_manager();
 
-    other_profile_ = profiles::testing::CreateProfileSync(
+    other_profile_ = &profiles::testing::CreateProfileSync(
         profile_manager_, profile_manager_->GenerateNextProfileDirectoryPath());
     otr_profile_ = profile()->GetPrimaryOTRProfile(true);
   }

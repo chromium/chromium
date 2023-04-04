@@ -27,14 +27,13 @@
 
 namespace {
 
-Profile* CreateAndWaitForProfile(const base::FilePath& profile_dir) {
-  Profile* profile = profiles::testing::CreateProfileSync(
+Profile& CreateAndWaitForProfile(const base::FilePath& profile_dir) {
+  Profile& profile = profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(), profile_dir);
-  EXPECT_TRUE(profile);
   return profile;
 }
 
-Profile* CreateAndWaitForGuestProfile() {
+Profile& CreateAndWaitForGuestProfile() {
   return CreateAndWaitForProfile(ProfileManager::GetGuestProfilePath());
 }
 
@@ -43,16 +42,16 @@ void SetGuestProfileAsLastProfile() {
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
   // Create the guest profile, and set it as the last used profile.
-  Profile* guest_profile = CreateAndWaitForGuestProfile();
-  [ac setLastProfile:guest_profile];
+  Profile& guest_profile = CreateAndWaitForGuestProfile();
+  [ac setLastProfile:&guest_profile];
   Profile* profile = [ac lastProfileIfLoaded];
   ASSERT_TRUE(profile);
-  EXPECT_EQ(guest_profile->GetPath(), profile->GetPath());
+  EXPECT_EQ(guest_profile.GetPath(), profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());
   // Also set the last used profile path preference. If the profile does need to
   // be read from disk for some reason this acts as a backstop.
   g_browser_process->local_state()->SetString(
-      prefs::kProfileLastUsed, guest_profile->GetPath().BaseName().value());
+      prefs::kProfileLastUsed, guest_profile.GetPath().BaseName().value());
 }
 
 }  // namespace
