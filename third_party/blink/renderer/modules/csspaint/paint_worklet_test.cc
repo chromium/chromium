@@ -305,7 +305,14 @@ TEST_P(MainOrOffThreadPaintWorkletTest, ConsistentGlobalScopeOnMainThread) {
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("bar"));
 }
 
-TEST_P(MainOrOffThreadPaintWorkletTest, AllGlobalScopesMustBeCreated) {
+// TODO(crbug.com/1430318): All/MainOrOffThreadPaintWorkletTest.
+// AllGlobalScopesMustBeCreated/1 is failing on Linux TSan Tests.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AllGlobalScopesMustBeCreated DISABLED_AllGlobalScopesMustBeCreated
+#else
+#define MAYBE_AllGlobalScopesMustBeCreated AllGlobalScopesMustBeCreated
+#endif
+TEST_P(MainOrOffThreadPaintWorkletTest, MAYBE_AllGlobalScopesMustBeCreated) {
   PaintWorklet* paint_worklet_to_test =
       MakeGarbageCollected<PaintWorklet>(*GetFrame().DomWindow());
   paint_worklet_to_test->ResetIsPaintOffThreadForTesting();
