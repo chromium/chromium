@@ -193,8 +193,7 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
     return is_dark_mode_enabled_for_focused_pod_.value();
   }
 
-  // Keep the color mode as DARK in login screen or when dark/light mode feature
-  // is not enabled.
+  // Keep the color mode as DARK in login screen.
   if (!active_user_pref_service_) {
     return true;
   }
