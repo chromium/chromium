@@ -5410,6 +5410,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"phone-hub-nudge", flag_descriptions::kPhoneHubNudgeName,
      flag_descriptions::kPhoneHubNudgeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubNudge)},
+    {"print-management-jelly", flag_descriptions::kPrintManagementJellyName,
+     flag_descriptions::kPrintManagementJellyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPrintManagementJelly)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

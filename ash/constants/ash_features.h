@@ -486,6 +486,7 @@ extern const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPreferConstantFrameRate);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrintManagementJelly);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrivacyIndicators);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProductivityLauncher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjector);
@@ -777,6 +778,7 @@ bool IsInternalServerSideSpeechRecognitionControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIppClientInfoEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForDiagnosticsApp();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForFirmwareUpdate();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForPrintManagement();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForOsFeedback();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();

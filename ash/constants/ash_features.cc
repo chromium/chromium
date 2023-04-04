@@ -1679,6 +1679,12 @@ BASE_FEATURE(kPreferConstantFrameRate,
              "PreferConstantFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the jelly colors will be used in the print management app.
+// Requires jelly-colors flag to also be enabled.
+BASE_FEATURE(kPrintManagementJelly,
+             "PrintManagementJelly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables to allocate more video capture buffers.
 BASE_FEATURE(kMoreVideoCaptureBuffers,
              "MoreVideoCaptureBuffers",
@@ -2846,6 +2852,11 @@ bool IsJellyEnabledForDiagnosticsApp() {
 bool IsJellyEnabledForFirmwareUpdate() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kFirmwareUpdateJelly);
+}
+
+bool IsJellyEnabledForPrintManagement() {
+  return chromeos::features::IsJellyEnabled() &&
+         base::FeatureList::IsEnabled(kPrintManagementJelly);
 }
 
 bool IsJellyEnabledForOsFeedback() {

@@ -3486,6 +3486,9 @@ extern const char kPreferDcheckDescription[];
 extern const char kPrintingPpdChannelName[];
 extern const char kPrintingPpdChannelDescription[];
 
+extern const char kPrintManagementJellyName[];
+extern const char kPrintManagementJellyDescription[];
+
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 
