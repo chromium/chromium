@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPANION_CORE_COMPANION_URL_BUILDER_H_
-#define CHROME_BROWSER_COMPANION_CORE_COMPANION_URL_BUILDER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_URL_BUILDER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_URL_BUILDER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
@@ -40,4 +40,4 @@ class CompanionUrlBuilder {
 
 }  // namespace companion
 
-#endif  // CHROME_BROWSER_COMPANION_CORE_COMPANION_URL_BUILDER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_URL_BUILDER_H_

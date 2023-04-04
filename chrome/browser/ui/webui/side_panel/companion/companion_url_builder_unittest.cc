@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/companion/core/companion_url_builder.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion_url_builder.h"
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "chrome/browser/companion/core/constants.h"
-#include "chrome/browser/companion/core/promo_handler.h"
-#include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/browser/companion/core/signin_delegate.h"
+#include "chrome/browser/ui/webui/side_panel/companion/constants.h"
+#include "chrome/browser/ui/webui/side_panel/companion/promo_handler.h"
+#include "chrome/browser/ui/webui/side_panel/companion/proto/companion_url_params.pb.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/unified_consent/pref_names.h"

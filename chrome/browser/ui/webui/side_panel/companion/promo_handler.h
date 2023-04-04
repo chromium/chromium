@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPANION_CORE_PROMO_HANDLER_H_
-#define CHROME_BROWSER_COMPANION_CORE_PROMO_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_
 
 #include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -62,4 +62,4 @@ class PromoHandler {
 
 }  // namespace companion
 
-#endif  // CHROME_BROWSER_COMPANION_CORE_PROMO_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_PROMO_HANDLER_H_

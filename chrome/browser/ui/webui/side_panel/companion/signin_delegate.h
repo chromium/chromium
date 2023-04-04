@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPANION_CORE_SIGNIN_DELEGATE_H_
-#define CHROME_BROWSER_COMPANION_CORE_SIGNIN_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_SIGNIN_DELEGATE_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_SIGNIN_DELEGATE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -35,4 +35,4 @@ class SigninDelegate {
 
 }  // namespace companion
 
-#endif  // CHROME_BROWSER_COMPANION_CORE_SIGNIN_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_SIGNIN_DELEGATE_H_

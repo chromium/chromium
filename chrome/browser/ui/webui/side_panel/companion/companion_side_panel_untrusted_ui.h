@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_COMPANION_COMPANION_SIDE_PANEL_UNTRUSTED_UI_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
