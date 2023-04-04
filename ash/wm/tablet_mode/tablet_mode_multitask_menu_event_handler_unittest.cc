@@ -24,7 +24,9 @@
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_switches.h"
 #include "ui/wm/core/window_util.h"
 
@@ -77,6 +79,19 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
         GetMultitaskMenuView(multitask_menu)->bounds().bottom_center() +
         gfx::Vector2d(0, 10));
     DCHECK(!GetMultitaskMenu());
+  }
+
+  void PressHalfButton(const aura::Window* window, bool left) {
+    ShowMultitaskMenu(*window);
+    auto* multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
+    const gfx::Rect half_bounds =
+        multitask_menu_view->half_button_for_testing()->GetBoundsInScreen();
+    GetEventGenerator()->GestureTapAt(left ? half_bounds.left_center()
+                                           : half_bounds.right_center());
+    auto* split_view_controller = SplitViewController::Get(window);
+    DCHECK_EQ(split_view_controller->GetPositionOfSnappedWindow(window),
+              left ? SplitViewController::SnapPosition::kPrimary
+                   : SplitViewController::SnapPosition::kSecondary);
   }
 
   void PressPartialPrimary(const aura::Window& window) {
@@ -209,21 +224,15 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PressMoveAndReleaseTouch) {
 }
 
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInSplitView) {
-  // Create two windows snapped in split view.
   auto window1 = CreateTestWindow(gfx::Rect(800, 600));
+  PressHalfButton(window1.get(), /*left=*/true);
   auto window2 = CreateTestWindow(gfx::Rect(800, 600));
-
-  auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  PressHalfButton(window2.get(), /*left=*/false);
 
   // Swipe down on the left window. Test that the menu is shown.
   wm::ActivateWindow(window1.get());
   gfx::Rect left_bounds(window1->bounds());
-  GenerateScroll(left_bounds.CenterPoint().x(), 0, 150);
+  GenerateScroll(left_bounds.CenterPoint().x(), 0, 160);
   auto* multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
   ASSERT_TRUE(multitask_menu_view);
   ASSERT_TRUE(left_bounds.Contains(multitask_menu_view->GetBoundsInScreen()));
@@ -234,6 +243,35 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownInSplitView) {
   multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
   ASSERT_TRUE(multitask_menu_view);
   ASSERT_TRUE(right_bounds.Contains(multitask_menu_view->GetBoundsInScreen()));
+}
+
+// Tests no crash when swiping down another window during menu animation.
+// http://b/276792842.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest,
+       SwipeDownInSplitViewWhileAnimating) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto window1 = CreateTestWindow(gfx::Rect(800, 600));
+  PressHalfButton(window1.get(), /*left=*/true);
+  auto window2 = CreateTestWindow(gfx::Rect(800, 600));
+  PressHalfButton(window2.get(), /*left=*/false);
+
+  // Start swipe down on the left window, then swap to the right window. Note
+  // that `end_y` must be less than the menu height, to start an animation.
+  gfx::Rect left_bounds(window1->bounds());
+  GenerateScroll(left_bounds.CenterPoint().x(), 0, /*end_y=*/150);
+  gfx::Rect right_bounds(window2->bounds());
+  GenerateScroll(right_bounds.CenterPoint().x(), 0, /*end_y=*/150);
+  EXPECT_TRUE(window2->GetBoundsInScreen().Contains(
+      GetMultitaskMenu()->widget()->GetWindowBoundsInScreen()));
+
+  // Test that swipe down both windows at the same time doesn't crash.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressTouchId(0, gfx::Point(left_bounds.CenterPoint().x(), 0));
+  generator->PressTouchId(1, gfx::Point(right_bounds.CenterPoint().x(), 0));
+  generator->MoveTouchId(gfx::Point(0, 150), 0);
+  generator->MoveTouchId(gfx::Point(0, 150), 1);
 }
 
 // Tests that swipe down outside the menu doesn't crash. Test for b/266742428.
