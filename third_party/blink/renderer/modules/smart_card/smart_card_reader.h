@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -25,7 +26,9 @@ class MODULES_EXPORT SmartCardReader
   ~SmartCardReader() override;
 
   // SmartCardReader idl
-  const String& name() const;
+  const String& name() const { return name_; }
+  V8SmartCardReaderState state() const { return state_; }
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
 
   // EventTarget:
   ExecutionContext* GetExecutionContext() const override;
@@ -41,7 +44,9 @@ class MODULES_EXPORT SmartCardReader
   void UpdateInfo(SmartCardReaderInfoPtr info);
 
  private:
-  SmartCardReaderInfoPtr reader_info_;
+  WTF::String name_;
+  V8SmartCardReaderState state_;
+  WTF::Vector<uint8_t> atr_;
 };
 }  // namespace blink
 

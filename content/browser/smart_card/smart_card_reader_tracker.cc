@@ -9,6 +9,9 @@
 
 namespace content {
 namespace {
+static constexpr char kSmartCardReaderTrackerKey[] =
+    "SmartCardReaderTrackerKey";
+
 std::unique_ptr<SmartCardReaderTracker> CreateSmartCardReaderTracker(
     BrowserContext& browser_context,
     SmartCardDelegate& delegate) {
@@ -19,12 +22,14 @@ std::unique_ptr<SmartCardReaderTracker> CreateSmartCardReaderTracker(
 }  // namespace
 
 // static
+const void* SmartCardReaderTracker::user_data_key_for_testing() {
+  return kSmartCardReaderTrackerKey;
+}
+
+// static
 SmartCardReaderTracker& SmartCardReaderTracker::GetForBrowserContext(
     BrowserContext& browser_context,
     SmartCardDelegate& delegate) {
-  static constexpr char kSmartCardReaderTrackerKey[] =
-      "SmartCardReaderTrackerKey";
-
   if (!browser_context.GetUserData(kSmartCardReaderTrackerKey)) {
     browser_context.SetUserData(
         kSmartCardReaderTrackerKey,

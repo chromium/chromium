@@ -8,6 +8,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/smart_card/mock_smart_card_context_factory.h"
+#include "content/browser/smart_card/smart_card_reader_tracker.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/common/content_switches.h"
@@ -48,6 +50,14 @@ class FakeSmartCardDelegate : public SmartCardDelegate {
   bool SupportsReaderAddedRemovedNotifications() const override { return true; }
 
   MockSmartCardContextFactory mock_context_factory;
+};
+
+class MockSmartCardReaderTracker : public SmartCardReaderTracker {
+ public:
+  MOCK_METHOD(void, Start, (Observer * observer, StartCallback), (override));
+  MOCK_METHOD(void, Stop, (Observer * observer), (override));
+
+  ObserverList observer_list;
 };
 
 class SmartCardTestContentBrowserClient
@@ -561,6 +571,71 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReadersFails) {
       }
     })()
   )"));
+}
+
+// Tests that the SmartCardReader.state attribute can be read and that
+// "onstatechange" is emitted when its value changes.
+IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderState) {
+  CreateFakeSmartCardDelegate();
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+
+  auto unique_tracker = std::make_unique<MockSmartCardReaderTracker>();
+  MockSmartCardReaderTracker& mock_tracker = *unique_tracker.get();
+  browser_context->SetUserData(
+      SmartCardReaderTracker::user_data_key_for_testing(),
+      std::move(unique_tracker));
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(mock_tracker, Start(_, _))
+        .WillOnce(
+            [&mock_tracker](SmartCardReaderTracker::Observer* observer,
+                            SmartCardReaderTracker::StartCallback callback) {
+              mock_tracker.observer_list.AddObserverIfMissing(observer);
+
+              std::vector<blink::mojom::SmartCardReaderInfoPtr> readers;
+              readers.push_back(blink::mojom::SmartCardReaderInfo::New(
+                  "Fake reader", blink::mojom::SmartCardReaderState::kEmpty,
+                  std::vector<uint8_t>()));
+              std::move(callback).Run(
+                  blink::mojom::SmartCardGetReadersResult::NewReaders(
+                      std::move(readers)));
+            });
+
+    // When the document is destroyed
+    EXPECT_CALL(mock_tracker, Stop(_));
+  }
+
+  EXPECT_EQ("state: empty", EvalJs(shell(), R"(
+    (async () => {
+      let readers = await navigator.smartCard.getReaders();
+
+      if (readers.length !== 1) {
+        return "reader not found";
+      }
+
+      let reader = readers[0];
+
+      window.promise = new Promise((resolve) => {
+        reader.addEventListener('statechange', (e) => {
+          resolve(`state changed: ${e.target.state}`);
+        }, { once: true });
+      });
+
+      return `state: ${reader.state}`;
+    })())"));
+
+  blink::mojom::SmartCardReaderInfo reader_info(
+      "Fake reader", blink::mojom::SmartCardReaderState::kPresent,
+      std::vector<uint8_t>({1u, 2u, 3u}));
+  mock_tracker.observer_list.NotifyReaderChanged(reader_info);
+
+  EXPECT_EQ("state changed: present", EvalJs(shell(), "window.promise"));
 }
 
 }  // namespace content

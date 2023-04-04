@@ -1530,6 +1530,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_code.cc",

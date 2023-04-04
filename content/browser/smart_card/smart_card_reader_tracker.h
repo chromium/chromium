@@ -91,6 +91,10 @@ class CONTENT_EXPORT SmartCardReaderTracker
   // Removes an observer and stops tracking smart card reader
   // changes/additions/removals if there are no other observers left
   virtual void Stop(Observer* observer) = 0;
+
+  // Returns the key used in SupportsUserData::GetUserData to fetch
+  // the SmartCardReaderTracker associated with a BrowserContext.
+  static const void* user_data_key_for_testing();
 };
 
 }  // namespace content
