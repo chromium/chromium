@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "base/guid.h"
 #include "base/run_loop.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -362,9 +362,10 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
       identity_manager->GetTokenService(),
       identity_manager->GetAccountTrackerService(), identity_manager,
       account_id,
-      token_value.empty() ? "refresh_token_for_" + account_id.ToString() + "_" +
-                                base::GenerateGUID()
-                          : token_value);
+      token_value.empty()
+          ? "refresh_token_for_" + account_id.ToString() + "_" +
+                base::Uuid::GenerateRandomV4().AsLowercaseString()
+          : token_value);
 }
 
 void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
