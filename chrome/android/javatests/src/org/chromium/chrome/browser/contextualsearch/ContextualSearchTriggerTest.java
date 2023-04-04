@@ -377,7 +377,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         assertNoWebContents();
 
         // Expanding before the search term resolves should not load anything.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertLoadedNoUrl();
 
         // Once the response comes in, it should load.

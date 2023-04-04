@@ -1330,64 +1330,27 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
-     * Click various places to cause the panel to show, expand, then close.
+     * Expands the panel by directly asking the panel to expand.
      */
-    protected void clickToExpandAndClosePanel() throws TimeoutException {
-        clickWordNode("states");
-        expandAndClosePanel();
-        waitForSelectionEmpty();
-    }
-
-    /**
-     * Expand the panel and then close it.
-     */
-    protected void expandAndClosePanel() throws TimeoutException {
-        expandPanelAndAssert();
-        closePanel();
-    }
-
-    /**
-     * Tap on the peeking Bar to expand the panel, then close it.
-     */
-    @Deprecated
-    protected void tapBarToExpandAndClosePanel() throws TimeoutException {
-        tapPeekingBarToExpandAndAssert();
-        closePanel();
-    }
-
-    /**
-     * Generate a click in the middle of panel's bar. TODO(donnd): Replace this method with
-     * panelBarClick since this appears to be unreliable.
-     */
-    protected void clickPanelBar() {
-        View root = sActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
-        float tapX = ((mPanel.getOffsetX() + mPanel.getWidth()) / 2f) * mDpToPx;
-        float tapY = (mPanel.getOffsetY() + (mPanel.getBarContainerHeight() / 2f)) * mDpToPx;
-
-        TouchCommon.singleClickView(root, (int) tapX, (int) tapY);
-    }
-
-    /**
-     * Taps the peeking bar to expand the panel
-     */
-    @Deprecated
-    protected void tapPeekingBarToExpandAndAssert() throws TimeoutException {
-        retryPanelBarInteractions(() -> {
-            clickPanelBar();
-            waitForPanelToExpand();
-        }, false);
+    protected void expandPanel() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPanel.notifyBarTouched(0);
+            if (mFakeServer.getContentsObserver() != null) {
+                mFakeServer.getContentsObserver().wasShown();
+            }
+            mPanel.animatePanelToState(PanelState.EXPANDED, StateChangeReason.UNKNOWN,
+                    PANEL_INTERACTION_RETRY_DELAY_MS);
+            float tapX = (mPanel.getOffsetX() + mPanel.getWidth()) / 2f;
+            float tapY = (mPanel.getOffsetY() + mPanel.getBarContainerHeight()) / 2f;
+            mPanel.handleBarClick(tapX, tapY);
+        });
     }
 
     /**
      * Expands the panel and asserts that it did actually expand.
      */
     protected void expandPanelAndAssert() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPanel.notifyBarTouched(0);
-            mFakeServer.getContentsObserver().wasShown();
-            mPanel.animatePanelToState(PanelState.EXPANDED, StateChangeReason.UNKNOWN,
-                    PANEL_INTERACTION_RETRY_DELAY_MS);
-        });
+        expandPanel();
         waitForPanelToExpand();
     }
 
@@ -1413,17 +1376,6 @@ public class ContextualSearchInstrumentationBase {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> { mPanel.peekPanel(StateChangeReason.UNKNOWN); });
         waitForPanelToPeek();
-    }
-
-    /**
-     * Force the Panel to expand, and wait for it to do so.
-     */
-    protected void expandPanel() {
-        // TODO(donnd): use a consistent method of running these test tasks, and it's probably
-        // best to use TestThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> { mPanel.expandPanel(StateChangeReason.UNKNOWN); });
-        waitForPanelToExpand();
     }
 
     /**
