@@ -146,9 +146,14 @@ class CalledProcessError(Exception):
 
   def __str__(self):
     # A user should be able to simply copy and paste the command that failed
-    # into their shell.
+    # into their shell (unless it is more than 200 chars).
+    # User can set PRINT_FULL_COMMAND=1 to always print the full command.
+    print_full = os.environ.get('PRINT_FULL_COMMAND', '0') != '0'
+    full_cmd = shlex.join(self.args)
+    short_cmd = textwrap.shorten(full_cmd, width=200)
+    printed_cmd = full_cmd if print_full else short_cmd
     copyable_command = '( cd {}; {} )'.format(os.path.abspath(self.cwd),
-        ' '.join(map(pipes.quote, self.args)))
+                                              printed_cmd)
     return 'Command failed: {}\n{}'.format(copyable_command, self.output)
 
 
