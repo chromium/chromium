@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/input_overlay/db/data_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
-#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/key_event_source_rewriter.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "components/keyed_service/core/keyed_service.h"

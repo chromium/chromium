@@ -8,20 +8,16 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
-#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
+#include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/layout/layout_types.h"
-#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -30,16 +26,17 @@ class PillButton;
 }  // namespace ash
 
 namespace arc::input_overlay {
-class ArcInputOverlayManagerTest;
-class TouchInjector;
+class Action;
+class ActionEditMenu;
+class ActionView;
+class EditFinishView;
+class EducationalView;
 class InputMappingView;
 class InputMenuView;
 class MenuEntryView;
-class ActionEditMenu;
-class EditFinishView;
 class MessageView;
-class EducationalView;
 class NudgeView;
+class TouchInjector;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
