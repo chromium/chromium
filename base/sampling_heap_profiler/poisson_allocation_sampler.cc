@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
@@ -20,6 +19,10 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
+
+#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
+#include "base/allocator/dispatcher/standard_hooks.h"
+#endif
 
 namespace base {
 
