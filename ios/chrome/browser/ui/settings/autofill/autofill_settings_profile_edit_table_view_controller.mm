@@ -37,6 +37,10 @@
   [self.handler loadFooterForSettings];
 }
 
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  return [self.handler isItemAtIndexPathTextEditCell:cellPath];
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {

@@ -276,6 +276,29 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  NSInteger itemType =
+      [self.controller.tableViewModel itemTypeForIndexPath:cellPath];
+  switch (static_cast<ItemType>(itemType)) {
+    case ItemTypeHonorificPrefix:
+    case ItemTypeCompanyName:
+    case ItemTypeFullName:
+    case ItemTypeLine1:
+    case ItemTypeLine2:
+    case ItemTypeCity:
+    case ItemTypeState:
+    case ItemTypeZip:
+    case ItemTypePhoneNumber:
+    case ItemTypeEmailAddress:
+      return YES;
+    case ItemTypeCountry:
+      return !self.autofillAccountProfilesUnionViewEnabled;
+    case ItemTypeError:
+    case ItemTypeFooter:
+      return NO;
+  }
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
