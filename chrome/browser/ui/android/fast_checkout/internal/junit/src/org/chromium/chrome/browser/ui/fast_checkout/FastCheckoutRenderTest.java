@@ -145,8 +145,7 @@ public class FastCheckoutRenderTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View bottomSheetView = mActivityTestRule.getActivity().findViewById(
-                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_home_screen_local_card");
     }
 
@@ -160,8 +159,7 @@ public class FastCheckoutRenderTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View bottomSheetView = mActivityTestRule.getActivity().findViewById(
-                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_home_screen_server_card");
     }
 
@@ -177,8 +175,7 @@ public class FastCheckoutRenderTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View bottomSheetView = mActivityTestRule.getActivity().findViewById(
-                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_addresses_screen");
     }
 
@@ -194,8 +191,7 @@ public class FastCheckoutRenderTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View bottomSheetView = mActivityTestRule.getActivity().findViewById(
-                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet);
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_credit_cards_screen");
     }
 }

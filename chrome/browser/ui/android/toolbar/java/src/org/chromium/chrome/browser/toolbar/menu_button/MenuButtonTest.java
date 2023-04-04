@@ -54,7 +54,7 @@ public class MenuButtonTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_MaterialComponents);
+        mActivity.setTheme(R.style.Theme_MaterialComponents);
         mMenuButton = (MenuButton) ((ViewGroup) LayoutInflater.from(mActivity).inflate(
                                             R.layout.menu_button, new LinearLayout(mActivity)))
                               .getChildAt(0);

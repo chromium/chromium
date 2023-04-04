@@ -41,7 +41,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;

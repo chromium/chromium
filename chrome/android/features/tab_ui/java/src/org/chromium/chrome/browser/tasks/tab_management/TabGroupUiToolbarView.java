@@ -188,14 +188,13 @@ public class TabGroupUiToolbarView extends FrameLayout {
      */
     void setupDialogToolbarLayout() {
         Context context = getContext();
-        mLeftButton.setImageResource(org.chromium.chrome.R.drawable.ic_arrow_back_24dp);
+        mLeftButton.setImageResource(R.drawable.ic_arrow_back_24dp);
         int topicMargin =
                 (int) context.getResources().getDimension(R.dimen.tab_group_toolbar_topic_margin);
         MarginLayoutParams params = (MarginLayoutParams) mTitleTextView.getLayoutParams();
         params.setMarginStart(topicMargin);
         mTitleTextView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-        mTitleTextView.setTextAppearance(
-                org.chromium.chrome.R.style.TextAppearance_Headline_Primary);
+        mTitleTextView.setTextAppearance(R.style.TextAppearance_Headline_Primary);
     }
 
     /**

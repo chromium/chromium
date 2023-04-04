@@ -26,19 +26,22 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/feedback/android:java",
+    "//chrome/browser/feedback/android:java_resources",
     "//chrome/browser/password_entry_edit/android:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-
+  resources_package = "org.chromium.chrome.browser.password_entry_edit"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.password_entry_edit"
   sources = [ "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditControllerTest.java" ]
 
   deps = [
@@ -47,7 +50,9 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/password_entry_edit/android:java",
+    "//chrome/browser/password_entry_edit/android:java_resources",
     "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
@@ -58,6 +63,7 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.password_entry_edit"
   sources = [ "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditViewTest.java" ]
 
   deps = [
@@ -65,6 +71,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_entry_edit/android:java",
+    "//chrome/browser/password_entry_edit/android:java_resources",
     "//chrome/browser/settings:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",

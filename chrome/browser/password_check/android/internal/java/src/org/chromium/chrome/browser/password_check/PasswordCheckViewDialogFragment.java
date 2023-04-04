@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.chrome.browser.password_check.internal.R;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 

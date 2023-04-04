@@ -85,7 +85,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties;
-import org.chromium.chrome.browser.password_check.internal.R;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
@@ -180,8 +179,8 @@ public class PasswordCheckViewTest {
         // Has a more button.
         assertNotNull(getCredentialMoreButtonAt(1));
         assertThat(getCredentialMoreButtonAt(1).getVisibility(), is(View.VISIBLE));
-        assertThat(getCredentialMoreButtonAt(1).getContentDescription(),
-                is(getString(org.chromium.chrome.R.string.more)));
+        assertThat(
+                getCredentialMoreButtonAt(1).getContentDescription(), is(getString(R.string.more)));
 
         // Has a favicon.
         assertNotNull(getCredentialFaviconAt(1));
@@ -234,7 +233,7 @@ public class PasswordCheckViewTest {
         runOnUiThreadBlocking(
                 () -> { mModel.get(ITEMS).add(buildHeader(IDLE, LEAKS_COUNT, checkTimestamp)); });
         waitForListViewToHaveLength(1);
-        assertDisplaysIcon(org.chromium.chrome.R.drawable.ic_warning_red_24dp);
+        assertDisplaysIcon(R.drawable.ic_warning_red_24dp);
     }
 
     @Test
@@ -242,7 +241,7 @@ public class PasswordCheckViewTest {
     public void testStatusDisplaysIconOnError() {
         runOnUiThreadBlocking(() -> { mModel.get(ITEMS).add(buildHeader(ERROR_OFFLINE)); });
         waitForListViewToHaveLength(1);
-        assertDisplaysIcon(org.chromium.chrome.R.drawable.ic_error_grey800_24dp_filled);
+        assertDisplaysIcon(R.drawable.ic_error_grey800_24dp_filled);
     }
 
     @Test

@@ -34,9 +34,9 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
-import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -127,8 +127,8 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TitleAndTitleIcon() throws IOException {
         setUpViews(R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton);
-        final Drawable icon = UiUtils.getTintedDrawable(getActivity(),
-                org.chromium.chrome.R.drawable.ic_add, R.color.default_icon_color_tint_list);
+        final Drawable icon = UiUtils.getTintedDrawable(
+                getActivity(), R.drawable.ic_add, R.color.default_icon_color_tint_list);
         createModel(mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
                             .with(ModalDialogProperties.TITLE_ICON, icon));
         mRenderTestRule.render(mModalDialogView, "title_and_title_icon");
@@ -226,8 +226,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
                                 R.string.cancel)
                         .with(ModalDialogProperties.FOOTER_MESSAGE,
-                                mResources.getString(
-                                        org.chromium.chrome.R.string.legal_information_summary)));
+                                mResources.getString(R.string.legal_information_summary)));
         mRenderTestRule.render(mModalDialogView, "footer_message");
     }
 

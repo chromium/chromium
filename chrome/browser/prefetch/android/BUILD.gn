@@ -45,9 +45,11 @@ android_library("java") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.prefetch.settings"
   sources = [ "java/src/org/chromium/chrome/browser/prefetch/settings/PreloadPagesSettingsFragmentTest.java" ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/feedback/android:java",

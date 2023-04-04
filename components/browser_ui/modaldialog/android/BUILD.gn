@@ -86,6 +86,7 @@ android_library("test_support_java") {
 
 android_library("unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.components.browser_ui.modaldialog.test"
 
   sources = [
     "java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenterTest.java",
@@ -95,6 +96,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     ":java_resources",
+    ":java_test_resources",
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",

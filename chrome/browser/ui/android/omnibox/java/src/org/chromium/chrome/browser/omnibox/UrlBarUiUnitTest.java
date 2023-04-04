@@ -54,7 +54,7 @@ public class UrlBarUiUnitTest {
             sContentView.setLayoutParams(
                     new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             sActivity.getResources().getDimensionPixelSize(
-                                    org.chromium.chrome.R.dimen.control_container_height)));
+                                    R.dimen.control_container_height)));
             sActivity.setContentView(sContentView);
         });
     }
@@ -63,8 +63,7 @@ public class UrlBarUiUnitTest {
     public void setupTest() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sContentView.removeAllViews();
-            sActivity.getLayoutInflater().inflate(
-                    org.chromium.chrome.R.layout.url_bar, sContentView);
+            sActivity.getLayoutInflater().inflate(R.layout.url_bar, sContentView);
             mUrlBar = (UrlBar) sContentView.getChildAt(0);
         });
     }

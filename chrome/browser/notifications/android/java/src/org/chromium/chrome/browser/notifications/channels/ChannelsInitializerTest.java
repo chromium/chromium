@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
+import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -170,7 +171,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.BROWSER));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(org.chromium.chrome.R.string.notification_category_browser)));
+                is(mContext.getString(R.string.notification_category_browser)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -186,8 +187,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.DOWNLOADS));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_downloads)));
+                is(mContext.getString(R.string.notification_category_downloads)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -203,8 +203,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.INCOGNITO));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_incognito)));
+                is(mContext.getString(R.string.notification_category_incognito)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -220,8 +219,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_media_playback)));
+                is(mContext.getString(R.string.notification_category_media_playback)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -239,7 +237,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.SITES));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(org.chromium.chrome.R.string.notification_category_sites)));
+                is(mContext.getString(R.string.notification_category_sites)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -260,8 +258,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.CONTENT_SUGGESTIONS));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_content_suggestions)));
+                is(mContext.getString(R.string.notification_category_content_suggestions)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_NONE));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -278,8 +275,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_fullscreen_controls)));
+                is(mContext.getString(R.string.notification_category_fullscreen_controls)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_MIN));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -340,8 +336,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.PRICE_DROP));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_price_drop)));
+                is(mContext.getString(R.string.notification_category_price_drop)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -358,8 +353,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_price_drop)));
+                is(mContext.getString(R.string.notification_category_price_drop)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -375,8 +369,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.SECURITY_KEY));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_security_key)));
+                is(mContext.getString(R.string.notification_category_security_key)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_HIGH));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -392,8 +385,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.CHROME_TIPS));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(org.chromium.chrome.R.string
-                                              .feature_notification_guide_notification_title)));
+                is(mContext.getString(R.string.feature_notification_guide_notification_title)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_HIGH));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -409,8 +401,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.BLUETOOTH));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(
-                        org.chromium.chrome.R.string.notification_category_bluetooth)));
+                is(mContext.getString(R.string.notification_category_bluetooth)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
@@ -426,7 +417,7 @@ public class ChannelsInitializerTest {
         NotificationChannel channel = getChannelsIgnoringDefault().get(0);
         assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.USB));
         assertThat(channel.getName().toString(),
-                is(mContext.getString(org.chromium.chrome.R.string.notification_category_usb)));
+                is(mContext.getString(R.string.notification_category_usb)));
         assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_LOW));
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }

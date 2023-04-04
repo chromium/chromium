@@ -42,7 +42,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 
-import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.test.R;
 
 /**
  * This is the testing util class for TabSelectionEditor. It's used to perform action and verify

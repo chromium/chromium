@@ -22,7 +22,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.test.R;
 
 /**
  * Tests for {@link BaseSuggestionViewProcessor}.

@@ -80,7 +80,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
 
     private void showNavigationButton() {
         TintedDrawable navigationIconDrawable = TintedDrawable.constructTintedDrawable(
-                getContext(), org.chromium.chrome.R.drawable.ic_arrow_back_white_24dp);
+                getContext(), R.drawable.ic_arrow_back_white_24dp);
         final @ColorInt int lightIconColor =
                 SemanticColorUtils.getDefaultIconColorInverse(getContext());
         navigationIconDrawable.setTint(lightIconColor);

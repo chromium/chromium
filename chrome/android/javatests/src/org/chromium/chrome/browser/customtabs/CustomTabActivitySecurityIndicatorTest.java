@@ -28,11 +28,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -90,7 +90,7 @@ public class CustomTabActivitySecurityIndicatorTest {
         });
 
         // Test that the security indicator is the lock icon.
-        final int expectedSecurityIcon = org.chromium.chrome.R.drawable.omnibox_https_valid;
+        final int expectedSecurityIcon = R.drawable.omnibox_https_valid;
         ImageView securityButton =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
         Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
@@ -128,7 +128,7 @@ public class CustomTabActivitySecurityIndicatorTest {
         });
 
         // Test that the security indicator is the lock icon.
-        final int expectedSecurityIcon = org.chromium.chrome.R.drawable.omnibox_https_valid;
+        final int expectedSecurityIcon = R.drawable.omnibox_https_valid;
         ImageView securityButton =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.security_button);
         Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());

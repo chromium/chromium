@@ -17,6 +17,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.R;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountCapabilities;
@@ -27,7 +28,6 @@ import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.signin.test.util.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;

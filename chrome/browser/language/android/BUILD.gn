@@ -117,6 +117,7 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.language"
 
   sources = [
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
@@ -163,6 +164,7 @@ android_library("javatests") {
 
 robolectric_library("junit") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.language"
 
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
@@ -176,6 +178,7 @@ robolectric_library("junit") {
 
   deps = [
     ":base_module_java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

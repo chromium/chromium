@@ -55,7 +55,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -68,6 +67,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -238,7 +238,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private void downloadAndOpenOfflinePage() {
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), org.chromium.chrome.R.id.offline_page_id);
+                mDownloadTestRule.getActivity(), R.id.offline_page_id);
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
 
         // Stop the server and also disconnect the network.
@@ -342,22 +342,22 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private void testThemeColor(ChromeActivity activity, Tab tab) {
         waitForBackgroundColor(tab, "\"rgb(255, 255, 255)\"");
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), activity,
-                org.chromium.chrome.R.id.reader_mode_prefs_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
         onView(isRoot()).check(ViewUtils.waitForView(allOf(withText("Dark"), isDisplayed())));
         onView(withText("Dark")).perform(click());
         Espresso.pressBack();
         waitForBackgroundColor(tab, "\"rgb(32, 33, 36)\"");
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), activity,
-                org.chromium.chrome.R.id.reader_mode_prefs_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
         onView(isRoot()).check(ViewUtils.waitForView(allOf(withText("Sepia"), isDisplayed())));
         onView(withText("Sepia")).perform(click());
         Espresso.pressBack();
         waitForBackgroundColor(tab, "\"rgb(254, 247, 224)\"");
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), activity,
-                org.chromium.chrome.R.id.reader_mode_prefs_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
         onView(isRoot()).check(ViewUtils.waitForView(allOf(withText("Light"), isDisplayed())));
         onView(withText("Light")).perform(click());
         Espresso.pressBack();
@@ -369,8 +369,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
     private void testFontSize(ChromeActivity activity, Tab tab) {
         waitForFontSize(tab, "\"14px\"");
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), activity,
-                org.chromium.chrome.R.id.reader_mode_prefs_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
         onView(isRoot()).check(ViewUtils.waitForView(allOf(withId(R.id.font_size), isDisplayed())));
         // Max is 200% font size.
         onView(withId(R.id.font_size))
@@ -379,8 +379,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
         Espresso.pressBack();
         waitForFontSize(tab, "\"28px\"");
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), activity,
-                org.chromium.chrome.R.id.reader_mode_prefs_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
         onView(isRoot()).check(ViewUtils.waitForView(allOf(withId(R.id.font_size), isDisplayed())));
         // Min is 50% font size.
         onView(withId(R.id.font_size))

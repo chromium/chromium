@@ -70,10 +70,12 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.password_edit_dialog"
   sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogControllerTest.java" ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -88,6 +90,7 @@ robolectric_library("junit") {
 }
 
 android_library("unit_device_javatests") {
+  resources_package = "org.chromium.chrome.browser.password_edit_dialog"
   testonly = true
 
   sources = [
@@ -98,6 +101,7 @@ android_library("unit_device_javatests") {
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/night_mode:java",

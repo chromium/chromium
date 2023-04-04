@@ -28,8 +28,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -89,8 +89,8 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
 
             mStatusView = getActivity()
                                   .getLayoutInflater()
-                                  .inflate(org.chromium.chrome.R.layout.location_status, view, true)
-                                  .findViewById(org.chromium.chrome.R.id.location_bar_status);
+                                  .inflate(R.layout.location_status, view, true)
+                                  .findViewById(R.id.location_bar_status);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
             // clang-format off
             mLocationBarModel = new LocationBarModel(mStatusView.getContext(),

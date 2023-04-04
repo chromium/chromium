@@ -35,10 +35,12 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.components.subresource_filter"
   sources = [ "java/src/org/chromium/components/subresource_filter/AdsBlockedDialogTest.java" ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/androidx:androidx_test_core_java",

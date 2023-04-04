@@ -100,6 +100,7 @@ if (is_android) {
   }
 
   robolectric_library("junit_tests") {
+    resources_package = "org.chromium.chrome.browser.notifications"
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
@@ -120,11 +121,13 @@ if (is_android) {
 
     deps = [
       ":java",
+      ":java_resources",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//chrome/browser/flags:java",
       "//chrome/browser/preferences:java",
+      "//chrome/browser/ui/android/signin:java_resources",
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/notifications/android:java",
@@ -146,6 +149,7 @@ if (is_android) {
 
   android_library("javatests") {
     testonly = true
+    resources_package = "org.chromium.chrome.browser.notifications"
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
@@ -154,6 +158,7 @@ if (is_android) {
 
     deps = [
       ":java",
+      ":java_resources",
       "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",

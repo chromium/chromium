@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.webapk.lib.common.splash.R;
 
 /**
  * Tests for splash screens.

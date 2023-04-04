@@ -390,10 +390,10 @@ public class TabUiTestHelper {
 
         if (getIsStartSurfaceEnabledFromUIThread(context)
                 && !getIsStartSurfaceRefactorEnabledFromUIThread(context)) {
-            return org.chromium.chrome.R.id.tasks_surface_body;
+            return R.id.tasks_surface_body;
         }
 
-        return org.chromium.chrome.R.id.compositor_view_holder;
+        return R.id.compositor_view_holder;
     }
 
     private static boolean getIsStartSurfaceEnabledFromUIThread(Context context) {

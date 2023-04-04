@@ -33,6 +33,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [ "junit/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogMediatorTest.java" ]
+  resources_package = "org.chromium.chrome.browser.loading_modal"
 
   deps = [
     ":java",
@@ -46,6 +47,7 @@ robolectric_library("junit") {
 
 android_library("unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.loading_modal"
 
   sources = [ "javatests/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogIntegrationTest.java" ]
 
@@ -53,6 +55,7 @@ android_library("unit_device_javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/browser/loading_modal/android:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",

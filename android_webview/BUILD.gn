@@ -651,6 +651,7 @@ android_library("browser_java") {
     "//components/viz/service:service_java",
     "//components/zoom/android:java",
     "//content/public/android:content_java",
+    "//content/public/android:content_java_resources",
     "//device/gamepad:java",
     "//mojo/public/java:system_java",
     "//mojo/public/java/system:system_impl_java",

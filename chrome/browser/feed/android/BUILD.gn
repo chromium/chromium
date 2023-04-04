@@ -232,6 +232,7 @@ generate_jni("jni_headers") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.feed.test"
 
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java",
@@ -239,6 +240,7 @@ android_library("javatests") {
   ]
 
   deps = [
+    ":feed_java_resources",
     ":java",
     "//base:base_java_test_support",
     "//chrome/browser/feature_engagement:java",

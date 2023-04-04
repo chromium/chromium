@@ -44,6 +44,7 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.components.messages"
   sources = [
     "java/src/org/chromium/components/messages/MessageAnimationCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
@@ -55,7 +56,9 @@ robolectric_library("junit") {
   ]
   deps = [
     ":java",
+    ":java_resources",
     "..:java",
+    "..:java_resources",
     "..:manager_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -73,6 +76,7 @@ robolectric_library("junit") {
 }
 
 android_library("unit_device_javatests") {
+  resources_package = "org.chromium.components.messages"
   testonly = true
   sources = [
     "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",

@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.Runtim
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.components.offline_items_collection.ContentId;
-import org.chromium.components.permissions.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -178,7 +178,7 @@ public class RuntimePermissionTest {
                 DOWNLOAD_TEST, false /* expectPermissionAllowed */,
                 null /* permissionPromptAllow */, true /* waitForMissingPermissionPrompt */,
                 false /* waitForUpdater */, "document.getElementsByTagName('a')[0].click();",
-                org.chromium.chrome.R.string.missing_storage_permission_download_education_text);
+                R.string.missing_storage_permission_download_education_text);
     }
 
     @Test

@@ -20,7 +20,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.widget.text.AccessibleTextView;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
-import org.chromium.components.infobars.R;
+import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappsIconUtils;
 
 /**

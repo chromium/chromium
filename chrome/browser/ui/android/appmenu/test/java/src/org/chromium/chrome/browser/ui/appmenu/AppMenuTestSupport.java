@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 

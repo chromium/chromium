@@ -12,7 +12,7 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
-import org.chromium.chrome.browser.ui.favicon.R;
+import org.chromium.chrome.browser.password_check.R;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;

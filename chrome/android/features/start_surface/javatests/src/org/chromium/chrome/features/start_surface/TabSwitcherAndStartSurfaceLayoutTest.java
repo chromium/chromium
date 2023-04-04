@@ -113,9 +113,9 @@ import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarControl
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -680,7 +680,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         final int count = mTabListDelegate.getBitmapFetchCountForTesting();
         for (int i = 0; i < 3; i++) {
             MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(), org.chromium.chrome.R.id.new_tab_menu_id);
+                    mActivityTestRule.getActivity(), R.id.new_tab_menu_id);
         }
         // Fetching might not happen instantly.
         Thread.sleep(1000);
@@ -705,7 +705,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         final int count = mTabListDelegate.getBitmapFetchCountForTesting();
         for (int i = 0; i < 3; i++) {
             MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(), org.chromium.chrome.R.id.new_tab_menu_id);
+                    mActivityTestRule.getActivity(), R.id.new_tab_menu_id);
         }
         // Fetching might not happen instantly.
         Thread.sleep(1000);
@@ -730,7 +730,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         final int count = mTabListDelegate.getBitmapFetchCountForTesting();
         for (int i = 0; i < 3; i++) {
             MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(), org.chromium.chrome.R.id.new_tab_menu_id);
+                    mActivityTestRule.getActivity(), R.id.new_tab_menu_id);
         }
         // Fetching might not happen instantly.
         Thread.sleep(1000);
@@ -2200,7 +2200,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     private void verifyOnlyOneTabSuggestionMessageCardIsShowing() throws InterruptedException {
         String suggestionMessageTemplate = mActivityTestRule.getActivity().getString(
-                org.chromium.chrome.tab_ui.R.string.tab_suggestion_close_stale_message);
+                R.string.tab_suggestion_close_stale_message);
         String suggestionMessage =
                 String.format(Locale.getDefault(), suggestionMessageTemplate, "3");
         prepareTabs(3, 0, mUrl);

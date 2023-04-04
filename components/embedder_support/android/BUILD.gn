@@ -311,6 +311,7 @@ robolectric_library("components_embedder_support_junit_tests") {
 
 android_library("embedder_support_javatests") {
   testonly = true
+  resources_package = "org.chromium.components.embedder_support"
 
   sources = [
     "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
@@ -329,6 +330,7 @@ android_library("embedder_support_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_resources",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
   ]

@@ -117,7 +117,7 @@ public class FreUMADialogTest {
                 .inRoot(isDialog())
                 .check(matches(not(isChecked())))
                 .perform(click());
-        onView(withText(org.chromium.chrome.R.string.done)).inRoot(isDialog()).perform(click());
+        onView(withText(R.string.done)).inRoot(isDialog()).perform(click());
 
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
         verify(mListenerMock).onAllowMetricsAndCrashUploadingChecked(true);
@@ -130,7 +130,7 @@ public class FreUMADialogTest {
 
         onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
 
-        onView(withText(org.chromium.chrome.R.string.done)).perform(click());
+        onView(withText(R.string.done)).perform(click());
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
         verify(mListenerMock).onAllowMetricsAndCrashUploadingChecked(false);
     }
@@ -141,7 +141,7 @@ public class FreUMADialogTest {
         showFreUMADialog(/*allowMetricsAndCrashUploading=*/true);
         onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isChecked()));
 
-        onView(withText(org.chromium.chrome.R.string.done)).perform(click());
+        onView(withText(R.string.done)).perform(click());
 
         onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
         verify(mListenerMock, never()).onAllowMetricsAndCrashUploadingChecked(anyBoolean());

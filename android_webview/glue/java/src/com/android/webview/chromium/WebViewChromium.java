@@ -62,6 +62,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.R;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
@@ -483,8 +484,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                 } else {
                     Log.w(TAG, msg);
                     TextView warningLabel = new TextView(mContext);
-                    warningLabel.setText(mContext.getString(
-                            org.chromium.android_webview.R.string.private_browsing_warning));
+                    warningLabel.setText(mContext.getString(R.string.private_browsing_warning));
                     mWebView.addView(warningLabel);
                 }
             }

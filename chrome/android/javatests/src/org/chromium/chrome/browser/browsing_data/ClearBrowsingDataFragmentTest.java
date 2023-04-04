@@ -62,7 +62,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -72,6 +71,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -150,8 +150,7 @@ public class ClearBrowsingDataFragmentTest {
     }
 
     private static void clickClearButton(Fragment preferences) {
-        Button clearButton =
-                preferences.getView().findViewById(org.chromium.chrome.R.id.clear_button);
+        Button clearButton = preferences.getView().findViewById(R.id.clear_button);
         Assert.assertNotNull(clearButton);
         Assert.assertTrue(clearButton.isEnabled());
         clearButton.callOnClick();

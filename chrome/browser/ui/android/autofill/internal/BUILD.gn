@@ -54,6 +54,7 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
@@ -63,6 +64,7 @@ robolectric_library("junit") {
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",

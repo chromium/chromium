@@ -47,7 +47,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -66,6 +65,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -164,7 +164,7 @@ public class ToolbarPhoneTest {
                     new TestControlsVisibilityDelegate(),
                     mActivityTestRule.getActivity().getWindowAndroid(), mFocusFunction,
                     mRequestRenderRunnable, true, () -> false, mThemeColorProvider,
-                    () -> null, () -> {}, org.chromium.chrome.R.id.menu_button_wrapper);
+                    () -> null, () -> {}, R.id.menu_button_wrapper);
             // clang-format on
             mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
             mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null,
@@ -366,9 +366,8 @@ public class ToolbarPhoneTest {
             Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
         });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
 
         // When the Start surface refactoring is enabled, the ToolbarPhone is shown on the grid tab
         // switcher rather than the Start surface toolbar.
@@ -403,9 +402,8 @@ public class ToolbarPhoneTest {
             Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
         });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
 
         boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
@@ -445,9 +443,8 @@ public class ToolbarPhoneTest {
             Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
         });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
 
         boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
@@ -479,9 +476,8 @@ public class ToolbarPhoneTest {
     testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        ImageButton tabSwitcherButton = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button);
-        });
+        ImageButton tabSwitcherButton = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return cta.findViewById(R.id.tab_switcher_button); });
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
             Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
@@ -535,9 +531,8 @@ public class ToolbarPhoneTest {
     testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled_noAnimation() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        ImageButton tabSwitcherButton = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button);
-        });
+        ImageButton tabSwitcherButton = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return cta.findViewById(R.id.tab_switcher_button); });
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
             Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
@@ -591,9 +586,8 @@ public class ToolbarPhoneTest {
     testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceDisabled() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        ImageButton tabSwitcherButton = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button);
-        });
+        ImageButton tabSwitcherButton = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return cta.findViewById(R.id.tab_switcher_button); });
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
             Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));

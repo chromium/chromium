@@ -108,6 +108,7 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.components.browser_ui.photo_picker"
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/FileEnumWorkerTaskTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerBitmapViewTest.java",
@@ -172,5 +173,5 @@ android_library("unit_device_javatests") {
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
   ]
-  resources_package = "org.chromium.components.browser_ui.photo_picker.test"
+  resources_package = "org.chromium.components.browser_ui.photo_picker"
 }

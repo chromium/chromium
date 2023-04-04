@@ -128,6 +128,7 @@ android_library("content_main_dex_java") {
 
 android_library("content_full_java") {
   deps = [
+    ":content_java_resources",
     ":content_main_dex_java",
     "$google_play_services_package:google_play_services_auth_api_phone_java",
     "$google_play_services_package:google_play_services_base_java",
@@ -195,6 +196,7 @@ android_library("content_full_java") {
     "//ui/touch_selection:ui_touch_handle_orientation_srcjar",
     "//ui/touch_selection:ui_touch_selection_enums_srcjar",
   ]
+  resources_package = "org.chromium.content"
 
   sources = [
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
@@ -490,9 +492,11 @@ group("jni") {
 
 android_library("content_javatests") {
   testonly = true
+  resources_package = "org.chromium.content"
 
   deps = [
     ":content_java",
+    ":content_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:process_launcher_java",
@@ -639,6 +643,7 @@ android_library("content_javatests") {
 }
 
 robolectric_binary("content_junit_tests") {
+  resources_package = "org.chromium.content"
   sources = [
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",

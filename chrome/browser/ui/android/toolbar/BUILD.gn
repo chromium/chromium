@@ -294,6 +294,7 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.toolbar"
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/BaseButtonDataProviderTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsCheckerTest.java",
@@ -327,10 +328,12 @@ robolectric_library("junit") {
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//cc:cc_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",

@@ -143,6 +143,7 @@ robolectric_library("junit") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.tab_ui"
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/BottomSheetToolbarViewBinderTest.java",
@@ -156,6 +157,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/commerce/merchant_viewer/android:java",
+    "//chrome/browser/creator/android:creator_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/profiles/android:java",
@@ -167,6 +169,7 @@ android_library("javatests") {
     "//components/embedder_support/android:content_view_java",
     "//components/messages/android:java",
     "//components/messages/android/internal:java",
+    "//components/messages/android/internal:java_resources",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/page_info/android:java",
     "//components/page_info/android:page_info_action_enum_java",

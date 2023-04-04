@@ -55,7 +55,7 @@ public class FeedStreamViewResizer extends ViewResizer {
         int defaultPaddingPixels = activity.getResources().getDimensionPixelSize(
                 R.dimen.content_suggestions_card_modern_margin);
         int minWidePaddingPixels = activity.getResources().getDimensionPixelSize(
-                org.chromium.chrome.tab_ui.R.dimen.ntp_wide_card_lateral_margins);
+                R.dimen.ntp_wide_card_lateral_margins);
 
         FeedStreamViewResizer viewResizer = new FeedStreamViewResizer(
                 activity, view, config, defaultPaddingPixels, minWidePaddingPixels);
@@ -102,20 +102,18 @@ public class FeedStreamViewResizer extends ViewResizer {
         // adjust margin sizes while keeping the body width constant.
         int customPadding = (int) ((screenWidth
                                            - mActivity.getResources().getDimensionPixelSize(
-                                                   org.chromium.chrome.browser.feed.R.dimen
-                                                           .ntp_wide_card_width_breakpoint))
+                                                   R.dimen.ntp_wide_card_width_breakpoint))
                 / 2);
         // (b) Once the margins reach max, adjust the body size while keeping margins constant.
         customPadding = Math.min(customPadding,
                 mActivity.getResources().getDimensionPixelSize(
-                        org.chromium.chrome.browser.feed.R.dimen
-                                .ntp_wide_card_lateral_margins_max));
+                        R.dimen.ntp_wide_card_lateral_margins_max));
         // (c) Once the body reaches max width, adjust the margin widths while keeping the body
         // constant.
         customPadding = Math.max(customPadding,
                 (int) (screenWidth
                         - mActivity.getResources().getDimensionPixelSize(
-                                org.chromium.chrome.browser.feed.R.dimen.ntp_wide_card_width_max))
+                                R.dimen.ntp_wide_card_width_max))
                         / 2);
         // (d) Return max of computed padding and min allowed margin.
         return Math.max(customPadding, getMinWidePaddingPixels());

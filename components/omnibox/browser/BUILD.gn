@@ -505,6 +505,7 @@ if (is_android) {
       ":java_resources",
       "//base:jni_java",
       "//build/android:build_java",
+      "//components/browser_ui/styles/android:java_resources",
       "//components/browser_ui/widget/android:java",
       "//components/embedder_support/android:util_java",
       "//components/query_tiles:query_tile_java",
@@ -525,6 +526,7 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
+    resources_package = "org.chromium.components.omnibox"
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java",
       "android/java/src/org/chromium/components/omnibox/action/HistoryClustersActionUnitTest.java",
@@ -533,9 +535,11 @@ if (is_android) {
     ]
     deps = [
       ":browser_java",
+      ":java_resources",
       ":junit_test_support",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//components/browser_ui/styles/android:java_resources",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/junit:junit",
       "//url:gurl_junit_shadows",
@@ -543,6 +547,7 @@ if (is_android) {
   }
 
   android_library("junit_test_support") {
+    resources_package = "org.chromium.components.omnibox"
     testonly = true
     sources = [
       "//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java",

@@ -498,6 +498,7 @@ android_resources("ui_javatest_resources") {
 }
 
 robolectric_binary("ui_junit_tests") {
+  resources_package = "org.chromium.ui"
   sources = [
     "junit/src/org/chromium/ui/AsyncViewProviderTest.java",
     "junit/src/org/chromium/ui/AsyncViewStubTest.java",
@@ -615,6 +616,7 @@ android_library("clipboard_java_test_support") {
 
 android_library("ui_unit_device_javatests") {
   testonly = true
+  resources_package = "org.chromium.ui"
 
   sources = [
     "java/src/org/chromium/ui/resources/dynamics/HardwareDrawTest.java",
@@ -628,6 +630,7 @@ android_library("ui_unit_device_javatests") {
     ":ui_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/browser_ui/widget/android:java_resources",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
