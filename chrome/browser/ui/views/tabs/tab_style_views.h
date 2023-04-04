@@ -50,6 +50,15 @@ class TabStyleViews : public TabStyle {
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
 
+  // Sets the center of the radial highlight in the hover animation.
+  virtual void SetHoverLocation(const gfx::Point& location) = 0;
+
+  // Shows the hover animation.
+  virtual void ShowHover(ShowHoverStyle style) = 0;
+
+  // Hides the hover animation.
+  virtual void HideHover(HideHoverStyle style) = 0;
+
   // Returns the minimum possible width of a selected Tab. Selected tabs must
   // always show a close button, and thus have a larger minimum size than
   // unselected tabs.
