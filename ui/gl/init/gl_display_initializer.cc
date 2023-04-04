@@ -74,7 +74,8 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
     AddInitDisplay(init_displays, ANGLE_OPENGLES);
   }
 
-  if (supports_angle_metal && use_angle_default && default_angle_metal) {
+  if (supports_angle_metal && use_angle_default && default_angle_metal &&
+      !GetGlWorkarounds().disable_metal) {
     AddInitDisplay(init_displays, ANGLE_METAL);
   }
 

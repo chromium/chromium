@@ -302,6 +302,7 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
 
   gl::GlWorkarounds workarounds = {
     .disable_d3d11 = is_enabled(DISABLE_D3D11),
+    .disable_metal = is_enabled(DISABLE_METAL),
     .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
     .disable_es3gl_context_for_testing =
         is_enabled(DISABLE_ES3_GL_CONTEXT_FOR_TESTING),
