@@ -37,6 +37,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -561,7 +562,12 @@ public class IntentHandler {
                     || TranslateIntentHandler.handleTranslateTabIntent(intent, mDelegate);
         }
 
-        LoadUrlParams loadUrlParams = createLoadUrlParamsForIntent(url, intent);
+        var asyncTabParams = AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().get(
+                getTabId(intent));
+        LoadUrlParams loadUrlParams =
+                (asyncTabParams == null || asyncTabParams.getLoadUrlParams() == null)
+                ? createLoadUrlParamsForIntent(url, intent)
+                : asyncTabParams.getLoadUrlParams();
 
         if (isIntentForMhtmlFileOrContent(intent) && tabOpenType == TabOpenType.OPEN_NEW_TAB
                 && loadUrlParams.getReferrer() == null
