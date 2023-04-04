@@ -187,6 +187,10 @@ test("shell_dialogs_unittests") {
   if (is_android) {
     deps += [ "//ui/android:ui_java" ]
   }
+
+  if (is_ios) {
+    bundle_deps = [ "//ui/resources:ui_test_pak_bundle_data" ]
+  }
 }
 
 source_set("test_support") {
