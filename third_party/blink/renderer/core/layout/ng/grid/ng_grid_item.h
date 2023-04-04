@@ -152,6 +152,10 @@ struct CORE_EXPORT GridItemData {
     return has_subgridded_columns || has_subgridded_rows;
   }
 
+  bool HasStandaloneAndSubgriddedAxis() const {
+    return has_subgridded_columns != has_subgridded_rows;
+  }
+
   bool IsConsideredForSizing(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? is_considered_for_column_sizing
                                             : is_considered_for_row_sizing;

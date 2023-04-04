@@ -29,12 +29,14 @@ class NGSubgriddedItemData {
       : item_data_in_parent_(&item_data_in_parent),
         parent_layout_data_(&parent_layout_data) {}
 
-  const GridItemData* operator->() const { return item_data_in_parent_; }
+  explicit operator bool() const { return item_data_in_parent_ != nullptr; }
 
-  const GridItemData& operator*() const {
+  const GridItemData* operator->() const {
     DCHECK(item_data_in_parent_);
-    return *item_data_in_parent_;
+    return item_data_in_parent_;
   }
+
+  const GridItemData& operator*() const { return *operator->(); }
 
   bool IsSubgrid() const {
     return item_data_in_parent_ && item_data_in_parent_->IsSubgrid();
@@ -76,9 +78,8 @@ class CORE_EXPORT NGGridSizingTree {
   NGGridSizingTree& operator=(NGGridSizingTree&&) = default;
   NGGridSizingTree& operator=(const NGGridSizingTree&) = delete;
 
-  GridTreeNode& CreateSizingData() {
-    return *tree_data_.emplace_back(std::make_unique<GridTreeNode>());
-  }
+  GridTreeNode& CreateSizingData(
+      const NGSubgriddedItemData& subgrid_data = kNoSubgriddedItemData);
 
   GridTreeNode& At(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
@@ -103,15 +104,22 @@ class CORE_EXPORT NGGridSizingTree {
   NGSubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;
 
- private:
-  using SubgriddedItemDataLookupMap =
-      HeapHashMap<Member<const LayoutBox>, NGSubgriddedItemData>;
+  wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const;
 
+ private:
   // In order to correctly determine the available space of a subgridded item,
   // which might be measured by a different grid than its parent grid, this map
   // stores the item's `NGSubgriddedItemData`, whose layout data should be used
   // to compute its span size within its parent grid's tracks.
+  using SubgriddedItemDataLookupMap =
+      HeapHashMap<Member<const LayoutBox>, NGSubgriddedItemData>;
   Persistent<SubgriddedItemDataLookupMap> subgridded_item_data_lookup_map_;
+
+  // Stores a subgrid's index in the grid sizing tree; this is useful when we
+  // want to create a `NGGridSizingSubtree` for an arbitrary subgrid.
+  using SubgridIndexLookupMap =
+      HeapHashMap<Member<const LayoutBox>, wtf_size_t>;
+  Persistent<SubgridIndexLookupMap> subgrid_index_lookup_map_;
 
   Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;
 };
@@ -125,8 +133,9 @@ class NGGridSizingSubtree
  public:
   NGGridSizingSubtree() = default;
 
-  explicit NGGridSizingSubtree(const NGGridSizingTree& sizing_tree)
-      : NGGridSubtree(&sizing_tree) {}
+  explicit NGGridSizingSubtree(const NGGridSizingTree& sizing_tree,
+                               wtf_size_t subtree_root = 0)
+      : NGGridSubtree(&sizing_tree, subtree_root) {}
 
   NGGridSizingSubtree(const NGGridSizingTree* sizing_tree,
                       wtf_size_t parent_end_index,
@@ -142,6 +151,16 @@ class NGGridSizingSubtree
       const GridItemData& grid_item) const {
     DCHECK(grid_tree_);
     return grid_tree_->LookupSubgriddedItemData(grid_item);
+  }
+
+  NGGridSizingSubtree SubgridSizingSubtree(
+      const GridItemData& subgrid_data) const {
+    DCHECK(grid_tree_);
+    DCHECK(subgrid_data.IsSubgrid());
+
+    return NGGridSizingSubtree(
+        *grid_tree_,
+        /* subtree_root */ grid_tree_->LookupSubgridIndex(subgrid_data));
   }
 
   NGGridSizingTree::GridTreeNode& SubtreeRootData() const {

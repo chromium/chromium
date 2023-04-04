@@ -511,7 +511,7 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
 
   bool has_nested_subgrid = false;
   auto& [grid_items, layout_data, subtree_size] =
-      sizing_tree->CreateSizingData();
+      sizing_tree->CreateSizingData(opt_subgrid_data);
 
   if (!must_ignore_children) {
     // Construct grid items that are not subgridded.
@@ -982,6 +982,16 @@ const NGLayoutResult* LayoutGridItemForMeasure(
   return node.Layout(constraint_space);
 }
 
+GridTrackSizingDirection RelativeDirectionInSubgrid(
+    GridTrackSizingDirection track_direction,
+    const GridItemData& subgrid_data) {
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const bool is_for_columns = subgrid_data.is_parallel_with_root_grid ==
+                              (track_direction == kForColumns);
+  return is_for_columns ? kForColumns : kForRows;
+}
+
 }  // namespace
 
 LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
@@ -1052,18 +1062,26 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
             .block_start;
   };
 
-  auto SubgridContributionSize =
-      [&](SizingConstraint sizing_constraint) -> LayoutUnit {
+  auto SubgridContributionSize = [&](bool is_min_content) -> LayoutUnit {
     DCHECK(grid_item->IsSubgrid());
-    return LayoutUnit();
+
+    const auto fragment_geometry = CalculateInitialFragmentGeometry(
+        space, grid_item->node, /* break_token */ nullptr,
+        /* is_intrinsic */ !space.IsFixedInlineSize());
+
+    const auto subgrid_algorithm =
+        NGGridLayoutAlgorithm({grid_item->node, fragment_geometry, space});
+
+    return subgrid_algorithm.ComputeSubgridContributionSize(
+        sizing_subtree.SubgridSizingSubtree(*grid_item),
+        RelativeDirectionInSubgrid(track_direction, *grid_item),
+        is_min_content ? SizingConstraint::kMinContent
+                       : SizingConstraint::kMaxContent);
   };
 
-  auto MinOrMaxContentSize =
-      [&](SizingConstraint sizing_constraint) -> LayoutUnit {
-    DCHECK_NE(sizing_constraint, SizingConstraint::kLayout);
-
+  auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {
     if (grid_item->IsSubgrid()) {
-      return SubgridContributionSize(sizing_constraint);
+      return SubgridContributionSize(is_min_content);
     }
 
     const auto result = ComputeMinAndMaxContentContributionForSelf(node, space);
@@ -1085,9 +1103,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     }
 
     const LayoutUnit content_size =
-        (sizing_constraint == SizingConstraint::kMinContent)
-            ? result.sizes.min_size
-            : result.sizes.max_size;
+        is_min_content ? result.sizes.min_size : result.sizes.max_size;
 
     if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
       CalculateBaselineShim(GetSynthesizedLogicalBaseline(
@@ -1099,10 +1115,10 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   };
 
   auto MinContentSize = [&]() -> LayoutUnit {
-    return MinOrMaxContentSize(SizingConstraint::kMinContent);
+    return MinOrMaxContentSize(/* is_min_content */ true);
   };
   auto MaxContentSize = [&]() -> LayoutUnit {
-    return MinOrMaxContentSize(SizingConstraint::kMaxContent);
+    return MinOrMaxContentSize(/* is_min_content */ false);
   };
 
   // This function will determine the correct block-size of a grid-item.
@@ -1114,7 +1130,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     DCHECK(!is_parallel_with_track_direction);
 
     if (grid_item->IsSubgrid()) {
-      return SubgridContributionSize(SizingConstraint::kLayout);
+      return SubgridContributionSize(/* is_min_content */ false);
     }
 
     // TODO(ikilpatrick): This check is potentially too broad, i.e. a fixed
@@ -1561,19 +1577,9 @@ void NGGridLayoutAlgorithm::InitializeTrackCollection(
 
 namespace {
 
-GridTrackSizingDirection RelativeDirectionInSubgrid(
-    GridTrackSizingDirection track_direction,
-    const NGSubgriddedItemData& subgrid_data) {
-  DCHECK(subgrid_data.IsSubgrid());
-
-  const bool is_for_columns = subgrid_data->is_parallel_with_root_grid ==
-                              (track_direction == kForColumns);
-  return is_for_columns ? kForColumns : kForRows;
-}
-
-absl::optional<GridTrackSizingDirection> RelativeDirectionInSubgrid(
+absl::optional<GridTrackSizingDirection> RelativeDirectionFilterInSubgrid(
     const absl::optional<GridTrackSizingDirection>& opt_track_direction,
-    const NGSubgriddedItemData& subgrid_data) {
+    const GridItemData& subgrid_data) {
   DCHECK(subgrid_data.IsSubgrid());
 
   if (opt_track_direction) {
@@ -1659,7 +1665,7 @@ void NGGridLayoutAlgorithm::InitializeTrackSizes(
 
     subgrid_algorithm.InitializeTrackSizes(
         next_subgrid_subtree, subgrid_data,
-        RelativeDirectionInSubgrid(opt_track_direction, subgrid_data));
+        RelativeDirectionFilterInSubgrid(opt_track_direction, grid_item));
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }
@@ -1847,7 +1853,7 @@ void NGGridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
 
     subgrid_algorithm.CompleteTrackSizingAlgorithm(
         next_subgrid_subtree, subgrid_data,
-        RelativeDirectionInSubgrid(track_direction, subgrid_data),
+        RelativeDirectionInSubgrid(track_direction, grid_item),
         sizing_constraint, opt_needs_additional_pass);
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();

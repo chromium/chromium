@@ -3544,13 +3544,10 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-001.h
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-004.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/repeat-auto-fill-003.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/repeat-auto-fill-006.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-001.html [ Crash Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-002.html [ Crash Failure Timeout ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-003.html [ Crash Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-004.html [ Crash ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-item-block-size-001.html [ Failure ]
 
 # [css-animations]
 
