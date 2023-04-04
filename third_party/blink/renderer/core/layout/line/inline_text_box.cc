@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/ellipsis_box.h"
-#include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -447,29 +446,6 @@ bool InlineTextBox::IsLineBreak() const {
           (*GetLineLayoutItem().GetText().Impl())[Start()] == '\n');
 }
 
-bool InlineTextBox::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& hit_test_location,
-                                const PhysicalOffset& accumulated_offset,
-                                LayoutUnit /* lineTop */,
-                                LayoutUnit /*lineBottom*/) {
-  if (IsLineBreak() || truncation_ == kCFullTruncation)
-    return false;
-
-  PhysicalOffset box_origin = PhysicalLocation();
-  box_origin += accumulated_offset;
-  PhysicalRect rect(box_origin, Size());
-  if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
-      hit_test_location.Intersects(rect)) {
-    GetLineLayoutItem().UpdateHitTestResult(
-        result, hit_test_location.Point() - accumulated_offset);
-    if (result.AddNodeToListBasedTestResult(GetLineLayoutItem().GetNode(),
-                                            hit_test_location,
-                                            rect) == kStopHitTesting)
-      return true;
-  }
-  return false;
-}
-
 bool InlineTextBox::GetEmphasisMarkPosition(
     const ComputedStyle& style,
     TextEmphasisPosition& emphasis_position) const {
@@ -495,50 +471,11 @@ bool InlineTextBox::GetEmphasisMarkPosition(
   return true;
 }
 
-void InlineTextBox::Paint(const PaintInfo& paint_info,
-                          const PhysicalOffset& paint_offset,
-                          LayoutUnit /*lineTop*/,
-                          LayoutUnit /*lineBottom*/) const {
-  InlineTextBoxPainter(*this).Paint(paint_info, paint_offset);
-  if (GetLineLayoutItem().ContainsOnlyWhitespaceOrNbsp() !=
-      OnlyWhitespaceOrNbsp::kYes) {
-    paint_info.context.GetPaintController().SetTextPainted();
-  }
-}
-
 void InlineTextBox::SelectionStartEnd(int& s_pos, int& e_pos) const {
   const LayoutTextSelectionStatus& status =
       GetLineLayoutItem().SelectionStatus();
   s_pos = std::max(static_cast<int>(status.start) - start_, 0);
   e_pos = std::min(static_cast<int>(status.end) - start_, (int)len_);
-}
-
-void InlineTextBox::PaintDocumentMarker(const PaintInfo& paint_info,
-                                        const PhysicalOffset& box_origin,
-                                        const DocumentMarker& marker,
-                                        const ComputedStyle& style,
-                                        const Font& font,
-                                        bool grammar) const {
-  InlineTextBoxPainter(*this).PaintDocumentMarker(paint_info, box_origin,
-                                                  marker, style, font, grammar);
-}
-
-void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
-                                              const PhysicalOffset& box_origin,
-                                              const DocumentMarker& marker,
-                                              const ComputedStyle& style,
-                                              const Font& font) const {
-  InlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, box_origin,
-                                                        marker, style, font);
-}
-
-void InlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
-                                              const PhysicalOffset& box_origin,
-                                              const DocumentMarker& marker,
-                                              const ComputedStyle& style,
-                                              const Font& font) const {
-  InlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, box_origin,
-                                                        marker, style, font);
 }
 
 int InlineTextBox::CaretMinOffset() const {

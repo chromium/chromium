@@ -24,8 +24,6 @@
 
 namespace blink {
 
-class HitTestResult;
-
 class EllipsisBox final : public InlineBox {
  public:
   EllipsisBox(LineLayoutItem item,
@@ -52,15 +50,6 @@ class EllipsisBox final : public InlineBox {
     SetHasVirtualLogicalHeight();
   }
 
-  void Paint(const PaintInfo&,
-             const PhysicalOffset&,
-             LayoutUnit line_top,
-             LayoutUnit line_bottom) const override;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   LayoutUnit line_top,
-                   LayoutUnit line_bottom) override;
   gfx::Rect SelectionRect() const;
 
   LayoutUnit VirtualLogicalHeight() const override { return height_; }

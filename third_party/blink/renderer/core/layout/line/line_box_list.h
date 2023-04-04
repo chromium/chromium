@@ -39,8 +39,6 @@
 namespace blink {
 
 class CullRect;
-class HitTestLocation;
-class HitTestResult;
 class InlineFlowBox;
 class InlineTextBox;
 class LayoutUnit;
@@ -155,11 +153,6 @@ class CORE_EXPORT LineBoxList : public InlineBoxList<InlineFlowBox> {
                                   LineLayoutItem child,
                                   bool can_dirty_ancestors);
 
-  bool HitTest(LineLayoutBoxModel,
-               HitTestResult&,
-               const HitTestLocation&,
-               const PhysicalOffset& accumulated_offset,
-               HitTestPhase) const;
   bool AnyLineIntersectsRect(LineLayoutBoxModel,
                              const CullRect&,
                              const PhysicalOffset&) const;

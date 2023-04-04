@@ -23,21 +23,12 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
-#include "third_party/blink/renderer/core/paint/ellipsis_box_painter.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
-
-void EllipsisBox::Paint(const PaintInfo& paint_info,
-                        const PhysicalOffset& paint_offset,
-                        LayoutUnit line_top,
-                        LayoutUnit line_bottom) const {
-  EllipsisBoxPainter(*this).Paint(paint_info, paint_offset, line_top,
-                                  line_bottom);
-}
 
 gfx::Rect EllipsisBox::SelectionRect() const {
   const ComputedStyle& style = GetLineLayoutItem().StyleRef(IsFirstLineStyle());
@@ -47,27 +38,6 @@ gfx::Rect EllipsisBox::SelectionRect() const {
       gfx::PointF(LogicalLeft().ToInt(),
                   (LogicalTop() + Root().SelectionTop()).ToInt()),
       Root().SelectionHeight().ToInt()));
-}
-
-bool EllipsisBox::NodeAtPoint(HitTestResult& result,
-                              const HitTestLocation& hit_test_location,
-                              const PhysicalOffset& accumulated_offset,
-                              LayoutUnit line_top,
-                              LayoutUnit line_bottom) {
-  PhysicalOffset adjusted_location = accumulated_offset + PhysicalLocation();
-  PhysicalRect bounds_rect(adjusted_location, Size());
-  if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
-      bounds_rect.Intersects(
-          HitTestLocation::RectForPoint(hit_test_location.Point()))) {
-    GetLineLayoutItem().UpdateHitTestResult(
-        result, hit_test_location.Point() - adjusted_location);
-    if (result.AddNodeToListBasedTestResult(GetLineLayoutItem().GetNode(),
-                                            hit_test_location,
-                                            bounds_rect) == kStopHitTesting)
-      return true;
-  }
-
-  return false;
 }
 
 const char* EllipsisBox::BoxName() const {

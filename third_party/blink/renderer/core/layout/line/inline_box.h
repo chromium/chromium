@@ -33,8 +33,6 @@
 
 namespace blink {
 
-class HitTestRequest;
-class HitTestResult;
 class InlineFlowBox;
 class LayoutObject;
 class RootInlineBox;
@@ -99,16 +97,6 @@ class CORE_EXPORT InlineBox : public GarbageCollected<InlineBox>,
   void MoveInBlockDirection(LayoutUnit delta) {
     MoveInLogicalDirection(LayoutSize(LayoutUnit(), delta));
   }
-
-  virtual void Paint(const PaintInfo&,
-                     const PhysicalOffset&,
-                     LayoutUnit line_top,
-                     LayoutUnit line_bottom) const;
-  virtual bool NodeAtPoint(HitTestResult&,
-                           const HitTestLocation&,
-                           const PhysicalOffset& accumulated_offset,
-                           LayoutUnit line_top,
-                           LayoutUnit line_bottom);
 
 #if DCHECK_IS_ON()
   void ShowTreeForThis() const;
@@ -323,10 +311,6 @@ class CORE_EXPORT InlineBox : public GarbageCollected<InlineBox>,
 #endif
 
   int Expansion() const { return bitfields_.Expansion(); }
-
-  bool VisibleToHitTestRequest(const HitTestRequest& request) const {
-    return GetLineLayoutItem().VisibleToHitTestRequest(request);
-  }
 
   // Anonymous inline: https://drafts.csswg.org/css2/visuren.html#anonymous
   bool IsAnonymousInline() const {

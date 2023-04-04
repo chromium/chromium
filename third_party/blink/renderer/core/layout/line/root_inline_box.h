@@ -28,7 +28,6 @@
 namespace blink {
 
 class EllipsisBox;
-class HitTestResult;
 class LineLayoutBlockFlow;
 
 struct BidiStatus;
@@ -133,16 +132,6 @@ class RootInlineBox : public InlineFlowBox {
 
   LayoutUnit BaselinePosition(FontBaseline baseline_type) const final;
   LayoutUnit LineHeight() const final;
-
-  void Paint(const PaintInfo&,
-             const PhysicalOffset&,
-             LayoutUnit line_top,
-             LayoutUnit line_bottom) const override;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   LayoutUnit line_top,
-                   LayoutUnit line_bottom) override;
 
   bool IsSelected() const final;
   InlineBox* FirstSelectedBox() const;

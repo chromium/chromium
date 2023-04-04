@@ -34,8 +34,6 @@
 
 namespace blink {
 
-class DocumentMarker;
-
 class CORE_EXPORT InlineTextBox : public InlineBox {
  public:
   InlineTextBox(LineLayoutItem item, int start, uint16_t length)
@@ -136,35 +134,7 @@ class CORE_EXPORT InlineTextBox : public InlineBox {
       bool include_newline_space_width = true) const;
   void SelectionStartEnd(int& s_pos, int& e_pos) const;
 
-  virtual void PaintDocumentMarker(const PaintInfo&,
-                                   const PhysicalOffset& box_origin,
-                                   const DocumentMarker&,
-                                   const ComputedStyle&,
-                                   const Font&,
-                                   bool grammar) const;
-  virtual void PaintTextMarkerForeground(const PaintInfo&,
-                                         const PhysicalOffset& box_origin,
-                                         const DocumentMarker&,
-                                         const ComputedStyle&,
-                                         const Font&) const;
-  virtual void PaintTextMarkerBackground(const PaintInfo&,
-                                         const PhysicalOffset& box_origin,
-                                         const DocumentMarker&,
-                                         const ComputedStyle&,
-                                         const Font&) const;
-
   void Move(const LayoutSize&) final;
-
- protected:
-  void Paint(const PaintInfo&,
-             const PhysicalOffset&,
-             LayoutUnit line_top,
-             LayoutUnit line_bottom) const override;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   LayoutUnit line_top,
-                   LayoutUnit line_bottom) override;
 
  private:
   void DeleteLine() final;

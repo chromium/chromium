@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/vertical_position_cache.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/root_inline_box_painter.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -175,32 +174,6 @@ LayoutUnit RootInlineBox::PlaceEllipsisBox(bool ltr,
     truncated_width = block_right_edge - block_left_edge - logical_left_offset;
   }
   return result;
-}
-
-void RootInlineBox::Paint(const PaintInfo& paint_info,
-                          const PhysicalOffset& paint_offset,
-                          LayoutUnit line_top,
-                          LayoutUnit line_bottom) const {
-  RootInlineBoxPainter(*this).Paint(paint_info, paint_offset, line_top,
-                                    line_bottom);
-}
-
-bool RootInlineBox::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& hit_test_location,
-                                const PhysicalOffset& accumulated_offset,
-                                LayoutUnit line_top,
-                                LayoutUnit line_bottom) {
-  if (HasEllipsisBox() && VisibleToHitTestRequest(result.GetHitTestRequest())) {
-    if (GetEllipsisBox()->NodeAtPoint(result, hit_test_location,
-                                      accumulated_offset, line_top,
-                                      line_bottom)) {
-      GetLineLayoutItem().UpdateHitTestResult(
-          result, hit_test_location.Point() - accumulated_offset);
-      return true;
-    }
-  }
-  return InlineFlowBox::NodeAtPoint(result, hit_test_location,
-                                    accumulated_offset, line_top, line_bottom);
 }
 
 void RootInlineBox::Move(const LayoutSize& delta) {

@@ -32,7 +32,6 @@
 
 namespace blink {
 
-class HitTestResult;
 class InlineTextBox;
 class LineBoxList;
 class SimpleFontData;
@@ -125,16 +124,6 @@ class InlineFlowBox : public InlineBox {
   void ClearTruncation() override;
 
   LayoutRect FrameRect() const;
-
-  void Paint(const PaintInfo&,
-             const PhysicalOffset&,
-             LayoutUnit line_top,
-             LayoutUnit line_bottom) const override;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   LayoutUnit line_top,
-                   LayoutUnit line_bottom) override;
 
   bool BoxShadowCanBeAppliedToBackground(const FillLayer&) const;
 

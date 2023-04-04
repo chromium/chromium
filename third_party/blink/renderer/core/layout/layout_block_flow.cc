@@ -795,15 +795,15 @@ bool LayoutBlockFlow::HitTestChildren(HitTestResult& result,
   if (IsScrollContainer())
     scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
 
-  if (ChildrenInline()) {
-    if (line_boxes_.HitTest(LineLayoutBoxModel(this), result, hit_test_location,
-                            scrolled_offset, phase)) {
-      UpdateHitTestResult(result,
-                          hit_test_location.Point() - accumulated_offset);
-      return true;
-    }
-  } else if (LayoutBlock::HitTestChildren(result, hit_test_location,
-                                          accumulated_offset, phase)) {
+  // TODO(1229581): Layout objects that don't allow fragment traversal for paint
+  // and hit-testing (see CanTraversePhysicalFragments()) still end up here. We
+  // may even end up here if ChildrenInline(). That's just the initial state of
+  // a block, though. As soon as a non-fragment-traversale object gets children,
+  // they will be blocks, and *they* will be fragment-traversable.
+  DCHECK(!ChildrenInline() || !FirstChild());
+  if (!ChildrenInline() &&
+      LayoutBlock::HitTestChildren(result, hit_test_location,
+                                   accumulated_offset, phase)) {
     return true;
   }
 

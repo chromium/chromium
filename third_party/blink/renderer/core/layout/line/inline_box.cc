@@ -221,30 +221,6 @@ void InlineBox::Move(const LayoutSize& delta) {
   SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded();
 }
 
-void InlineBox::Paint(const PaintInfo& paint_info,
-                      const PhysicalOffset&,
-                      LayoutUnit,
-                      LayoutUnit) const {
-  BlockPainter::PaintInlineBox(*this, paint_info);
-}
-
-bool InlineBox::NodeAtPoint(HitTestResult& result,
-                            const HitTestLocation& hit_test_location,
-                            const PhysicalOffset& accumulated_offset,
-                            LayoutUnit /* lineTop */,
-                            LayoutUnit /* lineBottom */) {
-  // Hit test all phases of replaced elements atomically, as though the replaced
-  // element established its own stacking context. (See Appendix E.2, section
-  // 6.4 on inline block/table elements in the CSS2.1 specification.)
-  PhysicalOffset layout_item_accumulated_offset = accumulated_offset;
-  if (GetLineLayoutItem().IsBox()) {
-    layout_item_accumulated_offset +=
-        LineLayoutBox(GetLineLayoutItem()).PhysicalLocation();
-  }
-  return GetLineLayoutItem().HitTestAllPhases(result, hit_test_location,
-                                              layout_item_accumulated_offset);
-}
-
 const RootInlineBox& InlineBox::Root() const {
   if (parent_)
     return parent_->Root();

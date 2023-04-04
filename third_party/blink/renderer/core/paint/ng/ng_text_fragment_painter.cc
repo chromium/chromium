@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
-#include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
@@ -251,8 +250,6 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   }
 }
 
-// This is copied from InlineTextBoxPainter::PaintSelection() but lacks of
-// ltr, expanding new line wrap or so which uses InlineTextBox functions.
 void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                   const PhysicalOffset& paint_offset) {
   const auto& text_item = *cursor_.CurrentItem();

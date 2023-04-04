@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/paint/line_box_list_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -53,8 +52,7 @@ void InlinePainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
-  LineBoxListPainter(*layout_inline_.LineBoxes())
-      .Paint(layout_inline_, local_paint_info, paint_offset);
+  NOTREACHED();
 }
 
 }  // namespace blink

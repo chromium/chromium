@@ -845,8 +845,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     return false;
   }
 
-  return LineBoxes()->HitTest(LineLayoutBoxModel(this), result,
-                              hit_test_location, accumulated_offset, phase);
+  NOTREACHED_NORETURN();
 }
 
 bool LayoutInline::HitTestCulledInline(HitTestResult& result,

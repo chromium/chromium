@@ -34,10 +34,7 @@
 #include "third_party/blink/renderer/core/layout/line/line_orientation_utils.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
-#include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/inline_flow_box_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -1318,119 +1315,6 @@ void InlineFlowBox::SetLayoutOverflowFromLogicalRect(
                                  ? logical_layout_overflow
                                  : logical_layout_overflow.TransposedRect());
   SetLayoutOverflow(layout_overflow, frame_box);
-}
-
-bool InlineFlowBox::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& hit_test_location,
-                                const PhysicalOffset& accumulated_offset,
-                                LayoutUnit line_top,
-                                LayoutUnit line_bottom) {
-  PhysicalRect overflow_rect =
-      PhysicalVisualOverflowRect(line_top, line_bottom);
-  overflow_rect.Move(accumulated_offset);
-  if (!hit_test_location.Intersects(overflow_rect))
-    return false;
-
-  // We need to hit test both our inline children (Inline Boxes) and culled
-  // inlines (LayoutObjects). We check our inlines in the same order as line
-  // layout but for each inline we additionally need to hit test its culled
-  // inline parents. While hit testing culled inline parents, we can stop once
-  // we reach a non-inline parent or a culled inline associated with a different
-  // inline box.
-  InlineBox* prev;
-  for (InlineBox* curr = LastChild(); curr; curr = prev) {
-    prev = curr->PrevOnLine();
-
-    // Layers will handle hit testing themselves.
-    if (!curr->BoxModelObject() ||
-        !curr->BoxModelObject().HasSelfPaintingLayer()) {
-      if (curr->NodeAtPoint(result, hit_test_location, accumulated_offset,
-                            line_top, line_bottom)) {
-        GetLineLayoutItem().UpdateHitTestResult(
-            result, hit_test_location.Point() - accumulated_offset);
-        return true;
-      }
-    }
-
-    // If the current inline box's layout object and the previous inline box's
-    // layout object are same, we should yield the hit-test to the previous
-    // inline box.
-    if (prev && curr->GetLineLayoutItem() == prev->GetLineLayoutItem())
-      continue;
-
-    // Hit test the culled inline if necessary.
-    LineLayoutItem curr_layout_item = curr->GetLineLayoutItem();
-    while (true) {
-      // If the previous inline box is not a descendant of a current inline's
-      // parent, the parent is a culled inline and we hit test it.
-      // Otherwise, move to the previous inline box because we hit test first
-      // all candidate inline boxes under the parent to take a pre-order tree
-      // traversal in reverse.
-      bool has_sibling =
-          curr_layout_item.PreviousSibling() || curr_layout_item.NextSibling();
-      LineLayoutItem culled_parent = curr_layout_item.Parent();
-      DCHECK(culled_parent);
-
-      if (culled_parent == GetLineLayoutItem() ||
-          (has_sibling && prev &&
-           prev->GetLineLayoutItem().IsDescendantOf(culled_parent)))
-        break;
-
-      if (culled_parent.IsLayoutInline() &&
-          LineLayoutInline(culled_parent)
-              .HitTestCulledInline(result, hit_test_location,
-                                   accumulated_offset))
-        return true;
-
-      curr_layout_item = culled_parent;
-    }
-  }
-
-  if (GetLineLayoutItem().IsBox() &&
-      To<LayoutBox>(LineLayoutAPIShim::LayoutObjectFrom(GetLineLayoutItem()))
-          ->HitTestClippedOutByBorder(hit_test_location, overflow_rect.offset))
-    return false;
-
-  if (GetLineLayoutItem().StyleRef().HasBorderRadius()) {
-    // TODO(layout-dev): LogicalFrameRect() seems incorrect.
-    PhysicalRect border_rect = PhysicalRectToBeNoop(LogicalFrameRect());
-    border_rect.Move(accumulated_offset);
-    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
-        GetLineLayoutItem().StyleRef(), border_rect, SidesToInclude());
-    if (!hit_test_location.Intersects(border))
-      return false;
-  }
-
-  // Now check ourselves.
-  LayoutRect layout_rect =
-      InlineFlowBoxPainter(*this).FrameRectClampedToLineTopAndBottomIfNeeded();
-  FlipForWritingMode(layout_rect);
-  PhysicalRect rect(layout_rect);
-  rect.Move(accumulated_offset);
-
-  // Pixel snap hit testing.
-  rect = PhysicalRect(ToPixelSnappedRect(rect));
-  if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
-      hit_test_location.Intersects(rect)) {
-    // Don't add in m_topLeft here, we want coords in the containing block's
-    // coordinate space.
-    GetLineLayoutItem().UpdateHitTestResult(
-        result, hit_test_location.Point() - accumulated_offset);
-    if (result.AddNodeToListBasedTestResult(GetLineLayoutItem().GetNode(),
-                                            hit_test_location,
-                                            rect) == kStopHitTesting)
-      return true;
-  }
-
-  return false;
-}
-
-void InlineFlowBox::Paint(const PaintInfo& paint_info,
-                          const PhysicalOffset& paint_offset,
-                          LayoutUnit line_top,
-                          LayoutUnit line_bottom) const {
-  InlineFlowBoxPainter(*this).Paint(paint_info, paint_offset, line_top,
-                                    line_bottom);
 }
 
 bool InlineFlowBox::BoxShadowCanBeAppliedToBackground(
