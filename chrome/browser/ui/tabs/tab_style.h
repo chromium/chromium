@@ -17,10 +17,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gfx {
-class Canvas;
-}
-
 // Holds the basic logic for rendering tabs, including preferred sizes, paths,
 // etc.
 class TabStyle {
@@ -123,9 +119,6 @@ class TabStyle {
 
   // Derives and returns colors for the tab. See TabColors, above.
   virtual TabColors CalculateColors() const = 0;
-
-  // Paints the tab.
-  virtual void PaintTab(gfx::Canvas* canvas) const = 0;
 
   // Sets the center of the radial highlight in the hover animation.
   virtual void SetHoverLocation(const gfx::Point& location) = 0;

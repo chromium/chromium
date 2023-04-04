@@ -24,6 +24,10 @@ struct ui::metadata::TypeConverter<TabStyle::TabColors>
 
 class Tab;
 
+namespace gfx {
+class Canvas;
+}
+
 // Holds Views-specific logic for rendering and sizing tabs.
 class TabStyleViews : public TabStyle {
  public:
@@ -42,6 +46,9 @@ class TabStyleViews : public TabStyle {
       float scale,
       bool force_active = false,
       RenderUnits render_units = RenderUnits::kPixels) const = 0;
+
+  // Paints the tab.
+  virtual void PaintTab(gfx::Canvas* canvas) const = 0;
 
   // Returns the minimum possible width of a selected Tab. Selected tabs must
   // always show a close button, and thus have a larger minimum size than
