@@ -21,6 +21,7 @@
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/features/automation_internal_bindings.h"
 #include "services/accessibility/features/mojo/mojo.h"
+#include "services/accessibility/features/v8_bindings_utils.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
@@ -33,34 +34,6 @@ namespace {
 // stores a pointer to this V8Manager. This allows any class with
 // a v8::Context to access this V8Manager.
 static const int kV8ContextWrapperIndex = 0;
-
-// Methods for debugging.
-// TODO(crbug.com/1355633): Use blink::mojom::DevToolsAgent interface to attach
-// to Chrome devtools.
-static std::string PrintArgs(gin::Arguments* args) {
-  std::string statement;
-  while (!args->PeekNext().IsEmpty()) {
-    v8::String::Utf8Value value(args->isolate(), args->PeekNext());
-    statement += base::StringPrintf("%s ", *value);
-    args->Skip();
-  }
-  return statement;
-}
-
-// Provides temporary functionality for atpconsole.log.
-static void ConsoleLog(gin::Arguments* args) {
-  LOG(ERROR) << "AccessibilityService V8: Info: " << PrintArgs(args);
-}
-
-// Provides temporary functionality for atpconsole.warn.
-static void ConsoleWarn(gin::Arguments* args) {
-  LOG(ERROR) << "AccessibilityService V8: Error: " << PrintArgs(args);
-}
-
-// Provides temporary functionality for atpconsole.error.
-static void ConsoleError(gin::Arguments* args) {
-  LOG(ERROR) << "AccessibilityService V8: Error: " << PrintArgs(args);
-}
 
 }  // namespace
 
@@ -218,25 +191,21 @@ void V8Manager::AddV8BindingsOnThread() {
     chrome_template->Set(isolate, "automationInternal",
                          automation_internal_template);
   }
-  // TODO(crbug.com/1355633): Add other API bindings to the global template.
 
-  // Use static bindings for console functions for initial development.
-  // Note that "console" seems to be protected in v8 so we have to make
-  // our own, "atpconsole".
-  // TODO(crbug.com/1355633): Use blink::mojom::DevToolsAgent interface to
-  // attach to Chrome devtools and remove these temporary bindings.
-  v8::Local<v8::ObjectTemplate> console_template =
-      v8::ObjectTemplate::New(isolate);
-  console_template->Set(
-      isolate, "log",
-      gin::CreateFunctionTemplate(isolate, base::BindRepeating(&ConsoleLog)));
-  console_template->Set(
-      isolate, "warn",
-      gin::CreateFunctionTemplate(isolate, base::BindRepeating(&ConsoleWarn)));
-  console_template->Set(
-      isolate, "error",
-      gin::CreateFunctionTemplate(isolate, base::BindRepeating(&ConsoleError)));
-  global_template->Set(isolate, "atpconsole", console_template);
+  // Adds atpconsole.log/warn/error.
+  // TODO(crbug.com/1355633): Deprecate and use console.log/warn/error instead.
+  BindingsUtils::AddAtpConsoleTemplate(isolate, global_template);
+
+  // Add TextEncoder and TextDecoder, which are used by Mojo to pass strings,
+  // as well as some Accessibility features.
+  BindingsUtils::AddCallHandlerToTemplate(
+      isolate, global_template, "TextEncoder",
+      BindingsUtils::CreateTextEncoderCallback);
+  BindingsUtils::AddCallHandlerToTemplate(
+      isolate, global_template, "TextDecoder",
+      BindingsUtils::CreateTextDecoderCallback);
+
+  // TODO(crbug.com/1355633): Add other API bindings to the global template.
 
   // Add the global template to the current context.
   v8::Local<v8::Context> context =

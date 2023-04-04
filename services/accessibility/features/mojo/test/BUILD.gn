@@ -7,7 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom_js_api") {
   testonly = true
-  sources = [ "test_api.mojom" ]
+  sources = [ "test_api.test-mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
@@ -33,14 +33,14 @@ template("concatenate_files") {
   }
 }
 
-# Concatinates the mojom JS bindings and generated mojo from test_api.mojom into
+# Concatinates the mojom JS bindings and generated mojo from test_api.test-mojom into
 # one file as we haven't yet implemented module loading.
 # TODO(b:262637071): Implement module loading.
 concatenate_files("test_support_js") {
   inputs = [
     "shim.js",
     "$root_gen_dir/mojo/public/js/mojo_bindings_lite.js",
-    "$root_gen_dir/services/accessibility/features/mojo/test/test_api.mojom-lite.js",
+    "$root_gen_dir/services/accessibility/features/mojo/test/test_api.test-mojom-lite.js",
   ]
 
   deps = [

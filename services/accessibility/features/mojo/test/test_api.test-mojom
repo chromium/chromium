@@ -9,10 +9,10 @@
 module axtest.mojom;
 
 // A structure with some Mojom types.
-// TODO(b:262637071): Support TextEncoder/Decoder and add strings here.
 struct TestStruct {
   bool is_structy;
   int32 num;
+  string name;
 };
 
 // An enum type.
@@ -36,7 +36,7 @@ interface TestBindingInterface {
     AddTestInterface() => (pending_receiver<TestInterface> interface_receiver);
 
     // Returns a value asynchronously through a callback.
-    GetTestStruct(int32 num) => (TestStruct result);
+    GetTestStruct(int32 num, string name) => (TestStruct result);
 
     // Requests that the TestBindingInterface send the enum to TestInterface,
     // if bound.

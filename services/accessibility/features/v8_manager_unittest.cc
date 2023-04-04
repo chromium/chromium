@@ -17,7 +17,7 @@
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/accessibility/features/mojo/test/test_api.mojom.h"
+#include "services/accessibility/features/mojo/test/test_api.test-mojom.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8_manager.h"
@@ -56,10 +56,14 @@ class TestBindingInterfaceImpl : public axtest::mojom::TestBindingInterface,
     std::move(callback).Run(std::move(pending_receiver));
   }
 
-  void GetTestStruct(int num, GetTestStructCallback callback) override {
+  void GetTestStruct(int num,
+                     const std::string& name,
+                     GetTestStructCallback callback) override {
     auto result = axtest::mojom::TestStruct::New();
     result->is_structy = true;
+    // Modify the passed values a bit to ensure it's not just an echo.
     result->num = num + 1;
+    result->name = name + " rocks";
     std::move(callback).Run(std::move(result));
   }
 
@@ -141,6 +145,28 @@ TEST_F(V8ManagerTest, ExecutesSimpleScript) {
     // By checking there's no error here, we know that V8 bindings
     // can be installed on the context.
     atpconsole.log('Green is the loneliest color');
+  )JS",
+                         script_waiter.QuitClosure());
+  script_waiter.Run();
+}
+
+// Sanity check of TextEncoder/TextDecoder.
+TEST_F(V8ManagerTest, SanityCheckTextEncoder) {
+  scoped_refptr<V8Manager> manager = V8Manager::Create();
+  manager->AddV8Bindings();
+  base::RunLoop script_waiter;
+  // Test that this script compiles and runs. That indicates there
+  // is no issue creating and using TextEncoder/Decoder, but does
+  // not verify that the values are as expected.
+  manager->ExecuteScript(R"JS(
+    let encoder = new TextEncoder();
+    let decoder = new TextDecoder();
+    // With contents.
+    let encoded = encoder.encode('Hello, world');
+    let response = decoder.decode(encoded);
+    // Empty.
+    encoded = encoder.encode('');
+    response = decoder.decode(encoded);
   )JS",
                          script_waiter.QuitClosure());
   script_waiter.Run();
@@ -251,9 +277,11 @@ TEST_F(V8ManagerTest, MAYBE_MojoBindingsGetsCallback) {
       }
 
       async init_() {
-        const response = await this.remote_.getTestStruct(41);
-        // Expect the result struct to have the number passed in plus 1.
-        if (response.result.isStructy && response.result.num === 42) {
+        const response = await this.remote_.getTestStruct(41, "RGB");
+        // Expect the result struct to have the number passed in plus 1,
+        // and the name passed in plus ' rocks'.
+        if (response.result.isStructy && response.result.num === 42 &&
+            response.result.name === "RGB rocks") {
           this.remote_.testComplete(/*success=*/true);
         } else {
           this.remote_.testComplete(/*success=*/false);
