@@ -29435,6 +29435,12 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="DOWNLOAD_PROMPT"/>
 </enum>
 
+<enum name="DpSuccessMetric">
+  <int value="0" label="Success with HotPlug Detect(HPD)"/>
+  <int value="1" label="Success without HotPlug Detect(HPD)"/>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="DragContent">
   <obsolete>
     Deprecated 12/2020.

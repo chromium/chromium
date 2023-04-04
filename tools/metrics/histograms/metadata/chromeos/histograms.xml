@@ -2748,6 +2748,19 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.TypeC.DpSuccess" enum="DpSuccessMetric"
+    expires_after="2023-10-08">
+  <owner>pmalani@chromium.org</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents DisplayPort (DP) alternate mode entry success (or
+    failure) for USB Type-C peripherals that support this alternate mode. This
+    metric gets recorded by the Chrome OS Type-C system daemon (typecd) when a
+    peripheral that supports DP alternate mode is connected to the systems that
+    support this metric.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.TypeC.PartnerLocation" enum="PartnerLocationMetric"
     expires_after="2023-09-03">
   <owner>wonchung@google.com</owner>
