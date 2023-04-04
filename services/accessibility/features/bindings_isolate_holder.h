@@ -5,6 +5,8 @@
 #ifndef SERVICES_ACCESSIBILITY_FEATURES_BINDINGS_ISOLATE_HOLDER_H_
 #define SERVICES_ACCESSIBILITY_FEATURES_BINDINGS_ISOLATE_HOLDER_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-local-handle.h"
@@ -22,6 +24,26 @@ class BindingsIsolateHolder {
  public:
   // Initializes V8 for the service. May be called from any thread.
   static void InitializeV8();
+
+  // An interface that allows classes to observe when an Isolate will be
+  // destroyed so that they can clean up state.
+  class IsolateObserver : public base::CheckedObserver {
+   public:
+    ~IsolateObserver() override = default;
+    virtual void OnIsolateWillDestroy() = 0;
+  };
+
+  BindingsIsolateHolder();
+  ~BindingsIsolateHolder();
+  BindingsIsolateHolder(const BindingsIsolateHolder&) = delete;
+  BindingsIsolateHolder& operator=(const BindingsIsolateHolder&) = delete;
+
+  void AddObserver(IsolateObserver* observer);
+
+  void RemoveObserver(IsolateObserver* observer);
+
+  // Notifies all the observers that the isolate will be destroyed.
+  void NotifyIsolateWillDestroy();
 
   // Gets the current isolate.
   virtual v8::Isolate* GetIsolate() const = 0;
@@ -45,6 +67,8 @@ class BindingsIsolateHolder {
   // Converts a V8 exception to a human-readable string including
   // line number, if relevant, within the script.
   std::string ExceptionToString(const v8::TryCatch& try_catch);
+
+  base::ObserverList<IsolateObserver> observers_;
 };
 
 }  // namespace ax
