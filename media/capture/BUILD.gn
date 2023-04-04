@@ -508,6 +508,10 @@ test("capture_unittests") {
     deps += [ "//third_party/ocmock" ]
   }
 
+  if (is_ios) {
+    deps += [ "//media:unit_tests_bundle_data" ]
+  }
+
   if (is_win) {
     sources += [
       "video/win/d3d_capture_test_utils.cc",
