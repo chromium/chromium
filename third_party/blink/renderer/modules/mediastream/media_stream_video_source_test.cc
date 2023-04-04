@@ -36,6 +36,8 @@ using ::testing::SaveArg;
 
 namespace blink {
 
+const double kSourceFrameRate = 500.0;
+
 class MediaStreamVideoSourceTest : public testing::Test {
  public:
   MediaStreamVideoSourceTest()
@@ -45,7 +47,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
         result_name_(""),
         mock_stream_video_source_(new MockMediaStreamVideoSource(
             media::VideoCaptureFormat(gfx::Size(1280, 720),
-                                      1000.0,
+                                      kSourceFrameRate,
                                       media::PIXEL_FORMAT_I420),
             false)) {
     mock_stream_video_source_->DisableStopForRestart();
@@ -617,8 +619,8 @@ TEST_F(MediaStreamVideoSourceTest, DropFrameAtTooHighRateAndThenStopDropping) {
 }
 
 TEST_F(MediaStreamVideoSourceTest, ReconfigureTrack) {
-  WebMediaStreamTrack track = CreateTrackAndStartSource(
-      640, 480, media::limits::kMaxFramesPerSecond - 2);
+  WebMediaStreamTrack track =
+      CreateTrackAndStartSource(640, 480, kSourceFrameRate - 2);
   MockMediaStreamVideoSink sink;
   sink.ConnectToTrack(track);
   EXPECT_EQ(track.Source().GetReadyState(),
@@ -629,7 +631,7 @@ TEST_F(MediaStreamVideoSourceTest, ReconfigureTrack) {
   native_track->GetSettings(settings);
   EXPECT_EQ(settings.width, 640);
   EXPECT_EQ(settings.height, 480);
-  EXPECT_EQ(settings.frame_rate, media::limits::kMaxFramesPerSecond - 2);
+  EXPECT_EQ(settings.frame_rate, kSourceFrameRate - 2);
   EXPECT_EQ(settings.aspect_ratio, 640.0 / 480.0);
 
   source()->ReconfigureTrack(
@@ -649,8 +651,8 @@ TEST_F(MediaStreamVideoSourceTest, ReconfigureTrack) {
 }
 
 TEST_F(MediaStreamVideoSourceTest, ReconfigureStoppedTrack) {
-  WebMediaStreamTrack track = CreateTrackAndStartSource(
-      640, 480, media::limits::kMaxFramesPerSecond - 2);
+  WebMediaStreamTrack track =
+      CreateTrackAndStartSource(640, 480, kSourceFrameRate - 2);
   EXPECT_EQ(track.Source().GetReadyState(),
             WebMediaStreamSource::kReadyStateLive);
 
@@ -659,7 +661,7 @@ TEST_F(MediaStreamVideoSourceTest, ReconfigureStoppedTrack) {
   native_track->GetSettings(settings);
   EXPECT_EQ(settings.width, 640);
   EXPECT_EQ(settings.height, 480);
-  EXPECT_EQ(settings.frame_rate, media::limits::kMaxFramesPerSecond - 2);
+  EXPECT_EQ(settings.frame_rate, kSourceFrameRate - 2);
   EXPECT_EQ(settings.aspect_ratio, 640.0 / 480.0);
 
   // Reconfiguring a stopped track should have no effect since it is no longer
@@ -1068,6 +1070,36 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaMultipleTracks) {
 
   // Extra call when destroying the tracks.
   EXPECT_CALL(*mock_source(), OnSourceCanDiscardAlpha(true)).Times(2);
+}
+
+TEST_F(MediaStreamVideoSourceTest, ConfiguredFrameRate) {
+  WebMediaStreamTrack track =
+      CreateTrackAndStartSource(640, 480, kSourceFrameRate);
+  MockMediaStreamVideoSink sink;
+  sink.ConnectToTrack(track);
+  EXPECT_EQ(track.Source().GetReadyState(),
+            WebMediaStreamSource::kReadyStateLive);
+
+  MediaStreamVideoTrack* native_track = MediaStreamVideoTrack::From(track);
+  MediaStreamTrackPlatform::Settings settings;
+  native_track->GetSettings(settings);
+  EXPECT_EQ(settings.frame_rate, kSourceFrameRate);
+
+  source()->ReconfigureTrack(
+      native_track,
+      VideoTrackAdapterSettings(gfx::Size(640, 480), kSourceFrameRate + 1));
+  native_track->GetSettings(settings);
+  // Since the adapter frame rate is greater than the source frame rate,
+  // the configured rate returned by GetSettings() is the source frame rate.
+  EXPECT_EQ(settings.frame_rate, kSourceFrameRate);
+
+  source()->ReconfigureTrack(
+      native_track,
+      VideoTrackAdapterSettings(gfx::Size(640, 480), kSourceFrameRate - 1));
+  native_track->GetSettings(settings);
+  // Since the adapter frame rate is less than the source frame rate,
+  // the configured rate returned by GetSettings() is the adapter frame rate.
+  EXPECT_EQ(settings.frame_rate, kSourceFrameRate - 1);
 }
 
 }  // namespace blink

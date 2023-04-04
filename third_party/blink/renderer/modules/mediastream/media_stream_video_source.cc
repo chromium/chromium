@@ -549,9 +549,7 @@ void MediaStreamVideoSource::UpdateTrackSettings(
   if (VideoTrackAdapter::CalculateDesiredSize(
           false /* is_rotated */, GetCurrentFormat()->frame_size,
           adapter_settings, &desired_size)) {
-    track->SetTargetSizeAndFrameRate(desired_size.width(),
-                                     desired_size.height(),
-                                     adapter_settings.max_frame_rate());
+    track->SetTargetSize(desired_size.width(), desired_size.height());
   }
   track->SetTrackAdapterSettings(adapter_settings);
 }
