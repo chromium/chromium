@@ -61,11 +61,17 @@ class RasterInterface : public InterfaceBase {
                                GLboolean unpack_flip_y,
                                GLboolean unpack_premultiply_alpha) = 0;
 
+  // Synchronously writes pixels from caller-owned memory |src_pixels| and given
+  // |src_info| + |src_row_bytes| into |dest_mailbox| for given |plane_index|.
+  // |plane_index| applies to multiplanar textures in mailboxes, for example YUV
+  // images produced by the VideoDecoder. |plane_index| as 0 should be passed
+  // for known single-plane textures.
   virtual void WritePixels(const gpu::Mailbox& dest_mailbox,
                            int dst_x_offset,
                            int dst_y_offset,
+                           int dst_plane_index,
                            GLenum texture_target,
-                           GLuint row_bytes,
+                           GLuint src_row_bytes,
                            const SkImageInfo& src_info,
                            const void* src_pixels) = 0;
 

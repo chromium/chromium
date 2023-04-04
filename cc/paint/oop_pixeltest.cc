@@ -273,8 +273,9 @@ class OopPixelTest : public testing::Test,
                     const gpu::Mailbox& mailbox,
                     const SkImageInfo& info,
                     const SkBitmap& bitmap) {
-    ri->WritePixels(mailbox, 0, 0, 0, info.minRowBytes(), info,
-                    bitmap.getPixels());
+    ri->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                    /*dst_plane_index=*/0, /*texture_target=*/0,
+                    info.minRowBytes(), info, bitmap.getPixels());
     ri->OrderingBarrierCHROMIUM();
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
   }
@@ -2194,7 +2195,8 @@ TEST_F(OopPixelTest, CopySharedImage) {
         ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    ri->WritePixels(source_mailbox, 0, 0, GL_TEXTURE_2D,
+    ri->WritePixels(source_mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+                    /*dst_plane_index=*/0, GL_TEXTURE_2D,
                     upload_bitmap.rowBytes(), upload_bitmap.info(),
                     upload_bitmap.getPixels());
   }
