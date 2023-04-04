@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
+import {Annotation, SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
 
 export function createVisit(
     visitId: bigint, normalizedUrl: string, urlForDisplay: string,
-    pageTitle: string, hasUrlKeyedImage: boolean,
-    relativeDate: string = ''): URLVisit {
+    pageTitle: string, hasUrlKeyedImage: boolean, relativeDate: string = '',
+    annotations: Annotation[] = []): URLVisit {
   return {
     visitId: visitId,
     normalizedUrl: {url: normalizedUrl},
@@ -18,7 +18,7 @@ export function createVisit(
     urlForDisplayMatchPositions: [],
     duplicates: [],
     relativeDate: relativeDate,
-    annotations: [],
+    annotations: annotations,
     debugInfo: {},
     rawVisitData: {
       url: {url: ''},

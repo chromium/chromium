@@ -126,13 +126,29 @@
   }
 
   #label,
-  #date {
+  #date,
+  #annotation {
     bottom: -2px;
     position: relative;
   }
 
   #date {
     min-width: max-content;
+  }
+
+  #annotation {
+    display: none;
+  }
+
+  #info-container-spacer {
+    display: none;
+    flex: 1 1 auto;
+    min-width: 8px;
+  }
+
+  :host([large-format]) #annotation,
+  :host([large-format]) #info-container-spacer {
+    display: block;
   }
 
   :host([large-format]) #label {
@@ -189,6 +205,10 @@
       <div id="label" class="truncate"> [[label_]]</div>
       <span id="dot">&nbsp&#8226&nbsp</span>
       <div id="date">[[visit.relativeDate]]</div>
+      <template is="dom-if" if="[[annotation_]]">
+        <div id="info-container-spacer"></div>
+        <div id="annotation">[[annotation_]]</div>
+      </template>
     </div>
   </div>
 </a>

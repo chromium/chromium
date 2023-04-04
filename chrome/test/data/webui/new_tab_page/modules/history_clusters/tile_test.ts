@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
+import {Annotation, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {ImageServiceBrowserProxy, TileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ImageServiceHandlerRemote} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
@@ -41,7 +41,7 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
     // Arrange.
     const tileElement = initializeModule(createVisit(
         BigInt(1), 'https://www.test.com/1', 'https://www.test.com/1',
-        'Test Title 1', false, '1 min ago'));
+        'Test Title 1', false, '1 min ago', [Annotation.kBookmarked]));
 
     // Assert.
     await waitAfterNextRender(tileElement);
@@ -52,6 +52,7 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
         !!window.getComputedStyle($$<HTMLImageElement>(tileElement, '#icon')!)
               .getPropertyValue('background-image')
               .trim());
+    assertEquals('Bookmarked', $$(tileElement, '#annotation')!.innerHTML);
   });
 
   [true, false].forEach(
