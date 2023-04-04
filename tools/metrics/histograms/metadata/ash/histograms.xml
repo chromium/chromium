@@ -1814,7 +1814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.BentoBarEnabled" enum="Boolean"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>minch@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2287,7 +2287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.UserHasUsedDesksRecently" enum="Boolean"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>minch@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -3406,7 +3406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Login.MigrationBanner" enum="BooleanShown"
-    expires_after="2023-06-18">
+    expires_after="2023-10-01">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -3581,7 +3581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MojoServiceManager.BootstrapRetryTimes" units="count"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>chungsheng@google.com</owner>
   <owner>chromeos-mojo-service-manager@google.com</owner>
   <summary>
@@ -3590,7 +3590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MojoServiceManager.IsConnectionLost" enum="BooleanShown"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>chungsheng@google.com</owner>
   <owner>chromeos-mojo-service-manager@google.com</owner>
   <summary>
@@ -6128,7 +6128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wallpaper.Collection" enum="WallpaperCollection"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -6457,7 +6457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.ModeSwitchSource"
-    enum="AltTabModeSwitchSource" expires_after="2023-07-30">
+    enum="AltTabModeSwitchSource" expires_after="2023-10-01">
   <owner>afakhry@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>

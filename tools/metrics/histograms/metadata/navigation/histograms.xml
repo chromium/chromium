@@ -487,7 +487,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.AnonymousIframeIsSandboxed" enum="Boolean"
-    expires_after="2023-07-09">
+    expires_after="2023-10-01">
   <owner>arthursonzogni@chromium.org</owner>
   <owner>chrome-security-owp-team@google.com</owner>
   <summary>
@@ -880,7 +880,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Navigation.MainFrame.RendererInitiated.InitiatorFramePresentAtStart"
-    enum="BooleanPresent" expires_after="2023-07-30">
+    enum="BooleanPresent" expires_after="2023-10-01">
   <owner>yaoxia@chromium.org</owner>
   <owner>cammie@chromium.org</owner>
   <summary>

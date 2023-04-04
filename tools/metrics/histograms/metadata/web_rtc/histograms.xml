@@ -1717,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidIceChars" units="boolean"
-    expires_after="2023-08-01">
+    expires_after="2023-10-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -1782,7 +1782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.60MinPlusMaxMinusOne"
-    units="2D fps" expires_after="2023-07-30">
+    units="2D fps" expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1792,7 +1792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.Exists"
-    units="boolean" expires_after="2023-07-30">
+    units="boolean" expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1802,7 +1802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.Max.Exists"
-    units="boolean" expires_after="2023-07-30">
+    units="boolean" expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1812,7 +1812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.Max.Value" units="fps"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1822,7 +1822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.Min.Exists"
-    units="boolean" expires_after="2023-07-30">
+    units="boolean" expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1832,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.Min.Value" units="fps"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1842,7 +1842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.MinLessThanMax.Max"
-    units="fps" expires_after="2023-07-30">
+    units="fps" expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1862,7 +1862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.FrameRateConstraints.MinUnset.Max"
-    units="fps" expires_after="2023-07-30">
+    units="fps" expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
@@ -1872,7 +1872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.ZeroHz.TimeUntilFirstFrameMs" units="ms"
-    expires_after="2023-07-30">
+    expires_after="2023-10-01">
   <owner>handellm@google.com</owner>
   <owner>ilnik@chromium.org</owner>
   <summary>
