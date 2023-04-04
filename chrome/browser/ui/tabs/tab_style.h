@@ -134,6 +134,8 @@ class TabStyle {
 
   static constexpr float kDefaultSelectedTabOpacity = 0.75f;
 
+  static std::unique_ptr<const TabStyle> Create();
+
  protected:
   // Avoid implicitly-deleted constructor.
   TabStyle() = default;
