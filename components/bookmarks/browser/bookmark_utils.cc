@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/metrics/user_metrics_action.h"
@@ -22,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -299,7 +299,7 @@ void PasteFromClipboard(BookmarkModel* model,
     GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
     if (!url.is_valid())
       return;
-    BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(), url);
+    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
     node.SetTitle(base::ASCIIToUTF16(url.spec()));
     bookmark_data = BookmarkNodeData(&node);
   }
@@ -566,7 +566,7 @@ const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model,
 }
 
 const BookmarkNode* GetBookmarkNodeByGUID(const BookmarkModel* model,
-                                          const base::GUID& guid) {
+                                          const base::Uuid& guid) {
   return FindNode(model->root_node(), [&guid](const BookmarkNode* node) {
     return node->guid() == guid;
   });

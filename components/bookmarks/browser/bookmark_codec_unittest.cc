@@ -11,13 +11,13 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -546,7 +546,7 @@ TEST_F(BookmarkCodecTest, ReassignEmptyGUID) {
   ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  const base::GUID guid = base::GUID::ParseCaseInsensitive(original_guid_str);
+  const base::Uuid guid = base::Uuid::ParseCaseInsensitive(original_guid_str);
   ASSERT_TRUE(guid.is_valid());
   EXPECT_NE(guid, decoded_model2->bookmark_bar_node()->children()[0]->guid());
   EXPECT_TRUE(
@@ -583,7 +583,7 @@ TEST_F(BookmarkCodecTest, ReassignMissingGUID) {
   ASSERT_TRUE(Decode(&decoder2, value, decoded_model2.get(),
                      /*sync_metadata_str=*/nullptr));
 
-  const base::GUID guid = base::GUID::ParseCaseInsensitive(original_guid_str);
+  const base::Uuid guid = base::Uuid::ParseCaseInsensitive(original_guid_str);
   ASSERT_TRUE(guid.is_valid());
   EXPECT_NE(guid, decoded_model2->bookmark_bar_node()->children()[0]->guid());
   EXPECT_TRUE(
@@ -593,7 +593,7 @@ TEST_F(BookmarkCodecTest, ReassignMissingGUID) {
 
 TEST_F(BookmarkCodecTest, ReassignInvalidGUID) {
   const std::string kInvalidGuid = "0000";
-  ASSERT_FALSE(base::GUID::ParseCaseInsensitive(kInvalidGuid).is_valid());
+  ASSERT_FALSE(base::Uuid::ParseCaseInsensitive(kInvalidGuid).is_valid());
 
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
 
@@ -657,8 +657,8 @@ TEST_F(BookmarkCodecTest, ReassignDuplicateGUID) {
 }
 
 TEST_F(BookmarkCodecTest, ReassignBannedGUID) {
-  const base::GUID kBannedGuid =
-      base::GUID::ParseLowercase(BookmarkNode::kBannedGuidDueToPastSyncBug);
+  const base::Uuid kBannedGuid =
+      base::Uuid::ParseLowercase(BookmarkNode::kBannedGuidDueToPastSyncBug);
   ASSERT_TRUE(kBannedGuid.is_valid());
 
   std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
@@ -710,12 +710,12 @@ TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateGUID) {
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_TRUE(decoder.guids_reassigned());
-  EXPECT_NE(base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
+  EXPECT_NE(base::Uuid::ParseLowercase(BookmarkNode::kRootNodeGuid),
             decoded_model->bookmark_bar_node()->children()[0]->guid());
 }
 
 TEST_F(BookmarkCodecTest, CanonicalizeGUID) {
-  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const std::string kUpperCaseGuid =
       base::ToUpperASCII(kGuid.AsLowercaseString());
 

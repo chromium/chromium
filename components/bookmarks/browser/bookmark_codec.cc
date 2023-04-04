@@ -12,7 +12,6 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -20,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/strings/grit/components_strings.h"
@@ -131,11 +131,11 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
                            int64_t* max_id,
                            std::string* sync_metadata_str) {
   ids_.clear();
-  guids_ = {base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
-            base::GUID::ParseLowercase(BookmarkNode::kBookmarkBarNodeGuid),
-            base::GUID::ParseLowercase(BookmarkNode::kOtherBookmarksNodeGuid),
-            base::GUID::ParseLowercase(BookmarkNode::kMobileBookmarksNodeGuid),
-            base::GUID::ParseLowercase(BookmarkNode::kManagedNodeGuid)};
+  guids_ = {base::Uuid::ParseLowercase(BookmarkNode::kRootNodeGuid),
+            base::Uuid::ParseLowercase(BookmarkNode::kBookmarkBarNodeGuid),
+            base::Uuid::ParseLowercase(BookmarkNode::kOtherBookmarksNodeGuid),
+            base::Uuid::ParseLowercase(BookmarkNode::kMobileBookmarksNodeGuid),
+            base::Uuid::ParseLowercase(BookmarkNode::kManagedNodeGuid)};
   ids_reassigned_ = false;
   guids_reassigned_ = false;
   ids_valid_ = true;
@@ -304,7 +304,7 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
   if (string_value)
     title = base::UTF8ToUTF16(*string_value);
 
-  base::GUID guid;
+  base::Uuid guid;
   // |node| is only passed in for bookmarks of type BookmarkPermanentNode, in
   // which case we do not need to check for GUID validity as their GUIDs are
   // hard-coded and not read from the persisted file.
@@ -314,23 +314,23 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
     // GUID. The same applies if the stored GUID is invalid or a duplicate.
     const std::string* guid_str = value.FindString(kGuidKey);
     if (guid_str && !guid_str->empty()) {
-      guid = base::GUID::ParseCaseInsensitive(*guid_str);
+      guid = base::Uuid::ParseCaseInsensitive(*guid_str);
     }
 
     if (!guid.is_valid()) {
-      guid = base::GUID::GenerateRandomV4();
+      guid = base::Uuid::GenerateRandomV4();
       guids_reassigned_ = true;
     }
 
     if (guid.AsLowercaseString() == BookmarkNode::kBannedGuidDueToPastSyncBug) {
-      guid = base::GUID::GenerateRandomV4();
+      guid = base::Uuid::GenerateRandomV4();
       guids_reassigned_ = true;
     }
 
     // Guard against GUID collisions, which would violate BookmarkModel's
     // invariant that each GUID is unique.
     if (base::Contains(guids_, guid)) {
-      guid = base::GUID::GenerateRandomV4();
+      guid = base::Uuid::GenerateRandomV4();
       guids_reassigned_ = true;
     }
 
