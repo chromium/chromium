@@ -90,7 +90,7 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void OnThemeColorChanged(const absl::optional<SkColor>& theme_color);
 
-  void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
+  void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
 
   // Notifies the page's color scheme was inferred.
   void DidInferColorScheme(blink::mojom::PreferredColorScheme color_scheme);

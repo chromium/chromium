@@ -2387,14 +2387,14 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
   // and other variables at used-value time instead of doing it at parse time
   // below.
 
-  SkColor resolved_background_color =
-      ResolveColor(background_color).ToSkColorDeprecated();
+  SkColor4f resolved_background_color =
+      ResolveColor(background_color).toSkColor4f();
   int highest_contrast_index = -1;
   float highest_contrast_ratio = 0;
   for (unsigned i = 0; i < colors_to_compare_against.size(); i++) {
     float contrast_ratio = color_utils::GetContrastRatio(
         resolved_background_color,
-        ResolveColor(colors_to_compare_against[i]).ToSkColorDeprecated());
+        ResolveColor(colors_to_compare_against[i]).toSkColor4f());
     if (target_contrast.has_value()) {
       if (contrast_ratio >= target_contrast.value()) {
         highest_contrast_ratio = contrast_ratio;
@@ -2412,9 +2412,9 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
     // contrast, then return white or black depending on which has the most
     // contrast.
     return color_utils::GetContrastRatio(resolved_background_color,
-                                         SK_ColorWHITE) >
+                                         SkColors::kWhite) >
                    color_utils::GetContrastRatio(resolved_background_color,
-                                                 SK_ColorBLACK)
+                                                 SkColors::kBlack)
                ? MakeGarbageCollected<cssvalue::CSSColor>(Color::kWhite)
                : MakeGarbageCollected<cssvalue::CSSColor>(Color::kBlack);
   }

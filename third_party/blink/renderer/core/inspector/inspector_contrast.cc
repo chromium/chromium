@@ -231,8 +231,8 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
   text_color = text_color.CombineWithAlpha(text_opacity);
 
   float contrast_ratio = color_utils::GetContrastRatio(
-      bgcolors.at(0).Blend(text_color).ToSkColorDeprecated(),
-      bgcolors.at(0).ToSkColorDeprecated());
+      bgcolors.at(0).Blend(text_color).toSkColor4f(),
+      bgcolors.at(0).toSkColor4f());
 
   auto text_info = GetTextInfo(top_element);
   bool is_large_font = IsLargeFont(text_info);
