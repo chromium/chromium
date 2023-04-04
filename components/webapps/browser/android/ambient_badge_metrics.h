@@ -7,6 +7,7 @@
 
 #include "components/messages/android/message_enums.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/ambient_badge_manager.h"
 
 namespace webapps {
 
@@ -14,6 +15,7 @@ void RecordAmbientBadgeDisplayEvent(AddToHomescreenParams::AppType type);
 void RecordAmbientBadgeDismissEvent(AddToHomescreenParams::AppType type);
 void RecordAmbientBadgeClickEvent(AddToHomescreenParams::AppType type);
 void RecordAmbientBadgeMessageDismissReason(messages::DismissReason event);
+void RecordAmbientBadgeTeminateState(AmbientBadgeManager::State state);
 
 }  // namespace webapps
 

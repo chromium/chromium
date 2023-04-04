@@ -17,6 +17,8 @@ constexpr char kAmbientBadgeDismissEventHistogram[] =
 constexpr char kAmbientBadgeClickEventHistogram[] = "Webapp.AmbientBadge.Click";
 constexpr char kAmbientBadgeMessageDismissReasonHistogram[] =
     "Webapp.AmbientBadge.Messages.DismissReason";
+constexpr char kAmbientBadgeTerminateHistogram[] =
+    "Webapp.AmbientBadge.Terminate";
 
 }  // namespace
 
@@ -39,6 +41,10 @@ void RecordAmbientBadgeMessageDismissReason(
     messages::DismissReason dismiss_reason) {
   base::UmaHistogramEnumeration(kAmbientBadgeMessageDismissReasonHistogram,
                                 dismiss_reason, messages::DismissReason::COUNT);
+}
+
+void RecordAmbientBadgeTeminateState(AmbientBadgeManager::State state) {
+  base::UmaHistogramEnumeration(kAmbientBadgeTerminateHistogram, state);
 }
 
 }  // namespace webapps

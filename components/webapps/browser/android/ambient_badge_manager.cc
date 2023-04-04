@@ -33,10 +33,8 @@ AmbientBadgeManager::AmbientBadgeManager(
     : web_contents_(web_contents->GetWeakPtr()),
       app_banner_manager_(app_banner_manager) {}
 
-AmbientBadgeManager::~AmbientBadgeManager() = default;
-
-AmbientBadgeManager::State AmbientBadgeManager::GetStatus() const {
-  return badge_state_;
+AmbientBadgeManager::~AmbientBadgeManager() {
+  RecordAmbientBadgeTeminateState(state_);
 }
 
 void AmbientBadgeManager::MaybeShow(
@@ -63,7 +61,7 @@ void AmbientBadgeManager::BadgeDismissed() {
       AppBannerManager::GetCurrentTime());
 
   RecordAmbientBadgeDismissEvent(a2hs_params_->app_type);
-  UpdateState(State::DISMISSED);
+  UpdateState(State::kDismissed);
 }
 
 void AmbientBadgeManager::HideAmbientBadge() {
@@ -90,13 +88,13 @@ void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
   }
   passed_worker_check_ = true;
 
-  if (badge_state_ == State::PENDING_WORKER) {
+  if (state_ == State::kPendingWorker) {
     CheckEngagementForAmbientBadge();
   }
 }
 
 void AmbientBadgeManager::UpdateState(State state) {
-  badge_state_ = state;
+  state_ = state;
 }
 
 void AmbientBadgeManager::MaybeShowAmbientBadge() {
@@ -107,13 +105,13 @@ void AmbientBadgeManager::MaybeShowAmbientBadge() {
     return;
   }
 
-  UpdateState(State::ACTIVE);
+  UpdateState(State::kActive);
 
   // Do not show the ambient badge if it was recently dismissed.
   if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(
           web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
           AppBannerManager::GetCurrentTime())) {
-    UpdateState(State::BLOCKED);
+    UpdateState(State::kBlocked);
     return;
   }
 
@@ -122,7 +120,7 @@ void AmbientBadgeManager::MaybeShowAmbientBadge() {
   if (a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK &&
       features::SkipServiceWorkerForInstallPromotion() &&
       !passed_worker_check_) {
-    UpdateState(State::PENDING_WORKER);
+    UpdateState(State::kPendingWorker);
     PerformWorkerCheckForAmbientBadge();
     return;
   }
@@ -131,13 +129,13 @@ void AmbientBadgeManager::MaybeShowAmbientBadge() {
 
 void AmbientBadgeManager::CheckEngagementForAmbientBadge() {
   if (ShouldSuppressAmbientBadge()) {
-    UpdateState(State::PENDING_ENGAGEMENT);
+    UpdateState(State::kPendingEngagement);
     return;
   }
 
   if (base::FeatureList::IsEnabled(features::kAmbientBadgeSiteEngagement) &&
       !HasSufficientEngagementForAmbientBadge()) {
-    UpdateState(State::PENDING_ENGAGEMENT);
+    UpdateState(State::kPendingEngagement);
     return;
   }
 
@@ -193,7 +191,7 @@ bool AmbientBadgeManager::ShouldSuppressAmbientBadge() {
 
 void AmbientBadgeManager::ShowAmbientBadge() {
   RecordAmbientBadgeDisplayEvent(a2hs_params_->app_type);
-  UpdateState(State::SHOWING);
+  UpdateState(State::kShowing);
 
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents_.get(), InstallTrigger::AMBIENT_BADGE);

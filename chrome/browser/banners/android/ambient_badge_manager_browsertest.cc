@@ -148,13 +148,13 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest, ShowAmbientBadge) {
   RunTest(embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-          AmbientBadgeManager::State::SHOWING);
+          AmbientBadgeManager::State::kShowing);
 }
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest, NoServiceWorker) {
   RunTest(embedded_test_server()->GetURL(
               "/banners/manifest_no_service_worker.html"),
-          AmbientBadgeManager::State::PENDING_WORKER);
+          AmbientBadgeManager::State::kPendingWorker);
 }
 
 }  // namespace webapps

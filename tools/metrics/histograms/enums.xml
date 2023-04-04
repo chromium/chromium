@@ -52604,6 +52604,16 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="Check complete, site is a PWA"/>
 </enum>
 
+<enum name="InstallableAmbientBadgeState">
+  <int value="0" label="Pipeline not started"/>
+  <int value="1" label="Pipeline is running"/>
+  <int value="2" label="blocked due to recently dismissed"/>
+  <int value="3" label="Waiting for service worker"/>
+  <int value="4" label="Waiting for site engagement"/>
+  <int value="5" label="Showing ambient badge"/>
+  <int value="6" label="Ambient badge dismissed"/>
+</enum>
+
 <enum name="InstallableStatusCode">
   <int value="0" label="No error"/>
   <int value="1" label="Renderer exiting"/>
