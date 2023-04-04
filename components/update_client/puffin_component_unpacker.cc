@@ -21,6 +21,20 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
+#include "third_party/zlib/google/compression_utils.h"
+
+namespace {
+
+constexpr base::FilePath::CharType kMetadataFolder[] =
+    FILE_PATH_LITERAL("_metadata");
+
+base::FilePath GetVerifiedContentsPath(const base::FilePath& extension_path) {
+  return extension_path.Append(kMetadataFolder)
+      .Append(FILE_PATH_LITERAL("verified_contents.json"));
+}
+
+}  // namespace
 
 namespace update_client {
 
@@ -64,7 +78,7 @@ void PuffinComponentUnpacker::Verify() {
     required_keys.push_back(pk_hash_);
   const crx_file::VerifierResult result = crx_file::Verify(
       path_, crx_format_, required_keys, std::vector<uint8_t>(), &public_key_,
-      /*crx_id=*/nullptr, /*compressed_verified_contents=*/nullptr);
+      /*crx_id=*/nullptr, &compressed_verified_contents_);
   if (result != crx_file::VerifierResult::OK_FULL) {
     EndUnpacking(UnpackerError::kInvalidFile, static_cast<int>(result));
     return;
@@ -76,8 +90,9 @@ void PuffinComponentUnpacker::Verify() {
 void PuffinComponentUnpacker::BeginUnzipping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath& destination = unpack_path_;
-  if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
-                                    &destination)) {
+  if (!base::CreateNewTempDirectory(
+          FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginUnzipping"),
+          &destination)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     EndUnpacking(UnpackerError::kUnzipPathError, 0);
     return;
@@ -96,6 +111,48 @@ void PuffinComponentUnpacker::EndUnzipping(bool result) {
     return;
   }
   VLOG(2) << "Unzipped successfully";
+  // Ignore the verified contents in the header if the verified
+  // contents are already present in the _metadata folder.
+  if (compressed_verified_contents_.empty() ||
+      base::PathExists(GetVerifiedContentsPath(unpack_path_))) {
+    EndUnpacking(UnpackerError::kNone, 0);
+    return;
+  }
+
+  UncompressVerifiedContents();
+}
+
+void PuffinComponentUnpacker::UncompressVerifiedContents() {
+  std::string verified_contents;
+  if (!compression::GzipUncompress(compressed_verified_contents_,
+                                   &verified_contents)) {
+    VLOG(1) << "Decompressing verified contents from header failed";
+    EndUnpacking(UnpackerError::kNone, 0);
+    return;
+  }
+
+  StoreVerifiedContentsInExtensionDir(verified_contents);
+}
+
+void PuffinComponentUnpacker::StoreVerifiedContentsInExtensionDir(
+    const std::string& verified_contents) {
+  base::FilePath metadata_path = unpack_path_.Append(kMetadataFolder);
+  if (!base::CreateDirectory(metadata_path)) {
+    VLOG(1) << "Could not create metadata directory " << metadata_path;
+    EndUnpacking(UnpackerError::kNone, 0);
+    return;
+  }
+
+  base::FilePath verified_contents_path = GetVerifiedContentsPath(unpack_path_);
+
+  // Cannot write the verified contents file.
+  if (!base::WriteFile(verified_contents_path, verified_contents)) {
+    VLOG(1) << "Could not write verified contents into file "
+            << verified_contents_path;
+    EndUnpacking(UnpackerError::kNone, 0);
+    return;
+  }
+
   EndUnpacking(UnpackerError::kNone, 0);
 }
 

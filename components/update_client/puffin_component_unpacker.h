@@ -42,6 +42,10 @@ class Unzipper;
 // unpacking, changing the order of operations such that patching needs to occur
 // before verifying and unpacking. Unlike the original implementation, by the
 // time we unpack, the patching has already occurred.
+//
+// Note: During unzip step we also check for verified_contents.json in the
+// header of crx file and unpack it to metadata_ folder if it doesn't already
+// contain verified_contents file.
 class PuffinComponentUnpacker
     : public base::RefCountedThreadSafe<PuffinComponentUnpacker> {
  public:
@@ -98,6 +102,13 @@ class PuffinComponentUnpacker
   void BeginUnzipping();
   void EndUnzipping(bool error);
 
+  // Decompresses verified contents fetched from the header of CRX.
+  void UncompressVerifiedContents();
+
+  // Stores the decompressed verified contents fetched from the header of CRX.
+  void StoreVerifiedContentsInExtensionDir(
+      const std::string& verified_contents);
+
   // The final step is to do clean-up for things that can't be tidied as we go.
   // If there is an error at any step, the remaining steps are skipped and
   // `EndUnpacking` is called. `EndUnpacking` is responsible for calling the
@@ -111,6 +122,9 @@ class PuffinComponentUnpacker
   base::OnceCallback<void(const Result& result)> callback_;
   base::FilePath unpack_path_;
   std::string public_key_;
+
+  // The compressed verified contents extracted from the CRX header.
+  std::vector<uint8_t> compressed_verified_contents_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

@@ -128,4 +128,30 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileHashMismatch) {
   DETACH_FROM_SEQUENCE(sequence_checker);
 }
 
+TEST_F(PuffinComponentUnpackerTest, UnpackWithVerifiedContents) {
+  SEQUENCE_CHECKER(sequence_checker);
+  auto config = base::MakeRefCounted<TestConfigurator>();
+  base::RunLoop loop;
+  PuffinComponentUnpacker::Unpack(
+      std::vector<uint8_t>(),
+      TestFile("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
+      config->GetUnzipperFactory()->Create(), crx_file::VerifierFormat::CRX3,
+      base::BindLambdaForTesting(
+          [&loop,
+           &sequence_checker](const PuffinComponentUnpacker::Result& result) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+            EXPECT_EQ(result.error, UnpackerError::kNone);
+            base::FilePath unpack_path = result.unpack_path;
+            EXPECT_FALSE(unpack_path.empty());
+            EXPECT_TRUE(base::DirectoryExists(unpack_path));
+            int64_t file_size = 0;
+            EXPECT_TRUE(base::GetFileSize(
+                unpack_path.AppendASCII("_metadata/verified_contents.json"),
+                &file_size));
+            EXPECT_EQ(file_size, 1538);
+            EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
+            loop.Quit();
+          }));
+}
+
 }  // namespace update_client
