@@ -8,7 +8,8 @@ namespace blink {
 
 std::unique_ptr<NGGridLayoutTrackCollection>
 NGSubgriddedItemData::CreateSubgridCollection(
-    GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction,
+    LayoutUnit subgrid_gutter_size) const {
   DCHECK(item_data_in_parent_ && item_data_in_parent_->IsSubgrid());
 
   const bool is_for_columns_in_parent =
@@ -25,7 +26,8 @@ NGSubgriddedItemData::CreateSubgridCollection(
 
   return std::make_unique<NGGridLayoutTrackCollection>(
       parent_track_collection.CreateSubgridCollection(
-          range_indices.begin, range_indices.end, track_direction));
+          range_indices.begin, range_indices.end, subgrid_gutter_size,
+          track_direction));
 }
 
 scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
