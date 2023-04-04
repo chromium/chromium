@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"

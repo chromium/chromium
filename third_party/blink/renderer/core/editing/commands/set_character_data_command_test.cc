@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/editing/commands/set_character_data_command.h"
 
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 
 namespace blink {
 

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"

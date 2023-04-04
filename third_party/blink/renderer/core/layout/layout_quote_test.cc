@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+
 namespace blink {
 
 class LayoutQuoteTest : public RenderingTest {

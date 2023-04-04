@@ -12,6 +12,7 @@
 namespace blink {
 
 class AffineTransform;
+class LayoutText;
 class NGFragmentItem;
 
 // The layout object for the element having "text-combine-upright:all" in
