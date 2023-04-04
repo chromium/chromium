@@ -4151,14 +4151,19 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
     ]
 
-    public_deps = [ ":android_runtime_jni_headers" ]
+    public_deps = [
+      ":android_runtime_jni_headers",
+      ":android_runtime_unchecked_jni_headers",
+    ]
   }
 
   generate_jar_jni("android_runtime_jni_headers") {
-    classes = [
-      "java/lang/Runnable.class",
-      "java/lang/Runtime.class",
-    ]
+    classes = [ "java/lang/Runtime.class" ]
+  }
+
+  generate_jar_jni("android_runtime_unchecked_jni_headers") {
+    classes = [ "java/lang/Runnable.class" ]
+    unchecked_exceptions = true
   }
 }  # is_android || is_robolectric
 
