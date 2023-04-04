@@ -23,9 +23,7 @@ const char kKeyDescription[] = "description";
 ExtensionInstallEventRouter::ExtensionInstallEventRouter(
     content::BrowserContext* context) {
   extension_registry_ = extensions::ExtensionRegistry::Get(context);
-  reporting_client_ =
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          context);
+  reporting_client_ = RealtimeReportingClientFactory::GetForProfile(context);
 }
 
 ExtensionInstallEventRouter::~ExtensionInstallEventRouter() {
@@ -50,7 +48,7 @@ void ExtensionInstallEventRouter::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     bool is_update) {
-  absl::optional<enterprise_connectors::ReportingSettings> settings =
+  absl::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(

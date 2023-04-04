@@ -37,7 +37,7 @@ RealtimeReportingClientFactory::RealtimeReportingClientFactory()
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
+  DependsOn(ConnectorsServiceFactory::GetInstance());
 }
 
 RealtimeReportingClientFactory::~RealtimeReportingClientFactory() = default;

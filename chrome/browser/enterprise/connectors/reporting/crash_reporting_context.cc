@@ -73,8 +73,7 @@ void ReportCrashes() {
   VLOG(1) << "enterprise.crash_reporting: crash reporting enabled: "
           << (reporting_client != nullptr);
   if (!reporting_client) {
-    g_browser_process->local_state()->ClearPref(
-        enterprise_connectors::kLatestCrashReportCreationTime);
+    g_browser_process->local_state()->ClearPref(kLatestCrashReportCreationTime);
     return;
   }
   VLOG(1) << "enterprise.crash_reporting: checking for unreported crashes";
@@ -135,16 +134,14 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReportsFromDatabase(
 }
 
 time_t GetLatestCrashReportTime(PrefService* local_state) {
-  time_t timestamp = local_state->GetInt64(
-      enterprise_connectors::kLatestCrashReportCreationTime);
+  time_t timestamp = local_state->GetInt64(kLatestCrashReportCreationTime);
   VLOG(1) << "enterprise.crash_reporting: latest crash report time: "
           << base::Time::FromTimeT(timestamp);
   return timestamp;
 }
 
 void SetLatestCrashReportTime(PrefService* local_state, time_t timestamp) {
-  local_state->SetInt64(enterprise_connectors::kLatestCrashReportCreationTime,
-                        timestamp);
+  local_state->SetInt64(kLatestCrashReportCreationTime, timestamp);
 }
 
 void UploadToReportingServer(
