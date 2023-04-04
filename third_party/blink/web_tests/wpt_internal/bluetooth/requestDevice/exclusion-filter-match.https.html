@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+let matching_services = [glucose.uuid];
+let matching_name = 'Glucose Device';
+let matching_namePrefix = 'Glucose';
+let matching_manufacturerData = [{ companyIdentifier: 0x0001 }];
+
+let test_specs = [
+  {
+    filters: [{
+      services: matching_services,
+    }],
+    exclusionFilters: [{
+      services: matching_services,
+      name: matching_name,
+      namePrefix: matching_namePrefix,
+      manufacturerData: matching_manufacturerData
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+    }],
+    exclusionFilters: [{
+      services: matching_services,
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+    }],
+    exclusionFilters: [{
+      name: matching_name,
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+    }],
+    exclusionFilters: [{
+      namePrefix: matching_namePrefix,
+    }]
+  },
+  {
+    filters: [{
+      services: matching_services,
+    }],
+    exclusionFilters: [{
+      manufacturerData: matching_manufacturerData
+    }]
+  }
+];
+
+bluetooth_test(t => {
+  return setBluetoothFakeAdapter('GlucoseHeartRateAdapter').then(() => {
+    let test_promises = Promise.resolve();
+    test_specs.forEach(args => {
+      test_promises = test_promises.then(
+          () => { return promise_rejects_dom(
+              t, 'NotFoundError', requestDeviceWithTrustedClick(args)) });
+    });
+    return test_promises;
+  });
+}, 'If at least one exclusion filter member matches the promise must reject.');
+</script>

@@ -5,7 +5,8 @@
 // https://webbluetoothcg.github.io/web-bluetooth/#dictdef-requestdeviceoptions
 
 dictionary RequestDeviceOptions {
-    sequence<BluetoothLEScanFilterInit>  filters;
+    sequence<BluetoothLEScanFilterInit> filters;
+    sequence<BluetoothLEScanFilterInit> exclusionFilters;
     sequence<BluetoothServiceUUID> optionalServices = [];
     [RuntimeEnabled=WebBluetoothWatchAdvertisements] sequence<unsigned short> optionalManufacturerData = [];
     boolean acceptAllDevices = false;
