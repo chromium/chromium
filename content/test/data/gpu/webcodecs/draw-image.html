@@ -51,7 +51,9 @@ CanvasRenderingContext2D.drawImage().
         await waitForNextFrame();
       }
       source.close();
+      TEST.log('Test completed');
     }
+    addManualTestButton({'source_type': 'offscreen'});
   </script>
 </head>
 

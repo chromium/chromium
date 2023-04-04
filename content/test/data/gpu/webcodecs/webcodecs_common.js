@@ -445,3 +445,16 @@ async function createFrameSource(type, width, height) {
     }
   }
 }
+
+function addManualTestButton(config) {
+  window.onload = function() {
+    const btn = document.createElement('button');
+    const label = document.createTextNode(
+        'Run test with config: ' + JSON.stringify(config));
+    btn.onclick = function() {
+      main(config);
+    };
+    btn.appendChild(label);
+    document.body.appendChild(btn);
+  }
+}

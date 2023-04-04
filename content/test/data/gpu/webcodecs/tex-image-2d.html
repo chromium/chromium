@@ -32,6 +32,7 @@ WebGLRenderingContext.texImage2D().
       let canvas = document.getElementById('display');
       let source =
         await createFrameSource(source_type, canvas.width, canvas.height);
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
       if (!source) {
         TEST.skip('Unsupported source: ' + source_type);
         return;
@@ -113,7 +114,9 @@ WebGLRenderingContext.texImage2D().
         await waitForNextFrame();
       }
       source.close();
+      TEST.log('Test completed');
     }
+    addManualTestButton({'source_type': 'offscreen'});
   </script>
 </head>
 

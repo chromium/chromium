@@ -108,6 +108,7 @@ Take frames coming from various sources and read them using copyTo().
 
   async function main(arg) {
     let source_type = arg.source_type;
+    TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
     let source = await createFrameSource(source_type, 320, 240);
     if (!source) {
       TEST.skip('Unsupported source: ' + source_type);
@@ -154,5 +155,7 @@ Take frames coming from various sources and read them using copyTo().
 
     frame.close();
     source.close();
+    TEST.log('Test completed');
   }
+  addManualTestButton({'source_type': 'offscreen'});
 </script>
