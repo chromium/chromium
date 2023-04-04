@@ -4,7 +4,9 @@
 
 #include "ash/style/system_textfield.h"
 
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "system_textfield.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -253,8 +255,12 @@ void SystemTextfield::UpdateBackground() {
   // Create a themed rounded rect background when the mouse hovers on the
   // textfield or the textfield is focused.
   if (IsMouseHovered() || HasFocus()) {
+    ui::ColorId default_hover_state_color_id =
+        chromeos::features::IsJellyrollEnabled()
+            ? cros_tokens::kCrosSysHoverOnSubtle
+            : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
     SetBackground(views::CreateThemedRoundedRectBackground(
-        background_color_id_.value_or(cros_tokens::kCrosSysHoverOnSubtle),
+        background_color_id_.value_or(default_hover_state_color_id),
         kCornerRadius));
     return;
   }
