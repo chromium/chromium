@@ -1972,6 +1972,12 @@ BASE_FEATURE(kShutdownConfirmationBubble,
              "ShutdownConfirmationBubble",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Moves toasts to the bottom-side corner where the status area is instead of
+// the center when enabled.
+BASE_FEATURE(kSideAlignedToasts,
+             "SideAlignedToasts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses experimental component version for smart dim.
 BASE_FEATURE(kSmartDimExperimentalComponent,
              "SmartDimExperimentalComponent",
@@ -2373,6 +2379,10 @@ bool ArePolicyProvidedTrustAnchorsAllowedAtLockScreen() {
 
 bool ArePromiseIconsEnabled() {
   return base::FeatureList::IsEnabled(kPromiseIcons);
+}
+
+bool AreSideAlignedToastsEnabled() {
+  return base::FeatureList::IsEnabled(kSideAlignedToasts);
 }
 
 bool AreSystemSoundsEnabled() {
