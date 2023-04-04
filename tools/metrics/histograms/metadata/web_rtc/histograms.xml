@@ -941,6 +941,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.FrameIsRefresh.{CapturerType}"
+    units="boolean" expires_after="2024-04-04">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    A boolean is recorded to this histogram for each provided video frame where
+    the desktop media source is given by {CapturerType}. Sampled as true if the
+    provided frame is a results of a client/sink asking for a refresh frame
+    using the RequestRefreshFrame() API, and sampled as false when the captured
+    frame is newly captured frame not explicitly requested by the client/sink.
+    Very few frames are expected to be marked as refresh frames.
+  </summary>
+  <token key="CapturerType">
+    <variant name="Screen" summary="Screen capture type"/>
+    <variant name="Window" summary="Window capture type"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.IsZeroHzActive.{CapturerType}"
     enum="BooleanActive" expires_after="2024-02-03">
   <owner>henrika@chromium.org</owner>

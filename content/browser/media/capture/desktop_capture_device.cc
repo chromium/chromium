@@ -119,6 +119,17 @@ void LogDesktopCaptureZeroHzIsActive(DesktopMediaID::Type capturer_type,
   }
 }
 
+void LogDesktopCaptureFrameIsRefresh(DesktopMediaID::Type capturer_type,
+                                     bool is_refresh_frame) {
+  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
+    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.FrameIsRefresh.Screen",
+                          is_refresh_frame);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.FrameIsRefresh.Window",
+                          is_refresh_frame);
+  }
+}
+
 }  // namespace
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
@@ -156,7 +167,7 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // Sends the last received frame (stored in |output_frame_|) to the client
   // using the colorspace in |last_frame_color_space_|.
   // Does not schedule the next frame.
-  void SendLastReceivedFrameToClient();
+  void SendLastReceivedFrameToClient(bool is_refresh_frame);
 
   // Method that is scheduled on |task_runner_| to be called on regular interval
   // to capture a frame.
@@ -318,7 +329,7 @@ void DesktopCaptureDevice::Core::RequestRefreshFrame() {
   // Simply send the last received frame, if we ever received one. Don't
   // schedule a new frame.
   if (output_frame_) {
-    SendLastReceivedFrameToClient();
+    SendLastReceivedFrameToClient(/*is_refresh_frame=*/true);
   }
 }
 
@@ -506,13 +517,15 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
 
   // Immediately send the new frame to the client and ask for a new frame.
-  SendLastReceivedFrameToClient();
+  SendLastReceivedFrameToClient(/*is_refresh_frame=*/false);
   ScheduleNextCaptureFrame();
 }
 
-void DesktopCaptureDevice::Core::SendLastReceivedFrameToClient() {
+void DesktopCaptureDevice::Core::SendLastReceivedFrameToClient(
+    bool is_refresh_frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("webrtc", __func__);
+  LogDesktopCaptureFrameIsRefresh(capturer_type_, is_refresh_frame);
 
   size_t output_bytes = output_frame_->size().width() *
                         output_frame_->size().height() *
