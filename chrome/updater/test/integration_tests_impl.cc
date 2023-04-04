@@ -66,7 +66,10 @@
 #include "third_party/re2/src/re2/re2.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/registry.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
+#include "chrome/updater/win/win_constants.h"
 #endif
 
 namespace updater::test {
@@ -356,6 +359,16 @@ void ExpectVersionActive(UpdaterScope scope, const std::string& version) {
   scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
   EXPECT_EQ(prefs->GetActiveVersion(), version);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(version, [scope]() {
+    std::wstring version;
+    EXPECT_EQ(base::win::RegKey(UpdaterScopeToHKeyRoot(scope), UPDATER_KEY,
+                                Wow6432(KEY_READ))
+                  .ReadValue(kRegValueVersion, &version),
+              ERROR_SUCCESS);
+    return base::WideToASCII(version);
+  }());
+#endif  // IS_WIN
 }
 
 void ExpectVersionNotActive(UpdaterScope scope, const std::string& version) {

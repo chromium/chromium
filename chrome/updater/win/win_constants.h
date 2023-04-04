@@ -50,7 +50,10 @@ extern const wchar_t kRegValueAP[];
 extern const wchar_t kRegValueDateOfLastActivity[];
 extern const wchar_t kRegValueDateOfLastRollcall[];
 extern const wchar_t kRegValueName[];
+
+// Values created under `UPDATER_KEY`.
 extern const wchar_t kRegValueUninstallCmdLine[];
+extern const wchar_t kRegValueVersion[];
 
 // Installer API registry names.
 // Registry values read from the Clients key for transmitting custom install

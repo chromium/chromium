@@ -157,7 +157,8 @@ bool SwapGoogleUpdate(UpdaterScope scope,
         return uninstall_if_unused_command.GetCommandLineString();
       }(),
       true);
-
+  list->AddSetRegValueWorkItem(root, UPDATER_KEY, KEY_WOW64_32KEY,
+                               kRegValueVersion, kUpdaterVersionUtf16, true);
   return true;
 }
 

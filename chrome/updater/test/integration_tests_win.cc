@@ -186,6 +186,10 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_TRUE(base::CommandLine::FromString(uninstall_cmd_line_string)
                       .HasSwitch(kWakeSwitch));
 
+      EXPECT_EQ(ERROR_SUCCESS,
+                base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                    .HasValue(kRegValueVersion));
+
       if (!IsSystemInstall(scope)) {
         std::wstring run_updater_wake_command;
         EXPECT_EQ(ERROR_SUCCESS,
