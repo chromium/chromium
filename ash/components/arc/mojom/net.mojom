@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 31
+// Next MinVersion: 32
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -122,12 +122,15 @@ struct PasspointCredentials {
   // Package name of the App that provided these credentials.
   string package_name@7;
 
-  // Friendly name of the home service provider.
+  // Friendly name of the home service provider. Taken from Android's
+  // android.net.wifi.hotspot2.pps.HomeSp.getFriendlyName().
   [MinVersion=22] string? friendly_name@8;
 
   // The time this subscription will expire or minimum value of 64-bit int to
   // indicate unset value. It is in the format of number of milliseconds since
   // January 1, 1970, 00:00:00 GMT.
+  // The field is a direct copy of Android's Java signed value taken from
+  // android.net.wifi.hotspot2.getSubscriptionExpirationTimeMillis().
   [MinVersion=22] int64 subscription_expiration_time_ms@9;
 };
 
@@ -737,6 +740,22 @@ struct PasspointApprovalRequest {
 
   // The name of the app requesting the approval.
   string app_name;
+
+  // Friendly name of the home service provider. Matches Android's
+  // android.net.wifi.hotspot2.pps.HomeSp.getFriendlyName() and
+  // PasspointCredentials.friendly_name.
+  // This value can be different from |app_name|, for instance for aggregator
+  // Apps.
+  [MinVersion=31] string? friendly_name;
+
+  // The time this subscription will expire or minimum value of 64-bit int to
+  // indicate unset value. It is in the format of number of milliseconds since
+  // January 1, 1970, 00:00:00 GMT.
+  // The field is a direct copy of Android's Java signed value taken from
+  // android.net.wifi.hotspot2.getSubscriptionExpirationTimeMillis().
+  // The field also matches subscription_expiration_time_ms of
+  // PasspointCredentials.
+  [MinVersion=31] int64 subscription_expiration_time_ms;
 };
 
 // Result object that is returned to the caller to the Chrome API
