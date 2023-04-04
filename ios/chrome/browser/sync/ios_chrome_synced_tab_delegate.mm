@@ -4,39 +4,32 @@
 
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 
-#import "base/memory/ref_counted.h"
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
 #import "components/sync_sessions/sync_sessions_client.h"
-#import "components/sync_sessions/synced_window_delegate.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
-#import "components/sync_sessions/tab_node_pool.h"
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
-#import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#import "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using web::NavigationItem;
 
 namespace {
 
 // Helper to access the correct NavigationItem, accounting for pending entries.
 // May return null in rare cases such as a FORWARD_BACK navigation cancelling a
 // slow-loading navigation.
-NavigationItem* GetPossiblyPendingItemAtIndex(web::WebState* web_state, int i) {
+web::NavigationItem* GetPossiblyPendingItemAtIndex(web::WebState* web_state,
+                                                   int index) {
   int pending_index = web_state->GetNavigationManager()->GetPendingItemIndex();
-  return (pending_index == i)
+  return (pending_index == index)
              ? web_state->GetNavigationManager()->GetPendingItem()
-             : web_state->GetNavigationManager()->GetItemAtIndex(i);
+             : web_state->GetNavigationManager()->GetItemAtIndex(index);
 }
 
 }  // namespace
@@ -107,7 +100,7 @@ GURL IOSChromeSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
     CRWNavigationItemStorage* item = item_storages[i];
     return item.virtualURL;
   }
-  NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
+  web::NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
   return item ? item->GetVirtualURL() : GURL();
 }
 
@@ -130,7 +123,7 @@ void IOSChromeSyncedTabDelegate::GetSerializedNavigationAtIndex(
             i, item);
     return;
   }
-  NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
+  web::NavigationItem* item = GetPossiblyPendingItemAtIndex(web_state_, i);
   if (item) {
     *serialized_entry =
         sessions::IOSSerializedNavigationBuilder::FromNavigationItem(i, *item);
@@ -175,40 +168,26 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
 }
 
 int64_t IOSChromeSyncedTabDelegate::GetTaskIdForNavigationId(int nav_id) const {
-  const IOSTaskTabHelper* ios_task_tab_helper = this->ios_task_tab_helper();
-  if (ios_task_tab_helper &&
-      ios_task_tab_helper->GetContextRecordTaskId(nav_id) != nullptr) {
-    return ios_task_tab_helper->GetContextRecordTaskId(nav_id)->task_id();
-  }
-  return -1;
+  const IOSContentRecordTaskId* record =
+      IOSTaskTabHelper::FromWebState(web_state_)
+          ->GetContextRecordTaskId(nav_id);
+  return record ? record->task_id() : -1;
 }
 
 int64_t IOSChromeSyncedTabDelegate::GetParentTaskIdForNavigationId(
     int nav_id) const {
-  const IOSTaskTabHelper* ios_task_tab_helper = this->ios_task_tab_helper();
-  if (ios_task_tab_helper &&
-      ios_task_tab_helper->GetContextRecordTaskId(nav_id) != nullptr) {
-    return ios_task_tab_helper->GetContextRecordTaskId(nav_id)
-        ->parent_task_id();
-  }
-  return -1;
+  const IOSContentRecordTaskId* record =
+      IOSTaskTabHelper::FromWebState(web_state_)
+          ->GetContextRecordTaskId(nav_id);
+  return record ? record->parent_task_id() : -1;
 }
 
 int64_t IOSChromeSyncedTabDelegate::GetRootTaskIdForNavigationId(
     int nav_id) const {
-  const IOSTaskTabHelper* ios_task_tab_helper = this->ios_task_tab_helper();
-  if (ios_task_tab_helper &&
-      ios_task_tab_helper->GetContextRecordTaskId(nav_id) != nullptr) {
-    return ios_task_tab_helper->GetContextRecordTaskId(nav_id)->root_task_id();
-  }
-  return -1;
-}
-
-const IOSTaskTabHelper* IOSChromeSyncedTabDelegate::ios_task_tab_helper()
-    const {
-  if (web_state_ == nullptr)
-    return nullptr;
-  return IOSTaskTabHelper::FromWebState(web_state_);
+  const IOSContentRecordTaskId* record =
+      IOSTaskTabHelper::FromWebState(web_state_)
+          ->GetContextRecordTaskId(nav_id);
+  return record ? record->root_task_id() : -1;
 }
 
 bool IOSChromeSyncedTabDelegate::GetSessionStorageIfNeeded() const {

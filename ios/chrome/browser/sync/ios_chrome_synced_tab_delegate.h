@@ -9,13 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @class CRWSessionStorage;
-class IOSTaskTabHelper;
 
 class IOSChromeSyncedTabDelegate
     : public sync_sessions::SyncedTabDelegate,
@@ -50,9 +48,9 @@ class IOSChromeSyncedTabDelegate
   int64_t GetRootTaskIdForNavigationId(int nav_id) const override;
 
  private:
-  explicit IOSChromeSyncedTabDelegate(web::WebState* web_state);
-  const IOSTaskTabHelper* ios_task_tab_helper() const;
   friend class web::WebStateUserData<IOSChromeSyncedTabDelegate>;
+
+  explicit IOSChromeSyncedTabDelegate(web::WebState* web_state);
 
   // Whether navigation data should be taken from session storage.
   // Storage must be used if slim navigation is enabled and the tab has not be
