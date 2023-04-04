@@ -184,9 +184,10 @@ void TranslateUIDelegate::Translate() {
         translate_ui_languages_manager_->GetSourceLanguageCode());
     prefs_->IncrementTranslationAcceptedCount(
         translate_ui_languages_manager_->GetSourceLanguageCode());
-    prefs_->SetRecentTargetLanguage(
-        translate_ui_languages_manager_->GetTargetLanguageCode());
   }
+
+  prefs_->SetRecentTargetLanguage(
+      translate_ui_languages_manager_->GetTargetLanguageCode());
 
   if (translate_manager_) {
     translate_manager_->RecordTranslateEvent(
