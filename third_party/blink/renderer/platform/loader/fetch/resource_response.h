@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/ssl/ssl_info.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/mojom/alternate_protocol_usage.mojom-shared.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
@@ -315,6 +316,15 @@ class PLATFORM_EXPORT ResourceResponse final {
     client_address_space_ = value;
   }
 
+  network::mojom::PrivateNetworkAccessPreflightResult
+  PrivateNetworkAccessPreflightResult() const {
+    return private_network_access_preflight_result_;
+  }
+  void SetPrivateNetworkAccessPreflightResult(
+      network::mojom::PrivateNetworkAccessPreflightResult result) {
+    private_network_access_preflight_result_ = result;
+  }
+
   bool WasAlpnNegotiated() const { return was_alpn_negotiated_; }
   void SetWasAlpnNegotiated(bool was_alpn_negotiated) {
     was_alpn_negotiated_ = was_alpn_negotiated;
@@ -471,6 +481,12 @@ class PLATFORM_EXPORT ResourceResponse final {
   // https://wicg.github.io/private-network-access/#policy-container-ip-address-space
   network::mojom::IPAddressSpace client_address_space_ =
       network::mojom::IPAddressSpace::kUnknown;
+
+  // The result of any PNA preflight sent for this request, if any.
+  // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+  network::mojom::PrivateNetworkAccessPreflightResult
+      private_network_access_preflight_result_ =
+          network::mojom::PrivateNetworkAccessPreflightResult::kNone;
 
   bool was_cached_ : 1;
   bool connection_reused_ : 1;

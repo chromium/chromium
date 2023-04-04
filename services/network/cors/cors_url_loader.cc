@@ -506,6 +506,10 @@ void CorsURLLoader::OnReceiveResponse(
   response_head->timing_allow_passed = !timing_allow_failed_flag_;
   response_head->has_authorization_covered_by_wildcard_on_preflight =
       has_authorization_covered_by_wildcard_;
+
+  response_head->private_network_access_preflight_result =
+      TakePrivateNetworkAccessPreflightResult();
+
   forwarding_client_->OnReceiveResponse(
       std::move(response_head), std::move(body), std::move(cached_metadata));
 }
@@ -537,6 +541,9 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   //
   // See also: https://crbug.com/1293891
   request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
+
+  response_head->private_network_access_preflight_result =
+      TakePrivateNetworkAccessPreflightResult();
 
   // If `CORS flag` is set and a CORS check for `request` and `response` returns
   // failure, then return a network error.
@@ -656,6 +663,11 @@ void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
 }
 
 void CorsURLLoader::StartRequest() {
+  // All results should be reported to `forwarding_client_` as part of a
+  // `URLResponseHead`, then `pna_preflight_result_` reset to `kNone`.
+  CHECK_EQ(pna_preflight_result_,
+           mojom::PrivateNetworkAccessPreflightResult::kNone);
+
   if (fetch_cors_flag_ && !skip_cors_enabled_scheme_check_ &&
       !base::Contains(url::GetCorsEnabledSchemes(), request_.url.scheme())) {
     HandleComplete(URLLoaderCompletionStatus(
@@ -751,14 +763,26 @@ void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
 absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     int net_error,
     absl::optional<CorsErrorStatus> status) {
-  if (net_error == net::OK) {
-    DCHECK(!status) << *status;
+  absl::optional<PreflightRequiredReason> reason = NeedsPreflight(request_);
+  CHECK(reason.has_value());  // Otherwise we should not have sent a preflight.
+
+  // Unmitigated success: no error and no warning.
+  if (net_error == net::OK && !status.has_value()) {
+    // If the preflight was sent for PNA, record the success so we can report it
+    // to `forwarding_client_`.
+    if (*reason == PreflightRequiredReason::kPrivateNetworkAccess) {
+      pna_preflight_result_ =
+          mojom::PrivateNetworkAccessPreflightResult::kSuccess;
+    }
+
     return absl::nullopt;
   }
 
-  net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_ERROR, [&] {
-    return NetLogPreflightErrorParams(net_error, status);
-  });
+  if (net_error != net::OK) {
+    net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_ERROR, [&] {
+      return NetLogPreflightErrorParams(net_error, status);
+    });
+  }
 
   // `kInvalidResponse` is never returned by the preflight controller, so we use
   // it to record the case where there was a net error and no CORS error.
@@ -773,10 +797,20 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     status->target_address_space = request_.target_ip_address_space;
   }
 
-  if (sending_pna_only_warning_preflight_) {
+  // Private Network Access warning: ignore net and CORS errors.
+  if (net_error == net::OK || sending_pna_only_warning_preflight_) {
+    CHECK(ShouldIgnorePrivateNetworkAccessErrors());
+    CHECK_EQ(*reason, PreflightRequiredReason::kPrivateNetworkAccess);
+
+    // Record the existence of the warning so that we can report it to
+    // `forwarding_client_` in the next `URLResponseHead` we construct.
+    pna_preflight_result_ =
+        mojom::PrivateNetworkAccessPreflightResult::kWarning;
+
     // Even if we ignore the error, record the warning in metrics and DevTools.
     base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
                                   histogram_error);
+
     if (devtools_observer_) {
       if (!status) {
         // Set the resource IP address space to the target IP address space for
@@ -796,6 +830,13 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     }
 
     return absl::nullopt;
+  }
+
+  // Failure.
+  CHECK(net_error != net::OK);
+
+  if (*reason == PreflightRequiredReason::kPrivateNetworkAccess) {
+    pna_preflight_result_ = mojom::PrivateNetworkAccessPreflightResult::kError;
   }
 
   base::UmaHistogramEnumeration(kPreflightErrorHistogramName, histogram_error);
@@ -878,7 +919,7 @@ void CorsURLLoader::StartNetworkRequest() {
   request_.credentials_mode = original_credentials_mode;
 }
 
-void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
+void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
   if (request_.trust_token_params) {
     HistogramTrustTokenOperationNetError(request_.trust_token_params->operation,
                                          status.trust_token_operation_status,
@@ -913,6 +954,10 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
     DCHECK(status.cors_error_status->resource_address_space !=
            mojom::IPAddressSpace::kUnknown);
 
+    // We should sent at most one PNA preflight per request (and per redirect).
+    CHECK_EQ(pna_preflight_result_,
+             mojom::PrivateNetworkAccessPreflightResult::kNone);
+
     // We should never send a preflight request for PNA after having already
     // forwarded response headers to our client. See https://crbug.com/1279376.
     if (!has_forwarded_response_) {
@@ -938,8 +983,11 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
     NOTREACHED();
   }
 
+  status.private_network_access_preflight_result =
+      TakePrivateNetworkAccessPreflightResult();
+
   net_log_.EndEvent(net::NetLogEventType::CORS_REQUEST);
-  forwarding_client_->OnComplete(status);
+  forwarding_client_->OnComplete(std::move(status));
   std::move(delete_callback_).Run(this);
   // |this| is deleted here.
 }
@@ -1080,6 +1128,13 @@ CorsURLLoader::GetPrivateNetworkAccessPreflightBehavior() const {
     return PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout;
   }
   return PrivateNetworkAccessPreflightBehavior::kWarn;
+}
+
+mojom::PrivateNetworkAccessPreflightResult
+CorsURLLoader::TakePrivateNetworkAccessPreflightResult() {
+  mojom::PrivateNetworkAccessPreflightResult result = pna_preflight_result_;
+  pna_preflight_result_ = mojom::PrivateNetworkAccessPreflightResult::kNone;
+  return result;
 }
 
 // static

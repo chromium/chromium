@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
+import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
@@ -274,4 +275,20 @@ struct URLResponseHead {
   // TODO(https://crbug.com/1374121): Remove the property when attribution response
   // parsing moves from blink to the network service.
   TriggerAttestation? trigger_attestation;
+
+  // The result of any PNA preflight sent for this request, if any.
+  //
+  // This is used to record metrics in the client for compatibility risk
+  // analysis and rollout monitoring. See https://crbug.com/1427470.
+  //
+  // Invariant: this is never `kError`, because the request must have succeeded
+  // for there to be response headers.
+  //
+  // Note: an identical field is defined in `URLLoaderCompletionStatus` and used
+  // when the request failed without ever returning a `URLResponseHead` to the
+  // loader client.
+  //
+  // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+  PrivateNetworkAccessPreflightResult private_network_access_preflight_result =
+      PrivateNetworkAccessPreflightResult.kNone;
 };

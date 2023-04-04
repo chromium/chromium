@@ -60,8 +60,27 @@ enum class PrivateNetworkAccessPreflightBehavior {
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
-  using CompletionCallback = base::OnceCallback<
-      void(int net_error, absl::optional<CorsErrorStatus>, bool)>;
+  // Called with the result of `PerformPreflightCheck()`.
+  //
+  // `net_error` is the overall result of the operation.
+  //
+  // `cors_error_status` contains additional details about CORS-specific errors.
+  // Invariant: `cors_error_status` is nullopt if `net_error` is neither
+  // `net::ERR_FAILED` nor `net::OK`.
+  // If `net_error` is `net::OK`, then `cors_error_status` may be non-nullopt to
+  // indicate a warning-only error arose due to Private Network Access.
+  // TODO(https://crbug.com/1268378): Once PNA preflights are always enforced,
+  // stop populating `cors_error_status` when `net_error` is `net::OK`.
+  //
+  // `has_autorization_covered_by_wildcard` is true iff the request carries an
+  // "authorization" header and that header is covered by the wildcard in the
+  // preflight response.
+  // TODO(https://crbug.com/1176753): Remove
+  // `has_authorization_covered_by_wildcard` once the investigation is done.
+  using CompletionCallback =
+      base::OnceCallback<void(int net_error,
+                              absl::optional<CorsErrorStatus> cors_error_status,
+                              bool has_authorization_covered_by_wildcard)>;
 
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;

@@ -753,6 +753,40 @@ TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequest) {
   EXPECT_EQ(1u, access_count());
 }
 
+TEST_F(PreflightControllerTest, CheckPrivateNetworkAccessRequestWarningOnly) {
+  GURL url = GetURL("/allow");
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = url;
+  request.request_initiator = test_initiator_origin();
+  request.target_ip_address_space = network::mojom::IPAddressSpace::kLoopback;
+
+  mojom::ClientSecurityStatePtr client_security_state =
+      ClientSecurityStateBuilder()
+          .WithLocalNetworkRequestPolicy(
+              mojom::LocalNetworkRequestPolicy::kPreflightWarn)
+          .Build();
+
+  // Set the client security state in the request's trusted params, because the
+  // test uses a shared factory with no client security state in its factory
+  // params, and URLLoader expects requests with a target IP address space to
+  // carry a client security state.
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->client_security_state = client_security_state.Clone();
+
+  PerformPreflightCheck(request, /*tainted=*/false, net::IsolationInfo(),
+                        PrivateNetworkAccessPreflightBehavior::kWarn,
+                        std::move(client_security_state));
+  EXPECT_EQ(net::OK, net_error());
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightMissingAllowPrivateNetwork, "");
+  expected_status.target_address_space = mojom::IPAddressSpace::kLoopback;
+  EXPECT_THAT(status(), Optional(expected_status));
+  EXPECT_EQ(1u, access_count());
+}
+
 // Set custom DelayedHttpResponse for test server.
 std::unique_ptr<net::test_server::HttpResponse> AllowPrivateNetworkAccess(
     const net::test_server::HttpRequest& request) {

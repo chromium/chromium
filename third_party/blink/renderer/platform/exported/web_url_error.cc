@@ -9,12 +9,10 @@
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 
 namespace blink {
+namespace {
 
-// static
-WebURLError WebURLError::Create(
-    const network::URLLoaderCompletionStatus& status,
-    const WebURL& url) {
-  DCHECK_NE(net::OK, status.error_code);
+WebURLError CreateInternal(const network::URLLoaderCompletionStatus& status,
+                           const WebURL& url) {
   const WebURLError::HasCopyInCache has_copy_in_cache =
       status.exists_in_cache ? WebURLError::HasCopyInCache::kTrue
                              : WebURLError::HasCopyInCache::kFalse;
@@ -45,6 +43,19 @@ WebURLError WebURLError::Create(
                      status.should_collapse_initiator
                          ? WebURLError::ShouldCollapseInitiator::kTrue
                          : WebURLError::ShouldCollapseInitiator::kFalse);
+}
+
+}  // namespace
+
+// static
+WebURLError WebURLError::Create(
+    const network::URLLoaderCompletionStatus& status,
+    const WebURL& url) {
+  DCHECK_NE(net::OK, status.error_code);
+  WebURLError error = CreateInternal(status, url);
+  error.private_network_access_preflight_result_ =
+      status.private_network_access_preflight_result;
+  return error;
 }
 
 WebURLError::WebURLError(int reason, const WebURL& url)

@@ -3865,6 +3865,9 @@ enum WebFeature {
   kAsyncClipboardAPIUnsanitizedRead = 4524,
   kWindowOpenFullscreenRequested = 4525,
   kFullscreenAllowedByWindowOpen = 4526,
+  kPrivateNetworkAccessPreflightError = 4530,
+  kPrivateNetworkAccessPreflightSuccess = 4531,
+  kPrivateNetworkAccessPreflightWarning = 4532,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

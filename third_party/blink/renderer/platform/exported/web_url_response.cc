@@ -39,6 +39,7 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/trigger_attestation.h"
+#include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -165,6 +166,8 @@ WebURLResponse WebURLResponse::Create(
   response.SetRemoteIPEndpoint(head.remote_endpoint);
   response.SetAddressSpace(head.response_address_space);
   response.SetClientAddressSpace(head.client_address_space);
+  response.SetPrivateNetworkAccessPreflightResult(
+      head.private_network_access_preflight_result);
 
   WebVector<WebString> cors_exposed_header_names(
       head.cors_exposed_header_names.size());
@@ -580,6 +583,16 @@ network::mojom::IPAddressSpace WebURLResponse::ClientAddressSpace() const {
 void WebURLResponse::SetClientAddressSpace(
     network::mojom::IPAddressSpace client_address_space) {
   resource_response_->SetClientAddressSpace(client_address_space);
+}
+
+network::mojom::PrivateNetworkAccessPreflightResult
+WebURLResponse::PrivateNetworkAccessPreflightResult() const {
+  return resource_response_->PrivateNetworkAccessPreflightResult();
+}
+
+void WebURLResponse::SetPrivateNetworkAccessPreflightResult(
+    network::mojom::PrivateNetworkAccessPreflightResult result) {
+  resource_response_->SetPrivateNetworkAccessPreflightResult(result);
 }
 
 void WebURLResponse::SetIsValidated(bool is_validated) {

@@ -216,6 +216,22 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
   }
 }
 
+absl::optional<mojom::WebFeature> PreflightResultToWebFeature(
+    network::mojom::PrivateNetworkAccessPreflightResult result) {
+  using Result = network::mojom::PrivateNetworkAccessPreflightResult;
+
+  switch (result) {
+    case Result::kNone:
+      return absl::nullopt;
+    case Result::kError:
+      return mojom::WebFeature::kPrivateNetworkAccessPreflightError;
+    case Result::kSuccess:
+      return mojom::WebFeature::kPrivateNetworkAccessPreflightSuccess;
+    case Result::kWarning:
+      return mojom::WebFeature::kPrivateNetworkAccessPreflightWarning;
+  }
+}
+
 }  // namespace
 
 // CodeCacheRequest handles the requests to fetch data from code cache.
@@ -806,6 +822,9 @@ bool ResourceLoader::WillFollowRedirect(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
+  CountPrivateNetworkAccessPreflightResult(
+      passed_redirect_response.PrivateNetworkAccessPreflightResult());
+
   if (resource_->GetResourceRequest().HttpHeaderFields().Contains(
           net::HttpRequestHeaders::kAuthorization) &&
       !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
@@ -1010,6 +1029,9 @@ void ResourceLoader::DidReceiveResponseInternal(
     fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
+
+  CountPrivateNetworkAccessPreflightResult(
+      response.PrivateNetworkAccessPreflightResult());
 
   if (request.IsAutomaticUpgrade()) {
     LogMixedAutoupgradeMetrics(MixedContentAutoupgradeStatus::kResponseReceived,
@@ -1320,6 +1342,10 @@ void ResourceLoader::DidFail(const WebURLError& error,
                                error.reason(), request.GetUkmSourceId(),
                                fetcher_->UkmRecorder(), resource_);
   }
+
+  CountPrivateNetworkAccessPreflightResult(
+      error.private_network_access_preflight_result());
+
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
@@ -1726,6 +1752,22 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
   }
 
   return false;
+}
+
+void ResourceLoader::CountPrivateNetworkAccessPreflightResult(
+    network::mojom::PrivateNetworkAccessPreflightResult result) {
+  absl::optional<mojom::WebFeature> feature =
+      PreflightResultToWebFeature(result);
+  if (!feature.has_value()) {
+    return;
+  }
+
+  // We do not call `CountDeprecation()` because sending a deprecation report
+  // would leak cross-origin information about the target of the fetch. Already,
+  // the presence of this information in the renderer process is suboptimal, but
+  // as of writing this is the best way to count a feature use detected in the
+  // network service.
+  fetcher_->GetUseCounter().CountUse(*feature);
 }
 
 void ResourceLoader::CancelIfWebBundleTokenMatches(

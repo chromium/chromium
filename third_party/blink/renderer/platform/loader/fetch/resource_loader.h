@@ -244,6 +244,10 @@ class PLATFORM_EXPORT ResourceLoader final
       const ResourceRequest::RedirectInfo redirect_info,
       CnameAliasMetricInfo* out_metric_info);
 
+  // Increments the right UseCounter for the given PNA preflight result, if any.
+  void CountPrivateNetworkAccessPreflightResult(
+      network::mojom::PrivateNetworkAccessPreflightResult result);
+
   std::unique_ptr<URLLoader> loader_;
   ResourceLoadScheduler::ClientId scheduler_client_id_;
   Member<ResourceFetcher> fetcher_;

@@ -42621,6 +42621,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4524" label="AsyncClipboardAPIUnsanitizedRead"/>
   <int value="4525" label="WindowOpenFullscreenRequested"/>
   <int value="4526" label="FullscreenAllowedByWindowOpen"/>
+  <int value="4530" label="PrivateNetworkAccessPreflightError"/>
+  <int value="4531" label="PrivateNetworkAccessPreflightSuccess"/>
+  <int value="4532" label="PrivateNetworkAccessPreflightWarning"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

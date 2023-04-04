@@ -163,3 +163,19 @@ struct CorsErrorStatus {
 
   mojo_base.mojom.UnguessableToken issue_id;
 };
+
+// Describes what happened wrt PNA preflights during a request.
+// TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+enum PrivateNetworkAccessPreflightResult {
+  // No preflight was sent.
+  kNone,
+
+  // A preflight was sent and succeeded.
+  kSuccess,
+
+  // A preflight was sent in warning-only mode and failed.
+  kWarning,
+
+  // A preflight was sent and failed.
+  kError,
+};
