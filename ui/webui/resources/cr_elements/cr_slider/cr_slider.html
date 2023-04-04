@@ -39,12 +39,14 @@
         }
       }
 
+      /* Disable browser touch actions so that dragging via touch works
+         correctly. */
       /* TODO(crbug/1068914): For reasons I don't understand we need to set
          touch-action: none on the container for sliders inside dialogs and on
          the host for sliders not in dialogs. If we don't, then you can't drag
          the slider via touch (mouse works fine).*/
-      :host([dragging]),
-      :host([dragging]) > #container {
+      :host,
+      :host > #container {
         touch-action: none;
       }
 
