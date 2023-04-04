@@ -96,11 +96,9 @@ class SmartCardTest : public ContentBrowserTest {
         "Permissions-Policy: smart-card%3D(self)");
   }
 
-  FakeSmartCardDelegate* CreateFakeSmartCardDelegate() {
-    auto unique_delegate = std::make_unique<FakeSmartCardDelegate>();
-    FakeSmartCardDelegate* delegate = unique_delegate.get();
-    test_client_->SetSmartCardDelegate(std::move(unique_delegate));
-    return delegate;
+  FakeSmartCardDelegate& GetFakeSmartCardDelegate() {
+    return *static_cast<FakeSmartCardDelegate*>(
+        test_client_->GetSmartCardDelegate(nullptr));
   }
 
  private:
@@ -113,6 +111,8 @@ class SmartCardTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
 
     test_client_ = std::make_unique<SmartCardTestContentBrowserClient>();
+    test_client_->SetSmartCardDelegate(
+        std::make_unique<FakeSmartCardDelegate>());
 
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
@@ -196,9 +196,8 @@ FakeSmartCardDelegate::GetSmartCardContextFactory(
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReaders) {
-  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
   MockSmartCardContextFactory& mock_context_factory =
-      delegate->mock_context_factory;
+      GetFakeSmartCardDelegate().mock_context_factory;
 
   {
     InSequence s;
@@ -308,9 +307,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReaders) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderAdd) {
-  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
   MockSmartCardContextFactory& mock_context_factory =
-      delegate->mock_context_factory;
+      GetFakeSmartCardDelegate().mock_context_factory;
 
   base::test::TestFuture<SmartCardContext::GetStatusChangeCallback>
       first_get_status_callback;
@@ -393,9 +391,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderAdd) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderRemove) {
-  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
   MockSmartCardContextFactory& mock_context_factory =
-      delegate->mock_context_factory;
+      GetFakeSmartCardDelegate().mock_context_factory;
 
   base::test::TestFuture<SmartCardContext::GetStatusChangeCallback>
       first_get_status_callback;
@@ -549,9 +546,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderRemove) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReadersFails) {
-  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
   MockSmartCardContextFactory& mock_context_factory =
-      delegate->mock_context_factory;
+      GetFakeSmartCardDelegate().mock_context_factory;
 
   EXPECT_CALL(mock_context_factory, ListReaders(_))
       .WillOnce([](SmartCardContext::ListReadersCallback callback) {
@@ -576,8 +572,6 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReadersFails) {
 // Tests that the SmartCardReader.state attribute can be read and that
 // "onstatechange" is emitted when its value changes.
 IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderState) {
-  CreateFakeSmartCardDelegate();
-
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   BrowserContext* browser_context =
