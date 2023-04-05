@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/surrounding_text_tracker.h"
 #include "ui/base/ime/text_input_client.h"
@@ -36,6 +37,7 @@ class Seat;
 // called but the associated window is not focused.
 class TextInput : public ui::TextInputClient,
                   public ui::VirtualKeyboardControllerObserver,
+                  public ash::input_method::InputMethodManager::Observer,
                   public SeatObserver {
  public:
   class Delegate {
@@ -154,13 +156,14 @@ class TextInput : public ui::TextInputClient,
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& cursor_pos);
 
-  // Sets the text input type, mode, flags, |should_do_learning|, and
-  // |can_compose_inline|.
+  // Sets the text input type, mode, flags, |should_do_learning|,
+  // |can_compose_inline| and |surrounding_text_supported|.
   void SetTypeModeFlags(ui::TextInputType type,
                         ui::TextInputMode mode,
                         int flags,
                         bool should_do_learning,
-                        bool can_compose_inline);
+                        bool can_compose_inline,
+                        bool surrounding_text_supported);
 
   // Sets the bounds of the text caret, relative to the window origin.
   void SetCaretBounds(const gfx::Rect& bounds);
@@ -232,6 +235,11 @@ class TextInput : public ui::TextInputClient,
   void OnKeyboardVisible(const gfx::Rect& keyboard_rect) override;
   void OnKeyboardHidden() override;
 
+  // ash::input_method::InputMethodManager::Observer:
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
+                          Profile* profile,
+                          bool show_message) override;
+
   // SeatObserver:
   void OnSurfaceFocused(Surface* gained_focus,
                         Surface* lost_focus,
@@ -266,6 +274,10 @@ class TextInput : public ui::TextInputClient,
   // to any InputMethod, so the TextInputClient overrides will not be called.
   ui::InputMethod* input_method_ = nullptr;
 
+  base::ScopedObservation<ash::input_method::InputMethodManager,
+                          ash::input_method::InputMethodManager::Observer>
+      input_method_manager_observation_{this};
+
   base::ScopedObservation<ui::VirtualKeyboardController,
                           ui::VirtualKeyboardControllerObserver>
       virtual_keyboard_observation_{this};
@@ -281,6 +293,12 @@ class TextInput : public ui::TextInputClient,
   bool can_compose_inline_ = true;
   ui::TextInputClient::FocusReason focus_reason_ =
       ui::TextInputClient::FOCUS_REASON_NONE;
+
+  // Whether the client supports surrounding text.
+  bool surrounding_text_supported_ = true;
+  // If surrounding text is not supported and the active IME needs it, we force
+  // using TEXT_INPUT_TYPE_NULL.
+  bool use_null_input_type_ = false;
 
   // Tracks the surrounding text.
   ui::SurroundingTextTracker surrounding_text_tracker_;

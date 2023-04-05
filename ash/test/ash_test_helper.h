@@ -55,7 +55,7 @@ class TestNewWindowDelegateProvider;
 class TestWallpaperControllerClient;
 
 namespace input_method {
-class MockInputMethodManager;
+class MockInputMethodManagerImpl;
 }  // namespace input_method
 
 // A helper class that does common initialization required for Ash. Creates a
@@ -164,6 +164,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return saved_desk_test_helper_.get();
   }
 
+  input_method::MockInputMethodManagerImpl* input_method_manager() {
+    return input_method_manager_;
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -209,7 +213,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
-  input_method::MockInputMethodManager* input_method_manager_ = nullptr;
+  input_method::MockInputMethodManagerImpl* input_method_manager_ = nullptr;
 
   // True if a fake global `CrasAudioHandler` should be created.
   bool create_global_cras_audio_handler_ = true;

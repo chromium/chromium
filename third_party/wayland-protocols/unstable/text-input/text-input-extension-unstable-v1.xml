@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="8">
+  <interface name="zcr_text_input_extension_v1" version="9">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="8">
+  <interface name="zcr_extended_text_input_v1" version="9">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -347,6 +347,30 @@
       <arg name="input_flags" type="uint" />
       <arg name="learning_mode" type="uint" enum="learning_mode" />
       <arg name="inline_composition_support" type="uint" enum="inline_composition_support" />
+    </request>
+
+    <!-- Version 9 -->
+
+    <enum name="surrounding_text_support" since="9">
+      <description summary="Whether surrounding text is supported" />
+      <entry name="unsupported" value="0" />
+      <entry name="supported" value="1" />
+    </enum>
+
+    <request name="set_surrounding_text_support" since="9">
+      <description summary="Sets whether surrounding text is supported">
+        Some clients are not able to provide surrounding text or selection.
+        When the server receives this request with the unsupproted enum, it
+        will disable functionality relying on surrounding text and avoid
+        sending events that depend on it like delete_surrounding_text,
+        set_preedit_region and cursor_position.
+
+        This request will take effect on the next 'set_content_type' or
+        'set_input_type' request.
+
+        By default, the server will assume surrounding text is supported.
+      </description>
+      <arg name="support" type="uint" enum="surrounding_text_support" />
     </request>
 
   </interface>

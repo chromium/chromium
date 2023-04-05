@@ -91,6 +91,14 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     pending_focus_reason_ = reason;
   }
 
+  bool pending_surrounding_text_supported() const {
+    return pending_surrounding_text_supported_;
+  }
+
+  void set_pending_surrounding_text_supported(bool is_supported) {
+    pending_surrounding_text_supported_ = is_supported;
+  }
+
  private:
   wl_client* client() { return wl_resource_get_client(text_input_); }
 
@@ -371,6 +379,9 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   ui::TextInputClient::FocusReason pending_focus_reason_ =
       ui::TextInputClient::FOCUS_REASON_OTHER;
 
+  // Pending surrounding text supported flag.
+  bool pending_surrounding_text_supported_ = true;
+
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
 
@@ -531,8 +542,15 @@ void text_input_set_content_type(wl_client* client,
       break;
   }
 
+  auto* delegate =
+      static_cast<WaylandTextInputDelegate*>(text_input->delegate());
+  bool surrounding_text_supported =
+    delegate->pending_surrounding_text_supported();
+  delegate->set_pending_surrounding_text_supported(/*is_supported = */ true);
+
   text_input->SetTypeModeFlags(type, mode, flags, should_do_learning,
-                               /* can_compose_inline = */ true);
+                               /* can_compose_inline = */ true,
+                               surrounding_text_supported);
 }
 
 void text_input_set_cursor_rectangle(wl_client* client,
@@ -636,9 +654,13 @@ void extended_text_input_set_input_type(wl_client* client,
       inline_composition_support ==
       ZCR_EXTENDED_TEXT_INPUT_V1_INLINE_COMPOSITION_SUPPORT_SUPPORTED;
 
+  bool surrounding_text_supported =
+    delegate->pending_surrounding_text_supported();
+  delegate->set_pending_surrounding_text_supported(/*is_supported = */ true);
+
   auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
   text_input->SetTypeModeFlags(ui_type, ui_mode, ui_flags, should_do_learning,
-                               can_compose_inline);
+                               can_compose_inline, surrounding_text_supported);
 }
 
 void extended_text_input_deprecated_set_input_type(wl_client* client,
@@ -744,6 +766,28 @@ void extended_text_input_set_focus_reason(wl_client* client,
   delegate->set_pending_focus_reason(focus_reason);
 }
 
+void extended_text_input_set_surrounding_text_support(wl_client* client,
+                                                      wl_resource* resource,
+                                                      uint32_t support) {
+  auto* delegate =
+      GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
+  if (!delegate) {
+    return;
+  }
+
+  switch (support) {
+    case ZCR_EXTENDED_TEXT_INPUT_V1_SURROUNDING_TEXT_SUPPORT_SUPPORTED:
+      delegate->set_pending_surrounding_text_supported(/*is_supported=*/true);
+      return;
+    case ZCR_EXTENDED_TEXT_INPUT_V1_SURROUNDING_TEXT_SUPPORT_UNSUPPORTED:
+      delegate->set_pending_surrounding_text_supported(/*is_supported=*/false);
+      return;
+    default:
+      LOG(ERROR) << "Unknown surrounding_text_support: " << support;
+      return;
+  }
+}
+
 constexpr struct zcr_extended_text_input_v1_interface
     extended_text_input_implementation = {
         extended_text_input_destroy,
@@ -753,6 +797,7 @@ constexpr struct zcr_extended_text_input_v1_interface
         extended_text_input_finalize_virtual_keyboard_changes,
         extended_text_input_set_focus_reason,
         extended_text_input_set_input_type,
+        extended_text_input_set_surrounding_text_support,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
