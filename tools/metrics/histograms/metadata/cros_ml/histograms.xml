@@ -321,10 +321,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Compute.Event"
     enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelComputeEvent"
-    expires_after="2023-05-01">
+    expires_after="2023-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The result of compute/inference based on a web platform model loaded, which
     can be OK or some specific error. The error code could be logged in machine
@@ -335,10 +334,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult.Event"
     enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelCreateModelLoaderResultEvent"
-    expires_after="2023-05-01">
+    expires_after="2023-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The result of creating web platform model loader, which can be success or
     some specific error. The error code could be logged in machine learning
@@ -349,10 +347,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Load.Event"
     enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelLoadEvent"
-    expires_after="2023-05-01">
+    expires_after="2023-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
-  <owner>honglinyu@chromium.org</owner>
   <summary>
     The result of loading a web platform model, which can be OK or some specific
     error. The error code could be logged in machine learning service in
