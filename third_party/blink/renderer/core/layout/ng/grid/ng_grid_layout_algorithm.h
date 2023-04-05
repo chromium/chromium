@@ -120,6 +120,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       SizingConstraint sizing_constraint,
       bool* opt_needs_additional_pass = nullptr) const;
 
+  std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridTrackCollection(
+      const NGSubgriddedItemData& subgrid_data,
+      GridTrackSizingDirection track_direction) const;
+
   // Initialize the track collections of a given grid sizing data.
   void InitializeTrackCollection(const NGSubgriddedItemData& opt_subgrid_data,
                                  GridTrackSizingDirection track_direction,
@@ -188,7 +192,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                             SizingConstraint sizing_constraint) const;
 
   // Gets the specified [column|row]-gap of the grid.
-  LayoutUnit GutterSize(GridTrackSizingDirection track_direction) const;
+  LayoutUnit GutterSize(
+      GridTrackSizingDirection track_direction,
+      LayoutUnit parent_grid_gutter_size = LayoutUnit()) const;
 
   LayoutUnit DetermineFreeSpace(
       SizingConstraint sizing_constraint,
