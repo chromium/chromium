@@ -49,6 +49,8 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
   // Mediator that updates Chromium model objects; serves as a delegate to the
   // view controller.
   BringAndroidTabsPromptMediator* _mediator;
+  // View provider for the bottom message variant of the prompt.
+  BringAndroidTabsPromptBottomMessageProvider* _provider;
 }
 
 - (void)start {
@@ -73,7 +75,11 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
       break;
     }
     case BringYourOwnTabsPromptType::kBottomMessage: {
-      // TODO(crbug.com/1418117): Create bottom message prompt.
+      _provider = [[BringAndroidTabsPromptBottomMessageProvider alloc]
+          initWithTabCount:static_cast<int>(service->GetNumberOfAndroidTabs())];
+      _provider.delegate = _mediator;
+      _provider.commandHandler = self.commandHandler;
+      _viewController = _provider.viewController;
       break;
     }
     case BringYourOwnTabsPromptType::kDisabled: {
@@ -93,6 +99,7 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
   // Remove the mediator.
   DCHECK(_mediator);
   _mediator = nil;
+  _provider = nil;
 }
 
 @end

@@ -26,6 +26,11 @@ extension Color {
     return Color(kTextTertiaryColor)
   }
 
+  /// The quaternary text color.
+  public static var textQuaternary: Color {
+    return Color(kTextQuaternaryColor)
+  }
+
   /// The tertiary background color
   public static var tertiaryBackground: Color {
     return Color(kTertiaryBackgroundColor)

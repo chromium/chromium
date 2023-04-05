@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/constants.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -17,6 +18,7 @@
 // Explicitly import the bridging header of the Swift dependencies, as the
 // implicit import of these bridging header is deprecated and will be removed in
 // a later version of Swift.
+#import "ios/chrome/common/ui/colors/swift_bridge.h"
 #import "ui/base/l10n/l10n_util_mac_bridge.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_BRING_ANDROID_TABS_BRING_ANDROID_TABS_SWIFT_BRIDGE_H_
