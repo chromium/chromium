@@ -68,7 +68,7 @@ ci.builder(
         run_tests_serially = True,
     ),
     builderless = 1,
-    cores = 24,
+    cores = None,
     os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "mac|lsan",
