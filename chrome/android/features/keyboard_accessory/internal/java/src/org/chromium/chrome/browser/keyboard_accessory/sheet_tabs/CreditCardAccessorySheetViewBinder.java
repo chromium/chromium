@@ -82,21 +82,28 @@ class CreditCardAccessorySheetViewBinder {
             // the event that the bitmap is not present in the PersonalDataManager, fall back to the
             // icon corresponding to the `mOrigin`.
             Bitmap iconBitmap = null;
+            int iconId = getDrawableForOrigin(info.getOrigin());
             Resources res = view.getContext().getResources();
             if (info.getIconUrl() != null && info.getIconUrl().isValid()) {
-                iconBitmap =
-                        PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                                AutofillUiUtils.getCCIconURLWithParams(info.getIconUrl(),
-                                        res.getDimensionPixelSize(
-                                                R.dimen.keyboard_accessory_bar_item_cc_icon_width),
-                                        res.getDimensionPixelSize(
-                                                R.dimen.keyboard_accessory_suggestion_icon_size)));
+                if (info.getIconUrl().getSpec().equals(
+                            "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                    iconId = R.drawable.capitalone_metadata_card;
+                } else {
+                    iconBitmap = PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
+                            AutofillUiUtils.getCCIconURLWithParams(info.getIconUrl(),
+                                    res.getDimensionPixelSize(
+                                            R.dimen.keyboard_accessory_bar_item_cc_icon_width),
+                                    res.getDimensionPixelSize(
+                                            R.dimen.keyboard_accessory_suggestion_icon_size)));
+                }
             }
             if (iconBitmap != null) {
                 view.setIcon(new BitmapDrawable(res, iconBitmap));
             } else {
-                view.setIcon(AppCompatResources.getDrawable(
-                        view.getContext(), getDrawableForOrigin(info.getOrigin())));
+                view.setIcon(AppCompatResources.getDrawable(view.getContext(), iconId));
             }
         }
 

@@ -472,6 +472,14 @@ public class AutofillUiUtils {
             Context context, CreditCard card, int widthId, int heightId) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)) {
             if (card.getCardArtUrl() != null && card.getCardArtUrl().isValid()) {
+                if (card.getCardArtUrl().getSpec().equals(
+                            "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                    return AppCompatResources.getDrawable(
+                            context, R.drawable.capitalone_metadata_card);
+                }
                 Resources resources = context.getResources();
                 Bitmap customIconBitmap =
                         PersonalDataManager.getInstance()
@@ -480,6 +488,13 @@ public class AutofillUiUtils {
                                                 resources.getDimensionPixelSize(widthId),
                                                 resources.getDimensionPixelSize(heightId)));
                 if (customIconBitmap != null) {
+                    if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                        // The new Capital One card icon assets are stored at all scales in the
+                        // client code, and there's no need to scale the bitmap.
+                        return new BitmapDrawable(resources, customIconBitmap);
+                    }
                     // TODO(crbug.com/1313616): We have one gstatic card art image that is available
                     // in a single size. All other card art images can be fetched in the desired
                     // size. Scale the bitmap to match the desired size. This might not be required
@@ -516,6 +531,14 @@ public class AutofillUiUtils {
         if (!showCustomIcon || !cardArtUrl.isValid()) {
             return defaultIcon;
         }
+
+        if (cardArtUrl.getSpec().equals(
+                    "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
+        }
+
         Resources resources = context.getResources();
         Bitmap customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
@@ -524,6 +547,14 @@ public class AutofillUiUtils {
         if (customIconBitmap == null) {
             return defaultIcon;
         }
+
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            // The new Capital One card icon assets are stored at all scales in the
+            // client code, and there's no need to scale the bitmap.
+            return new BitmapDrawable(resources, customIconBitmap);
+        }
+
         // Scale the icon to the desired dimension.
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(customIconBitmap,
                 resources.getDimensionPixelSize(widthId), resources.getDimensionPixelSize(heightId),
