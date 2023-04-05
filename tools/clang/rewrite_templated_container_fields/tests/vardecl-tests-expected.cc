@@ -121,4 +121,11 @@ void fct() {
     // Expected rewrite: b = (a.size() > 0) ? a : std::vector<raw_ptr<S>>();
     b = (a.size() > 0) ? a : std::vector<raw_ptr<S>>();
   }
+
+  {
+    // Expected rewrite: std::vector<raw_ptr<S>> a = o.member;
+    std::vector<raw_ptr<S>> a = o.member;
+    // This tests whether the implicit lambda field is rewritten.
+    auto fct = [&a]() { a.push_back(nullptr); };
+  }
 }

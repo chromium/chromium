@@ -865,7 +865,7 @@ class VectorRawPtrRewriter {
     // connected to other nodes)
     auto field_decl =
         fieldDecl(hasExplicitFieldDecl(lhs_type_loc),
-                  unless(allOf(field_exclusions, isRawPtrExclusionAnnotated())))
+                  unless(anyOf(field_exclusions, isRawPtrExclusionAnnotated())))
             .bind("field_decl");
     match_finder_.addMatcher(field_decl, &potentail_nodes_);
 
