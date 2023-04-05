@@ -233,4 +233,7 @@ ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
   return partition_config;
 }
 
+void ExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
+    content::WebContents* web_contents) const {}
+
 }  // namespace extensions

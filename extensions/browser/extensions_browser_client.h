@@ -503,6 +503,11 @@ class ExtensionsBrowserClient {
       const std::string& partition_name,
       bool in_memory);
 
+  // Creates password reuse detection manager when new extension web contents
+  // are created.
+  virtual void CreatePasswordReuseDetectionManager(
+      content::WebContents* web_contents) const;
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };
