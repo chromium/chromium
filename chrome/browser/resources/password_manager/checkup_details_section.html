@@ -55,18 +55,17 @@
 </style>
 <div id="header">
   <cr-icon-button class="icon-arrow-back" id="backButton"
-      on-click="navigateBack_">
+      on-click="navigateBack_" aria-label="$i18n{backToCheckup}">
   </cr-icon-button>
   <h2 id="title" class="page-title">[[pageTitle_]]</h2>
 </div>
 <div id="body">
-    <div id="subtitle" class="label">
-      [[getSubTitle_(insecurityType_)]]
-    </div>
-    <div id="description" class="cr-secondary-text label">
-      [[getDescription_(insecurityType_)]]
-    </div>
-  </template>
+  <div id="subtitle" class="label">
+    [[getSubTitle_(insecurityType_)]]
+  </div>
+  <div id="description" class="cr-secondary-text label">
+    [[getDescription_(insecurityType_)]]
+  </div>
 </div>
 <template is="dom-if" if="[[!isReusedType(insecurityType_)]]">
   <template id="insecureCredentials" is="dom-repeat"

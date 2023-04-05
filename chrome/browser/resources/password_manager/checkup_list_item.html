@@ -66,7 +66,9 @@
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
 <div id="list-item" focus-row-container>
-  <site-favicon url="[[group.iconUrl]]" domain="[[group.name]]"></site-favicon>
+  <site-favicon url="[[group.iconUrl]]" domain="[[group.name]]"
+      aria-hidden="true">
+  </site-favicon>
   <div id="credentialInfo">
     <div id="infoColumn">
       <div id="shownUrl" class="label">
