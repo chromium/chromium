@@ -6,6 +6,7 @@
 // get information about and control the audio devices attached to the
 // system.
 // This API is currently only available in kiosk mode for ChromeOS.
+[modernised_enums]
 namespace audio {
 
   // Type of stream an audio device provides.

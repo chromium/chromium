@@ -12,24 +12,24 @@ api::audio::StreamType ConvertStreamTypeFromMojom(
     crosapi::mojom::StreamType type) {
   switch (type) {
     case crosapi::mojom::StreamType::kNone:
-      return api::audio::STREAM_TYPE_NONE;
+      return api::audio::StreamType::kNone;
     case crosapi::mojom::StreamType::kInput:
-      return api::audio::STREAM_TYPE_INPUT;
+      return api::audio::StreamType::kInput;
     case crosapi::mojom::StreamType::kOutput:
-      return api::audio::STREAM_TYPE_OUTPUT;
+      return api::audio::StreamType::kOutput;
   }
   NOTREACHED();
-  return api::audio::STREAM_TYPE_NONE;
+  return api::audio::StreamType::kNone;
 }
 
 crosapi::mojom::StreamType ConvertStreamTypeToMojom(
     api::audio::StreamType type) {
   switch (type) {
-    case api::audio::STREAM_TYPE_NONE:
+    case api::audio::StreamType::kNone:
       return crosapi::mojom::StreamType::kNone;
-    case api::audio::STREAM_TYPE_INPUT:
+    case api::audio::StreamType::kInput:
       return crosapi::mojom::StreamType::kInput;
-    case api::audio::STREAM_TYPE_OUTPUT:
+    case api::audio::StreamType::kOutput:
       return crosapi::mojom::StreamType::kOutput;
   }
   NOTREACHED();
@@ -40,80 +40,80 @@ api::audio::DeviceType ConvertDeviceTypeFromMojom(
     crosapi::mojom::DeviceType type) {
   switch (type) {
     case crosapi::mojom::DeviceType::kNone:
-      return api::audio::DeviceType::DEVICE_TYPE_NONE;
+      return api::audio::DeviceType::kNone;
     case crosapi::mojom::DeviceType::kHeadphone:
-      return api::audio::DeviceType::DEVICE_TYPE_HEADPHONE;
+      return api::audio::DeviceType::kHeadphone;
     case crosapi::mojom::DeviceType::kMic:
-      return api::audio::DeviceType::DEVICE_TYPE_MIC;
+      return api::audio::DeviceType::kMic;
     case crosapi::mojom::DeviceType::kUsb:
-      return api::audio::DeviceType::DEVICE_TYPE_USB;
+      return api::audio::DeviceType::kUsb;
     case crosapi::mojom::DeviceType::kBluetooth:
-      return api::audio::DeviceType::DEVICE_TYPE_BLUETOOTH;
+      return api::audio::DeviceType::kBluetooth;
     case crosapi::mojom::DeviceType::kHdmi:
-      return api::audio::DeviceType::DEVICE_TYPE_HDMI;
+      return api::audio::DeviceType::kHdmi;
     case crosapi::mojom::DeviceType::kInternalSpeaker:
-      return api::audio::DeviceType::DEVICE_TYPE_INTERNAL_SPEAKER;
+      return api::audio::DeviceType::kInternalSpeaker;
     case crosapi::mojom::DeviceType::kInternalMic:
-      return api::audio::DeviceType::DEVICE_TYPE_INTERNAL_MIC;
+      return api::audio::DeviceType::kInternalMic;
     case crosapi::mojom::DeviceType::kFrontMic:
-      return api::audio::DeviceType::DEVICE_TYPE_FRONT_MIC;
+      return api::audio::DeviceType::kFrontMic;
     case crosapi::mojom::DeviceType::kRearMic:
-      return api::audio::DeviceType::DEVICE_TYPE_REAR_MIC;
+      return api::audio::DeviceType::kRearMic;
     case crosapi::mojom::DeviceType::kKeyboardMic:
-      return api::audio::DeviceType::DEVICE_TYPE_KEYBOARD_MIC;
+      return api::audio::DeviceType::kKeyboardMic;
     case crosapi::mojom::DeviceType::kHotword:
-      return api::audio::DeviceType::DEVICE_TYPE_HOTWORD;
+      return api::audio::DeviceType::kHotword;
     case crosapi::mojom::DeviceType::kLineout:
-      return api::audio::DeviceType::DEVICE_TYPE_LINEOUT;
+      return api::audio::DeviceType::kLineout;
     case crosapi::mojom::DeviceType::kPostMixLoopback:
-      return api::audio::DeviceType::DEVICE_TYPE_POST_MIX_LOOPBACK;
+      return api::audio::DeviceType::kPostMixLoopback;
     case crosapi::mojom::DeviceType::kPostDspLoopback:
-      return api::audio::DeviceType::DEVICE_TYPE_POST_DSP_LOOPBACK;
+      return api::audio::DeviceType::kPostDspLoopback;
     case crosapi::mojom::DeviceType::kAlsaLoopback:
-      return api::audio::DeviceType::DEVICE_TYPE_ALSA_LOOPBACK;
+      return api::audio::DeviceType::kAlsaLoopback;
     case crosapi::mojom::DeviceType::kOther:
-      return api::audio::DeviceType::DEVICE_TYPE_OTHER;
+      return api::audio::DeviceType::kOther;
   }
   NOTREACHED();
-  return api::audio::DeviceType::DEVICE_TYPE_NONE;
+  return api::audio::DeviceType::kNone;
 }
 
 crosapi::mojom::DeviceType ConvertDeviceTypeToMojom(
     api::audio::DeviceType type) {
   switch (type) {
-    case api::audio::DeviceType::DEVICE_TYPE_NONE:
+    case api::audio::DeviceType::kNone:
       return crosapi::mojom::DeviceType::kNone;
-    case api::audio::DeviceType::DEVICE_TYPE_HEADPHONE:
+    case api::audio::DeviceType::kHeadphone:
       return crosapi::mojom::DeviceType::kHeadphone;
-    case api::audio::DeviceType::DEVICE_TYPE_MIC:
+    case api::audio::DeviceType::kMic:
       return crosapi::mojom::DeviceType::kMic;
-    case api::audio::DeviceType::DEVICE_TYPE_USB:
+    case api::audio::DeviceType::kUsb:
       return crosapi::mojom::DeviceType::kUsb;
-    case api::audio::DeviceType::DEVICE_TYPE_BLUETOOTH:
+    case api::audio::DeviceType::kBluetooth:
       return crosapi::mojom::DeviceType::kBluetooth;
-    case api::audio::DeviceType::DEVICE_TYPE_HDMI:
+    case api::audio::DeviceType::kHdmi:
       return crosapi::mojom::DeviceType::kHdmi;
-    case api::audio::DeviceType::DEVICE_TYPE_INTERNAL_SPEAKER:
+    case api::audio::DeviceType::kInternalSpeaker:
       return crosapi::mojom::DeviceType::kInternalSpeaker;
-    case api::audio::DeviceType::DEVICE_TYPE_INTERNAL_MIC:
+    case api::audio::DeviceType::kInternalMic:
       return crosapi::mojom::DeviceType::kInternalMic;
-    case api::audio::DeviceType::DEVICE_TYPE_FRONT_MIC:
+    case api::audio::DeviceType::kFrontMic:
       return crosapi::mojom::DeviceType::kFrontMic;
-    case api::audio::DeviceType::DEVICE_TYPE_REAR_MIC:
+    case api::audio::DeviceType::kRearMic:
       return crosapi::mojom::DeviceType::kRearMic;
-    case api::audio::DeviceType::DEVICE_TYPE_KEYBOARD_MIC:
+    case api::audio::DeviceType::kKeyboardMic:
       return crosapi::mojom::DeviceType::kKeyboardMic;
-    case api::audio::DeviceType::DEVICE_TYPE_HOTWORD:
+    case api::audio::DeviceType::kHotword:
       return crosapi::mojom::DeviceType::kHotword;
-    case api::audio::DeviceType::DEVICE_TYPE_LINEOUT:
+    case api::audio::DeviceType::kLineout:
       return crosapi::mojom::DeviceType::kLineout;
-    case api::audio::DeviceType::DEVICE_TYPE_POST_MIX_LOOPBACK:
+    case api::audio::DeviceType::kPostMixLoopback:
       return crosapi::mojom::DeviceType::kPostMixLoopback;
-    case api::audio::DeviceType::DEVICE_TYPE_POST_DSP_LOOPBACK:
+    case api::audio::DeviceType::kPostDspLoopback:
       return crosapi::mojom::DeviceType::kPostDspLoopback;
-    case api::audio::DeviceType::DEVICE_TYPE_ALSA_LOOPBACK:
+    case api::audio::DeviceType::kAlsaLoopback:
       return crosapi::mojom::DeviceType::kAlsaLoopback;
-    case api::audio::DeviceType::DEVICE_TYPE_OTHER:
+    case api::audio::DeviceType::kOther:
       return crosapi::mojom::DeviceType::kOther;
   }
   NOTREACHED();
