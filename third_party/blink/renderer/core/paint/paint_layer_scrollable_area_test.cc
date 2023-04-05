@@ -535,7 +535,11 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(100, 0),
                                    mojom::blink::ScrollType::kClamping);
-  EXPECT_EQ(scrollable_area->GetScrollOffset().x(), 0);
+  if (RuntimeEnabledFeatures::OverflowOverlayAliasesAutoEnabled()) {
+    EXPECT_EQ(scrollable_area->GetScrollOffset().x(), 15);
+  } else {
+    EXPECT_EQ(scrollable_area->GetScrollOffset().x(), 0);
+  }
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest,

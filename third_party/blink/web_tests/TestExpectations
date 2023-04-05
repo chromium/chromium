@@ -2990,7 +2990,6 @@ crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/syste
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-alphabetic.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-extends.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-symbolic.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-overflow/overflow-overlay.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/url/IdnaTestV2.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-non-adjoining-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-block-end-trimmed-only.html [ Failure ]
