@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 
 namespace drivefs {
 
