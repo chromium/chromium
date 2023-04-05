@@ -395,7 +395,8 @@ D3DImageBacking::CreateFromVideoTexture(
     // value from default-construction.
     constexpr gfx::ColorSpace kInvalidColorSpace;
 
-    // TODO(sunnyps): Switch to GL_TEXTURE_2D since it's now supported by ANGLE.
+    // TODO(crbug.com/1430349): Switch to GL_TEXTURE_2D since it's now supported
+    // by ANGLE.
     constexpr GLenum kTextureTarget = GL_TEXTURE_EXTERNAL_OES;
 
     // Do not cache a GL texture in the backing if it could be owned by WebGPU
