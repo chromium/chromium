@@ -98,7 +98,7 @@ struct ImportResults {
   };
 
   // General status of the triggered password import process.
-  Status status;
+  Status status = NONE;
 
   // Number of successfully imported passwords.
   size_t number_imported = 0;

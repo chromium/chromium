@@ -471,22 +471,23 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchAccountStore) {
       "https://"
       "test.com,username_exists_in_account_store,password_already_stored\n";
 
-  PasswordForm form_profile_store;
-  form_profile_store.url = GURL("https://test.com");
-  form_profile_store.signon_realm = form_profile_store.url.spec();
-  form_profile_store.username_value = u"username_exists_in_account_store";
-  form_profile_store.password_value = u"password_already_stored";
-  form_profile_store.in_store =
+  PasswordForm form_account_store;
+  form_account_store.url = GURL("https://test.com");
+  form_account_store.signon_realm = form_account_store.url.spec();
+  form_account_store.username_value = u"username_exists_in_account_store";
+  form_account_store.password_value = u"password_already_stored";
+  form_account_store.in_store =
       password_manager::PasswordForm::Store::kAccountStore;
 
-  ASSERT_TRUE(AddPasswordForm(form_profile_store));
+  ASSERT_TRUE(AddPasswordForm(form_account_store));
 
   base::HistogramTester histogram_tester;
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
   ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
-  ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
+  ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(
+      input_path, PasswordForm::Store::kAccountStore));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
@@ -652,22 +653,26 @@ TEST_F(PasswordImporterTest, CSVImportConflictAccountStore) {
   EXPECT_EQ(u"password2", stored_passwords()[1].password);
 }
 
-TEST_F(PasswordImporterTest, CSVImportConflictProfileAndAccountStore) {
+// A PasswordForm already exists in the ProfileStore, while conflicting
+// credentials are imported to the AccountStore. No conflicts are reported to
+// the  user.
+TEST_F(PasswordImporterTest,
+       CSVImportConflictSkippedInStoreDifferentFromTarget) {
   constexpr char kTestCSVInput[] =
       "Url,Username,Password\n"
       "https://"
-      "test.com,username_exists_in_profile_and_account_store,password1\n"
+      "test.com,username_exists_in_profile_store,password1\n"
       "https://test2.com,username2,password2\n";
 
-  PasswordForm form_account_profile_store;
-  form_account_profile_store.url = GURL("https://test.com");
-  form_account_profile_store.signon_realm =
-      form_account_profile_store.url.spec();
-  form_account_profile_store.username_value =
-      u"username_exists_in_profile_and_account_store";
-  form_account_profile_store.password_value = u"password_does_not_match";
+  PasswordForm form_profile_store;
+  form_profile_store.url = GURL("https://test.com");
+  form_profile_store.signon_realm = form_profile_store.url.spec();
+  form_profile_store.username_value = u"username_exists_in_profile_store";
+  form_profile_store.password_value = u"password_does_not_match";
+  form_profile_store.in_store =
+      password_manager::PasswordForm::Store::kProfileStore;
 
-  AddToProfileAndAccountStores(std::move(form_account_profile_store));
+  ASSERT_TRUE(AddPasswordForm(form_profile_store));
 
   base::HistogramTester histogram_tester;
 
@@ -677,29 +682,20 @@ TEST_F(PasswordImporterTest, CSVImportConflictProfileAndAccountStore) {
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(
       input_path, password_manager::PasswordForm::Store::kAccountStore));
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
-                                      ImportEntry::Status::CONFLICT_ACCOUNT, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.ImportEntryStatus", 0);
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
+      "PasswordManager.ImportedPasswordsPerUserInCSV", 2, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.Import.PerFile.Conflicts", 1, 1);
+      "PasswordManager.Import.PerFile.Conflicts", 0, 1);
 
   const password_manager::ImportResults& results = GetImportResults();
 
-  ASSERT_EQ(1u, results.displayed_entries.size());
-  EXPECT_EQ("https://test.com/", results.displayed_entries[0].url);
-  EXPECT_EQ("username_exists_in_profile_and_account_store",
-            results.displayed_entries[0].username);
-  EXPECT_EQ(password_manager::ImportEntry::Status::CONFLICT_ACCOUNT,
-            results.displayed_entries[0].status);
+  EXPECT_EQ(0u, results.displayed_entries.size());
 
   EXPECT_EQ(password_manager::ImportResults::Status::SUCCESS, results.status);
-  EXPECT_EQ(1u, results.number_imported);
-  ASSERT_EQ(2u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].GetURL());
-  EXPECT_EQ(u"username2", stored_passwords()[1].username);
-  EXPECT_EQ(u"password2", stored_passwords()[1].password);
+  EXPECT_EQ(2u, results.number_imported);
+  ASSERT_EQ(3u, stored_passwords().size());
 }
 
 TEST_F(PasswordImporterTest, CSVImportEmptyPasswordReported) {
