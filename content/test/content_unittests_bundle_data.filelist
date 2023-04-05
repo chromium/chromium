@@ -1476,6 +1476,7 @@ data/service_worker/fetch_event.js
 data/service_worker/fetch_event.js.mock-http-headers
 data/service_worker/fetch_event_blob.js
 data/service_worker/fetch_event_blob.js.mock-http-headers
+data/service_worker/fetch_event_object_removing_itself.js
 data/service_worker/fetch_event_pass_through.js
 data/service_worker/fetch_event_pass_through.js.mock-http-headers
 data/service_worker/fetch_event_rejected.js
