@@ -46,7 +46,7 @@ using UserSiteSetting = PermissionsManager::UserSiteSetting;
 constexpr char kAllHostsScheme[] = "*://*/*";
 constexpr char kExplicitHostsScheme[] = "http://127.0.0.1/*";
 constexpr char kBackgroundScript[] =
-    R"("background": {"scripts": ["script.js"]})";
+    R"("background": {"scripts": ["script.js"], "persistent": true})";
 
 constexpr char kBackgroundScriptSource[] =
     R"(var listener = function(tabId) {
@@ -96,9 +96,13 @@ bool DidInjectScript(content::WebContents* web_contents) {
 
 }  // namespace
 
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
  public:
-  ExtensionActionRunnerBrowserTest() {}
+  explicit ExtensionActionRunnerBrowserTest(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionBrowserTest(context_type) {}
 
   void TearDownOnMainThread() override;
 
@@ -274,18 +278,38 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
   EXPECT_FALSE(runner->WantsToRun(extension));
 }
 
+class ExtensionActionRunnerBrowserTestWithContextType
+    : public ExtensionActionRunnerBrowserTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionActionRunnerBrowserTestWithContextType()
+      : ExtensionActionRunnerBrowserTest(GetParam()) {}
+
+  ExtensionActionRunnerBrowserTestWithContextType(
+      const ExtensionActionRunnerBrowserTestWithContextType&) = delete;
+  ExtensionActionRunnerBrowserTestWithContextType& operator=(
+      const ExtensionActionRunnerBrowserTestWithContextType&) = delete;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionActionRunnerBrowserTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionActionRunnerBrowserTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Load up different combinations of extensions, and verify that script
 // injection is properly withheld and indicated to the user.
 // NOTE: Though these could be parameterized test cases, there's enough
 // bits here that just having a helper method is quite a bit more readable.
-IN_PROC_BROWSER_TEST_F(
-    ExtensionActionRunnerBrowserTest,
+IN_PROC_BROWSER_TEST_P(
+    ExtensionActionRunnerBrowserTestWithContextType,
     ActiveScriptsAreDisplayedAndDelayExecution_ExecuteScripts_AllHosts) {
   RunActiveScriptsTest("execute_scripts_all_hosts", ALL_HOSTS, EXECUTE_SCRIPT,
                        WITHHOLD_PERMISSIONS, REQUIRES_CONSENT);
 }
-IN_PROC_BROWSER_TEST_F(
-    ExtensionActionRunnerBrowserTest,
+IN_PROC_BROWSER_TEST_P(
+    ExtensionActionRunnerBrowserTestWithContextType,
     ActiveScriptsAreDisplayedAndDelayExecution_ExecuteScripts_ExplicitHosts) {
   RunActiveScriptsTest("execute_scripts_explicit_hosts", EXPLICIT_HOSTS,
                        EXECUTE_SCRIPT, WITHHOLD_PERMISSIONS, REQUIRES_CONSENT);
