@@ -66,6 +66,7 @@ class TestActionHandler : public RecoveryComponentActionHandler {
   // Overrides for RecoveryComponentActionHandler.
   base::CommandLine MakeCommandLine(
       const base::FilePath& unpack_path) const override;
+  void PrepareFiles(const base::FilePath& unpack_path) const override;
   void Elevate(Callback callback) override;
 };
 
@@ -75,6 +76,8 @@ base::CommandLine TestActionHandler::MakeCommandLine(
       unpack_path.Append(FILE_PATH_LITERAL("ChromeRecovery.exe")));
   return command_line;
 }
+
+void TestActionHandler::PrepareFiles(const base::FilePath& unpack_path) const {}
 
 // This test fixture only tests the per-user execution flow.
 void TestActionHandler::Elevate(Callback callback) {
