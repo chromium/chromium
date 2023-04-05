@@ -73,6 +73,11 @@ BASE_FEATURE(kSynchronousSignInChecking,
              "SynchronousSignInChecking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Retires the static denylist functionality - this serves as a kill-switch.
+BASE_FEATURE(kRetireStaticDenyList,
+             "RetireStaticDenyList",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsWebFilterInterstitialRefreshEnabled() {
   DCHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
          !base::FeatureList::IsEnabled(kLocalWebApprovals));
