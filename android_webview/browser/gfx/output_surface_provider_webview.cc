@@ -57,6 +57,14 @@ GLSurfaceContextPair GetRealContextForVulkan() {
   // not having any real EGL context in that case instead of crashing.
   if (surface) {
     gl::GLContextAttribs attribs;
+
+    // This context is used on the GPU thread. We must avoid it being put in a
+    // virtualization group with contexts that Chrome creates and uses on other
+    // threads to avoid EGL_BAD_ACCESS errors when ANGLE tries to make the
+    // underlying native context current on multiple threads simultaneously.
+    attribs.angle_context_virtualization_group_number =
+        gl::AngleContextVirtualizationGroup::kWebViewRenderThread;
+
     context = gl::init::CreateGLContext(nullptr, surface.get(), attribs);
   }
   DCHECK(context);
