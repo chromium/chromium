@@ -53,13 +53,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCheckPasswordsButton,
 };
 
-// Possible states for the items in the insecure types section.
-enum class ItemState {
-  kSafe,
-  kWarning,
-  kSevereWarning,
-};
-
 // Helper method to get the right header image depending on the
 // `password_checkup_state`.
 UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
@@ -107,8 +100,8 @@ NSString* GetCompromisedPasswordsItemDetailText(bool has_compromised_passwords,
 
 // Sets up the trailing icon and its tint color for the given item. This is used
 // to set up the trailing icon of the items in the insecure types section.
-void SetUpTrailingIcon(SettingsCheckItem* item, ItemState item_state) {
-  if (item_state == ItemState::kSafe) {
+void SetUpTrailingIcon(SettingsCheckItem* item, ItemWarningState item_state) {
+  if (item_state == ItemWarningState::kSafe) {
     item.trailingImage = DefaultSymbolTemplateWithPointSize(
         kCheckmarkCircleFillSymbol, kTrailingIconSize);
     item.trailingImageTintColor = [UIColor colorNamed:kGreen500Color];
@@ -117,7 +110,7 @@ void SetUpTrailingIcon(SettingsCheckItem* item, ItemState item_state) {
 
   item.trailingImage = DefaultSymbolTemplateWithPointSize(
       kErrorCircleFillSymbol, kTrailingIconSize);
-  if (item_state == ItemState::kWarning) {
+  if (item_state == ItemWarningState::kWarning) {
     item.trailingImageTintColor = [UIColor colorNamed:kYellow500Color];
   } else {
     item.trailingImageTintColor = [UIColor colorNamed:kRed500Color];
@@ -140,11 +133,11 @@ void SetUpTrailingIconAndAccessoryType(
     case PasswordCheckupHomepageStateDone:
       if (has_insecure_passwords) {
         SetUpTrailingIcon(item, has_compromised_passwords
-                                    ? ItemState::kSevereWarning
-                                    : ItemState::kWarning);
+                                    ? ItemWarningState::kSevereWarning
+                                    : ItemWarningState::kWarning);
         item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       } else {
-        SetUpTrailingIcon(item, ItemState::kSafe);
+        SetUpTrailingIcon(item, ItemWarningState::kSafe);
       }
       break;
     case PasswordCheckupHomepageStateRunning: {

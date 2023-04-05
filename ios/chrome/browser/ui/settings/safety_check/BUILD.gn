@@ -136,6 +136,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

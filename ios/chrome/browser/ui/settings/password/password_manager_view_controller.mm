@@ -1482,12 +1482,10 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
       break;
     }
     case PasswordCheckStateUnmutedCompromisedPasswords: {
-      int detailTextId = IsPasswordCheckupEnabled()
-                             ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
-                             : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT;
       _passwordProblemsItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-              detailTextId, self.insecurePasswordsCount));
+              IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT,
+              self.insecurePasswordsCount));
       break;
     }
     case PasswordCheckStateReusedPasswords: {
@@ -1514,7 +1512,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
           IsPasswordCheckupEnabled()
               ? [self.delegate formattedElapsedTimeSinceLastCheck]
               : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                    IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0));
+                    IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0));
       break;
     }
     case PasswordCheckStateDefault:

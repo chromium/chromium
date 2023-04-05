@@ -2832,8 +2832,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_CHECKUP" desc="Title for the item in Settings for Password Checkup feature." meaning="Label tells the user about status of Password Checkup [CHAR_LIMIT=25] [iOS only]">
         Password Checkup
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_ONGOING" desc="Title for the item in Settings for Password Checkup feature while the checks are running." meaning="Label tells the user that their passwords are being checked [CHAR_LIMIT=25] [iOS only]">
-        Checking Passwords...
+      <message name="IDS_IOS_PASSWORD_CHECKUP_ONGOING" desc="In Title Case: Title for the item in Settings for Password Checkup feature while the checks are running. [CHAR_LIMIT=25] [iOS only]" meaning="In Title Case.">
+        Checking Passwords…
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_PASSWORD_CHECKUP_ONGOING" desc="In sentence case: Subtitle for the password check item in Safety Check indicating that the checks are running. Sentence case. [CHAR_LIMIT=25] [iOS only]" meaning="In sentence case.">
+        Checking passwords…
       </message>
       <message name="IDS_IOS_CHECK_PASSWORDS_DESCRIPTION" desc="Description for the Password Check item in Settings." meaning="Label is shown to explain purpose of Password Check feature. This string is shown only if user didn't run Password Check before or check finished due to error without any results.  [iOS only]">
         Keep your passwords safe from security issues
@@ -2846,24 +2849,19 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           =1 {for {COUNT} site or app}
           other {for {COUNT} sites and apps}}
       </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
+      <message name="IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
         {COUNT, plural,
           =0 {No compromised passwords}
           =1 {{COUNT} Compromised password}
           other {{COUNT} Compromised passwords}}
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
-        {COUNT, plural,
-          =1 {{COUNT} Compromised Password}
-          other {{COUNT} Compromised Passwords}}
-      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT" desc="Displays the number of reused passwords present in the database. User can only have 2 or more reused passwords, so this string will always be plural.">
-        <ph name="COUNT">$1<ex>2</ex></ph> Reused Passwords
+        <ph name="COUNT">$1<ex>2</ex></ph> Reused passwords
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT" desc="Displays the number of weak passwords present in the database.">
         {COUNT, plural,
-          =1 {{COUNT} Weak Password}
-          other {{COUNT} Weak Passwords}}
+          =1 {{COUNT} Weak password}
+          other {{COUNT} Weak passwords}}
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT" desc="Displays the number of compromised password warnings that have been dismissed.">
         {COUNT, plural,
