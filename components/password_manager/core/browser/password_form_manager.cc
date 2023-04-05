@@ -388,10 +388,10 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
     const auto& possible_usernames =
         parsed_submitted_form_->all_possible_usernames;
     auto possible_username_it = base::ranges::find(
-        possible_usernames, new_username, &ValueElementPair::first);
+        possible_usernames, new_username, &AlternativeElement::value);
 
     if (possible_username_it != possible_usernames.end()) {
-      parsed_submitted_form_->username_element = possible_username_it->second;
+      parsed_submitted_form_->username_element = possible_username_it->name;
       votes_uploader_.set_username_change_state(
           VotesUploader::UsernameChangeState::kChangedToKnownValue);
     } else {
@@ -414,12 +414,12 @@ void PasswordFormManager::OnUpdatePasswordFromPrompt(
   parsed_submitted_form_->new_password_value.clear();
   parsed_submitted_form_->new_password_element.clear();
 
-  for (const ValueElementPair& pair :
-       parsed_submitted_form_->all_possible_passwords) {
-    if (pair.first == new_password) {
-      parsed_submitted_form_->password_element = pair.second;
-      break;
-    }
+  const AlternativeElementVector& possible_passwords =
+      parsed_submitted_form_->all_possible_passwords;
+  auto possible_password_it = base::ranges::find(
+      possible_passwords, new_password, &AlternativeElement::value);
+  if (possible_password_it != possible_passwords.end()) {
+    parsed_submitted_form_->password_element = possible_password_it->name;
   }
 
   CreatePendingCredentials();

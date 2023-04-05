@@ -944,12 +944,12 @@ void SetFields(const SignificantFields& significant_fields,
 // ProcessedField instances, or an empty vector if there was not a single
 // password field. Also, computes the vector of all password values and
 // associated element names in |all_possible_passwords|, and similarly for
-// usernames and |all_possible_usernames|. If |mode| is |kSaving|, fields with
+// usernames in |all_possible_usernames|. If |mode| is |kSaving|, fields with
 // empty values are ignored.
 std::vector<ProcessedField> ProcessFields(
     const std::vector<FormFieldData>& fields,
-    ValueElementVector* all_possible_passwords,
-    ValueElementVector* all_possible_usernames,
+    AlternativeElementVector* all_possible_passwords,
+    AlternativeElementVector* all_possible_usernames,
     FormDataParser::Mode mode) {
   DCHECK(all_possible_passwords);
   DCHECK(all_possible_passwords->empty());
@@ -979,13 +979,15 @@ std::vector<ProcessedField> ProcessFields(
     if (!field_value.empty()) {
       std::set<base::StringPiece16>& seen_values =
           is_password ? seen_password_values : seen_username_values;
-      ValueElementVector* all_possible_fields =
+      AlternativeElementVector* all_possible_fields =
           is_password ? all_possible_passwords : all_possible_usernames;
       // Only the field name of the first occurrence is added.
       auto insertion = seen_values.insert(field_value);
       if (insertion.second) {
         // There was no such element in |seen_values|.
-        all_possible_fields->push_back({field_value, field.name});
+        all_possible_fields->emplace_back(
+            AlternativeElement::Value(field_value), field.unique_renderer_id,
+            AlternativeElement::Name(field.name));
       }
     }
 
@@ -1039,8 +1041,8 @@ bool GetMayUsePrefilledPlaceholder(
 std::unique_ptr<PasswordForm> AssemblePasswordForm(
     const FormData& form_data,
     const SignificantFields& significant_fields,
-    ValueElementVector all_possible_passwords,
-    ValueElementVector all_possible_usernames,
+    AlternativeElementVector all_possible_passwords,
+    AlternativeElementVector all_possible_usernames,
     const absl::optional<FormPredictions>& form_predictions) {
   if (!significant_fields.HasPasswords() &&
       !significant_fields.is_single_username &&
@@ -1095,8 +1097,8 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
     return nullptr;
 
   readonly_status_ = ReadonlyPasswordFields::kNoHeuristics;
-  ValueElementVector all_possible_passwords;
-  ValueElementVector all_possible_usernames;
+  AlternativeElementVector all_possible_passwords;
+  AlternativeElementVector all_possible_usernames;
   std::vector<ProcessedField> processed_fields = ProcessFields(
       form_data.fields, &all_possible_passwords, &all_possible_usernames, mode);
 

@@ -110,6 +110,7 @@ using base::ASCIIToUTF16;
 using base::Feature;
 using testing::_;
 using testing::ElementsAre;
+using testing::Field;
 using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
     FieldSuggestion::FieldPrediction;
 
@@ -2543,10 +2544,15 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       ManagePasswordsUIController::FromWebContents(WebContents())
           ->GetPendingPassword()
           .all_possible_passwords,
-      ElementsAre(
-          ValueElementPair(u"pass1", u"chg_password_wo_username_field"),
-          ValueElementPair(u"pass2", u"chg_new_password_wo_username_1"),
-          ValueElementPair(u"pass3", u"chg_new_password_wo_username_2")));
+      ElementsAre(AllOf(Field("value", &AlternativeElement::value, u"pass1"),
+                        Field("name", &AlternativeElement::name,
+                              u"chg_password_wo_username_field")),
+                  AllOf(Field("value", &AlternativeElement::value, u"pass2"),
+                        Field("name", &AlternativeElement::name,
+                              u"chg_new_password_wo_username_1")),
+                  AllOf(Field("value", &AlternativeElement::value, u"pass3"),
+                        Field("name", &AlternativeElement::name,
+                              u"chg_new_password_wo_username_2"))));
   bubble_observer.AcceptSavePrompt();
   WaitForPasswordStore();
   CheckThatCredentialsStored("", "pass1");

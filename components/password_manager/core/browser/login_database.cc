@@ -66,17 +66,19 @@ constexpr int kCurrentVersionNumber = 33;
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 33;
 
-base::Pickle SerializeValueElementPairs(const ValueElementVector& vec) {
+base::Pickle SerializeAlternativeElementVector(
+    const AlternativeElementVector& vector) {
   base::Pickle p;
-  for (const auto& pair : vec) {
-    p.WriteString16(pair.first);
-    p.WriteString16(pair.second);
+  for (const auto& element : vector) {
+    p.WriteString16(element.value);
+    p.WriteString16(element.name);
   }
   return p;
 }
 
-ValueElementVector DeserializeValueElementPairs(const base::Pickle& p) {
-  ValueElementVector ret;
+AlternativeElementVector DeserializeAlternativeElementVector(
+    const base::Pickle& p) {
+  AlternativeElementVector ret;
   std::u16string value;
   std::u16string field_name;
 
@@ -84,7 +86,13 @@ ValueElementVector DeserializeValueElementPairs(const base::Pickle& p) {
   while (iterator.ReadString16(&value)) {
     bool name_success = iterator.ReadString16(&field_name);
     DCHECK(name_success);
-    ret.push_back(ValueElementPair(value, field_name));
+    // TODO(crbug.com/1260336): migrate field identifier from name to
+    // field_signature + field_rank. Field names are not unique and have
+    // collisions on some forms. We don't store field_renderer_id in the
+    // storage as it has no guarantees to be stable across page reloads.
+    ret.emplace_back(AlternativeElement::Value(value),
+                     autofill::FieldRendererId(),
+                     AlternativeElement::Name(field_name));
   }
   return ret;
 }
@@ -238,7 +246,7 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindInt(COLUMN_GENERATION_UPLOAD_STATUS,
              static_cast<int>(form.generation_upload_status));
   base::Pickle usernames_pickle =
-      SerializeValueElementPairs(form.all_possible_usernames);
+      SerializeAlternativeElementVector(form.all_possible_usernames);
   s->BindBlob(COLUMN_POSSIBLE_USERNAME_PAIRS, PickleToSpan(usernames_pickle));
   s->BindTime(COLUMN_DATE_LAST_USED, form.date_last_used);
   base::Pickle moving_blocked_for_pickle =
@@ -1177,7 +1185,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindInt(next_param++, form.skip_zero_click);
   s.BindInt(next_param++, static_cast<int>(form.generation_upload_status));
   base::Pickle username_pickle =
-      SerializeValueElementPairs(form.all_possible_usernames);
+      SerializeAlternativeElementVector(form.all_possible_usernames);
   s.BindBlob(next_param++, PickleToSpan(username_pickle));
   s.BindTime(next_param++, form.date_last_used);
   base::Pickle moving_blocked_for_pickle =
@@ -1420,7 +1428,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
       s.ColumnBlob(COLUMN_POSSIBLE_USERNAME_PAIRS);
   if (!possible_username_pairs_blob.empty()) {
     base::Pickle pickle = PickleFromSpan(possible_username_pairs_blob);
-    form->all_possible_usernames = DeserializeValueElementPairs(pickle);
+    form->all_possible_usernames = DeserializeAlternativeElementVector(pickle);
   }
   form->times_used_in_html_form = s.ColumnInt(COLUMN_TIMES_USED);
   base::span<const uint8_t> form_data_blob = s.ColumnBlob(COLUMN_FORM_DATA);

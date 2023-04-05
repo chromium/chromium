@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_form.h"
 
+#include <compare>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -104,12 +105,12 @@ std::string ToString(const T& obj) {
   return ostream.str();
 }
 
-std::u16string ValueElementVectorToString(
-    const ValueElementVector& value_element_pairs) {
+std::u16string AlternativeElementVectorToString(
+    const AlternativeElementVector& value_element_pairs) {
   std::vector<std::u16string> pairs(value_element_pairs.size());
   base::ranges::transform(
       value_element_pairs, pairs.begin(),
-      [](const ValueElementPair& p) { return p.first + u"+" + p.second; });
+      [](const AlternativeElement& p) { return p.value + u"+" + p.name; });
   return base::JoinString(pairs, u", ");
 }
 
@@ -145,9 +146,9 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
              base::NumberToString(
                  form.confirmation_password_element_renderer_id.value()));
   target.Set("all_possible_usernames",
-             ValueElementVectorToString(form.all_possible_usernames));
+             AlternativeElementVectorToString(form.all_possible_usernames));
   target.Set("all_possible_passwords",
-             ValueElementVectorToString(form.all_possible_passwords));
+             AlternativeElementVectorToString(form.all_possible_passwords));
   target.Set("blocked_by_user", form.blocked_by_user);
   target.Set("date_last_used", form.date_last_used.ToDoubleT());
   target.Set("date_password_modified", form.date_password_modified.ToDoubleT());
@@ -210,6 +211,37 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 }
 
 }  // namespace
+
+AlternativeElement::AlternativeElement(const AlternativeElement::Value& value,
+                           autofill::FieldRendererId field_renderer_id,
+                           const AlternativeElement::Name& name)
+    : value(value), field_renderer_id(field_renderer_id), name(name) {}
+
+AlternativeElement::AlternativeElement(const AlternativeElement& rhs) = default;
+AlternativeElement::AlternativeElement(AlternativeElement&& rhs) = default;
+AlternativeElement& AlternativeElement::operator=(
+    const AlternativeElement& rhs) = default;
+AlternativeElement& AlternativeElement::operator=(AlternativeElement&& rhs) =
+    default;
+AlternativeElement::~AlternativeElement() = default;
+bool AlternativeElement::operator==(const AlternativeElement&) const = default;
+std::strong_ordering AlternativeElement::operator<=>(
+    const AlternativeElement&) const = default;
+
+std::ostream& operator<<(std::ostream& os, const AlternativeElement& element) {
+  base::Value::Dict element_json;
+  element_json.Set("value", element.value);
+  element_json.Set("field_renderer_id",
+                   base::NumberToString(element.field_renderer_id.value()));
+  element_json.Set("name", element.name);
+
+  std::string element_as_string;
+  base::JSONWriter::WriteWithOptions(
+      element_json, base::JSONWriter::OPTIONS_PRETTY_PRINT, &element_as_string);
+  base::TrimWhitespaceASCII(element_as_string, base::TRIM_ALL,
+                            &element_as_string);
+  return os << "AlternativeElement(" << element_as_string << ")";
+}
 
 InsecurityMetadata::InsecurityMetadata() = default;
 InsecurityMetadata::InsecurityMetadata(base::Time create_time, IsMuted is_muted)
