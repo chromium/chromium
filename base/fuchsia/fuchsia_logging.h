@@ -17,8 +17,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 
 // Use the ZX_LOG family of macros along with a zx_status_t containing a Zircon
 // error. The error value will be decoded so that logged messages explain the
@@ -75,6 +73,18 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
 
 namespace base {
 
+namespace internal {
+
+BASE_EXPORT std::string FidlMethodResultErrorMessage(
+    const base::StringPiece& formatted_error,
+    const base::StringPiece& method_name);
+
+BASE_EXPORT std::string FidlConnectionErrorMessage(
+    const base::StringPiece& protocol_name,
+    const base::StringPiece& status_string);
+
+}  // namespace internal
+
 class Location;
 
 // Returns a function suitable for use as error-handler for a FIDL binding or
@@ -90,10 +100,32 @@ BASE_EXPORT fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
 template <typename Protocol>
 BASE_EXPORT std::string FidlConnectionErrorMessage(
     const zx::result<fidl::ClientEnd<Protocol>>& result) {
-  DCHECK(result.is_error());
-  return base::StringPrintf("Failed to connect to %s: %s",
-                            fidl::DiscoverableProtocolName<Protocol>,
-                            result.status_string());
+  CHECK(result.is_error());
+  return internal::FidlConnectionErrorMessage(
+      fidl::DiscoverableProtocolName<Protocol>, result.status_string());
+}
+
+template <typename FidlMethod>
+BASE_EXPORT std::string FidlMethodResultErrorMessage(
+    const fidl::Result<FidlMethod>& result,
+    const base::StringPiece& method_name) {
+  CHECK(result.is_error());
+  return internal::FidlMethodResultErrorMessage(
+      result.error_value().FormatDescription(), method_name);
+}
+
+BASE_EXPORT std::string FidlMethodResultErrorMessage(
+    const fit::result<fidl::OneWayError>& result,
+    const base::StringPiece& method_name);
+
+BASE_EXPORT fit::function<void(fidl::UnbindInfo)>
+FidlBindingClosureWarningLogger(base::StringPiece protocol_name);
+
+template <typename Protocol>
+BASE_EXPORT fit::function<void(fidl::UnbindInfo)>
+FidlBindingClosureWarningLogger() {
+  return FidlBindingClosureWarningLogger(
+      fidl::DiscoverableProtocolName<Protocol>);
 }
 
 }  // namespace base
