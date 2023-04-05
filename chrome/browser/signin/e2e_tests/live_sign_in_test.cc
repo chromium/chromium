@@ -4,6 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -13,23 +14,33 @@
 #include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/driver/sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/webview/webview.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -526,5 +537,60 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
               Tribool::kFalse);
   }
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
+  TestAccount test_account;
+  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", test_account));
+
+  // Check there is only one profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1U);
+
+  // Open the profile picker.
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
+  profiles::testing::WaitForPickerLoadStop(
+      GURL("chrome://profile-picker/new-profile"));
+
+  // Simulate a click on the signin button.
+  base::test::TestFuture<bool> proceed_future;
+  ProfilePicker::SwitchToDiceSignIn(SK_ColorRED, proceed_future.GetCallback());
+  EXPECT_TRUE(proceed_future.Get());
+
+  // Signin on Gaia.
+  content::WebContents* picker_contents =
+      ProfilePicker::GetWebViewForTesting()->GetWebContents();
+  Profile* new_profile =
+      Profile::FromBrowserContext(picker_contents->GetBrowserContext());
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
+  EXPECT_NE(browser()->profile(), new_profile);
+  sign_in_functions.SignInFromCurrentPage(picker_contents, test_account,
+                                          /*previously_signed_in_accounts=*/0);
+
+  // User is signed in, but Sync is off.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
+            signin::ConsentLevel::kSignin);
+
+  // Confirm Sync.
+  ui_test_utils::BrowserChangeObserver browser_added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  GURL sync_confirmation_url = AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow);
+  profiles::testing::WaitForPickerLoadStop(sync_confirmation_url);
+  LoginUIServiceFactory::GetForProfile(new_profile)
+      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+
+  // Wait for browser to open.
+  profiles::testing::WaitForPickerClosed();
+  Browser* new_browser = browser_added_observer.Wait();
+  EXPECT_EQ(new_browser->profile(), new_profile);
+  EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
+            signin::ConsentLevel::kSync);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin::test

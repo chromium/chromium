@@ -353,8 +353,7 @@ ProfilePickerView::NavigationFinishedObserver::~NavigationFinishedObserver() =
 
 void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!closure_ || navigation_handle->GetURL() != url_ ||
-      !navigation_handle->HasCommitted()) {
+  if (!closure_ || !navigation_handle->HasCommitted()) {
     return;
   }
   std::move(closure_).Run();
