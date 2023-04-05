@@ -978,41 +978,18 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
     return false;
   }
 
-  if (RuntimeEnabledFeatures::
-          AllowDiscoverableCredentialsForSecurePaymentConfirmationEnabled()) {
-    if ((!authenticator->hasResidentKey() &&
-         !authenticator->hasRequireResidentKey()) ||
-        (authenticator->hasResidentKey() &&
-         authenticator->residentKey() == "discouraged") ||
-        (!authenticator->hasResidentKey() &&
-         authenticator->hasRequireResidentKey() &&
-         !authenticator->requireResidentKey())) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "A resident key must be 'preferred' or 'required' for 'payment' "
-          "extension."));
-      return false;
-    }
-  } else {
-    // Currently discoverable credentials on Android do not support the payment
-    // extension. As such, we only allow residentKey=preferred, and later
-    // internally map it to discouraged to receive a non-discoverable
-    // credential.
-    //
-    // We do not allow developers to directly specify residentKey=discouraged
-    // for Android, in order to align behavior with desktop platforms.
-    //
-    // TODO(crbug.com/1393662): Remove Android-specific code once OS-level
-    // support is available.
-    if (!authenticator->hasResidentKey() ||
-        authenticator->residentKey() != "preferred") {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "A resident key must be 'preferred' for 'payment' extension "
-          "('required' is not supported on Android at this time: "
-          "https://crbug.com/1393662)."));
-      return false;
-    }
+  if ((!authenticator->hasResidentKey() &&
+       !authenticator->hasRequireResidentKey()) ||
+      (authenticator->hasResidentKey() &&
+       authenticator->residentKey() == "discouraged") ||
+      (!authenticator->hasResidentKey() &&
+       authenticator->hasRequireResidentKey() &&
+       !authenticator->requireResidentKey())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "A resident key must be 'preferred' or 'required' for 'payment' "
+        "extension."));
+    return false;
   }
 
   if (!authenticator->hasAuthenticatorAttachment() ||
