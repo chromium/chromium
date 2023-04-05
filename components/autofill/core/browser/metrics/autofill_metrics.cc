@@ -2578,7 +2578,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetWasFocused(OptionalBooleanToBool(was_focused))
       .SetIsFocusable(field.IsFocusable())
-      .SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field));
+      .SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field))
+      .SetFormControlType(static_cast<int>(field.FormControlType()));
 
   if (was_focused == OptionalBoolean::kTrue) {
     builder

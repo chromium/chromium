@@ -7209,6 +7209,16 @@ others/histograms.xml -->
   <int value="9481" label="IBAN: False Negative (Unknown)"/>
 </enum>
 
+<enum name="AutofillFormControlType">
+  <int value="0" label="Empty"/>
+  <int value="1" label="Other"/>
+  <int value="2" label="Text"/>
+  <int value="3" label="Textarea"/>
+  <int value="4" label="Checkbox"/>
+  <int value="5" label="Radio"/>
+  <int value="6" label="Select one"/>
+</enum>
+
 <enum name="AutofillFormDynamicity">
   <int value="0" label="Static form"/>
   <int value="1" label="Field changed"/>

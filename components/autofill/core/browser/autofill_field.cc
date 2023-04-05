@@ -484,4 +484,22 @@ void AutofillField::AppendLogEventIfNotRepeated(
   }
 }
 
+FormControlType AutofillField::FormControlType() const {
+  if (form_control_type == "text") {
+    return FormControlType::kText;
+  } else if (form_control_type == "textarea") {
+    return FormControlType::kTextarea;
+  } else if (form_control_type == "checkbox") {
+    return FormControlType::kCheckbox;
+  } else if (form_control_type == "radio") {
+    return FormControlType::kRadio;
+  } else if (form_control_type == "select-one") {
+    return FormControlType::kSelectOne;
+  } else if (form_control_type == "") {
+    return FormControlType::kEmpty;
+  } else {
+    return FormControlType::kOther;
+  }
+}
+
 }  // namespace autofill

@@ -2967,6 +2967,13 @@ be describing additional metrics about the same event.
       Whether the user modified a field after autofilling/autocompleting it.
     </summary>
   </metric>
+  <metric name="FormControlType" enum="AutofillFormControlType">
+    <summary>
+      A form control type of a web form-associated element. We only list the
+      very common ones that are seen in autofill, such as text, textarea,
+      checkbox, radio, select-one, see |autofill::FormControlType|.
+    </summary>
+  </metric>
   <metric name="FormSessionIdentifier">
     <summary>
       A random variable assigned to a specific instance of a HTML form in a
