@@ -139,6 +139,22 @@ presubmit_builder(
 )
 
 presubmit_builder(
+    name = "win-presubmit",
+    executable = "recipe:presubmit",
+    builderless = True,
+    os = os.WINDOWS_DEFAULT,
+    execution_timeout = 40 * time.minute,
+    properties = {
+        "$depot_tools/presubmit": {
+            "runhooks": True,
+            "timeout_s": 480,
+        },
+        "repo_name": "chromium",
+    },
+    tryjob = None,
+)
+
+presubmit_builder(
     name = "requires-testing-checker",
     description_html = "prevents CLs that requires testing from landing on branches with no CQ",
     executable = "recipe:requires_testing_checker",
