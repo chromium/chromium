@@ -7,17 +7,22 @@
 #include "base/files/file_path.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -25,14 +30,20 @@
 
 namespace {
 
+const char kTestWebUIAppManifestId[] = "";
 const char kTestWebUIAppURL[] = "chrome://password-manager/?source=pwa";
 
-std::unique_ptr<WebAppInstallInfo> CreateTestWebAppInstallInfo() {
+std::unique_ptr<WebAppInstallInfo> GetTestWebAppInstallInfo() {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL(kTestWebUIAppURL);
   web_app_info->title = u"Test app";
-  web_app_info->manifest_id = "";
+  web_app_info->manifest_id = kTestWebUIAppManifestId;
   return web_app_info;
+}
+
+web_app::AppId GetTestWebAppId() {
+  return web_app::GenerateAppId(kTestWebUIAppManifestId,
+                                GURL(kTestWebUIAppURL));
 }
 
 Profile* CreateAdditionalProfile() {
@@ -49,6 +60,13 @@ Profile* CreateAdditionalProfile() {
   return &profile;
 }
 
+void InstallAppForProfile(Profile* profile,
+                          std::unique_ptr<WebAppInstallInfo> app_info) {
+  GURL app_url(app_info->start_url);
+  web_app::test::InstallWebApp(profile, std::move(app_info));
+  ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(profile, app_url));
+}
+
 }  // namespace
 
 class WebAppProfileSwitcherBrowserTest
@@ -62,14 +80,7 @@ class WebAppProfileSwitcherBrowserTest
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                        SwitchWebAppProfileRequiresInstall) {
   Profile* first_profile = profile();
-
-  // Install WebApp for the first profile.
-  auto web_app_info = CreateTestWebAppInstallInfo();
-  web_app::AppId app_id = web_app::GenerateAppId(web_app_info->manifest_id,
-                                                 web_app_info->start_url);
-  web_app::test::InstallWebApp(first_profile, std::move(web_app_info));
-  ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(first_profile,
-                                                      GURL(kTestWebUIAppURL)));
+  InstallAppForProfile(first_profile, GetTestWebAppInstallInfo());
 
   // Create a second profile.
   Profile* second_profile = CreateAdditionalProfile();
@@ -81,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   // Verify that the app is installed and launched.
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   base::test::TestFuture<void> profile_switch_complete;
-  WebAppProfileSwitcher profile_switcher(app_id, *first_profile,
+  WebAppProfileSwitcher profile_switcher(GetTestWebAppId(), *first_profile,
                                          profile_switch_complete.GetCallback());
   profile_switcher.SwitchToProfile(second_profile->GetPath());
 
@@ -102,29 +113,18 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                        SwitchWebAppProfileLaunchOnly) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* first_profile = profile();
-
-  auto web_app_info = CreateTestWebAppInstallInfo();
-  web_app::AppId app_id = web_app::GenerateAppId(web_app_info->manifest_id,
-                                                 web_app_info->start_url);
-  // Install web app.
-  web_app::test::InstallWebApp(first_profile, std::move(web_app_info));
-  ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(first_profile,
-                                                      GURL(kTestWebUIAppURL)));
+  InstallAppForProfile(first_profile, GetTestWebAppInstallInfo());
 
   // Create a second profile and install the app for it.
   Profile* second_profile = CreateAdditionalProfile();
-  auto web_app_info_copy = CreateTestWebAppInstallInfo();
-  web_app::test::InstallWebApp(second_profile, std::move(web_app_info_copy));
-  ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(second_profile,
-                                                      GURL(kTestWebUIAppURL)));
+  InstallAppForProfile(second_profile, GetTestWebAppInstallInfo());
   ASSERT_FALSE(chrome::FindBrowserWithProfile(second_profile));
 
   // Verify that the app is launched for the second profile.
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   base::test::TestFuture<void> profile_switch_complete;
-  WebAppProfileSwitcher profile_switcher(app_id, *first_profile,
+  WebAppProfileSwitcher profile_switcher(GetTestWebAppId(), *first_profile,
                                          profile_switch_complete.GetCallback());
   profile_switcher.SwitchToProfile(second_profile->GetPath());
 
@@ -139,4 +139,42 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
             new_web_contents);
 
   EXPECT_TRUE(profile_switch_complete.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
+                       SwitchWebAppProfileActivateWindowOnly) {
+  Profile* first_profile = profile();
+  InstallAppForProfile(first_profile, GetTestWebAppInstallInfo());
+
+  // Launch the app for the first profile.
+  web_app::LaunchWebAppBrowserAndWait(first_profile, GetTestWebAppId());
+  Browser* first_profile_app_browser =
+      web_app::AppBrowserController::FindForWebApp(*first_profile,
+                                                   GetTestWebAppId());
+  ASSERT_TRUE(first_profile_app_browser);
+  ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
+
+  // Create a second profile and install the app for it.
+  Profile* second_profile = CreateAdditionalProfile();
+  InstallAppForProfile(second_profile, GetTestWebAppInstallInfo());
+  // Launch the app.
+  web_app::LaunchWebAppBrowserAndWait(second_profile, GetTestWebAppId());
+  Browser* second_profile_app_browser =
+      web_app::AppBrowserController::FindForWebApp(*second_profile,
+                                                   GetTestWebAppId());
+  ASSERT_TRUE(second_profile_app_browser);
+  EXPECT_EQ(chrome::FindLastActive(), second_profile_app_browser);
+
+  // Switch to the first profile from the second.
+  base::test::TestFuture<void> profile_switch_complete;
+  WebAppProfileSwitcher profile_switcher(GetTestWebAppId(), *second_profile,
+                                         profile_switch_complete.GetCallback());
+  profile_switcher.SwitchToProfile(first_profile->GetPath());
+  ui_test_utils::BrowserActivationWaiter(first_profile_app_browser)
+      .WaitForActivation();
+  EXPECT_TRUE(profile_switch_complete.Wait());
+
+  // Check that there is only one browser for the first_profile and it's active. 
+  ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
+  EXPECT_EQ(chrome::FindBrowserWithActiveWindow(), first_profile_app_browser);
 }

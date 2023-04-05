@@ -2890,7 +2890,6 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
-        "../browser/password_manager/web_app_profile_switcher_browsertest.cc",
       ]
     }
 
@@ -9836,6 +9835,10 @@ if (!is_android) {
 
     if (is_linux || is_chromeos || is_win) {
       data_deps += [ "//chrome:packed_resources" ]
+    }
+
+    if (!is_chromeos) {
+      sources += [ "../browser/password_manager/web_app_profile_switcher_interactive_uitest.cc" ]
     }
 
     if (use_ozone) {

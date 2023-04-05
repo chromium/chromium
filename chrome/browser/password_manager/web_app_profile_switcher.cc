@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -81,12 +83,19 @@ void WebAppProfileSwitcher::QueryProfileWebAppRegistryToOpenWebApp(
 void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
     web_app::AppLock& new_profile_lock) {
   if (new_profile_lock.registrar().IsInstalled(app_id_)) {
-    // The web app is already installed and can be launched.
-    LaunchAppWithId(app_id_,
-                    webapps::InstallResultCode::kSuccessAlreadyInstalled);
+    // The web app is already installed and can be launched, or foregrounded,
+    // if it's already launched.
+    Browser* launched_app =
+        web_app::AppBrowserController::FindForWebApp(*new_profile_, app_id_);
+    if (launched_app) {
+      launched_app->window()->Activate();
+      RunCompletionCallback();
+    } else {
+      LaunchAppWithId(app_id_,
+                      webapps::InstallResultCode::kSuccessAlreadyInstalled);
+    }
     return;
   }
-
   // Fetch app icons from the already installed app prior to
   // installation.
   // TODO(crbug/1414331) Use the icon loading command once it's available.
