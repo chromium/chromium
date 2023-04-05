@@ -1016,6 +1016,7 @@ public class AwContentsTest {
                 "Pixel",
                 "Pixel 2",
                 "Pixel 3",
+                "Pixel 4a",
         };
         if (!Arrays.asList(supportedModels).contains(Build.MODEL)) {
             Log.w(TAG, "Skipping vulkan test on unknown device: " + Build.MODEL);
