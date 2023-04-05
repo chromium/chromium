@@ -208,7 +208,7 @@ class CalendarViewTest : public AshTestBase {
     calendar_view_->check_upcoming_events_timer_.user_task().Run();
   }
 
-  views::View* calendar_sliding_surface_view() {
+  CalendarSlidingSurface* calendar_sliding_surface_view() {
     return calendar_view_->calendar_sliding_surface_;
   }
 
@@ -2307,9 +2307,7 @@ TEST_F(
   EXPECT_FALSE(is_showing_up_next_view);
 }
 
-TEST_F(
-    CalendarViewWithJellyEnabledTest,
-    GivenEventsStartingTenMinsAway_WhenCalendarViewOpens_ThenUpNextViewShouldBeShown) {
+TEST_F(CalendarViewWithJellyEnabledTest, ShouldShowUpNextView) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   // Set time override.
@@ -2324,8 +2322,7 @@ TEST_F(
 
   // When fetched events are in the next 10 mins, then up next should have been
   // created.
-  bool is_showing_up_next_view = up_next_view();
-  EXPECT_TRUE(is_showing_up_next_view);
+  EXPECT_TRUE(up_next_view());
 }
 
 TEST_F(CalendarViewWithJellyEnabledTest,
