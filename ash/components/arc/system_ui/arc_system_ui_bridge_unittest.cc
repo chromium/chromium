@@ -44,11 +44,13 @@ class TestColorPaletteController : public ash::ColorPaletteController {
   void SetStaticColor(SkColor seed_color,
                       const AccountId& account_id,
                       base::OnceClosure on_complete) override {}
-  ash::ColorPaletteSeed GetColorPaletteSeed(
+  absl::optional<ash::ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     return seed_;
   }
-  ash::ColorPaletteSeed GetCurrentSeed() const override { return seed_; }
+  absl::optional<ash::ColorPaletteSeed> GetCurrentSeed() const override {
+    return seed_;
+  }
   bool UsesWallpaperSeedColor(const AccountId& account_id) const override {
     return true;
   }

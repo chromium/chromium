@@ -95,7 +95,9 @@ void ArcSystemUIBridge::OnConnectionReady() {
   }
 
   const auto seed = color_palette_controller_->GetCurrentSeed();
-  OnColorPaletteChanging(seed);
+  if (seed) {
+    OnColorPaletteChanging(*seed);
+  }
 }
 
 void ArcSystemUIBridge::OnColorPaletteChanging(

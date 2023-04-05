@@ -35,6 +35,26 @@ class MockPaletteObserver : public ColorPaletteController::Observer {
               (override));
 };
 
+// A helper to record updates to a `ui::NativeTheme`.
+class TestObserver : public ui::NativeThemeObserver {
+ public:
+  TestObserver() = default;
+  ~TestObserver() override = default;
+
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {
+    last_theme_ = observed_theme;
+    call_count_++;
+  }
+
+  int call_count() { return call_count_; }
+
+  ui::NativeTheme* last_theme() { return last_theme_; }
+
+ private:
+  ui::NativeTheme* last_theme_ = nullptr;
+  int call_count_ = 0;
+};
+
 }  // namespace
 
 class ColorPaletteControllerTest : public NoSessionAshTestBase {
@@ -80,20 +100,28 @@ TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
 TEST_F(ColorPaletteControllerTest, SetColorScheme_JellyDisabled_AlwaysTonal) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(chromeos::features::kJelly);
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.SetCalculatedColors(
+      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
 
   color_palette_controller()->SetColorScheme(ColorScheme::kStatic, kAccountId,
                                              base::DoNothing());
-  EXPECT_EQ(ColorScheme::kTonalSpot,
-            color_palette_controller()->GetColorPaletteSeed(kAccountId).scheme);
+  EXPECT_EQ(
+      ColorScheme::kTonalSpot,
+      color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
 
   color_palette_controller()->SetColorScheme(ColorScheme::kExpressive,
                                              kAccountId, base::DoNothing());
-  EXPECT_EQ(ColorScheme::kTonalSpot,
-            color_palette_controller()->GetColorPaletteSeed(kAccountId).scheme);
+  EXPECT_EQ(
+      ColorScheme::kTonalSpot,
+      color_palette_controller()->GetColorPaletteSeed(kAccountId)->scheme);
 }
 
 TEST_F(ColorPaletteControllerTest, SetColorScheme) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.SetCalculatedColors(
+      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
 
   ColorScheme color_scheme = ColorScheme::kExpressive;
 
@@ -106,7 +134,7 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
             color_palette_controller()->GetStaticColor(kAccountId));
   auto color_palette_seed =
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
-  EXPECT_EQ(color_scheme, color_palette_seed.scheme);
+  EXPECT_EQ(color_scheme, color_palette_seed->scheme);
 }
 
 TEST_F(ColorPaletteControllerTest, SetStaticColor) {
@@ -122,8 +150,8 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor) {
             color_palette_controller()->GetColorScheme(kAccountId));
   auto color_palette_seed =
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
-  EXPECT_EQ(ColorScheme::kStatic, color_palette_seed.scheme);
-  EXPECT_EQ(static_color, color_palette_seed.seed_color);
+  EXPECT_EQ(ColorScheme::kStatic, color_palette_seed->scheme);
+  EXPECT_EQ(static_color, color_palette_seed->seed_color);
 }
 
 // If the Jelly flag is off, we always return the KMeans color from the
@@ -145,7 +173,7 @@ TEST_F(ColorPaletteControllerTest, SetStaticColor_JellyDisabled_AlwaysKMeans) {
   // moved.
   EXPECT_NE(
       SK_ColorWHITE,
-      color_palette_controller()->GetColorPaletteSeed(kAccountId).seed_color);
+      color_palette_controller()->GetColorPaletteSeed(kAccountId)->seed_color);
 }
 
 TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
@@ -163,6 +191,92 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
                             ui::ColorProviderManager::ColorMode::kDark)))
       .Times(1);
   dark_light_controller()->SetDarkModeEnabledForTest(true);
+}
+
+TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chromeos::features::kJelly);
+
+  // Set to a known state.
+  dark_light_controller()->SetDarkModeEnabledForTest(true);
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.SetCalculatedColors(
+      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
+
+  TestObserver observer;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  dark_light_controller()->SetDarkModeEnabledForTest(false);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(1, observer.call_count());
+  ASSERT_TRUE(observer.last_theme());
+  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
+            observer.last_theme()->GetDefaultSystemColorScheme());
+  // TODO(skau): Check that this matches kKMean after color blending has been
+  // moved.
+  EXPECT_NE(SK_ColorWHITE, observer.last_theme()->user_color().value());
+}
+
+TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+
+  const SkColor kCelebiColor = SK_ColorBLUE;
+
+  // Set to a known state.
+  dark_light_controller()->SetDarkModeEnabledForTest(true);
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.SetCalculatedColors(
+      WallpaperCalculatedColors({}, SK_ColorWHITE, kCelebiColor));
+
+  TestObserver observer;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  dark_light_controller()->SetDarkModeEnabledForTest(false);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(1, observer.call_count());
+  ASSERT_TRUE(observer.last_theme());
+  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
+            observer.last_theme()->GetDefaultSystemColorScheme());
+  EXPECT_EQ(kCelebiColor, observer.last_theme()->user_color().value());
+}
+
+// Emulates Dark mode changes on login screen that can result from pod
+// selection.
+TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_NoSession) {
+  GetSessionControllerClient()->Reset();
+
+  // Set to a known state.
+  dark_light_controller()->SetDarkModeEnabledForTest(true);
+
+  TestObserver observer;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  dark_light_controller()->SetDarkModeEnabledForTest(false);
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(1, observer.call_count());
+  ASSERT_TRUE(observer.last_theme());
+  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
+            observer.last_theme()->GetDefaultSystemColorScheme());
+}
+
+TEST_F(ColorPaletteControllerTest, GetSeedWithUnsetWallpaper) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+
+  WallpaperControllerTestApi wallpaper(wallpaper_controller());
+  wallpaper.ResetCalculatedColors();
+
+  // If we calculated wallpaper colors are unset, we can't produce a valid
+  // seed.
+  EXPECT_FALSE(color_palette_controller()->GetCurrentSeed().has_value());
 }
 
 }  // namespace ash

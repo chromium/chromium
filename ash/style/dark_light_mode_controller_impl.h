@@ -28,7 +28,6 @@ class ColorModeObserver;
 class ASH_EXPORT DarkLightModeControllerImpl
     : public DarkLightModeController,
       public LoginDataDispatcher::Observer,
-      public WallpaperControllerObserver,
       public ScheduledFeature {
  public:
   DarkLightModeControllerImpl();
@@ -62,9 +61,6 @@ class ASH_EXPORT DarkLightModeControllerImpl
   // LoginDataDispatcher::Observer:
   void OnOobeDialogStateChanged(OobeDialogState state) override;
   void OnFocusPod(const AccountId& account_id) override;
-
-  // WallpaperControllerObserver:
-  void OnWallpaperColorsChanged() override;
 
   // ScheduledFeature:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
@@ -103,8 +99,7 @@ class ASH_EXPORT DarkLightModeControllerImpl
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 
-  // Keep track of the last value that was sent to avoid multiple
-  // notifications.
+  // Keep track of the last value that was sent to avoid multiple notifications.
   absl::optional<bool> last_value_;
 
   // absl::nullopt in case no user pod is focused.
