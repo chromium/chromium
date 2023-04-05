@@ -43,7 +43,8 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
                                          std::unique_ptr<TracedValue>& value) {
   value->SetString("object_name", object.GetName());
   DCHECK(object.GetFrame());
-  value->SetString("frame", String::FromUTF8(ToTraceValue(object.GetFrame())));
+  value->SetString("frame",
+                   String::FromUTF8(GetFrameIdForTracing(object.GetFrame())));
   value->SetBoolean("is_in_main_frame", object.GetFrame()->IsMainFrame());
   value->SetBoolean("is_in_outermost_main_frame",
                     object.GetFrame()->IsOutermostMainFrame());

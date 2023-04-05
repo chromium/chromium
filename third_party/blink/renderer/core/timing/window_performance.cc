@@ -647,7 +647,7 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
       DomWindow());
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
-               ToTraceValue(DomWindow()->GetFrame()));
+               GetFrameIdForTracing(DomWindow()->GetFrame()));
   if (HasObserverFor(PerformanceEntry::kElement))
     NotifyObserversOfEntry(*entry);
   if (!IsElementTimingBufferFull())

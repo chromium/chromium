@@ -418,7 +418,7 @@ void Frame::UpdateVisibleToHitTesting() {
     DidChangeVisibleToHitTesting();
 }
 
-const std::string& Frame::ToTraceValue() {
+const std::string& Frame::GetFrameIdForTracing() {
   // token's ToString() is latin1.
   if (!trace_value_)
     trace_value_ = devtools_frame_token_.ToString();
@@ -807,7 +807,7 @@ bool Frame::SwapImpl(
       // renderer in telemetry metrics. See crbug.com/692112#c11.
       TRACE_EVENT_INSTANT1("loading", "markAsMainFrame",
                            TRACE_EVENT_SCOPE_THREAD, "frame",
-                           ::blink::ToTraceValue(new_local_frame));
+                           ::blink::GetFrameIdForTracing(new_local_frame));
     }
   }
 

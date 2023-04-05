@@ -299,7 +299,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   const base::UnguessableToken& GetDevToolsFrameToken() const {
     return devtools_frame_token_;
   }
-  const std::string& ToTraceValue();
+  const std::string& GetFrameIdForTracing();
 
   void SetEmbeddingToken(const base::UnguessableToken& embedding_token);
   const absl::optional<base::UnguessableToken>& GetEmbeddingToken() const {
@@ -623,9 +623,10 @@ DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(Frame)
 // This method should be used instead of Frame* pointer
 // in a TRACE_EVENT_XXX macro. Example:
 //
-// TRACE_EVENT1("category", "event_name", "frame", ToTraceValue(GetFrame()));
-static inline std::string ToTraceValue(Frame* frame) {
-  return frame ? frame->ToTraceValue() : std::string();
+// TRACE_EVENT1("category", "event_name", "frame",
+// GetFrameIdForTracing(GetFrame()));
+static inline std::string GetFrameIdForTracing(Frame* frame) {
+  return frame ? frame->GetFrameIdForTracing() : std::string();
 }
 
 }  // namespace blink

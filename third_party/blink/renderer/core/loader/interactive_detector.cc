@@ -594,7 +594,7 @@ void InteractiveDetector::OnTimeToInteractiveDetected() {
 
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "loading,rail", "InteractiveTime", interactive_time_, "frame",
-      ToTraceValue(GetSupplementable()->GetFrame()), "args",
+      GetFrameIdForTracing(GetSupplementable()->GetFrame()), "args",
       [&](perfetto::TracedValue context) {
         // We log the trace event even if there is user input, but annotate the
         // event with whether that happened.

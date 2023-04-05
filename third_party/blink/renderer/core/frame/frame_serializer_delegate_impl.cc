@@ -50,7 +50,7 @@ const char kShadowDelegatesFocusAttributeName[] = "shadowdelegatesfocus";
 // static
 String FrameSerializerDelegateImpl::GetContentID(Frame* frame) {
   DCHECK(frame);
-  String frame_id = String(frame->ToTraceValue().data());
+  String frame_id = String(frame->GetFrameIdForTracing().data());
   return "<frame-" + frame_id + "@mhtml.blink>";
 }
 

@@ -58,10 +58,10 @@ void LargestTextPaintManager::ReportCandidateToTrace(
     return;
   auto value = std::make_unique<TracedValue>();
   PopulateTraceValue(*value, largest_text_record);
-  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestTextPaint::Candidate",
-                                   largest_text_record.paint_time, "data",
-                                   std::move(value), "frame",
-                                   ToTraceValue(&frame_view_->GetFrame()));
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+      "loading", "LargestTextPaint::Candidate", largest_text_record.paint_time,
+      "data", std::move(value), "frame",
+      GetFrameIdForTracing(&frame_view_->GetFrame()));
 }
 
 TextRecord* LargestTextPaintManager::UpdateMetricsCandidate() {
