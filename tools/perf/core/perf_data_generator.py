@@ -154,7 +154,6 @@ FYI_BUILDERS = {
     'android-cfi-builder-perf-fyi': {
         'additional_compile_targets': [
             'android_tools',
-            'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
@@ -201,7 +200,6 @@ FYI_BUILDERS = {
     'android_arm64-cfi-builder-perf-fyi': {
         'additional_compile_targets': [
             'android_tools',
-            'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
@@ -444,7 +442,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
             'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
@@ -506,7 +503,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
             'chromium_builder_perf',
             'dump_syms',
             'push_apps_to_background_apk',
@@ -526,7 +522,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',
@@ -595,7 +590,6 @@ BUILDERS = {
             'microdump_stackwalk',
             'system_webview_google_apk',
             'android_tools',
-            'cc_perftests',
             'chromium_builder_perf',
             'push_apps_to_background_apk',
             'system_webview_apk',

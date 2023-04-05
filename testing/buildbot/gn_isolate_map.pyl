@@ -399,10 +399,6 @@
     "label": "//media/cast:cast_unittests",
     "type": "windowed_test_launcher",
   },
-  "cc_perftests": {
-    "label": "//cc:cc_perftests",
-    "type": "additional_compile_target",
-  },
   "cc_unittests": {
     "label": "//cc:cc_unittests",
     "type": "windowed_test_launcher",
