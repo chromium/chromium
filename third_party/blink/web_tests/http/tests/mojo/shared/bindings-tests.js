@@ -9,7 +9,7 @@ const kTestNumbers = [0, 1, 1, 2, 3, 5, 8, 13, 21];
 class TargetImpl {
   constructor() {
     this.numPokes = 0;
-    this.target = new liteJsTest.mojom.TestMessageTargetReceiver(this);
+    this.target = new TestMessageTargetReceiver(this);
   }
 
   poke() { this.numPokes++; }
@@ -45,7 +45,7 @@ promise_test(() => {
 promise_test(() => {
   let impl = new TargetImpl;
   let remote = impl.target.$.bindNewPipeAndPassRemote();
-  const enumValue = liteJsTest.mojom.TestMessageTarget_NestedEnum.kFoo;
+  const enumValue = TestMessageTarget_NestedEnum.kFoo;
   return remote.echo(enumValue)
                .then(({nested}) => assert_equals(nested, enumValue));
 }, 'nested enums are usable as arguments and responses.');
@@ -84,13 +84,13 @@ promise_test(() => {
   // Intercept any browser-bound request for TestMessageTarget and bind it
   // instead to the local |impl| object.
   let interceptor = new MojoInterfaceInterceptor(
-      liteJsTest.mojom.TestMessageTarget.$interfaceName);
+      TestMessageTarget.$interfaceName);
   interceptor.oninterfacerequest = e => {
     impl.target.$.bindHandle(e.handle);
   }
   interceptor.start();
 
-  let remote = liteJsTest.mojom.TestMessageTarget.getRemote();
+  let remote = TestMessageTarget.getRemote();
   remote.poke();
   return remote.ping().then(() => {
     assert_equals(impl.numPokes, 1);
@@ -98,7 +98,7 @@ promise_test(() => {
 }, 'getRemote() attempts to send requests to the frame host');
 
 promise_test(() => {
-  let router = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  let router = new TestMessageTargetCallbackRouter;
   let remote = router.$.bindNewPipeAndPassRemote();
   return new Promise(resolve => {
     router.poke.addListener(resolve);
@@ -107,7 +107,7 @@ promise_test(() => {
 }, 'basic generated CallbackRouter behavior works as intended');
 
 promise_test(() => {
-  let router = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  let router = new TestMessageTargetCallbackRouter;
   let remote = router.$.bindNewPipeAndPassRemote();
   let numPokes = 0;
   router.poke.addListener(() => ++numPokes);
@@ -117,7 +117,7 @@ promise_test(() => {
 }, 'CallbackRouter listeners can reply to messages');
 
 promise_test(() => {
-  let router = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  let router = new TestMessageTargetCallbackRouter;
   let remote = router.$.bindNewPipeAndPassRemote();
   router.repeat.addListener(
     (message, numbers) => ({message: message, numbers: numbers}));
@@ -129,9 +129,9 @@ promise_test(() => {
 }, 'CallbackRouter listeners can reply with multiple reply arguments');
 
 promise_test(() => {
-  let targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  let targetRouter = new TestMessageTargetCallbackRouter;
   let targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
-  let subinterfaceRouter = new liteJsTest.mojom.SubinterfaceCallbackRouter;
+  let subinterfaceRouter = new SubinterfaceCallbackRouter;
   targetRouter.requestSubinterface.addListener((request, client) => {
     let values = [];
     subinterfaceRouter.$.bindHandle(request.handle);
@@ -142,8 +142,8 @@ promise_test(() => {
     });
   });
 
-  let clientRouter = new liteJsTest.mojom.SubinterfaceClientCallbackRouter;
-  let subinterfaceRemote = new liteJsTest.mojom.SubinterfaceRemote;
+  let clientRouter = new SubinterfaceClientCallbackRouter;
+  let subinterfaceRemote = new SubinterfaceRemote;
   targetRemote.requestSubinterface(
     subinterfaceRemote.$.bindNewPipeAndPassReceiver(),
     clientRouter.$.bindNewPipeAndPassRemote());
@@ -159,7 +159,7 @@ promise_test(() => {
 }, 'can send and receive interface requests and proxies');
 
 promise_test(() => {
-  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRouter = new TestMessageTargetCallbackRouter;
   const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
   targetRouter.deconstruct.addListener(({x, y, z}) => ({
     x: x,
@@ -176,7 +176,7 @@ promise_test(() => {
    'correctly serialized');
 
 promise_test(() => {
-  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRouter = new TestMessageTargetCallbackRouter;
   const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
   targetRouter.flatten.addListener(values => ({values: values.map(v => v.x)}));
   return targetRemote.flatten([{x: 1}, {x: 2}, {x: 3}]).then(reply => {
@@ -185,7 +185,7 @@ promise_test(() => {
 }, 'regression test for complex array serialization');
 
 promise_test(() => {
-  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRouter = new TestMessageTargetCallbackRouter;
   const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
   targetRouter.flattenUnions.addListener(unions => {
     return {x: unions.filter(u => u.x !== undefined).map(u => u.x),
@@ -201,7 +201,7 @@ promise_test(() => {
 }, 'can serialize and deserialize unions');
 
 promise_test(() => {
-  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRouter = new TestMessageTargetCallbackRouter;
   const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
   targetRouter.flattenMap.addListener(map => {
     return {keys: Object.keys(map), values: Object.values(map)};
@@ -214,7 +214,7 @@ promise_test(() => {
 }, 'can serialize and deserialize maps with odd number of items');
 
 promise_test(() => {
-  const targetRouter = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const targetRouter = new TestMessageTargetCallbackRouter;
   const targetRemote = targetRouter.$.bindNewPipeAndPassRemote();
   targetRouter.flattenMap.addListener(map => {
     return {keys: Object.keys(map), values: Object.values(map)};
@@ -242,7 +242,7 @@ promise_test(() => {
 }, 'can use generated flushForTesting API for synchronization in tests');
 
 promise_test(async () => {
-  let clientRouter = new liteJsTest.mojom.SubinterfaceClientCallbackRouter;
+  let clientRouter = new SubinterfaceClientCallbackRouter;
   let clientRemote = clientRouter.$.bindNewPipeAndPassRemote();
 
   let actualDidFlushes = 0;
@@ -268,7 +268,7 @@ promise_test(async(t) => {
 }, 'InterfaceTarget connection error handler runs when set on an Interface object');
 
 promise_test(() => {
-  const router = new liteJsTest.mojom.TestMessageTargetCallbackRouter;
+  const router = new TestMessageTargetCallbackRouter;
   const remote = router.$.bindNewPipeAndPassRemote();
   const disconnectPromise = new Promise(resolve => router.onConnectionError.addListener(resolve));
   remote.$.close();
@@ -276,7 +276,7 @@ promise_test(() => {
 }, 'InterfaceTarget connection error handler runs when set on an InterfaceCallbackRouter object');
 
 function getMojoEchoRemote() {
-  let remote = new content.mojom.MojoEchoRemote;
+  let remote = new MojoEchoRemote;
   remote.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
   return remote;
 }
