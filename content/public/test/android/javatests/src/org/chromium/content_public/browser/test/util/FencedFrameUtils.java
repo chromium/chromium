@@ -33,7 +33,7 @@ public class FencedFrameUtils {
                 () -> { return FencedFrameUtilsJni.get().getCount(frame); });
     }
 
-    private static RenderFrameHost getLastFencedFrame(
+    public static RenderFrameHost getLastFencedFrame(
             final RenderFrameHost frame, final String url) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return FencedFrameUtilsJni.get().getLastFencedFrame(frame, url); });
@@ -57,7 +57,7 @@ public class FencedFrameUtils {
 
             String script = "((async() => {"
                     + " const fenced_frame = document.createElement('fencedframe');"
-                    + " fenced_frame.src = '" + url + "';"
+                    + " fenced_frame.config = new FencedFrameConfig('" + url + "');"
                     + " document.body.appendChild(fenced_frame);"
                     + "})());";
             frameExt.executeJavaScript(script, (String r) -> {});

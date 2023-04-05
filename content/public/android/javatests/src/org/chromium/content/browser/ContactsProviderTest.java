@@ -169,7 +169,8 @@ public class ContactsProviderTest {
      */
     @Test
     @SmallTest
-    @CommandLineFlags.Add({"enable-features=FencedFrames<Study,PrivacySandboxAdsAPIsOverride",
+    @CommandLineFlags.
+    Add({"enable-features=FencedFrames<Study,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:implementation_type/mparch"})
     public void
