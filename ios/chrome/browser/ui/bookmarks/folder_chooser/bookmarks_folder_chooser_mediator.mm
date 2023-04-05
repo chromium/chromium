@@ -121,6 +121,8 @@ using bookmarks::BookmarkNode;
   return bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
 }
 
+// TODO(crbug.com/1430453): Update logic when API to check whether butter is
+// enabled is available.
 - (BOOL)shouldShowAccountBookmarks {
   if (!base::FeatureList::IsEnabled(
           bookmarks::kEnableBookmarksAccountStorage)) {
