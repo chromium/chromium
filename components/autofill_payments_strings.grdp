@@ -544,6 +544,9 @@
   <message name="IDS_AUTOFILL_SAVE_IBAN_PLACEHOLDER" desc="The placeholder/label text to show for the autofill prompt IBAN (International Bank Account Number) save bubble to indicate that user can enter nickname optionally.">
     Optional
   </message>
+  <message name="IDS_IBAN_NICKNAME_COUNT_BY" desc="Label message showing how many characters have been entered for an IBAN (International Bank Account Number) nickname vs max characters allowed.">
+    <ph name="NICKNAME_COUNT">$1<ex>20</ex></ph>/<ph name="NICKNAME_MAX">$2<ex>25</ex></ph>
+  </message>
   <message name="IDS_AUTOFILL_IBAN_SAVED" desc="Title text for the Autofill save IBAN (International Bank Account Number) bubble view when the IBAN  has been saved. Also label for icon animation.">
     IBAN saved
   </message>
