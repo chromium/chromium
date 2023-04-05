@@ -84,6 +84,9 @@ class MojoTrap : public Object<MojoTrap> {
   // events so that another thread may dipatch its own.
   base::ConditionVariable dispatching_condition_ GUARDED_BY(lock_){&lock_};
 
+  // The current number of waiters on |dispatching_condition_|.
+  uint32_t waiters_ GUARDED_BY(lock_) = 0;
+
   // A ref identifying the thread which is currently dispatching an event for
   // this trap, if any.
   absl::optional<base::PlatformThreadRef> dispatching_thread_ GUARDED_BY(lock_);
