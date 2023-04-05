@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
@@ -1212,7 +1213,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
       bubble_ui_info.AddQuickAction(
           DownloadCommands::Command::OPEN_WHEN_COMPLETE,
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
-          &vector_icons::kOpenInNewIcon);
+          &kOpenInNewIcon);
     }
   }
   return bubble_ui_info;

@@ -108,6 +108,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "nfc.icon",
     "note_outline.icon",
     "notes.icon",
+    "open_in_new.icon",
     "overflow_chevron.icon",
     "paintbrush.icon",
     "palette.icon",

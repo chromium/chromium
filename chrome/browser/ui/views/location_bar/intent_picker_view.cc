@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -73,7 +73,7 @@ bool IntentPickerView::GetShowIcon() const {
 }
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
-  return vector_icons::kOpenInNewIcon;
+  return kOpenInNewIcon;
 }
 
 BEGIN_METADATA(IntentPickerView, PageActionIconView)
