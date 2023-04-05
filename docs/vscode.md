@@ -145,7 +145,7 @@ $ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.pytho
 The following extensions might be useful for you as well:
 
 ```bash
-$ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker tht13.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
+$ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker george-alisson.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
 ```
 
 *   **chromium-codesearch** -
@@ -168,7 +168,7 @@ $ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo
 *   [**Code Spell Checker**](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) -
     A basic spell checker that works well with camelCase code. It helps catch
     common spelling errors.
-*   [**HTML Preview**](https://marketplace.visualstudio.com/items?itemName=tht13.html-preview-vscode) -
+*   [**HTML Preview**](https://marketplace.visualstudio.com/items?itemName=george-alisson.html-preview-vscode) -
     Previews HTML files while editing with `Ctrl+k v`.
 *   [**Color Picker**](https://marketplace.visualstudio.com/items?itemName=anseki.vscode-color) -
     Visualizes color codes inline and provides color picker GUI to generates new
