@@ -177,6 +177,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   SetCanActivate(false);
   set_parent_window(parent);
   set_margins(gfx::Insets());
+  set_adjust_if_offscreen(true);
 
   completion_view_ = AddChildView(
       std::make_unique<CompletionSuggestionView>(base::BindRepeating(
@@ -291,6 +292,8 @@ void SuggestionWindowView::Reorient(Orientation orientation) {
 void SuggestionWindowView::MakeVisible() {
   multiple_candidate_area_->SetVisible(true);
   SizeToContents();
+  // Docs can put the cursor offscreen - force it onscreen.
+  GetWidget()->SetBoundsConstrained(GetBubbleBounds());
 }
 
 void SuggestionWindowView::SetCandidateHighlighted(

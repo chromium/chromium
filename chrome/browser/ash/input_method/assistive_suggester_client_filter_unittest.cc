@@ -276,7 +276,7 @@ INSTANTIATE_TEST_SUITE_P(
          EnabledSuggestions{.emoji_suggestions = false,
                             .multi_word_suggestions = false,
                             .personal_info_suggestions = false,
-                            .diacritic_suggestions = false}},
+                            .diacritic_suggestions = true}},
         {"SlidesWithFullPath",
          /* url=*/
          "https://docs.google.com/presentation/d/"
@@ -286,7 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
          EnabledSuggestions{.emoji_suggestions = false,
                             .multi_word_suggestions = false,
                             .personal_info_suggestions = false,
-                            .diacritic_suggestions = false}},
+                            .diacritic_suggestions = true}},
         {"SystemTextApp",
          /* url=*/"chrome-extension://mmfbcljfglbokpmkimbfghdkjmjhdgbg",
          /* app_id=*/"mmfbcljfglbokpmkimbfghdkjmjhdgbg",

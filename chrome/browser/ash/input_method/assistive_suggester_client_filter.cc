@@ -127,13 +127,6 @@ const char* kAllowedAppsForEmojiSuggester[] = {
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
-const char* kDeniedDomainAndPathsForDiacritics[][2] = {
-    // Google Slides: delete on insert does not work
-    {"docs.google.com", "/presentation"},
-    // Google Docs: delete on insert does not work
-    {"docs.google.com", "/document"},
-};
-
 const char* kDeniedUrlsForMultiwordSuggester[] = {
     "chrome-untrusted://crosh/",     // Crosh on Chrome browser
     "chrome-untrusted://terminal/",  // Terminal on Chrome browser
@@ -282,8 +275,6 @@ void ReturnEnabledSuggestions(
   bool diacritic_suggestions_allowed =
       !IsMatchedSubDomain(kDeniedDomainsForDiacritics, current_url) &&
       !IsMatchedApp(kDeniedAppsForDiacritics, window_properties) &&
-      !IsMatchedUrlWithPathPrefix(kDeniedDomainAndPathsForDiacritics,
-                                  current_url) &&
       !IsMatchedExactUrl(kDeniedUrlsForDiacritics, current_url);
 
   // TODO(b/245469813): Investigate if denied is intentional for suggesters

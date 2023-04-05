@@ -554,7 +554,7 @@ TEST_F(
   EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
 }
 
 TEST_F(
@@ -578,7 +578,7 @@ TEST_F(
   EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
 }
 
 TEST_F(
@@ -602,7 +602,7 @@ TEST_F(
   EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
 }
 
 TEST_F(
@@ -626,7 +626,7 @@ TEST_F(
   EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
 }
 
 TEST_F(AssistiveSuggesterTest, DiacriticsSuggestionOnKeyDownRecordsSuccess) {
