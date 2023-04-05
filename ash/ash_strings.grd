@@ -3286,11 +3286,11 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_BRIGHTNESS_UP" desc="Label for accelerator action - Turn brightness up.">
         Turn brightness up
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle backwards in the MRU window list.">
-        Cycle backwards in the MRU window list
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" desc="Label for accelerator action - Go through windows from the least used window.">
+        Go through windows from the least used window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator action - Cycle forwards in the most recently used window list.">
-        Cycle forwards in the most recently used window list
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" desc="Label for accelerator action - Go through windows from the most recently used window.">
+        Go through windows from the most recently used window
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_LEFT" desc="Label for accelerator action - Activate desk on left.">
         Activate desk on left
@@ -3562,17 +3562,17 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP" desc="Label for accelerator action - Turn volume up.">
         Turn volume up
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" translateable="false" desc="Label for accelerator action - Keep window on left.">
-        Keep window on left
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" desc="Label for accelerator action - Pin window to left.">
+        Pin window to left
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" translateable="false" desc="Label for accelerator action - Keep window on right.">
-        Keep window on right
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" desc="Label for accelerator action - Pin window to right.">
+        Pin window to right
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_MINIMIZE" desc="Label for accelerator action - Minimize window.">
         Minimize window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" translateable="false" desc="Label for accelerator action - Minimize top window on back.">
-        Minimize top window on back
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" desc="Label for accelerator action - Minimize top window when there's no back history in Chrome.">
+        Minimize top window when there's no back history in Chrome
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Turn keyboard backlight on or off.">
         Turn keyboard backlight on or off
