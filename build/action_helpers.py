@@ -7,6 +7,7 @@ import contextlib
 import filecmp
 import os
 import pathlib
+import posixpath
 import shutil
 import tempfile
 
@@ -40,12 +41,13 @@ def atomic_output(path, mode='w+b', only_if_changed=True):
     try:
       yield f
 
-      # file should be closed before comparison/move.
+      # File should be closed before comparison/move.
       f.close()
       if not (only_if_changed and os.path.exists(path)
               and filecmp.cmp(f.name, path)):
         shutil.move(f.name, path)
     finally:
+      f.close()
       if os.path.exists(f.name):
         os.unlink(f.name)
 
@@ -71,21 +73,20 @@ def write_depfile(depfile_path, first_gn_output, inputs=None):
   assert depfile_path != first_gn_output  # http://crbug.com/646165
   assert not isinstance(inputs, str)  # Easy mistake to make
 
-  if inputs:
-    for path in inputs:
-      # Ensure relative paths os that build dirs are hermetic.
-      assert not os.path.isabs(path), f'Found abs path in depfile: {path}'
-
-  def _escape(value):
-    return value.replace(' ', '\\ ')
+  def _process_path(path):
+    assert not os.path.isabs(path), f'Found abs path in depfile: {path}'
+    if os.path.sep != posixpath.sep:
+      path = str(pathlib.Path(path).as_posix())
+    assert '\\' not in path, f'Found \\ in depfile: {path}'
+    return path.replace(' ', '\\ ')
 
   sb = []
-  sb.append(_escape(first_gn_output))
+  sb.append(_process_path(first_gn_output))
   if inputs:
     # Sort and uniquify to ensure file is hermetic.
     # One path per line to keep it human readable.
     sb.append(': \\\n ')
-    sb.append(' \\\n '.join(sorted(_escape(p) for p in set(inputs))))
+    sb.append(' \\\n '.join(sorted(_process_path(p) for p in set(inputs))))
   else:
     sb.append(': ')
   sb.append('\n')
