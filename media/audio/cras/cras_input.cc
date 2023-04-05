@@ -79,7 +79,10 @@ CrasInputStream::CrasInputStream(const AudioParameters& params,
       recording_enabled_(false),
 #endif
       glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
-      log_callback_(std::move(log_callback)) {
+      log_callback_(std::move(log_callback)),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(audio_manager_),
+                                         /*trace_start=*/true)) {
   DCHECK(audio_manager_);
   audio_bus_ = AudioBus::Create(params_);
   if (!audio_manager_->IsDefault(device_id, true)) {
@@ -437,6 +440,9 @@ void CrasInputStream::ReadAudio(size_t frames,
 
   audio_bus_->FromInterleaved<SignedInt16SampleTypeTraits>(
       reinterpret_cast<int16_t*>(buffer), audio_bus_->frames());
+
+  peak_detector_.FindPeak(audio_bus_.get());
+
   callback_->OnData(audio_bus_.get(), capture_time, normalized_volume, {});
 }
 
