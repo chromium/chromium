@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
+#include "build/build_config.h"
 
 #include <memory>
 
@@ -90,7 +91,13 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   std::unique_ptr<ScreensaverImageDownloader> screensaver_image_downloader_;
 };
 
-TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
+// crbug.com/1430802: flaky on Linux,
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DownloadImagesTest DISABLED_DownloadImagesTest
+#else
+#define MAYBE_DownloadImagesTest DownloadImagesTest
+#endif
+TEST_F(ScreensaverImageDownloaderTest, MAYBE_DownloadImagesTest) {
   // Test successful download.
   {
     url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
