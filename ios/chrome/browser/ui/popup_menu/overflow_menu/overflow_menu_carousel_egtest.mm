@@ -66,40 +66,6 @@ id<GREYMatcher> GetWhatsNewDestinationWithNewBadgeMatcher() {
       GetDestinationIdWithNewBadge(kToolsMenuWhatsNewId));
 }
 
-// Returns matcher that matches any possible destination in the Overflow Menu
-// carousel.
-id<GREYMatcher> GetAnyCarouselDestinationMatcher() {
-  return grey_anyOf(chrome_test_util::BookmarksDestinationButton(),
-                    chrome_test_util::HistoryDestinationButton(),
-                    chrome_test_util::ReadingListDestinationButton(),
-                    chrome_test_util::PasswordsDestinationButton(),
-                    chrome_test_util::DownloadsDestinationButton(),
-                    chrome_test_util::RecentTabsDestinationButton(),
-                    chrome_test_util::SettingsDestinationButton(),
-                    GetSettingsDestinationWithPromoBadgeMatcher(),
-                    GetSettingsDestinationWithErrorBadgeMatcher(),
-                    chrome_test_util::SiteInfoDestinationButton(),
-                    chrome_test_util::WhatsNewDestinationButton(),
-                    GetWhatsNewDestinationWithNewBadgeMatcher(), nil);
-}
-
-// Returns the GREYInteraction object that results in the selection of the
-// carousel destination at the specified `indexStartingFromEnd` index
-// (0-offset).
-//
-// The `indexStartingFromEnd` is the index starting from the end of the list of
-// carousel destinations. For example, if there are 8 elements in the carousel,
-// a `indexStartingFromEnd` of 7 will return the 1st element in the carousel
-// starting from the left/beginning. On the opposite side, an index of 0 will
-// return the 8th element.
-id<GREYInteraction> SelectDestinationAtIndex(NSUInteger indexStartingFromEnd) {
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
-                                              kPopupMenuToolsMenuTableViewId)),
-                                          GetAnyCarouselDestinationMatcher(),
-                                          nil)] atIndex:indexStartingFromEnd];
-}
-
 // Cleans up the data related to the destination badge highlight features, e.g.,
 // to highlight What's New with a badge.
 void CleanupDestinationsHighlightFeaturesData() {
@@ -194,15 +160,11 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
-  // Verifies that the Settings destination is moved at the correct position
-  // when badged.
+  // Verify that the error badge is shown.
   [ChromeEarlGreyUI openToolsMenu];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
-                                              kPopupMenuToolsMenuTableViewId)),
-                                          GetAnyCarouselDestinationMatcher(),
-                                          nil)] atIndex:4]
-      assertWithMatcher:GetSettingsDestinationWithErrorBadgeMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:GetSettingsDestinationWithErrorBadgeMatcher()]
+      assertWithMatcher:grey_notNil()];
 
   ResolvePassphraseErrorFromOverflowMenu();
 
@@ -239,15 +201,11 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Verifies that the Settings destination is moved at the correct position
-  // when badged.
+  // Verifies that the error badge is shown.
   [ChromeEarlGreyUI openToolsMenu];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
-                                              kPopupMenuToolsMenuTableViewId)),
-                                          GetAnyCarouselDestinationMatcher(),
-                                          nil)] atIndex:4]
-      assertWithMatcher:GetSettingsDestinationWithErrorBadgeMatcher()];
+  [[EarlGrey
+      selectElementWithMatcher:GetSettingsDestinationWithErrorBadgeMatcher()]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests non-error destination highlights.
@@ -269,15 +227,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   [ChromeEarlGreyUI openToolsMenu];
-
-  id<GREYMatcher> badgedDestinationMatcher =
-      grey_anyOf(GetSettingsDestinationWithPromoBadgeMatcher(),
-                 GetWhatsNewDestinationWithNewBadgeMatcher(), nil);
-
-  // Verifies that both destinations are moved to the highlight section of the
-  // carousel, next to each other without a specific order.
-  [SelectDestinationAtIndex(3) assertWithMatcher:badgedDestinationMatcher];
-  [SelectDestinationAtIndex(4) assertWithMatcher:badgedDestinationMatcher];
 
   // Verifies that both destinations are there with the right badge.
   [[EarlGrey
