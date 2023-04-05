@@ -42,8 +42,9 @@ constexpr int kOnboardingViewTopMarginDip = 48;
 
 constexpr base::StringPiece kLearnMoreUrl =
     "https://support.google.com/chromebook?p=assistant";
-constexpr auto kToastMarginDip = gfx::Insets::TLBR(0, 24, 4, 24);
-constexpr auto kToastPreferredSizeDip = gfx::Size(496, 64);
+
+constexpr auto kToastMarginDip = gfx::Insets::TLBR(0, 24, 2, 24);
+constexpr auto kToastMarginTabletModeDip = gfx::Insets::TLBR(12, 16, 2, 16);
 
 bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
   if (assistant::features::IsAssistantLearnMoreEnabled()) {
@@ -61,6 +62,11 @@ bool ShouldShowSpacer(bool in_tablet_mode) {
 
 bool ShouldShowLearnMoreToast() {
   return assistant::features::IsAssistantLearnMoreEnabled();
+}
+
+int GetMarginWidth(bool in_tablet_mode) {
+  return in_tablet_mode ? kToastMarginTabletModeDip.width()
+                        : kToastMarginDip.width();
 }
 
 }  // namespace
@@ -93,6 +99,19 @@ void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
+void AssistantZeroStateView::OnBoundsChanged(const gfx::Rect& prev_bounds) {
+  if (prev_bounds.size() != bounds().size()) {
+    // Update `learn_more_toast_` preferred size to layout the title label.
+    // The actual height may change based on the text in the toast.
+    const int kToastMaxHeightDip = 64;
+    const auto kToastPreferredSizeDip =
+        gfx::Size(bounds().width() - GetMarginWidth(delegate_->IsTabletMode()),
+                  kToastMaxHeightDip);
+    learn_more_toast_->SetPreferredSize(kToastPreferredSizeDip);
+    learn_more_toast_->SetTitleLabelMaximumWidth();
+  }
+}
+
 void AssistantZeroStateView::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   DCHECK(assistant_controller_observation_.IsObservingSource(
@@ -114,6 +133,8 @@ void AssistantZeroStateView::InitLayout() {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Onboarding.
   onboarding_view_ =
@@ -144,7 +165,7 @@ void AssistantZeroStateView::InitLayout() {
   layout->SetFlexForView(spacer_, 1);
 
   // Learn more toast.
-  // TODO(b/274527683, b/274525194): add i18n and a11y supports.
+  // TODO(b/274527683): add i18n strings.
   learn_more_toast_ = AddChildView(
       AppListToastView::Builder(u"Learn more about Google Assistant")
           .SetButton(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
@@ -153,9 +174,9 @@ void AssistantZeroStateView::InitLayout() {
                          base::Unretained(this)))
           .Build());
   learn_more_toast_->SetID(AssistantViewID::kLearnMoreToast);
-  learn_more_toast_->SetProperty(views::kMarginsKey, kToastMarginDip);
-  learn_more_toast_->SetPreferredSize(kToastPreferredSizeDip);
-  learn_more_toast_->SetTitleLabelMaximumWidth();
+  learn_more_toast_->SetProperty(
+      views::kMarginsKey,
+      delegate_->IsTabletMode() ? kToastMarginTabletModeDip : kToastMarginDip);
 }
 
 void AssistantZeroStateView::UpdateLayout() {

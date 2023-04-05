@@ -11,6 +11,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -20,6 +21,8 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/scroll_view.h"
@@ -335,6 +338,70 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "search_box_view_active", /*revision_number=*/0, search_box_view));
+}
+
+class AppListViewAssistantZeroStateParams {
+ public:
+  AppListViewAssistantZeroStateParams(bool rtl, bool dark_theme)
+      : rtl_(rtl), dark_theme_(dark_theme) {}
+
+  static std::string ToTestSuffix(
+      const testing::TestParamInfo<AppListViewAssistantZeroStateParams>& info) {
+    std::string suffix;
+    suffix.append(info.param.rtl() ? "rtl" : "ltr");
+    suffix.append("_");
+    suffix.append(info.param.dark_theme() ? "dark" : "light");
+    return suffix;
+  }
+
+  bool rtl() const { return rtl_; }
+  bool dark_theme() const { return dark_theme_; }
+
+ private:
+  bool rtl_;
+  bool dark_theme_;
+};
+
+class AppListViewAssistantZeroStateTest
+    : public AssistantAshTestBase,
+      public testing::WithParamInterface<AppListViewAssistantZeroStateParams> {
+ public:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params;
+    init_params.under_rtl = GetParam().rtl();
+    return init_params;
+  }
+
+  void SetUp() override {
+    base::test::ScopedFeatureList scoped_feature_list(
+        assistant::features::kEnableAssistantLearnMore);
+
+    AssistantAshTestBase::SetUp();
+    SetNumberOfSessionsWhereOnboardingShown(
+        assistant::ui::kOnboardingMaxSessionsShown);
+    DarkLightModeController::Get()->SetDarkModeEnabledForTest(
+        GetParam().dark_theme());
+    ShowAssistantUi();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RTL,
+    AppListViewAssistantZeroStateTest,
+    testing::Values(AppListViewAssistantZeroStateParams(false, false),
+                    AppListViewAssistantZeroStateParams(false, true),
+                    AppListViewAssistantZeroStateParams(true, false),
+                    AppListViewAssistantZeroStateParams(true, true)),
+    &AppListViewAssistantZeroStateParams::ToTestSuffix);
+
+TEST_P(AppListViewAssistantZeroStateTest, Basic) {
+  // Wait layout.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "app_list_view_assistant_zero_state", /*revision_number=*/0,
+      page_view()));
 }
 
 }  // namespace ash
