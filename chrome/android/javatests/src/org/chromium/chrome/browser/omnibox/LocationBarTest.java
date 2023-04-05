@@ -28,6 +28,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,6 +44,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
@@ -263,9 +265,9 @@ public class LocationBarTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.setSearchQuery(query));
 
         triggerAndWaitForDeferredNativeInitialization();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(query, mUrlBar.getTextWithoutAutocomplete());
-            Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mUrlBar.getTextWithoutAutocomplete(), Matchers.is(query));
+            Criteria.checkThat(mLocationBarMediator.isUrlBarFocused(), Matchers.is(true));
         });
     }
 

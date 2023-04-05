@@ -278,7 +278,7 @@ public class OmniboxTestUtils {
                     mLocationBar.getAutocompleteCoordinator().getSuggestionModelListForTest();
             for (int i = 0; i < currentModels.size(); i++) {
                 DropdownItemViewInfo info = (DropdownItemViewInfo) currentModels.get(i);
-                if (filter.apply(info)) {
+                if (filter.apply(info) && getSuggestionViewForIndex(i) != null) {
                     result.set(new SuggestionInfo<T>(i, info.type, mAutocomplete.getSuggestionAt(i),
                             info.model, getSuggestionViewForIndex(i)));
                     return true;

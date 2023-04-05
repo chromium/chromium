@@ -109,6 +109,9 @@ public class MultiWindowUtilsTest {
         Assert.assertTrue("ChromeTabbedActivity2 should be resumed",
                 ApplicationStatus.getStateForActivity(activity2) == ActivityState.RESUMED);
 
+        // Wait for profile to be initialized.
+        CriteriaHelper.pollUiThread(() -> activity2.getCurrentTabModel().getProfile() != null);
+
         // Open settings and wait for ChromeTabbedActivity2 to pause.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { activity2.onMenuOrKeyboardAction(R.id.preferences_id, true); });

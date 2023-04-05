@@ -296,7 +296,8 @@ public class KeyboardAccessoryModernViewTest {
             mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
         });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
-        CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
+        CriteriaHelper.pollUiThread(
+                () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
         rotateActivityToLandscape();

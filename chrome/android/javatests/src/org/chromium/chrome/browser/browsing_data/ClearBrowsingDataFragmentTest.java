@@ -57,6 +57,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -106,6 +107,8 @@ public class ClearBrowsingDataFragmentTest {
     @Mock
     private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
+
     @TimePeriod
     private static final int DEFAULT_TIME_PERIOD = TimePeriod.ALL_TIME;
 
@@ -118,6 +121,7 @@ public class ClearBrowsingDataFragmentTest {
         // immediately called.
         doAnswer((Answer<Void>) invocation -> {
             ((BrowsingDataBridge) invocation.getArgument(0)).browsingDataCleared();
+            mCallbackHelper.notifyCalled();
             return null;
         })
                 .when(mBrowsingDataBridgeMock)
@@ -239,7 +243,7 @@ public class ClearBrowsingDataFragmentTest {
      */
     @Test
     @MediumTest
-    public void testClearingEverything() {
+    public void testClearingEverything() throws Exception {
         setDataTypesToClear(ClearBrowsingDataFragment.getAllOptions().toArray(new Integer[0]));
 
         final ClearBrowsingDataFragment preferences =
@@ -260,6 +264,7 @@ public class ClearBrowsingDataFragmentTest {
         });
 
         waitForProgressToComplete(preferences);
+        mCallbackHelper.waitForFirst();
 
         // Verify that we got the appropriate call to clear all data.
         verify(mBrowsingDataBridgeMock)
@@ -282,7 +287,7 @@ public class ClearBrowsingDataFragmentTest {
      */
     @Test
     @MediumTest
-    public void testClearTimeInterval() {
+    public void testClearTimeInterval() throws Exception {
         setDataTypesToClear(DialogOption.CLEAR_CACHE);
 
         final ClearBrowsingDataFragment preferences =
@@ -294,6 +299,7 @@ public class ClearBrowsingDataFragmentTest {
         });
 
         waitForProgressToComplete(preferences);
+        mCallbackHelper.waitForFirst();
 
         // Verify that we got the appropriate call to clear all data.
         verify(mBrowsingDataBridgeMock)
@@ -383,7 +389,7 @@ public class ClearBrowsingDataFragmentTest {
      */
     @Test
     @LargeTest
-    public void testDialogAboutOtherFormsOfBrowsingHistory() {
+    public void testDialogAboutOtherFormsOfBrowsingHistory() throws Exception {
         // Sign in.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         OtherFormsOfHistoryDialogFragment.clearShownPreferenceForTesting();
@@ -394,6 +400,7 @@ public class ClearBrowsingDataFragmentTest {
         final SettingsActivity settingsActivity1 = startPreferences();
         TestThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(settingsActivity1));
+        mCallbackHelper.waitForCallback(0);
 
         assertDataTypesCleared(BrowsingDataType.CACHE);
 
@@ -427,6 +434,7 @@ public class ClearBrowsingDataFragmentTest {
         // That should close the preference screen as well.
         CriteriaHelper.pollUiThread(new PreferenceScreenClosedCriterion(settingsActivity2));
 
+        mCallbackHelper.waitForCallback(1);
         // Verify history cleared.
         assertDataTypesCleared(BrowsingDataType.HISTORY);
 
@@ -485,6 +493,8 @@ public class ClearBrowsingDataFragmentTest {
             Criteria.checkThat(preferences, Matchers.notNullValue());
             Criteria.checkThat(
                     preferences.getImportantSitesDialogFragment(), Matchers.notNullValue());
+            Criteria.checkThat(preferences.getImportantSitesDialogFragment().getDialog(),
+                    Matchers.notNullValue());
             Criteria.checkThat(
                     preferences.getImportantSitesDialogFragment().getDialog().isShowing(),
                     Matchers.is(true));
@@ -539,6 +549,7 @@ public class ClearBrowsingDataFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(preferences, AlertDialog.BUTTON_POSITIVE));
         waitForProgressToComplete(preferences);
+        mCallbackHelper.waitForFirst();
 
         // Verify history cleared.
         assertDataTypesCleared(BrowsingDataType.HISTORY, BrowsingDataType.CACHE);
@@ -622,6 +633,7 @@ public class ClearBrowsingDataFragmentTest {
                 getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_POSITIVE));
 
         waitForProgressToComplete(fragment);
+        mCallbackHelper.waitForFirst();
 
         int[] expectedTypes = new int[] {BrowsingDataType.HISTORY, BrowsingDataType.CACHE};
         String[] keepDomains = new String[] {kKeepDomain};

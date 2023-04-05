@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.junit.Assert;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -20,6 +22,7 @@ public class LayoutTestUtils {
      * @param type The type of layout to wait for.
      */
     public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type) {
+        Assert.assertNotNull(layoutManager);
         CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
         LayoutStateObserver observer = new LayoutStateObserver() {
             @Override
