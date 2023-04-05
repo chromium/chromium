@@ -35,6 +35,25 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
                                          public SearchPrefetchURLLoader,
                                          public mojo::DataPipeDrainer::Client {
  public:
+  // This enum is mainly for checking the correctness of reader serving.
+  // These values are persisted to logs as SearchPreloadForwardingResult.
+  // Entries should not be renumbered and numeric values should never be reused.
+  enum class ForwardingResult {
+    // This loader is not serving to any navigation via `forwarding_client`.
+    // (Note: if the loader is served to prerendering reader, and the
+    // prerendering navigation is activated, the status should also be
+    // kNotServed, as `forwarding_client` did not participate in serving.)
+    kNotServed = 0,
+    // Set to this value when starting serving. Should not be recorded as a
+    // terminate status.
+    kStartedServing = 1,
+    // Terminate status; Encountered errors while serving.
+    kFailed = 2,
+    // Terminate status; Successfully push the last byte.
+    kCompleted = 3,
+    kMaxValue = kCompleted,
+  };
+
   // Used to reading the prefetched response from
   // `StreamingSearchPrefetchURLLoader`'s data cache.
   class ResponseReader : public network::mojom::URLLoader {
@@ -311,6 +330,10 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Whether we are serving from |body_content_|.
   bool serving_from_data_ = false;
 
+  // Whether this loader created a reader and served the response to
+  // prerendering navigation.
+  bool was_served_to_prerender_reader_ = false;
+
   // The status returned from |network_url_loader_|.
   absl::optional<network::URLLoaderCompletionStatus> status_;
 
@@ -325,6 +348,10 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   bool drain_complete_ = false;
   // Drainer for the content in |network_url_loader_|.
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
+
+  // Once `forwarding_client_` is set, this status tracks the whether the
+  // forwarding is successfully completed.
+  ForwardingResult forwarding_result_ = ForwardingResult::kNotServed;
 
   // URL Loader Events that occur before serving to the navigation stack should
   // be queued internally until the request is being served.

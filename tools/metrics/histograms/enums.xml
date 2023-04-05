@@ -92475,6 +92475,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Upgraded to prerender and succeeded"/>
 </enum>
 
+<enum name="SearchPreloadForwardingResult">
+  <int value="0" label="kNotServed (should not be recorded)"/>
+  <int value="1" label="kStartedServing"/>
+  <int value="2" label="kFailed"/>
+  <int value="3" label="kCompleted"/>
+</enum>
+
 <enum name="SearchResultExtractorClientStatus">
   <int value="0" label="Success"/>
   <int value="1" label="No results"/>

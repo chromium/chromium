@@ -1558,6 +1558,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender"
+    enum="SearchPreloadForwardingResult" expires_after="2023-08-02">
+  <owner>lingqi@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Recorded when posting a task to destroy StreamingSearchPrefetchURLLoader.
+    Used to track whether the native forwarding works as expected. Together with
+    Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender, these two
+    metrics are used to monitor whether shareable cache does not break the
+    forwarding logic.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender"
+    enum="SearchPreloadForwardingResult" expires_after="2023-08-02">
+  <owner>lingqi@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Recorded when posting a task to destroy StreamingSearchPrefetchURLLoader.
+    Together with Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender,
+    these two metrics are used to monitor whether shareable cache does not break
+    the forwarding logic.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender"
     enum="SearchPrefetchResponseDataReaderStatus" expires_after="2023-08-02">
   <owner>lingqi@chromium.org</owner>

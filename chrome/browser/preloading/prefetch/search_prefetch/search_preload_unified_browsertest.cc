@@ -1624,6 +1624,28 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedBrowserTest,
   }
 }
 
+// Used by SearchPreloadUnifiedFallbackBrowserTest and
+// NoCancelSearchPreloadUnifiedFallbackBrowserTest to check the streaming
+// loader's status. Since the result can be set upon Mojo disconnection, we have
+// to wait until it to be reported.
+void CheckCorrectForwardingResultMetric(
+    base::HistogramTester& histogram_tester,
+    StreamingSearchPrefetchURLLoader::ForwardingResult result,
+    int count) {
+  while (true) {
+    int num = histogram_tester.GetBucketCount(
+        "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender", result);
+    if (num >= count) {
+      break;
+    }
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender", result,
+      count);
+}
+
 class SearchPreloadUnifiedFallbackBrowserTest
     : public SearchPreloadUnifiedBrowserTest {
  public:
@@ -1707,6 +1729,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       StreamingSearchPrefetchURLLoader::ResponseReader::
           ResponseDataReaderStatus::kCompleted,
       1);
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 }
 
 // Tests that prefetched response can be served to prerender client
@@ -1756,6 +1781,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       StreamingSearchPrefetchURLLoader::ResponseReader::
           ResponseDataReaderStatus::kCompleted,
       1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender", 0);
 }
 
 // Tests that the SearchSuggestionService can trigger prerendering if it
@@ -1819,6 +1846,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       StreamingSearchPrefetchURLLoader::ResponseReader::
           ResponseDataReaderStatus::kCompleted,
       1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender", 0);
 }
 
 // Tests that once prefetch encountered error, prerender would be canceled as
@@ -1945,6 +1974,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
               "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
               StreamingSearchPrefetchURLLoader::ResponseReader::
                   ResponseDataReaderStatus::kCompleted));
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 }
 
 // Edge case: when the prerendering navigation is still reading from the cache,
@@ -2155,6 +2187,9 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
               "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
               StreamingSearchPrefetchURLLoader::ResponseReader::
                   ResponseDataReaderStatus::kCompleted));
+  CheckCorrectForwardingResultMetric(
+      histogram_tester,
+      StreamingSearchPrefetchURLLoader::ForwardingResult::kCompleted, 1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
