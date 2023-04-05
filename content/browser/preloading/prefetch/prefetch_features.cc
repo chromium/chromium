@@ -10,4 +10,8 @@ BASE_FEATURE(kPrefetchUseContentRefactor,
              "PrefetchUseContentRefactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchRedirects,
+             "PrefetchRedirects",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace content::features
