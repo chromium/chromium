@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -582,11 +583,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   // It is called when there is a subresouce load. The reported values via
   // arguments are cumulative. They are NOT a difference from the previous call.
   virtual void DidObserveSubresourceLoad(
-      uint32_t number_of_subresources_loaded,
-      uint32_t number_of_subresource_loads_handled_by_service_worker,
-      bool pervasive_payload_requested,
-      int64_t pervasive_bytes_fetched,
-      int64_t total_bytes_fetched) {}
+      const SubresourceLoadMetrics& subresource_load_metrics) {}
 
   // Blink hits the code path for a certain UseCounterFeature for the first time
   // on this frame. As a performance optimization, features already hit on other

@@ -172,7 +172,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
       const mojom::InputTiming& input_timing,
-      const mojom::SubresourceLoadMetrics& subresource_load_metrics,
+      const absl::optional<blink::SubresourceLoadMetrics>&
+          subresource_load_metrics,
       content::RenderFrameHost* rfh,
       uint32_t soft_navigation_count = 0);
 

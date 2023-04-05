@@ -124,8 +124,7 @@ class MetricsWebContentsObserverTest
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(absl::in_place), timing.Clone(),
-        mojom::InputTimingPtr(absl::in_place),
-        mojom::SubresourceLoadMetricsPtr(absl::in_place), 0);
+        mojom::InputTimingPtr(absl::in_place), absl::nullopt, 0);
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -143,15 +142,14 @@ class MetricsWebContentsObserverTest
       const mojom::PageLoadTiming& timing,
       content::RenderFrameHost* render_frame_host) {
     previous_timing_ = timing.Clone();
-    observer()->OnTimingUpdated(
-        render_frame_host, timing.Clone(),
-        mojom::FrameMetadataPtr(absl::in_place),
-        std::vector<blink::UseCounterFeature>(),
-        std::vector<mojom::ResourceDataUpdatePtr>(),
-        mojom::FrameRenderDataUpdatePtr(absl::in_place),
-        mojom::CpuTimingPtr(absl::in_place),
-        mojom::InputTimingPtr(absl::in_place),
-        mojom::SubresourceLoadMetricsPtr(absl::in_place), 0);
+    observer()->OnTimingUpdated(render_frame_host, timing.Clone(),
+                                mojom::FrameMetadataPtr(absl::in_place),
+                                std::vector<blink::UseCounterFeature>(),
+                                std::vector<mojom::ResourceDataUpdatePtr>(),
+                                mojom::FrameRenderDataUpdatePtr(absl::in_place),
+                                mojom::CpuTimingPtr(absl::in_place),
+                                mojom::InputTimingPtr(absl::in_place),
+                                absl::nullopt, 0);
   }
 
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>

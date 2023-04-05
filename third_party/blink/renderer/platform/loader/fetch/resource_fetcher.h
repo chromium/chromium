@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom-blink.h"
@@ -608,18 +609,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
 
-  // The total number of sub resource loads except for ResourceType::kRaw.
-  uint32_t number_of_subresources_loaded_ = 0;
-  // The number of sub resource loads that a service worker fetch handler
-  // called respondWith. i.e. no fallback to network.
-  uint32_t number_of_subresource_loads_handled_by_service_worker_ = 0;
-  // Whether a pervasive payload (aka sub resource) was requested. Once this is
-  // set as true, it will be true for all future updates in a page load.
-  bool pervasive_payload_requested_ = false;
-  // Number of bytes fetched by the network for pervasive payloads on a page.
-  int64_t pervasive_bytes_fetched_ = 0;
-  // Total number of bytes fetched by the network.
-  int64_t total_bytes_fetched_ = 0;
+  SubresourceLoadMetrics subresource_load_metrics_;
 };
 
 class ResourceCacheValidationSuppressor {

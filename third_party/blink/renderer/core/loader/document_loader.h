@@ -44,6 +44,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
@@ -461,11 +462,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   }
 
   void UpdateSubresourceLoadMetrics(
-      uint32_t number_of_subresources_loaded,
-      uint32_t number_of_subresource_loads_handled_by_service_worker,
-      bool pervasive_payload_requested,
-      int64_t pervasive_bytes_fetched,
-      int64_t total_bytes_fetched);
+      const SubresourceLoadMetrics& subresource_load_metrics);
 
  protected:
   // Based on its MIME type, if the main document's response corresponds to an

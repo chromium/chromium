@@ -22,7 +22,8 @@ class PageTimingSender {
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
       mojom::InputTimingPtr input_timing_delta,
-      mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
+      const absl::optional<blink::SubresourceLoadMetrics>&
+          subresource_load_metrics,
       uint32_t soft_navigation_count) = 0;
   virtual void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) = 0;

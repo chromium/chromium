@@ -25,7 +25,8 @@ void FakePageTimingSender::SendTiming(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::InputTimingPtr new_input_timing,
-    const mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
+    const absl::optional<blink::SubresourceLoadMetrics>&
+        subresource_load_metrics,
     uint32_t soft_navigation_count) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, new_input_timing,
@@ -87,8 +88,8 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedInputTiming()
 
 void FakePageTimingSender::PageTimingValidator::
     UpdateExpectedSubresourceLoadMetrics(
-        const mojom::SubresourceLoadMetrics& subresource_load_metrics) {
-  expected_subresource_load_metrics_ = subresource_load_metrics.Clone();
+        const blink::SubresourceLoadMetrics& subresource_load_metrics) {
+  expected_subresource_load_metrics_ = subresource_load_metrics;
 }
 
 void FakePageTimingSender::PageTimingValidator::
@@ -145,7 +146,8 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::InputTimingPtr& new_input_timing,
-    const mojom::SubresourceLoadMetricsPtr& subresource_load_metrics,
+    const absl::optional<blink::SubresourceLoadMetrics>&
+        subresource_load_metrics,
     uint32_t soft_navigation_count) {
   actual_timings_.push_back(timing.Clone());
   if (!cpu_timing->task_time.is_zero()) {
@@ -166,7 +168,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   actual_input_timing->total_input_delay += new_input_timing->total_input_delay;
   actual_input_timing->total_adjusted_input_delay +=
       new_input_timing->total_adjusted_input_delay;
-  actual_subresource_load_metrics_ = subresource_load_metrics.Clone();
+  actual_subresource_load_metrics_ = subresource_load_metrics;
 
   VerifyExpectedTimings();
   VerifyExpectedCpuTimings();

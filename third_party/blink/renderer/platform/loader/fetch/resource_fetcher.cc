@@ -2093,9 +2093,10 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
 
   // kRaw might not be subresource, and we do not need them.
   if (resource->GetType() != ResourceType::kRaw) {
-    ++number_of_subresources_loaded_;
+    ++subresource_load_metrics_.number_of_subresources_loaded;
     if (resource->GetResponse().WasFetchedViaServiceWorker()) {
-      ++number_of_subresource_loads_handled_by_service_worker_;
+      ++subresource_load_metrics_
+            .number_of_subresource_loads_handled_by_service_worker;
     }
 
     if (IsControlledByServiceWorker() ==
@@ -2110,19 +2111,16 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     }
   }
 
-  pervasive_payload_requested_ |= pervasive_payload_requested;
+  subresource_load_metrics_.pervasive_payload_requested |=
+      pervasive_payload_requested;
   if (bytes_fetched > 0) {
-    total_bytes_fetched_ += bytes_fetched;
+    subresource_load_metrics_.total_bytes_fetched += bytes_fetched;
     if (pervasive_payload_requested) {
-      pervasive_bytes_fetched_ += bytes_fetched;
+      subresource_load_metrics_.pervasive_bytes_fetched += bytes_fetched;
     }
   }
 
-  context_->UpdateSubresourceLoadMetrics(
-      number_of_subresources_loaded_,
-      number_of_subresource_loads_handled_by_service_worker_,
-      pervasive_payload_requested_, pervasive_bytes_fetched_,
-      total_bytes_fetched_);
+  context_->UpdateSubresourceLoadMetrics(subresource_load_metrics_);
 
   DCHECK_LE(inflight_keepalive_bytes, inflight_keepalive_bytes_);
   inflight_keepalive_bytes_ -= inflight_keepalive_bytes;

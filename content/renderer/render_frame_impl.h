@@ -73,6 +73,7 @@
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
@@ -599,11 +600,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidObserveSubresourceLoad(
-      uint32_t number_of_subresources_loaded,
-      uint32_t number_of_subresource_loads_handled_by_service_worker,
-      bool pervasive_payload_requested,
-      int64_t pervasive_bytes_fetched,
-      int64_t total_bytes_fetched) override;
+      const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) override;
   void DidObserveSoftNavigation(uint32_t count) override;

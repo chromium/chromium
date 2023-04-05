@@ -86,35 +86,12 @@ void PageTimingMetricsSender::DidObserveLoadingBehavior(
 }
 
 void PageTimingMetricsSender::DidObserveSubresourceLoad(
-    uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker,
-    bool pervasive_payload_requested,
-    int64_t pervasive_bytes_fetched,
-    int64_t total_bytes_fetched) {
-  if (!subresource_load_metrics_) {
-    subresource_load_metrics_ = mojom::SubresourceLoadMetrics::New();
-  }
-  if (subresource_load_metrics_->number_of_subresources_loaded ==
-          number_of_subresources_loaded &&
-      subresource_load_metrics_
-              ->number_of_subresource_loads_handled_by_service_worker ==
-          number_of_subresource_loads_handled_by_service_worker &&
-      subresource_load_metrics_->pervasive_payload_requested ==
-          pervasive_payload_requested &&
-      subresource_load_metrics_->pervasive_bytes_fetched ==
-          pervasive_bytes_fetched &&
-      subresource_load_metrics_->total_bytes_fetched == total_bytes_fetched) {
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
+  if (subresource_load_metrics_ &&
+      *subresource_load_metrics_ == subresource_load_metrics) {
     return;
   }
-  subresource_load_metrics_->number_of_subresources_loaded =
-      number_of_subresources_loaded;
-  subresource_load_metrics_
-      ->number_of_subresource_loads_handled_by_service_worker =
-      number_of_subresource_loads_handled_by_service_worker;
-  subresource_load_metrics_->pervasive_payload_requested =
-      pervasive_payload_requested;
-  subresource_load_metrics_->total_bytes_fetched = total_bytes_fetched;
-  subresource_load_metrics_->pervasive_bytes_fetched = pervasive_bytes_fetched;
+  subresource_load_metrics_ = subresource_load_metrics;
   EnsureSendTimer();
 }
 
@@ -342,10 +319,10 @@ void PageTimingMetricsSender::SendNow() {
       page_resource_data_use_.erase(resource->resource_id());
     }
   }
-  sender_->SendTiming(
-      last_timing_, metadata_, std::move(new_features_), std::move(resources),
-      render_data_, last_cpu_timing_, std::move(input_timing_delta_),
-      subresource_load_metrics_.Clone(), soft_navigation_count_);
+  sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
+                      std::move(resources), render_data_, last_cpu_timing_,
+                      std::move(input_timing_delta_), subresource_load_metrics_,
+                      soft_navigation_count_);
   input_timing_delta_ = mojom::InputTiming::New();
   InitiateUserInteractionTiming();
   new_features_.clear();

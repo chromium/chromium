@@ -144,7 +144,7 @@ FakePageLoadMetricsObserverDelegate::GetPageInputTiming() const {
   return page_input_timing_;
 }
 
-const absl::optional<mojom::SubresourceLoadMetrics>&
+const absl::optional<blink::SubresourceLoadMetrics>&
 FakePageLoadMetricsObserverDelegate::GetSubresourceLoadMetrics() const {
   return subresource_load_metrics_;
 }

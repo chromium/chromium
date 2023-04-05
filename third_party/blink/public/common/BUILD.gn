@@ -304,6 +304,7 @@ source_set("headers") {
     "sms/webotp_constants.h",
     "sms/webotp_service_outcome.h",
     "storage_key/storage_key.h",
+    "subresource_load_metrics.h",
     "switches.h",
     "thread_safe_browser_interface_broker_proxy.h",
     "unique_name/unique_name_helper.h",

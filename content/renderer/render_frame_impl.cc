@@ -4350,17 +4350,9 @@ void RenderFrameImpl::DidObserveLoadingBehavior(
 }
 
 void RenderFrameImpl::DidObserveSubresourceLoad(
-    uint32_t number_of_subresources_loaded,
-    uint32_t number_of_subresource_loads_handled_by_service_worker,
-    bool pervasive_payload_requested,
-    int64_t pervasive_bytes_fetched,
-    int64_t total_bytes_fetched) {
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   for (auto& observer : observers_)
-    observer.DidObserveSubresourceLoad(
-        number_of_subresources_loaded,
-        number_of_subresource_loads_handled_by_service_worker,
-        pervasive_payload_requested, pervasive_bytes_fetched,
-        total_bytes_fetched);
+    observer.DidObserveSubresourceLoad(subresource_load_metrics);
 }
 
 void RenderFrameImpl::DidObserveNewFeatureUsage(
