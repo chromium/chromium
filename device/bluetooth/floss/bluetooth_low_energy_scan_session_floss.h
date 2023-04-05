@@ -42,7 +42,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanSessionFloss
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
   base::OnceCallback<void(const std::string&)> destructor_callback_;
   device::BluetoothUUID uuid_;
-  uint8_t scanner_id_;
+  uint8_t scanner_id_ = 0;
   bool has_activated_ = false;
 
   base::WeakPtrFactory<BluetoothLowEnergyScanSessionFloss> weak_ptr_factory_{
