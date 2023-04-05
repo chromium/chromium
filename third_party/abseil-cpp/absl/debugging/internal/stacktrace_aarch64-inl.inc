@@ -138,7 +138,6 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
 #else
 # error reading stack point not yet supported on this platform.
 #endif
-
   skip_count++;    // Skip the frame for this function.
   int n = 0;
 
@@ -151,29 +150,33 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
   // does not work for the first stack frame, which belongs to UnwindImp() but
   // we skip the frame for UnwindImp() anyway.
   void* prev_return_address = nullptr;
+  // The nth frame size is the difference between the nth frame pointer and the
+  // the frame pointer below it in the call chain. There is no frame below the
+  // leaf frame, but this function is the leaf anyway, and we skip it.
+  void** prev_frame_pointer = nullptr;
 
-  while (frame_pointer && n < max_depth) {
-    // The absl::GetStackFrames routine is called when we are in some
-    // informational context (the failure signal handler for example).
-    // Use the non-strict unwinding rules to produce a stack trace
-    // that is as complete as possible (even if it contains a few bogus
-    // entries in some rare cases).
-    void **next_frame_pointer =
-        NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
-
+   while (frame_pointer && n < max_depth) {
     if (skip_count > 0) {
       skip_count--;
     } else {
       result[n] = prev_return_address;
       if (IS_STACK_FRAMES) {
         sizes[n] = static_cast<int>(
-            ComputeStackFrameSize(frame_pointer, next_frame_pointer));
+            ComputeStackFrameSize(prev_frame_pointer, frame_pointer));
       }
       n++;
     }
     prev_return_address = frame_pointer[1];
-    frame_pointer = next_frame_pointer;
+    prev_frame_pointer = frame_pointer;
+    // The absl::GetStackFrames routine is called when we are in some
+    // informational context (the failure signal handler for example).
+    // Use the non-strict unwinding rules to produce a stack trace
+    // that is as complete as possible (even if it contains a few bogus
+    // entries in some rare cases).
+    frame_pointer =
+        NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
   }
+
   if (min_dropped_frames != nullptr) {
     // Implementation detail: we clamp the max of frames we are willing to
     // count, so as not to spend too much time in the loop below.

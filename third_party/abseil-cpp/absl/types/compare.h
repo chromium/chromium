@@ -36,6 +36,7 @@
 #include <type_traits>
 
 #include "absl/base/attributes.h"
+#include "absl/base/macros.h"
 #include "absl/meta/type_traits.h"
 
 namespace absl {
@@ -45,14 +46,23 @@ namespace compare_internal {
 using value_type = int8_t;
 
 class OnlyLiteralZero {
-  // A private type which cannot be named to explicitly cast to it.
-  struct MatchLiteralZero;
-
  public:
+#if ABSL_HAVE_ATTRIBUTE(enable_if)
+  // On clang, we can avoid triggering modernize-use-nullptr by only enabling
+  // this overload when the value is a compile time integer constant equal to 0.
+  //
+  // In c++20, this could be a static_assert in a consteval function.
+  constexpr OnlyLiteralZero(int n)  // NOLINT
+      __attribute__((enable_if(n == 0, "Only literal `0` is allowed."))) {}
+#else  // ABSL_HAVE_ATTRIBUTE(enable_if)
   // Accept only literal zero since it can be implicitly converted to a pointer
-  // type. nullptr constants will be caught by the other constructor which
-  // accepts a nullptr_t.
-  constexpr OnlyLiteralZero(MatchLiteralZero *) noexcept {}  // NOLINT
+  // to member type. nullptr constants will be caught by the other constructor
+  // which accepts a nullptr_t.
+  //
+  // This constructor is not used for clang since it triggers
+  // modernize-use-nullptr.
+  constexpr OnlyLiteralZero(int OnlyLiteralZero::*) noexcept {}  // NOLINT
+#endif
 
   // Fails compilation when `nullptr` or integral type arguments other than
   // `int` are passed. This constructor doesn't accept `int` because literal `0`

@@ -36,10 +36,12 @@
 //   * `absl::StreamFormat()` to more efficiently write a format string to a
 //     stream, such as`std::cout`.
 //   * `absl::PrintF()`, `absl::FPrintF()` and `absl::SNPrintF()` as
-//     replacements for `std::printf()`, `std::fprintf()` and `std::snprintf()`.
+//     drop-in replacements for `std::printf()`, `std::fprintf()` and
+//     `std::snprintf()`.
 //
-//     Note: a version of `std::sprintf()` is not supported as it is
-//     generally unsafe due to buffer overflows.
+//     Note: An `absl::SPrintF()` drop-in replacement is not supported as it
+//     is generally unsafe due to buffer overflows. Use `absl::StrFormat` which
+//     returns the string as output instead of expecting a pre-allocated buffer.
 //
 // Additionally, you can provide a format string (and its associated arguments)
 // using one of the following abstractions:

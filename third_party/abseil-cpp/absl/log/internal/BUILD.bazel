@@ -320,13 +320,13 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":test_helpers",
-        "@com_google_googletest//:gtest",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:log_severity",
         "//absl/log:log_entry",
         "//absl/strings",
         "//absl/time",
+        "@com_google_googletest//:gtest",
     ] + select({
         "//absl:msvc_compiler": [],
         "//conditions:default": [

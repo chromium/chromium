@@ -850,7 +850,8 @@ ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Time InfinitePast() {
 // FromUDate()
 // FromUniversal()
 //
-// Creates an `absl::Time` from a variety of other representations.
+// Creates an `absl::Time` from a variety of other representations.  See
+// https://unicode-org.github.io/icu/userguide/datetime/universaltimescale.html
 ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Time FromUnixNanos(int64_t ns);
 ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Time FromUnixMicros(int64_t us);
 ABSL_ATTRIBUTE_CONST_FUNCTION constexpr Time FromUnixMillis(int64_t ms);
@@ -867,10 +868,12 @@ ABSL_ATTRIBUTE_CONST_FUNCTION Time FromUniversal(int64_t universal);
 // ToUDate()
 // ToUniversal()
 //
-// Converts an `absl::Time` to a variety of other representations.  Note that
-// these operations round down toward negative infinity where necessary to
-// adjust to the resolution of the result type.  Beware of possible time_t
-// over/underflow in ToTime{T,val,spec}() on 32-bit platforms.
+// Converts an `absl::Time` to a variety of other representations.  See
+// https://unicode-org.github.io/icu/userguide/datetime/universaltimescale.html
+//
+// Note that these operations round down toward negative infinity where
+// necessary to adjust to the resolution of the result type.  Beware of
+// possible time_t over/underflow in ToTime{T,val,spec}() on 32-bit platforms.
 ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToUnixNanos(Time t);
 ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToUnixMicros(Time t);
 ABSL_ATTRIBUTE_CONST_FUNCTION int64_t ToUnixMillis(Time t);

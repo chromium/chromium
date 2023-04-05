@@ -510,16 +510,20 @@ class Storage {
     //
     //  *  It's possible to trivially copy construct/assign the elements.
     //
-    // TODO(b/274984172): the conditions here, preserved from historical ones,
-    // don't actually implement this. They are far too conservative (they don't
-    // work for move-only types, and require both copyability and
-    // assignability).
-    ABSL_HARDENING_ASSERT(
-        other_storage.GetIsAllocated() ||
-        (std::is_same<A, std::allocator<ValueType<A>>>::value &&
-         absl::is_trivially_copy_constructible<ValueType<A>>::value &&
-         absl::is_trivially_copy_assignable<ValueType<A>>::value &&
-         absl::is_trivially_destructible<ValueType<A>>::value));
+    {
+      using V = ValueType<A>;
+      ABSL_HARDENING_ASSERT(
+          other_storage.GetIsAllocated() ||
+          (std::is_same<A, std::allocator<V>>::value &&
+           (
+               // First case above
+               ((absl::is_trivially_move_constructible<V>::value ||
+                 absl::is_trivially_move_assignable<V>::value) &&
+                absl::is_trivially_destructible<V>::value) ||
+               // Second case above
+               (absl::is_trivially_copy_constructible<V>::value ||
+                absl::is_trivially_copy_assignable<V>::value))));
+    }
 
     GetSizeAndIsAllocated() = other_storage.GetSizeAndIsAllocated();
     data_ = other_storage.data_;

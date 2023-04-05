@@ -350,11 +350,6 @@ TEST(Duration, ToChrono) {
 }
 
 TEST(Duration, FactoryOverloads) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
   enum E { kOne = 1 };
 #define TEST_FACTORY_OVERLOADS(NAME)                                          \
   EXPECT_EQ(1, NAME(kOne) / NAME(kOne));                                      \
@@ -885,11 +880,6 @@ TEST(Duration, RelationalOperators) {
 }
 
 TEST(Duration, Addition) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
 #define TEST_ADD_OPS(UNIT)                  \
   do {                                      \
     EXPECT_EQ(UNIT(2), UNIT(1) + UNIT(1));  \
@@ -983,11 +973,6 @@ TEST(Duration, Negation) {
 }
 
 TEST(Duration, AbsoluteValue) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
   EXPECT_EQ(absl::ZeroDuration(), AbsDuration(absl::ZeroDuration()));
   EXPECT_EQ(absl::Seconds(1), AbsDuration(absl::Seconds(1)));
   EXPECT_EQ(absl::Seconds(1), AbsDuration(absl::Seconds(-1)));
@@ -1005,11 +990,6 @@ TEST(Duration, AbsoluteValue) {
 }
 
 TEST(Duration, Multiplication) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
 #define TEST_MUL_OPS(UNIT)                                    \
   do {                                                        \
     EXPECT_EQ(UNIT(5), UNIT(2) * 2.5);                        \
@@ -1262,11 +1242,6 @@ TEST(Duration, RoundTripUnits) {
 }
 
 TEST(Duration, TruncConversions) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
   // Tests ToTimespec()/DurationFromTimespec()
   const struct {
     absl::Duration d;
@@ -1563,11 +1538,6 @@ TEST(Duration, ConversionSaturation) {
 }
 
 TEST(Duration, FormatDuration) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
   // Example from Go's docs.
   EXPECT_EQ("72h3m0.5s",
             absl::FormatDuration(absl::Hours(72) + absl::Minutes(3) +
@@ -1702,11 +1672,6 @@ TEST(Duration, FormatDuration) {
 }
 
 TEST(Duration, ParseDuration) {
-#if defined(ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT) && \
-    ABSL_SKIP_TIME_TESTS_BROKEN_ON_MSVC_OPT
-  GTEST_SKIP();
-#endif
-
   absl::Duration d;
 
   // No specified unit. Should only work for zero and infinity.
