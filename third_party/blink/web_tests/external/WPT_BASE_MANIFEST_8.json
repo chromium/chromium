@@ -174956,6 +174956,19 @@
        {}
       ]
      ],
+     "colspan-004.html": [
+      "cbe7f96ec2c44466e42c619ca8d1db676e6cd6db",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "dynamic-table-cell-height.html": [
       "f6cd48e5ba5616a499809293714fcbb5b5742489",
       [
@@ -248702,6 +248715,21 @@
         ]
        ]
       },
+      "filters": {
+       "2d.filter.canvasFilterObject.dropShadow.tentative.html": [
+        "22c6a6547f23650f1f2f3d8a0cd57816386066a5",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.dropShadow.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
       "layers": {
        "2d.layer.endlayer.alone.html": [
         "a7a5933b33d0d9e6a183d1bd5ab3a2e88d6a507f",
@@ -249680,19 +249708,6 @@
            {}
           ]
          ],
-         "canvas-filter-object-drop-shadow.html": [
-          "0082fdf8343c516797bc611700fdc573dce3f1c0",
-          [
-           null,
-           [
-            [
-             "/html/canvas/element/manual/filters/tentative/canvas-filter-object-drop-shadow-expected.html",
-             "=="
-            ]
-           ],
-           {}
-          ]
-         ],
          "canvas-filter-object-turbulence.html": [
           "8e1eaf54bc9dc58277552f2e46826e75c23aab3c",
           [
@@ -249972,6 +249987,34 @@
       }
      },
      "offscreen": {
+      "filters": {
+       "2d.filter.canvasFilterObject.dropShadow.tentative.html": [
+        "04cf86d204ce8e143c6056eaf6499a3f768a4dec",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShadow.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.dropShadow.tentative.w.html": [
+        "8d5e2da1586a56943588f9d343e96e7c32233386",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShadow.tentative-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
       "layers": {
        "2d.layer.endlayer.alone.html": [
         "f088c89aa7cb1c678c16bc2f317385254f645007",
@@ -268652,11 +268695,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "1d322d82d9904a969a459e9169584080120188cd",
+     "a68320c3908519559282316279a7de75eef1138c",
      []
     ],
     "mtime.json": [
-     "e13ec7596f52bf832a6578e50a2e12d561a54683",
+     "9bdcf616143f8086194319b73be5e86dc106c320",
      []
     ]
    },
@@ -268708,7 +268751,7 @@
      ]
     },
     "web-identity": [
-     "cba0cb331e714c9a4208bdff1e7d74f19c314f03",
+     "2095182bd040631d1ecaaa70d456d67dee3aee15",
      []
     ]
    },
@@ -276076,11 +276119,11 @@
      ],
      "fedcm": {
       "accounts.py": [
-       "088ce5967cd585d41ce91a30dd6492c42bf872a3",
+       "3dbc7403dc28106b0958bd7b7819037374830a06",
        []
       ],
       "client_metadata.py": [
-       "e6f6a776329062987b14a57a4199e67e6b7af0cc",
+       "bfc8027412df0a941468df4a7368f754de0ab13e",
        []
       ],
       "client_metadata.py.headers": [
@@ -276104,7 +276147,7 @@
        []
       ],
       "manifest.py": [
-       "3e72faf75a48a298d00e7a53edc11fce793452fb",
+       "6105db007b0948a150d2ba7098ba97e30d333a15",
        []
       ],
       "manifest_redirect_accounts.json": [
@@ -276132,19 +276175,19 @@
        []
       ],
       "single_account.py": [
-       "2de3deb2661690675d7574ebe4e72f4c87b8f457",
+       "b388ef55a4b11760f388b4b3d468cf7cc52a3c25",
        []
       ],
       "token.py": [
-       "867dab9592f89a36fd2ef6d3656046318673cf5b",
+       "cd73394bc4f83efd3f78705b6ba2a51e53625bf7",
        []
       ],
       "token_with_account_id.py": [
-       "bef755364833b2b11ff5ca70e34678b2d079c309",
+       "8bdfec8f6d9a9dabbe34a78d73afd404afdf9bbb",
        []
       ],
       "two_accounts.py": [
-       "bca62d60223d86b16f05fd017cdd942adaf6b4dc",
+       "48451740663adab6c35eead23e49cd0174d4cbc8",
        []
       ],
       "userinfo-iframe.html": [
@@ -276251,6 +276294,10 @@
       ],
       "hypothetical-inline-alone-on-second-line-ref.html": [
        "1ceebb0f7e39896003508a769c772cc6e6bf54cd",
+       []
+      ],
+      "table-caption-is-containing-block-001.html.ini": [
+       "84dad78cf725c4c3b702cd77a961f78b5f403ef2",
        []
       ]
      },
@@ -283778,7 +283825,7 @@
        []
       ],
       "mix-blend-mode-sibling-with-3D-transform.html.ini": [
-       "42b02c5be2ddb18556b96908bccd66c58f9b7e3d",
+       "5e490ffee1e6229597b00b1f27bf5ca19826fc2e",
        []
       ],
       "mix-blend-mode-stacking-context-001.html.ini": [
@@ -322306,6 +322353,10 @@
       "4021be83dcd97fd1169304e75245f1aaf96f15e2",
       []
      ],
+     "perspective-split-by-zero-w.html.ini": [
+      "15e581a34dab68b6d8bb1e1c866a23f24bcc399b",
+      []
+     ],
      "perspective-svg-001-ref.html": [
       "0319294322a60653905bcc5bad8e074c8e6a1311",
       []
@@ -323476,6 +323527,10 @@
      ],
      "transform3d-translatez-ref.html": [
       "0e4a06d0637ff790d22c12cc05f95c303d77b824",
+      []
+     ],
+     "transformed-preserve-3d-1.html.ini": [
+      "69f9edb1a2b8a1ba27d6a906baa8780ff55013f0",
       []
      ],
      "translate": {
@@ -325043,6 +325098,10 @@
        "bf6d9691e31ad4e61a209412d127a5fde92cd503",
        []
       ],
+      "kind-of-widget-fallback-input-button-border-block-start-color-001.html.ini": [
+       "f53e3465d6af6ec2eae39f1d65a88e3a265b538f",
+       []
+      ],
       "kind-of-widget-fallback-input-button-border-block-start-style-001.html.ini": [
        "e935a80df693f45b69f2ef1b013dd5d719fcc22d",
        []
@@ -325073,6 +325132,10 @@
       ],
       "kind-of-widget-fallback-input-reset-border-block-start-style-001.html.ini": [
        "d2a4e40bc701ac0e9ec882454ab371b34dafc19f",
+       []
+      ],
+      "kind-of-widget-fallback-input-reset-border-bottom-color-001.html.ini": [
+       "deff1088432c360f5e2d55430dc2f241394f547e",
        []
       ],
       "kind-of-widget-fallback-input-reset-border-bottom-left-radius-001.html.ini": [
@@ -325273,6 +325336,10 @@
       ],
       "kind-of-widget-fallback-input-submit-border-block-start-width-001.html.ini": [
        "8a96e9f0c7b1a37b0306a7510550602646bf2d4f",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-border-bottom-color-001.html.ini": [
+       "8935b9554968fb36a2cf7b00bf4d2d81a5ab1cf9",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-bottom-left-radius-001.html.ini": [
@@ -348833,6 +348900,12 @@
         []
        ]
       },
+      "filters": {
+       "2d.filter.canvasFilterObject.dropShadow.tentative-expected.html": [
+        "90f406fed9fd8545a352f2c213ace27b9556d3d7",
+        []
+       ]
+      },
       "layers": {
        "2d.layer.endlayer.alone-expected.html": [
         "607526e4376282dcb4b8a359ada7a23a5fdb3286",
@@ -349066,10 +349139,6 @@
          ],
          "canvas-filter-object-convolve-matrix-expected.html": [
           "896a93542ec507f1873866f47c77051e7d08a0e3",
-          []
-         ],
-         "canvas-filter-object-drop-shadow-expected.html": [
-          "39eff4290eb2e6088d56d16528f486eb8a3352e6",
           []
          ],
          "canvas-filter-object-turbulence-expected.html": [
@@ -349885,6 +349954,12 @@
         []
        ]
       },
+      "filters": {
+       "2d.filter.canvasFilterObject.dropShadow.tentative-expected.html": [
+        "90f406fed9fd8545a352f2c213ace27b9556d3d7",
+        []
+       ]
+      },
       "layers": {
        "2d.layer.endlayer.alone-expected.html": [
         "607526e4376282dcb4b8a359ada7a23a5fdb3286",
@@ -350272,7 +350347,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "d5a190025dfcaf078aca401e108db5f2c16be5a8",
+       "bb734b31c66477279b0fcee06ed812249e3a1a1c",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -350288,7 +350363,7 @@
        []
       ],
       "templates-new.yaml": [
-       "0a2de9f0b43b240f1a08732891895554b1a8858c",
+       "703af3c2cb3264a89715e5bd2902798e7ee790c4",
        []
       ],
       "templates.yaml": [
@@ -350383,7 +350458,7 @@
         []
        ],
        "filters.yaml": [
-        "4dfc3a538e37208fa62c686f4d84c153646fc94c",
+        "bdf3dcfe9fc47be1e8f8f562a619640fc05cc3b0",
         []
        ],
        "layers.yaml": [
@@ -370761,6 +370836,10 @@
      "blob-popup.html": [
       "bc3c97ef8dc75db2b5766012543952112d680892",
       []
+     ],
+     "middle-frame.html": [
+      "58d14d61ef944e9264ed34cb26abf57cf0a181e0",
+      []
      ]
     },
     "spec.src.json": [
@@ -382245,11 +382324,11 @@
       []
      ],
      "partitioned-estimate-usage-details-indexeddb-helper-frame.html": [
-      "80f9cca27d66848eea842a49dc3a46f24677dc4e",
+      "fd2cfb669bd30c287b60f11c00022ffb9d2a7317",
       []
      ],
      "partitioned-estimate-usage-details-service-workers-helper-frame.html": [
-      "29d91a95d715e4d77dd864d1a13161d95621df8b",
+      "25d7554868fdda856f9eb101eb328d304c646a97",
       []
      ],
      "worker.js": [
@@ -451459,6 +451538,27 @@
        {}
       ]
      ],
+     "colspan-001.html": [
+      "e6cb440366cf0cecb94d0198315a909327c70a34",
+      [
+       null,
+       {}
+      ]
+     ],
+     "colspan-002.html": [
+      "144cbef4850f52c19163a793ff6b1f8f6b9b77a1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "colspan-003.html": [
+      "58e02b92878269b6fbe79fdc6684fb969d1ec0dc",
+      [
+       null,
+       {}
+      ]
+     ],
      "column-track-merging.html": [
       "6dba9e6f6079863a7b810715b2e2fcdc0952c38d",
       [
@@ -459406,6 +459506,13 @@
      ],
      "calc-integer.html": [
       "821dac4048961cdff3eae329b02566310f75eb1f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "calc-invalid-parsing.html": [
+      "9e0b09caac3eb5eaa38d8c29bf2306e417a2b4c9",
       [
        null,
        {}
@@ -548686,6 +548793,13 @@
           null,
           {}
          ]
+        ],
+        "non-external-no-import.tentative.html": [
+         "50836e0d7beed9f643fba2e2f4db6306cf8a7204",
+         [
+          null,
+          {}
+         ]
         ]
        },
        "fetch-src": {
@@ -566736,6 +566850,20 @@
      [
       null,
       {}
+     ]
+    ],
+    "nested-iframes.window.js": [
+     "daa0110471c11d8047eacdc8cec93e37238e624b",
+     [
+      "mixed-content/nested-iframes.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ]
+       ]
+      }
      ]
     ],
     "tentative": {
@@ -602360,14 +602488,14 @@
      ]
     ],
     "partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html": [
-     "a58d5426543be328521bcb8a5fd3e7524857d2d5",
+     "98a1ed8da2512d138b76cd39e39fa28fc7ce32b4",
      [
       null,
       {}
      ]
     ],
     "partitioned-estimate-usage-details-service-workers.tentative.https.sub.html": [
-     "9f283e300a633e5569c76c64d4838916989eb8ec",
+     "c52ca34e68e520b21d77b8ad8860d216e739e7d9",
      [
       null,
       {}
@@ -626522,7 +626650,7 @@
      ]
     ],
     "videoDecoder-codec-specific.https.any.js": [
-     "e78ac15cfac2dba35a3455c4a9abd6668ce15a8f",
+     "4e0843646b7daed9829a21aa1243bbd2b697963f",
      [
       "webcodecs/videoDecoder-codec-specific.https.any.html?av1",
       {
