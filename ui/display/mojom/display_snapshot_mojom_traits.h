@@ -167,9 +167,9 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->variable_refresh_rate_state();
   }
 
-  static const absl::optional<gfx::Range>& vertical_display_range_limits(
+  static uint16_t vsync_rate_min(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->vertical_display_range_limits();
+    return snapshot->vsync_rate_min().value_or(0);
   }
 
   static const display::DrmFormatsAndModifiers& drm_formats_and_modifiers(

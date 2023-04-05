@@ -303,7 +303,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const int64_t product_code = 19;
   const int32_t year_of_manufacture = 1776;
   const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
-  const gfx::Range vertical_display_range_limits({48, 120});
+  const uint16_t vsync_rate_min = 48;
 
   const DisplayMode display_mode(gfx::Size(13, 11), true, 40.0f);
 
@@ -327,7 +327,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
       hdr_static_metadata, display_name, sys_path, std::move(modes),
       PanelOrientation::kNormal, edid, current_mode, native_mode, product_code,
       year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vertical_display_range_limits, std::move(drm_formats_and_modifiers));
+      vsync_rate_min, std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -361,7 +361,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const int64_t product_code = 9;
   const int32_t year_of_manufacture = 1776;
   const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
-  const gfx::Range vertical_display_range_limits({48, 120});
+  const uint16_t vsync_rate_min = 48;
 
   const DisplayMode display_mode(gfx::Size(13, 11), true, 50.0f);
 
@@ -385,7 +385,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
       hdr_static_metadata, display_name, sys_path, std::move(modes),
       PanelOrientation::kNormal, edid, current_mode, native_mode, product_code,
       year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vertical_display_range_limits, std::move(drm_formats_and_modifiers));
+      vsync_rate_min, std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -419,7 +419,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
   const VariableRefreshRateState variable_refresh_rate_state = kVrrDisabled;
-  const gfx::Range vertical_display_range_limits({40, 144});
+  const uint16_t vsync_rate_min = 40;
 
   const DisplayMode display_mode(gfx::Size(1024, 768), false, 60.0f);
   const DisplayMode display_current_mode(gfx::Size(1440, 900), false, 59.89f);
@@ -447,7 +447,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
       hdr_static_metadata, display_name, sys_path, std::move(modes),
       PanelOrientation::kLeftUp, edid, current_mode, native_mode, product_code,
       year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vertical_display_range_limits, std::move(drm_formats_and_modifiers));
+      vsync_rate_min, std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

@@ -24,7 +24,6 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
-    "//ui/gfx/range/mojom",
   ]
 
   shared_cpp_typemaps = [

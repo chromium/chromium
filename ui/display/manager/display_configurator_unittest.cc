@@ -258,7 +258,7 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetBaseConnectorId(kEdpConnectorId)
                       .SetIsAspectPreservingScaling(true)
                       .SetVariableRefreshRateState(kVrrDisabled)
-                      .SetVerticalDisplayRangeLimits(gfx::Range())
+                      .SetVsyncRateMin(40)
                       .Build();
 
     outputs_[1] = FakeDisplaySnapshot::Builder()
@@ -2235,7 +2235,7 @@ TEST_F(DisplayConfiguratorTest, RefreshRateThrottle_VrrEnabled) {
                     .SetBaseConnectorId(kEdpConnectorId)
                     .SetIsAspectPreservingScaling(true)
                     .SetVariableRefreshRateState(kVrrDisabled)
-                    .SetVerticalDisplayRangeLimits(gfx::Range())
+                    .SetVsyncRateMin(40)
                     .Build();
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
   UpdateOutputs(1, true);
@@ -2313,7 +2313,7 @@ TEST_F(DisplayConfiguratorTest,
                     .SetBaseConnectorId(kSecondConnectorId)
                     .SetIsAspectPreservingScaling(true)
                     .SetVariableRefreshRateState(kVrrDisabled)
-                    .SetVerticalDisplayRangeLimits(gfx::Range())
+                    .SetVsyncRateMin(40)
                     .Build();
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   UpdateOutputs(2, true);

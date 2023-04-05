@@ -474,8 +474,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
         continue;
       // bit 3: Horizontal max rate offset (not used)
       // bit 2: Horizontal min rate offset (not used)
-      // bit 1: Vertical max rate offset
-      const uint8_t verticalMaxRateOffset = rateOffset & (1 << 1) ? 255 : 0;
+      // bit 1: Vertical max rate offset (not used)
       // bit 0: Vertical min rate offset
       const uint8_t verticalMinRateOffset = rateOffset & (1 << 0) ? 255 : 0;
 
@@ -484,13 +483,9 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       if (edid[offset + 5] == 0 || edid[offset + 6] == 0 ||
           edid[offset + 7] == 0 || edid[offset + 8] == 0)
         continue;
-      vertical_display_range_limits_ = absl::make_optional<gfx::Range>();
       // byte 5: Min vertical rate in Hz
-      vertical_display_range_limits_->set_start(edid[offset + 5] +
-                                                verticalMinRateOffset);
-      // byte 6: Max vertical rate in Hz
-      vertical_display_range_limits_->set_end(edid[offset + 6] +
-                                              verticalMaxRateOffset);
+      vsync_rate_min_ = edid[offset + 5] + verticalMinRateOffset;
+      // byte 6: Max vertical rate in Hz (not used)
       // byte 7: Min horizontal rate in kHz (not used)
       // byte 8: Max horizontal rate in kHz (not used)
 

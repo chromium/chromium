@@ -63,7 +63,7 @@ class ConfigureDisplaysTaskTest : public testing::Test {
                             .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
                             .SetBaseConnectorId(kEdpConnectorId)
                             .SetVariableRefreshRateState(kVrrDisabled)
-                            .SetVerticalDisplayRangeLimits(gfx::Range())
+                            .SetVsyncRateMin(40)
                             .Build());
     displays_.push_back(FakeDisplaySnapshot::Builder()
                             .SetId(456)

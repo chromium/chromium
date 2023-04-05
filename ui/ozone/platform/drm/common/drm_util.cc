@@ -585,7 +585,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata{};
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
-  absl::optional<gfx::Range> vertical_display_range_limits;
+  absl::optional<uint16_t> vsync_rate_min;
 
   ScopedDrmPropertyBlobPtr edid_blob(
       GetDrmPropertyBlob(drm, info->connector(), "EDID"));
@@ -613,10 +613,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 bits_per_channel);
     hdr_static_metadata = edid_parser.hdr_static_metadata();
-    vertical_display_range_limits =
-        variable_refresh_rate_state == display::kVrrNotCapable
-            ? absl::nullopt
-            : edid_parser.vertical_display_range_limits();
+    vsync_rate_min = edid_parser.vsync_rate_min();
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
             << info->connector()->connector_id;
@@ -639,7 +636,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       hdr_static_metadata, display_name, drm.device_path(), std::move(modes),
       panel_orientation, edid, current_mode, native_mode, product_code,
       year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vertical_display_range_limits, drm_formats_and_modifiers);
+      vsync_rate_min, drm_formats_and_modifiers);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

@@ -173,7 +173,7 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .AddMode(small_mode_.Clone())
                        .SetBaseConnectorId(kSecondConnectorId)
                        .SetVariableRefreshRateState(kVrrDisabled)
-                       .SetVerticalDisplayRangeLimits(gfx::Range())
+                       .SetVsyncRateMin(40)
                        .Build();
   }
 
