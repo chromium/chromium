@@ -2834,13 +2834,12 @@ ContentCaptureManager* LayoutText::GetOrResetContentCaptureManager() {
 }
 
 void LayoutText::SetInlineItems(NGInlineItemsData* data,
-                                size_t begin,
-                                size_t size) {
+                                wtf_size_t begin,
+                                wtf_size_t size) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
-  for (size_t i = begin; i < begin + size; i++) {
-    DCHECK_EQ(data->items[base::checked_cast<wtf_size_t>(i)].GetLayoutObject(),
-              this);
+  for (wtf_size_t i = begin; i < begin + size; i++) {
+    DCHECK_EQ(data->items[i].GetLayoutObject(), this);
   }
 #endif
   auto* items = GetNGInlineItems();

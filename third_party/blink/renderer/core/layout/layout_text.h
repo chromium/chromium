@@ -371,7 +371,9 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return node_id_ != kInvalidDOMNodeId;
   }
 
-  void SetInlineItems(NGInlineItemsData* data, size_t begin, size_t size);
+  void SetInlineItems(NGInlineItemsData* data,
+                      wtf_size_t begin,
+                      wtf_size_t size);
   void ClearInlineItems();
   bool HasValidInlineItems() const {
     NOT_DESTROYED();
