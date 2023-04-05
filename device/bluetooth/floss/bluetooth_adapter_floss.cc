@@ -1531,6 +1531,11 @@ void BluetoothAdapterFloss::StopScan(DiscoverySessionResultCallback callback) {
 void BluetoothAdapterFloss::OnRegisterScanner(
     base::WeakPtr<BluetoothLowEnergyScanSessionFloss> scan_session,
     DBusResult<device::BluetoothUUID> ret) {
+  if (!scan_session) {
+    BLUETOOTH_LOG(ERROR)
+        << "Scan session removed before registration completed.";
+    return;
+  }
   if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed RegisterScanner: " << ret.error();
     scan_session->OnRelease();
