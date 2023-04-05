@@ -97,6 +97,10 @@ class ArcAppQueueRestoreHandler
   struct WindowInfo {
     std::string app_id;
     int32_t window_id;
+
+    bool operator==(const WindowInfo& rhs) const {
+      return app_id == rhs.app_id && window_id == rhs.window_id;
+    }
   };
 
   ArcAppQueueRestoreHandler();
