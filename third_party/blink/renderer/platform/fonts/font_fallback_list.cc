@@ -51,7 +51,7 @@ FontFallbackList::FontFallbackList(FontFallbackMap& font_fallback_map)
       can_shape_word_by_word_(false),
       can_shape_word_by_word_computed_(false),
       is_invalid_(false),
-      record_replay_id_(recordreplay::NewIdMainThread("FontFallbackList")) {}
+      record_replay_id_(recordreplay::NewIdAnyThread("FontFallbackList")) {}
 
 FontFallbackList::~FontFallbackList() {
   ReleaseFontData();
