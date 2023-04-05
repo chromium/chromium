@@ -911,6 +911,13 @@ if (!is_ios) {
       ]
     }
 
+    if (enable_screen_ai_service) {
+      deps += [
+        "//components/services/screen_ai",
+        "//skia",
+      ]
+    }
+
     if (is_android) {
       sources += [
         "browser_ui/client_certificate/android/ssl_client_certificate_request_browsertest.cc",
