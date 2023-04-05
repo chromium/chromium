@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaGestureEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -189,26 +188,19 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         @Override
         public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            updateScrimVisibility(true);
+            mBrowserScrimShowing = true;
         }
 
         @Override
         public void onStartedHiding(
                 @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
-            updateScrimVisibility(false);
+            mBrowserScrimShowing = false;
         }
 
         @Override
         public void onTabSelectionHinted(int tabId) {
             LayoutStateObserver.super.onTabSelectionHinted(tabId);
-        }
-
-        private void updateScrimVisibility(boolean visibility) {
-            // Handled by separate scrim over entire browser.
-            // Scrim doesn't actually show if the a11y list switcher is showing.
-            mBrowserScrimShowing =
-                    visibility && !DeviceClassManager.enableAccessibilityLayout(mContext);
         }
     }
 
