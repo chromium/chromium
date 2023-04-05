@@ -35,7 +35,6 @@
 namespace blink {
 
 struct PaintInfo;
-class LineLayoutBox;
 class NGBlockNode;
 
 typedef HeapLinkedHashSet<Member<LayoutBox>> TrackedLayoutBoxLinkedHashSet;
@@ -477,9 +476,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void OffsetForContents(LayoutPoint&) const;
   void OffsetForContents(PhysicalOffset&) const;
 
-  PositionWithAffinity PositionForPointRespectingEditingBoundaries(
-      LineLayoutBox child,
-      const PhysicalOffset& point_in_parent_coordinates) const;
   PositionWithAffinity PositionForPointIfOutsideAtomicInlineLevel(
       const PhysicalOffset&) const;
 

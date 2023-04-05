@@ -793,65 +793,6 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
   return false;
 }
 
-static inline bool IsEditingBoundary(const LayoutObject* ancestor,
-                                     LineLayoutBox child) {
-  DCHECK(!ancestor || ancestor->NonPseudoNode());
-  DCHECK(child);
-  DCHECK(child.NonPseudoNode());
-  return !ancestor || !ancestor->Parent() ||
-         (ancestor->HasLayer() && IsA<LayoutView>(ancestor->Parent())) ||
-         IsEditable(*ancestor->NonPseudoNode()) ==
-             IsEditable(*child.NonPseudoNode());
-}
-
-// FIXME: This function should go on LayoutObject.
-// Then all cases in which positionForPoint recurs could call this instead to
-// prevent crossing editable boundaries. This would require many tests.
-PositionWithAffinity LayoutBlock::PositionForPointRespectingEditingBoundaries(
-    LineLayoutBox child,
-    const PhysicalOffset& point_in_parent_coordinates) const {
-  NOT_DESTROYED();
-  PhysicalOffset child_location = child.PhysicalLocation();
-  if (child.IsStickyPositioned()) {
-    child_location += child.StickyPositionOffset();
-  }
-
-  PhysicalOffset point_in_child_coordinates =
-      point_in_parent_coordinates - child_location;
-
-  // If this is an anonymous layoutObject, we just recur normally
-  const Node* child_node = child.NonPseudoNode();
-  if (!child_node)
-    return child.PositionForPoint(point_in_child_coordinates);
-
-  // Otherwise, first make sure that the editability of the parent and child
-  // agree. If they don't agree, then we return a visible position just before
-  // or after the child
-  const LayoutObject* ancestor = this;
-  while (ancestor && !ancestor->NonPseudoNode())
-    ancestor = ancestor->Parent();
-
-  // If we can't find an ancestor to check editability on, or editability is
-  // unchanged, we recur like normal
-  if (IsEditingBoundary(ancestor, child))
-    return child.PositionForPoint(point_in_child_coordinates);
-
-  // Otherwise return before or after the child, depending on if the click was
-  // to the logical left or logical right of the child
-  LayoutUnit child_middle = LogicalWidthForChildSize(child.Size()) / 2;
-  LayoutUnit logical_left = IsHorizontalWritingMode()
-                                ? point_in_child_coordinates.left
-                                : point_in_child_coordinates.top;
-  if (logical_left < child_middle) {
-    if (IsUserSelectContain(*ancestor->NonPseudoNode()))
-      return ancestor->PositionBeforeThis();
-    return child.PositionBeforeThis();
-  }
-  if (IsUserSelectContain(*ancestor->NonPseudoNode()))
-    return ancestor->PositionAfterThis();
-  return child.PositionAfterThis();
-}
-
 PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
@@ -870,12 +811,6 @@ PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
   return PositionWithAffinity();
 }
 
-static inline bool IsChildHitTestCandidate(LayoutBox* box) {
-  return box->Size().Height() &&
-         box->StyleRef().Visibility() == EVisibility::kVisible &&
-         !box->IsFloatingOrOutOfFlowPositioned() && !box->IsLayoutFlowThread();
-}
-
 PositionWithAffinity LayoutBlock::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
@@ -891,52 +826,10 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
       return position;
   }
 
-  if (IsLayoutNGObject() && PhysicalFragmentCount())
+  if (PhysicalFragmentCount()) {
     return PositionForPointInFragments(point);
-
-  if (IsTable())
-    return LayoutBox::PositionForPoint(point);
-
-  PhysicalOffset point_in_contents = point;
-  OffsetForContents(point_in_contents);
-  LayoutPoint point_in_logical_contents = FlipForWritingMode(point_in_contents);
-  if (!IsHorizontalWritingMode())
-    point_in_logical_contents = point_in_logical_contents.TransposedPoint();
-
-  DCHECK(!ChildrenInline());
-
-  LayoutBox* last_candidate_box = LastChildBox();
-  while (last_candidate_box && !IsChildHitTestCandidate(last_candidate_box))
-    last_candidate_box = last_candidate_box->PreviousSiblingBox();
-
-  bool blocks_are_flipped = StyleRef().IsFlippedBlocksWritingMode();
-  if (last_candidate_box) {
-    if (point_in_logical_contents.Y() >
-            LogicalTopForChild(*last_candidate_box) ||
-        (!blocks_are_flipped && point_in_logical_contents.Y() ==
-                                    LogicalTopForChild(*last_candidate_box)))
-      return PositionForPointRespectingEditingBoundaries(
-          LineLayoutBox(last_candidate_box), point_in_contents);
-
-    for (LayoutBox* child_box = FirstChildBox(); child_box;
-         child_box = child_box->NextSiblingBox()) {
-      if (!IsChildHitTestCandidate(child_box))
-        continue;
-      LayoutUnit child_logical_bottom =
-          LogicalTopForChild(*child_box) + LogicalHeightForChild(*child_box);
-      // We hit child if our click is above the bottom of its padding box (like
-      // IE6/7 and FF3).
-      if (point_in_logical_contents.Y() < child_logical_bottom ||
-          (blocks_are_flipped &&
-           point_in_logical_contents.Y() == child_logical_bottom)) {
-        return PositionForPointRespectingEditingBoundaries(
-            LineLayoutBox(child_box), point_in_contents);
-      }
-    }
   }
 
-  // We only get here if there are no hit test candidate children below the
-  // click.
   return LayoutBox::PositionForPoint(point);
 }
 
