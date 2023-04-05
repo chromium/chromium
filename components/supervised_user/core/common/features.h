@@ -45,6 +45,9 @@ bool IsLocalWebApprovalThePreferredButton();
 // Returns whether to use the new Api for fetching.
 bool IsKidsManagementServiceEnabled();
 
+// Returns whether the ClassifyUrl call uses proto apis.
+bool IsProtoApiForClassifyUrlEnabled();
+
 // Returns whether the First Run Experience will rely on checking the sign-in
 // status synchronously - http://b/264382308.
 bool IsSynchronousSignInCheckingEnabled();

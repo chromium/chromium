@@ -68,6 +68,11 @@ BASE_FEATURE(kEnableKidsManagementService,
              "EnableKidsManagementService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the proto api for ClassifyURL calls.
+BASE_FEATURE(kEnableProtoApiForClassifyUrl,
+             "EnableProtoApiForClassifyUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables synchronous sign-in checking in the First Run Experience.
 BASE_FEATURE(kSynchronousSignInChecking,
              "SynchronousSignInChecking",
@@ -116,6 +121,10 @@ bool IsLocalWebApprovalThePreferredButton() {
 
 bool IsKidsManagementServiceEnabled() {
   return base::FeatureList::IsEnabled(kEnableKidsManagementService);
+}
+
+bool IsProtoApiForClassifyUrlEnabled() {
+  return base::FeatureList::IsEnabled(kEnableProtoApiForClassifyUrl);
 }
 
 // The following flags control whether supervision features are enabled on
