@@ -6739,7 +6739,7 @@
 <translation id="6970480684834282392">启动类型</translation>
 <translation id="6970543303783413625">无法导入密码。您一次最多只能导入 <ph name="COUNT" /> 个密码。</translation>
 <translation id="6970856801391541997">打印特定页面</translation>
-<translation id="6970861306198150268">请务必保存您在此网站上使用的当前密码</translation>
+<translation id="6970861306198150268">请确保您保存的是您目前用于此网站的密码</translation>
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="697312151395002334">允许发送弹出式窗口并使用重定向</translation>
 <translation id="6973611239564315524">可以升级至 Debian 10 (Buster)</translation>
@@ -7294,7 +7294,7 @@
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481358317100446445">准备就绪</translation>
 <translation id="748138892655239008">证书基本约束</translation>
-<translation id="7484645889979462775">此网站一律不保存密码</translation>
+<translation id="7484645889979462775">一律不保存此网站的密码</translation>
 <translation id="7487141338393529395">开启增强的“拼写检查”功能</translation>
 <translation id="7487969577036436319">没有安装任何组件</translation>
 <translation id="7488682689406685343">此网站可能正试图诱骗您允许显示侵扰性通知。</translation>

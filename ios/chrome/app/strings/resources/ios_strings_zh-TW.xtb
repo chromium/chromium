@@ -88,7 +88,7 @@
 <translation id="1506063256525392513">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼</translation>
 <translation id="1509486075633541495">登入網站</translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
-<translation id="152234381334907219">永不儲存</translation>
+<translation id="152234381334907219">一律不儲存</translation>
 <translation id="1523341279170789507">允許所有 Cookie</translation>
 <translation id="1531836666020185856">精選內容</translation>
 <translation id="1535268707340844072">你目前的設定可能會導致某些網站無法正常運作。如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
@@ -235,7 +235,7 @@
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2664621323652615289">停止</translation>
-<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員中所儲存的密碼。</translation>
+<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員所儲存的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="26915454213703967">使用 Google 搜尋圖片內容</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
@@ -296,7 +296,7 @@
 <translation id="2982481275546140226">清除資料</translation>
 <translation id="298306318844797842">新增付款方式...</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
-<translation id="3020183492814296499">快速鍵</translation>
+<translation id="3020183492814296499">捷徑</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039722182465315531">不登入</translation>
 <translation id="3074499504015191586">翻譯整頁內容</translation>
@@ -965,7 +965,7 @@
 <translation id="7531345132340165516">目前網站</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="754655535278952384">已在 <ph name="TIME" />勾選</translation>
-<translation id="7553234618121028547">如要關閉，請開啟<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />並前往「密碼選項」部分。</translation>
+<translation id="7553234618121028547">如要關閉這項功能，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「密碼選項」部分。</translation>
 <translation id="7554645225856321710">全部關閉</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7561196759112975576">一律使用</translation>

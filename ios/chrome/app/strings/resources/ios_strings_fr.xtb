@@ -789,7 +789,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6377118281273296434">Sécurité du site</translation>
 <translation id="6380866119319257197">Si vous oubliez votre phrase secrète, ou pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6383719166112032471">Ouvrir l'emplacement…</translation>
-<translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe Google uniquement sur cet appareil.</translation>
+<translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google uniquement sur cet appareil.</translation>
 <translation id="6389470377220713856">Nom sur la carte</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
@@ -1031,7 +1031,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="797413074872316787">Activez la synchronisation pour accéder à vos données et les personnaliser sur tous vos appareils.</translation>
 <translation id="7978018860671536736">3. Appuyez sur "Saisir automatiquement les mots de passe"</translation>
 <translation id="7982789257301363584">Réseau</translation>
-<translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe Google.</translation>
+<translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>
 <translation id="8005666035647241369">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
@@ -1168,7 +1168,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8934982071228289624">Pour enregistrer ce mot de passe dans votre compte, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="894191600409472540">Créez des mots de passe sécurisés</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
-<translation id="8953046091948372197">Vos mots de passe s'afficheront ici</translation>
+<translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>
 <translation id="895541991026785598">Signaler un problème</translation>
 <translation id="8971545611707025079">Revérifier</translation>
 <translation id="8974714402877957201">1. Ouvrez les réglages de l'iPad</translation>

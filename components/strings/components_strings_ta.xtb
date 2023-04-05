@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">பஞ்ச் பாட்டம் ரைட்</translation>
 <translation id="2122719317867821810">இந்தக் கொள்கை எதிர்பார்த்த வகையில் வேலை செய்கிறது. ஆனால் முரண்படும் மதிப்பு ஒன்று வேறு எங்கோ அமைக்கப்பட்டுள்ளதோடு இந்தக் கொள்கை அந்த மதிப்பை மீறிச் செயல்படுகிறது.</translation>
 <translation id="2126374524350484896">PDF தயாரிப்பாளர்:</translation>
+<translation id="2128262927290305126">உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />)</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode கொள்கை அமைக்கப்படாததால் நீங்கள் குறிப்பிட்ட டெம்ப்ளேட்கள் பொருந்தாமல் போகக்கூடும்.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">ஆடவருக்கான ஆடை</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">சாதனத்தை ரீசெட் செய்ய வேண்டும்</translation>
 <translation id="2224337661447660594">இணைய இணைப்பு இல்லை</translation>
 <translation id="2225927550500503913">விர்ச்சுவல் கார்டு இயக்கப்பட்டுள்ளது</translation>
+<translation id="2226636330183131181">Wi-Fi நெட்வொர்க்கில் <ph name="BEGIN_LINK" />உள்நுழைகிறது<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">இப்போதே அனுப்பு</translation>
 <translation id="2241693394036365668">ஃபைல் பதிவிறக்கப்படும்போது</translation>
 <translation id="2246264294482514010">10 x 12 இன்ச்</translation>
@@ -1080,6 +1082,7 @@
 <translation id="3631244953324577188">பயோமெட்ரிக்ஸ்</translation>
 <translation id="3632503704576938756">ஸ்கிரீன் பகிர்வு தொடங்கப்பட்டது</translation>
 <translation id="3632892046558972264">ஸ்கிரீன் பகிர்வு இடைநிறுத்தப்பட்டது</translation>
+<translation id="3633035844150606508">உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) முகவரி சேமிக்கப்படும்</translation>
 <translation id="3633738897356909127">’Chromeமைப் புதுப்பி’ பட்டன், Chrome அமைப்புகளில் Chromeமைப் புதுப்பிக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="3634530185120165534">தட்டு 5</translation>
 <translation id="3634567936866541746">ஏமாற்றக்கூடிய தளத்தில் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். உங்கள் கணக்குகளைப் பாதுகாக்க, நீங்கள் சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்குமாறு Chrome பரிந்துரைக்கிறது.</translation>
@@ -1984,6 +1987,7 @@
 <translation id="5830698870816298009">கேமரா உபயோகம் &amp; நகர்வு</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5838278095973806738">தீங்கிழைப்பவர்கள் திருடிவிடலாம் என்பதால், இந்தத் தளத்தில் பாதுகாக்கப்பட வேண்டிய தகவலை (எடுத்துக்காட்டு: கடவுச்சொற்கள் அல்லது கிரெடிட் கார்டுகள்) உள்ளிட வேண்டாம்.</translation>
+<translation id="5841338463993781099">கணக்கில் சேமிக்கவா?</translation>
 <translation id="5851548754964597211">தாவல் பட்டியல்</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>

@@ -211,7 +211,7 @@
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2451654228769116489">تثبيت علامة تبويب</translation>
-<translation id="2461070143328828326">إعدادات كلمة المرور</translation>
+<translation id="2461070143328828326">إعدادات كلمات المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">غير مختارة</translation>
@@ -933,7 +933,7 @@
 <translation id="7221173315674413369">تعرَّف على ميزات ومعلومات جديدة في صفحة "الميزات الجديدة".</translation>
 <translation id="7223102419539744003">إغلاق علامة التبويب</translation>
 <translation id="722454870747268814">علامة تبويب جديدة للتصفح المتخفي</translation>
-<translation id="7265758999917665941">عدم حفظ كلمة المرور لهذا الموقع الإلكتروني</translation>
+<translation id="7265758999917665941">عدم الحفظ لهذا الموقع أبدًا</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
 <translation id="7291368939935408496">جارٍ تحضير كلمات المرور…</translation>
 <translation id="730958329302570991">‏يمكنك متى شئت إضافة كلمات مرور المواقع الإلكترونية بسهولة إلى "مدير كلمات المرور في Google".</translation>
@@ -967,7 +967,7 @@
 <translation id="7531345132340165516">الموقع الإلكتروني الحالي</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور منذ <ph name="TIME" /></translation>
-<translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمة المرور).</translation>
+<translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمات المرور).</translation>
 <translation id="7554645225856321710">إغلاق الكل</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7561196759112975576">دومًا</translation>
@@ -1020,7 +1020,7 @@
 <translation id="7920949005883349320">الخصوصية والأمان</translation>
 <translation id="7930998711684428189">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7938254975914653459">FaceTime</translation>
-<translation id="7939128259257418052">جارٍ تصدير كلمات المرور...</translation>
+<translation id="7939128259257418052">تصدير كلمات المرور...</translation>
 <translation id="794799177247607889">إيقاف التسجيل</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق.}=1{هناك كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق.}two{هناك كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق.}few{هناك {COUNT} كلمات مرور محتمَل تعرّضها للاختراق.}many{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق.}other{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق.}}</translation>
 <translation id="7959441099968534758">الانتقال إلى الخلاصة</translation>
@@ -1164,7 +1164,7 @@
 <translation id="8911759861431145525">انقر على "إضافة" ثم أدخِل معلوماتك.</translation>
 <translation id="891282356902782456">‏يتم حفظ كلمة المرور هذه على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google‏ (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">ميِّز النص على موقع إلكتروني.</translation>
-<translation id="8917490105272468696">نعم، أنا موافق</translation>
+<translation id="8917490105272468696">نعم، أوافق</translation>
 <translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="8934982071228289624">لحفظ كلمة المرور هذه في حسابك، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="894191600409472540">إنشاء كلمات مرور قوية</translation>

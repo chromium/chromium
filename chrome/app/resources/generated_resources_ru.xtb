@@ -6761,7 +6761,7 @@
 <translation id="6970480684834282392">Тип запуска</translation>
 <translation id="6970543303783413625">Не удалось выполнить импорт. Максимальное число паролей, которые можно импортировать за один раз: <ph name="COUNT" />.</translation>
 <translation id="6970856801391541997">Печать выбранных страниц</translation>
-<translation id="6970861306198150268">Не забудьте сохранить текущий пароль для этого сайта.</translation>
+<translation id="6970861306198150268">Убедитесь, что вы сохраняете текущий пароль для этого сайта.</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="697312151395002334">Разрешить сайтам показывать всплывающие окна или использовать переадресацию</translation>
 <translation id="6973611239564315524">Доступна версия Debian 10 (Buster).</translation>
@@ -7352,7 +7352,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431">Работа с приложением "<ph name="APP_NAME" />" приостановлена</translation>
 <translation id="7520766081042531487">Портал в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">Показать сочетания клавиш</translation>
+<translation id="752098910262610337">Показывать ярлыки</translation>
 <translation id="7522255036471229694">Скажите "Окей, Google"</translation>
 <translation id="7523117833414447032">Озвучивание заглавных букв</translation>
 <translation id="7523585675576642403">Переименовать профиль</translation>

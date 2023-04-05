@@ -604,7 +604,7 @@
 <translation id="1517467582299994451">如要使用代碼建立投放連線，請開啟 Chrome 瀏覽器同步處理設定</translation>
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521774566618522728">上次使用時間：今天</translation>
-<translation id="152234381334907219">永不儲存</translation>
+<translation id="152234381334907219">一律不儲存</translation>
 <translation id="1523279371236772909">過去一個月看過</translation>
 <translation id="1523978563989812243">文字轉語音的引擎</translation>
 <translation id="1524430321211440688">鍵盤</translation>
@@ -2384,7 +2384,7 @@
 <translation id="3019023222666709803">箭頭工具</translation>
 <translation id="3019285239893817657">子頁面按鈕</translation>
 <translation id="3019595674945299805">VPN 服務</translation>
-<translation id="3020183492814296499">快速鍵</translation>
+<translation id="3020183492814296499">捷徑</translation>
 <translation id="3020990233660977256">序號：<ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">使用電池時</translation>
 <translation id="3021066826692793094">蝴蝶</translation>
@@ -2505,7 +2505,7 @@
 <translation id="313205617302240621">忘記密碼了嗎？</translation>
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
-<translation id="3132996321662585180">每天重新整理</translation>
+<translation id="3132996321662585180">每天更新</translation>
 <translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
@@ -7340,7 +7340,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431">「<ph name="APP_NAME" />」已暫停</translation>
 <translation id="7520766081042531487">無痕模式入口網站：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">顯示快速鍵</translation>
+<translation id="752098910262610337">顯示捷徑</translation>
 <translation id="7522255036471229694">說出「Ok Google」</translation>
 <translation id="7523117833414447032">朗讀大寫字母時</translation>
 <translation id="7523585675576642403">重新命名設定檔</translation>

@@ -698,6 +698,7 @@
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
+<translation id="7131634559772719176">אישור ההגדרה הקבועה מראש</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
@@ -802,6 +803,7 @@
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8045012663542226664">השתקת המיקרופון</translation>
+<translation id="8050091914317269817">בחירה בטפט הזה תפעיל את המצב הכהה וההתאמה לצבע הטפט באופן אוטומטי.</translation>
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
