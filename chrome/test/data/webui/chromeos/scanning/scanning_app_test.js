@@ -460,6 +460,11 @@ suite('scanningAppTest', function() {
   /** @type {?HTMLElement} */
   let scannedImages = null;
 
+  /** @type {?HTMLLinkElement} */
+  let linkEl = null;
+
+  const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
+
   /**
    * @type {!Map<!mojoBase.mojom.UnguessableToken,
    *     !ash.scanning.mojom.ScannerCapabilities>}
@@ -485,12 +490,19 @@ suite('scanningAppTest', function() {
 
   setup(function() {
     document.body.innerHTML = '';
+    linkEl = /**@type {HTMLLinkElement}*/ (document.createElement('link'));
+    linkEl.href = disabledUrl;
+    document.head.appendChild(linkEl);
   });
 
   teardown(function() {
     fakeScanService_.resetForTest();
     if (scanningApp) {
       scanningApp.remove();
+    }
+    if (linkEl) {
+      document.head.removeChild(linkEl);
+      linkEl = null;
     }
     scanningApp = null;
     scannerSelect = null;
@@ -2612,5 +2624,26 @@ suite('scanningAppTest', function() {
               ash.scanning.mojom.PageSize.kMax.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
         });
+  });
+
+  // Verify cros_styles.css kept when `isJellyEnabledForScanningApp` is false.
+  test('IsJellyEnabledForScanningApp_DisabledKeepsCSS', async () => {
+    loadTimeData.overrideValues({
+      isJellyEnabledForScanningApp: false,
+    });
+    await initializeScanningApp(expectedScanners, capabilities);
+
+    assertTrue(linkEl.href.includes(disabledUrl));
+  });
+
+  // Verify cros_styles.css replaced when `isJellyEnabledForScanningApp` is
+  // true.
+  test('IsJellyEnabledForScanningApp_EnabledUpdateCSS', async () => {
+    loadTimeData.overrideValues({
+      isJellyEnabledForScanningApp: true,
+    });
+    await initializeScanningApp(expectedScanners, capabilities);
+
+    assertTrue(linkEl.href.includes('chrome://theme/colors.css'));
   });
 });

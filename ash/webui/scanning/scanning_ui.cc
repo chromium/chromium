@@ -26,6 +26,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash {
 
@@ -43,6 +44,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddBoolean("isJellyEnabledForScanningApp",
+                     ash::features::IsJellyEnabledForScanningApp());
 }
 
 void AddScanningAppStrings(content::WebUIDataSource* html_source) {
@@ -201,6 +204,12 @@ void ScanningUI::BindInterface(
     mojo::PendingReceiver<common::mojom::AccessibilityFeatures>
         pending_receiver) {
   accessibility_features_->BindInterface(std::move(pending_receiver));
+}
+
+void ScanningUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ScanningUI)
