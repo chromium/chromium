@@ -644,8 +644,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::Subpage::kInputMethodOptions);
   generator->RegisterNestedSetting(mojom::Setting::kShowVKAutoCorrection,
                                    mojom::Subpage::kInputMethodOptions);
-  generator->RegisterNestedSetting(mojom::Setting::kShowDiacritic,
-                                   mojom::Subpage::kInputMethodOptions);
 
   // Smart inputs.
   generator->RegisterTopLevelSubpage(

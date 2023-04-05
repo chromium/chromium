@@ -135,6 +135,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
           Setting.kKeyboardFunctionKeys,
           Setting.kKeyboardAutoRepeat,
           Setting.kKeyboardShortcuts,
+          Setting.kShowDiacritic,
         ]),
       },
     };

@@ -498,6 +498,18 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_REMAP_KEYS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a button leading the user to remap keyboard keys page.">
     Remap keyboard keys
+    </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a toggle to enable/disable a method of inserting accented characters via long pressing a key.">
+    Diacritics
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC1" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a toggle to enable/disable a method of inserting accented characters via long pressing a key.">
+    Accent marks
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC2" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a toggle to enable/disable a method of inserting accented characters via long pressing a key.">
+    Special characters
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC3" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with a toggle to enable/disable a method of inserting accented characters via long pressing a key.">
+    Tones
   </message>
   <message name="IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT" desc="Text for search result item which, when clicked, navigates the user to keyboard settings, with toggles/sliders to set the auto-repeat state. Alternate phrase for: 'Keyboard repeat latency'">
     Keyboard auto-repeat
@@ -1047,6 +1059,7 @@
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_DEVICE_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with allows users to change device language.">
     Change device language
   </message>
+
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_OFFER_TRANSLATION" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with a toggle to enable/disable translation prompts.">
     Translation suggestion
   </message>
