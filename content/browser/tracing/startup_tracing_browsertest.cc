@@ -322,8 +322,13 @@ INSTANTIATE_TEST_SUITE_P(
             OutputLocation::kDirectoryWithDefaultBasename,
             OutputLocation::kDirectoryWithBasenameUpdatedBeforeStop)));
 
-// TODO(1428814): Re-enable this test.
-IN_PROC_BROWSER_TEST_P(StartupTracingTest, DISABLED_TestEnableTracing) {
+// TODO(crbug.com/1428925): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestEnableTracing DISABLED_TestEnableTracing
+#else
+#define MAYBE_TestEnableTracing TestEnableTracing
+#endif
+IN_PROC_BROWSER_TEST_P(StartupTracingTest, MAYBE_TestEnableTracing) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   if (GetOutputLocation() ==
