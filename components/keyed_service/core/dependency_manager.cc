@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -53,6 +54,8 @@ void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
            "previous method or to the appropriate "
            "`EnsureBrowserContextKeyedServiceFactoriesBuilt()` function to "
            "properly register your factory.";
+    SCOPED_CRASH_KEY_STRING32("KeyedServiceFactories", "factory_name",
+                              component->name());
     base::debug::DumpWithoutCrashing();
   }
 
