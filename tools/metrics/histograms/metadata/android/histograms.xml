@@ -1339,6 +1339,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Event.ActionDown" enum="InputDeviceSource"
+    expires_after="2024-04-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/android/OWNERS</owner>
+  <summary>
+    Records the input device source for the action down touch event.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.FamilyLinkUser.LocalWebApprovalParentAuthenticationError"
     units="Status error codes raised in GMS Core" expires_after="2023-06-13">

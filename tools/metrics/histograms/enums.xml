@@ -52278,6 +52278,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Dismiss"/>
 </enum>
 
+<enum name="InputDeviceSource">
+  <int value="0" label="Other"/>
+  <int value="1" label="Touchscreen"/>
+  <int value="2" label="Touchpad"/>
+  <int value="3" label="Mouse"/>
+  <int value="4" label="Stylus"/>
+</enum>
+
 <enum name="InputEventTypeForResponsivenessMetric">
   <int value="0" label="mousedown"/>
   <int value="1" label="click"/>

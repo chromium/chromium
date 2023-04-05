@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -22,6 +23,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -95,12 +97,48 @@ public class EventForwarder {
         return mCurrentTouchOffsetX != 0.0f || mCurrentTouchOffsetY != 0.0f;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({InputDeviceSource.OTHER, InputDeviceSource.TOUCHSCREEN, InputDeviceSource.TOUCHPAD,
+            InputDeviceSource.MOUSE, InputDeviceSource.STYLUS, InputDeviceSource.COUNT})
+    private @interface InputDeviceSource {
+        int OTHER = 0;
+        int TOUCHSCREEN = 1;
+        int TOUCHPAD = 2;
+        int MOUSE = 3;
+        int STYLUS = 4;
+        int COUNT = 5;
+    }
+
+    private static final void logActionDown(MotionEvent event) {
+        @InputDeviceSource
+        int source = InputDeviceSource.OTHER;
+        if (event.isFromSource(InputDevice.SOURCE_MOUSE)
+                && event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER) {
+            // On the event a touchpad is not indicated as a distinct source from a mouse, but the
+            // tool type is different.
+            source = InputDeviceSource.TOUCHPAD;
+        } else if (event.isFromSource(InputDevice.SOURCE_MOUSE)
+                && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE) {
+            source = InputDeviceSource.MOUSE;
+        } else if (event.isFromSource(InputDevice.SOURCE_STYLUS)) {
+            // Check stylus before touchscreen. In the case of a stylus acting on a touchscreen both
+            // will be true, but stylus is more specific.
+            source = InputDeviceSource.STYLUS;
+        } else if (event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) {
+            source = InputDeviceSource.TOUCHSCREEN;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Event.ActionDown", source, InputDeviceSource.COUNT);
+    }
+
     /**
      * @see View#onTouchEvent(MotionEvent)
      */
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             mLastToolType = event.getToolType(0);
+            logActionDown(event);
         }
 
         if (mStylusWritingDelegate != null && mStylusWritingDelegate.handleTouchEvent(event)) {
