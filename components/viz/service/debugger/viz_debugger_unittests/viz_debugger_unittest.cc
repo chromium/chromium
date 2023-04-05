@@ -280,7 +280,6 @@ TEST_F(VisualDebuggerTest, MultipleBuffersSync) {
   const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
   static const int kNumFrames = 1;
   GetInternal()->ForceEnabled();
-  GetInternal()->Reset();
   VizDebuggerInternal::BufferInfo buffer_info;
   const int kBufferWidth = 4;
   const int kBufferHeight = 8;
@@ -337,7 +336,6 @@ TEST_F(VisualDebuggerTest, SingleBufferAsync) {
   const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
   static const int kNumFrames = 2;
   GetInternal()->ForceEnabled();
-  GetInternal()->Reset();
   VizDebuggerInternal::BufferInfo buffer_info;
   const int kBufferWidth = 4;
   const int kBufferHeight = 8;
@@ -400,8 +398,6 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
   const gfx::Rect kTestRect = gfx::Rect(12, 34, 56, 78);
   static const int kNumFrames = 2;
   GetInternal()->ForceEnabled();
-  GetInternal()->Reset();
-
   const int kBufferWidth = 4;
   const int kBufferHeight = 8;
 

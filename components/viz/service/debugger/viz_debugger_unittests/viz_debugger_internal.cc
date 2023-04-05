@@ -87,6 +87,9 @@ bool VizDebuggerInternal::Reset() {
   draw_rect_calls_tail_idx_ = 0;
   draw_text_calls_tail_idx_ = 0;
   logs_tail_idx_ = 0;
+  enabled_ = false;
+  new_filters_.clear();
+  cached_filters_.clear();
   return true;
 }
 }  // namespace viz

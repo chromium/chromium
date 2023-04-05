@@ -215,7 +215,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     std::string value;
   };
 
-  struct FilterBlock {
+  struct VIZ_SERVICE_EXPORT FilterBlock {
     FilterBlock(const std::string file_str,
                 const std::string func_str,
                 const std::string anno_str,
