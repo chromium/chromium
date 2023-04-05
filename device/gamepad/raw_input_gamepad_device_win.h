@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -127,8 +128,8 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   size_t buttons_length_ = 0;
   bool buttons_[Gamepad::kButtonsLengthCap];
 
-  // Keep track of which button indices are in use.
-  std::vector<bool> button_indices_used_;
+  // The report ID for each button index, or nullopt if the button is not used.
+  std::vector<absl::optional<uint8_t>> button_report_id_;
 
   // Bitfield to keep track of which axes indices are in use.
   uint32_t axes_used_ = 0;
