@@ -306,7 +306,6 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private hasOptionsPageInSettings_(id: string): boolean {
     return hasOptionsPageInSettings(
         id, loadTimeData.getBoolean('allowPredictiveWriting'),
-        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
   }
 

@@ -1159,7 +1159,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
             SettingToQueryString(
-                chromeos::settings::mojom::kInputMethodOptionsSubpagePath,
+                chromeos::settings::mojom::kKeyboardSubpagePath,
                 chromeos::settings::mojom::Setting::kShowDiacritic));
       }
       if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {

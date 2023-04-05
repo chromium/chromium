@@ -150,7 +150,6 @@ class SettingsInputMethodOptionsPageElement extends
   // Internal properties for mixins.
   // From DeepLinkingMixin.
   override supportedSettingIds = new Set<Setting>([
-    Setting.kShowDiacritic,
     Setting.kShowPKAutoCorrection,
     Setting.kShowVKAutoCorrection,
   ]);
@@ -257,7 +256,6 @@ class SettingsInputMethodOptionsPageElement extends
   private populateOptionSections_(): void {
     const options = generateOptions(
         this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
-        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
     const inputMethodSpecificSettings =
         this.getPref<PrefsObjectType>(PREFS_PATH).value;
@@ -323,10 +321,6 @@ class SettingsInputMethodOptionsPageElement extends
 
       let link = -1;
 
-      if (name ===
-          OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS) {
-        link = Setting.kShowDiacritic;
-      }
       if (name === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL) {
         link = Setting.kShowPKAutoCorrection;
       }

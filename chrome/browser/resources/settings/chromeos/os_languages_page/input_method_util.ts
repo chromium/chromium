@@ -67,8 +67,6 @@ export enum OptionType {
       'physicalKeyboardEnableCapitalization',
   PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING =
       'physicalKeyboardEnablePredictiveWriting',
-  PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS =
-      'physicalKeyboardEnableDiacriticsOnLongpress',
   VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL = 'virtualKeyboardAutoCorrectionLevel',
   VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION =
       'virtualKeyboardEnableCapitalization',
@@ -139,7 +137,6 @@ export const OPTION_DEFAULT = {
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
-  [OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS]: true,
   [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.XKB_LAYOUT]: 'US',
@@ -390,11 +387,6 @@ const Settings = {
     optionNames:
         [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING}],
   }],
-  [SettingsType.PK_DIACRITICS_SETTINGS]: [{
-    title: SettingsHeaders.PHYSICAL_KEYBOARD,
-    optionNames:
-        [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS}],
-  }],
 } satisfies Record<SettingsType, Array<{
                      title: SettingsHeaders,
                      optionNames: Array<{
@@ -419,7 +411,6 @@ export function getFirstPartyInputMethodEngineId(id: string): string {
  */
 export function hasOptionsPageInSettings(
     id: string, predictiveWritingEnabled: boolean,
-    physicalKeyboardDiacriticsEnabled: boolean,
     isJapaneseSettingsEnabled: boolean): boolean {
   if (!isFirstPartyInputMethodId(id)) {
     return false;
@@ -427,8 +418,7 @@ export function hasOptionsPageInSettings(
   const engineId = getFirstPartyInputMethodEngineId(id);
 
   const inputMethodSettings = getInputMethodSettings(
-      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
-      isJapaneseSettingsEnabled);
+      predictiveWritingEnabled, isJapaneseSettingsEnabled);
   return !!inputMethodSettings[engineId];
 }
 
@@ -439,7 +429,6 @@ export function hasOptionsPageInSettings(
  */
 export function generateOptions(
     engineId: string, predictiveWritingEnabled: boolean,
-    physicalKeyboardDiacriticsEnabled: boolean,
     isJapaneseSettingsEnabled: boolean): Array<{
   title: SettingsHeaders,
   optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
@@ -449,8 +438,7 @@ export function generateOptions(
     optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
   }> = [];
   const inputMethodSettings = getInputMethodSettings(
-      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
-      isJapaneseSettingsEnabled);
+      predictiveWritingEnabled, isJapaneseSettingsEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
     const pushedOptions = new Map<SettingsHeaders, number>();
@@ -496,7 +484,6 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
-    case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
     case OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
     case OptionType.PINYIN_CHINESE_PUNCTUATION:
@@ -597,8 +584,6 @@ export function getOptionLabelName(option: OptionType): string {
       return 'inputMethodOptionsEnableCapitalization';
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
       return 'inputMethodOptionsPredictiveWriting';
-    case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
-      return 'inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpress';
     case OptionType.PINYIN_CHINESE_PUNCTUATION:
       return 'inputMethodOptionsPinyinChinesePunctuation';
     case OptionType.PINYIN_DEFAULT_CHINESE:
@@ -675,8 +660,6 @@ export function getOptionLabelName(option: OptionType): string {
  */
 export function getOptionSubtitleName(option: OptionType): string {
   switch (option) {
-    case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
-      return 'inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpressSubtitle';
     // TODO(b/234790486): The subtitle is not forced to the next line if it is
     // too short. You end up with something like :
     // https://screenshot.googleplex.com/8xk2BfbBXcGqhvs This likely also
