@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/multi_column_set_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
@@ -418,7 +417,7 @@ void LayoutMultiColumnSet::PaintObject(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
-  MultiColumnSetPainter(*this).PaintObject(paint_info, paint_offset);
+  NOTREACHED_NORETURN();
 }
 
 LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(

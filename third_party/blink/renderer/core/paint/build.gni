@@ -72,8 +72,6 @@ blink_core_sources_paint = [
   "inline_painter.h",
   "link_highlight_impl.cc",
   "link_highlight_impl.h",
-  "multi_column_set_painter.cc",
-  "multi_column_set_painter.h",
   "ng/ng_box_fragment_painter.cc",
   "ng/ng_box_fragment_painter.h",
   "ng/ng_decorating_box.h",
