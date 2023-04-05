@@ -1617,6 +1617,23 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram
+    name="Prerender.Experimental.BookmarkBar.EnterToPressDuration{ButtonType}"
+    units="ms" expires_after="2023-09-24">
+  <owner>robertlin@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The metrics for preload boomark to understand the distribution of delay to
+    press {ButtonType}. It records duration time from entering to to pressing
+    the button.
+  </summary>
+  <token key="ButtonType">
+    <variant name="" summary="any button"/>
+    <variant name=".LeftButton" summary="the left button"/>
+  </token>
+</histogram>
+
+<histogram
     name="Prerender.Experimental.BookmarkBar.HoverDuration.{ConversionResultType}"
     units="ms" expires_after="2023-09-24">
   <owner>robertlin@chromium.org</owner>
