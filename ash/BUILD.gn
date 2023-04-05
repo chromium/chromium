@@ -3791,8 +3791,6 @@ static_library("interactive_ui_test_support") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "accelerators/accelerator_alias_converter.cc",
-    "accelerators/accelerator_alias_converter.h",
     "accessibility/accessibility_controller_test_api_impl.cc",
     "accessibility/accessibility_controller_test_api_impl.h",
     "accessibility/test_accessibility_controller_client.cc",
@@ -3863,8 +3861,6 @@ static_library("test_support") {
     "drag_drop/draggable_test_view.h",
     "drag_drop/mock_drag_drop_observer.cc",
     "drag_drop/mock_drag_drop_observer.h",
-    "events/keyboard_capability_delegate_impl.cc",
-    "events/keyboard_capability_delegate_impl.h",
     "fast_ink/laser/laser_pointer_controller_test_api.cc",
     "fast_ink/laser/laser_pointer_controller_test_api.h",
     "frame_sink/frame_sink_holder_test_api.cc",
@@ -3912,8 +3908,6 @@ static_library("test_support") {
     "system/message_center/message_popup_animation_waiter.h",
     "system/test_system_sounds_delegate.cc",
     "system/test_system_sounds_delegate.h",
-    "system/tray/system_nudge_label.cc",
-    "system/tray/system_nudge_label.h",
     "test/pixel/ash_pixel_diff_util.cc",
     "test/pixel/ash_pixel_diff_util.h",
     "test/pixel/ash_pixel_differ.cc",
@@ -3941,8 +3935,6 @@ static_library("test_support") {
     "session/test_session_controller_client.h",
     "shelf/shelf_button_pressed_metric_tracker_test_api.cc",
     "shelf/shelf_button_pressed_metric_tracker_test_api.h",
-    "shelf/shelf_focus_cycler.cc",
-    "shelf/shelf_focus_cycler.h",
     "shelf/shelf_test_util.cc",
     "shelf/shelf_test_util.h",
     "shelf/shelf_view_test_api.cc",
