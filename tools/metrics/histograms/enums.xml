@@ -101492,6 +101492,7 @@ would be helpful to identify which type is being sent.
   <int value="9" label="Not shown: unknown field"/>
   <int value="10" label="Not shown: unsupported field type"/>
   <int value="11" label="Not shown: Fast Checkout was shown"/>
+  <int value="12" label="Not shown: some inputs already contain values"/>
 </enum>
 
 <enum name="TouchToFill.Outcome">
