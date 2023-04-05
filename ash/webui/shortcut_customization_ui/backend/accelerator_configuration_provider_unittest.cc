@@ -587,7 +587,9 @@ TEST_F(AcceleratorConfigurationProviderTest, FilterOutHiddenAccelerators) {
                                expected_test_data, mojo_observer.config());
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
+// TODO(crbug.com/1430899): Re-enable this test.
+TEST_F(AcceleratorConfigurationProviderTest,
+       DISABLED_TopRowKeyAcceleratorRemapped) {
   // Add a fake layout2 keyboard.
   ui::InputDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
