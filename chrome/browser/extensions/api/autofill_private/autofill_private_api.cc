@@ -157,10 +157,17 @@ autofill::AutofillManager* GetAutofillManager(
 
 autofill::AutofillProfile CreateNewAutofillProfile(
     autofill::PersonalDataManager* personal_data) {
-  const autofill::AutofillProfile::Source source =
+  autofill::AutofillProfile::Source source =
       personal_data->IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
           : autofill::AutofillProfile::Source::kLocalOrSyncable;
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::test::
+              kAutofillCreateAccountProfilesFromSettings)) {
+    // Note: overriding address profile source only if test feature is enabled.
+    source = autofill::AutofillProfile::Source::kAccount;
+  }
   return autofill::AutofillProfile(base::GenerateGUID(), kSettingsOrigin,
                                    source);
 }
