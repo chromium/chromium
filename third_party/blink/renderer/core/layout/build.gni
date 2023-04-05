@@ -45,8 +45,6 @@ blink_core_sources_layout = [
   "api/selection_state.h",
   "background_bleed_avoidance.h",
   "box_layout_extra_input.h",
-  "collapsed_border_value.cc",
-  "collapsed_border_value.h",
   "content_change_type.h",
   "counter_node.cc",
   "counter_node.h",
@@ -708,7 +706,6 @@ if (is_fuchsia) {
 blink_core_tests_layout = [
   "anchor_scroll_data_test.cc",
   "api/selection_state_test.cc",
-  "collapsed_border_value_test.cc",
   "geometry/axis_test.cc",
   "geometry/logical_rect_test.cc",
   "geometry/physical_rect_test.cc",
