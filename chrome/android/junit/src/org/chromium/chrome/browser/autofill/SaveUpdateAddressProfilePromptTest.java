@@ -54,6 +54,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT})
 public class SaveUpdateAddressProfilePromptTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
+    private static final boolean NO_MIGRATION = false;
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
@@ -93,7 +94,7 @@ public class SaveUpdateAddressProfilePromptTest {
         AutofillProfile dummyProfile = new AutofillProfile();
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController, mModalDialogManager,
-                mActivity, mProfile, dummyProfile, isUpdate);
+                mActivity, mProfile, dummyProfile, isUpdate, NO_MIGRATION);
         mPrompt.setAddressEditorForTesting(mAddressEditor);
         mPrompt.show();
     }

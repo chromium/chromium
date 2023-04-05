@@ -52,7 +52,8 @@ public class SaveUpdateAddressProfilePrompt {
      */
     public SaveUpdateAddressProfilePrompt(SaveUpdateAddressProfilePromptController controller,
             ModalDialogManager modalDialogManager, Activity activity, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate) {
+            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate,
+            boolean isMigrationToAccount) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
@@ -74,7 +75,7 @@ public class SaveUpdateAddressProfilePrompt {
 
         mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
-        mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
+        mAddressEditor = new AddressEditor(/*saveToDisk=*/false, isMigrationToAccount);
         mAddressEditor.setEditorDialog(mEditorDialog);
         AutofillAddress autofillAddress = new AutofillAddress(activity, autofillProfile);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {
@@ -100,19 +101,22 @@ public class SaveUpdateAddressProfilePrompt {
      * @param browserProfile the Chrome profile being used.
      * @param autofillProfile the address data to be saved.
      * @param isUpdate true if there's an existing profile which will be updated, false otherwise.
+     * @param isMigrationToAccount true if address profile is going to be saved in user's Google
+     *         account, false otherwise.
      * @return instance of the SaveUpdateAddressProfilePrompt or null if the call failed.
      */
     @CalledByNative
     @Nullable
     private static SaveUpdateAddressProfilePrompt create(WindowAndroid windowAndroid,
             SaveUpdateAddressProfilePromptController controller, Profile browserProfile,
-            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate) {
+            PersonalDataManager.AutofillProfile autofillProfile, boolean isUpdate,
+            boolean isMigrationToAccount) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
         return new SaveUpdateAddressProfilePrompt(controller, modalDialogManager, activity,
-                browserProfile, autofillProfile, isUpdate);
+                browserProfile, autofillProfile, isUpdate, isMigrationToAccount);
     }
 
     /**

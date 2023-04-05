@@ -60,7 +60,8 @@ SaveUpdateAddressProfilePromptController::
 
 void SaveUpdateAddressProfilePromptController::DisplayPrompt() {
   bool success =
-      prompt_view_->Show(this, profile_, /*is_update=*/!!original_profile_);
+      prompt_view_->Show(this, profile_, /*is_update=*/!!original_profile_,
+                         is_migration_to_account_);
   if (!success)
     std::move(dismissal_callback_).Run();
 }

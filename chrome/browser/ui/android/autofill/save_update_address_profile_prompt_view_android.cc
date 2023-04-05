@@ -41,7 +41,8 @@ SaveUpdateAddressProfilePromptViewAndroid::
 bool SaveUpdateAddressProfilePromptViewAndroid::Show(
     SaveUpdateAddressProfilePromptController* controller,
     const AutofillProfile& autofill_profile,
-    bool is_update) {
+    bool is_update,
+    bool is_migration_to_account) {
   DCHECK(controller);
   if (!web_contents_->GetTopLevelNativeWindow()) {
     return false;  // No window attached (yet or anymore).
@@ -66,7 +67,8 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   java_object_.Reset(Java_SaveUpdateAddressProfilePrompt_create(
       env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
       java_controller, browser_profile_android->GetJavaObject(),
-      java_autofill_profile, static_cast<jboolean>(is_update)));
+      java_autofill_profile, static_cast<jboolean>(is_update),
+      static_cast<jboolean>(is_migration_to_account)));
   if (!java_object_)
     return false;
 

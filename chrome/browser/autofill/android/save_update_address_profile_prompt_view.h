@@ -16,7 +16,8 @@ class SaveUpdateAddressProfilePromptView {
  public:
   virtual bool Show(SaveUpdateAddressProfilePromptController* controller,
                     const AutofillProfile& autofill_profile,
-                    bool is_update) = 0;
+                    bool is_update,
+                    bool is_migration_to_account) = 0;
 
   virtual ~SaveUpdateAddressProfilePromptView() = default;
 };
