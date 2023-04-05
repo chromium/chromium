@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 
 #include <iomanip>
+#include <list>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -139,11 +140,11 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   MOCK_METHOD(void, OnStartSearchQuery, (const mojom::QueryParameters&));
 
-  void StartSearchQuery(mojo::PendingReceiver<SearchQuery> receiver,
-                        mojom::QueryParametersPtr query_params) override {
-    EXPECT_FALSE(search_receiver_.is_bound());
+  void StartSearchQuery(mojo::PendingReceiver<SearchQuery> query,
+                        const mojom::QueryParametersPtr query_params) override {
+    EXPECT_TRUE(query_params);
+    queries_.emplace_back(this, std::move(query));
     OnStartSearchQuery(*query_params);
-    search_receiver_.Bind(std::move(receiver));
   }
 
   MOCK_METHOD(FileError,
@@ -178,7 +179,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
               (override));
 
  private:
-  mojo::Receiver<SearchQuery> search_receiver_{this};
+  std::list<mojo::Receiver<SearchQuery>> queries_;
 };
 
 class MockSpaceGetter {
@@ -1965,6 +1966,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.progress_.stage = Stage::kListingFiles;
   manager.progress_.max_active_queries = 2;
   manager.progress_.active_queries = 2;
+  manager.progress_.total_queries = 2;
 
   const Id dir_id = Id(101);
   const Path dir_path("/root/Folder");
@@ -1973,13 +1975,121 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   item.metadata = FileMetadata::New();
   FileMetadata& md = *item.metadata;
   md.stable_id = 102;
-  md.type = FileMetadata::Type(-1);
   md.size = 0;
   md.pinned = false;
   md.available_offline = false;
   md.capabilities = mojom::Capabilities::New();
 
+  // Unexpected item type.
+  md.type = FileMetadata::Type(-1);
+
+  EXPECT_EQ(manager.progress_.skipped_items, 0);
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 1);
+
+  // Shortcut
+  md.shortcut_details = mojom::ShortcutDetails::New();
+  md.shortcut_details->target_stable_id = 201;
+  md.type = FileMetadata::Type::kDirectory;
+
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 0);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 0);
+  EXPECT_EQ(manager.progress_.listed_docs, 0);
+
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 2);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 0);
+  EXPECT_EQ(manager.progress_.listed_docs, 0);
+
+  md.type = FileMetadata::Type::kFile;
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 3);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 2);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 0);
+  EXPECT_EQ(manager.progress_.listed_docs, 0);
+
+  md.type = FileMetadata::Type::kHosted;
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 4);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 0);
+  EXPECT_EQ(manager.progress_.listed_docs, 0);
+
+  // Unexpected path
+  md.shortcut_details.reset();
+  md.type = FileMetadata::Type::kFile;
+  item.path = Path("/root/Unexpected");
+
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 0);
+  EXPECT_EQ(manager.progress_.listed_docs, 0);
+
+  // File
+  md.stable_id++;
+  md.type = FileMetadata::Type::kFile;
+  item.path = Path("/root/Folder/File");
+
+  EXPECT_EQ(manager.progress_.files_to_pin, 0);
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_docs, 0);
+  EXPECT_EQ(manager.progress_.files_to_pin, 1);
+
+  // Hosted doc
+  md.stable_id++;
+  md.type = FileMetadata::Type::kHosted;
+  item.path = Path("/root/Folder/Doc");
+
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_docs, 1);
+  EXPECT_EQ(manager.progress_.files_to_pin, 2);
+
+  // Directory
+  md.stable_id++;
+  md.type = FileMetadata::Type::kDirectory;
+  item.path = Path("/root/Folder/Dir");
+
+  EXPECT_THAT(manager.visited_dirs_, IsEmpty());
+  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 1);
+  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_docs, 1);
+  EXPECT_EQ(manager.progress_.files_to_pin, 2);
+  EXPECT_EQ(manager.progress_.max_active_queries, 3);
+  EXPECT_EQ(manager.progress_.active_queries, 3);
+  EXPECT_EQ(manager.progress_.total_queries, 3);
+  EXPECT_THAT(manager.visited_dirs_, SizeIs(1));
+
+  // Already visited directory
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 6);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 2);
+  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_docs, 1);
+  EXPECT_EQ(manager.progress_.files_to_pin, 2);
+  EXPECT_EQ(manager.progress_.max_active_queries, 3);
+  EXPECT_EQ(manager.progress_.active_queries, 3);
+  EXPECT_EQ(manager.progress_.total_queries, 3);
+  EXPECT_THAT(manager.visited_dirs_, SizeIs(1));
 
   manager.Stop();
 }
@@ -1997,8 +2107,16 @@ TEST_F(DriveFsPinManagerTest, OnSearchResult) {
   manager.OnSearchResult(Id(101), Path("/root/My Folder"), PinManager::Query(),
                          FileError::FILE_ERROR_OK, {});
 
+  EXPECT_EQ(manager.progress_.stage, Stage::kListingFiles);
   EXPECT_EQ(manager.progress_.max_active_queries, 2);
   EXPECT_EQ(manager.progress_.active_queries, 1);
+
+  manager.OnSearchResult(Id(100), Path("/root"), PinManager::Query(),
+                         FileError::FILE_ERROR_OK, {});
+
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(manager.progress_.max_active_queries, 2);
+  EXPECT_EQ(manager.progress_.active_queries, 0);
 
   manager.Stop();
 }

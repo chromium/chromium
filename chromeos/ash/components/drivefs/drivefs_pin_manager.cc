@@ -824,9 +824,12 @@ void PinManager::HandleQueryItem(Id dir_id,
   const Id id = Id(md.stable_id);
   const Path& path = item.path;
 
-  if (Path("/.files-by-id").IsParent(path) || !dir_path.IsParent(path)) {
-    LOG(ERROR) << "Unexpected path " << Quote(path) << " for " << Quote(md)
-               << " when listing items in " << dir_id << " " << Quote(dir_path);
+  if (!dir_path.IsParent(path)) {
+    progress_.skipped_items++;
+    LOG(ERROR) << "Unexpected path " << id << " " << Quote(path) << " for "
+               << Quote(md) << " when listing items in " << dir_id << " "
+               << Quote(dir_path);
+    return;
   }
 
   if (md.shortcut_details) {
@@ -865,6 +868,7 @@ void PinManager::HandleQueryItem(Id dir_id,
       return;
   }
 
+  progress_.skipped_items++;
   LOG(ERROR) << "Unexpected item type " << Quote(md.type) << " for " << id
              << " " << path;
 }
