@@ -1308,6 +1308,13 @@ BluetoothAdapterFloss::StartLowEnergyScanSession(
 
 device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
 BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
+  if (!IsPowered()) {
+    BLUETOOTH_LOG(ERROR)
+        << "GetLowEnergyScanSessionHardwareOffloadingStatus called when "
+        << "adapter is not powered.";
+    return device::BluetoothAdapter::
+        LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
+  }
   return FlossDBusManager::Get()->GetGattManagerClient()->GetMsftSupported()
              ? device::BluetoothAdapter::
                    LowEnergyScanSessionHardwareOffloadingStatus::kSupported
