@@ -10,11 +10,17 @@
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/widget/widget_observer.h"
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace ash {
 
 class ASH_EXPORT CastNotificationController
-    : public CastConfigController::Observer {
+    : public CastConfigController::Observer,
+      public views::WidgetObserver {
  public:
   CastNotificationController();
 
@@ -26,6 +32,9 @@ class ASH_EXPORT CastNotificationController
 
   // CastConfigControllerObserver:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
+
+  // views::WidgetObserver overrides:
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
  private:
   // The callback that is triggered when the cast notification is pressed,
@@ -48,6 +57,7 @@ class ASH_EXPORT CastNotificationController
   // interacts with a cast, we use these values.
   absl::optional<int> freeze_button_index_;
   bool displayed_route_is_frozen_ = false;
+  bool freeze_on_tray_widget_destroyed_ = false;
 
   base::WeakPtrFactory<CastNotificationController> weak_ptr_factory_{this};
 };

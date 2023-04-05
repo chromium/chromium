@@ -4,8 +4,11 @@
 
 #include "ash/system/cast/cast_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/cast_config_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -213,6 +216,30 @@ TEST_F(CastNotificationControllerTest, FreezeUi) {
   EXPECT_EQ(cast_config_.unfreeze_route_count_, 1u);
   EXPECT_EQ(cast_config_.stop_casting_count_, 2u);
   EXPECT_EQ(cast_config_.unfreeze_route_route_id_, device.route.id);
+}
+
+TEST_F(CastNotificationControllerTest, FreezeWithTrayOpen) {
+  // Create notification.
+  cast_config_.has_sinks_and_routes_ = true;
+  cast_config_.has_active_routes_ = true;
+  SinkAndRoute device = CreateDeviceLocalRoute();
+  // Make the device "freezable" so the freeze (pause) button appears.
+  device.route.freeze_info.can_freeze = true;
+  notification_controller_->OnDevicesUpdated({device});
+  EXPECT_TRUE(GetNotification()->pinned());
+
+  // Open the unified system tray.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
+
+  // Pressing freeze (first button) should close the tray.
+  ClickOnNotificationButton(0);
+  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
+
+  // Allow the Widget to close and notify the CastNotificationController.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(cast_config_.freeze_route_count_, 1u);
 }
 
 }  // namespace ash

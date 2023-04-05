@@ -7,14 +7,21 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/widget/widget.h"
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -115,7 +122,8 @@ void CastNotificationController::OnDevicesUpdated(
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating(&CastNotificationController::PressedCallback,
                                 weak_ptr_factory_.GetWeakPtr())),
-        kSystemMenuCastIcon,
+        displayed_route_is_frozen_ ? kSystemMenuCastPausedIcon
+                                   : kSystemMenuCastIcon,
         message_center::SystemNotificationWarningLevel::NORMAL);
     notification->set_pinned(true);
     MessageCenter::Get()->AddNotification(std::move(notification));
@@ -145,7 +153,34 @@ void CastNotificationController::FreezePressed() {
   if (displayed_route_is_frozen_) {
     controller->UnfreezeRoute(displayed_route_id_);
   } else {
-    controller->FreezeRoute(displayed_route_id_);
+    auto* status_area_widget =
+        Shell::GetPrimaryRootWindowController()->shelf()->GetStatusAreaWidget();
+    if (status_area_widget->unified_system_tray() &&
+        status_area_widget->unified_system_tray()
+            ->IsBubbleShown()) {  // The system tray is open.
+      freeze_on_tray_widget_destroyed_ = true;
+      status_area_widget->unified_system_tray()->GetBubbleWidget()->AddObserver(
+          this);
+      status_area_widget->unified_system_tray()->CloseBubble();
+    } else if (status_area_widget->notification_center_tray() &&
+               status_area_widget->notification_center_tray()
+                   ->IsBubbleShown()) {  // Notification tray is open.
+      freeze_on_tray_widget_destroyed_ = true;
+      status_area_widget->notification_center_tray()
+          ->GetBubbleWidget()
+          ->AddObserver(this);
+      status_area_widget->notification_center_tray()->CloseBubble();
+    } else {
+      controller->FreezeRoute(displayed_route_id_);
+    }
+  }
+}
+
+void CastNotificationController::OnWidgetDestroyed(views::Widget* widget) {
+  widget->RemoveObserver(this);
+  if (freeze_on_tray_widget_destroyed_) {
+    CastConfigController::Get()->FreezeRoute(displayed_route_id_);
+    freeze_on_tray_widget_destroyed_ = false;
   }
 }
 
