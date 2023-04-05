@@ -379,6 +379,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                             int max_width,
                             int max_height);
   void DisableAutomaticDragDrop();
+  void GoToOffset(int offset);
   v8::Local<v8::Value> EvaluateScriptInIsolatedWorldAndReturnValue(
       int world_id,
       const std::string& script);
@@ -825,7 +826,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                    &TestRunnerBindings::WebHistoryItemCount)
       .SetMethod("windowCount", &TestRunnerBindings::WindowCount)
       .SetMethod("disableAutomaticDragDrop",
-                 &TestRunnerBindings::DisableAutomaticDragDrop);
+                 &TestRunnerBindings::DisableAutomaticDragDrop)
+      .SetMethod("goToOffset", &TestRunnerBindings::GoToOffset);
 }
 
 BoundV8Callback TestRunnerBindings::WrapV8Callback(
@@ -2191,6 +2193,13 @@ void TestRunnerBindings::DisableAutomaticDragDrop() {
     return;
   }
   runner_->DisableAutomaticDragDrop();
+}
+
+void TestRunnerBindings::GoToOffset(int offset) {
+  if (invalid_) {
+    return;
+  }
+  runner_->GoToOffset(offset);
 }
 
 void TestRunnerBindings::NotImplemented(const gin::Arguments& args) {}

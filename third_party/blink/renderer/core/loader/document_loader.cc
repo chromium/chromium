@@ -904,15 +904,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       is_client_redirect_, is_browser_initiated);
   probe::DidNavigateWithinDocument(frame_);
 
-  if (frame_->IsMainFrame()) {
-    if (ScriptState* script_state = ToScriptStateForMainWorld(frame_)) {
-      DCHECK(frame_->DomWindow());
-      SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*frame_->DomWindow());
-      heuristics->SameDocumentNavigationCommitted(script_state, new_url);
-    }
-  }
-
   // If intercept() was called during this same-document navigation's
   // NavigateEvent, the navigation will finish asynchronously, so
   // don't immediately call DidStopLoading() in that case.
@@ -935,7 +926,27 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (!frame_)
     return;
 
-  // Aything except a history.pushState/replaceState is considered a new
+  std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
+  SoftNavigationHeuristics* heuristics = nullptr;
+  ScriptState* script_state = nullptr;
+  if (frame_->IsMainFrame()) {
+    script_state = ToScriptStateForMainWorld(frame_);
+    if (script_state) {
+      CHECK(frame_->DomWindow());
+      heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
+      if (is_browser_initiated) {
+        // For browser-initiated navigations, we never started the soft
+        // navigation (as this is the first we hear of it in the renderer). We
+        // need to do that now.
+        soft_navigation_event_scope =
+            std::make_unique<SoftNavigationEventScope>(heuristics,
+                                                       script_state);
+        heuristics->SameDocumentNavigationStarted(script_state);
+      }
+    }
+  }
+
+  // Anything except a history.pushState/replaceState is considered a new
   // navigation that resets whether the user has scrolled and fires popstate.
   if (same_document_navigation_type !=
       mojom::blink::SameDocumentNavigationType::kHistoryApi) {
@@ -952,6 +963,10 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       frame_->DomWindow()->DispatchPopstateEvent(
           std::move(state_object), soft_navigation_heuristics_task_id);
     }
+  }
+  if (heuristics) {
+    CHECK(script_state);
+    heuristics->SameDocumentNavigationCommitted(script_state, new_url);
   }
 }
 
