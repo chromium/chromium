@@ -250,7 +250,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1202892408424955784">Prodotti monitorati</translation>
 <translation id="120368089816228251">Nota musicale</translation>
 <translation id="1203942045716040624">Worker condiviso: <ph name="SCRIPT_URL" /></translation>
-<translation id="1211769675100312947">Le scorciatoie vengono selezionate in base a te</translation>
+<translation id="1211769675100312947">Le scorciatoie vengono selezionate da te</translation>
 <translation id="1213254615020057352">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare l'esperienza Android di tuo figlio tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati di diagnostica e utilizzo relativi a questo dispositivo. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google.</translation>
 <translation id="1213726621272705156">Non vedrai più schede in questa pagina</translation>
 <translation id="121384500095351701">Impossibile scaricare il file in modo sicuro</translation>
@@ -1868,7 +1868,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2561211427862644160">Qui puoi vedere tutti i tuoi preferiti</translation>
 <translation id="2564520396658920462">L'esecuzione di JavaScript tramite AppleScript è disattivata. Per attivarla, vai alla barra dei menu, apri Visualizza &gt; Sviluppatore &gt; Consenti JavaScript da Apple Events. Per ulteriori informazioni, visita la pagina all'indirizzo https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Controllo ortografico avanzato</translation>
-<translation id="2568694057933302218">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su più siti. La tua attività di navigazione non viene usata, ad esempio, per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
+<translation id="2568694057933302218">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione sui siti. La tua attività di navigazione non viene usata, ad esempio, per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2569972178052279830">Nome del rivenditore</translation>
 <translation id="257088987046510401">Temi</translation>
@@ -2562,7 +2562,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3183944777708523606">Disposizione del monitor</translation>
 <translation id="3184536091884214176">Configura o gestisci le stampanti CUPS. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Questa app è bloccata}other{Alcune app sono bloccate}}</translation>
-<translation id="3187472288455401631">Valutazione degli annunci</translation>
+<translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="3188465121994729530">Media spostamento</translation>
 <translation id="3189187154924005138">Puntatore grande</translation>
@@ -3880,7 +3880,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4366138410738374926">Stampa avviata</translation>
 <translation id="4367513928820380646">Controlla le autorizzazioni rimosse</translation>
 <translation id="4369215744064167350">Richiesta di accesso al sito web approvata</translation>
-<translation id="4369735607080757018">Vengono condivisi tipi di dati limitati tra i siti per valutare il rendimento dei loro annunci, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio</translation>
+<translation id="4369735607080757018">Vengono condivisi tipi di dati limitati tra i siti per misurare il rendimento dei loro annunci, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio</translation>
 <translation id="4370975561335139969">L'indirizzo email e la password non corrispondono</translation>
 <translation id="4374805630006466253">Usa un telefono o tablet diverso</translation>
 <translation id="4374831787438678295">Programma di installazione di Linux</translation>
@@ -6156,7 +6156,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6444070574980481588">Imposta data e ora</translation>
 <translation id="6444147596556711162">Utilizza "Prossimo" e "Precedente" per spostarti da un elemento all'altro sullo schermo</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Ricerca Bluetooth attiva</translation>
-<translation id="6445395161658447009">Può essere necessaria fino a una settimana affinché un elenco di siti venga visualizzato qui in base alla tua cronologia di navigazione.</translation>
+<translation id="6445395161658447009">Può essere necessaria fino a una settimana affinché un elenco di siti venga visualizzato qui in base alla tua cronologia di navigazione</translation>
 <translation id="6445450263907939268">Se non volevi apportare queste modifiche, puoi ripristinare le impostazioni precedenti.</translation>
 <translation id="6446213738085045933">Crea collegamento sul desktop</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -6831,7 +6831,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7017004637493394352">Di' "Ok Google" di nuovo</translation>
 <translation id="7017219178341817193">Aggiungi una nuova pagina</translation>
 <translation id="7017354871202642555">Impossibile impostare la modalità dopo l'impostazione della finestra.</translation>
-<translation id="7018275672629230621">Lettura e modifica della cronologia di navigazione</translation>
 <translation id="7019546817926942979">Devi collegare il dispositivo alla corrente. L'upgrade di Linux potrebbe comportare un notevole consumo della batteria. Collega il dispositivo a un caricabatterie e riprova.</translation>
 <translation id="7019805045859631636">Veloce</translation>
 <translation id="7022562585984256452">La tua pagina iniziale è stata impostata.</translation>
@@ -7120,6 +7119,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7308643132139167865">Lingue dei siti web</translation>
 <translation id="7310598146671372464">Impossibile accedere. Il server non supporta i tipi di crittografia Kerberos specificati. Contatta l'amministratore.</translation>
 <translation id="7311089766378749632">Richiesta di lettura e modifica del sito <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="7317831949569936035">Registrazione per uso scolastico</translation>
 <translation id="7320213904474460808">Scegli rete predefinita</translation>
@@ -7696,7 +7696,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7800518121066352902">Ruota in senso anti&amp;orario</translation>
 <translation id="7801679634091975683">Le modifiche che apporti qui vengono applicate soltanto al browser Lacros. Per apportare modifiche alle impostazioni del browser Chrome, aprilo e vai alle impostazioni.</translation>
-<translation id="780301667611848630">No grazie</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7804072833593604762">Scheda chiusa</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7805906048382884326">Chiudi suggerimento</translation>

@@ -385,7 +385,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3083194063661536258">Välja logitud. Nupp. Avab dialoogi sisselogimiseks ja sünkroonimise sisselülitamiseks.</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
-<translation id="3104179992611025423">Sinu brauserit haldavad sinu vanemad</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">lingitud kaardiga</translation>
 <translation id="3123734510202723619">Teadaanded</translation>
@@ -456,6 +455,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> soovitatud sisu kohta</translation>
 <translation id="3495219333887281978">Sisselogimise alumine leht on avatud poolel kõrgusel.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Sordi vanima järgi</translation>
 <translation id="3507132249039706973">Tavakaitse on sisse lülitatud</translation>
 <translation id="3509330069915219067">Võrguühenduseta. Chrome ei saa värskendusi otsida.</translation>
 <translation id="3513704683820682405">Liitreaalsus</translation>
@@ -576,6 +576,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4177222230309051052">Hankige kõik oma järjehoidjad</translation>
 <translation id="4177501066905053472">Reklaamiteemad</translation>
 <translation id="4181841719683918333">Keeled</translation>
+<translation id="4188221736490993796">Sordi Y-st A-ni järgi</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4196597275619698563">Loo kaart</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
@@ -641,6 +642,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4572422548854449519">Logige hallatud kontole sisse</translation>
 <translation id="4576892426230499203">Proovige mõnda teist kinnitusvõimalust</translation>
+<translation id="4577115723294378384">Sordi A-st Y-ni järgi</translation>
 <translation id="4578289292431526768">Alustage</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minut tagasi}other{# minutit tagasi}}</translation>
 <translation id="4587589328781138893">Saidid</translation>
@@ -664,6 +666,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4689792375321623175">Otsi pilti Google'iga <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Vahemällu salvestatud kujutised ja failid</translation>
+<translation id="4710167854527459075">Sordi uusima järgi</translation>
 <translation id="4719927025381752090">Paku tõlkimist</translation>
 <translation id="4720023427747327413">Ava teenuses <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Vaadake oma sageli külastatud saite</translation>
@@ -833,6 +836,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5561162485081632007">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad</translation>
 <translation id="5561549206367097665">Võrguühenduse ootamine …</translation>
 <translation id="5568069709869097550">Ei saa sisse logida</translation>
+<translation id="557018954714092179">Loo uus kaust</translation>
 <translation id="5578795271662203820">Otsi otsingust <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="5581519193887989363">Jaotises <ph name="BEGIN_LINK1" />Seaded<ph name="END_LINK1" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="5590372121997663538">Pea see arvuti meeles</translation>
@@ -937,6 +941,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6138832295072039549">Muutke siin oma saidi seadeid</translation>
 <translation id="6140709049082532940">Täiustatud kaitse:</translation>
 <translation id="6140912465461743537">Riik/piirkond</translation>
+<translation id="6148266338772765473">Välista link</translation>
 <translation id="6150320133806434356">Järjehoidja salvestatud</translation>
 <translation id="6154478581116148741">Seadmes olevate paroolide eksportimiseks lülitage seadetes ekraanilukk sisse.</translation>
 <translation id="6159729262978459665">Kustutab ajaloo kõigist sünkroonitud seadmetest.</translation>
@@ -1028,6 +1033,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6590680911007613645">Veenduge, et salvestatav parool ühtiks teie teenuses <ph name="SITE" /> kasutatava parooliga</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
 <translation id="6594121454516132231">Vaadake, kuidas Chrome plaanib teid kaitsta saidiülese jälgimise eest, säilitades siiski juurdepääsu avatud veebile</translation>
+<translation id="6594347733515723558">Sortimine ja vaatamine</translation>
 <translation id="6595046016124923392">Pildid saadetakse kirjelduste täiendamiseks Google'ile.</translation>
 <translation id="6600954340915313787">Chrome'i kopeeritud</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>

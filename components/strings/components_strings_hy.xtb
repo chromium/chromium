@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">առաջարկներ</translation>
 <translation id="1375198122581997741">Տարբերակի մասին</translation>
 <translation id="1376836354785490390">Ցույց տալ ավելի քիչ</translation>
-<translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1380591466760231819">Ծալում ծրարի տեսքով</translation>
 <translation id="138218114945450791">Բաց կապույտ</translation>
 <translation id="1382194467192730611">USB սարքը թույլատրված է ձեր ադմինիստրատորի կողմից</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">Փոխեք գաղտնաբառը</translation>
 <translation id="1482879811280872320">Հեծանվասպորտ</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
-<translation id="1484290072879560759">Ընտրեք առաքման հասցեն</translation>
 <translation id="1492194039220927094">Կանոնների մղում՝</translation>
 <translation id="149293076951187737">Երբ փակեք Chrome-ի բոլոր ինկոգնիտո ներդիրները, այս սարքից կհեռացվեն այդ ներդիրներում ձեր կատարած գործողությունները, այդ թվում՝
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">Առայժմ այսքանը</translation>
 <translation id="1536390784834419204">Թարգմանել էջը</translation>
 <translation id="1539840569003678498">Հաշվետվությունն ուղարկվել է՝</translation>
-<translation id="154408704832528245">Ընտրեք առաքման հասցեն</translation>
 <translation id="1549470594296187301">Այս հատկությունից օգտվելու համար հարկավոր է միացնել JavaScript-ը:</translation>
 <translation id="1551884710160394169">Անվճար և ընդհանուր օգտագործման ծրագրեր</translation>
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
@@ -370,7 +367,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Վիրտուալ քարտի մանրամասներ</translation>
 <translation id="1803020234906945288">Առողջ սնունդ</translation>
-<translation id="1803264062614276815">Քարտատիրոջ անունը</translation>
 <translation id="1803351196216024260">Կարող է հայցել խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1807528111851433570">Առաջին թերթ</translation>
@@ -619,7 +615,6 @@
 <translation id="2450021089947420533">Այցելություններ</translation>
 <translation id="2456755709261364512">Ձեր մարտկոցի լիցքը պետք է <ph name="REQUIRED_BATTERY_PRECENT" />%-ից բարձր լինի</translation>
 <translation id="2463739503403862330">Լրացնել</translation>
-<translation id="2465655957518002998">Ընտրեք առաքման եղանակը</translation>
 <translation id="2465688316154986572">Ամրակ</translation>
 <translation id="2465914000209955735">Կառավարել Chrome-ում ձեր ներբեռնած ֆայլերը</translation>
 <translation id="2466004615675155314">Ցույց տալ տեղեկություններ համացանցից</translation>
@@ -741,7 +736,6 @@
 <translation id="2730600605555029057">Դասական երաժշտություն</translation>
 <translation id="2731382536835015353">44 x 68 դյույմ</translation>
 <translation id="2734319753272419592">Հասանելի դարձրեք Google-ին ձեր զամբյուղները, որպեսզի մեր համակարգերը կարողանան անհատականացված զեղչեր որոնել ձեզ համար։ Առկայության դեպքում զեղչերն ավտոմատ կերպով կցուցադրվեն ձեր զամբյուղներում։</translation>
-<translation id="2738330467931008676">Ընտրեք ստացման հասցեն</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2742511345840685325">Սեղանի թենիս</translation>
 <translation id="2742870351467570537">Հեռացնել ընտրված կետերը</translation>
@@ -823,7 +817,6 @@
 <translation id="2983666748527428214">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="2985306909656435243">Եթե միացված է, Chromium-ն այս սարքում կպահի ձեր քարտի կրկնօրինակը՝ ձևն արագ լրացնելու համար:</translation>
 <translation id="2985398929374701810">Մուտքագրեք վավեր հասցե</translation>
-<translation id="2986368408720340940">Ստացման այս եղանակը հասանելի չէ: Փորձեք այլ եղանակ:</translation>
 <translation id="2987034854559945715">Համընկնող գործառույթներ չկան</translation>
 <translation id="2989742184762224133">Երկու ամրակ վերևում</translation>
 <translation id="2991174974383378012">Համօգտագործում այլ կայքերի հետ</translation>
@@ -855,7 +848,6 @@
 <translation id="3086579638707268289">Ձեր գործողությունները համացանցում հետագծվում են</translation>
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">Ավելացրեք ստացման հասցեն</translation>
 <translation id="3096195745018397576">Մանկական հագուստ</translation>
 <translation id="3098513225387949945">Անտեսվում է, քանի որ «Անջատված» ցանկը պարունակում է «*» ձևանմուշը, որը հավասարազոր է կանոնի անջատմանը։</translation>
 <translation id="3105172416063519923">Ակտիվների ID՝</translation>
@@ -1382,7 +1374,6 @@
 <translation id="4333561522337981382">Կառավարել պատուհանները ձեր բոլոր էկրաններին</translation>
 <translation id="4340575312453649552">Այս գովազդը չափազանց շատ ռեսուրս է օգտագործել ձեր սարքում, այդ պատճառով Chrome-ը հեռացրել է այն։</translation>
 <translation id="4340982228985273705">Այս համակարգիչը կազմակերպության կողմից կառավարվող համակարգիչ չէ: Համաձայն կանոնի՝ ավտոմատ կարող են տեղադրվել միայն Chrome Web Store-ի ընդլայնումները: Chrome Web Store-ի թարմացման URL-ն է՝ «<ph name="CWS_UPDATE_URL" />»:</translation>
-<translation id="4346197816712207223">Վարկային քարտեր, որոնցով կարելի է վճարել</translation>
 <translation id="4348834659292907206">Միացումը <ph name="SITE" /> կայքին պաշտպանված չէ</translation>
 <translation id="4349365535725594680">Հնարավոր չէ կիսվել կոնֆիդենցիալ բովանդակությամբ</translation>
 <translation id="4349810866125026513">Վերբեռնել</translation>
@@ -1586,7 +1577,6 @@
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4852429274334674023">Օպերացիոն համակարգեր</translation>
 <translation id="4853901935952445031">Այս կայքը 2022 թ․ փետրվար ամսից չի աջակցելու U2F API-ը։ Եթե կայքը ձեզ է պատկանում, անցեք Web Authentication API-ին։</translation>
-<translation id="4854362297993841467">Առաքման տվյալ եղանակը հասանելի չէ: Ընտրեք այլ եղանակ:</translation>
 <translation id="4854853140771946034">Արագ ստեղծել նշում Google Keep-ում</translation>
 <translation id="4858792381671956233">Դուք խնդրել եք ձեր ծնողին հաստատել, որ այս կայք կարելի է մտնել։</translation>
 <translation id="485902285759009870">Կոդը ստուգվում է…</translation>
@@ -1789,7 +1779,6 @@
 <translation id="5316812925700871227">Պտտել ժամացույցի սլաքի հակառակ ուղղությամբ</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">Ընտրեք կոնտակտային տվյալները</translation>
 <translation id="5329858041417644019">Ձեր դիտարկիչը չի կառավարվում</translation>
 <translation id="5332219387342487447">Առաքման եղանակը</translation>
 <translation id="5332769172018416402">Խնդրել հաղորդագրության միջոցով</translation>
@@ -1892,7 +1881,6 @@
 <translation id="5593349413089863479">Կապը լիովին պաշտպանված չէ</translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="5596939519753369075">2 x 3,5 դյույմ</translation>
-<translation id="5598944008576757369">Ընտրեք վճարման եղանակը</translation>
 <translation id="560412284261940334">Սարքերի կառավարումը չի աջակցվում</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Ինչպես կարող եք կառավարել ձեր տվյալները.<ph name="END_BOLD" /> Chrome-ը ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 4 շաբաթ առաջ։ Եթե դուք նորից այցելեք որոշակի կայք, այն կրկին կարող է հայտնվել ցանկում։ Դուք նաև ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք արգելել կայքին գովազդ առաջարկել կամ ընդհանրապես անջատել կայքերի կողմից առաջարկվող գովազդների ցուցադրումը։</translation>
@@ -1924,7 +1912,6 @@
 <translation id="568292603005599551">Պատկերի դիրքը X առանցքով</translation>
 <translation id="5684277895745049190">Ցուցակ</translation>
 <translation id="5684874026226664614">Չհաջողվեց թարգմանել այս էջը:</translation>
-<translation id="5685654322157854305">Ավելացրեք առաքման հասցեն</translation>
 <translation id="5689199277474810259">Արտահանել JSON ձևաչափով</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates կանոնի արժեքը անհամապատասխան է և չի կարող օգտագործվել, եթե DnsOverHttpsMode կանոնի համար չի կարգավորվել <ph name="SECURE_DNS_MODE_AUTOMATIC" /> կամ <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
@@ -2790,7 +2777,6 @@
 <translation id="776110834126722255">Հնացած</translation>
 <translation id="7761159795823346334">Թույլատրե՞լ տեսախցիկի օգտագործումը</translation>
 <translation id="7761701407923456692">Սերվերի վկայագիրը չի համապատասխանում URL-ին:</translation>
-<translation id="7763386264682878361">Վճարումների մանիֆեստների վերլուծիչ</translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
 <translation id="7766518757692125295">Կիսաշրջազգեստ</translation>
 <translation id="7773005668374414287">Նույն հերթականությամբ՝ երեսի կողմով վերև</translation>
@@ -2894,7 +2880,6 @@
 <translation id="8038817883578389970">Ավտոմրցարշավ</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8041940743680923270">Օգտագործել համընդհանուր կանխադրվածը (Հարցնել)</translation>
-<translation id="8042918947222776840">Ընտրեք ստացման եղանակը</translation>
 <translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>
 <translation id="8055534648776115597">Մասնագիտական և շարունակական կրթություն</translation>
 <translation id="8057711352706143257">«<ph name="SOFTWARE_NAME" />» ծրագիրը սխալ է կազմաձևված: Ապատեղադրեք «<ph name="SOFTWARE_NAME" />» ծրագիրը: Դրանով սովորաբար խնդիրը լուծվում է: <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3268,7 +3253,6 @@
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9018120810758822233">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի ձեր անվտանգության կոդը</translation>
 <translation id="901834265349196618">էլփոստ</translation>
-<translation id="9020200922353704812">Անհրաժեշտ է նշել քարտի վճարային հասցեն</translation>
 <translation id="9020542370529661692">Այս էջը թարգմանվել է <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի կիսվեք այս ներդիրով՝ ուղարկելով հղում կամ ստեղծելով QR կոդ, հեռարձակում և այլն։</translation>
@@ -3305,7 +3289,6 @@
 <translation id="9101630580131696064">Դարակ 1</translation>
 <translation id="9103537084693478942">Տեսանյութերի մշակման ծրագիր</translation>
 <translation id="9103872766612412690">Ձեր տվյալները պաշտպանելու համար <ph name="SITE" /> կայքը սովորաբար գաղտնագրում է օգտագործում: Chromium-ի՝ <ph name="SITE" /> կայքին կապակցվելու փորձի ժամանակ կայքը վերադարձրեց արտասովոր և սխալ մուտքային տվյալներ: Հնարավոր է, որ <ph name="SITE" /> կայքի անվան տակ նենգորդ է հանդես գալիս, կամ Wi-Fi մուտքի էկրանի կապն ընդհատվել է: Ձեր տվյալները, այնուամենայնիվ, ապահով են, քանի որ Chromium-ն ընդհատել էր կապը՝ նախքան տեղի կունենար տվյալների փոխանակում:</translation>
-<translation id="9106062320799175032">Ավելացրեք վճարային հասցեն</translation>
 <translation id="9107467864910557787">Ձեր դիտարկիչը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="91108059142052966">Ադմինիստրատորն անջատել է էկրանի ցուցադրումը <ph name="APPLICATION_TITLE" /> հավելվածին, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="9114524666733003316">Քարտի հաստատում...</translation>
@@ -3326,7 +3309,6 @@
 <translation id="9139318394846604261">Գնումներ</translation>
 <translation id="9141013498910525015">Կառավարել հասցեները</translation>
 <translation id="9144951720726881238">Սպառման ամսաթիվը՝</translation>
-<translation id="9148088599418889305">Ընտրեք առաքման եղանակը</translation>
 <translation id="9148507642005240123">&amp;Հետարկել փոփոխումը</translation>
 <translation id="9150045010208374699">Օգտագործել տեսախցիկը</translation>
 <translation id="9150685862434908345">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -3377,7 +3359,6 @@
 <translation id="964050462028070434">Կառավարել գաղտնաբառերն ու անցաբառերը…</translation>
 <translation id="96680173638229310">Ավտոմեքենաներ և տրանսպորտային միջոցներ</translation>
 <translation id="969892804517981540">Պաշտոնական տարբերակ</translation>
-<translation id="973773823069644502">Ավելացրեք առաքման հասցեն</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Ոչինչ չկա}=1{1 տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="976522784004777030">5 x 8 դյույմ</translation>
 <translation id="977502174772294970">Հարսանիքներ</translation>

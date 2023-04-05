@@ -118,6 +118,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1091767800771861448">Druk ESCAPE om oor te slaan (Slegs nie-amptelike bou).</translation>
 <translation id="1093457606523402488">Sigbare netwerke:</translation>
 <translation id="1095761715416917775">Maak seker dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
+<translation id="1095879482467973146">Google Wagwoordbestuurder op die web</translation>
 <translation id="109647177154844434">As Parallels Desktop gedeïnstalleer word, sal jou Windows-stelselkopie uitgevee word. Dit sluit die programme, instellings en data daarvan in. Is jy seker jy wil voortgaan?</translation>
 <translation id="1097016918605049747">Hierdie bladsy kon nie vertaal word nie.</translation>
 <translation id="1097658378307015415">Voor jy aanmeld, gaan asseblief as Gas in om die netwerk <ph name="NETWORK_ID" /> te aktiveer</translation>
@@ -1499,6 +1500,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2252017960592955005">Bekyk tans beskerming (beta)</translation>
 <translation id="225240747099314620">Laat identifiseerders vir beskermde inhoud toe (rekenaarherbegin sal dalk vereis word)</translation>
 <translation id="2253318212986772520">Kan nie PPD vir <ph name="PRINTER_NAME" /> ophaal nie.</translation>
+<translation id="2253927598983295051">Kies wat om met <ph name="APP_NAME" /> te deel</translation>
 <translation id="2255077166240162850">Hierdie toestel is in ander domein of modus gesluit.</translation>
 <translation id="2255317897038918278">Microsoft-tydstempel</translation>
 <translation id="2256115617011615191">Herbegin nou</translation>
@@ -1847,6 +1849,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2532589005999780174">Hoëkontrasmodus</translation>
 <translation id="2533649878691950253">Hierdie werf is verhinder om te weet wat jou presiese ligging is omdat jy dit gewoonlik nie toelaat nie</translation>
 <translation id="253434972992662860">Laat wag</translation>
+<translation id="253498598929009420">Die werf sal jou skerm se inhoud kan sien</translation>
 <translation id="253557089021624350">Telling van aktiewe aktiwiteite</translation>
 <translation id="2535799430745250929">Geen sellulêre netwerk bestaan nie</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kan die volgende lêers en vouers bekyk en wysig</translation>
@@ -6848,7 +6851,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7017004637493394352">Sê weer "Ok Google"</translation>
 <translation id="7017219178341817193">Voeg 'n nuwe bladsy by</translation>
 <translation id="7017354871202642555">Kan nie modus stel ná venster gestel is nie.</translation>
-<translation id="7018275672629230621">Lees en verander jou blaaigeskiedenis</translation>
 <translation id="7019546817926942979">Jou toestel moet ingeprop wees. Die opgradering van Linux kan aansienlik baie van jou batterykrag gebruik. Koppel jou toestel aan 'n batterylaaier en probeer weer.</translation>
 <translation id="7019805045859631636">Vinnig</translation>
 <translation id="7022562585984256452">Jou tuisblad is gestel.</translation>
@@ -7137,6 +7139,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7308643132139167865">Webwerftale</translation>
 <translation id="7310598146671372464">Kon nie aanmeld nie. Die bediener steun nie gespesifiseerde Kerberos-enkripsietipes nie. Kontak asseblief jou administrateur.</translation>
 <translation id="7311089766378749632">Versoek tans om <ph name="SITE_NAME" /> te lees en te verander</translation>
+<translation id="7311244614769792472">Geen resultate gekry nie</translation>
 <translation id="7312210124139670355">Jou administrateur stel tans jou e-SIM terug. Dit kan 'n paar minute neem.</translation>
 <translation id="7317831949569936035">Skoolinskrywing</translation>
 <translation id="7320213904474460808">Verstek vir netwerk</translation>

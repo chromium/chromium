@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">كوكب</translation>
 <translation id="2305020378527873881">تم إخراج <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">إعداد الشبكة</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{لا يمكن تحديد مكان الإضافة التي تتضمّن المعرّف: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}zero{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}two{لا يمكن تحديد مكان الإضافتَين اللتَين تتضمّنَان المعرّفَين: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}few{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}many{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}other{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}}</translation>
 <translation id="2325650632570794183">‏نوع الملف هذا غير متوافق. يُرجى الانتقال إلى سوق Chrome الإلكتروني للعثور على تطبيق يمكنه فتح هذا النوع من الملفات.</translation>
 <translation id="2326539130272988168">البلغارية</translation>
 <translation id="2337715497728194187">‏المشاركة مع الجهاز الافتراضي Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">غير مؤمّن</translation>
 <translation id="3291218047831493686">‏يمكنك الاتصال بهذه الشبكة لتغيير إعدادات قفل شريحة SIM.</translation>
 <translation id="3293023191599135697">‏شبكات WEP غير متوافقة.</translation>
+<translation id="3295006446256079333">هذا المجلد</translation>
 <translation id="3295357220137379386">الجهاز مشغول.</translation>
 <translation id="3296763833017966289">الجورجية</translation>
 <translation id="3307875152560779385">الأوكرانية</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="110724200315609752">Нээлттэй цонх руу сэлгэх</translation>
 <translation id="1112015203684611006">Хэвлэж чадсангүй.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> хоногийн дараа</translation>
 <translation id="1125564390852150847">Шинэ таб үүсгэнэ үү.</translation>
 <translation id="1126013303640354461">Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
 Зөвхөн таны нэвтрэх үгтэй хүн таны шифрлэгдсэн өгөгдлийг унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл синкийг шинэчлэх шаардлагатай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@
 <translation id="2218443599109088993">Жижигрүүлэх</translation>
 <translation id="2230173723195178503">Веб хуудсыг ачаалласан</translation>
 <translation id="2239626343334228536">Хөтчийн өгөгдлийг устгаж байна...</translation>
+<translation id="22508856139286506">Үл хэрэгссэн сануулгууд (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Цэс → Түүх</translation>
 <translation id="2256933947031277845">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө.</translation>
 <translation id="225943865679747347">Алдааны код: <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@
 <translation id="2626236249646841566">Холболтоо шалгаад, нэвтрэхээр дахин оролдоно уу.</translation>
 <translation id="2637313651144986786">Табуудыг хайх...</translation>
 <translation id="2647269890314209800">Ашиглаж буй күүки</translation>
+<translation id="2648721026697078500">Хэзээ ч бүү зөө</translation>
 <translation id="2648803196158606475">Уншсаныг устгах</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2664621323652615289">Зогсоох</translation>
@@ -346,6 +349,7 @@
 <translation id="3305294846493618482">бусад</translation>
 <translation id="3311748811247479259">Унтраалттай байна</translation>
 <translation id="3324193307694657476">Хаяг 2</translation>
+<translation id="3328459813621383194">Идэвхгүй табуудыг зөөх</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
 <translation id="3371831930909698441">Орчуулах боломжтой байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="3377063233124932127">Одоо таны хадгалсан хавчуурга, нууц үг болон бусад зүйл дээд талд байна.</translation>
@@ -510,6 +514,7 @@
 <translation id="452750746583162491">Синк хийсэн өгөгдлөө шалгах</translation>
 <translation id="4536418791685807335">Дахин нэвтрэхээр оролдоно уу.</translation>
 <translation id="4540780316273593836">Алдаа гарлаа</translation>
+<translation id="4550040941166547650">Зөвхөн энэ төхөөрөмжид</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Идэвхгүй {COUNT} табыг хаах уу?}other{Идэвхгүй {COUNT} табыг хаах уу?}}</translation>
 <translation id="457386861538956877">Илүү ихийг ...</translation>
 <translation id="4587235830039045480">Google Бүртгэлдээ нууц үг хадгална уу</translation>
@@ -762,6 +767,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6193424046394092997">{count,plural, =1{{title}-д тэмдэглэсэн}other{{title}-д тэмдэглэсэн}}</translation>
 <translation id="6196207969502475924">Дуугаар хайх</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} табыг хаах}other{{COUNT} табыг хаах}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> эсвэл түүнээс олон хоног ашиглаагүй табуудыг ийшээ зөөдөг. Та үүнийг хүссэн үедээ <ph name="BEGIN_LINK" />тохиргоонд<ph name="END_LINK" /> өөрчлөх боломжтой.</translation>
 <translation id="6213567400989743524">Үл хэрэгссэн сануулгууд</translation>
 <translation id="6219550825416862075">Эргээд тавтай морилно уу</translation>
 <translation id="6219688215832490856">Хэзээ ч бүү хөрвүүл</translation>
@@ -1057,6 +1063,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8059533439631660104">Хэсгийг хураалаа.</translation>
 <translation id="8065292699993359127">URL-г Chrome дээр Нууцлалтайгаар нээх</translation>
 <translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>
+<translation id="8069394452933076548">Ойрын үед ашиглаагүй табуудыг идэвхгүй табын хэсэг рүү хэзээ зөөхийг сонгоно уу.</translation>
 <translation id="8073670137947914548">Татаж дууслаа</translation>
 <translation id="8073872304774253879">Хайлт болон хөтлөх явцыг сайжруулах</translation>
 <translation id="8076492880354921740">Таб</translation>
@@ -1085,6 +1092,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8237382152611443140">Автоматаар бөглөх хэсэг дэх нууц үгийн тохиргоог нээнэ үү</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8264966119170358612">Таны хадгалсан зарим нууц үг Google-н бус өгөгдлийн зөрчилд өртсөн байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Зөвхөн энэ төхөөрөмжид</translation>
 <translation id="8271720166617117963">Зөвшөөрөөд, нэвтрэх</translation>
 <translation id="8278938988428169257">Үг эсвэл өгүүлбэр оруулна уу</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1200,6 +1208,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9055772144595778347">Нэвтэрч чадахгүй байна</translation>
 <translation id="9055960261314198756">Сайжруулсан хамгаалалт унтраалттай байна</translation>
 <translation id="9057972802061533987">Дагах боломжгүй. Алдаа гарлаа.</translation>
+<translation id="9061495354530850708">Таны Google Бүртгэлд</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9068336935206019333">Chrome-н Нууцлалтай горимд нээх үү?</translation>
 <translation id="9079935439869366234">Бүгдийг уншаагүй гэж тэмдэглэх</translation>

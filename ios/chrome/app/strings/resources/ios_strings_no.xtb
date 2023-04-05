@@ -178,6 +178,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2218443599109088993">Zoom ut</translation>
 <translation id="2230173723195178503">Nettsiden er lastet inn</translation>
 <translation id="2239626343334228536">Sletter nettlesingsdata …</translation>
+<translation id="22508856139286506">Avviste varsler (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Meny → Logg</translation>
 <translation id="2256933947031277845">Organisasjonen din lar deg kun logge på med visse kontoer.</translation>
 <translation id="225943865679747347">Feilkode: <ph name="ERROR_CODE" /></translation>
@@ -1092,6 +1093,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8237382152611443140">Åpne innstillinger for autofylling av passord</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8264966119170358612">Noen av de lagrede passordene dine ble avdekket i et databrudd utenfor Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Bare på denne enheten</translation>
 <translation id="8271720166617117963">Godta og logg på</translation>
 <translation id="8278938988428169257">Skriv inn et ord eller uttrykk</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>

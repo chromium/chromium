@@ -386,7 +386,6 @@
 <translation id="3083194063661536258">زر يشير إلى أنّه قد تم الخروج من الحساب. عند النقر على هذا الزر، يتم فتح مربع حوار لتسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="3091010850649238832">عرض محتوى الحافظة</translation>
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
-<translation id="3104179992611025423">يتولّى والداك إدارة متصفِّحك.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">مرتبطة بـ</translation>
 <translation id="3123734510202723619">الإعلامات</translation>
@@ -457,6 +456,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
 <translation id="3495219333887281978">تم فتح البطاقة السفلية لتسجيل الدخول في نصف الشاشة.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">الترتيب حسب الأقدم</translation>
 <translation id="3507132249039706973">ميزة الحماية العادية مفعّلة.</translation>
 <translation id="3509330069915219067">‏لا يتوفَّر اتصال بالإنترنت. يتعذّر على Chrome البحث عن تحديثات.</translation>
 <translation id="3513704683820682405">الواقع المعزّز</translation>
@@ -577,6 +577,7 @@
 <translation id="4177222230309051052">الحصول على جميع الإشارات المرجعية</translation>
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
 <translation id="4181841719683918333">اللغات</translation>
+<translation id="4188221736490993796">الترتيب من ي إلى أ</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4196597275619698563">إنشاء بطاقة</translation>
 <translation id="4198423547019359126">ما من مواقع تنزيل متاحة</translation>
@@ -642,6 +643,7 @@
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4572422548854449519">تسجيل الدخول إلى الحساب المدار</translation>
 <translation id="4576892426230499203">تجربة خيار آخر لإثبات الهوية</translation>
+<translation id="4577115723294378384">الترتيب من أ إلى ي</translation>
 <translation id="4578289292431526768">لنبدأ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{قبل دقيقة واحدة (#)}zero{قبل # دقيقة}two{قبل دقيقتين (#)}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
 <translation id="4587589328781138893">المواقع</translation>
@@ -665,6 +667,7 @@
 <translation id="4689792375321623175">‏البحث في الصور على Google <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخيار إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}zero{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخياران إضافيان (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}few{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات إضافية}many{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا إضافيًا}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}}</translation>
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
+<translation id="4710167854527459075">الترتيب حسب الأحدث</translation>
 <translation id="4719927025381752090">عرض ترجمة</translation>
 <translation id="4720023427747327413">الفتح في <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">الاطّلاع على أهم المواقع الإلكترونية</translation>
@@ -834,6 +837,7 @@
 <translation id="5561162485081632007">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="5561549206367097665">في انتظار الشبكة...</translation>
 <translation id="5568069709869097550">تعذّر الدخول</translation>
+<translation id="557018954714092179">إنشاء مجلد جديد</translation>
 <translation id="5578795271662203820">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="5581519193887989363">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK1" />الإعدادات<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">تذكّر جهاز الكمبيوتر هذا</translation>
@@ -938,6 +942,7 @@
 <translation id="6138832295072039549">يمكنك تغيير إعدادات الموقع الإلكتروني من هنا.</translation>
 <translation id="6140709049082532940">الحماية المُحسَّنة:</translation>
 <translation id="6140912465461743537">الدولة/الإقليم</translation>
+<translation id="6148266338772765473">استبعاد الرابط</translation>
 <translation id="6150320133806434356">تم حفظ الإشارة المرجعية</translation>
 <translation id="6154478581116148741">تشغيل قفل الشاشة في الإعدادات لتصدير كلمات المرور من هذا الجهاز</translation>
 <translation id="6159729262978459665">سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها.</translation>
@@ -1029,6 +1034,7 @@
 <translation id="6590680911007613645">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">إصدار الموقع الإلكتروني المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="6594121454516132231">‏اطّلِع على خِطط Chrome لحمايتك من آليات التتبّع في جميع المواقع الإلكترونية مع الحفاظ على محتوى شبكة الإنترنت المفتوحة.</translation>
+<translation id="6594347733515723558">خيارات الترتيب والعرض</translation>
 <translation id="6595046016124923392">‏يتم إرسال الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="6600954340915313787">‏تم النسخ إلى Chrome</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
@@ -1183,7 +1189,7 @@
 <translation id="7400418766976504921">‏عنوان URL</translation>
 <translation id="7403691278183511381">‏أول تجربة تشغيل لمتصفح Chrome</translation>
 <translation id="7411224099004328643">‏مستخدم حساب Google</translation>
-<translation id="741204030948306876">نعم، موافق</translation>
+<translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7419565702166471774">استخدام الاتصالات الآمنة دائمًا</translation>
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
@@ -1274,7 +1280,7 @@
 <translation id="7851858861565204677">أجهزة أخرى</translation>
 <translation id="7853202427316060426">النشاط</translation>
 <translation id="7859988229622350291">لغات لا أريد ترجمتها مطلقًا</translation>
-<translation id="7864208933699511058">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الخيار و<ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصّص الإعلانات.</translation>
+<translation id="7864208933699511058">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد وعلى <ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصّص الإعلانات.</translation>
 <translation id="7866213166286285359">يمكنك ترجمة الصفحات هنا.</translation>
 <translation id="78707286264420418">يجب تفعيل الإذن "الأجهزة المجاورة" ليتمكّن <ph name="PRODUCT_NAME" /> من الاتصال بجهازك.</translation>
 <translation id="7875915731392087153">إنشاء رسالة إلكترونية</translation>

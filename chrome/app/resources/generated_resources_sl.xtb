@@ -118,6 +118,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1091767800771861448">Pritisnite Esc, če želite preskočiti (samo neuradne delovne različice).</translation>
 <translation id="1093457606523402488">Vidna omrežja:</translation>
 <translation id="1095761715416917775">Poskrbite, da boste ves čas lahko dostopali do podatkov sinhronizacije</translation>
+<translation id="1095879482467973146">Googlov upravitelj gesel v spletu</translation>
 <translation id="109647177154844434">Če odstranite program Parallels Desktop, boste izbrisali sliko sistema Windows. To vključuje aplikacije, nastavitve in podatke v njem. Ali res želite nadaljevati?</translation>
 <translation id="1097016918605049747">Te strani ni bilo mogoče prevesti</translation>
 <translation id="1097658378307015415">Pred prijavo vstopite kot gost, da aktivirate omrežje <ph name="NETWORK_ID" />.</translation>
@@ -1502,6 +1503,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2252017960592955005">Zaščita pred ogledovanjem (beta)</translation>
 <translation id="225240747099314620">Omogoči identifikatorje za zaščiteno vsebino (morda bo treba znova zagnati računalnik)</translation>
 <translation id="2253318212986772520">Datoteke PPD za <ph name="PRINTER_NAME" /> ni mogoče pridobiti.</translation>
+<translation id="2253927598983295051">Izberite, kaj želite deliti z aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Ta naprava je bila zaklenjena na drugo domeno ali način.</translation>
 <translation id="2255317897038918278">Microsoftovo časovno žigosanje</translation>
 <translation id="2256115617011615191">Znova zaženi</translation>
@@ -1850,6 +1852,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2532589005999780174">Visokokontrastni način</translation>
 <translation id="2533649878691950253">Temu spletnemu mestu je onemogočen dostop do vaše natančne lokacije, ker običajno tega ne dovolite.</translation>
 <translation id="253434972992662860">&amp;Premor</translation>
+<translation id="253498598929009420">Spletnemu mestu bo vidna vsebina vašega zaslona.</translation>
 <translation id="253557089021624350">Štetje ohranjanja dejavnosti</translation>
 <translation id="2535799430745250929">Ni nobenega mobilnega omrežja</translation>
 <translation id="2537395079978992874">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda in ureja naslednje datoteke in mape</translation>
@@ -6858,7 +6861,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7017004637493394352">Znova izgovorite »Ok Google«</translation>
 <translation id="7017219178341817193">Dodaj novo stran</translation>
 <translation id="7017354871202642555">Ko enkrat nastavite okno, ni mogoče nastaviti načina.</translation>
-<translation id="7018275672629230621">Branje in spreminjanje zgodovine brskanja</translation>
 <translation id="7019546817926942979">Naprava mora biti priklopljena. Nadgradnja Linuxa lahko znatno izprazni baterijo. Priključite napravo na polnilnik in poskusite znova.</translation>
 <translation id="7019805045859631636">Hitro</translation>
 <translation id="7022562585984256452">Domača stran je nastavljena.</translation>
@@ -7147,6 +7149,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7308643132139167865">Jeziki spletnih mest</translation>
 <translation id="7310598146671372464">Prijava ni uspela. Strežnik ne podpira navedenih vrst šifriranja Kerberos. Obrnite se na skrbnika.</translation>
 <translation id="7311089766378749632">Zahtevanje branja in spreminjanja mesta <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7312210124139670355">Skrbnik ponastavlja vašo kartico eSIM. To lahko traja nekaj minut.</translation>
 <translation id="7317831949569936035">Vpis v šolo</translation>
 <translation id="7320213904474460808">Privzeto omrežje</translation>

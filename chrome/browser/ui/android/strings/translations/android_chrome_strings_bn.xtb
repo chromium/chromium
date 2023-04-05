@@ -385,7 +385,6 @@
 <translation id="3083194063661536258">সাইন-আউট হয়ে গেছেন। বোতাম। সাইন-ইন করতে এবং সিঙ্ক চালু করতে ডায়ালগ বক্স খোলে।</translation>
 <translation id="3091010850649238832">ক্লিপবোর্ডের কন্টেন্ট দেখান</translation>
 <translation id="3098745985164956033">আপনার জন্য ছবির বিবরণ আরও উন্নত করতে কিছু ছবি Google-কে পাঠানো হয়</translation>
-<translation id="3104179992611025423">আপনার সংস্থা অভিভাবকরা ম্যানেজ করছেন</translation>
 <translation id="3114507951000454849">আজকের খবর পড়ুন <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">এর সাথে লিঙ্ক করা হয়েছে</translation>
 <translation id="3123734510202723619">ঘোষণা</translation>
@@ -456,6 +455,7 @@
 <translation id="3493531032208478708">প্রস্তাবিত কন্টেন্ট সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">স্ক্রিনের নিচে অ্যাটাচ করা শিটে সাইন-ইন করার সুবিধা অর্ধেক স্ক্রিন জুড়ে খুলেছে।</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">পুরনো অনুযায়ী সাজান</translation>
 <translation id="3507132249039706973">"স্ট্যান্ডার্ড সুরক্ষা" ফিচারটি চালু করা আছে</translation>
 <translation id="3509330069915219067">অফলাইন। কোনও আপডেট আছে কিনা, Chrome তা চেক করতে পারছে না।</translation>
 <translation id="3513704683820682405">অগমেন্টেড রিয়েলিটি</translation>
@@ -578,6 +578,7 @@
 <translation id="4177222230309051052">আপনার সমস্ত বুকমার্ক পান</translation>
 <translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
+<translation id="4188221736490993796">Z থেকে A অনুসারে সাজান</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4196597275619698563">কার্ড তৈরি করুন</translation>
 <translation id="4198423547019359126">ডাউনলোড করার জন্য লোকেশন উপলভ্য নেই</translation>
@@ -643,6 +644,7 @@
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
 <translation id="4572422548854449519">ম্যানেজ করা অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4576892426230499203">যাচাইকরণের অন্য একটি বিকল্প ব্যবহার করে দেখুন</translation>
+<translation id="4577115723294378384">A থেকে Z অনুসারে সাজান</translation>
 <translation id="4578289292431526768">শুরু করা যাক</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# মিনিট আগে}one{# মিনিট আগে}other{# মিনিট আগে}}</translation>
 <translation id="4587589328781138893">সাইট</translation>
@@ -666,6 +668,7 @@
 <translation id="4689792375321623175">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /> ব্যবহার করে ছবি সার্চ করুন</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}}</translation>
 <translation id="4699172675775169585">ক্যাশে করা ছবি এবং ফাইলগুলি</translation>
+<translation id="4710167854527459075">নতুন অনুযায়ী সাজান</translation>
 <translation id="4719927025381752090">অনুবাদ করুন</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> এ খুলুন</translation>
 <translation id="47217992755561375">আপনার জন্য বেছে নেওয়া সেরা সাইট দেখুন</translation>
@@ -835,6 +838,7 @@
 <translation id="5561162485081632007">ব্রাউজ করার সময় কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়</translation>
 <translation id="5561549206367097665">নেটওয়ার্কের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="5568069709869097550">প্রবেশ করতে পারছেন না</translation>
+<translation id="557018954714092179">নতুন ফোল্ডার তৈরি করুন</translation>
 <translation id="5578795271662203820">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" /> খুঁজুন</translation>
 <translation id="5581519193887989363"><ph name="BEGIN_LINK1" />সেটিংসে<ph name="END_LINK1" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="5590372121997663538">এই কম্পিউটারে মনে রাখুন</translation>
@@ -939,6 +943,7 @@
 <translation id="6138832295072039549">এখান থেকে আপনার সাইট সেটিংস পরিবর্তন করুন</translation>
 <translation id="6140709049082532940">উন্নত সুরক্ষা:</translation>
 <translation id="6140912465461743537">দেশ/অঞ্চল</translation>
+<translation id="6148266338772765473">লিঙ্ক বাদ দিন</translation>
 <translation id="6150320133806434356">বুকমার্ক সেভ করা হয়েছে</translation>
 <translation id="6154478581116148741">এই ডিভাইস থেকে আপনার পাসওয়ার্ড এক্সপোর্ট করতে সেটিংসে স্ক্রিন লক চালু করুন</translation>
 <translation id="6159729262978459665">সিঙ্ক করা সব ডিভাইস থেকে ইতিহাস মুছে ফেলে।</translation>
@@ -1030,6 +1035,7 @@
 <translation id="6590680911007613645">আপনি যে পাসওয়ার্ড সেভ করছেন, সেটি <ph name="SITE" /> সাইটে লেখা আপনার পাসওয়ার্ডের সাথে মিলছে কিনা দেখুন</translation>
 <translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
 <translation id="6594121454516132231">Chrome কীভাবে আপনাকে ওপেন ওয়েব সুরক্ষিত করার মাধ্যমে ক্রস-সাইট ট্র্যাক করা থেকে রক্ষা করে তা দেখুন</translation>
+<translation id="6594347733515723558">বেছে নেওয়া ও দেখার বিকল্প</translation>
 <translation id="6595046016124923392">আপনার জন্য ছবির বিবরণ আরও উন্নত করতে ছবিগুলি Google-এ পাঠানো হয়।</translation>
 <translation id="6600954340915313787">Chrome-এ প্রতিলিপি করা হয়েছে</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>

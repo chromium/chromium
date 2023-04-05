@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Гараг</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />-г салгалаа.</translation>
 <translation id="2307462900900812319">Сүлжээг тохируулах</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ID-тай өргөтгөлийн байршлыг тогтоох боломжгүй. Администратортайгаа холбогдоно уу.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> ID-нуудтай өргөтгөлүүдийн байршлыг тогтоох боломжгүй. Администратортайгаа холбогдоно уу.}}</translation>
 <translation id="2325650632570794183">Энэ төрлийн файлыг дэмжихгүй байна. Chrome Web Store-т нэвтрэн энэ төрлийн файл нээж чадахуйц программыг татан авна уу.</translation>
 <translation id="2326539130272988168">Болгар</translation>
 <translation id="2337715497728194187">Bruschetta-тай хуваалцах</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Хамгаалалтгүй</translation>
 <translation id="3291218047831493686">SIM-н түгжээний тохиргоог өөрчлөхийн тулд энэ сүлжээнд холбогдоно уу</translation>
 <translation id="3293023191599135697">WEP сүлжээг дэмждэггүй</translation>
+<translation id="3295006446256079333">Энэ түвшин</translation>
 <translation id="3295357220137379386">Төхөөрөмж завгүй байна</translation>
 <translation id="3296763833017966289">Гүрж хэл</translation>
 <translation id="3307875152560779385">Украин</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Þýða alltaf <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Skipta yfir í opinn glugga</translation>
 <translation id="1112015203684611006">Prentun tókst ekki.</translation>
+<translation id="1118266931011974190">Eftir <ph name="THRESHOLD" /> daga</translation>
 <translation id="1125564390852150847">Búa til nýjan flipa.</translation>
 <translation id="1126013303640354461">Upplýsingar um greiðslumáta og heimilisföng frá Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að endurstilla samstillingu. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -232,6 +233,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2626236249646841566">Athugaðu nettenginguna og reyndu að skrá þig inn aftur.</translation>
 <translation id="2637313651144986786">Leita í flipum...</translation>
 <translation id="2647269890314209800">Fótspor í notkun</translation>
+<translation id="2648721026697078500">Aldrei færa</translation>
 <translation id="2648803196158606475">Eyða því sem er lesið</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2664621323652615289">Stöðva</translation>
@@ -347,6 +349,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3305294846493618482">meira</translation>
 <translation id="3311748811247479259">Slökkt</translation>
 <translation id="3324193307694657476">Heimilisfang 2</translation>
+<translation id="3328459813621383194">Færa óvirka flipa</translation>
 <translation id="3328801116991980348">Upplýsingar um vefsvæði</translation>
 <translation id="3371831930909698441">Þýðing er í boði. Valkostir eru neðst á skjánum</translation>
 <translation id="3377063233124932127">Nú eru vistuð bókamerki, aðgangsorð og fleira efst</translation>
@@ -511,6 +514,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="452750746583162491">Fara yfir samstillt gögn</translation>
 <translation id="4536418791685807335">Reyndu að skrá þig inn aftur.</translation>
 <translation id="4540780316273593836">Eitthvað fór úrskeiðis</translation>
+<translation id="4550040941166547650">Aðeins í þessu tæki</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Loka {COUNT} óvirkum flipa?}one{Loka {COUNT} óvirkum flipa?}other{Loka {COUNT} óvirkum flipum?}}</translation>
 <translation id="457386861538956877">Meira...</translation>
 <translation id="4587235830039045480">Vista aðgangsorð á Google-reikningi</translation>
@@ -764,6 +768,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6193424046394092997">{count,plural, =1{Bókamerkt í {title}}one{Bókamerkt í {title}}other{Bókamerkt í {title}}}</translation>
 <translation id="6196207969502475924">Raddleit</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
+<translation id="6210079381482819663">Flipar sem eru ekki notaðir í <ph name="THRESHOLD" /> daga eða meira eru færðir hingað. Þú getur breytt þessu hvenær sem er í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Hunsaðar viðvaranir</translation>
 <translation id="6219550825416862075">Velkomin(n) aftur</translation>
 <translation id="6219688215832490856">Þýða aldrei</translation>
@@ -1059,6 +1064,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8059533439631660104">Minnkar hlutann.</translation>
 <translation id="8065292699993359127">Opna vefslóðir í Chrome í huliðsstillingu</translation>
 <translation id="806745655614357130">Halda gögnunum mínum aðskildum</translation>
+<translation id="8069394452933076548">Veldu hvenær flytja á flipa sem hafa ekki verið notaðir nýlegar yfir í hluta óvirkra flipa.</translation>
 <translation id="8073670137947914548">Niðurhali lokið</translation>
 <translation id="8073872304774253879">Bæta leit og vefskoðun</translation>
 <translation id="8076492880354921740">Flipar</translation>
@@ -1087,6 +1093,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8237382152611443140">Opnaðu stillingar sjálfvirkrar útfyllingar aðgangsorða</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8264966119170358612">Sum vistuðu aðgangsorðin þín voru afhjúpuð í öryggisbroti utan Google. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Aðeins í þessu tæki</translation>
 <translation id="8271720166617117963">Samþykkja og skrá inn</translation>
 <translation id="8278938988428169257">Sláðu inn orð eða setningu</translation>
 <translation id="8281781826761538115">Sjálfgefið – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1202,6 +1209,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9055772144595778347">Innskráning tókst ekki</translation>
 <translation id="9055960261314198756">Slökkt er á aukinni vörn</translation>
 <translation id="9057972802061533987">Ekki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
+<translation id="9061495354530850708">Á Google-reikningnum þínum</translation>
 <translation id="9065203028668620118">Breyta</translation>
 <translation id="9068336935206019333">Opna í huliðsstillingu Chrome</translation>
 <translation id="9079935439869366234">Merkja allt sem ólesið</translation>

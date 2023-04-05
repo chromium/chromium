@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is uitgegooi.</translation>
 <translation id="2307462900900812319">Stel netwerk op</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{’n Uitbreiding met die ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kan nie opgespoor word nie. Kontak jou admin.}other{Uitbreidings met die ID’s <ph name="BEGIN_LIST" /><ph name="END_LIST" /> kan nie opgespoor word nie. Kontak jou admin.}}</translation>
 <translation id="2325650632570794183">Hierdie lêertipe word nie gesteun nie. Besoek asseblief die Chrome Webwinkel om 'n program te vind wat hierdie tipe lêer kan oopmaak.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
 <translation id="2337715497728194187">Deel met Bruschetta</translation>
@@ -274,6 +275,7 @@
 <translation id="3290356915286466215">Onbeveilig</translation>
 <translation id="3291218047831493686">Koppel aan hierdie netwerk om SIM-slotinstelling te verander</translation>
 <translation id="3293023191599135697">WEP-netwerke word nie gesteun nie</translation>
+<translation id="3295006446256079333">Hierdie volume</translation>
 <translation id="3295357220137379386">Toestel is besig</translation>
 <translation id="3296763833017966289">Georgies</translation>
 <translation id="3307875152560779385">Oekraïens</translation>

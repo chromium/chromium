@@ -118,6 +118,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1091767800771861448">Trykk på ESC for å hoppe over denne (bare uoffisielle delversjoner).</translation>
 <translation id="1093457606523402488">Synlige nettverk:</translation>
 <translation id="1095761715416917775">Sørg for at du alltid har tilgang til de synkroniserte dataene dine</translation>
+<translation id="1095879482467973146">Google Passordlagring på nettet</translation>
 <translation id="109647177154844434">Hvis du avinstallerer Parallels Desktop, blir Windows-avbildningen slettet. Dette inkluderer programmene, innstillingene og dataene i den. Er du sikker på at du vil fortsette?</translation>
 <translation id="1097016918605049747">Denne siden kunne ikke oversettes</translation>
 <translation id="1097658378307015415">Gå inn som gjest for å aktivere nettverket <ph name="NETWORK_ID" /> før du logger deg på.</translation>
@@ -1494,6 +1495,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2252017960592955005">Visningsbeskyttelse (betaversjon)</translation>
 <translation id="225240747099314620">Tillat identifikatorer for beskyttet innhold (du må kanskje stare datamaskinen på nytt)</translation>
 <translation id="2253318212986772520">Kan ikke hente PPD for <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Velg hva du vil dele med <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Denne enheten er låst til et annet domene eller en annen modus.</translation>
 <translation id="2255317897038918278">Microsoft tidsangivelse</translation>
 <translation id="2256115617011615191">Start på nytt nå</translation>
@@ -1842,6 +1844,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2532589005999780174">Høykontrastmodus</translation>
 <translation id="2533649878691950253">Dette nettstedet er blokkert fra å få vite den nøyaktige posisjonen din, siden du vanligvis ikke tillater dette</translation>
 <translation id="253434972992662860">&amp;Stans midlertidig</translation>
+<translation id="253498598929009420">Nettstedet kan se innholdet på skjermen din</translation>
 <translation id="253557089021624350">Keepalive-teller</translation>
 <translation id="2535799430745250929">Det finnes ingen mobilnettverk</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kan se og redigere disse filene og mappene</translation>
@@ -6838,7 +6841,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7017004637493394352">Si «Ok Google» igjen</translation>
 <translation id="7017219178341817193">Legg til en ny side</translation>
 <translation id="7017354871202642555">Kan ikke angi modus etter at vinduet er opprettet.</translation>
-<translation id="7018275672629230621">lese og endre leserloggen din</translation>
 <translation id="7019546817926942979">Enheten må være koblet til strøm. Oppgradering av Linux kan tappe batteriet betydelig. Koble enheten til en lader, og prøv på nytt.</translation>
 <translation id="7019805045859631636">Høy</translation>
 <translation id="7022562585984256452">Startsiden din er angitt.</translation>
@@ -7127,6 +7129,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7308643132139167865">Nettstedsspråk</translation>
 <translation id="7310598146671372464">Kan ikke logge på. Tjeneren støtter ikke de angitte Kerberos-krypteringstypene. Ta kontakt med administratoren din.</translation>
 <translation id="7311089766378749632">Ber om å få lese og endre <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>
 <translation id="7320213904474460808">Bruk nettverk som standard</translation>

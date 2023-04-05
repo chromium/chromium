@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">無法列印。</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> 天後</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126013303640354461">Google Pay 上的付款方法和地址將不會加密。Chrome 上的瀏覽記錄將不會同步。
 只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -232,6 +233,7 @@
 <translation id="2626236249646841566">請檢查您的連線，然後再次嘗試登入。</translation>
 <translation id="2637313651144986786">搜尋分頁…</translation>
 <translation id="2647269890314209800">使用中的 Cookie</translation>
+<translation id="2648721026697078500">永不移動</translation>
 <translation id="2648803196158606475">刪除已閱讀的項目</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2664621323652615289">停止</translation>
@@ -347,6 +349,7 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3324193307694657476">地址行 2</translation>
+<translation id="3328459813621383194">移動閒置分頁</translation>
 <translation id="3328801116991980348">網站資料</translation>
 <translation id="3371831930909698441">有可以用嘅翻譯。你可以喺接近畫面底部附近搵到選項。</translation>
 <translation id="3377063233124932127">您儲存的書籤、密碼等內容現在會在頂端顯示。</translation>
@@ -511,6 +514,7 @@
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
+<translation id="4550040941166547650">僅在這部裝置上</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{要關閉 {COUNT} 個閒置分頁嗎？}other{要關閉 {COUNT} 個閒置分頁嗎？}}</translation>
 <translation id="457386861538956877">更多語言…</translation>
 <translation id="4587235830039045480">將密碼儲存在您的 Google 帳戶中</translation>
@@ -764,6 +768,7 @@
 <translation id="6193424046394092997">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
 <translation id="6213567400989743524">已關閉的警告</translation>
 <translation id="6219550825416862075">歡迎回來</translation>
 <translation id="6219688215832490856">永不翻譯</translation>
@@ -1057,6 +1062,7 @@
 <translation id="8059533439631660104">收起嗰個部分。</translation>
 <translation id="8065292699993359127">在 Chrome 中以無痕模式開啟網址</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
+<translation id="8069394452933076548">針對最近沒有使用的分頁，選擇過多久要移至閒置分頁區塊。</translation>
 <translation id="8073670137947914548">下載完畢</translation>
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
 <translation id="8076492880354921740">分頁</translation>
@@ -1085,6 +1091,7 @@
 <translation id="8237382152611443140">開啟「自動填入密碼」設定</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8264966119170358612">非 Google 資料外洩中包含部分您儲存的密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">只儲存在此裝置上</translation>
 <translation id="8271720166617117963">接受並登入</translation>
 <translation id="8278938988428169257">輸入字詞或詞組</translation>
 <translation id="8281781826761538115">預設 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1200,6 +1207,7 @@
 <translation id="9055772144595778347">無法登入</translation>
 <translation id="9055960261314198756">已關閉「強化保護功能」</translation>
 <translation id="9057972802061533987">無法追蹤，發生錯誤。</translation>
+<translation id="9061495354530850708">在你的 Google 帳戶中</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9068336935206019333">在 Chrome 無痕模式中開啟</translation>
 <translation id="9079935439869366234">全部標示為未讀</translation>

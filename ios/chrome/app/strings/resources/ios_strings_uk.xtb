@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Перейти у відкрите вікно</translation>
 <translation id="1112015203684611006">Не надруковано.</translation>
+<translation id="1118266931011974190">Через <ph name="THRESHOLD" /> дн.</translation>
 <translation id="1125564390852150847">Створити вкладку.</translation>
 <translation id="1126013303640354461">Способи оплати й адреси з Google Pay не шифруватимуться. Історія веб-перегляду з Chrome не синхронізуватиметься.
 Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, скиньте синхронізацію. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@
 <translation id="2218443599109088993">Віддалити</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
 <translation id="2239626343334228536">Очищення даних веб-перегляду…</translation>
+<translation id="22508856139286506">Закриті попередження (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Меню → Історія</translation>
 <translation id="2256933947031277845">Ваша організація дозволяє входити лише в певні облікові записи.</translation>
 <translation id="225943865679747347">Код помилки: <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@
 <translation id="2626236249646841566">Перевірте з’єднання та спробуйте ввійти знову.</translation>
 <translation id="2637313651144986786">Шукайте вкладки…</translation>
 <translation id="2647269890314209800">Активні файли cookie</translation>
+<translation id="2648721026697078500">Ніколи не переміщувати</translation>
 <translation id="2648803196158606475">Видалити прочитані</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2664621323652615289">Зупинити</translation>
@@ -346,6 +349,7 @@
 <translation id="3305294846493618482">більше</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
+<translation id="3328459813621383194">Перемістити неактивні вкладки</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
@@ -510,6 +514,7 @@
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4536418791685807335">Спробуйте ввійти ще раз.</translation>
 <translation id="4540780316273593836">Сталася помилка</translation>
+<translation id="4550040941166547650">Лише на цьому пристрої</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Закрити {COUNT} неактивну вкладку?}one{Закрити {COUNT} неактивну вкладку?}few{Закрити {COUNT} неактивні вкладки?}many{Закрити {COUNT} неактивних вкладок?}other{Закрити {COUNT} неактивної вкладки?}}</translation>
 <translation id="457386861538956877">Інші...</translation>
 <translation id="4587235830039045480">Збережіть пароль у своєму обліковому записі Google</translation>
@@ -763,6 +768,7 @@
 <translation id="6193424046394092997">{count,plural, =1{Закладку збережено в папці "{title}"}one{Закладки збережено в папці "{title}"}few{Закладки збережено в папці "{title}"}many{Закладки збережено в папці "{title}"}other{Закладки збережено в папці "{title}"}}</translation>
 <translation id="6196207969502475924">Голосовий пошук</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрити {COUNT} вкладку}one{Закрити {COUNT} вкладку}few{Закрити {COUNT} вкладки}many{Закрити {COUNT} вкладок}other{Закрити {COUNT} вкладки}}</translation>
+<translation id="6210079381482819663">Сюди переміщуються вкладки, які не використовуються принаймні <ph name="THRESHOLD" /> дн. Параметри функції можна будь-коли змінити в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Закриті попередження</translation>
 <translation id="6219550825416862075">З поверненням</translation>
 <translation id="6219688215832490856">Ніколи не перекладати</translation>
@@ -1058,6 +1064,7 @@
 <translation id="8059533439631660104">Згортає розділ.</translation>
 <translation id="8065292699993359127">Відкривати URL-адреси в Chrome в анонімному режимі</translation>
 <translation id="806745655614357130">Зберігати мої дані окремо</translation>
+<translation id="8069394452933076548">Укажіть, коли вкладки, якими ви давно не користувалися, мають переміщуватися в розділ "Неактивні вкладки".</translation>
 <translation id="8073670137947914548">Завантаження завершено</translation>
 <translation id="8073872304774253879">Покращувати пошук і веб-перегляд</translation>
 <translation id="8076492880354921740">Вкладки</translation>
@@ -1086,6 +1093,7 @@
 <translation id="8237382152611443140">Відкрийте налаштування автозаповнення паролів</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8264966119170358612">Деякі ваші збережені паролі було розкрито через порушення безпеки даних стороннього сервісу. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Лише на цьому пристрої</translation>
 <translation id="8271720166617117963">Прийняти й увійти</translation>
 <translation id="8278938988428169257">Введіть слово або фразу</translation>
 <translation id="8281781826761538115">За умовчанням – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1201,6 +1209,7 @@
 <translation id="9055772144595778347">Не вдається ввійти</translation>
 <translation id="9055960261314198756">Покращений захист вимкнено</translation>
 <translation id="9057972802061533987">Не вдалося підписатися.</translation>
+<translation id="9061495354530850708">У вашому обліковому записі Google</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9068336935206019333">Відкрити в анонімній вкладці Chrome</translation>
 <translation id="9079935439869366234">Позначити всі як непрочитані</translation>

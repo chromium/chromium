@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Na-eject ang <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">I-configure ang network</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Ang extension na may ID na <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ay hindi mahanap. Makipag-ugnayan sa iyong administrator.}one{Ang mga extension na may mga ID na <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ay hindi mahanap. Makipag-ugnayan sa iyong administrator.}other{Ang mga extension na may mga ID na <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ay hindi mahanap. Makipag-ugnayan sa iyong administrator.}}</translation>
 <translation id="2325650632570794183">Hindi sinusuportahan ang uri ng file na ito. Pakibisita ang Chrome Web Store upang makahanap ng app na makakapagbukas ng ganitong uri ng file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
 <translation id="2337715497728194187">I-share sa Bruschetta</translation>

@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Превключване към отворения прозорец</translation>
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
+<translation id="1118266931011974190">След <ph name="THRESHOLD" /> дни</translation>
 <translation id="1125564390852150847">Създаване на нов раздел.</translation>
 <translation id="1126013303640354461">Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.
 Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако го забравите или искате да промените тази настройка, трябва да нулирате синхронизирането. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@
 <translation id="2626236249646841566">Проверете връзката си и опитайте отново да влезете.</translation>
 <translation id="2637313651144986786">Търсене в разделите…</translation>
 <translation id="2647269890314209800">„Бисквитки“, които се използват</translation>
+<translation id="2648721026697078500">Без преместване</translation>
 <translation id="2648803196158606475">Изтриване на прочетените</translation>
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2664621323652615289">Спиране</translation>
@@ -346,6 +348,7 @@
 <translation id="3305294846493618482">още</translation>
 <translation id="3311748811247479259">Изключено</translation>
 <translation id="3324193307694657476">Адрес 2</translation>
+<translation id="3328459813621383194">Преместване на неактивните раздели</translation>
 <translation id="3328801116991980348">Информация за сайта</translation>
 <translation id="3371831930909698441">Налице е превод. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="3377063233124932127">Запазените ви отметки, пароли и др. вече се показват най-горе.</translation>
@@ -510,6 +513,7 @@
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4536418791685807335">Опитайте да влезете отново.</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
+<translation id="4550040941166547650">Само на това устройство</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Искате ли да затворите {COUNT} неактивен раздел?}other{Искате ли да затворите {COUNT} неактивни раздела?}}</translation>
 <translation id="457386861538956877">Още...</translation>
 <translation id="4587235830039045480">Запазване на паролата в профила ви в Google</translation>
@@ -763,6 +767,7 @@
 <translation id="6193424046394092997">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“}other{Отметките бяха запазени в(ъв) „{title}“}}</translation>
 <translation id="6196207969502475924">Гласово търсене</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
+<translation id="6210079381482819663">Разделите, които не сте използвали от <ph name="THRESHOLD" /> или повече дни, ще бъдат премествани тук. Можете да промените това по всяко време от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Отхвърлени предупреждения</translation>
 <translation id="6219550825416862075">Добре дошли отново</translation>
 <translation id="6219688215832490856">Никога да не се превежда</translation>
@@ -1058,6 +1063,7 @@
 <translation id="8059533439631660104">Свива секцията.</translation>
 <translation id="8065292699993359127">Отваряне на URL адресите в режим „инкогнито“ в Chrome</translation>
 <translation id="806745655614357130">Оставяне на данните отделно</translation>
+<translation id="8069394452933076548">Изберете кога разделите, които не сте използвали скоро, да се преместват в секцията за неактивни раздели.</translation>
 <translation id="8073670137947914548">Изтеглянето завърши</translation>
 <translation id="8073872304774253879">Подобряване на търсенията и сърфирането</translation>
 <translation id="8076492880354921740">Раздели</translation>
@@ -1086,6 +1092,7 @@
 <translation id="8237382152611443140">Отворете настройките за автоматично попълване на паролите.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8264966119170358612">Някои от запазените ви пароли са били разкрити вследствие на нарушение на сигурността на данните извън Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Само на това устройство</translation>
 <translation id="8271720166617117963">Приемане и вход</translation>
 <translation id="8278938988428169257">Въведете дума или фраза.</translation>
 <translation id="8281781826761538115">Стандартно – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1201,6 +1208,7 @@
 <translation id="9055772144595778347">Не може да се влезе</translation>
 <translation id="9055960261314198756">Режимът за подобрена защита е изключен</translation>
 <translation id="9057972802061533987">Следенето не е възможно. Нещо се обърка.</translation>
+<translation id="9061495354530850708">В профила ви в Google</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9068336935206019333">Отваряне в режим „инкогнито“ в Chrome</translation>
 <translation id="9079935439869366234">Означаване на всичко като непрочетено</translation>

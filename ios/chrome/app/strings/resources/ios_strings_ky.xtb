@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="110724200315609752">Ачык терезеге которулуңуз</translation>
 <translation id="1112015203684611006">Басылып чыгарылбай калды.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> күндөн кийин</translation>
 <translation id="1125564390852150847">Жаңы өтмөк түзүү.</translation>
 <translation id="1126013303640354461">Google Pay'деги даректер жана төлөм ыкмалары шифрленбейт. Chrome'до көрүлгөн вебсайттар шайкештирилбейт.
 Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, шайкештирүүнү баштапкы абалга келтиришиңиз керек болот. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -232,6 +233,7 @@
 <translation id="2626236249646841566">Интернет байланышын текшерип, кайталап көрүңүз.</translation>
 <translation id="2637313651144986786">Өтмөктөрдү издөө...</translation>
 <translation id="2647269890314209800">Колдонулган кукилер</translation>
+<translation id="2648721026697078500">Эч качан жылдырылбасын</translation>
 <translation id="2648803196158606475">Окулгандарды жок кылуу</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2664621323652615289">Токтотуу</translation>
@@ -347,6 +349,7 @@
 <translation id="3305294846493618482">дагы</translation>
 <translation id="3311748811247479259">Өчүк</translation>
 <translation id="3324193307694657476">2-дарек</translation>
+<translation id="3328459813621383194">Жигерсиз өтмөктөрдү жылдыруу</translation>
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="3377063233124932127">Эми сакталган кыстармаларыңыз, сырсөздөрүңүз жана башка нерселер жогору жакта.</translation>
@@ -511,6 +514,7 @@
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4536418791685807335">Кайра кирип көрүңүз.</translation>
 <translation id="4540780316273593836">Бир жерден ката кетти</translation>
+<translation id="4550040941166547650">Ушул түзмөктө гана</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} жигерсиз өтмөктү жабасызбы?}other{{COUNT} жигерсиз өтмөктү жабасызбы?}}</translation>
 <translation id="457386861538956877">Дагы…</translation>
 <translation id="4587235830039045480">Сырсөздү Google аккаунтуңузга сактаңыз</translation>
@@ -764,6 +768,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6193424046394092997">{count,plural, =1{Кыстарма {title} папкасында түзүлдү}other{Кыстарма {title} папкасында түзүлдү}}</translation>
 <translation id="6196207969502475924">Айтып издөө</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} өтмөктү жабуу}other{{COUNT} өтмөктү жабуу}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> же андан көбүрөөк күн колдонулбаган өтмөктөр ушул жерге жылдырылат. Бул мүмкүнчүлүктү каалаган убакта <ph name="BEGIN_LINK" />параметрлерден<ph name="END_LINK" /> өзгөртө аласыз.</translation>
 <translation id="6213567400989743524">Четке кагылган эскертүүлөр</translation>
 <translation id="6219550825416862075">Кайтып келишиңиз менен</translation>
 <translation id="6219688215832490856">Эч качан которулбасын</translation>
@@ -1059,6 +1064,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8059533439631660104">Бөлүмдү жыйыштырат.</translation>
 <translation id="8065292699993359127">URL даректерин Chrome'до Жашыруун режимде ачуу</translation>
 <translation id="806745655614357130">Дайындарды өзүнчө сактоо</translation>
+<translation id="8069394452933076548">Акыркы убакта колдонулбаган өтмөктөр Жигерсиз өтмөк бөлүмүнө качан жылдырыла турганын тандаңыз.</translation>
 <translation id="8073670137947914548">Жүктөлүп алынды</translation>
 <translation id="8073872304774253879">Издөө жана серептөө аракеттериңизди жакшыртыңыз</translation>
 <translation id="8076492880354921740">Өтмөктөр</translation>
@@ -1087,6 +1093,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8237382152611443140">Сырсөздөрдү автотолтуруу параметрлерин ачыңыз</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8264966119170358612">Айрым сырсөздөрүңүздү Google'дан тышкары жерде кимдир бирөө билип алды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Ушул түзмөктө гана</translation>
 <translation id="8271720166617117963">Кабыл алуу жана кирүү</translation>
 <translation id="8278938988428169257">Сөз же сөз айкашын киргизиңиз</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1202,6 +1209,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9055772144595778347">Кирүү мүмкүн эмес</translation>
 <translation id="9055960261314198756">Мыктылап коргоо өчүк</translation>
 <translation id="9057972802061533987">Жазылган жок. Бир жерден ката кетти.</translation>
+<translation id="9061495354530850708">Google аккаунтуңузда</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9068336935206019333">Chrome'до Жашыруун режимде ачуу</translation>
 <translation id="9079935439869366234">Баарын окула элек деп белгилөө</translation>

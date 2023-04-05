@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Passer à une autre fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
+<translation id="1118266931011974190">Après <ph name="THRESHOLD" /> jours</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
 <translation id="1126013303640354461">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous voulez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
 <translation id="2637313651144986786">Rechercher dans les onglets…</translation>
 <translation id="2647269890314209800">Cookies utilisés</translation>
+<translation id="2648721026697078500">Ne jamais déplacer</translation>
 <translation id="2648803196158606475">Supprimer entrées lues</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2664621323652615289">Arrêter</translation>
@@ -346,6 +348,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
+<translation id="3328459813621383194">Déplacer les onglets inactifs</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
 <translation id="3371831930909698441">La traduction est disponible. Options disponibles au bas de l'écran.</translation>
 <translation id="3377063233124932127">Vos favoris, vos mots de passe et d'autres éléments sont désormais affichés en haut de la page.</translation>
@@ -510,6 +513,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4536418791685807335">Veuillez essayer de vous reconnecter.</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
+<translation id="4550040941166547650">Uniquement sur cet appareil</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fermer {COUNT} onglet inactif ?}one{Fermer {COUNT} onglet inactif ?}other{Fermer {COUNT} onglets inactifs ?}}</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4587235830039045480">Enregistrez le mot de passe dans votre compte Google</translation>
@@ -763,6 +767,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6193424046394092997">{count,plural, =1{Ajouté aux favoris sur {title}}one{Ajouté aux favoris sur {title}}other{Ajoutés aux favoris sur {title}}}</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
+<translation id="6210079381482819663">Les onglets inutilisés pendant au moins <ph name="THRESHOLD" /> jours sont déplacés ici. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6213567400989743524">Avertissements ignorés</translation>
 <translation id="6219550825416862075">Bon retour parmi nous</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
@@ -799,7 +804,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6377118281273296434">Sécurité du site</translation>
 <translation id="6380866119319257197">Si vous oubliez votre phrase secrète, ou pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6383719166112032471">Ouvrir l'emplacement…</translation>
-<translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe Google uniquement sur cet appareil.</translation>
+<translation id="6387994324662817823">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google uniquement sur cet appareil.</translation>
 <translation id="6389470377220713856">Nom sur la carte</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410390304316730527">La fonctionnalité Navigation sécurisée vous protège contre les pirates informatiques qui pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels malveillants ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). Si vous la désactivez, faites preuve de vigilance lorsque vous consultez des sites Web inconnus ou peu fiables.</translation>
@@ -1045,7 +1050,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="797413074872316787">Activez la synchronisation pour accéder à vos données et les personnaliser sur tous vos appareils.</translation>
 <translation id="7978018860671536736">3. Appuyez sur "Saisir automatiquement les mots de passe"</translation>
 <translation id="7982789257301363584">Réseau</translation>
-<translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe Google.</translation>
+<translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe de Google.</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>
 <translation id="8005666035647241369">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
@@ -1059,6 +1064,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode navigation privée</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
+<translation id="8069394452933076548">Indiquez quand déplacer les onglets non utilisés récemment vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8073872304774253879">Améliorer les recherches et la navigation</translation>
 <translation id="8076492880354921740">Onglets</translation>
@@ -1087,6 +1093,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8237382152611443140">Accédez à "Préremplir les mots de passe"</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été divulgués à la suite d'une violation de données non-Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8278938988428169257">Saisissez un terme ou une expression</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>
@@ -1184,7 +1191,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8934982071228289624">Pour enregistrer ce mot de passe dans votre compte, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="894191600409472540">Créez des mots de passe sécurisés</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
-<translation id="8953046091948372197">Vos mots de passe s'afficheront ici</translation>
+<translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>
 <translation id="895541991026785598">Signaler un problème</translation>
 <translation id="8971545611707025079">Revérifier</translation>
 <translation id="8974714402877957201">1. Ouvrez les réglages de l'iPad</translation>
@@ -1202,6 +1209,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9055772144595778347">Connexion impossible</translation>
 <translation id="9055960261314198756">La protection renforcée est désactivée</translation>
 <translation id="9057972802061533987">Impossible de vous abonner en raison d'une erreur.</translation>
+<translation id="9061495354530850708">Dans votre compte Google</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9068336935206019333">Ouvrir en navigation privée Chrome</translation>
 <translation id="9079935439869366234">Tout marquer comme non lu</translation>

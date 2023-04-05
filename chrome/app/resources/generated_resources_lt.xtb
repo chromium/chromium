@@ -6860,7 +6860,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7017004637493394352">Dar kartą ištarkite „Ok Google“</translation>
 <translation id="7017219178341817193">Pridėti naują puslapį</translation>
 <translation id="7017354871202642555">Nustačius langą, režimo nustatyti negalima.</translation>
-<translation id="7018275672629230621">Skaityti ir keisti naršymo istoriją</translation>
 <translation id="7019546817926942979">Reikia įjungti įrenginį į lizdą. Naujovinant „Linux“ gali būti smarkiai eikvojama akumuliatoriaus energija. Prijunkite įrenginį prie kroviklio ir bandykite dar kartą.</translation>
 <translation id="7019805045859631636">Greitas</translation>
 <translation id="7022562585984256452">Pagrindinis puslapis nustatytas.</translation>
@@ -7149,6 +7148,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7308643132139167865">Svetainių kalbos</translation>
 <translation id="7310598146671372464">Nepavyko prisijungti. Serveris nepalaiko nurodytų „Kerberos“ šifruotės tipų. Susisiekite su administratoriumi.</translation>
 <translation id="7311089766378749632">Prašoma leidimo skaityti ir keisti <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Rezultatų nerasta</translation>
 <translation id="7312210124139670355">Administratorius iš naujo nustato jūsų „eSIM“ kortelę. Tai gali užtrukti kelias minutes.</translation>
 <translation id="7317831949569936035">Mokyklos registracija</translation>
 <translation id="7320213904474460808">Nustatyti tinklą kaip numatytąjį</translation>

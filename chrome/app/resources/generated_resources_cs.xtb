@@ -6833,7 +6833,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7017004637493394352">Řekněte „Ok Google“ ještě jednou</translation>
 <translation id="7017219178341817193">Přidat novou stránku</translation>
 <translation id="7017354871202642555">Po nastavení okna již nelze nastavit režim.</translation>
-<translation id="7018275672629230621">Číst a upravovat vaši historii procházení</translation>
 <translation id="7019546817926942979">Zařízení musí být zapojeno do zásuvky. Upgradování Linuxu může rychle vybíjet baterii. Připojte zařízení k nabíječce a zkuste to znovu.</translation>
 <translation id="7019805045859631636">Rychle</translation>
 <translation id="7022562585984256452">Domovská stránka byla nastavena.</translation>
@@ -7122,6 +7121,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7308643132139167865">Jazyky webových stránek</translation>
 <translation id="7310598146671372464">Přihlášení se nezdařilo. Server nepodporuje zadané typy šifrování Kerberos. Obraťte se na svého administrátora.</translation>
 <translation id="7311089766378749632">Žádost o oprávnění ke čtení a provádění změn pro <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Žádné výsledky</translation>
 <translation id="7312210124139670355">Administrátor resetuje vaši eSIM. Může to trvat několik minut.</translation>
 <translation id="7317831949569936035">Registrace do školy</translation>
 <translation id="7320213904474460808">Nastavit výchozí síť</translation>

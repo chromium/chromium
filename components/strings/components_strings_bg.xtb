@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">предложения</translation>
 <translation id="1375198122581997741">Всичко за версията</translation>
 <translation id="1376836354785490390">Показване на по-малко</translation>
-<translation id="1377321085342047638">№ на картата</translation>
 <translation id="1380591466760231819">Сгъване тип „писмо“</translation>
 <translation id="138218114945450791">светлосиньо</translation>
 <translation id="1382194467192730611">USB устройството е разрешено от администратора</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">Променете паролата си</translation>
 <translation id="1482879811280872320">Колоездене</translation>
 <translation id="1483493594462132177">Изпращане</translation>
-<translation id="1484290072879560759">Избиране на адрес за доставка</translation>
 <translation id="1492194039220927094">Разпространение на правилата:</translation>
 <translation id="149293076951187737">Когато затворите всички раздели на Chrome в режим „инкогнито“, активността ви в тях се изчиства от устройството. Това включва:
 <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">Това е всичко засега</translation>
 <translation id="1536390784834419204">Превод на страницата</translation>
 <translation id="1539840569003678498">Сигналът е изпратен на:</translation>
-<translation id="154408704832528245">Избиране на адрес за бърза доставка</translation>
 <translation id="1549470594296187301">Трябва да активирате JavaScript, за да използвате тази функция.</translation>
 <translation id="1551884710160394169">Софтуер без парично заплащане или с пробен период</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
@@ -370,7 +367,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Подробности на виртуалната карта</translation>
 <translation id="1803020234906945288">Здравословно хранене</translation>
-<translation id="1803264062614276815">Име на титуляря на картата</translation>
 <translation id="1803351196216024260">Може да поиска разрешение да използва микрофона ви</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1807528111851433570">Първи лист</translation>
@@ -619,7 +615,6 @@
 <translation id="2450021089947420533">Пътешествия</translation>
 <translation id="2456755709261364512">Батерията ви трябва да бъде заредена над <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Попълване</translation>
-<translation id="2465655957518002998">Избиране на начин на бърза доставка</translation>
 <translation id="2465688316154986572">Телбодиране</translation>
 <translation id="2465914000209955735">Управление на файловете, които сте изтеглили с Chrome</translation>
 <translation id="2466004615675155314">Показване на информация от мрежата</translation>
@@ -741,7 +736,6 @@
 <translation id="2730600605555029057">Класическа музика</translation>
 <translation id="2731382536835015353">44 x 68 инча</translation>
 <translation id="2734319753272419592">Позволете на Google да използва кошниците ви, за да търси персонализирани отстъпки. Когато са налице, отстъпките автоматично ще се показват в кошниците ви.</translation>
-<translation id="2738330467931008676">Избиране на адрес за вземане</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Тенис на маса</translation>
 <translation id="2742870351467570537">Премахване на избраните елементи</translation>
@@ -823,7 +817,6 @@
 <translation id="2983666748527428214">Отваряне на раздел в режим „инкогнито“</translation>
 <translation id="2985306909656435243">Ако настройката е активирана, Chromium ще съхранява на това устройство копие на картата ви с цел по-бързо попълване на формуляри.</translation>
 <translation id="2985398929374701810">Въведете валиден адрес</translation>
-<translation id="2986368408720340940">Този начин на вземане не се поддържа. Опитайте с друг.</translation>
 <translation id="2987034854559945715">Няма съответстващи функции</translation>
 <translation id="2989742184762224133">Двуточково телбодиране в горната част</translation>
 <translation id="2991174974383378012">Споделяне с уебсайтове</translation>
@@ -855,7 +848,6 @@
 <translation id="3086579638707268289">Активността ви в мрежата се наблюдава</translation>
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">Добавяне на адрес за вземане</translation>
 <translation id="3096195745018397576">Детско облекло</translation>
 <translation id="3098513225387949945">Правилото бе пренебрегнато, защото списъкът за деактивиране съдържа образец, еквивалентен на „*“, което е равносилно на деактивиране на правилото.</translation>
 <translation id="3105172416063519923">ID на актива:</translation>
@@ -1382,7 +1374,6 @@
 <translation id="4333561522337981382">Управление на прозорците на всичките ви дисплеи</translation>
 <translation id="4340575312453649552">Тази реклама бе премахната от Chrome, защото използваше твърде много от ресурсите на устройството ви.</translation>
 <translation id="4340982228985273705">Този компютър не се управлява корпоративно, така че правилото може да инсталира автоматично само разширения от уеб магазина на Chrome. URL адресът за актуализация за уеб магазина на Chrome е <ph name="CWS_UPDATE_URL" />.</translation>
-<translation id="4346197816712207223">Приемани кредитни карти</translation>
 <translation id="4348834659292907206">Връзката със сайта <ph name="SITE" /> не е защитена</translation>
 <translation id="4349365535725594680">Споделянето на поверително съдържание не е възможно</translation>
 <translation id="4349810866125026513">Качване въпреки това</translation>
@@ -1586,7 +1577,6 @@
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4852429274334674023">Операционни системи</translation>
 <translation id="4853901935952445031">След февруари 2022 г. този сайт няма да може да използва API за U2F. Ако вие сте собственикът на сайта, трябва да преминете към API за удостоверяване в мрежата.</translation>
-<translation id="4854362297993841467">Този начин на бърза доставка не се поддържа. Опитайте с друг.</translation>
 <translation id="4854853140771946034">Бързо създаване на бележка в Google Keep</translation>
 <translation id="4858792381671956233">Попитахте родителите си дали може да посетите този сайт</translation>
 <translation id="485902285759009870">Кодът се потвърждава...</translation>
@@ -1788,7 +1778,6 @@
 <translation id="5316812925700871227">Завъртане обратно на часовниковата стрелка</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> от <ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">Избиране на информация за връзка</translation>
 <translation id="5329858041417644019">Браузърът ви не се управлява</translation>
 <translation id="5332219387342487447">Начин за доставка</translation>
 <translation id="5332769172018416402">Запитване в съобщение</translation>
@@ -1891,7 +1880,6 @@
 <translation id="5593349413089863479">Връзката не е напълно защитена</translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
 <translation id="5596939519753369075">2 x 3,5 инча</translation>
-<translation id="5598944008576757369">Избиране на начин на плащане</translation>
 <translation id="560412284261940334">Управлението не се поддържа</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива сайтовете, които са по-стари от 4 седмици. Ако отново посетите даден сайт, той може пак да се покаже в списъка. Също така можете да блокирате даден сайт, така че да не предлага реклами, и да изключите този тип реклами по всяко време от настройките на Chrome.</translation>
@@ -1923,7 +1911,6 @@
 <translation id="568292603005599551">Позиция на изображението по оста X</translation>
 <translation id="5684277895745049190">Списък</translation>
 <translation id="5684874026226664614">Ами сега! Тази страница не можа да се преведе.</translation>
-<translation id="5685654322157854305">Добавяне на адрес за доставка</translation>
 <translation id="5689199277474810259">Експортиране във формат JSON</translation>
 <translation id="5689516760719285838">Местоположение</translation>
 <translation id="569000877158168851">Стойността на DnsOverHttpsTemplates не е подходяща и няма да се използва, освен ако за правилото DnsOverHttpsMode не е зададено <ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -2789,7 +2776,6 @@
 <translation id="776110834126722255">Оттеглено</translation>
 <translation id="7761159795823346334">Да се разреши ли достъпът до камерата?</translation>
 <translation id="7761701407923456692">Сертификатът на сървъра не съответства на URL адреса.</translation>
-<translation id="7763386264682878361">Инструмент за синтактичен анализ на манифести за плащания</translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
 <translation id="7766518757692125295">Пола</translation>
 <translation id="7773005668374414287">В същия ред с отпечатаната страна нагоре</translation>
@@ -2893,7 +2879,6 @@
 <translation id="8038817883578389970">Автомобилни състезания</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8041940743680923270">Използване на глобалната стандартна стойност (запитване)</translation>
-<translation id="8042918947222776840">Избиране на начин на вземане</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8055534648776115597">Професионално обучение и допълнителна квалификация</translation>
 <translation id="8057711352706143257">Софтуерът <ph name="SOFTWARE_NAME" /> не е конфигуриран правилно. Обикновено проблемът се отстранява с деинсталиране на <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3267,7 +3252,6 @@
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9018120810758822233">Въведете кода си за сигурност за <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имейл</translation>
-<translation id="9020200922353704812">Свързаният с картата адрес за фактуриране е задължителен</translation>
 <translation id="9020542370529661692">Тази страница е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да споделите този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
@@ -3304,7 +3288,6 @@
 <translation id="9101630580131696064">Тава 1</translation>
 <translation id="9103537084693478942">Видеософтуер</translation>
 <translation id="9103872766612412690">Обикновено <ph name="SITE" /> използва шифроване за защита на информацията ви. Когато Chromium опита да установи връзка с/ъс <ph name="SITE" /> този път, уебсайтът върна необичайни и неправилни идентификационни данни. Това може да се случи, когато извършител на атака пробва да се представи за <ph name="SITE" /> или връзката е прекъсната от екран за вход в Wi-Fi. Информацията ви продължава да е защитена, тъй като Chromium спря връзката, преди да бъдат обменени данни.</translation>
-<translation id="9106062320799175032">Добавяне на адрес за фактуриране</translation>
 <translation id="9107467864910557787">Браузърът ви се управлява от <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Споделянето на екрана с(ъс) <ph name="APPLICATION_TITLE" />, когато се вижда поверително съдържание, е деактивирано от администраторски правила</translation>
 <translation id="9114524666733003316">Картата се потвърждава...</translation>
@@ -3325,7 +3308,6 @@
 <translation id="9139318394846604261">Пазаруване</translation>
 <translation id="9141013498910525015">Управление на адресите</translation>
 <translation id="9144951720726881238">Дата на валидност:</translation>
-<translation id="9148088599418889305">Избиране на начин на доставка</translation>
 <translation id="9148507642005240123">&amp;Отмяна на редактирането</translation>
 <translation id="9150045010208374699">Използване на камерата ви</translation>
 <translation id="9150685862434908345">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chrome. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -3376,7 +3358,6 @@
 <translation id="964050462028070434">Управление на паролите и кодовете за достъп…</translation>
 <translation id="96680173638229310">Автомобили и превозни средства</translation>
 <translation id="969892804517981540">Официално издание</translation>
-<translation id="973773823069644502">Добавяне на адрес за бърза доставка</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Няма}=1{1 елемент}other{# елемента}}</translation>
 <translation id="976522784004777030">5 x 8 инча</translation>
 <translation id="977502174772294970">Сватби</translation>

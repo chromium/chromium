@@ -118,6 +118,7 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1091767800771861448">Cindezela ku-ESCAPE ukuze weqe (Ukwakhiwa okungekho emthethweni kuphela).</translation>
 <translation id="1093457606523402488">Amanethiwekhi abonakalayo:</translation>
 <translation id="1095761715416917775">Qinisekisa ukuthi ungahlala ufinyelela kudatha yakho yokuvumelanisa</translation>
+<translation id="1095879482467973146">Umphathi Wephasiwedi Ye-Google kuwebhu</translation>
 <translation id="109647177154844434">Ukukhipha i-Parallels Desktop kuzosusa isithombe sakho se-Windows. Lokhu kuhlanganisa izinhlelo zayo zokusebenza, izilungiselelo, nedatha. Uyaqiniseka yini ukuthi ufuna ukuqhubeka?</translation>
 <translation id="1097016918605049747">Leli khasi alikwazanga ukuhunyushwa</translation>
 <translation id="1097658378307015415">Ngaphambi kokungena ngemvume, sicela ungene njengesihambeli ukuze wenze kusebenze i-<ph name="NETWORK_ID" /> yenethiwekhi</translation>
@@ -1499,6 +1500,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2252017960592955005">Ukuvikelwa kokubuka (i-Beta)</translation>
 <translation id="225240747099314620">Vumela izikhombi zokuqukethwe okuvikelekile (ukuqaliswa kabusha kwekhompyutha kungadingeka)</translation>
 <translation id="2253318212986772520">Ayikwazi ukubuyisela i-PPD ye-<ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Khetha ongabelana ngakho ne-<ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Le divayisi ikhiyiwe kusizinda esihlukile noma imodi.</translation>
 <translation id="2255317897038918278">Ukufaka isitembu kwesikhathi kwe-Microsoft</translation>
 <translation id="2256115617011615191">Qala kabusha manje</translation>
@@ -1848,6 +1850,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2532589005999780174">Imodi yokugqala okuphezulu</translation>
 <translation id="2533649878691950253">Le sayithi livinjelwe ukuthi lazi indawo yakho ngqo ngoba ngokuvamile awukuvumeli lokhu</translation>
 <translation id="253434972992662860">Misa isikhashana</translation>
+<translation id="253498598929009420">Isayithi lizokwazi ukubona okuqukethwe kwesikrini sakho</translation>
 <translation id="253557089021624350">Ukubala kwe-Keepalive</translation>
 <translation id="2535799430745250929">Ayikho inethiwekhi yeselula ekhona</translation>
 <translation id="2537395079978992874">I-<ph name="ORIGIN" /> ingabuka iphinde ilandele amafayela namafolda</translation>
@@ -6852,7 +6855,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7017004637493394352">Ithi "Ok Google" futhi</translation>
 <translation id="7017219178341817193">Engeza ikhasi elisha</translation>
 <translation id="7017354871202642555">Ayikwazi ukusetha imodi ngemuva kokusetha iwindi.</translation>
-<translation id="7018275672629230621">Funda futhi ushintshe umlando wakho wokuphequlula</translation>
 <translation id="7019546817926942979">Idivayisi yakho idinga ukuxhunywa. Ukuthuthukisa i-Linux kungadla ibhethri lakho kakhulu. Xhuma idivayisi yakho kushaja bese uyazama futhi.</translation>
 <translation id="7019805045859631636">Sheshayo</translation>
 <translation id="7022562585984256452">Ikhasi lakho lasekhaya lisethiwe.</translation>
@@ -7141,6 +7143,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7308643132139167865">Izilimi zewebhusayithi</translation>
 <translation id="7310598146671372464">Yehlulekile ukungena ngemvume. Le seva ayisekeli izinhlobo ezithile zokubethela kwe-Kerberos. Sicela uxhumane nomlawuli wakho.</translation>
 <translation id="7311089766378749632">Icela ukufunda nokushintsha i-<ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Akunamiphumela etholakele</translation>
 <translation id="7312210124139670355">Umlawuli wakho usetha kabusha i-eSIM yakho. Lokhu kungathatha imizuzu embalwa.</translation>
 <translation id="7317831949569936035">Ukubhaliswa kwesikole</translation>
 <translation id="7320213904474460808">Okuzenzakalelayo ukuya kunethiwekhi</translation>

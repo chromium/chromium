@@ -177,6 +177,7 @@
 <translation id="2218443599109088993">जुम घटाउनुहोस्</translation>
 <translation id="2230173723195178503">वेबपृष्ठ लोड गरियो</translation>
 <translation id="2239626343334228536">ब्राउजिङ डेटा खाली गर्दै...</translation>
+<translation id="22508856139286506">खारेज गरिएका चेतावनीहरू (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">मेनु → इतिहास</translation>
 <translation id="2256933947031277845">तपाईंको सङ्गठनको नीतिअनुसार तपाईं निश्चित खातामार्फत मात्र साइन इन गर्न पाउनुहुन्छ।</translation>
 <translation id="225943865679747347">त्रुटि कोड: <ph name="ERROR_CODE" /></translation>
@@ -1086,6 +1087,7 @@
 <translation id="8237382152611443140">पासवर्ड स्वतः भर्ने सुविधासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8264966119170358612">तपाईंका सेभ गरिएका केही पासवर्डहरू तेस्रो पक्षले गरेको डेटा चोरीको घटनामा देखिएका थिए। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">यो डिभाइसमा मात्र</translation>
 <translation id="8271720166617117963">स्वीकार गर्नुहोस् र साइन इन गर्नुहोस्</translation>
 <translation id="8278938988428169257">कुनै शब्द वा वाक्यांश हाल्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>

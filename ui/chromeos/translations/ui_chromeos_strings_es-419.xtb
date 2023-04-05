@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Se expulsó <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Configurar red</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{No se puede encontrar una extensión con el ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Comunícate con el administrador.}other{No se pueden encontrar las extensiones con los IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Comunícate con el administrador.}}</translation>
 <translation id="2325650632570794183">Este tipo de archivo no es compatible. Visita Chrome Web Store para buscar una aplicación que pueda abrir este tipo de archivo.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
 <translation id="2337715497728194187">Compartir con Bruschetta</translation>

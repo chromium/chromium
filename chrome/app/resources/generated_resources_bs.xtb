@@ -118,6 +118,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1091767800771861448">Pritisnite tipku Esc da preskočite (samo nezvanične verzije).</translation>
 <translation id="1093457606523402488">Vidljive mreže:</translation>
 <translation id="1095761715416917775">Provjerite možete li uvijek pristupiti sinhroniziranim podacima</translation>
+<translation id="1095879482467973146">Google upravitelj lozinki na webu</translation>
 <translation id="109647177154844434">Ako deinstalirate Parallels Desktop, izbrisat ćete sliku Windowsa. To obuhvata aplikacije, postavke i podatke. Jeste li sigurni da želite nastaviti?</translation>
 <translation id="1097016918605049747">Prijevod stranice nije uspio</translation>
 <translation id="1097658378307015415">Prije nego se prijavite, pristupite kao gost da aktivirate mrežu <ph name="NETWORK_ID" /></translation>
@@ -1498,6 +1499,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2252017960592955005">Zaštita pregleda (beta verzija)</translation>
 <translation id="225240747099314620">Dozvoli identifikatore za zaštićeni sadržaj (može biti potrebno ponovno pokretanje računara)</translation>
 <translation id="2253318212986772520">Nije moguće dohvatiti PPD za štampač <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Odaberite šta ćete dijeliti s aplikacijom <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Ovaj uređaj je bio zaključan za neku drugu domenu ili način rada.</translation>
 <translation id="2255317897038918278">Microsoft vremensko označavanje</translation>
 <translation id="2256115617011615191">Ponovo pokreni sada</translation>
@@ -1846,6 +1848,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2532589005999780174">Način rada visokog kontrasta</translation>
 <translation id="2533649878691950253">Ovoj web lokaciji je blokiran pristup vašoj tačnoj lokaciji jer to obično ne dozvoljavate</translation>
 <translation id="253434972992662860">&amp;Pauziraj</translation>
+<translation id="253498598929009420">Web lokacija će moći vidjeti sadržaje ekrana</translation>
 <translation id="253557089021624350">Broj aktivnih radnji</translation>
 <translation id="2535799430745250929">Mobilna mreža ne postoji</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> može pregledati i uređivati sljedeće fajlove i foldere</translation>
@@ -6850,7 +6853,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7017004637493394352">Ponovo recite "Ok Google"</translation>
 <translation id="7017219178341817193">Dodajte novu stranicu</translation>
 <translation id="7017354871202642555">Nije moguće postaviti način rada nakon postavljanja prozora.</translation>
-<translation id="7018275672629230621">Čitati i mijenjati vašu historiju pregledanja</translation>
 <translation id="7019546817926942979">Morate priključiti uređaj na napajanje. Nadogradnja Linuxa može znatno brže isprazniti bateriju. Povežite uređaj na punjač i pokušajte ponovo.</translation>
 <translation id="7019805045859631636">Brzo</translation>
 <translation id="7022562585984256452">Vaša početna stranica je postavljena.</translation>
@@ -7139,6 +7141,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7308643132139167865">Jezici web lokacija</translation>
 <translation id="7310598146671372464">Prijava nije uspjela. Server ne podržava određene vrste Kerberos enkripcije. Kontaktirajte svog administratora.</translation>
 <translation id="7311089766378749632">Zahtijevanje čitanja i promjene web lokacije <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7312210124139670355">Vaš administrator vraća vaš eSIM na zadano. To može potrajati nekoliko minuta.</translation>
 <translation id="7317831949569936035">Školska prijava</translation>
 <translation id="7320213904474460808">Zadana mreža</translation>

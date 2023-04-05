@@ -385,7 +385,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3083194063661536258">Logout. Tombol. Membuka dialog untuk login dan mengaktifkan sinkronisasi.</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
-<translation id="3104179992611025423">Browser dikelola oleh orang tuamu</translation>
 <translation id="3114507951000454849">Baca berita hari ini <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ditautkan dengan</translation>
 <translation id="3123734510202723619">Pengumuman</translation>
@@ -456,6 +455,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
 <translation id="3495219333887281978">Sheet bawah untuk tombol login terbuka setengah.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Urutkan dari yang terlama</translation>
 <translation id="3507132249039706973">Perlindungan Standar aktif</translation>
 <translation id="3509330069915219067">Offline. Chrome tidak dapat memeriksa update.</translation>
 <translation id="3513704683820682405">Augmented Reality</translation>
@@ -576,6 +576,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4177222230309051052">Dapatkan semua bookmark Anda</translation>
 <translation id="4177501066905053472">Topik iklan</translation>
 <translation id="4181841719683918333">Bahasa</translation>
+<translation id="4188221736490993796">Urutkan menurut Z ke A</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4196597275619698563">Buat kartu</translation>
 <translation id="4198423547019359126">Tidak tersedia lokasi download</translation>
@@ -641,6 +642,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4572422548854449519">Login ke akun terkelola</translation>
 <translation id="4576892426230499203">Coba opsi verifikasi lain</translation>
+<translation id="4577115723294378384">Urutkan menurut A ke Z</translation>
 <translation id="4578289292431526768">Mulai</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# menit yang lalu}other{# menit yang lalu}}</translation>
 <translation id="4587589328781138893">Situs</translation>
@@ -664,6 +666,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4689792375321623175">Telusuri gambar dengan Google <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}}</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
+<translation id="4710167854527459075">Urutkan menurut yang terbaru</translation>
 <translation id="4719927025381752090">Tawarkan penerjemahan</translation>
 <translation id="4720023427747327413">Buka di <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Lihat situs teratas Anda</translation>
@@ -833,6 +836,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5561162485081632007">Mendeteksi dan memberikan peringatan terkait peristiwa berbahaya ketika terjadi</translation>
 <translation id="5561549206367097665">Menunggu jaringan…</translation>
 <translation id="5568069709869097550">Tidak dapat sign in</translation>
+<translation id="557018954714092179">Buat folder baru</translation>
 <translation id="5578795271662203820">Telusuri <ph name="SEARCH_ENGINE" /> untuk gambar ini</translation>
 <translation id="5581519193887989363">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK1" />setelan<ph name="END_LINK1" /> kapan saja.</translation>
 <translation id="5590372121997663538">Ingat komputer ini</translation>
@@ -937,6 +941,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6138832295072039549">Ubah setelan situs di sini</translation>
 <translation id="6140709049082532940">Perlindungan yang ditingkatkan:</translation>
 <translation id="6140912465461743537">Negara/Wilayah</translation>
+<translation id="6148266338772765473">Kecualikan link</translation>
 <translation id="6150320133806434356">Bookmark disimpan</translation>
 <translation id="6154478581116148741">Aktifkan kunci layar di Setelan untuk mengekspor sandi dari perangkat ini</translation>
 <translation id="6159729262978459665">Menghapus histori dari semua perangkat yang disinkronkan.</translation>
@@ -1028,6 +1033,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6590680911007613645">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Situs desktop</translation>
 <translation id="6594121454516132231">Lihat upaya Chrome dalam mengamankan Anda dari pelacakan lintas situs sekaligus mempertahankan web terbuka</translation>
+<translation id="6594347733515723558">Opsi urutan dan tampilan</translation>
 <translation id="6595046016124923392">Gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda.</translation>
 <translation id="6600954340915313787">Disalin ke Chrome</translation>
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>

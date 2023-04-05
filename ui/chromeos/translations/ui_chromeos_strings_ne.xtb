@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> हटाइएको छ।</translation>
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{निम्न ID भएको एक्स्टेन्सन <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}other{निम्न ID भएका एक्स्टेन्सनहरू <ph name="BEGIN_LIST" /><ph name="END_LIST" /> भेट्टाउन सकिएन। आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्।}}</translation>
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
 <translation id="2326539130272988168">बुल्गेरियाली</translation>
 <translation id="2337715497728194187">Bruschetta सँग सेयर गर्नुहोस्</translation>

@@ -118,6 +118,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1091767800771861448">Drücke die Esc-Taste, um die Aktualisierung zu überspringen (nur inoffizielle Builds).</translation>
 <translation id="1093457606523402488">Sichtbare Netzwerke:</translation>
 <translation id="1095761715416917775">Du solltest jederzeit auf deine synchronisierten Daten zugreifen können</translation>
+<translation id="1095879482467973146">Google Passwortmanager im Web</translation>
 <translation id="109647177154844434">Durch die Deinstallation von Parallels Desktop wird dein Windows-Image gelöscht. Dazu gehören auch die darin enthaltenen Anwendungen, Einstellungen und Daten. Möchtest du wirklich fortfahren?</translation>
 <translation id="1097016918605049747">Diese Seite konnte nicht übersetzt werden</translation>
 <translation id="1097658378307015415">Melde dich vor der Anmeldung als Gast an, um das Netzwerk <ph name="NETWORK_ID" /> zu aktivieren.</translation>
@@ -1235,7 +1236,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2050339315714019657">Hochformat</translation>
 <translation id="2051555741181591333">Hotspot automatisch deaktivieren</translation>
 <translation id="2052572566310583903">Auf deinen anderen Geräten installiert</translation>
-<translation id="2053105195397337973">Wir probieren neue Optionen aus, um Tracking einzuschränken. Gleichzeitig wird Websites die Möglichkeit gegeben, Werbespam und Betrug zu bekämpfen.</translation>
+<translation id="2053105195397337973">Wir probieren neue Optionen aus, um Tracking einzuschränken und Websites gleichzeitig zu ermöglichen, Werbespam und Betrug zu verhindern.</translation>
 <translation id="2053312383184521053">Daten für inaktiven Zustand</translation>
 <translation id="2054240652864153171">Websitedaten für <ph name="SITE_NAME" />, die auf <ph name="PARTITION_SITE_NAME" /> partioniert sind, löschen?</translation>
 <translation id="2055585478631012616">Du wirst von diesen Websites abgemeldet, auch in offenen Tabs</translation>
@@ -1484,6 +1485,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2252017960592955005">Spionageschutz (Beta)</translation>
 <translation id="225240747099314620">Kennungen für geschützte Inhalte ermöglichen (erfordert eventuell einen Neustart des Computers)</translation>
 <translation id="2253318212986772520">PPD für <ph name="PRINTER_NAME" /> kann nicht abgerufen werden.</translation>
+<translation id="2253927598983295051">Inhalte zum Teilen mit <ph name="APP_NAME" /> auswählen</translation>
 <translation id="2255077166240162850">Dieses Gerät wurde zur ausschließlichen Nutzung in einer anderen Domain oder in einem anderen Modus eingerichtet.</translation>
 <translation id="2255317897038918278">Microsoft-Zeitstempeldienst</translation>
 <translation id="2256115617011615191">Jetzt neu starten</translation>
@@ -1829,6 +1831,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2532589005999780174">Modus mit hohem Kontrast</translation>
 <translation id="2533649878691950253">Diese Website darf nicht auf deinen genauen Standort zugreifen, weil du das meist nicht erlaubst</translation>
 <translation id="253434972992662860">&amp;Anhalten</translation>
+<translation id="253498598929009420">Die Website kann dann den Bildschirminhalt sehen</translation>
 <translation id="253557089021624350">Keepalive-Zahl</translation>
 <translation id="2535799430745250929">Kein Mobilfunknetz vorhanden</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kann die folgenden Dateien und Ordner lesen und bearbeiten</translation>
@@ -3726,7 +3729,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist nicht zulässig}other{Einige Erweiterungen sind nicht zulässig}}</translation>
 <translation id="4231095370974836764">Apps und Spiele von Google Play auf dem <ph name="DEVICE_TYPE" /> installieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Spielsteuerung schließen</translation>
-<translation id="4231542173270219144">Wenn Tests aktiviert sind, werden für die Spam- und Betrugsreduzierung Private Stake Tokens verwendet, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>
+<translation id="4231542173270219144">Wenn Tests aktiviert sind, werden für die Spam- und Betrugsreduzierung Private State Tokens verwendet, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4233739489690259993">Dein Chromebook erhält keine Sicherheits- und Softwareupdates mehr. Aktualisiere dein Gerät, um die neuesten Sicherheitsupdates und Funktionen zu erhalten. Es gelten die Angebotsbedingungen.</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
@@ -3874,7 +3877,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4366138410738374926">Druckvorgang gestartet</translation>
 <translation id="4367513928820380646">Entfernte Berechtigungen überprüfen</translation>
 <translation id="4369215744064167350">Websiteanfrage genehmigt</translation>
-<translation id="4369735607080757018">Zur Messung der Leistung von Werbung werden nur manche Datentypen zwischen Websites geteilt, wie z. B. die Tageszeit, zu der dir die Werbung präsentiert wurde</translation>
+<translation id="4369735607080757018">Zur Erfolgsmessung von Werbeanzeigen werden nur manche Datentypen zwischen Websites geteilt, wie z. B. die Tageszeit, zu der dir die Werbung präsentiert wurde</translation>
 <translation id="4370975561335139969">Die E-Mail-Adresse und das Passwort, die du eingegeben hast, stimmen nicht überein.</translation>
 <translation id="4374805630006466253">Anderes Smartphone oder Tablet verwenden</translation>
 <translation id="4374831787438678295">Linux-Installationsprogramm</translation>
@@ -6825,7 +6828,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7017004637493394352">Sag noch einmal „Hey Google“.</translation>
 <translation id="7017219178341817193">Neue Seite hinzufügen</translation>
 <translation id="7017354871202642555">Nach Erstellung des Fensters kann der Modus nicht mehr festgelegt werden.</translation>
-<translation id="7018275672629230621">Deinen Browserverlauf lesen und ändern</translation>
 <translation id="7019546817926942979">Dein Gerät muss an ein Ladegerät angeschlossen werden. Wenn du Linux aktualisierst, kann dies den Akku stark beanspruchen. Verbinde das Gerät mit einem Ladegerät und versuche es noch einmal.</translation>
 <translation id="7019805045859631636">Schnell</translation>
 <translation id="7022562585984256452">Deine Startseite wurde eingerichtet.</translation>
@@ -7114,6 +7116,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7308643132139167865">Websitesprachen</translation>
 <translation id="7310598146671372464">Fehler beim Anmelden. Der Server unterstützt keine angegebenen Kerberos-Verschlüsselungstypen. Bitte wende dich an deinen Administrator.</translation>
 <translation id="7311089766378749632">Anfrage zum Lesen und Ändern von <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312210124139670355">Dein Administrator setzt deine eSIM zurück. Das kann einige Minuten dauern.</translation>
 <translation id="7317831949569936035">Registrierung bei einer Bildungseinrichtung</translation>
 <translation id="7320213904474460808">Netzwerk als Standard festlegen</translation>
@@ -7351,7 +7354,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> pausiert</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">Tastenkombinationen anzeigen</translation>
+<translation id="752098910262610337">Verknüpfungen anzeigen</translation>
 <translation id="7522255036471229694">Sag „Hey Google“.</translation>
 <translation id="7523117833414447032">Beim Lesen von Großbuchstaben</translation>
 <translation id="7523585675576642403">Profil umbenennen</translation>

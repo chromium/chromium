@@ -385,7 +385,6 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3083194063661536258">Odjavljeni ste. Dugme. Otvara dijaloški okvir za prijavu i uključivanje sinhronizacije.</translation>
 <translation id="3091010850649238832">Prikažite sadržaj međumemorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Googleu radi poboljšanja opisa</translation>
-<translation id="3104179992611025423">Preglednikom upravljaju tvoji roditelji</translation>
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">povezano sa</translation>
 <translation id="3123734510202723619">Najave</translation>
@@ -456,6 +455,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="3495219333887281978">Donja tabela za prijavu je otvorena na pola visine.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Poredaj od najstarijeg</translation>
 <translation id="3507132249039706973">Standardna zaštita je uključena</translation>
 <translation id="3509330069915219067">Van mreže. Chrome ne može provjeriti ima li ažuriranja.</translation>
 <translation id="3513704683820682405">Proširena realnost</translation>
@@ -576,6 +576,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="4177222230309051052">Preuzmite sve svoje oznake</translation>
 <translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="4181841719683918333">Jezici</translation>
+<translation id="4188221736490993796">Poredaj od Ž do A</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4196597275619698563">Kreiraj karticu</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
@@ -641,6 +642,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4572422548854449519">Prijava na upravljani račun</translation>
 <translation id="4576892426230499203">Pokušajte s drugom opcijom za potvrdu</translation>
+<translation id="4577115723294378384">Poredaj od A do Ž</translation>
 <translation id="4578289292431526768">Započnimo</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Prije # min}one{Prije # min}few{Prije # min}other{Prije # min}}</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
@@ -664,6 +666,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4689792375321623175">Pretraži sliku uz Google <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Slike i fajlovi u keš memoriji</translation>
+<translation id="4710167854527459075">Poredaj od najnovijeg</translation>
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720023427747327413">Otvori u aplikaciji <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Pogledajte najpopularnije web lokacije</translation>
@@ -833,6 +836,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5561162485081632007">Otkriva opasne događaje i upozorava vas na njih kada nastupe</translation>
 <translation id="5561549206367097665">Čekanje na mrežu…</translation>
 <translation id="5568069709869097550">Ne možete se prijaviti</translation>
+<translation id="557018954714092179">Kreiraj novi folder</translation>
 <translation id="5578795271662203820">Pretražuj <ph name="SEARCH_ENGINE" /> za ovu sliku</translation>
 <translation id="5581519193887989363">Uvijek možete odabrati šta želite sinhronizirati u <ph name="BEGIN_LINK1" />postavkama<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Zapamti ovaj računar</translation>
@@ -937,6 +941,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="6138832295072039549">Ovdje promijenite postavke web lokacije</translation>
 <translation id="6140709049082532940">Poboljšana zaštita:</translation>
 <translation id="6140912465461743537">Zemlja/Regija</translation>
+<translation id="6148266338772765473">Izuzmi link</translation>
 <translation id="6150320133806434356">Oznaka je sačuvana</translation>
 <translation id="6154478581116148741">Uključite zaključavanje ekrana u Postavkama da izvezete lozinke s ovog uređaja</translation>
 <translation id="6159729262978459665">Briše historiju sa svih sinhroniziranih uređaja.</translation>
@@ -1028,6 +1033,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6590680911007613645">Provjerite podudara li se lozinka koju želite sačuvati s lozinkom za web lokaciju <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Web lokacija za računar</translation>
 <translation id="6594121454516132231">Pogledajte kako Chrome planira da vas zaštiti od praćenja između web lokacija, a da pri tome očuva otvoreni web</translation>
+<translation id="6594347733515723558">Sortiranje i pregled</translation>
 <translation id="6595046016124923392">Slike se šalju Googleu radi poboljšanja opisa.</translation>
 <translation id="6600954340915313787">Kopirano u Chrome</translation>
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>

@@ -6836,7 +6836,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7017004637493394352">Diga "OK Google" novamente</translation>
 <translation id="7017219178341817193">Adicionar uma nova página</translation>
 <translation id="7017354871202642555">Não é possível definir o modo uma vez definida a janela.</translation>
-<translation id="7018275672629230621">Ler e alterar o histórico de navegação</translation>
 <translation id="7019546817926942979">O seu dispositivo tem de estar ligado. A atualização do Linux pode consumir significativamente a bateria. Ligue o dispositivo a um carregador e tente novamente.</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7022562585984256452">A sua página inicial foi definida.</translation>
@@ -7125,6 +7124,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7308643132139167865">Idiomas de Websites</translation>
 <translation id="7310598146671372464">Não é possível iniciar sessão. O servidor não suporta os tipos de encriptação Kerberos especificados. Contacte o administrador.</translation>
 <translation id="7311089766378749632">A pedir para ler e alterar <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Não foram encontrados resultados</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7317831949569936035">Inscrição escolar</translation>
 <translation id="7320213904474460808">Predefinir rede</translation>

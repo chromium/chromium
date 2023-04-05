@@ -385,7 +385,6 @@
 <translation id="3083194063661536258">ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ. ಬಟನ್. ಸೈನ್ ಇನ್ ಮಾಡಲು ಮತ್ತು ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಲು ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="3091010850649238832">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ವಿಷಯಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
-<translation id="3104179992611025423">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ಇದರ ಜೊತೆ ಲಿಂಕ್ ಆಗಿದೆ</translation>
 <translation id="3123734510202723619">ಪ್ರಕಟಣೆಗಳು</translation>
@@ -456,6 +455,7 @@
 <translation id="3493531032208478708">ಸೂಚಿಸಲಾದ ವಿಷಯದ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್ ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">ಹಳೆಯದರಿಂದ ವಿಂಗಡಿಸಿ</translation>
 <translation id="3507132249039706973">ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="3509330069915219067">ಆಫ್‌ಲೈನ್. ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂದು ನೋಡಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="3513704683820682405">ವರ್ಧಿತ ವಾಸ್ತವತೆ</translation>
@@ -576,6 +576,7 @@
 <translation id="4177222230309051052">ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
+<translation id="4188221736490993796">Z ನಿಂದ A ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4196597275619698563">ಕಾರ್ಡ್ ರಚಿಸಿ</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -640,6 +641,7 @@
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="4572422548854449519">ನಿರ್ವಹಿಸಲ್ಪಟ್ಟ ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4576892426230499203">ಬೇರೊಂದು ಪರಿಶೀಲನೆ ಆಯ್ಕೆಯನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="4577115723294378384">A ನಿಂದ Z ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4578289292431526768">ಪ್ರಾರಂಭಿಸೋಣ</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# ನಿಮಿಷದ ಹಿಂದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ}}</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -663,6 +665,7 @@
 <translation id="4689792375321623175">Google ಬಳಸಿಕೊಂಡು ಚಿತ್ರವನ್ನು ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು</translation>
+<translation id="4710167854527459075">ಹೊಸದರಿಂದ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4719927025381752090">ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="47217992755561375">ನಿಮ್ಮ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
@@ -832,6 +835,7 @@
 <translation id="5561162485081632007">ಆಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸಿದಾಗ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
 <translation id="5561549206367097665">ನೆಟ್‌ವರ್ಕ್‌ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5568069709869097550">ಸೈನ್ ಇನ್ ಆಗಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="557018954714092179">ಹೊಸ ಫೋಲ್ಡರ್ ರಚಿಸಿ</translation>
 <translation id="5578795271662203820">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಾಡಿ</translation>
 <translation id="5581519193887989363">ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK1" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK1" /> ಯಾವಾಗ ಬೇಕಾದರೂ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="5590372121997663538">ಈ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ನೆನಪಿನಲ್ಲಿಡಿ</translation>
@@ -936,6 +940,7 @@
 <translation id="6138832295072039549">ಇಲ್ಲಿ ನಿಮ್ಮ ಸೈಟ್‌ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6140709049082532940">ವರ್ಧಿತ ಸುರಕ್ಷತೆ:</translation>
 <translation id="6140912465461743537">ರಾಷ್ಟ್ರ/ಪ್ರದೇಶ</translation>
+<translation id="6148266338772765473">ಲಿಂಕ್ ಹೊರತುಪಡಿಸಿ</translation>
 <translation id="6150320133806434356">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6154478581116148741">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತುಮಾಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6159729262978459665">ಎಲ್ಲಾ ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಿಂದ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
@@ -1027,6 +1032,7 @@
 <translation id="6590680911007613645">ನೀವು ಈಗ ಉಳಿಸುತ್ತಿರುವ ಪಾಸ್‌ವರ್ಡ್, ಈ ಮೊದಲು <ph name="SITE" /> ಗೆ ಹೊಂದಿಸಿದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗೆ ಹೋಲುತ್ತಿದೆಯೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6593061639179217415">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌</translation>
 <translation id="6594121454516132231">ತೆರೆದ ವೆಬ್ ಅನ್ನು ಕಾಪಾಡುವಾಗ ಕ್ರಾಸ್-ಸೈಟ್ ಟ್ರ್ಯಾಕಿಂಗ್‌ನಿಂದ ನಿಮ್ಮನ್ನು ಹೇಗೆ ರಕ್ಷಿಸಲು Chrome ಪ್ಲಾನ್ ಮಾಡುತ್ತದೆ ಎಂಬುದನ್ನು ನೋಡಿ</translation>
+<translation id="6594347733515723558">ಆಯ್ಕೆ ವಿಂಗಡಿಸಿ, ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6595046016124923392">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="6600954340915313787">Chrome ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="661266467055912436">ನಿಮಗಾಗಿ ಹಾಗೂ ವೆಬ್‌ನಲ್ಲಿರುವ ಎಲ್ಲರಿಗಾಗಿ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.</translation>

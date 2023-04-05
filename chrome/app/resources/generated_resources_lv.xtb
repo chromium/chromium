@@ -6834,7 +6834,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7017004637493394352">Vēlreiz sakiet frāzi “Ok Google”.</translation>
 <translation id="7017219178341817193">Pievienot jaunu lapu</translation>
 <translation id="7017354871202642555">Nevar iestatīt režīmu pēc loga iestatīšanas.</translation>
-<translation id="7018275672629230621">Lasīt un mainīt jūsu pārlūkošanas vēsturi</translation>
 <translation id="7019546817926942979">Ierīcei ir jābūt pievienotai elektrotīklam. Jauninot Linux, var tikt ātri izlādēts akumulators. Pievienojiet savu ierīci lādētājam un mēģiniet vēlreiz.</translation>
 <translation id="7019805045859631636">Ātrs</translation>
 <translation id="7022562585984256452">Jūsu sākumlapa ir iestatīta.</translation>
@@ -7123,6 +7122,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7308643132139167865">Vietņu valodas</translation>
 <translation id="7310598146671372464">Neizdevās pieteikties. Serveris neatbalsta norādītos Kerberos šifrēšanas veidus. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="7311089766378749632">Tiek pieprasīta atļauja lasīt un mainīt datus vietnē <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7312210124139670355">Administrators atiestata jūsu eSIM. Atiestatīšana var ilgt dažas minūtes.</translation>
 <translation id="7317831949569936035">Skolas ierīces reģistrēšana</translation>
 <translation id="7320213904474460808">Noklusējuma tīkla iestatīšana</translation>

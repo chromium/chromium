@@ -6829,7 +6829,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7017004637493394352">Thuaj përsëri "Ok Google"</translation>
 <translation id="7017219178341817193">Shto një faqe të re</translation>
 <translation id="7017354871202642555">Nuk mund të caktojë modalitetin pas caktimit të dritares.</translation>
-<translation id="7018275672629230621">Lexo dhe ndrysho historikun e shfletimit</translation>
 <translation id="7019546817926942979">Pajisja jote duhet të vendoset në prizë. Përmirësimi i Linux mund ta shkarkojë në mënyrë të konsiderueshme baterinë. Lidhe pajisjen me një ngarkues dhe provo përsëri.</translation>
 <translation id="7019805045859631636">E shpejtë</translation>
 <translation id="7022562585984256452">Faqja jote kryesore është caktuar.</translation>
@@ -7118,6 +7117,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7308643132139167865">Gjuhët e faqeve të internetit</translation>
 <translation id="7310598146671372464">Nuk mund të identifikohej. Serveri nuk i mbështet llojet e përcaktuara të enkriptimit Kerberos. Kontakto me administratorin tënd.</translation>
 <translation id="7311089766378749632">Po kërkohet të lexohet dhe të ndryshohet <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7312210124139670355">Administratori yt po rivendos eSIM. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="7317831949569936035">Regjistrimi për përdorimin në shkollë</translation>
 <translation id="7320213904474460808">Kalo si parazgjedhje te rrjeti</translation>

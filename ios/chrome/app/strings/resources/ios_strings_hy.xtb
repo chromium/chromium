@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="110724200315609752">Անցնել բացված պատուհան</translation>
 <translation id="1112015203684611006">Չհաջողվեց տպել:</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> օր հետո</translation>
 <translation id="1125564390852150847">Ստեղծել նոր ներդիր:</translation>
 <translation id="1126013303640354461">Վճարման եղանակները և Google Pay-ի հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։
 Միայն ձեր անցաբառն ունեցող մարդիկ կարող են կարդալ ձեր գաղտնագրված տվյալները։ Անցաբառը չի ուղարկվում Google-ին կամ պահվում նրա կողմից։ Եթե մոռացել եք ձեր անցաբառը կամ ուզում եք փոխել այս կարգավորումը, զրոյացրեք համաժամացումը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -231,6 +232,7 @@
 <translation id="2626236249646841566">Ստուգեք կապը և նորից փորձեք մուտք գործել։</translation>
 <translation id="2637313651144986786">Որոնեք ներդիրներում</translation>
 <translation id="2647269890314209800">Օգտագործվող քուքիներ</translation>
+<translation id="2648721026697078500">Երբեք չտեղափոխել</translation>
 <translation id="2648803196158606475">Ջնջել կարդացվածները</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2664621323652615289">Կանգնեցնել</translation>
@@ -346,6 +348,7 @@
 <translation id="3305294846493618482">ավելին</translation>
 <translation id="3311748811247479259">Անջատված է</translation>
 <translation id="3324193307694657476">Հասցե 2</translation>
+<translation id="3328459813621383194">Ոչ ակտիվ ներդիրների տեղափոխում</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
 <translation id="3371831930909698441">Translate-ը հասանելի է: Կարգավորումները հասանելի են էկրանի ստորին հատվածում:</translation>
 <translation id="3377063233124932127">Այժմ ձեր պահած էջանիշները, գաղտնաբառերը և մյուս տարրերը վերևում են։</translation>
@@ -510,6 +513,7 @@
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4536418791685807335">Փորձեք նորից մուտք գործել:</translation>
 <translation id="4540780316273593836">Սխալ առաջացավ</translation>
+<translation id="4550040941166547650">Միայն այս սարքում</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}one{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրը}other{Փակե՞լ {COUNT} ոչ ակտիվ ներդիրները}}</translation>
 <translation id="457386861538956877">Ավելին…</translation>
 <translation id="4587235830039045480">Պահեք գաղտնաբառը ձեր Google հաշվում</translation>
@@ -763,6 +767,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6193424046394092997">{count,plural, =1{Էջանշվեց «{title}» պանակում}one{Էջանշվեց «{title}» պանակում}other{Էջանշվեցին «{title}» պանակում}}</translation>
 <translation id="6196207969502475924">Ձայնային որոնում</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
+<translation id="6210079381482819663">Առնվազն <ph name="THRESHOLD" /> օր չօգտագործված ներդիրները տեղափոխվում են այստեղ։ Սա ցանկացած ժամանակ կարող եք <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" /> փոփոխել։</translation>
 <translation id="6213567400989743524">Թաքցված նախազգուշացումներ</translation>
 <translation id="6219550825416862075">Բարի վերադարձ</translation>
 <translation id="6219688215832490856">Երբեք չթարգմանել</translation>
@@ -1058,6 +1063,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8059533439631660104">Կոծկում է բաժինը:</translation>
 <translation id="8065292699993359127">Բացեք URL-ները Chrome-ի ինկոգնիտո ներդիրում</translation>
 <translation id="806745655614357130">Իմ տվյալները պահել առանձին</translation>
+<translation id="8069394452933076548">Ընտրեք, թե վերջերս չօգտագործված ներդիրները երբ պետք է տեղափոխվեն ոչ ակտիվ ներդիրների բաժին։</translation>
 <translation id="8073670137947914548">Ներբեռնումն ավարտվեց</translation>
 <translation id="8073872304774253879">Բարելավել որոնումն ու էջերի դիտումը</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
@@ -1086,6 +1092,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8237382152611443140">Բացեք գաղտնաբառերի ինքնալրացման կարգավորումները։</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8264966119170358612">Google-ին չպատկանող սերվերներից տվյալների արտահոսքի հետևանքով ձեր որոշ պահված գաղտնաբառեր կոտրվել են։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Միայն այս սարքում</translation>
 <translation id="8271720166617117963">Ընդունել և մուտք գործել</translation>
 <translation id="8278938988428169257">Մուտքագրեք բառ կամ արտահայտություն</translation>
 <translation id="8281781826761538115">Կանխադրված՝ <ph name="DEFAULT_LOCALE" /></translation>
@@ -1201,6 +1208,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9055772144595778347">Հնարավոր չէ մուտք գործել</translation>
 <translation id="9055960261314198756">Բարելավված պաշտպանությունն անջատված է</translation>
 <translation id="9057972802061533987">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
+<translation id="9061495354530850708">Ձեր Google հաշվում</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9068336935206019333">Բացել Chrome-ի ինկոգնիտո ներդիրում</translation>
 <translation id="9079935439869366234">Բոլորը նշել որպես չկարդացված</translation>

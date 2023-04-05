@@ -159,6 +159,7 @@
 <translation id="2304820083631266885">행성</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />이(가) 제거되었습니다.</translation>
 <translation id="2307462900900812319">네트워크 설정</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID가 <ph name="BEGIN_LIST" /><ph name="END_LIST" />인 확장 프로그램을 찾을 수 없습니다. 관리자에게 문의하세요.}other{ID가 <ph name="BEGIN_LIST" /><ph name="END_LIST" />인 확장 프로그램을 찾을 수 없습니다. 관리자에게 문의하세요.}}</translation>
 <translation id="2325650632570794183">이 파일 형식은 지원되지 않습니다. Chrome 웹 스토어에서 이 파일 형식을 열 수 있는 앱을 검색하세요.</translation>
 <translation id="2326539130272988168">불가리아어</translation>
 <translation id="2337715497728194187">Bruschetta와 공유</translation>

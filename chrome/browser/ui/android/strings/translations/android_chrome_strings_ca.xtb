@@ -385,7 +385,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3083194063661536258">Has tancat la sessió. Botó. Obre el quadre de diàleg per iniciar la sessió i activar la sincronització.</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
-<translation id="3104179992611025423">Els teus pares gestionen el navegador</translation>
 <translation id="3114507951000454849">Llegeix les notícies d'avui <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">enllaçada amb</translation>
 <translation id="3123734510202723619">Anuncis</translation>
@@ -456,6 +455,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el contingut suggerit</translation>
 <translation id="3495219333887281978">El full inferior d'inici de sessió s'ha obert a mitja alçada.</translation>
 <translation id="3499246418971111862">chrome_codiqr_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Ordena per més antic</translation>
 <translation id="3507132249039706973">La protecció estàndard està activada</translation>
 <translation id="3509330069915219067">No tens connexió. Chrome no pot cercar actualitzacions.</translation>
 <translation id="3513704683820682405">Realitat augmentada</translation>
@@ -576,6 +576,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4177222230309051052">Obtén totes les teves adreces d'interès</translation>
 <translation id="4177501066905053472">Temes d'anuncis</translation>
 <translation id="4181841719683918333">Idiomes</translation>
+<translation id="4188221736490993796">Ordena de la Z a la A</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4196597275619698563">Crea una targeta</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
@@ -641,6 +642,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4565377596337484307">Oculta la contrasenya</translation>
 <translation id="4572422548854449519">Inicia la sessió al compte gestionat</translation>
 <translation id="4576892426230499203">Prova una altra opció de verificació</translation>
+<translation id="4577115723294378384">Ordena de la A a la Z</translation>
 <translation id="4578289292431526768">Som-hi</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{fa # minut}other{fa # minuts}}</translation>
 <translation id="4587589328781138893">Llocs web</translation>
@@ -664,6 +666,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4689792375321623175">Cerca la imatge amb Google <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
+<translation id="4710167854527459075">Ordena per més recent</translation>
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
 <translation id="4720023427747327413">Obre a <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Consulta els llocs web que més visites</translation>
@@ -833,6 +836,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5561162485081632007">Detecta esdeveniments perillosos quan es produeixen i t'avisa</translation>
 <translation id="5561549206367097665">S'està esperant la xarxa…</translation>
 <translation id="5568069709869097550">No puc accedir</translation>
+<translation id="557018954714092179">Crea una carpeta nova</translation>
 <translation id="5578795271662203820">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Sempre pots anar a la <ph name="BEGIN_LINK1" />configuració<ph name="END_LINK1" /> per decidir què vols sincronitzar.</translation>
 <translation id="5590372121997663538">Recorda aquest ordinador</translation>
@@ -937,6 +941,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6138832295072039549">Canvia la configuració del teu lloc web aquí</translation>
 <translation id="6140709049082532940">Protecció millorada:</translation>
 <translation id="6140912465461743537">País/Regió</translation>
+<translation id="6148266338772765473">Exclou l'enllaç</translation>
 <translation id="6150320133806434356">Adreça d'interès desada</translation>
 <translation id="6154478581116148741">Activa el bloqueig de pantalla a Configuració per exportar les teves contrasenyes d'aquest dispositiu</translation>
 <translation id="6159729262978459665">Esborra l'historial des de tots els dispositius sincronitzats.</translation>
@@ -1028,6 +1033,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6590680911007613645">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya per a <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Lloc web per a ordinador</translation>
 <translation id="6594121454516132231">Consulta què farà Chrome per protegir-te dels mecanismes de seguiment entre llocs web, alhora que preserva el web obert</translation>
+<translation id="6594347733515723558">Ordena i visualitza</translation>
 <translation id="6595046016124923392">Les imatges s'envien a Google per millorar-ne les descripcions per a tu.</translation>
 <translation id="6600954340915313787">Copiada de Chrome</translation>
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>

@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
 <translation id="1376836354785490390">折りたたむ</translation>
-<translation id="1377321085342047638">カード番号</translation>
 <translation id="1380591466760231819">レター折り</translation>
 <translation id="138218114945450791">ライトブルー</translation>
 <translation id="1382194467192730611">管理者によって許可された USB デバイス</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">パスワードを変更してください</translation>
 <translation id="1482879811280872320">自転車</translation>
 <translation id="1483493594462132177">送信</translation>
-<translation id="1484290072879560759">配送先住所を選択</translation>
 <translation id="1492194039220927094">ポリシーのプッシュ:</translation>
 <translation id="149293076951187737">Chrome のシークレット タブをすべて閉じると、シークレット タブでの以下のアクティビティがこのデバイスから削除されます。
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">現在、コンテンツはありません</translation>
 <translation id="1536390784834419204">ページを翻訳</translation>
 <translation id="1539840569003678498">レポートの送信日時:</translation>
-<translation id="154408704832528245">配達先住所を選択</translation>
 <translation id="1549470594296187301">この機能を使用するには JavaScript を有効にする必要があります。</translation>
 <translation id="1551884710160394169">フリーウェア、シェアウェア</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
@@ -370,7 +367,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">仮想カードの詳細</translation>
 <translation id="1803020234906945288">健康的な食事</translation>
-<translation id="1803264062614276815">カード名義人</translation>
 <translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
@@ -619,7 +615,6 @@
 <translation id="2450021089947420533">ジャーニー</translation>
 <translation id="2456755709261364512">バッテリーの残量が <ph name="REQUIRED_BATTERY_PRECENT" />% 以上である必要があります</translation>
 <translation id="2463739503403862330">入力する</translation>
-<translation id="2465655957518002998">配達方法を選択</translation>
 <translation id="2465688316154986572">ステープル</translation>
 <translation id="2465914000209955735">Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="2466004615675155314">ウェブの情報を表示します</translation>
@@ -741,7 +736,6 @@
 <translation id="2730600605555029057">クラシック音楽</translation>
 <translation id="2731382536835015353">44x68 インチ</translation>
 <translation id="2734319753272419592">カートに入れたアイテムの割引情報の検索を Google に許可します。見つかった割引情報はカートに自動的に表示されます。</translation>
-<translation id="2738330467931008676">受け取り場所の住所を選択</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">卓球</translation>
 <translation id="2742870351467570537">選択したアイテムを削除</translation>
@@ -823,7 +817,6 @@
 <translation id="2983666748527428214">シークレット タブを開く</translation>
 <translation id="2985306909656435243">有効にすると、Chromium がカード情報をこのデバイスに保存するためフォームにすばやく入力できるようになります。</translation>
 <translation id="2985398929374701810">有効な住所を入力してください</translation>
-<translation id="2986368408720340940">この受け取り方法はご利用いただけません。別の方法を選択してください。</translation>
 <translation id="2987034854559945715">一致する機能はありません</translation>
 <translation id="2989742184762224133">2 か所のステープル（上）</translation>
 <translation id="2991174974383378012">ウェブサイトとの共有</translation>
@@ -855,7 +848,6 @@
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">受け取り場所の住所を追加</translation>
 <translation id="3096195745018397576">子供服</translation>
 <translation id="3098513225387949945">無効リストにポリシーを無効にするのと同じ「*」と同等のパターンが含まれているため、無視されました。</translation>
 <translation id="3105172416063519923">アセット ID:</translation>
@@ -1383,7 +1375,6 @@
 <translation id="4333561522337981382">全ディスプレイのウィンドウを管理する</translation>
 <translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
-<translation id="4346197816712207223">利用可能なクレジット カード</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> への接続は安全ではありません</translation>
 <translation id="4349365535725594680">機密コンテンツは共有できません</translation>
 <translation id="4349810866125026513">そのままアップロード</translation>
@@ -1587,7 +1578,6 @@
 <translation id="4850886885716139402">表示</translation>
 <translation id="4852429274334674023">オペレーティング システム</translation>
 <translation id="4853901935952445031">このサイトでは、2022 年 2 月以降、U2F API を使用できなくなります。このサイトの所有者の方は、Web Authentication API を使用するように変更を行っていただく必要があります。</translation>
-<translation id="4854362297993841467">この配達方法はご利用いただけません。別の方法を選択してください。</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="4858792381671956233">このサイトを開いてもよいかの問い合わせを保護者に送信しました</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
@@ -1789,7 +1779,6 @@
 <translation id="5316812925700871227">反時計回りに回転</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />、<ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">連絡作情報を選択</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5332219387342487447">配送方法</translation>
 <translation id="5332769172018416402">リクエストを送信</translation>
@@ -1892,7 +1881,6 @@
 <translation id="5593349413089863479">接続は完全には保護されていません</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5596939519753369075">2x3.5 インチ</translation>
-<translation id="5598944008576757369">お支払い方法を選択</translation>
 <translation id="560412284261940334">管理はサポートされていません</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したサイトが自動削除されます。サイトにもう一度アクセスすると、リストにそのサイトが再度表示される場合もあります。また、Chrome の設定では、サイトによる広告の提案をブロックしたり、無効にしたりすることがいつでも可能です。</translation>
@@ -1924,7 +1912,6 @@
 <translation id="568292603005599551">画像の X 座標</translation>
 <translation id="5684277895745049190">リスト</translation>
 <translation id="5684874026226664614">このページを翻訳できませんでした。</translation>
-<translation id="5685654322157854305">配送先住所を追加</translation>
 <translation id="5689199277474810259">JSON にエクスポート</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates の値は関連するものでないため、使用されません。ただし、DnsOverHttpsMode ポリシーが「<ph name="SECURE_DNS_MODE_AUTOMATIC" />」または「<ph name="SECURE_DNS_MODE_SECURE" />」に設定されている場合は除きます。</translation>
@@ -2790,7 +2777,6 @@
 <translation id="776110834126722255">廃止</translation>
 <translation id="7761159795823346334">カメラの使用を許可しますか？</translation>
 <translation id="7761701407923456692">サーバーの証明書が URL と一致しません。</translation>
-<translation id="7763386264682878361">Payment Manifest Parser</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7766518757692125295">スカート</translation>
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
@@ -2894,7 +2880,6 @@
 <translation id="8038817883578389970">自動車レース</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041940743680923270">グローバルのデフォルト値（[確認]）を使用</translation>
-<translation id="8042918947222776840">受け取り方法を選択</translation>
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8055534648776115597">職業教育、生涯教育</translation>
 <translation id="8057711352706143257">「<ph name="SOFTWARE_NAME" />」が正しく設定されていません。通常、この問題は「<ph name="SOFTWARE_NAME" />」をアンインストールすることで解決します。<ph name="FURTHER_EXPLANATION" /></translation>
@@ -3269,7 +3254,6 @@
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> のセキュリティ コードを入力してください</translation>
 <translation id="901834265349196618">メール</translation>
-<translation id="9020200922353704812">カードの請求先住所を入力する必要があります</translation>
 <translation id="9020542370529661692">このページは<ph name="TARGET_LANGUAGE" />に翻訳されています</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有できます</translation>
@@ -3306,7 +3290,6 @@
 <translation id="9101630580131696064">トレイ 1</translation>
 <translation id="9103537084693478942">動画編集ソフトウェア</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> では通常、暗号化して情報を保護しています。今回、Chromium から <ph name="SITE" /> への接続試行時に、このウェブサイトからいつもとは異なる誤った認証情報が返されました。悪意のあるユーザーが <ph name="SITE" /> になりすまそうとしているか、Wi-Fi ログイン画面で接続が中断された可能性があります。データのやり取りが行われる前に Chromium によって接続が停止されたため、情報は引き続き保護されています。</translation>
-<translation id="9106062320799175032">請求先住所の追加</translation>
 <translation id="9107467864910557787">ご使用のブラウザは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="91108059142052966">管理者のポリシーによって、機密コンテンツが表示されているときは、<ph name="APPLICATION_TITLE" /> との画面共有が無効になります</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
@@ -3327,7 +3310,6 @@
 <translation id="9139318394846604261">ショッピング</translation>
 <translation id="9141013498910525015">住所を管理</translation>
 <translation id="9144951720726881238">有効期限:</translation>
-<translation id="9148088599418889305">配送方法を選択</translation>
 <translation id="9148507642005240123">編集の取り消し（&amp;U）</translation>
 <translation id="9150045010208374699">カメラを使用する</translation>
 <translation id="9150685862434908345">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -3378,7 +3360,6 @@
 <translation id="964050462028070434">パスワードとパスキーを管理...</translation>
 <translation id="96680173638229310">自動車、乗り物</translation>
 <translation id="969892804517981540">Official Build</translation>
-<translation id="973773823069644502">配達先住所を追加</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{なし}=1{1 件のアイテム}other{# 件のアイテム}}</translation>
 <translation id="976522784004777030">5x8 インチ</translation>
 <translation id="977502174772294970">ウェディング</translation>

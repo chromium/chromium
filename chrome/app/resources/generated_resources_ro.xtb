@@ -118,6 +118,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1091767800771861448">Apăsați pe ESCAPE pentru a ignora (numai versiunile neoficiale).</translation>
 <translation id="1093457606523402488">Rețele vizibile:</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
+<translation id="1095879482467973146">Managerul de parole Google pe web</translation>
 <translation id="109647177154844434">Dacă dezinstalezi Parallels Desktop, imaginea Windows va fi ștearsă. Aici sunt incluse aplicațiile, setările și datele conexe. Sigur vrei să continui?</translation>
 <translation id="1097016918605049747">Pagina nu a putut fi tradusă</translation>
 <translation id="1097658378307015415">Înainte de a vă conecta, începeți o sesiune pentru invitați pentru activarea rețelei <ph name="NETWORK_ID" /></translation>
@@ -1488,6 +1489,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2252017960592955005">Protecție pentru afișare (beta)</translation>
 <translation id="225240747099314620">Permiteți identificatorii pentru conținutul protejat (poate fi necesară repornirea computerului)</translation>
 <translation id="2253318212986772520">Nu se poate prelua fișierul PPD pentru <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Alege la ce informații are acces <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Acest dispozitiv a fost blocat pe un alt domeniu sau mod.</translation>
 <translation id="2255317897038918278">Marcare temporală Microsoft</translation>
 <translation id="2256115617011615191">Repornește acum</translation>
@@ -1833,6 +1835,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2532589005999780174">Mod de contrast ridicat</translation>
 <translation id="2533649878691950253">Accesul acestui site la locația exactă a fost blocat, deoarece nu acorzi de obicei această permisiune</translation>
 <translation id="253434972992662860">&amp;Întrerupe</translation>
+<translation id="253498598929009420">Site-ul va putea să vadă conținutul ecranului</translation>
 <translation id="253557089021624350">Număr necesar pentru stare activă</translation>
 <translation id="2535799430745250929">Nu există nicio rețea celulară</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> poate să vadă și să editeze fișierele și dosarele următoare</translation>
@@ -6834,7 +6837,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7017004637493394352">Rostește din nou „Ok Google”</translation>
 <translation id="7017219178341817193">Adaugă o pagină nouă</translation>
 <translation id="7017354871202642555">Modul nu poate fi setat după setarea ferestrei.</translation>
-<translation id="7018275672629230621">Citește și modifică istoricul de navigare</translation>
 <translation id="7019546817926942979">Trebuie să conectezi dispozitivul. Upgrade-ul la Linux îți poate descărca rapid bateria. Conectează dispozitivul la încărcător și încearcă din nou.</translation>
 <translation id="7019805045859631636">Rapid</translation>
 <translation id="7022562585984256452">Pagina de pornire a fost setată.</translation>
@@ -7123,6 +7125,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7308643132139167865">Limbi pentru site-uri</translation>
 <translation id="7310598146671372464">Conectarea nu a reușit. Serverul nu acceptă tipurile de criptare Kerberos specificate. Contactează administratorul.</translation>
 <translation id="7311089766378749632">Se solicită citirea și modificarea <ph name="SITE_NAME" />:</translation>
+<translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7312210124139670355">Administratorul îți resetează cardul eSIM Poate dura câteva minute.</translation>
 <translation id="7317831949569936035">Înscriere la școală</translation>
 <translation id="7320213904474460808">Setează ca rețea prestabilită</translation>

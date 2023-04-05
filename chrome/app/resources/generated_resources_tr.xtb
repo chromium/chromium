@@ -605,7 +605,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1517467582299994451">Kod kullanarak yayınlamak için Chrome tarayıcı senkronizasyon ayarlarını etkinleştirin</translation>
 <translation id="1521442365706402292">Sertifikaları yönet</translation>
 <translation id="1521774566618522728">Son etkin olduğu zaman:</translation>
-<translation id="152234381334907219">Hiç Kaydedilmeyenler</translation>
+<translation id="152234381334907219">Hiç Kaydedilmeyecekler</translation>
 <translation id="1523279371236772909">Geçen ay görüntülendi</translation>
 <translation id="1523978563989812243">Metin okuma motorları</translation>
 <translation id="1524430321211440688">Klavye</translation>
@@ -6830,7 +6830,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7017004637493394352">Tekrar "Ok Google" deyin</translation>
 <translation id="7017219178341817193">Yeni sayfa ekle</translation>
 <translation id="7017354871202642555">Pencere ayarlandıktan sonra mod ayarlanamaz.</translation>
-<translation id="7018275672629230621">Göz atma geçmişinizi okuma ve değiştirme</translation>
 <translation id="7019546817926942979">Cihazınızın güce bağlı olması gerekir. Linux'u yeni sürüme geçirme işlemi pilinizi önemli ölçüde tüketebilir. Cihazınızı bir şarj cihazına bağlayıp tekrar deneyin.</translation>
 <translation id="7019805045859631636">Hızlı</translation>
 <translation id="7022562585984256452">Ana sayfanız ayarlandı.</translation>
@@ -7119,6 +7118,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7308643132139167865">Web sitesi dilleri</translation>
 <translation id="7310598146671372464">Giriş yapılamadı. Sunucu belirtilen Kerberos şifreleme türlerini desteklemiyor. Lütfen yöneticinizle iletişim kurun.</translation>
 <translation id="7311089766378749632"><ph name="SITE_NAME" /> sitesini okuyup değiştirmek istiyor.</translation>
+<translation id="7311244614769792472">Sonuç bulunamadı</translation>
 <translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="7317831949569936035">Okula kayıt</translation>
 <translation id="7320213904474460808">Varsayılan olarak ağa bağlan</translation>

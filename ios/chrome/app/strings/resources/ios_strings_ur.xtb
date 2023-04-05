@@ -177,6 +177,7 @@
 <translation id="2218443599109088993">زوم آؤٹ کریں</translation>
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
 <translation id="2239626343334228536">براؤزنگ ڈیٹا صاف ہو رہا ہے...</translation>
+<translation id="22508856139286506">برخاست کردہ وارننگز (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">مینیو ← سرگزشت</translation>
 <translation id="2256933947031277845">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔</translation>
 <translation id="225943865679747347">خرابی کا کوڈ: <ph name="ERROR_CODE" /></translation>
@@ -1086,6 +1087,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8237382152611443140">آٹو فل پاس ورڈ کی ترتیبات کھولیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8264966119170358612">‏آپ کے محفوظ کردہ کچھ پاس ورڈز غیر Google ڈیٹا کی خلاف ورزی میں افشاء ہو گئے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">صرف اس آلے پر</translation>
 <translation id="8271720166617117963">قبول کریں اور سائن ان کریں</translation>
 <translation id="8278938988428169257">ایک لفظ یا جملہ درج کریں</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>

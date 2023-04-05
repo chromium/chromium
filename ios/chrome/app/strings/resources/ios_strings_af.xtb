@@ -20,6 +20,7 @@
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
 <translation id="110724200315609752">Wissel na oop venster</translation>
 <translation id="1112015203684611006">Kon nie druk nie.</translation>
+<translation id="1118266931011974190">Ná <ph name="THRESHOLD" /> dae</translation>
 <translation id="1125564390852150847">Skep nuwe oortjie.</translation>
 <translation id="1126013303640354461">Betaalmetodes en -adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
 Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google gestuur of deur hulle gestoor nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy sinkronisering moet terugstel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -177,6 +178,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2218443599109088993">Zoem uit</translation>
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2239626343334228536">Vee blaaierdata uit …</translation>
+<translation id="22508856139286506">Toegemaakte waarskuwings (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Kieslys → Geskiedenis</translation>
 <translation id="2256933947031277845">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld.</translation>
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
@@ -231,6 +233,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2626236249646841566">Gaan jou verbinding na en probeer weer aanmeld.</translation>
 <translation id="2637313651144986786">Soek oortjies …</translation>
 <translation id="2647269890314209800">Webkoekies in gebruik</translation>
+<translation id="2648721026697078500">Moet nooit skuif nie</translation>
 <translation id="2648803196158606475">Vee uit wat gelees is</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2664621323652615289">Stop</translation>
@@ -346,6 +349,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3305294846493618482">meer</translation>
 <translation id="3311748811247479259">Af</translation>
 <translation id="3324193307694657476">Adres 2</translation>
+<translation id="3328459813621383194">Skuif onaktiewe oortjies</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="3371831930909698441">Vertaal is beskikbaar. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="3377063233124932127">Jou gestoorde boekmerke, wagwoorde en meer is nou aan die bokant.</translation>
@@ -510,6 +514,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="452750746583162491">Gaan jou gesinkroniseerde data na</translation>
 <translation id="4536418791685807335">Probeer om weer aan te meld.</translation>
 <translation id="4540780316273593836">Iets was fout</translation>
+<translation id="4550040941166547650">Net op hierdie toestel</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Maak {COUNT} onaktiewe oortjie toe?}other{Maak {COUNT} onaktiewe oortjies toe?}}</translation>
 <translation id="457386861538956877">Nog meer …</translation>
 <translation id="4587235830039045480">Stoor wagwoord in jou Google-rekening</translation>
@@ -763,6 +768,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6193424046394092997">{count,plural, =1{Geboekmerk in {title}}other{Geboekmerk in {title}}}</translation>
 <translation id="6196207969502475924">Stemsoektog</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
+<translation id="6210079381482819663">Oortjies wat <ph name="THRESHOLD" /> dae of langer nie gebruik is nie, word hierheen geskuif. Jy kan dit enige tyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> verander.</translation>
 <translation id="6213567400989743524">Toegemaakte waarskuwings</translation>
 <translation id="6219550825416862075">Welkom terug</translation>
 <translation id="6219688215832490856">Moet nooit vertaal nie</translation>
@@ -1058,6 +1064,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8059533439631660104">Vou die afdeling in.</translation>
 <translation id="8065292699993359127">Maak URL'e in Chrome in Incognitomodus oop</translation>
 <translation id="806745655614357130">Hou my data apart</translation>
+<translation id="8069394452933076548">Kies wanneer oortjies wat nie onlangs gebruik is nie na die afdeling vir onaktiewe oortjies toe geskuif word.</translation>
 <translation id="8073670137947914548">Aflaai is klaar</translation>
 <translation id="8073872304774253879">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8076492880354921740">Oortjies</translation>
@@ -1086,6 +1093,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8237382152611443140">Maak AutoFill Password Settings oop</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8264966119170358612">Sommige van jou gestoorde wagwoorde is blootgestel in ’n nie-Google-dataskending. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Net op hierdie toestel</translation>
 <translation id="8271720166617117963">Aanvaar en meld aan</translation>
 <translation id="8278938988428169257">Voer ’n woord of frase in</translation>
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1201,6 +1209,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9055772144595778347">Kan nie aanmeld nie</translation>
 <translation id="9055960261314198756">Verbeterde Beskerming is af</translation>
 <translation id="9057972802061533987">Kan nie volg nie. Iets was fout.</translation>
+<translation id="9061495354530850708">In jou Google-rekening</translation>
 <translation id="9065203028668620118">Wysig</translation>
 <translation id="9068336935206019333">Maak in Chrome Incognito oop</translation>
 <translation id="9079935439869366234">Merk alles as ongelees</translation>

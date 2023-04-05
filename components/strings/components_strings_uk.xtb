@@ -181,7 +181,6 @@
 <translation id="1374468813861204354">пропозиції</translation>
 <translation id="1375198122581997741">Про версію</translation>
 <translation id="1376836354785490390">Показати менше</translation>
-<translation id="1377321085342047638">Номер картки</translation>
 <translation id="1380591466760231819">Зігнути у вигляді конверта</translation>
 <translation id="138218114945450791">Світло-синій</translation>
 <translation id="1382194467192730611">Пристрій USB дозволив адміністратор</translation>
@@ -228,7 +227,6 @@
 <translation id="1476595624592550506">Змініть пароль</translation>
 <translation id="1482879811280872320">Велоспорт</translation>
 <translation id="1483493594462132177">Надіслати</translation>
-<translation id="1484290072879560759">Вибрати адресу доставки</translation>
 <translation id="1492194039220927094">Сповіщення про правила:</translation>
 <translation id="149293076951187737">Коли ви закриваєте всі анонімні вкладки в Chrome, з пристрою видаляються дані про ваші дії в них, зокрема:
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@
 <translation id="153384715582417236">Більше нічого немає</translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
 <translation id="1539840569003678498">Звіт надіслано:</translation>
-<translation id="154408704832528245">Вибрати адресу доставки</translation>
 <translation id="1549470594296187301">Щоб користуватися цією функцією, потрібно ввімкнути JavaScript.</translation>
 <translation id="1551884710160394169">Безкоштовне й умовно безкоштовне програмне забезпечення</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
@@ -370,7 +367,6 @@
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Дані віртуальної картки</translation>
 <translation id="1803020234906945288">Здорове харчування</translation>
-<translation id="1803264062614276815">Ім’я та прізвище власника картки</translation>
 <translation id="1803351196216024260">Може просити доступ до мікрофона</translation>
 <translation id="1807246157184219062">Світла</translation>
 <translation id="1807528111851433570">Перший аркуш</translation>
@@ -619,7 +615,6 @@
 <translation id="2450021089947420533">Сеанси</translation>
 <translation id="2456755709261364512">Заряд акумулятора має становити більше <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
 <translation id="2463739503403862330">Заповнити</translation>
-<translation id="2465655957518002998">Вибрати спосіб доставки</translation>
 <translation id="2465688316154986572">Скріпити</translation>
 <translation id="2465914000209955735">Керувати завантаженими файлами в Chrome</translation>
 <translation id="2466004615675155314">Показати інформацію з Інтернету</translation>
@@ -741,7 +736,6 @@
 <translation id="2730600605555029057">Класична музика</translation>
 <translation id="2731382536835015353">44 x 68 дюйм.</translation>
 <translation id="2734319753272419592">Надайте Google доступ до своїх кошиків, щоб наші системи могли знаходити для вас персоналізовані знижки й автоматично показувати їх у кошиках.</translation>
-<translation id="2738330467931008676">Вибрати адресу отримання</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Настільний теніс</translation>
 <translation id="2742870351467570537">Видалити вибрані елементи</translation>
@@ -823,7 +817,6 @@
 <translation id="2983666748527428214">Відкрити анонімну вкладку</translation>
 <translation id="2985306909656435243">Якщо цю функцію ввімкнено, Chromium зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
 <translation id="2985398929374701810">Введіть дійсну адресу</translation>
-<translation id="2986368408720340940">Цей спосіб отримання недоступний. Виберіть інший спосіб.</translation>
 <translation id="2987034854559945715">Немає відповідних функцій</translation>
 <translation id="2989742184762224133">Двічі скріпити вгорі</translation>
 <translation id="2991174974383378012">Надання інформації веб-сайтам</translation>
@@ -855,7 +848,6 @@
 <translation id="3086579638707268289">Ваші дії в Інтернеті відстежуються</translation>
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">Додати адресу отримання</translation>
 <translation id="3096195745018397576">Дитячий одяг</translation>
 <translation id="3098513225387949945">Ігнорується, оскільки список деактивації містить шаблон "*", який означає те саме, що й вимкнути правило.</translation>
 <translation id="3105172416063519923">Ідентифікатор об’єкта:</translation>
@@ -1348,6 +1340,7 @@
 <translation id="4274173425554582601">Комп’ютери й електроніка</translation>
 <translation id="4275830172053184480">Перезапустіть пристрій</translation>
 <translation id="4277028893293644418">Скинути пароль</translation>
+<translation id="4277937682389409325">Місцева адреса</translation>
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="4281998142035485137">{0,plural, =1{Відкрити конфіденційний файл?}one{Відкрити конфіденційні файли?}few{Відкрити конфіденційні файли?}many{Відкрити конфіденційні файли?}other{Відкрити конфіденційні файли?}}</translation>
 <translation id="4282346679996504092">Сповіщення для цього товару вимкнено, а закладку вилучено</translation>
@@ -1382,7 +1375,6 @@
 <translation id="4333561522337981382">керувати вікнами на всіх ваших екранах</translation>
 <translation id="4340575312453649552">Це оголошення використовувало забагато ресурсів пристрою, тож веб-переглядач Chrome видалив його.</translation>
 <translation id="4340982228985273705">Цим комп’ютером не керує адміністратор підприємства, тому правило може лише автоматично встановити розширення, розміщені у Веб-магазині Chrome. URL-адреса для оновлення Веб-магазину Chrome: <ph name="CWS_UPDATE_URL" />.</translation>
-<translation id="4346197816712207223">Кредитні картки, які приймаються до оплати</translation>
 <translation id="4348834659292907206">З’єднання із сайтом <ph name="SITE" /> не захищене</translation>
 <translation id="4349365535725594680">Неможливо поділитися конфіденційним контентом</translation>
 <translation id="4349810866125026513">Усе одно завантажити</translation>
@@ -1586,7 +1578,6 @@
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="4852429274334674023">Операційні системи</translation>
 <translation id="4853901935952445031">Після лютого 2022 року цей сайт більше не підтримуватиме U2F API. Якщо сайт належить вам, перейдіть на Web Authentication API.</translation>
-<translation id="4854362297993841467">Цей спосіб доставки недоступний. Виберіть інший спосіб.</translation>
 <translation id="4854853140771946034">Швидко створюйте нові нотатки в Google Keep</translation>
 <translation id="4858792381671956233">Ви надіслали батькам запит на перегляд цього сайту</translation>
 <translation id="485902285759009870">Перевірка коду…</translation>
@@ -1788,7 +1779,6 @@
 <translation id="5316812925700871227">Обернути проти годинникової стрілки</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">Вибрати контактну інформацію</translation>
 <translation id="5329858041417644019">Веб-переглядачем не керує адміністратор</translation>
 <translation id="5332219387342487447">Спосіб доставки</translation>
 <translation id="5332769172018416402">Запитати в повідомленні</translation>
@@ -1891,7 +1881,6 @@
 <translation id="5593349413089863479">З'єднання не повністю захищене</translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="5596939519753369075">2 x 3,5 дюйм.</translation>
-<translation id="5598944008576757369">Вибрати спосіб оплати</translation>
 <translation id="560412284261940334">Керування не підтримується</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Як ви можете керувати своїми даними.<ph name="END_BOLD" /> Chrome автоматично видаляє сайти через 4 тижні. Сайт, який ви відвідаєте знову, може повторно з’явитися в списку. Ви також можете будь-коли заборонити сайту пропонувати вам оголошення й вимкнути цей параметр у налаштуваннях Chrome.</translation>
@@ -1923,7 +1912,6 @@
 <translation id="568292603005599551">Горизонтальне положення зображення</translation>
 <translation id="5684277895745049190">Список</translation>
 <translation id="5684874026226664614">На жаль, цю сторінку неможливо перекласти.</translation>
-<translation id="5685654322157854305">Додати адресу доставки</translation>
 <translation id="5689199277474810259">Експортувати у формат JSON</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
 <translation id="569000877158168851">Значення DnsOverHttpsTemplates невідповідне й не використовуватиметься, якщо для правила DnsOverHttpsMode не буде вибрано значення <ph name="SECURE_DNS_MODE_AUTOMATIC" /> або <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -2789,7 +2777,6 @@
 <translation id="776110834126722255">Не підтримується</translation>
 <translation id="7761159795823346334">Дозволити доступ до камери?</translation>
 <translation id="7761701407923456692">Сертифікат сервера не відповідає URL-адресі.</translation>
-<translation id="7763386264682878361">Синтаксичний аналізатор маніфесту платежу</translation>
 <translation id="7764225426217299476">Додати адресу</translation>
 <translation id="7766518757692125295">З полями</translation>
 <translation id="7773005668374414287">Однаковий порядок лицевою стороною вгору</translation>
@@ -2893,7 +2880,6 @@
 <translation id="8038817883578389970">Автоперегони</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8041940743680923270">Використовувати глобальне налаштування за умовчанням (Запитувати)</translation>
-<translation id="8042918947222776840">Вибрати спосіб отримання</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8055534648776115597">Професійно-технічна й післядипломна освіта</translation>
 <translation id="8057711352706143257"><ph name="SOFTWARE_NAME" /> налаштовано неправильно. Якщо видалити програмне забезпечення <ph name="SOFTWARE_NAME" />, проблема зазвичай зникає. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3268,7 +3254,6 @@
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9018120810758822233">Введіть код безпеки для кредитної картки <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">електронна адреса</translation>
-<translation id="9020200922353704812">Потрібно вказати платіжну адресу картки</translation>
 <translation id="9020542370529661692">Цю сторінку перекладено такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо)</translation>
@@ -3305,7 +3290,6 @@
 <translation id="9101630580131696064">Лоток 1</translation>
 <translation id="9103537084693478942">Програмне забезпечення для обробки відео</translation>
 <translation id="9103872766612412690">Веб-сайт <ph name="SITE" /> зазвичай використовує шифрування для захисту вашої інформації. Під час цієї спроби Chromium під’єднатися до сторінки <ph name="SITE" /> з неї отримано незвичні й неправильні облікові дані. Це може статися, коли зловмисник намагається видавати себе за веб-сайт <ph name="SITE" /> або з’єднання перервано екраном входу Wi-Fi. Ваша інформація залишається захищеною, оскільки Chromium припинив з’єднання до того, як почався обмін будь-якими даними.</translation>
-<translation id="9106062320799175032">Додайте платіжну адресу</translation>
 <translation id="9107467864910557787">Вашим веб-переглядачем керує <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Адміністратор заборонив показувати екран за допомогою додатка <ph name="APPLICATION_TITLE" />, коли видно конфіденційний контент</translation>
 <translation id="9114524666733003316">Підтверджуються дані картки…</translation>
@@ -3326,7 +3310,6 @@
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9141013498910525015">Керувати адресами</translation>
 <translation id="9144951720726881238">Діє до:</translation>
-<translation id="9148088599418889305">Вибрати спосіб доставки</translation>
 <translation id="9148507642005240123">&amp;Відмінити редагування</translation>
 <translation id="9150045010208374699">Використовувати вашу камеру</translation>
 <translation id="9150685862434908345">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chrome. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -3377,7 +3360,6 @@
 <translation id="964050462028070434">Керувати паролями та ключами доступу…</translation>
 <translation id="96680173638229310">Автомобілі й транспортні засоби</translation>
 <translation id="969892804517981540">Офіційне складання</translation>
-<translation id="973773823069644502">Додати адресу доставки</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Немає}=1{1 запис}one{# запис}few{# записи}many{# записів}other{# запису}}</translation>
 <translation id="976522784004777030">5 x 8 дюйм.</translation>
 <translation id="977502174772294970">Весілля</translation>

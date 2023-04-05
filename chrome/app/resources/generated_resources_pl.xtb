@@ -5498,7 +5498,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5855643921295613558">0,6 s</translation>
 <translation id="5856721540245522153">Włącz funkcje debugowania</translation>
 <translation id="5857090052475505287">Nowy folder</translation>
-<translation id="5857171483910641802">Skróty proponowane są na podstawie stron, które często odwiedzasz</translation>
+<translation id="5857171483910641802">W skrótach pojawiają się strony, które często odwiedzasz</translation>
 <translation id="5857675236236529683">Jeśli zechcesz zobaczyć swoją listę Do przeczytania, znajdziesz ją tutaj</translation>
 <translation id="5857693745746757503">Przejdź na nowego Chromebooka już dziś i zaoszczędź co najmniej 50 USD</translation>
 <translation id="5858490737742085133">Terminal</translation>
@@ -6822,7 +6822,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7017004637493394352">Powiedz „OK Google” jeszcze raz</translation>
 <translation id="7017219178341817193">Dodaj nową stronę</translation>
 <translation id="7017354871202642555">Nie można ustawić trybu po ustawieniu okna.</translation>
-<translation id="7018275672629230621">Odczyt i zmiana historii przeglądania</translation>
 <translation id="7019546817926942979">Podłącz urządzenie do zasilania. Uaktualnianie Linuksa może szybko rozładować baterię. Podłącz ładowarkę i spróbuj ponownie.</translation>
 <translation id="7019805045859631636">Szybko</translation>
 <translation id="7022562585984256452">Strona główna została ustawiona.</translation>
@@ -7111,6 +7110,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7308643132139167865">Języki wyświetlania stron internetowych</translation>
 <translation id="7310598146671372464">Logowanie nie udało się. Serwer nie obsługuje wybranych typów szyfrowania Kerberos. Skontaktuj się z administratorem.</translation>
 <translation id="7311089766378749632">Prośby o uprawnienia do odczytywania i modyfikowania strony <ph name="SITE_NAME" /></translation>
+<translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7317831949569936035">Rejestracja w szkole</translation>
 <translation id="7320213904474460808">Łącz domyślnie z siecią</translation>

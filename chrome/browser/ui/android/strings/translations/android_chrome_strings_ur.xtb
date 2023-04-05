@@ -385,7 +385,6 @@
 <translation id="3083194063661536258">سائن آؤٹ ہو گئے۔ بٹن۔ سائن ان کرنے اور مطابقت پذیری کو آن کرنے کے لیے ڈائیلاگ کھولتا ہے۔</translation>
 <translation id="3091010850649238832">کلپ بورڈ مواد دکھائیں</translation>
 <translation id="3098745985164956033">‏آپ کے لیے تفصیلات میں بہتری لانے کے لیے Google کو کچھ تصاویر بھیجی جاتی ہیں</translation>
-<translation id="3104179992611025423">آپ کا براؤزر آپ کے پیرنٹس کے زیر انتظام ہے</translation>
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">اس کے ساتھ لنک کیا گيا</translation>
 <translation id="3123734510202723619">اعلانات</translation>
@@ -456,6 +455,7 @@
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">سائن ان کرنے کے لیے نیچے کی شیٹ آدھی اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">قدیم ترین کے لحاظ سے ترتیب دیں</translation>
 <translation id="3507132249039706973">معیاری تحفظ آن ہے</translation>
 <translation id="3509330069915219067">‏آف لائن۔ Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
 <translation id="3513704683820682405">افزودہ حقیقت</translation>
@@ -576,6 +576,7 @@
 <translation id="4177222230309051052">اپنے تمام بک مارکس حاصل کریں</translation>
 <translation id="4177501066905053472">اشتہار کے موضوعات</translation>
 <translation id="4181841719683918333">زبانیں</translation>
+<translation id="4188221736490993796">‏Z سے A کے لحاظ سے ترتیب دیں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4196597275619698563">کارڈ تخلیق کریں</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
@@ -641,6 +642,7 @@
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
 <translation id="4572422548854449519">نظم کردہ اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="4576892426230499203">توثیق کا دوسرا اختیار آزمائیں</translation>
+<translation id="4577115723294378384">‏A سے Z کے لحاظ سے ترتیب دیں</translation>
 <translation id="4578289292431526768">آئیے شروع کریں</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
@@ -664,6 +666,7 @@
 <translation id="4689792375321623175">‏Google پر تصویر تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}}</translation>
 <translation id="4699172675775169585">کیش کردہ تصاویر اور فائلیں</translation>
+<translation id="4710167854527459075">جدید ترین کے لحاظ سے ترتیب دیں</translation>
 <translation id="4719927025381752090">ترجمہ کرنے کی پیشکش</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> میں کھولیں</translation>
 <translation id="47217992755561375">اپنی سرفہرست سائٹس دیکھیں</translation>
@@ -833,6 +836,7 @@
 <translation id="5561162485081632007">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="5561549206367097665">نیٹ ورک کا منتظر…</translation>
 <translation id="5568069709869097550">سائن نہیں کیا جا سکتا ہے</translation>
+<translation id="557018954714092179">نیا فولڈر بنائیں</translation>
 <translation id="5578795271662203820">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> تلاش کریں</translation>
 <translation id="5581519193887989363">آپ <ph name="BEGIN_LINK1" />ترتیبات<ph name="END_LINK1" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="5590372121997663538">اس کمپیوٹر کو یاد رکھیں</translation>
@@ -937,6 +941,7 @@
 <translation id="6138832295072039549">اپنی سائٹ کی ترتیبات کو یہاں تبدیل کریں</translation>
 <translation id="6140709049082532940">بہتر کردہ حفاظت:</translation>
 <translation id="6140912465461743537">ملک/علاقہ</translation>
+<translation id="6148266338772765473">لنک خارج کریں</translation>
 <translation id="6150320133806434356">بک مارک محفوظ ہو گیا</translation>
 <translation id="6154478581116148741">اس آلہ سے اپنے پاس ورڈز برآمد کرنے کے لئے ترتیبات میں اسکرین لاک آن کریں</translation>
 <translation id="6159729262978459665">مطابقت پذیر کردہ تمام آلات سے سرگزشت صاف ہو جاتی ہے۔</translation>
@@ -1028,6 +1033,7 @@
 <translation id="6590680911007613645">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="SITE" /> کے پاس ورڈ سے مماثل ہے</translation>
 <translation id="6593061639179217415">ڈیسک ٹاپ سائٹ</translation>
 <translation id="6594121454516132231">‏دیکھیں کہ Chrome کیسے آپ کو اوپن ویب کے تحفظ کے دوران کراس سائٹ کی ٹریکنگ سے محفوظ رکھنے کے لیے پلان بناتا ہے</translation>
+<translation id="6594347733515723558">ترتیب دیں و اختیارات دیکھیں</translation>
 <translation id="6595046016124923392">‏آپ کے لئے تفصیلات میں بہتری لانے کیلئے Google کو تصاویر بھیجی جاتی ہیں۔</translation>
 <translation id="6600954340915313787">‏Chrome پر کاپی کر دیا گیا</translation>
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>

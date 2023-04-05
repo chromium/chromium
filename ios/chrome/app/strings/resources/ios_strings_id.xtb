@@ -178,6 +178,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2218443599109088993">Perkecil</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2239626343334228536">Menghapus data browsing...</translation>
+<translation id="22508856139286506">Peringatan yang Ditolak (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Histori</translation>
 <translation id="2256933947031277845">Organisasi mengizinkan Anda login hanya dengan akun tertentu.</translation>
 <translation id="225943865679747347">Kode kesalahan: <ph name="ERROR_CODE" /></translation>
@@ -1092,6 +1093,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8237382152611443140">Buka AutoFill Password di Settings</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8264966119170358612">Beberapa sandi tersimpan Anda terekspos dalam pelanggaran data non-Google. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Hanya di perangkat ini</translation>
 <translation id="8271720166617117963">Terima dan Login</translation>
 <translation id="8278938988428169257">Masukkan Kata atau Frasa</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>

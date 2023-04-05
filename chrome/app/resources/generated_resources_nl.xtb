@@ -118,6 +118,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1091767800771861448">Druk op ESCAPE om over te slaan (alleen voor niet-officiële builds).</translation>
 <translation id="1093457606523402488">Zichtbare netwerken:</translation>
 <translation id="1095761715416917775">Zorg dat je altijd toegang hebt tot je gesynchroniseerde gegevens</translation>
+<translation id="1095879482467973146">Google Wachtwoordmanager op internet</translation>
 <translation id="109647177154844434">Als je Parallels Desktop verwijdert, wordt je Windows-image verwijderd. Bijbehorende apps, instellingen en gegevens worden ook verwijderd. Weet je zeker dat je wilt doorgaan?</translation>
 <translation id="1097016918605049747">Deze pagina kan niet worden vertaald</translation>
 <translation id="1097658378307015415">Voordat je inlogt, log je eerst in als gast om het netwerk <ph name="NETWORK_ID" /> te activeren.</translation>
@@ -1487,6 +1488,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2252017960592955005">Weergavebeveiliging (bèta)</translation>
 <translation id="225240747099314620">ID's voor beschermde content toestaan (mogelijk moet de computer opnieuw worden gestart)</translation>
 <translation id="2253318212986772520">Kan PPD niet ophalen voor <ph name="PRINTER_NAME" />.</translation>
+<translation id="2253927598983295051">Kies wat je wilt delen met <ph name="APP_NAME" /></translation>
 <translation id="2255077166240162850">Dit apparaat is vergrendeld in een ander domein of een andere modus.</translation>
 <translation id="2255317897038918278">Microsoft-tijdstempel</translation>
 <translation id="2256115617011615191">Nu opnieuw starten</translation>
@@ -1832,6 +1834,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2532589005999780174">Modus voor hoog contrast</translation>
 <translation id="2533649878691950253">Deze site heeft geen toegang tot je exacte locatie omdat je dit gewoonlijk niet toestaat</translation>
 <translation id="253434972992662860">&amp;Onderbreken</translation>
+<translation id="253498598929009420">De site kan de content van je scherm bekijken</translation>
 <translation id="253557089021624350">Aantal keepalive-activiteiten</translation>
 <translation id="2535799430745250929">Er bestaat geen mobiel netwerk</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken en bewerken</translation>
@@ -6824,7 +6827,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7017004637493394352">Zeg nog een keer "Hey Google"</translation>
 <translation id="7017219178341817193">Een nieuwe pagina toevoegen</translation>
 <translation id="7017354871202642555">Kan modus niet instellen nadat venster is ingesteld.</translation>
-<translation id="7018275672629230621">Je browsegeschiedenis lezen en wijzigen</translation>
 <translation id="7019546817926942979">Je apparaat moet worden aangesloten. Als je Linux upgradet, kan je batterij aanzienlijk sneller leeglopen. Sluit je apparaat aan op een oplader en probeer het opnieuw.</translation>
 <translation id="7019805045859631636">Snel</translation>
 <translation id="7022562585984256452">Je homepage is ingesteld.</translation>
@@ -7113,6 +7115,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7308643132139167865">Websitetalen</translation>
 <translation id="7310598146671372464">Kan niet inloggen. De server ondersteunt de opgegeven Kerberos-versleutelingstypen niet. Neem contact op met je beheerder.</translation>
 <translation id="7311089766378749632">Verzoek om <ph name="SITE_NAME" /> te lezen en te wijzigen</translation>
+<translation id="7311244614769792472">Geen resultaten gevonden</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7317831949569936035">Schoolinschrijving</translation>
 <translation id="7320213904474460808">Standaardnetwerk gebruiken</translation>

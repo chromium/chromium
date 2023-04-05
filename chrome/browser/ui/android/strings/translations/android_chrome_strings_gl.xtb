@@ -385,7 +385,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3083194063661536258">Tes a sesión pechada. Botón 4. Abre un cadro de diálogo para iniciar sesión e activar a sincronización.</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
-<translation id="3104179992611025423">Os teus pais xestionan o teu navegador</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">vinculouse a</translation>
 <translation id="3123734510202723619">Avisos</translation>
@@ -456,6 +455,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>
 <translation id="3495219333887281978">Panel inferior de inicio de sesión aberto ata media altura.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="350276055892098337">Ordenar polo máis antigo</translation>
 <translation id="3507132249039706973">A protección estándar está activada</translation>
 <translation id="3509330069915219067">Estás sen conexión. Chrome non puido buscar actualizacións.</translation>
 <translation id="3513704683820682405">Realidade aumentada</translation>
@@ -576,6 +576,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4177222230309051052">Obtén todos os teus marcadores</translation>
 <translation id="4177501066905053472">Temas dos anuncios</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4188221736490993796">Ordenar do Z ao A</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196597275619698563">Crear tarxeta</translation>
 <translation id="4198423547019359126">Non hai localizacións de descarga dispoñibles</translation>
@@ -641,6 +642,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4572422548854449519">Inicia sesión nunha conta xestionada</translation>
 <translation id="4576892426230499203">Proba con outra opción de verificación</translation>
+<translation id="4577115723294378384">Ordenar do A ao Z</translation>
 <translation id="4578289292431526768">Comezar</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{Hai # minuto}other{Hai # minutos}}</translation>
 <translation id="4587589328781138893">Sitios</translation>
@@ -664,6 +666,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4689792375321623175">Buscar na imaxe <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}}</translation>
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
+<translation id="4710167854527459075">Ordenar por máis recente</translation>
 <translation id="4719927025381752090">Ofrecer a tradución</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Ver os teus sitios favoritos</translation>
@@ -833,6 +836,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5561162485081632007">Móstrache unha advertencia cando detecta eventos perigosos</translation>
 <translation id="5561549206367097665">Esperando unha rede…</translation>
 <translation id="5568069709869097550">Non se pode iniciar sesión</translation>
+<translation id="557018954714092179">Crear novo cartafol</translation>
 <translation id="5578795271662203820">Busca esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Sempre podes escoller na <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" /> o contido que queres sincronizar.</translation>
 <translation id="5590372121997663538">Memorizar este ordenador</translation>
@@ -937,6 +941,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6138832295072039549">Cambia aquí a configuración do teu sitio</translation>
 <translation id="6140709049082532940">Protección mellorada:</translation>
 <translation id="6140912465461743537">País/rexión</translation>
+<translation id="6148266338772765473">Excluír ligazón</translation>
 <translation id="6150320133806434356">Gardouse o marcador</translation>
 <translation id="6154478581116148741">Activa o bloqueo de pantalla en Configuración para exportar os teus contrasinais deste dispositivo</translation>
 <translation id="6159729262978459665">Borra o historial de todos os dispositivos sincronizados.</translation>
@@ -1028,6 +1033,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6590680911007613645">Asegúrate de que o contrasinal que gardas coincida co de <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
 <translation id="6594121454516132231">Mira como planea protexerte Chrome contra os mecanismos de seguimento en varios sitios mentres axuda a que a Web siga sendo un espazo aberto</translation>
+<translation id="6594347733515723558">Ordenar e ver opcións</translation>
 <translation id="6595046016124923392">As imaxes envíanse a Google coa finalidade de mellorar as descricións para ti.</translation>
 <translation id="6600954340915313787">Copiouse en Chrome</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>

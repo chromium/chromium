@@ -178,6 +178,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
+<translation id="22508856139286506">Advertencias descartadas (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2256933947031277845">Tu organización te permite acceder solo con determinadas cuentas.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
@@ -1092,6 +1093,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8237382152611443140">Ve a Autorrelleno de contraseñas en Configuración.</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="8271720166617117963">Aceptar y acceder</translation>
 <translation id="8278938988428169257">Ingresa una palabra o frase.</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

@@ -178,6 +178,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="2218443599109088993">Zoom Out</translation>
 <translation id="2230173723195178503">Na-load na ang webpage</translation>
 <translation id="2239626343334228536">Kini-clear ang data sa pag-browse...</translation>
+<translation id="22508856139286506">Mga Na-dismiss na Babala (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → History</translation>
 <translation id="2256933947031277845">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account.</translation>
 <translation id="225943865679747347">Code ng error: <ph name="ERROR_CODE" /></translation>
@@ -1092,6 +1093,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8237382152611443140">Buksan ang Mga Setting ng Pag-autofill ng Password</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8264966119170358612">Nalantad ang ilan sa iyong mga naka-save na password sa isang paglabag sa data na hindi sa Google. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Sa device lang na ito</translation>
 <translation id="8271720166617117963">Tanggapin at Mag-sign in</translation>
 <translation id="8278938988428169257">Maglagay ng Salita o Parirala</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>

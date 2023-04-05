@@ -20,6 +20,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="110724200315609752">Yopilmagan oynalarga oʻtish</translation>
 <translation id="1112015203684611006">Chop etilmadi.</translation>
+<translation id="1118266931011974190"><ph name="THRESHOLD" /> kundan keyin</translation>
 <translation id="1125564390852150847">Yangi sahifa ochish</translation>
 <translation id="1126013303640354461">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Kodli iborani unutsangiz yoki bu sozlamani oʻzgartirishni istasangiz, sinxronlash sozlamalarini tiklashingiz lozim. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -232,6 +233,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2626236249646841566">Internet aloqasini tekshiring va qaytadan kirish uchun urining</translation>
 <translation id="2637313651144986786">Varaqlar ichidan qidirish</translation>
 <translation id="2647269890314209800">Cookie fayllaridan foydalanish</translation>
+<translation id="2648721026697078500">Hech qachon koʻchirilmasin</translation>
 <translation id="2648803196158606475">O‘qilganlarni o‘chirish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2664621323652615289">Toʻxtatish</translation>
@@ -347,6 +349,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3305294846493618482">yana</translation>
 <translation id="3311748811247479259">Oʻchiq</translation>
 <translation id="3324193307694657476">Manzil, 2-qator</translation>
+<translation id="3328459813621383194">Nofaol varaqlarni koʻchirish</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="3371831930909698441">Tarjima mavjud. Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>
 <translation id="3377063233124932127">Endi saqlangan bukmarklar, parollar va boshqalar yuqorida chiqadi.</translation>
@@ -511,6 +514,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4536418791685807335">Qaytadan kirib ko‘ring.</translation>
 <translation id="4540780316273593836">Nimadir xato ketdi</translation>
+<translation id="4550040941166547650">Faqat shu qurilmada</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} ta nofaol varaq yopilsinmi?}other{{COUNT} ta nofaol varaq yopilsinmi?}}</translation>
 <translation id="457386861538956877">Yana...</translation>
 <translation id="4587235830039045480">Parolni Google hisobingizda saqlang</translation>
@@ -764,6 +768,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6193424046394092997">{count,plural, =1{Bukmark “{title}” jildiga saqlandi}other{Bukmark “{title}” jildiga saqlandi}}</translation>
 <translation id="6196207969502475924">Ovozli qidiruv</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ta varaqni yopish}other{{COUNT} ta varaqni yopish}}</translation>
+<translation id="6210079381482819663"><ph name="THRESHOLD" /> yoki koʻproq kun foydalanilmagan varaqlar shu yerga koʻchirildi Buni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalardan<ph name="END_LINK" /> oʻzgartirish mumkin.</translation>
 <translation id="6213567400989743524">Yopilgan ogohlantirishlar</translation>
 <translation id="6219550825416862075">Qaytganingizdan mamnunmiz</translation>
 <translation id="6219688215832490856">Hech qachon tarjima qilinmasin</translation>
@@ -1059,6 +1064,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8059533439631660104">Bo‘limni yig‘adi.</translation>
 <translation id="8065292699993359127">URL manzillarni Chrome brauzerida Inkognito rejimda ochish</translation>
 <translation id="806745655614357130">Ma’lumotlar alohida saqlansin</translation>
+<translation id="8069394452933076548">Yaqinda foydalanilmagan varaqlarni qachon nofaol varaqlar boʻlimiga koʻchirishni tanlang.</translation>
 <translation id="8073670137947914548">Yuklab olindi</translation>
 <translation id="8073872304774253879">Sahifalarni kezish va qidiruvni yaxshilash</translation>
 <translation id="8076492880354921740">Varaqlar</translation>
@@ -1087,6 +1093,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8237382152611443140">Parollarni avtomatik kiritish sozlamalarini oching</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8264966119170358612">Saqlangan parollaringizdan ayrimlari Googledan boshqa tashqi xizmatlarning sizib chiqarilgan axborotlari ichidan topildi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="8265018477030547118">Faqat shu qurilmada</translation>
 <translation id="8271720166617117963">Qabul qilish va kirish</translation>
 <translation id="8278938988428169257">Soʻz yoki iborani kiriting</translation>
 <translation id="8281781826761538115">Standart - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1202,6 +1209,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9055772144595778347">Xatolik</translation>
 <translation id="9055960261314198756">Kuchaytirilgan himoya o'chiq</translation>
 <translation id="9057972802061533987">Obuna qilinmadi. Xatolik yuz berdi.</translation>
+<translation id="9061495354530850708">Google hisobingizda</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9068336935206019333">Chrome Inkognito oynasida ochish</translation>
 <translation id="9079935439869366234">Hammasini o‘qilmagan deb belgilash</translation>

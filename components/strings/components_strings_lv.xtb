@@ -181,7 +181,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1374468813861204354">ieteikumus</translation>
 <translation id="1375198122581997741">Par versiju</translation>
 <translation id="1376836354785490390">Rādīt mazāk</translation>
-<translation id="1377321085342047638">Kartes numurs</translation>
 <translation id="1380591466760231819">Vēstules locījums</translation>
 <translation id="138218114945450791">Gaiši zila</translation>
 <translation id="1382194467192730611">USB ierīce, ko atļauj jūsu administrators</translation>
@@ -228,7 +227,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1476595624592550506">Paroles maiņa</translation>
 <translation id="1482879811280872320">Riteņbraukšana</translation>
 <translation id="1483493594462132177">Sūtīt</translation>
-<translation id="1484290072879560759">Izvēlēties nosūtīšanas adresi</translation>
 <translation id="1492194039220927094">Politiku informatīvie ziņojumi:</translation>
 <translation id="149293076951187737">Kad aizvērsiet visas Chrome inkognito cilnes, no šīs ierīces tiks notīrītas šajās cilnēs veiktās darbības:
           <ph name="BEGIN_LIST" />
@@ -256,7 +254,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="153384715582417236">Pagaidām tas arī viss!</translation>
 <translation id="1536390784834419204">Tulkot lapu</translation>
 <translation id="1539840569003678498">Pārskata nosūtīšanas laiks:</translation>
-<translation id="154408704832528245">Izvēlēties piegādes adresi</translation>
 <translation id="1549470594296187301">Lai izmantotu šo funkciju, ir jābūt iespējotai valodai JavaScript.</translation>
 <translation id="1551884710160394169">Bezmaksas programmatūra un izplatāmprogrammatūra</translation>
 <translation id="1553358976309200471">Atjaunināt Chrome</translation>
@@ -370,7 +367,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtuālās kartes informācija</translation>
 <translation id="1803020234906945288">Veselīgs uzturs</translation>
-<translation id="1803264062614276815">Kartes īpašnieka vārds, uzvārds</translation>
 <translation id="1803351196216024260">Var pieprasīt atļauju izmantot jūsu mikrofonu</translation>
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1807528111851433570">Sākuma lapa</translation>
@@ -619,7 +615,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2450021089947420533">Meklēšanas ceļi</translation>
 <translation id="2456755709261364512">Akumulatora uzlādes līmenim ir jāpārsniedz <ph name="REQUIRED_BATTERY_PRECENT" />%.</translation>
 <translation id="2463739503403862330">Aizpildīt</translation>
-<translation id="2465655957518002998">Izvēlēties piegādes veidu</translation>
 <translation id="2465688316154986572">Skavojums</translation>
 <translation id="2465914000209955735">Pārvaldīt pārlūkā Chrome lejupielādētos failus</translation>
 <translation id="2466004615675155314">Rādīt informāciju no tīmekļa</translation>
@@ -741,7 +736,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2730600605555029057">Klasiskā mūzika</translation>
 <translation id="2731382536835015353">44 x 68 collas</translation>
 <translation id="2734319753272419592">Ļaujiet uzņēmumam Google izmantot jūsu grozus, lai meklētu personalizētas atlaides. Atlaides tiks automātiski parādītas jūsu grozos, kad tās būs pieejamas.</translation>
-<translation id="2738330467931008676">Izvēlēties saņemšanas adresi</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2742511345840685325">Galda teniss</translation>
 <translation id="2742870351467570537">Noņemt atlasītos vienumus</translation>
@@ -823,7 +817,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2983666748527428214">Atvērt inkognito cilni</translation>
 <translation id="2985306909656435243">Ja šī opcija ir iespējota, Chromium saglabās jūsu kartes informāciju šajā ierīcē, lai nodrošinātu ātrāku veidlapu aizpildi.</translation>
 <translation id="2985398929374701810">Ievadiet derīgu adresi</translation>
-<translation id="2986368408720340940">Šis saņemšanas veids nav pieejams. Izmēģiniet citu veidu.</translation>
 <translation id="2987034854559945715">Nav atbilstošu līdzekļu</translation>
 <translation id="2989742184762224133">Divkāršs skavojums augšdaļā</translation>
 <translation id="2991174974383378012">Kopīgošana ar vietnēm</translation>
@@ -855,7 +848,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3086579638707268289">Jūsu darbības tīmeklī tiek uzraudzītas</translation>
 <translation id="3087734570205094154">Apakšā</translation>
 <translation id="3095940652251934233">Statement</translation>
-<translation id="3096100844101284527">Pievienot saņemšanas adresi</translation>
 <translation id="3096195745018397576">Bērnu apģērbs</translation>
 <translation id="3098513225387949945">Tiek ignorēta, jo atspējošanas sarakstā ir ietverta aizstājējzīme “*”, kas ir līdzvērtīga politikas atspējošanai.</translation>
 <translation id="3105172416063519923">Līdzekļa ID:</translation>
@@ -1381,7 +1373,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4333561522337981382">Pārvaldīt logus visos jūsu displejos</translation>
 <translation id="4340575312453649552">Šī reklāma izmantoja pārāk daudz resursu jūsu ierīcē, tādēļ Chrome to noņēma.</translation>
 <translation id="4340982228985273705">Šo datoru nepārvalda uzņēmums, tāpēc politika var automātiski instalēt tikai tos paplašinājumus, kas tiek mitināti Chrome interneta veikalā. Chrome interneta veikala atjauninājumu URL: <ph name="CWS_UPDATE_URL" />.</translation>
-<translation id="4346197816712207223">Pieņemtās kredītkartes</translation>
 <translation id="4348834659292907206">Savienojums ar vietni <ph name="SITE" /> nav drošs</translation>
 <translation id="4349365535725594680">Nevar kopīgot konfidenciālu saturu</translation>
 <translation id="4349810866125026513">Tomēr augšupielādēt</translation>
@@ -1585,7 +1576,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="4852429274334674023">Operētājsistēmas</translation>
 <translation id="4853901935952445031">Pēc 2022. gada februāra šajā vietnē vairs nevarēs izmantot U2F API. Ja vietne pieder jums, veiciet izmaiņas, lai turpmāk tajā izmantotu Web Authentication API.</translation>
-<translation id="4854362297993841467">Šis piegādes veids nav pieejams. Izmēģiniet citu veidu.</translation>
 <translation id="4854853140771946034">Ātri izveidot jaunu piezīmi lietotnē Google Keep</translation>
 <translation id="4858792381671956233">Jūs lūdzāt vecākiem atļauju apmeklēt šo lapu</translation>
 <translation id="485902285759009870">Notiek koda verificēšana…</translation>
@@ -1787,7 +1777,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5316812925700871227">Pagriezt pretēji pulksteņrādītāju kustības virzienam</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />. no <ph name="NUM_MATCHES" /></translation>
-<translation id="5324080437450482387">Izvēlēties kontaktinformāciju</translation>
 <translation id="5329858041417644019">Jūsu pārlūks netiek pārvaldīts</translation>
 <translation id="5332219387342487447">Piegādes veids</translation>
 <translation id="5332769172018416402">Lūgt atļauju ziņojumā</translation>
@@ -1890,7 +1879,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5593349413089863479">Savienojums nav pilnīgi drošs</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="5596939519753369075">2 x 3,5 collas</translation>
-<translation id="5598944008576757369">Izvēlēties maksājuma veidu</translation>
 <translation id="560412284261940334">Pārvaldīšana netiek atbalstīta.</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> pārlūkā Chrome tiek automātiski dzēsti vietņu ieteiktie dati, kas ir vecāki par četrām nedēļām. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Jebkurā brīdī Chrome iestatījumos varat bloķēt vietni, lai tā vairs neieteiktu reklāmas, un izslēgt vietņu ieteiktās reklāmas.</translation>
@@ -1922,7 +1910,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="568292603005599551">Attēla pozīcija uz X ass</translation>
 <translation id="5684277895745049190">Saraksts</translation>
 <translation id="5684874026226664614">Hmm... Šo lapu nevarēja iztulkot.</translation>
-<translation id="5685654322157854305">Pievienot nosūtīšanas adresi</translation>
 <translation id="5689199277474810259">Eksportēt JSON formātā</translation>
 <translation id="5689516760719285838">Atrašanās vieta</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates vērtība nav atbilstoša un netiks izmantota, ja politikai DnsOverHttpsMode nav iestatīta vērtība <ph name="SECURE_DNS_MODE_AUTOMATIC" /> vai <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -2788,7 +2775,6 @@ Papildu informācija:
 <translation id="776110834126722255">Novecojusi</translation>
 <translation id="7761159795823346334">Vai atļaut piekļuvi kamerai?</translation>
 <translation id="7761701407923456692">Servera sertifikāts neatbilst URL.</translation>
-<translation id="7763386264682878361">Maksājumu manifestu parsētājs</translation>
 <translation id="7764225426217299476">Pievienot adresi</translation>
 <translation id="7766518757692125295">Kontūra</translation>
 <translation id="7773005668374414287">Tāda pati secība, apdrukātā puse uz augšu</translation>
@@ -2892,7 +2878,6 @@ Papildu informācija:
 <translation id="8038817883578389970">Autosacīkstes</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="8041940743680923270">Izmantot globālo noklusējumu (Vaicāt)</translation>
-<translation id="8042918947222776840">Izvēlēties saņemšanas veidu</translation>
 <translation id="8052898407431791827">Kopēts starpliktuvē</translation>
 <translation id="8055534648776115597">Arodizglītība un tālākizglītība</translation>
 <translation id="8057711352706143257">Programmatūra <ph name="SOFTWARE_NAME" /> nav pareizi konfigurēta. Atinstalējot programmatūru <ph name="SOFTWARE_NAME" />, parasti problēma tiek novērsta. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -3267,7 +3252,6 @@ Papildu informācija:
 <translation id="9008201768610948239">Ignorēt</translation>
 <translation id="9018120810758822233">Ievadiet kartes <ph name="CREDIT_CARD" /> drošības kodu</translation>
 <translation id="901834265349196618">e-pasts</translation>
-<translation id="9020200922353704812">Jānorāda kartes norēķinu adrese</translation>
 <translation id="9020542370529661692">Šī lapa ir tulkota <ph name="TARGET_LANGUAGE" /> valodā.</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai kopīgotu šo cilni, piemēram, kopīgojot saiti, izveidojot kvadrātkodu, sākot apraidi vai citā veidā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -3304,7 +3288,6 @@ Papildu informācija:
 <translation id="9101630580131696064">1. paplāte</translation>
 <translation id="9103537084693478942">Video programmatūra</translation>
 <translation id="9103872766612412690">Vietnē <ph name="SITE" /> informācijas aizsargāšanai parasti tiek izmantota šifrēšana. Kad pārlūkā Chromium tika mēģināts izveidot savienojumu ar vietni <ph name="SITE" />, šoreiz tā nosūtīja neparastus un nepareizus akreditācijas datus. Iespējams, tas notika, jo uzbrucējs mēģināja uzdoties par vietni <ph name="SITE" />, vai arī Wi-Fi pierakstīšanās ekrāns pārtrauca savienojumu. Jūsu informācija joprojām ir drošībā, jo pārlūks Chromium pārtrauca savienojumu, pirms tika veikta jebkādu datu apmaiņa.</translation>
-<translation id="9106062320799175032">Norēķinu adreses pievienošana</translation>
 <translation id="9107467864910557787">Jūsu pārlūku pārvalda <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Saskaņā ar administratora iestatīto politiku ekrāna kopīgošana ar lietojumprogrammu <ph name="APPLICATION_TITLE" /> tiek atspējota, kad ir redzams konfidenciāls saturs.</translation>
 <translation id="9114524666733003316">Notiek kartes apstiprināšana...</translation>
@@ -3325,7 +3308,6 @@ Papildu informācija:
 <translation id="9139318394846604261">Pirkumi</translation>
 <translation id="9141013498910525015">Pārvaldīt adreses</translation>
 <translation id="9144951720726881238">Derīguma termiņš:</translation>
-<translation id="9148088599418889305">Izvēlēties nosūtīšanas veidu</translation>
 <translation id="9148507642005240123">&amp;Atsaukt labojumu</translation>
 <translation id="9150045010208374699">Izmantot jūsu videokameru</translation>
 <translation id="9150685862434908345">Jūsu administrators var attālināti mainīt jūsu pārlūka iestatījumus. Darbību šajā ierīcē var pārvaldīt arī ārpus Chrome. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
@@ -3376,7 +3358,6 @@ Papildu informācija:
 <translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="96680173638229310">Automašīnas un transportlīdzekļi</translation>
 <translation id="969892804517981540">Oficiālā Uzbūve</translation>
-<translation id="973773823069644502">Pievienot piegādes adresi</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nav}=1{1 vienums}zero{# vienumi}one{# vienums}other{# vienumi}}</translation>
 <translation id="976522784004777030">5 x 8 collas</translation>
 <translation id="977502174772294970">Kāzas</translation>

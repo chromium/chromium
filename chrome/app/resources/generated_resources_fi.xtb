@@ -6843,7 +6843,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7017004637493394352">Sano ”Hey Google” uudelleen</translation>
 <translation id="7017219178341817193">Lisää uusi sivu</translation>
 <translation id="7017354871202642555">Tilaa ei voi asettaa ikkunan asettamisen jälkeen.</translation>
-<translation id="7018275672629230621">Lukea ja muokata selaushistoriaasi</translation>
 <translation id="7019546817926942979">Laite on liitettävä virtalähteeseen. Linuxin päivittäminen voi kuluttaa paljon akkuvirtaa. Laita laite lataukseen ja yritä uudelleen.</translation>
 <translation id="7019805045859631636">Nopea</translation>
 <translation id="7022562585984256452">Etusivusi on asetettu.</translation>
@@ -7132,6 +7131,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7308643132139167865">Verkkosivustojen kielet</translation>
 <translation id="7310598146671372464">Kirjautuminen epäonnistui. Palvelin ei tue määritettyjä Kerberos-salaustyyppejä. Ota yhteyttä järjestelmänvalvojaan.</translation>
 <translation id="7311089766378749632">Pyytää lupaa lukea ja muuttaa sivustoa (<ph name="SITE_NAME" />)</translation>
+<translation id="7311244614769792472">Ei tuloksia</translation>
 <translation id="7312210124139670355">Järjestelmänvalvoja nollaa eSIMiäsi. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="7317831949569936035">Kouluun rekisteröinti</translation>
 <translation id="7320213904474460808">Aseta oletusverkko</translation>

@@ -385,7 +385,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3083194063661536258">Accesso non eseguito. Pulsante. Consente di aprire la finestra di dialogo per accedere e attivare la sincronizzazione.</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
-<translation id="3104179992611025423">Il tuo browser è gestito dai tuoi genitori</translation>
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">collegata con</translation>
 <translation id="3123734510202723619">Annunci</translation>
@@ -396,7 +395,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="316694332262407393">Chrome è già in esecuzione qui.</translation>
 <translation id="3167258285411721858">Puoi richiedere il sito mobile di <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3187472288455401631">Valutazione degli annunci</translation>
+<translation id="3187472288455401631">Misurazione degli annunci</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> è stato eliminato</translation>
@@ -603,7 +602,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="433213510553688132">In attesa di seguire…</translation>
 <translation id="4335835283689002019">Navigazione sicura non attiva</translation>
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
-<translation id="4369735607080757018">Vengono condivisi tipi di dati limitati tra i siti per valutare il rendimento dei loro annunci, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio</translation>
+<translation id="4369735607080757018">Vengono condivisi tipi di dati limitati tra i siti per misurare il rendimento dei loro annunci, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="438319986296050901">Condividi solo schede</translation>
 <translation id="4384468725000734951">Sogou in uso per la ricerca</translation>
@@ -1268,7 +1267,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7780645209293383778">Se hai eseguito l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
-<translation id="780301667611848630">No grazie</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7808889146555843082">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" />. Cambia la password o elimina il tuo account su <ph name="SITE" /> per proteggerlo dagli altri.</translation>
 <translation id="7810647596859435254">Apri con…</translation>
 <translation id="7815484226266492798">Screenshot lungo</translation>
