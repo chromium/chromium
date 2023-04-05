@@ -99,6 +99,11 @@
         aria-label$="[[i18n('modulesJourneysShowAllAcc', cluster.label)]]">
       [[i18n('modulesJourneysShowAll')]]
     </button>
+    <button id="openAllInTabGroupButton" class="dropdown-item"
+        on-click="onOpenAllInTabGroupClick_"
+        slot="action-menu-items" type="button">
+      [[i18n('modulesJourneysOpenAllInNewTabGroupButtonText')]]
+    </button>
   </ntp-module-header>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
     <div id="layout1" class="layout">

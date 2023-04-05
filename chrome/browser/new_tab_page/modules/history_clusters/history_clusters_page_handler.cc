@@ -432,6 +432,10 @@ void HistoryClustersPageHandler::OpenUrlsInTabGroup(
   tab_indices.insert(tab_indices.begin(), model->GetIndexOfWebContents(
                                               model->GetActiveWebContents()));
   model->AddToNewGroup(tab_indices);
+
+  if (tab_indices.size() > 1) {
+    model->ActivateTabAt(tab_indices.at(1));
+  }
 }
 
 void HistoryClustersPageHandler::DismissCluster(

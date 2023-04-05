@@ -562,8 +562,8 @@ TEST_F(HistoryClustersPageHandlerTest, ShowJourneysSidePanel) {
 }
 
 TEST_F(HistoryClustersPageHandlerTest, OpenUrlsInTabGroup) {
-  const std::vector<GURL> urls = {GURL("http://foo/1"), GURL("http://foo/2"),
-                                  GURL("http://www.google.com/search?q=foo")};
+  const std::vector<GURL> urls = {GURL("http://www.google.com/search?q=foo"),
+                                  GURL("http://foo/1"), GURL("http://foo/2")};
   handler().OpenUrlsInTabGroup(urls);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -574,6 +574,8 @@ TEST_F(HistoryClustersPageHandlerTest, OpenUrlsInTabGroup) {
 
   TabGroupModel* tab_group_model = tab_strip_model->group_model();
   ASSERT_EQ(1u, tab_group_model->ListTabGroups().size());
+  ASSERT_EQ(1, tab_strip_model->GetIndexOfWebContents(
+                   tab_strip_model->GetActiveWebContents()));
 }
 
 TEST_F(HistoryClustersPageHandlerTest, DismissCluster) {

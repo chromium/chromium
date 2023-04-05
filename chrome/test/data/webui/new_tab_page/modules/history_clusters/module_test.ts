@@ -9,6 +9,7 @@ import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-we
 import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, ImageServiceBrowserProxy, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ImageServiceHandlerRemote} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -17,7 +18,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
-import {createRelatedSearches, createSampleVisits} from './test_support.js';
+import {createRelatedSearches, createSampleVisits, GOOGLE_SEARCH_BASE_URL} from './test_support.js';
 
 const DISPLAY_LAYOUT_METRIC_NAME = 'NewTabPage.HistoryClusters.DisplayLayout';
 
@@ -275,6 +276,30 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                   HistoryClusterLayoutType.LAYOUT_1}.Click`,
               HistoryClusterElementType.SHOW_ALL));
     });
+
+    test(
+        'Backend is notified when "Open all in tab group" is triggered',
+        async () => {
+          const sampleCluster =
+              createSampleCluster(HistoryClusterLayoutType.LAYOUT_1);
+          const moduleElement = await initializeModule(sampleCluster);
+          assertTrue(!!moduleElement);
+
+          const openAllButton =
+              moduleElement.shadowRoot!.querySelector('ntp-module-header')!
+                  .querySelector<HTMLElement>('#openAllInTabGroupButton')!;
+          assertEquals(
+              (loadTimeData.getString(
+                  'modulesJourneysOpenAllInNewTabGroupButtonText')),
+              openAllButton.innerText.trim());
+          openAllButton.click();
+
+          const urls = await handler.whenCalled('openUrlsInTabGroup');
+          assertEquals(3, urls.length);
+          assertEquals(`${GOOGLE_SEARCH_BASE_URL}?q=foo`, urls[0].url);
+          assertEquals('https://www.foo.com/1', urls[1].url);
+          assertEquals('https://www.foo.com/2', urls[2].url);
+        });
 
     test('Backend is notified when module is dismissed', async () => {
       // Arrange.
