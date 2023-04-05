@@ -636,7 +636,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.UserAction.PerProfile" enum="Profile"
-    expires_after="2023-04-16">
+    expires_after="never">
+<!-- expires-never: Used by the Chrome Profile Metrics dashboard to track user
+     actions per profile, for users with multiple active profiles. -->
+
   <owner>msarda@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
   <summary>
