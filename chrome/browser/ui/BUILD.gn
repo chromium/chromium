@@ -3465,6 +3465,7 @@ static_library("ui") {
       "//ui/file_manager:file_manager",
       "//ui/ozone",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+      "//ui/webui/resources/cr_components/color_change_listener:mojom",
     ]
     public_deps += [
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
