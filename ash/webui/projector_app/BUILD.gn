@@ -26,6 +26,8 @@ static_library("projector_app") {
     "untrusted_annotator_page_handler_impl.h",
     "untrusted_projector_annotator_ui.cc",
     "untrusted_projector_annotator_ui.h",
+    "untrusted_projector_page_handler_impl.cc",
+    "untrusted_projector_page_handler_impl.h",
     "untrusted_projector_ui.cc",
     "untrusted_projector_ui.h",
   ]
@@ -35,7 +37,9 @@ static_library("projector_app") {
     "//ash/strings",
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
+    "//ash/webui/projector_app/mojom:projector_mojo_bindings",
     "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings",
+    "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:projector_annotator_untrusted_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
@@ -83,12 +87,15 @@ source_set("unit_tests") {
     "test/projector_oauth_token_fetcher_unittest.cc",
     "test/projector_xhr_sender_unittest.cc",
     "test/untrusted_annotator_page_handler_impl_unittest.cc",
+    "test/untrusted_projector_page_handler_impl_unittest.cc",
   ]
 
   deps = [
     ":test_support",
     "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
+    "//ash/webui/projector_app/mojom:projector_mojo_bindings",
     "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings",
+    "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
     "//base",
     "//components/prefs:test_support",
     "//content/test:test_support",

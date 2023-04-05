@@ -249,7 +249,9 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
+#include "ash/webui/projector_app/untrusted_projector_ui.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -1473,6 +1475,9 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 
   registry.ForWebUI<ash::UntrustedProjectorAnnotatorUI>()
       .Add<ash::annotator::mojom::UntrustedAnnotatorPageHandlerFactory>();
+
+  registry.ForWebUI<ash::UntrustedProjectorUI>()
+      .Add<ash::projector::mojom::UntrustedProjectorPageHandlerFactory>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)

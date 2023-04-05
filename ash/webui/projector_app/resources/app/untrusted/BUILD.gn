@@ -9,10 +9,15 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash, "Projector is ChromeOS only")
 
 js_library("untrusted_app") {
-  sources = [ "untrusted_app_comm_factory.js" ]
+  sources = [
+    "untrusted_app_comm_factory.js",
+    "untrusted_projector_browser_proxy.js",
+  ]
   deps = [
     "//ash/webui/common/resources/post_message_api:post_message_api_client",
     "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
+    "//ash/webui/projector_app/mojom:projector_mojo_bindings_webui_js",
+    "//ash/webui/projector_app/public/mojom:projector_mojo_bindings_webui_js",
     "//ash/webui/projector_app/resources/common:message_types",
   ]
   externs_list = [ "../../common/projector_app.externs.js" ]
@@ -23,9 +28,19 @@ generate_grd("build_untrusted_grd") {
     "index.html",
     "sandboxed_load_time_data.js",
     "untrusted_app_comm_factory.js",
+    "untrusted_projector_browser_proxy.js",
   ]
 
   input_files_base_dir = rebase_path(".", "//")
   grd_prefix = "ash_projector_app_untrusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+
+  deps = [
+    "//ash/webui/projector_app/mojom:projector_mojo_bindings_webui_grdp",
+    "//ash/webui/projector_app/public/mojom:projector_mojo_bindings_webui_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/../../../mojom/projector_mojo_bindings_webui_resources.grdp",
+    "$target_gen_dir/../../../public/mojom/projector_mojo_bindings_webui_resources.grdp",
+  ]
 }

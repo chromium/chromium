@@ -7,6 +7,8 @@ import {RequestHandler} from '//resources/ash/common/post_message_api/post_messa
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {ProjectorError} from 'chrome-untrusted://projector/common/message_types.js';
 
+import {browserProxy} from './untrusted_projector_browser_proxy.js';
+
 const TARGET_URL = 'chrome://projector/';
 
 // Maps video file id to promises of video files.
@@ -71,8 +73,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<!projectorApp.NewScreencastPreconditionState>}
    */
   getNewScreencastPreconditionState() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getNewScreencastPreconditionState', []);
+    return browserProxy.getNewScreencastPreconditionState();
   },
 
   /**
@@ -239,16 +240,19 @@ export class UntrustedAppRequestHandler extends RequestHandler {
   constructor(parentWindow) {
     super(null, TARGET_URL, TARGET_URL);
     this.targetWindow_ = parentWindow;
+    this.callbackRouter_ = browserProxy.getProjectorCallbackRouter();
 
-    this.registerMethod('onNewScreencastPreconditionChanged', (args) => {
-      if (args.length !== 1) {
-        console.error(
-            'Invalid argument to onNewScreencastPreconditionChanged', args);
-        return;
-      }
+    this.callbackRouter_.onNewScreencastPreconditionChanged.addListener(
+        (precondition) => {
+          try {
+            getAppElement().onNewScreencastPreconditionChanged(precondition);
+          } catch (error) {
+            console.error(
+                'Unable to notify onNewScreencastPreconditionChanged method',
+                error);
+          }
+        });
 
-      getAppElement().onNewScreencastPreconditionChanged(args[0]);
-    });
     this.registerMethod('onSodaInstallProgressUpdated', (args) => {
       if (args.length !== 1 || isNaN(args[0])) {
         return;

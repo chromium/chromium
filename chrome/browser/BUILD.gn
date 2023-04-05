@@ -5016,6 +5016,7 @@ static_library("browser") {
       "//ash/webui/print_management",
       "//ash/webui/projector_app",
       "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
+      "//ash/webui/projector_app/mojom:projector_mojo_bindings",
       "//ash/webui/scanning",
       "//ash/webui/scanning/mojom",
       "//ash/webui/shimless_rma",

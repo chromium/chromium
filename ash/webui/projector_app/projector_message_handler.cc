@@ -180,12 +180,6 @@ void ProjectorMessageHandler::RegisterMessages() {
                                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "getNewScreencastPreconditionState",
-      base::BindRepeating(
-          &ProjectorMessageHandler::GetNewScreencastPrecondition,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       "startProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::StartProjectorSession,
                           base::Unretained(this)));
@@ -252,13 +246,6 @@ void ProjectorMessageHandler::OnSodaInstalled() {
   FireWebUIListener("onSodaInstalled");
 }
 
-void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
-    const NewScreencastPrecondition& precondition) {
-  AllowJavascript();
-  FireWebUIListener("onNewScreencastPreconditionChanged",
-                    precondition.ToValue());
-}
-
 void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
   AllowJavascript();
 
@@ -281,18 +268,6 @@ void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
   }
 
   ResolveJavascriptCallback(args[0], response);
-}
-
-void ProjectorMessageHandler::GetNewScreencastPrecondition(
-    const base::Value::List& args) {
-  AllowJavascript();
-
-  // Check that there is only one argument which is the callback id.
-  DCHECK_EQ(args.size(), 1u);
-
-  ResolveJavascriptCallback(
-      args[0],
-      ProjectorController::Get()->GetNewScreencastPrecondition().ToValue());
 }
 
 void ProjectorMessageHandler::StartProjectorSession(

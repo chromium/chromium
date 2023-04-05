@@ -43,13 +43,9 @@ const char kXhrResponseStringPath[] = "response";
 const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 const char kWebUIResponse[] = "cr.webUIResponse";
 const char kGetAccountsCallback[] = "getAccountsCallback";
-const char kGetNewScreencastPreconditionCallback[] =
-    "getNewScreencastPreconditionCallback";
 const char kStartProjectorSessionCallback[] = "startProjectorSessionCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
-const char kOnNewScreencastPreconditionChanged[] =
-    "onNewScreencastPreconditionChanged";
 const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
 const char kOnSodaInstalled[] = "onSodaInstalled";
 const char kOnSodaInstallError[] = "onSodaInstallError";
@@ -67,8 +63,6 @@ const char kGetUserPrefCallback[] = "getUserPrefCallback";
 constexpr char kRejectedRequestMessage[] = "Request Rejected";
 constexpr char kRejectedRequestMessageKey[] = "message";
 constexpr char kRejectedRequestArgsKey[] = "requestArgs";
-
-constexpr char kState[] = "state";
 }  // namespace
 
 namespace ash {
@@ -187,34 +181,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetAccounts) {
   const std::string* email = account.FindString("email");
   ASSERT_NE(email, nullptr);
   EXPECT_EQ(*email, kTestUserEmail);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, CanStartProjectorSession) {
-  NewScreencastPrecondition precondition = NewScreencastPrecondition(
-      NewScreencastPreconditionState::kEnabled,
-      {NewScreencastPreconditionReason::kEnabledBySoda});
-
-  EXPECT_CALL(controller(), GetNewScreencastPrecondition());
-  ON_CALL(controller(), GetNewScreencastPrecondition)
-      .WillByDefault(testing::Return(precondition));
-
-  base::Value::List list_args;
-  list_args.Append(kGetNewScreencastPreconditionCallback);
-
-  web_ui().HandleReceivedMessage("getNewScreencastPreconditionState",
-                                 list_args);
-
-  // We expect that there was only one callback to the WebUI.
-  EXPECT_EQ(web_ui().call_data().size(), 1u);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(),
-            kGetNewScreencastPreconditionCallback);
-  EXPECT_TRUE(call_data.arg2()->GetBool());
-  const auto* args = call_data.arg3();
-  EXPECT_EQ(*(args->FindIntKey(kState)),
-            static_cast<int>(NewScreencastPreconditionState::kEnabled));
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
@@ -440,17 +406,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   // Verify error is UNSUPPORTED_URL.
   const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, NewScreencastPreconditionChanged) {
-  NewScreencastPrecondition precondition = NewScreencastPrecondition(
-      NewScreencastPreconditionState::kEnabled,
-      {NewScreencastPreconditionReason::kEnabledBySoda});
-  message_handler()->OnNewScreencastPreconditionChanged(precondition);
-  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
-  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
-  EXPECT_EQ(call_data.arg1()->GetString(), kOnNewScreencastPreconditionChanged);
-  EXPECT_EQ(*(call_data.arg2()), precondition.ToValue());
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {

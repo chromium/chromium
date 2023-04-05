@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/webui/projector_app/untrusted_projector_page_handler_impl.h"
+
+#include <memory>
+#include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
+#include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
+#include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
+
+namespace ash {
+namespace {
+
+// TODO(b/237337607) Add type mapping from NewScreencastPrecondition
+// to projector::mojom::NewScreencastPrecondition.
+projector::mojom::NewScreencastPreconditionPtr ToMojom(
+    const NewScreencastPrecondition& precondition) {
+  auto result = projector::mojom::NewScreencastPrecondition::New();
+  result->state = static_cast<projector::mojom::NewScreencastPreconditionState>(
+      precondition.state);
+  for (const auto& reason : precondition.reasons) {
+    result->reasons.push_back(
+        static_cast<projector::mojom::NewScreencastPreconditionReason>(reason));
+  }
+  return result;
+}
+}  // namespace
+
+UntrustedProjectorPageHandlerImpl::UntrustedProjectorPageHandlerImpl(
+    mojo::PendingReceiver<projector::mojom::UntrustedProjectorPageHandler>
+        receiver,
+    mojo::PendingRemote<projector::mojom::UntrustedProjectorPage>
+        projector_remote)
+    : receiver_(this, std::move(receiver)),
+      projector_remote_(std::move(projector_remote)) {
+  ProjectorAppClient::Get()->AddObserver(this);
+}
+
+UntrustedProjectorPageHandlerImpl::~UntrustedProjectorPageHandlerImpl() {
+  ProjectorAppClient::Get()->RemoveObserver(this);
+}
+
+void UntrustedProjectorPageHandlerImpl::OnNewScreencastPreconditionChanged(
+    const NewScreencastPrecondition& precondition) {
+  projector_remote_->OnNewScreencastPreconditionChanged(ToMojom(precondition));
+}
+
+void UntrustedProjectorPageHandlerImpl::GetNewScreencastPrecondition(
+    projector::mojom::UntrustedProjectorPageHandler::
+        GetNewScreencastPreconditionCallback callback) {
+  std::move(callback).Run(
+      ToMojom(ProjectorController::Get()->GetNewScreencastPrecondition()));
+}
+
+}  // namespace ash
