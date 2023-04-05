@@ -45,6 +45,24 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       topicSource: TopicSource.kGooglePhotos,
       url: {url: 'http://test_url3'},
     },
+    {
+      id: '4',
+      checked: true,
+      title: '4',
+      description: '4',
+      numberOfPhotos: 1,
+      topicSource: TopicSource.kVideo,
+      url: {url: 'http://test_url4'},
+    },
+    {
+      id: '5',
+      checked: false,
+      title: '5',
+      description: '5',
+      numberOfPhotos: 1,
+      topicSource: TopicSource.kVideo,
+      url: {url: 'http://test_url5'},
+    },
   ];
 
   public previews: Url[] = [

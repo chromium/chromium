@@ -60,6 +60,11 @@ export class AlbumList extends WithPersonalizationStore {
 
   /** Invoked on selection of an album. */
   private onAlbumSelected_(e: Event&{model: {album: AmbientModeAlbum}}) {
+    if (this.topicSource === TopicSource.kVideo && e.model.album.checked) {
+      // De-selecting a selected video album is a no-op. Selecting a different
+      // video album will unselect the other video albums in the client.
+      return;
+    }
     e.model.album.checked = !e.model.album.checked;
     this.dispatchEvent(new CustomEvent(
         'album_selected_changed',
@@ -108,6 +113,10 @@ export class AlbumList extends WithPersonalizationStore {
 
   private isGooglePhotos_(topicSource: TopicSource): boolean {
     return topicSource === TopicSource.kGooglePhotos;
+  }
+
+  private isVideo_(topicSource: TopicSource): boolean {
+    return topicSource === TopicSource.kVideo;
   }
 }
 

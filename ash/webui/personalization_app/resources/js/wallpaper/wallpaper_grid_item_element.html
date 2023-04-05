@@ -190,7 +190,8 @@
   }
 
 </style>
-<div class="item" style$="[[getItemPlaceholderAnimationDelay_(index)]]">
+<div class="item" part="item"
+    style$="[[getItemPlaceholderAnimationDelay_(index)]]">
   <template is="dom-repeat" items="[[getSrcArray_(src, collage)]]">
     <img aria-hidden="true"
         auto-src="[[item.url]]"
