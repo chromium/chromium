@@ -7,8 +7,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 
 using content::WebContents;
@@ -25,15 +23,15 @@ GURL ExclusiveAccessControllerBase::GetExclusiveAccessBubbleURL() const {
 }
 
 GURL ExclusiveAccessControllerBase::GetURLForExclusiveAccessBubble() const {
-  if (tab_with_exclusive_access_)
-    return tab_with_exclusive_access_->GetURL();
-  return GURL();
+  return exclusive_access_tab() ? exclusive_access_tab()->GetURL() : GURL();
 }
 
 void ExclusiveAccessControllerBase::OnTabDeactivated(
     WebContents* web_contents) {
-  if (web_contents == tab_with_exclusive_access_)
-    ExitExclusiveAccessIfNecessary();
+  if (web_contents != exclusive_access_tab()) {
+    return;
+  }
+  ExitExclusiveAccessIfNecessary();
 }
 
 void ExclusiveAccessControllerBase::OnTabDetachedFromView(
@@ -42,26 +40,18 @@ void ExclusiveAccessControllerBase::OnTabDetachedFromView(
 }
 
 void ExclusiveAccessControllerBase::OnTabClosing(WebContents* web_contents) {
-  if (web_contents == tab_with_exclusive_access_) {
-    ExitExclusiveAccessIfNecessary();
-
-    // The call to exit exclusive access may result in asynchronous notification
-    // of state change (e.g. fullscreen change on Linux). We don't want to rely
-    // on it to call NotifyTabExclusiveAccessLost(), because at that point
-    // |tab_with_exclusive_access_| may not be valid. Instead, we call it here
-    // to clean up exclusive access tab related state.
-    NotifyTabExclusiveAccessLost();
+  if (web_contents != exclusive_access_tab()) {
+    return;
   }
-}
 
-void ExclusiveAccessControllerBase::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_NAV_ENTRY_COMMITTED, type);
-  if (content::Details<content::LoadCommittedDetails>(details)
-          ->is_navigation_to_different_page())
-    ExitExclusiveAccessIfNecessary();
+  ExitExclusiveAccessIfNecessary();
+
+  // The call to exit exclusive access may result in asynchronous notification
+  // of state change (e.g. fullscreen change on Linux). We don't want to rely
+  // on it to call NotifyTabExclusiveAccessLost(), because at that point
+  // |tab_with_exclusive_access_| may not be valid. Instead, we call it here
+  // to clean up exclusive access tab related state.
+  NotifyTabExclusiveAccessLost();
 }
 
 void ExclusiveAccessControllerBase::RecordBubbleReshownUMA() {
@@ -78,20 +68,24 @@ void ExclusiveAccessControllerBase::RecordExitingUMA() {
 
 void ExclusiveAccessControllerBase::SetTabWithExclusiveAccess(
     WebContents* tab) {
-  // Tab should never be replaced with another tab, or
-  // UpdateNotificationRegistrations would need updating.
-  DCHECK(tab_with_exclusive_access_ == tab ||
-         tab_with_exclusive_access_ == nullptr || tab == nullptr);
-  tab_with_exclusive_access_ = tab;
-  UpdateNotificationRegistrations();
+  // Tab should never be replaced with another tab.
+  CHECK(exclusive_access_tab() == tab || exclusive_access_tab() == nullptr ||
+        tab == nullptr);
+  web_contents_observer_.Observe(tab);
 }
 
-void ExclusiveAccessControllerBase::UpdateNotificationRegistrations() {
-  if (tab_with_exclusive_access_ && registrar_.IsEmpty()) {
-    registrar_.Add(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                   content::Source<content::NavigationController>(
-                       &tab_with_exclusive_access_->GetController()));
-  } else if (!tab_with_exclusive_access_ && !registrar_.IsEmpty()) {
-    registrar_.RemoveAll();
+//////////
+// ExclusiveAccessControllerBase::WebContentsObserver
+
+ExclusiveAccessControllerBase::WebContentsObserver::WebContentsObserver(
+    ExclusiveAccessControllerBase& controller)
+    : controller_(controller) {}
+
+void ExclusiveAccessControllerBase::WebContentsObserver::
+    NavigationEntryCommitted(
+        const content::LoadCommittedDetails& load_details) {
+  if (!load_details.is_navigation_to_different_page()) {
+    return;
   }
+  controller_->ExitExclusiveAccessIfNecessary();
 }
