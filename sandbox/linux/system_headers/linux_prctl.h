@@ -15,14 +15,19 @@
 #define PR_SET_TIMERSLACK 29
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-
+// The PR_SET_VMA* symbols are originally from
 // https://android.googlesource.com/platform/bionic/+/lollipop-release/libc/private/bionic_prctl.h
+// and were subsequently added to mainline Linux in Jan 2022.
+//
+// We conditionally define these symbols here to support older
+// GNU/Linux operating systems that may not have these symbols yet.
 #if !defined(PR_SET_VMA)
 #define PR_SET_VMA 0x53564d41
 #endif
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#if !defined(PR_SET_VMA_ANON_NAME)
+#define PR_SET_VMA_ANON_NAME 0
+#endif
 
 #if !defined(PR_SET_PTRACER)
 #define PR_SET_PTRACER 0x59616d61
