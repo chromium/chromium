@@ -1504,7 +1504,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 // Dismisses the menu and adds the current page as a bookmark or opens the
 // bookmark edit screen if the current page is bookmarked.
 - (void)addOrEditBookmark {
-  RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
+  RecordAction(UserMetricsAction("MobileMenuAddToOrEditBookmark"));
   // Dismissing the menu disconnects the mediator, so save anything cleaned up
   // there.
   web::WebState* currentWebState = self.webState;
