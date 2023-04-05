@@ -1152,6 +1152,22 @@ MATCHER_P(DoesNotHaveMetric, key, "") {
   return true;
 }
 
+MATCHER_P2(OnlyHasMetricIf, key, condition, "") {
+  if (condition) {
+    if (!arg.contains(key)) {
+      *result_listener << "which does not contain " << key << " and should";
+      return false;
+    }
+  } else {
+    if (arg.contains(key)) {
+      *result_listener << "which unexpectedly contains " << key
+                       << " and shouldn't";
+      return false;
+    }
+  }
+  return true;
+}
+
 class AuctionRunnerTest : public RenderViewHostTestHarness,
                           public AuctionWorkletManager::Delegate,
                           public DebuggableAuctionWorkletTracker::Observer {
@@ -1909,6 +1925,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName,
                 Entry::
                     kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
+                Entry::kMeanComponentAuctionLatencyInMillisName,
+                Entry::kMaxComponentAuctionLatencyInMillisName,
             });
 
     EXPECT_THAT(ukm_entries, testing::SizeIs(1));
@@ -2150,6 +2168,17 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             UkmEntry::kNumInterestGroupsWithSeparateBidsForKAnonAndNonKAnonName,
             expectations
                 .num_interest_groups_with_separate_bids_for_k_anon_and_non_k_anon));
+
+    bool is_multi_seller_auction =
+        expectations.num_sellers && *expectations.num_sellers >= 2;
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(UkmEntry::kMeanComponentAuctionLatencyInMillisName,
+                        is_multi_seller_auction));
+    EXPECT_THAT(
+        ukm_metrics,
+        OnlyHasMetricIf(UkmEntry::kMaxComponentAuctionLatencyInMillisName,
+                        is_multi_seller_auction));
   }
 
   AuctionRunner::IsInterestGroupApiAllowedCallback

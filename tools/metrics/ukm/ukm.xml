@@ -720,6 +720,28 @@ be describing additional metrics about the same event.
       can independently filter this based on the value of NumInterestGroups.
     </summary>
   </metric>
+  <metric name="MaxComponentAuctionLatencyInMillis">
+    <summary>
+      Only for multi-seller auctions, this is the highest latency of the bidding
+      and scoring phase, observed across all of the component auctions. This
+      latency is measured as the time between the call to
+      StartBiddingAndScoringPhase and the call to OnComponentAuctionComplete.
+      This metric only has a value for entries that represent multi-seller
+      auctions, as indicated by a value for the NumSellersWithBidders metric of
+      two or greater.
+    </summary>
+  </metric>
+  <metric name="MeanComponentAuctionLatencyInMillis">
+    <summary>
+      Only for multi-seller auctions, this is the mean latency of the bidding
+      and scoring phase, aggregated across each of the component auctions. This
+      latency is measured as the time between the call to
+      StartBiddingAndScoringPhase and the call to OnComponentAuctionComplete.
+      This metric only has a value for entries that represent multi-seller
+      auctions, as indicated by a value for the NumSellersWithBidders metric of
+      two or greater.
+    </summary>
+  </metric>
   <metric name="NumBidderWorklets">
     <summary>
       The number of distinct BidderWorklets. Interest groups with the same owner
@@ -852,9 +874,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="NumSellersWithBidders">
     <summary>
-      This is either the number of component auctions in a multi-seller auction
-      (under the assumption that the top-level auction may not itself have any
-      InterestGroups), or 1 for a single-seller auction. Equivalent to UMA
+      This is either the number of component auctions *plus one* for a
+      multi-seller auction, or 1 for a single-seller auction. Equivalent to UMA
       metric, Ads.InterestGroup.Auction.NumSellersWithBidders. No value is
       defined for this metric if there are no bidders eligible to participate in
       this auction.

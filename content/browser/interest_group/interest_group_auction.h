@@ -895,6 +895,9 @@ class CONTENT_EXPORT InterestGroupAuction
   AuctionPhaseCompletionCallback load_interest_groups_phase_callback_;
   AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback_;
 
+  // Start time of the BiddingAndScoring phase for UKM metrics.
+  base::TimeTicks bidding_and_scoring_phase_start_time_;
+
   // Invoked in the bidding and scoring phase, once the seller worklet has
   // loaded. May be null.
   base::OnceClosure on_seller_receiver_callback_;

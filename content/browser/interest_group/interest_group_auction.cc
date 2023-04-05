@@ -1726,6 +1726,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   bidding_and_scoring_phase_callback_ =
       std::move(bidding_and_scoring_phase_callback);
 
+  bidding_and_scoring_phase_start_time_ = base::TimeTicks::Now();
+
   outstanding_bid_sources_ = buyer_helpers_.size() + component_auctions_.size();
 
   // Need to start loading worklets before any bids can be generated or scored.
@@ -2729,6 +2731,9 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
 void InterestGroupAuction::OnComponentAuctionComplete(
     InterestGroupAuction* component_auction,
     bool success) {
+  auction_metrics_recorder_->RecordComponentAuctionLatency(
+      base::TimeTicks::Now() - bidding_and_scoring_phase_start_time_);
+
   // TODO(morlovich): Can try to consolidate these as kBothKAnonModes when
   // possible.
   ScoredBid* non_kanon_enforced_bid =
