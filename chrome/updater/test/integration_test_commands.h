@@ -116,6 +116,9 @@ class IntegrationTestCommands
                                      policy_same_version_update) const = 0;
 
   virtual void SetupFakeLegacyUpdater() const = 0;
+#if BUILDFLAG(IS_WIN)
+  virtual void RunFakeLegacyUpdater() const = 0;
+#endif  // BUILDFLAG(IS_WIN)
   virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,
                                     const base::Version& version) const = 0;

@@ -326,6 +326,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_legacy_updater");
   }
 
+#if BUILDFLAG(IS_WIN)
+  void RunFakeLegacyUpdater() const override {
+    RunCommand("run_fake_legacy_updater");
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectLegacyUpdaterMigrated() const override {
     RunCommand("expect_legacy_updater_migrated");
   }

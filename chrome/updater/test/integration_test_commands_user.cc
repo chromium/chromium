@@ -286,6 +286,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::SetupFakeLegacyUpdater(updater_scope_);
   }
 
+#if BUILDFLAG(IS_WIN)
+  void RunFakeLegacyUpdater() const override {
+    updater::test::RunFakeLegacyUpdater(updater_scope_);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectLegacyUpdaterMigrated() const override {
     updater::test::ExpectLegacyUpdaterMigrated(updater_scope_);
   }

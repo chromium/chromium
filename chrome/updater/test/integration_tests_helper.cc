@@ -345,6 +345,9 @@ void AppTestHelper::FirstTaskRun() {
                                                     &CallServiceUpdate)))))},
     {"setup_fake_legacy_updater",
      WithSystemScope(Wrap(&SetupFakeLegacyUpdater))},
+#if BUILDFLAG(IS_WIN)
+    {"run_fake_legacy_updater", WithSystemScope(Wrap(&RunFakeLegacyUpdater))},
+#endif  // BUILDFLAG(IS_WIN)
     {"expect_legacy_updater_migrated",
      WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},
     {"run_recovery_component",
