@@ -174,6 +174,9 @@ build_webui_tests("build") {
     files += [ "passwords_section_test_cros.ts" ]
   } else {
     files += [
+      "live_caption_section_tests.ts",
+      "live_translate_section_tests.ts",
+      "test_captions_browser_proxy.ts",
       "default_browser_test.ts",
       "import_data_dialog_test.ts",
       "system_page_tests.ts",

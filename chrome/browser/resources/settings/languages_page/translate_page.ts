@@ -94,7 +94,7 @@ export class SettingsTranslatePageElement extends
    * name of the language.
   */
   private getTargetLanguageDisplayOption_(
-        item: chrome.languageSettingsPrivate.Language): string {
+      item: chrome.languageSettingsPrivate.Language): string {
     return this.languageHelper.getFullName(item);
   }
 

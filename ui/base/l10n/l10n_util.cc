@@ -609,6 +609,15 @@ bool IsLocaleNameTranslated(const char* locale,
       base::UTF16ToASCII(display_name) != locale;
 }
 
+std::u16string GetDisplayNameForLocaleWithoutCountry(
+    const std::string& locale,
+    const std::string& display_locale,
+    bool is_for_ui,
+    bool disallow_default) {
+  return GetDisplayNameForLocale(GetLanguage(locale), display_locale, is_for_ui,
+                                 disallow_default);
+}
+
 std::u16string GetDisplayNameForLocale(const std::string& locale,
                                        const std::string& display_locale,
                                        bool is_for_ui,

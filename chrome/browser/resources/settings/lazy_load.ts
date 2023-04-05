@@ -48,6 +48,7 @@ import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/zoom_levels.js';
 // <if expr="not is_chromeos">
+import './a11y_page/live_caption_section.js';
 import './people_page/import_data_dialog.js';
 // </if>
 // <if expr="not chromeos_ash">
@@ -87,6 +88,12 @@ export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_t
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+// <if expr="not is_chromeos">
+export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl} from './a11y_page/captions_browser_proxy.js';
+export {LiveCaptionLanguageList, SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
+export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
+// </if>
+
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';

@@ -7,16 +7,50 @@
  * interact with the browser. Used on operating system that is not Chrome OS.
  */
 
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+
+import {LiveCaptionLanguageList} from './live_caption_section.js';
+
 export interface CaptionsBrowserProxy {
   /**
    * Open the native captions system dialog.
    */
   openSystemCaptionsDialog(): void;
+
+  liveCaptionSectionReady(): void;
+
+  getInstalledLanguagePacks(): Promise<LiveCaptionLanguageList>;
+
+  getAvailableLanguagePacks(): Promise<LiveCaptionLanguageList>;
+
+  removeLanguagePack(languageCode: string): void;
+
+  installLanguagePacks(languageCodes: string[]): void;
 }
 
 export class CaptionsBrowserProxyImpl implements CaptionsBrowserProxy {
   openSystemCaptionsDialog() {
     chrome.send('openSystemCaptionsDialog');
+  }
+
+  liveCaptionSectionReady() {
+    chrome.send('liveCaptionSectionReady');
+  }
+
+  getInstalledLanguagePacks() {
+    return sendWithPromise('getInstalledLanguagePacks');
+  }
+
+  getAvailableLanguagePacks() {
+    return sendWithPromise('getAvailableLanguagePacks');
+  }
+
+  removeLanguagePack(languageCode: string) {
+    chrome.send('removeLanguagePack', [languageCode]);
+  }
+
+  installLanguagePacks(languageCodes: string[]) {
+    chrome.send('installLanguagePacks', languageCodes);
   }
 
   static getInstance(): CaptionsBrowserProxy {

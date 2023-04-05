@@ -407,6 +407,7 @@ non_web_component_files = [
   "chromeos/setting_id_param_util.ts",
 
   # Files below are from Browser Settings and shared with ChromeOS Settings
+  "a11y_page/captions_browser_proxy.ts",
   "appearance_page/fonts_browser_proxy.ts",
   "controls/cr_policy_pref_mixin.ts",
   "controls/pref_control_mixin.ts",

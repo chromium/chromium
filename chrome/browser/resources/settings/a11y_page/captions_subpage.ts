@@ -23,6 +23,12 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './captions_subpage.html.js';
 
+// clang-format off
+// <if expr="not is_chromeos">
+import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+// </if>
+// clang-format on
+
 const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
 export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
@@ -40,6 +46,20 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
         type: Object,
         notify: true,
       },
+
+
+      // <if expr="not is_chromeos">
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+      languages: {
+        type: Object,
+        notify: true,
+      },
+
+      languageHelper: Object,
+      // </if>
 
       /**
        * List of options for the background opacity drop-down menu.
@@ -198,6 +218,10 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
+  // <if expr="not is_chromeos">
+  languages: LanguagesModel;
+  languageHelper: LanguageHelper;
+  // </if>
   private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
   private readonly colorOptions_: DropdownMenuOptionList;
   private textFontOptions_: DropdownMenuOptionList;

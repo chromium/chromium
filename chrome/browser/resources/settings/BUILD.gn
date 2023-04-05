@@ -223,6 +223,7 @@ build_webui("build") {
 
   if (!is_chromeos_ash) {
     web_component_files += [
+      "a11y_page/live_translate_section.ts",
       "people_page/manage_profile.ts",
       "relaunch_confirmation_dialog.ts",
       "languages_page/add_languages_dialog.ts",

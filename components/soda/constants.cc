@@ -186,13 +186,8 @@ LanguageCode GetLanguageCode(const std::string& language_name) {
 
 const std::u16string GetLanguageDisplayName(const std::string& language_name,
                                             const std::string& display_locale) {
-  absl::optional<SodaLanguagePackComponentConfig> language_config =
-      GetLanguageComponentConfig(language_name);
-  if (language_config.has_value()) {
-    return l10n_util::GetDisplayNameForLocale(
-        language_config.value().language_name, display_locale, true);
-  }
-  return std::u16string();
+  return l10n_util::GetDisplayNameForLocaleWithoutCountry(language_name,
+                                                          display_locale, true);
 }
 
 const std::string GetInstallationSuccessTimeMetricForLanguagePack(
