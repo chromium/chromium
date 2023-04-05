@@ -363,6 +363,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/safe_mode:unit_tests",
     "//ios/chrome/browser/ui/settings:unit_tests",
     "//ios/chrome/browser/ui/settings/autofill:unit_tests",
+    "//ios/chrome/browser/ui/settings/autofill/cells:unit_tests",
     "//ios/chrome/browser/ui/settings/bandwidth:unit_tests",
     "//ios/chrome/browser/ui/settings/cells:unit_tests",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:unit_tests",

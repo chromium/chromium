@@ -12,9 +12,30 @@ source_set("cells") {
   ]
 
   deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_profile_item_unittest.mm" ]
+
+  deps = [
+    ":cells",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

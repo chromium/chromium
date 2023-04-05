@@ -57,6 +57,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:settings_root_categories",
     "//ios/chrome/browser/ui/settings/autofill/cells",
