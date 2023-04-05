@@ -378,13 +378,13 @@ public class InstantStartTest {
         collector.checkThat(StartSurfaceConfiguration.isStartSurfaceFlagEnabled(), is(true));
         collector.checkThat(TextUtils.isEmpty(HomepageManager.getHomepageUri()), is(false));
         Assert.assertFalse(
-                NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
+                NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
         ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(mActivityTestRule.getActivity());
         ReturnToChromeUtil.isStartSurfaceEnabled(mActivityTestRule.getActivity());
         PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity());
 
         Assert.assertFalse("There should be no GURL usages triggering native library loading",
-                NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
+                NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
     }
 
     @Test

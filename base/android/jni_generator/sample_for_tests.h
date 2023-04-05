@@ -64,12 +64,8 @@ namespace android {
 // - The Java class must be part of an android_apk target that depends on
 //   a generate_jni_registration target. This generate_jni_registration target
 //   automatically generates all necessary registration functions. The
-//   generated header file exposes two functions that should be called when a
-//   library is first loaded:
-//     1) RegisterMainDexNatives()
-//       - Registers all methods that are used outside the browser process
-//     2) RegisterNonMainDexNatives()
-//       - Registers all methods used in the browser process
+//   generated header file exposes RegisterNatives() which registers all
+//   methods.
 //
 class CPPClass {
  public:

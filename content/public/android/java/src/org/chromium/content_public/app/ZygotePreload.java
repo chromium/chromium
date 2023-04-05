@@ -12,7 +12,6 @@ import android.os.SystemClock;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.process_launcher.ChildProcessService;
@@ -53,7 +52,6 @@ public class ZygotePreload implements android.app.ZygotePreload {
             // should give an accurate measurement of zygote process startup time.
             ChildProcessService.setZygoteInfo(
                     Process.myPid(), SystemClock.currentThreadTimeMillis());
-            JNIUtils.enableSelectiveJniRegistration();
             LibraryLoader.getInstance().getMediator().initInAppZygote();
             LibraryLoader.getInstance().loadNowInZygote(appInfo);
         } catch (Throwable e) {

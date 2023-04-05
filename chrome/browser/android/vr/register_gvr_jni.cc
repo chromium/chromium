@@ -23,8 +23,7 @@ static const base::android::RegistrationMethod kGvrRegisteredMethods[] = {
 };
 
 bool RegisterGvrJni(JNIEnv* env) {
-  if (!base::android::IsSelectiveJniRegistrationEnabled(env) &&
-      !RegisterNativeMethods(env, kGvrRegisteredMethods,
+  if (!RegisterNativeMethods(env, kGvrRegisteredMethods,
                              std::size(kGvrRegisteredMethods))) {
     return false;
   }

@@ -51,11 +51,6 @@ typedef bool NativeInitializationHook(LibraryProcessType library_process_type);
 BASE_EXPORT void SetNativeInitializationHook(
     NativeInitializationHook native_initialization_hook);
 
-typedef void NonMainDexJniRegistrationHook();
-
-BASE_EXPORT void SetNonMainDexJniRegistrationHook(
-    NonMainDexJniRegistrationHook jni_registration_hook);
-
 // Record any pending renderer histogram value as histograms.  Pending values
 // are set by
 // JNI_LibraryLoader_RegisterChromiumAndroidLinkerRendererHistogram().

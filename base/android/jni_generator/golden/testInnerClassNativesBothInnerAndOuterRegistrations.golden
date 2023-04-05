@@ -94,18 +94,11 @@ JNI_REGISTRATION_EXPORT bool RegisterNative_org_chromium_TestJni(JNIEnv* env) {
 }
 
 
-// Step 4: Main dex and non-main dex registration functions.
+// Step 4: Registration function.
 
 namespace test {
 
-bool RegisterMainDexNatives(JNIEnv* env) {
-  if (!RegisterNative_org_chromium_TestJni(env))
-    return false;
-
-  return true;
-}
-
-bool RegisterNonMainDexNatives(JNIEnv* env) {
+bool RegisterNatives(JNIEnv* env) {
 
   return true;
 }

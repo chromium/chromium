@@ -4,8 +4,6 @@
 
 package org.chromium.base.library_loader;
 
-import android.content.pm.ApplicationInfo;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -21,11 +19,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.MainDex;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for early JNI initialization.
@@ -36,15 +31,15 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.UNIT_TESTS)
 public class EarlyNativeTest {
     private boolean mWasInitialized;
-    private CallbackHelper mLoadMainDexStarted;
-    private CallbackHelper mEnsureMainDexInitializedFinished;
+    private CallbackHelper mLoadStarted;
+    private CallbackHelper mEnsureInitializedFinished;
 
     @Before
     public void setUp() {
         mWasInitialized = LibraryLoader.getInstance().isInitialized();
         LibraryLoader.getInstance().resetForTesting();
-        mLoadMainDexStarted = new CallbackHelper();
-        mEnsureMainDexInitializedFinished = new CallbackHelper();
+        mLoadStarted = new CallbackHelper();
+        mEnsureInitializedFinished = new CallbackHelper();
     }
 
     @After
@@ -52,25 +47,6 @@ public class EarlyNativeTest {
         // Restore the simulated library state (due to the resetForTesting() call).
         if (mWasInitialized) {
             LibraryLoader.getInstance().ensureInitialized();
-        }
-    }
-
-    private class TestLibraryLoader extends LibraryLoader {
-        @Override
-        @SuppressWarnings("GuardedBy") // ErrorProne: should be guarded by 'mLock'
-        protected void loadMainDexAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
-            mLoadMainDexStarted.notifyCalled();
-            super.loadMainDexAlreadyLocked(appInfo, inZygote);
-        }
-
-        @Override
-        protected void loadNonMainDex() {
-            try {
-                mEnsureMainDexInitializedFinished.waitForCallback(0);
-            } catch (TimeoutException e) {
-                throw new RuntimeException(e);
-            }
-            super.loadNonMainDex();
         }
     }
 
@@ -82,12 +58,7 @@ public class EarlyNativeTest {
 
     @Test
     @SmallTest
-    public void testEnsureMainDexInitialized() {
-        LibraryLoader.getInstance().ensureMainDexInitialized();
-        // Some checks to ensure initialization has taken place.
-        Assert.assertTrue(EarlyNativeTestJni.get().isCommandLineInitialized());
-        Assert.assertFalse(EarlyNativeTestJni.get().isProcessNameEmpty());
-
+    public void testEnsureInitialized() {
         // Make sure the Native library isn't considered ready for general use.
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
 
@@ -101,44 +72,6 @@ public class EarlyNativeTest {
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
     }
 
-    private void doTestFullInitializationDoesntBlockMainDexInitialization(final boolean initialize)
-            throws Exception {
-        final TestLibraryLoader loader = new TestLibraryLoader();
-        loader.setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
-        final Thread t1 = new Thread(() -> {
-            if (initialize) {
-                loader.ensureInitialized();
-            } else {
-                loader.loadNow();
-            }
-        });
-        t1.start();
-        mLoadMainDexStarted.waitForCallback(0);
-        final Thread t2 = new Thread(() -> {
-            loader.ensureMainDexInitialized();
-            Assert.assertFalse(loader.isInitialized());
-            mEnsureMainDexInitializedFinished.notifyCalled();
-        });
-        t2.start();
-        t2.join();
-        t1.join();
-        Assert.assertTrue(loader.isInitialized());
-    }
-
-    @Test
-    @SmallTest
-    @RequiresRestart("Uses custom LibraryLoader")
-    public void testFullInitializationDoesntBlockMainDexInitialization() throws Exception {
-        doTestFullInitializationDoesntBlockMainDexInitialization(true);
-    }
-
-    @Test
-    @SmallTest
-    @RequiresRestart("Uses custom LibraryLoader")
-    public void testLoadDoesntBlockMainDexInitialization() throws Exception {
-        doTestFullInitializationDoesntBlockMainDexInitialization(false);
-    }
-
     @Test
     @SmallTest
     public void testNativeMethodsReadyAfterLibraryInitialized() {
@@ -146,19 +79,9 @@ public class EarlyNativeTest {
         if (!BuildConfig.ENABLE_ASSERTS) return;
 
         Assert.assertFalse(
-                NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
-        Assert.assertFalse(
-                NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
-
-        LibraryLoader.getInstance().ensureMainDexInitialized();
-        Assert.assertTrue(
-                NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
-        Assert.assertFalse(
                 NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
 
         LibraryLoader.getInstance().ensureInitialized();
-        Assert.assertTrue(
-                NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
         Assert.assertTrue(
                 NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
     }

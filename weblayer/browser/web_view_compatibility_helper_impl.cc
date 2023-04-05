@@ -9,22 +9,14 @@
 #endif
 
 namespace weblayer {
-namespace {
-#if defined(WEBLAYER_MANUAL_JNI_REGISTRATION)
-void RegisterNonMainDexNativesHook() {
-  RegisterNonMainDexNatives(base::android::AttachCurrentThread());
-}
-#endif
-}  // namespace
 
 bool MaybeRegisterNatives() {
 #if defined(WEBLAYER_MANUAL_JNI_REGISTRATION)
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_WebViewCompatibilityHelperImpl_requiresManualJniRegistration(env)) {
-    if (!RegisterMainDexNatives(env))
+    if (!RegisterNatives(env)) {
       return false;
-    base::android::SetNonMainDexJniRegistrationHook(
-        RegisterNonMainDexNativesHook);
+    }
   }
 #endif
   return true;
