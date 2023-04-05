@@ -687,6 +687,11 @@ const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     "OmniboxRichSuggestionVerticalMargin",
     4);
 
+bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella) ||
+         base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
+}
+
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kCr2023Umbrella) ||
          base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
