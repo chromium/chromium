@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,8 +13,6 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -78,33 +75,10 @@ class CreditCardAccessorySheetViewBinder {
                                     || view.getExpMonth().getVisibility() == View.VISIBLE
                             ? View.VISIBLE
                             : View.GONE);
-            // If the icon url is present, fetch the bitmap from the PersonalDataManager. In
-            // the event that the bitmap is not present in the PersonalDataManager, fall back to the
-            // icon corresponding to the `mOrigin`.
-            Bitmap iconBitmap = null;
-            int iconId = getDrawableForOrigin(info.getOrigin());
-            Resources res = view.getContext().getResources();
-            if (info.getIconUrl() != null && info.getIconUrl().isValid()) {
-                if (info.getIconUrl().getSpec().equals(
-                            "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-                    iconId = R.drawable.capitalone_metadata_card;
-                } else {
-                    iconBitmap = PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                            AutofillUiUtils.getCCIconURLWithParams(info.getIconUrl(),
-                                    res.getDimensionPixelSize(
-                                            R.dimen.keyboard_accessory_bar_item_cc_icon_width),
-                                    res.getDimensionPixelSize(
-                                            R.dimen.keyboard_accessory_suggestion_icon_size)));
-                }
-            }
-            if (iconBitmap != null) {
-                view.setIcon(new BitmapDrawable(res, iconBitmap));
-            } else {
-                view.setIcon(AppCompatResources.getDrawable(view.getContext(), iconId));
-            }
+            view.setIcon(getCardIcon(view.getContext(), info.getIconUrl(),
+                    getDrawableForOrigin(info.getOrigin()),
+                    R.dimen.keyboard_accessory_bar_item_cc_icon_width,
+                    R.dimen.keyboard_accessory_suggestion_icon_size, /* showCustomIcon= */ true));
         }
 
         private static @DrawableRes int getDrawableForOrigin(String origin) {

@@ -43,7 +43,6 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -459,57 +458,6 @@ public class AutofillUiUtils {
     }
 
     /**
-     * If the card has a valid card art URL, it tries to fetch the bitmap of the required size from
-     * PersonalDataManager. If it is not available in cache, then the bitmap of the required size is
-     * fetched and stored in cache for the next time.
-     * @param context Context required to get resources.
-     * @param card The credit card for which the icon is to be retrieved.
-     * @param widthId Resource Id for the width spec.
-     * @param heightId Resource Id for the height spec.
-     * @return {@link Drawable} that can be set as the card icon.
-     */
-    public static Drawable getCardIcon(
-            Context context, CreditCard card, int widthId, int heightId) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)) {
-            if (card.getCardArtUrl() != null && card.getCardArtUrl().isValid()) {
-                if (card.getCardArtUrl().getSpec().equals(
-                            "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-                    return AppCompatResources.getDrawable(
-                            context, R.drawable.capitalone_metadata_card);
-                }
-                Resources resources = context.getResources();
-                Bitmap customIconBitmap =
-                        PersonalDataManager.getInstance()
-                                .getCustomImageForAutofillSuggestionIfAvailable(
-                                        getCCIconURLWithParams(card.getCardArtUrl(),
-                                                resources.getDimensionPixelSize(widthId),
-                                                resources.getDimensionPixelSize(heightId)));
-                if (customIconBitmap != null) {
-                    if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-                        // The new Capital One card icon assets are stored at all scales in the
-                        // client code, and there's no need to scale the bitmap.
-                        return new BitmapDrawable(resources, customIconBitmap);
-                    }
-                    // TODO(crbug.com/1313616): We have one gstatic card art image that is available
-                    // in a single size. All other card art images can be fetched in the desired
-                    // size. Scale the bitmap to match the desired size. This might not be required
-                    // when this gstatic card art image is deprecated.
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(customIconBitmap,
-                            resources.getDimensionPixelSize(widthId),
-                            resources.getDimensionPixelSize(heightId), true);
-                    return new BitmapDrawable(resources, scaledBitmap);
-                }
-            }
-        }
-        return AppCompatResources.getDrawable(context, card.getIssuerIconDrawableId());
-    }
-
-    /**
      * If {@code showCustomIcon} is true, and the {@code cardArtUrl} is valid, it fetches the bitmap
      * of the required size from PersonalDataManager. If not, the default icon {@code defaultIconId}
      * is fetched from the resources. If the bitmap is not available in cache, then it is fetched
@@ -524,11 +472,11 @@ public class AutofillUiUtils {
      * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
      *         default icon is available, returns null.
      */
-    public static @Nullable Drawable getCardIcon(Context context, GURL cardArtUrl,
+    public static @Nullable Drawable getCardIcon(Context context, @Nullable GURL cardArtUrl,
             int defaultIconId, int widthId, int heightId, boolean showCustomIcon) {
         Drawable defaultIcon =
                 defaultIconId == 0 ? null : AppCompatResources.getDrawable(context, defaultIconId);
-        if (!showCustomIcon || !cardArtUrl.isValid()) {
+        if (!showCustomIcon || cardArtUrl == null || !cardArtUrl.isValid()) {
             return defaultIcon;
         }
 

@@ -151,8 +151,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
         // Set card icon. It can be either a custom card art or the network icon.
         ImageView cardIconContainer = v.findViewById(R.id.card_icon);
-        cardIconContainer.setImageDrawable(getCardIcon(
-                getContext(), mCard, getSettingsPageIconWidthId(), getSettingsPageIconHeightId()));
+        cardIconContainer.setImageDrawable(getCardIcon(getContext(), mCard.getCardArtUrl(),
+                mCard.getIssuerIconDrawableId(), getSettingsPageIconWidthId(),
+                getSettingsPageIconHeightId(),
+                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
 
         ((TextView) v.findViewById(R.id.card_name)).setText(mCard.getCardNameForAutofillDisplay());
         ((TextView) v.findViewById(R.id.card_last_four))
