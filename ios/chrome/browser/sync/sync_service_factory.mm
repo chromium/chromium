@@ -21,6 +21,7 @@
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
+#import "components/sync_device_info/local_device_info_provider.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
@@ -172,8 +173,9 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
         DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
 
     if (history_service && device_info_sync_service) {
-      history_service->SetDeviceInfoTracker(
-          device_info_sync_service->GetDeviceInfoTracker());
+      history_service->SetDeviceInfoServices(
+          device_info_sync_service->GetDeviceInfoTracker(),
+          device_info_sync_service->GetLocalDeviceInfoProvider());
     }
   }
 

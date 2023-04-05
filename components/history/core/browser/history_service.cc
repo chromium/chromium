@@ -396,16 +396,27 @@ void HistoryService::RemoveObserver(HistoryServiceObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HistoryService::SetDeviceInfoTracker(
-    syncer::DeviceInfoTracker* device_info_tracker) {
+void HistoryService::SetDeviceInfoServices(
+    syncer::DeviceInfoTracker* device_info_tracker,
+    syncer::LocalDeviceInfoProvider* local_device_info_provider) {
   CHECK(history::IsSyncSegmentsDataEnabled());
   CHECK(device_info_tracker != nullptr);
+  CHECK(local_device_info_provider != nullptr);
 
   device_info_tracker_observation_.Reset();
   device_info_tracker_ = device_info_tracker;
   device_info_tracker_observation_.Observe(device_info_tracker);
 
   OnDeviceInfoChange();
+
+  local_device_info_provider_ = local_device_info_provider;
+  local_device_info_available_subscription_ =
+      local_device_info_provider->RegisterOnInitializedCallback(
+          base::BindRepeating(
+              &HistoryService::SendLocalDeviceOriginatorCacheGuidToBackend,
+              weak_ptr_factory_.GetSafeRef()));
+
+  SendLocalDeviceOriginatorCacheGuidToBackend();
 }
 
 void HistoryService::OnDeviceInfoChange() {
@@ -432,6 +443,29 @@ void HistoryService::OnDeviceInfoChange() {
 void HistoryService::OnDeviceInfoShutdown() {
   device_info_tracker_observation_.Reset();
   device_info_tracker_ = nullptr;
+
+  local_device_info_available_subscription_ = {};
+  local_device_info_provider_ = nullptr;
+}
+
+void HistoryService::SendLocalDeviceOriginatorCacheGuidToBackend() {
+  CHECK(history::IsSyncSegmentsDataEnabled());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(local_device_info_provider_ != nullptr);
+
+  const syncer::DeviceInfo* local_device_info =
+      local_device_info_provider_->GetLocalDeviceInfo();
+
+  if (!local_device_info) {
+    return;
+  }
+
+  const std::string guid = local_device_info->guid();
+
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HistoryBackend::SetLocalDeviceOriginatorCacheGuid,
+                     history_backend_, std::move(guid)));
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::ScheduleDBTask(
@@ -1257,6 +1291,12 @@ void HistoryService::Cleanup() {
 
   // Clear `backend_task_runner_` to make sure it's not used after Cleanup().
   backend_task_runner_ = nullptr;
+
+  local_device_info_available_subscription_ = {};
+  local_device_info_provider_ = nullptr;
+
+  device_info_tracker_observation_.Reset();
+  device_info_tracker_ = nullptr;
 }
 
 bool HistoryService::Init(
@@ -1329,7 +1369,14 @@ void HistoryService::ScheduleTask(SchedulePriority priority,
 
 base::WeakPtr<HistoryService> HistoryService::AsWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+base::SafeRef<HistoryService> HistoryService::AsSafeRef() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return weak_ptr_factory_.GetSafeRef();
 }
 
 base::WeakPtr<syncer::SyncableService>
