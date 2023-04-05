@@ -620,7 +620,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return _available;
 }
 
-#pragma mark - Private properties
+#pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   _scrollInProgress = YES;
@@ -875,6 +875,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // change.
   if (!visible && _items.count > 0) {
     return;
+  }
+
+  if (visible && _items.count == 1) {
+    [self popLastInsertedItem];
   }
 
   [self.delegate pinnedTabsViewControllerVisibilityDidChange:self];
