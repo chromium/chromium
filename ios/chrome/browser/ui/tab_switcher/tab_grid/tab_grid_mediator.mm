@@ -1009,28 +1009,6 @@ void RecordTabGridCloseTabsCount(int count) {
       GetWebState(self.webStateList, WebStateSearchCriteria{
                                          .identifier = identifier,
                                      });
-  // TODO(crbug.com/1430397): Remove this workaround when snapshot won't be
-  // linked to browsers anymore.
-  if (!webState) {
-    // The web state is probably saved in another browser (inactive browser or
-    // multiwindow browser). Looking at all of them.
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
-    BrowserList* browserList =
-        BrowserListFactory::GetForBrowserState(browserState);
-    std::set<Browser*> browsers = browserState->IsOffTheRecord()
-                                      ? browserList->AllIncognitoBrowsers()
-                                      : browserList->AllRegularBrowsers();
-
-    for (Browser* browser : browsers) {
-      webState =
-          GetWebState(browser->GetWebStateList(), WebStateSearchCriteria{
-                                                      .identifier = identifier,
-                                                  });
-      if (webState) {
-        break;
-      }
-    }
-  }
   if (webState) {
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
