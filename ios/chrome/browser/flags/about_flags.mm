@@ -1525,6 +1525,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          web::features::kEnableSessionSerializationOptimizations)},
+    {"bottom-omnibox-steady-state",
+     flag_descriptions::kBottomOmniboxSteadyStateName,
+     flag_descriptions::kBottomOmniboxSteadyStateDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kBottomOmniboxSteadyState)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

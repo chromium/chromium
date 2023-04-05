@@ -124,6 +124,11 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAutofillUseRendererIDsName[];
 extern const char kAutofillUseRendererIDsDescription[];
 
+// Title and description for the flag that moves the omnibox to the bottom in
+// the steady state.
+extern const char kBottomOmniboxSteadyStateName[];
+extern const char kBottomOmniboxSteadyStateDescription[];
+
 // Title and description for the flag to control if initial uploading of crash
 // reports is delayed.
 extern const char kBreakpadNoDelayInitialUploadName[];

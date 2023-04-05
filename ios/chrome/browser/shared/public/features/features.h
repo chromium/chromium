@@ -170,4 +170,7 @@ BASE_DECLARE_FEATURE(kIndicateSyncErrorInOverflowMenu);
 // Returns true if the `kIndicateSyncErrorInOverflowMenu` feature is enabled.
 bool IsIndicateSyncErrorInOverflowMenuEnabled();
 
+// Feature flag to move the steady-state (unfocused) omnibox to the bottom.
+BASE_DECLARE_FEATURE(kBottomOmniboxSteadyState);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

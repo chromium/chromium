@@ -208,3 +208,7 @@ BASE_FEATURE(kIndicateSyncErrorInOverflowMenu,
 bool IsIndicateSyncErrorInOverflowMenuEnabled() {
   return base::FeatureList::IsEnabled(kIndicateSyncErrorInOverflowMenu);
 }
+
+BASE_FEATURE(kBottomOmniboxSteadyState,
+             "BottomOmniboxSteadyState",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -146,6 +146,10 @@ const char kAutofillUseRendererIDsDescription[] =
     "When enabled, Autofill logic uses unique numeric renderer IDs instead "
     "of string form and field identifiers in form filling logic.";
 
+const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
+const char kBottomOmniboxSteadyStateDescription[] =
+    "Move the omnibox to the bottom in steady state";
+
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =
