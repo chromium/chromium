@@ -27,6 +27,7 @@ const enum HistogramName {
   AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
+  DYNAMIC_COLOR_TOGGLE_BUTTON = 'Ash.Personalization.DynamicColor.ToggleButton',
   KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
       'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
 }
@@ -75,4 +76,9 @@ export function logGooglePhotosPreviewsLoadTime() {
 export function logKeyboardBacklightOpenZoneCustomizationUMA() {
   chrome.metricsPrivate.recordBoolean(
       HistogramName.KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION, true);
+}
+
+export function logDynamicColorToggleButtonClick(enabled: boolean) {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.DYNAMIC_COLOR_TOGGLE_BUTTON, enabled);
 }

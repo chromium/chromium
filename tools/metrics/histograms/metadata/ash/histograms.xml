@@ -4441,6 +4441,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.DynamicColor.ToggleButton"
+    enum="BooleanEnabled" expires_after="2024-04-03">
+  <owner>ericamlee@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a user clicks the toggle button to enable or disable dynamic
+    color in personalization hub.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.EntryPoint"
     enum="PersonalizationEntryPoint" expires_after="2023-09-10">
   <owner>thuongphan@chromium.org</owner>
