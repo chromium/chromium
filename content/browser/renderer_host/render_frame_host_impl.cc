@@ -11185,7 +11185,7 @@ void RenderFrameHostImpl::CreateCodeCacheHostWithIsolationKey(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
     const net::NetworkIsolationKey& nik) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik,
+  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik, storage_key_,
                                  std::move(receiver),
                                  GetCodeCacheHostReceiverHandler());
 }
