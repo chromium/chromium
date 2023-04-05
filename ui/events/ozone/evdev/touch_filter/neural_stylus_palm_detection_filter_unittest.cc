@@ -38,7 +38,9 @@ class NeuralStylusPalmDetectionFilterTest
 
   void SetUp() override {
     shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
-    model_ = new testing::StrictMock<MockNeuralModel>;
+    auto neural_model =
+        std::make_unique<testing::StrictMock<MockNeuralModel>>();
+    model_ = neural_model.get();
     model_config_.biggest_near_neighbor_count = 2;
     model_config_.min_sample_count = 2;
     model_config_.max_sample_count = 5;
@@ -57,8 +59,7 @@ class NeuralStylusPalmDetectionFilterTest
     EXPECT_TRUE(
         CapabilitiesToDeviceInfo(kNocturneTouchScreen, &nocturne_touchscreen_));
     palm_detection_filter_ = std::make_unique<NeuralStylusPalmDetectionFilter>(
-        nocturne_touchscreen_,
-        std::unique_ptr<NeuralStylusPalmDetectionFilterModel>(model_),
+        nocturne_touchscreen_, std::move(neural_model),
         shared_palm_state.get());
     touch_.resize(kNumTouchEvdevSlots);
     for (size_t i = 0; i < touch_.size(); ++i) {
@@ -70,10 +71,9 @@ class NeuralStylusPalmDetectionFilterTest
   std::vector<InProgressTouchEvdev> touch_;
   std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state;
   EventDeviceInfo nocturne_touchscreen_;
-  // Owned by the filter.
-  raw_ptr<MockNeuralModel> model_;
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
+  raw_ptr<MockNeuralModel> model_;  // Owned by the filter.
   base::TimeDelta sample_period_ = base::Milliseconds(8);
 };
 
