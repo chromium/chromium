@@ -2630,6 +2630,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
+    units="entries" expires_after="2024-04-03">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    When VisitedLinkReader's in-memory hashtable is initialized, this metric
+    records the value for table_length_ (the maximum number of entries that can
+    be held in that hashtable).
+  </summary>
+</histogram>
+
+<histogram name="History.VisitedLinks.HashTableSizeOnTableCreate" units="MB"
+    expires_after="2024-04-03">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    When a new in-memory hashtable is created in VisitedLinkWriter, this metric
+    records the size of the memory allocated for that new hashtable in MB.
+  </summary>
+</histogram>
+
+<histogram name="History.VisitedLinks.HashTableUsageOnLinkAdded"
+    units="fingerprints" expires_after="2024-04-03">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    When a new URL fingerprint is added to the VisitedLink hashtable, this
+    metric logs value for used_items_ (the number of entries in the hashtable
+    containing an actual fingerprint value rather than a placeholder).
+  </summary>
+</histogram>
+
 <histogram name="History.VisitTableCount" units="visits"
     expires_after="2023-08-20">
   <owner>mpearson@chromium.org</owner>

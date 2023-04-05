@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/web/web_view.h"
 
 using blink::WebView;
@@ -61,6 +62,8 @@ void VisitedLinkReader::UpdateVisitedLinks(
   hash_table_ = const_cast<Fingerprint*>(reinterpret_cast<const Fingerprint*>(
       static_cast<const SharedHeader*>(table_mapping_.memory()) + 1));
   table_length_ = table_len;
+  UMA_HISTOGRAM_COUNTS_10M("History.VisitedLinks.HashTableLengthOnReaderInit",
+                           table_length_);
 }
 
 void VisitedLinkReader::AddVisitedLinks(
