@@ -3543,6 +3543,9 @@ extern const char kArcInputOverlayDescriptionBeta[];
 extern const char kArcInputOverlayNameAlphaV2[];
 extern const char kArcInputOverlayDescriptionAlphaV2[];
 
+extern const char kScanningAppJellyName[];
+extern const char kScanningAppJellyDescription[];
+
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];
 

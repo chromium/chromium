@@ -6160,6 +6160,12 @@ const char kArcInputOverlayDescriptionAlphaV2[] =
     "Enable menu and action reposition feature for Gaming Input Overlay based "
     "on Alpha.";
 
+const char kScanningAppJellyName[] =
+    "Enable jelly colors for the Scanning App.";
+const char kScanningAppJellyDescription[] =
+    "Enable jelly colors for the Scanning App. Requires "
+    "jelly-colors flag to be enabled.";
+
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";
 const char kShelfAutoHideSeparationDescription[] =

@@ -58582,6 +58582,7 @@ from previous Chrome versions.
       label="AutofillEnableRankingFormulaCreditCards:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
   <int value="-1819497481" label="TouchTextEditingRedesign:disabled"/>
+  <int value="-1818994562" label="ScanningAppJelly:enabled"/>
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
   <int value="-1818565030"
       label="AutofillUseConsistentPopupSettingsIcons:disabled"/>
@@ -62047,6 +62048,7 @@ from previous Chrome versions.
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
+  <int value="64547625" label="ScanningAppJelly:disabled"/>
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="65750425" label="OmniboxMostVisitedTilesDynamicSpacing:disabled"/>
