@@ -96,6 +96,7 @@ dependencies {
 
     // testCompile targets have test_only = true.
     androidTestCompile 'androidx.fragment:fragment-testing:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.benchmark:benchmark-macro:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-macro-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.test:core:1.4.0-rc01'
