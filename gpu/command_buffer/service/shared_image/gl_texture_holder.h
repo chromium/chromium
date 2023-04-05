@@ -36,7 +36,6 @@ class GLTextureHolder {
   // Initialize by creating a new GL texture.
   void Initialize(const GLCommonImageBackingFactory::FormatInfo& format_info,
                   bool framebuffer_attachment_angle,
-                  const bool disable_tex_storage,
                   base::span<const uint8_t> pixel_data,
                   const std::string& debug_label);
 
