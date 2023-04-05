@@ -54,8 +54,8 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
   ~UIResourceLayer() override;
 
   cc::UIResourceId resource_id() const { return resource_id_; }
-  auto uv_top_left() const { return uv_.origin(); }
-  auto uv_bottom_right() const { return uv_.bottom_right(); }
+  auto uv_top_left() const { return uv_top_left_; }
+  auto uv_bottom_right() const { return uv_bottom_right_; }
   const auto& vertex_opacity() const { return vertex_opacity_; }
 
   bool HasDrawableContent() const override;
@@ -74,7 +74,8 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
 
   cc::UIResourceId resource_id_ = 0;
   SkBitmap bitmap_;
-  gfx::RectF uv_{1.0f, 1.0f};
+  gfx::PointF uv_top_left_;
+  gfx::PointF uv_bottom_right_{1.0f, 1.0f};
   float vertex_opacity_[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
