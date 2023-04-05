@@ -1126,7 +1126,8 @@ void SkiaRenderer::BindFramebufferToTexture(
   // should be backing ready.
   RenderPassBacking& backing = iter->second;
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
-      render_pass_id, backing.size, backing.format, backing.generate_mipmap,
+      render_pass_id, backing.size,
+      SharedImageFormat::SinglePlane(backing.format), backing.generate_mipmap,
       backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
       /*is_overlay=*/is_root, backing.mailbox);
 
@@ -3531,7 +3532,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   } else {
     current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
         quad->render_pass_id, dst_overlay_backing.size,
-        dst_overlay_backing.format, /*mipmap=*/false,
+        SharedImageFormat::SinglePlane(dst_overlay_backing.format),
+        /*mipmap=*/false,
         /*scanout_dcomp_surface=*/false,
         RenderPassBackingSkColorSpace(dst_overlay_backing),
         /*is_overlay=*/true, overlay->mailbox);

@@ -106,7 +106,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // paint render pass.
   virtual SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                          const gfx::Size& size,
-                                         ResourceFormat format,
+                                         SharedImageFormat format,
                                          bool mipmap,
                                          bool scanout_dcomp_surface,
                                          sk_sp<SkColorSpace> color_space,

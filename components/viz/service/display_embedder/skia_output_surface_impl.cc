@@ -655,7 +655,7 @@ void SkiaOutputSurfaceImpl::ScheduleOutputSurfaceAsOverlay(
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
-    ResourceFormat format,
+    SharedImageFormat format,
     bool mipmap,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
@@ -667,7 +667,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   DCHECK(resource_sync_tokens_.empty());
 
   SkColorType color_type =
-      ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true, format);
+      ToClosestSkColorType(/*gpu_compositing=*/true, format);
   SkSurfaceCharacterization characterization =
       CreateSkSurfaceCharacterizationRenderPass(
           surface_size, color_type, kPremul_SkAlphaType, mipmap,
