@@ -101,6 +101,7 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
   // available, so call `IsFederatedServiceAvailable()` before each attempt at
   // interacting with the service.
   bool IsFederatedServiceAvailable();
+  bool IsLoggingEnabled();
   void TryToBindFederatedServiceIfNecessary();
   void LogExample(const std::string& query);
 

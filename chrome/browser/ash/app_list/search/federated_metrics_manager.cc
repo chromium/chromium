@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chromeos/ash/services/federated/public/cpp/federated_example_util.h"
 #include "chromeos/ash/services/federated/public/mojom/example.mojom.h"
 #include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
@@ -39,12 +40,6 @@ std::string SearchSessionConclusionToString(
     default:
       NOTREACHED();
   }
-}
-bool IsLoggingEnabled() {
-  // TODO(b/262611120): Also check user metrics opt-in/out, any other relevant
-  // federated flags, etc.
-  return ash::features::IsFederatedServiceEnabled() &&
-         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
 }
 
 void LogSearchSessionConclusion(ash::SearchSessionConclusion conclusion) {
@@ -152,6 +147,12 @@ void FederatedMetricsManager::OnLaunch(Location location,
 
 bool FederatedMetricsManager::IsFederatedServiceAvailable() {
   return controller_ && controller_->IsServiceAvailable();
+}
+
+bool FederatedMetricsManager::IsLoggingEnabled() {
+  return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
+         ash::features::IsFederatedServiceEnabled() &&
+         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
 }
 
 void FederatedMetricsManager::TryToBindFederatedServiceIfNecessary() {
