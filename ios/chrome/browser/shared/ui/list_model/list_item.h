@@ -12,8 +12,7 @@
 // tableview}-specific subclasses.
 @interface ListItem : NSObject <UIAccessibilityIdentification>
 
-// A client-defined value. It should be unique among items of a given list
-// model.
+// A client-defined value.
 @property(nonatomic, readonly, assign) NSInteger type;
 
 // The cell class to use in conjunction with this item.
