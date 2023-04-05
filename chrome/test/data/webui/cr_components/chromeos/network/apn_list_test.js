@@ -184,19 +184,18 @@ suite('ApnListTest', function() {
 
   test('Connected APN is inside custom APN list.', async function() {
     apnList.managedCellularProperties = {
-      connectedApn: connectedApn,
+      connectedApn: customApn3,
       apnList: {
         activeValue: [apn1, apn2],
       },
-      customApnList: [customApn1, customApn2, customApn3, connectedApn],
+      customApnList: [customApn1, customApn2, customApn3],
     };
     await flushTasks();
     const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
-    assertEquals(apns.length, 4);
-    assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
+    assertEquals(apns.length, 3);
+    assertTrue(OncMojo.apnMatch(apns[0].apn, customApn3));
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
-    assertTrue(OncMojo.apnMatch(apns[3].apn, customApn3));
     assertTrue(apns[0].isConnected);
   });
 
