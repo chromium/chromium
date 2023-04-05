@@ -35,6 +35,10 @@ ASH_EXPORT std::vector<aura::Window*> GetContainersForAllRootWindows(
     int container_id,
     aura::Window* priority_root = nullptr);
 
+// Returns the parent window for power button menu container for the provided
+// root_Window.
+ASH_EXPORT aura::Window* GetPowerMenuContainerParent(aura::Window* root_window);
+
 }  // namespace ash
 
 #endif  // ASH_WM_CONTAINER_FINDER_H_

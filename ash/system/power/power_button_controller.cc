@@ -20,6 +20,7 @@
 #include "ash/system/power/power_button_menu_screen_view.h"
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/system/power/power_button_screenshot_controller.h"
+#include "ash/wm/container_finder.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -459,8 +460,7 @@ void PowerButtonController::OnSecurityCurtainEnabled() {
 
 void PowerButtonController::OnSecurityCurtainDisabled() {
   DismissMenu();
-  Shell::GetPrimaryRootWindow()
-      ->GetChildById(kShellWindowId_LockScreenRelatedContainersContainer)
+  GetPowerMenuContainerParent(Shell::GetPrimaryRootWindow())
       ->AddChild(GetPowerMenuContainer());
 }
 
