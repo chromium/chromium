@@ -18,7 +18,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {SearchFileType, SearchLocation, SearchOptions, SearchRecency} from '../../externs/ts/state.js';
+import {SearchLocation, SearchOptions, SearchRecency} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getDefaultSearchOptions} from '../../state/store.js';
@@ -261,27 +261,6 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
-   * For the given options returns the category of files to which the search
-   * should be limited (e.g., images, videos, etc.).
-   *
-   * @return {chrome.fileManagerPrivate.FileCategory}
-   */
-  getDesiredCategory_() {
-    switch (this.options_.type) {
-      case SearchFileType.AUDIO:
-        return chrome.fileManagerPrivate.FileCategory.AUDIO;
-      case SearchFileType.DOCUMENTS:
-        return chrome.fileManagerPrivate.FileCategory.DOCUMENT;
-      case SearchFileType.IMAGES:
-        return chrome.fileManagerPrivate.FileCategory.IMAGE;
-      case SearchFileType.VIDEOS:
-        return chrome.fileManagerPrivate.FileCategory.VIDEO;
-      default:
-        return chrome.fileManagerPrivate.FileCategory.ALL;
-    }
-  }
-
-  /**
    * @param {!FilesAppEntry|DirectoryEntry} dirEntry
    * @return {!Array<!DirectoryEntry>}
    */
@@ -479,7 +458,7 @@ export class SearchV2ContentScanner extends ContentScanner {
   async scan(
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
-    const category = this.getDesiredCategory_();
+    const category = this.options_.type;
     const timestamp = getEarliestTimestamp(this.options_.recency, new Date());
     const maxResults = 100;
 

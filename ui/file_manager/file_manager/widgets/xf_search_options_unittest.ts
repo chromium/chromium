@@ -4,7 +4,7 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {SearchFileType, SearchLocation, SearchRecency} from '../externs/ts/state.js';
+import {SearchLocation, SearchRecency} from '../externs/ts/state.js';
 
 import {OptionKind, SEARCH_OPTIONS_CHANGED, XfSearchOptionsElement} from './xf_search_options.js';
 
@@ -59,14 +59,17 @@ export async function testChangeFileType(done: () => void) {
   const element = getSearchOptionsElement();
   const fileTypeSelector = element.getFileTypeSelector();
   fileTypeSelector.options = [
-    {value: SearchFileType.ALL_TYPES, text: 'All types'},
-    {value: SearchFileType.IMAGES, text: 'Images'},
+    {value: chrome.fileManagerPrivate.FileCategory.ALL, text: 'All types'},
+    {value: chrome.fileManagerPrivate.FileCategory.IMAGE, text: 'Images'},
   ];
 
   element.addEventListener(SEARCH_OPTIONS_CHANGED, (event) => {
-    const want = {kind: OptionKind.FILE_TYPE, value: SearchFileType.IMAGES};
+    const want = {
+      kind: OptionKind.FILE_TYPE,
+      value: chrome.fileManagerPrivate.FileCategory.IMAGE,
+    };
     assertDeepEquals(want, event.detail);
     done();
   });
-  fileTypeSelector.value = SearchFileType.IMAGES;
+  fileTypeSelector.value = chrome.fileManagerPrivate.FileCategory.IMAGE;
 }

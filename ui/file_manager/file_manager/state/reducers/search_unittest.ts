@@ -4,7 +4,7 @@
 
 import {assertDeepEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchRecency} from '../../externs/ts/state.js';
+import {PropStatus, SearchData, SearchLocation, SearchRecency} from '../../externs/ts/state.js';
 import {clearSearch, updateSearch} from '../actions.js';
 import {getEmptyState, getStore, Store} from '../store.js';
 
@@ -30,7 +30,7 @@ export function testSearchAction() {
   const currentOptions = {
     location: SearchLocation.THIS_FOLDER,
     recency: SearchRecency.ANYTIME,
-    type: SearchFileType.ALL_TYPES,
+    type: chrome.fileManagerPrivate.FileCategory.ALL,
   };
   store.dispatch(updateSearch({
     query: undefined,
