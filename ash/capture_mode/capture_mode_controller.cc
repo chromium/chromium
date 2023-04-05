@@ -20,6 +20,7 @@
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -446,6 +447,8 @@ int GetFileSizeInKB(const base::FilePath& file_path) {
   // Convert the value to KBs.
   return size_in_bytes / 1024;
 }
+
+constexpr char kShareToYouTubeURL[] = "https://studio.youtube.com";
 
 }  // namespace
 
@@ -1978,6 +1981,13 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
       return CaptureModeSaveToLocation::kDriveFolder;
   }
   return CaptureModeSaveToLocation::kCustomizedFolder;
+}
+
+void CaptureModeController::OnShareToYouTubeButtonPressed() {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kShareToYouTubeURL),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 }  // namespace ash
