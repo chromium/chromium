@@ -540,28 +540,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
                        DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
 }
 
-// A version of the test with the flag off, in order to test that everything
-// still works as expected.
-class FlagOffExtensionActionRunnerBrowserTest
-    : public ExtensionActionRunnerBrowserTest {
- private:
-  // Simply don't append the flag.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(FlagOffExtensionActionRunnerBrowserTest,
-                       ScriptsExecuteWhenFlagAbsent_ContentScripts) {
-  RunActiveScriptsTest("content_scripts_all_hosts", ALL_HOSTS, CONTENT_SCRIPT,
-                       DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
-}
-IN_PROC_BROWSER_TEST_F(FlagOffExtensionActionRunnerBrowserTest,
-                       ScriptsExecuteWhenFlagAbsent_ExecuteScripts) {
-  RunActiveScriptsTest("execute_scripts_all_hosts", ALL_HOSTS, EXECUTE_SCRIPT,
-                       DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
-}
-
 class ExtensionActionRunnerFencedFrameBrowserTest
     : public ExtensionActionRunnerBrowserTest {
  public:
