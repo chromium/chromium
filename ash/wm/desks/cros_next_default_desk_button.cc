@@ -35,9 +35,9 @@ CrOSNextDefaultDeskButton::CrOSNextDefaultDeskButton(DesksBarView* bar_view)
     : CrOSNextDeskButtonBase(
           DesksController::Get()->desks()[0]->name(),
           /*set_text=*/true,
+          bar_view,
           base::BindRepeating(&CrOSNextDefaultDeskButton::OnButtonPressed,
-                              base::Unretained(this))),
-      bar_view_(bar_view) {
+                              base::Unretained(this))) {
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
                                  DesksController::Get()->desks()[0]->name()));

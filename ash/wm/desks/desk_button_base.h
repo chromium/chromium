@@ -13,19 +13,26 @@
 
 namespace ash {
 
-// The base class of buttons that appear in the `DesksBarView`.
+class DesksBarView;
+
+// The base class of buttons that appear in the desk bar view classes. It's
+// guaranteed this button always lives under a desk bar view except
+// `PersistentDesksBarDeskButton`.
+// TODO(yongshun): When the persistent desk bar is deprecated, update this
+// comment.
 class ASH_EXPORT DeskButtonBase : public views::LabelButton,
                                   public OverviewHighlightableView {
  public:
   METADATA_HEADER(DeskButtonBase);
 
-  // This LabelButton will include either text or image inside. Set the text
-  // of the button to `text` only if `set_text` is true, otherwise, the given
-  // `text` will only be used for the tooltip, accessible name etc of the
-  // button. If text of the button is empty, an image will be assigned to the
-  // button instead.
+  // This button will include either text or image. Set `text` only if
+  // `set_text` is true, otherwise, the given `text` will only be used for the
+  // tooltip, accessible name etc. If the text is empty, an image will be
+  // assigned to the button instead. This button is under `bar_view` in the view
+  // hierarchy.
   DeskButtonBase(const std::u16string& text,
                  bool set_text,
+                 DesksBarView* bar_view,
                  base::RepeatingClosure pressed_callback,
                  int corner_radius);
   ~DeskButtonBase() override;
@@ -61,6 +68,13 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
   // views::LabelButton:
   void UpdateBackgroundColor() override;
+
+ protected:
+  // The desk bar view instance above this button in the view hierarchy.
+  // TODO(yongshun): This might be nullptr only because the persistent bento bar
+  // reuses this base class. When the persistent desk bar is deprecated, update
+  // this comment.
+  DesksBarView* bar_view_;
 
  private:
   friend class DesksTestApi;

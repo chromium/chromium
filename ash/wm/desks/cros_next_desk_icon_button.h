@@ -16,8 +16,6 @@ struct VectorIcon;
 
 namespace ash {
 
-class DesksBarView;
-
 // A button view in the desks bar with an icon. The button have three different
 // states, and the three states are interchangeable.
 // TODO(conniekxu): Remove `ZeroStateIconButton` and `ExpandedDesksBarButton`,
@@ -87,8 +85,6 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   // enable state change. Also this functions will be called after the button's
   // initialization to show the button's correct enable state.
   void UpdateEnabledState();
-
-  DesksBarView* const bar_view_;
 
   State state_;
 

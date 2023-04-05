@@ -195,7 +195,8 @@ class DeskBarHoverObserver : public ui::EventObserver {
 // |scroll_view_|.
 class DesksBarScrollViewLayout : public views::LayoutManager {
  public:
-  DesksBarScrollViewLayout(DesksBarView* bar_view) : bar_view_(bar_view) {}
+  explicit DesksBarScrollViewLayout(DesksBarView* bar_view)
+      : bar_view_(bar_view) {}
   DesksBarScrollViewLayout(const DesksBarScrollViewLayout&) = delete;
   DesksBarScrollViewLayout& operator=(const DesksBarScrollViewLayout&) = delete;
   ~DesksBarScrollViewLayout() override = default;
@@ -592,7 +593,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
         std::make_unique<ZeroStateDefaultDeskButton>(this));
     zero_state_new_desk_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<ZeroStateIconButton>(
-            &kDesksNewDeskButtonIcon,
+            this, &kDesksNewDeskButtonIcon,
             l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
             base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                                 base::Unretained(this),
@@ -628,7 +629,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                                   base::Unretained(this))));
       zero_state_library_button_ = scroll_view_contents_->AddChildView(
           std::make_unique<ZeroStateIconButton>(
-              &kDesksTemplatesIcon, l10n_util::GetStringUTF16(button_text_id),
+              this, &kDesksTemplatesIcon,
+              l10n_util::GetStringUTF16(button_text_id),
               base::BindRepeating(&DesksBarView::OnLibraryButtonPressed,
                                   base::Unretained(this))));
     }

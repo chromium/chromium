@@ -39,8 +39,6 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
 
  private:
   void OnButtonPressed();
-
-  DesksBarView* bar_view_;
 };
 
 // A button in the zero state bar with an icon. Zero state is the state of the
@@ -50,7 +48,8 @@ class ASH_EXPORT ZeroStateIconButton : public DeskButtonBase {
  public:
   METADATA_HEADER(ZeroStateIconButton);
 
-  ZeroStateIconButton(const gfx::VectorIcon* button_icon,
+  ZeroStateIconButton(DesksBarView* bar_view,
+                      const gfx::VectorIcon* button_icon,
                       const std::u16string& text,
                       base::RepeatingClosure callback);
   ZeroStateIconButton(const ZeroStateIconButton&) = delete;

@@ -500,7 +500,9 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
   should_commit_name_changes_ = true;
 
   // Set the Overview highlight to move focus with the DeskNameView.
-  UpdateOverviewHighlightForFocus(desk_name_view_);
+  if (owner_bar_->overview_grid()) {
+    UpdateOverviewHighlightForFocus(desk_name_view_);
+  }
 
   if (!defer_select_all_)
     desk_name_view_->SelectAll(false);

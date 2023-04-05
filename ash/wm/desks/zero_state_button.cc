@@ -49,10 +49,10 @@ ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
     : DeskButtonBase(
           DesksController::Get()->desks()[0]->name(),
           /*set_text=*/true,
+          bar_view,
           base::BindRepeating(&ZeroStateDefaultDeskButton::OnButtonPressed,
                               base::Unretained(this)),
-          kCornerRadius),
-      bar_view_(bar_view) {
+          kCornerRadius) {
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
                                  DesksController::Get()->desks()[0]->name()));
@@ -106,11 +106,13 @@ END_METADATA
 // -----------------------------------------------------------------------------
 // ZeroStateIconButton:
 
-ZeroStateIconButton::ZeroStateIconButton(const gfx::VectorIcon* button_icon,
+ZeroStateIconButton::ZeroStateIconButton(DesksBarView* bar_view,
+                                         const gfx::VectorIcon* button_icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure callback)
     : DeskButtonBase(text,
                      /*set_text=*/false,
+                     bar_view,
                      std::move(callback),
                      kCornerRadius),
       button_icon_(button_icon) {

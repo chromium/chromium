@@ -35,6 +35,7 @@ PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
     : DeskButtonBase(
           desk->name(),
           /*set_text=*/true,
+          /*bar_view=*/nullptr,
           base::BindRepeating(&PersistentDesksBarDeskButton::OnButtonPressed,
                               base::Unretained(this)),
           kCornerRadius),
