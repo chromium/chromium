@@ -1,0 +1,42 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Appearance Description: Square with rounded corners and an arrow pointing up
+//   from the center.
+// Note: Share icon specifically for MacOS.
+
+CANVAS_DIMENSIONS, 20,
+MOVE_TO, 5.49f, 19,
+R_CUBIC_TO, -0.41f, 0, -0.76f, -0.15f, -1.06f, -0.44f,
+R_CUBIC_TO, -0.29f, -0.29f, -0.44f, -0.65f, -0.44f, -1.06f,
+R_V_LINE_TO, -9,
+R_CUBIC_TO, 0, -0.41f, 0.15f, -0.77f, 0.44f, -1.06f,
+R_CUBIC_TO, 0.29f, -0.29f, 0.65f, -0.44f, 1.06f, -0.44f,
+R_H_LINE_TO, 2.5f,
+R_V_LINE_TO, 1.5f,
+R_H_LINE_TO, -2.5f,
+R_V_LINE_TO, 9,
+R_H_LINE_TO, 9.01f,
+R_V_LINE_TO, -9,
+H_LINE_TO, 12,
+V_LINE_TO, 7,
+R_H_LINE_TO, 2.5f,
+R_CUBIC_TO, 0.42f, 0, 0.77f, 0.15f, 1.06f, 0.44f,
+R_CUBIC_TO, 0.29f, 0.29f, 0.44f, 0.65f, 0.44f, 1.06f,
+R_V_LINE_TO, 9,
+R_CUBIC_TO, 0, 0.41f, -0.15f, 0.77f, -0.44f, 1.06f,
+R_CUBIC_TO, -0.29f, 0.29f, -0.65f, 0.44f, -1.06f, 0.44f,
+H_LINE_TO, 5.49f,
+CLOSE,
+R_MOVE_TO, 3.76f, -6,
+V_LINE_TO, 3.88f,
+LINE_TO, 8.06f, 5.07f,
+LINE_TO, 7, 4.01f,
+R_LINE_TO, 3, -3,
+R_LINE_TO, 3, 3,
+R_LINE_TO, -1.06f, 1.06f,
+R_LINE_TO, -1.19f, -1.19f,
+V_LINE_TO, 13,
+R_H_LINE_TO, -1.5f,
+CLOSE
