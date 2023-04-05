@@ -118,6 +118,7 @@ src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/util/floating_point.ts
 src/webgpu/util/f32_interval.ts
 src/unittests/f32_interval.spec.ts
+src/unittests/floating_point.spec.ts
 src/unittests/getStackTrace.spec.ts
 src/unittests/listing.ts
 src/unittests/loaders_and_trees.spec.ts
