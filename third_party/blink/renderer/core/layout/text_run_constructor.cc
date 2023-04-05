@@ -134,25 +134,4 @@ TextRun ConstructTextRun(const Font& font,
                           flags);
 }
 
-TextRun ConstructTextRun(const Font& font,
-                         const LineLayoutText text,
-                         unsigned offset,
-                         unsigned length,
-                         const ComputedStyle& style) {
-  SECURITY_DCHECK(offset + length <= text.TextLength());
-  if (text.HasEmptyText()) {
-    return ConstructTextRunInternal(font, static_cast<const LChar*>(nullptr), 0,
-                                    style, TextDirection::kLtr);
-  }
-  if (text.Is8Bit()) {
-    return ConstructTextRunInternal(font, text.Characters8() + offset, length,
-                                    style, TextDirection::kLtr);
-  }
-
-  TextRun run = ConstructTextRunInternal(font, text.Characters16() + offset,
-                                         length, style, TextDirection::kLtr);
-  run.SetDirection(DirectionForRun(run));
-  return run;
-}
-
 }  // namespace blink

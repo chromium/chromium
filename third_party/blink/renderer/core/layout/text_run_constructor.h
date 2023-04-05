@@ -46,7 +46,6 @@ namespace blink {
 class Font;
 class ComputedStyle;
 class LayoutText;
-class LineLayoutText;
 
 enum TextRunFlag {
   kDefaultTextRunFlags = 0,
@@ -61,11 +60,6 @@ TextRun ConstructTextRun(const Font&,
                          const String&,
                          const ComputedStyle&,
                          TextRunFlags = kDefaultTextRunFlags);
-TextRun ConstructTextRun(const Font&,
-                         const LineLayoutText,
-                         unsigned offset,
-                         unsigned length,
-                         const ComputedStyle&);
 
 // Explicit direction.
 TextRun ConstructTextRun(const Font&,

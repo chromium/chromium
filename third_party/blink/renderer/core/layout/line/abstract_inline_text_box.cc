@@ -43,20 +43,13 @@
 
 namespace blink {
 
-AbstractInlineTextBox::AbstractInlineTextBox(LineLayoutText line_layout_item)
-    : line_layout_item_(line_layout_item) {}
-
-AbstractInlineTextBox::~AbstractInlineTextBox() {
-  DCHECK(!line_layout_item_);
-}
-
 LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   // We only want to apply the first letter to the first inline text box
   // for a LayoutObject.
   if (!IsFirst())
     return nullptr;
 
-  Node* node = GetLineLayoutItem().GetNode();
+  Node* node = layout_text_->GetNode();
   if (!node)
     return nullptr;
   if (auto* layout_text = DynamicTo<LayoutText>(node->GetLayoutObject()))
@@ -65,28 +58,24 @@ LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
 }
 
 void AbstractInlineTextBox::Detach() {
-  DCHECK(GetLineLayoutItem());
+  DCHECK(layout_text_);
   if (AXObjectCache* cache = ExistingAXObjectCache())
     cache->Remove(this);
 
-  line_layout_item_ = LineLayoutText(nullptr);
+  layout_text_ = nullptr;
 }
 
 Node* AbstractInlineTextBox::GetNode() const {
-  if (!GetLineLayoutItem())
+  if (!layout_text_) {
     return nullptr;
-  return GetLineLayoutItem().GetNode();
-}
-
-LayoutObject* AbstractInlineTextBox::GetLayoutObject() const {
-  if (!GetLineLayoutItem())
-    return nullptr;
-  return GetLineLayoutItem().GetLayoutObject();
+  }
+  return layout_text_->GetNode();
 }
 
 AXObjectCache* AbstractInlineTextBox::ExistingAXObjectCache() const {
-  if (LayoutObject* layout_object = GetLayoutObject())
-    return layout_object->GetDocument().ExistingAXObjectCache();
+  if (layout_text_) {
+    return layout_text_->GetDocument().ExistingAXObjectCache();
+  }
   return nullptr;
 }
 
