@@ -289,8 +289,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateFrameTo("b.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
   // 3p cookie read
   NavigateFrameTo("b.com", "/");
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -319,8 +319,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
           url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   NavigateFrameToUrl(url);           // 3p cookie write
   NavigateFrameTo(url.host(), "/");  // 3p cookie read
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -348,8 +348,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   NavigateFrameTo("c.com", "/set-cookie?thirdparty=1;SameSite=None;Secure");
   // 3p cookie read
   NavigateFrameTo("c.com", "/");
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 2, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 2, 1);
@@ -407,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 
   // Read a third-party cookie.
   EXPECT_TRUE(content::ExecJs(frame, "let x = document.cookie;"));
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 1, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
@@ -461,8 +461,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   // Write a third-party cookie.
   EXPECT_TRUE(content::ExecJs(
       frame, "document.cookie = 'foo=bar;SameSite=None;Secure';"));
-  NavigateToUntrackedUrl();
   observer.Wait();
+  NavigateToUntrackedUrl();
 
   histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectUniqueSample(kWriteCookieHistogram, 1, 1);
