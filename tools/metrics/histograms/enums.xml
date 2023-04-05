@@ -61329,8 +61329,6 @@ from previous Chrome versions.
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>
   <int value="-310908854" label="new-wallpaper-picker"/>
   <int value="-310615515" label="EnableSuggestedFiles:disabled"/>
-  <int value="-309744108"
-      label="DiacriticsOnPhysicalKeyboardLongpressDefaultOn:enabled"/>
   <int value="-308793293" label="WebShare:disabled"/>
   <int value="-308785012"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:enabled"/>
@@ -65784,8 +65782,6 @@ from previous Chrome versions.
       label="lacros-data-backward-migration-policy:enabled"/>
   <int value="2122023503" label="enable-win32k-lockdown-mimetypes"/>
   <int value="2122256719" label="EnableCardboard:disabled"/>
-  <int value="2122690871"
-      label="DiacriticsOnPhysicalKeyboardLongpressDefaultOn:disabled"/>
   <int value="2122863344" label="WebViewSurfaceControl:disabled"/>
   <int value="2122876605" label="enable-bleeding-edge-rendering-fast-paths"/>
   <int value="2123183411" label="BlinkHeapIncrementalMarking:enabled"/>

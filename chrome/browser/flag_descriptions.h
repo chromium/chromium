@@ -3340,9 +3340,6 @@ extern const char kHotspotDescription[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 
-extern const char kDiacriticsOnPhysicalKeyboardLongpressDefaultOnName[];
-extern const char kDiacriticsOnPhysicalKeyboardLongpressDefaultOnDescription[];
-
 extern const char kHoldingSpacePredictabilityName[];
 extern const char kHoldingSpacePredictabilityDescription[];
 
