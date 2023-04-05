@@ -2344,11 +2344,8 @@ TEST_F(CalendarViewWithJellyEnabledTest,
   MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
                     CreateMockEventListWithEventStartTimeTenMinsAway());
 
-  // When the event list view is open, then the up next view should have
-  // been created but the changes to scroll view height, animations etc
-  // shouldn't occur.
   bool is_showing_up_next_view = up_next_view();
-  EXPECT_TRUE(is_showing_up_next_view);
+  EXPECT_FALSE(is_showing_up_next_view);
   const int bottom_of_scroll_view_visible_area =
       scroll_view()->bounds().y() + scroll_view()->GetMaxHeight();
   const int top_of_event_list_view = calendar_sliding_surface_view()->y();
@@ -2572,12 +2569,12 @@ TEST_F(CalendarViewWithJellyEnabledTest,
   MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
                     CreateMockEventListWithEventStartTimeTenMinsAway());
 
-  // Up next view should have been created.
-  EXPECT_TRUE(up_next_view());
-
   // Close the event list view.
   GestureTapOn(close_button());
   ASSERT_FALSE(event_list_view());
+
+  // Up next should be showing.
+  EXPECT_TRUE(up_next_view());
 
   // When the event list view closes, the scrollview max height should have been
   // clipped back to the right height for the up next view.
