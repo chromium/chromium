@@ -150,9 +150,7 @@ NDEFReader* NDEFReader::Create(ExecutionContext* context) {
 
 NDEFReader::NDEFReader(ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context), permission_service_(context) {
-  // Call GetNFCProxy to create a proxy. This guarantees no allocation will
-  // be needed when calling HasPendingActivity later during gc tracing.
-  GetNfcProxy();
+  nfc_proxy_ = NFCProxy::From(*DomWindow());
 }
 
 NDEFReader::~NDEFReader() = default;
@@ -166,7 +164,7 @@ ExecutionContext* NDEFReader::GetExecutionContext() const {
 }
 
 bool NDEFReader::HasPendingActivity() const {
-  return GetExecutionContext() && GetNfcProxy()->IsReading(this) &&
+  return GetExecutionContext() && nfc_proxy_->IsReading(this) &&
          HasEventListeners();
 }
 
@@ -197,7 +195,7 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
   }
 
   // Reject promise when there's already an ongoing scan.
-  if (scan_resolver_ || GetNfcProxy()->IsReading(this)) {
+  if (scan_resolver_ || nfc_proxy_->IsReading(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A scan() operation is ongoing.");
     return ScriptPromise();
@@ -238,7 +236,7 @@ void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
 
   DCHECK(!scan_signal_ || !scan_signal_->aborted());
 
-  GetNfcProxy()->StartReading(
+  nfc_proxy_->StartReading(
       this,
       WTF::BindOnce(&NDEFReader::ReadOnRequestCompleted, WrapPersistent(this)));
 }
@@ -270,7 +268,7 @@ void NDEFReader::ReadOnRequestCompleted(
 
 void NDEFReader::OnReading(const String& serial_number,
                            const device::mojom::blink::NDEFMessage& message) {
-  DCHECK(GetNfcProxy()->IsReading(this));
+  DCHECK(nfc_proxy_->IsReading(this));
   DispatchEvent(*MakeGarbageCollected<NDEFReadingEvent>(
       event_type_names::kReading, serial_number,
       MakeGarbageCollected<NDEFMessage>(message)));
@@ -287,7 +285,7 @@ void NDEFReader::OnReadingError(const String& message) {
 }
 
 void NDEFReader::ContextDestroyed() {
-  GetNfcProxy()->StopReading(this);
+  nfc_proxy_->StopReading(this);
   scan_abort_handle_.Clear();
 }
 
@@ -299,7 +297,7 @@ void NDEFReader::ReadAbort(AbortSignal* signal) {
       return;
   }
 
-  GetNfcProxy()->StopReading(this);
+  nfc_proxy_->StopReading(this);
   scan_abort_handle_.Clear();
 
   if (!scan_resolver_)
@@ -363,7 +361,7 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
 
   // Add the writer to proxy's writer list for Mojo connection error
   // notification.
-  GetNfcProxy()->AddWriter(this);
+  nfc_proxy_->AddWriter(this);
 
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
@@ -407,9 +405,9 @@ void NDEFReader::WriteOnRequestPermission(
   auto callback =
       WTF::BindOnce(&NDEFReader::WriteOnRequestCompleted, WrapPersistent(this),
                     WrapPersistent(resolver), std::move(scoped_abort_state));
-  GetNfcProxy()->Push(std::move(message),
-                      device::mojom::blink::NDEFWriteOptions::From(options),
-                      std::move(callback));
+  nfc_proxy_->Push(std::move(message),
+                   device::mojom::blink::NDEFWriteOptions::From(options),
+                   std::move(callback));
 }
 
 void NDEFReader::WriteOnRequestCompleted(
@@ -452,7 +450,7 @@ void NDEFReader::WriteAbort(AbortSignal* signal) {
 
   // WriteOnRequestCompleted() should always be called whether the push
   // operation is cancelled successfully or not.
-  GetNfcProxy()->CancelPush();
+  nfc_proxy_->CancelPush();
 }
 
 ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
@@ -486,7 +484,7 @@ ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
 
   // Add the writer to proxy's writer list for Mojo connection error
   // notification.
-  GetNfcProxy()->AddWriter(this);
+  nfc_proxy_->AddWriter(this);
 
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
@@ -529,7 +527,7 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
   auto callback = WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestCompleted,
                                 WrapPersistent(this), WrapPersistent(resolver),
                                 std::move(scoped_abort_state));
-  GetNfcProxy()->MakeReadOnly(std::move(callback));
+  nfc_proxy_->MakeReadOnly(std::move(callback));
 }
 
 void NDEFReader::MakeReadOnlyOnRequestCompleted(
@@ -572,15 +570,11 @@ void NDEFReader::MakeReadOnlyAbort(AbortSignal* signal) {
 
   // MakeReadOnlyOnRequestCompleted() should always be called whether the
   // makeReadOnly operation is cancelled successfully or not.
-  GetNfcProxy()->CancelMakeReadOnly();
-}
-
-NFCProxy* NDEFReader::GetNfcProxy() const {
-  DCHECK(DomWindow());
-  return NFCProxy::From(*DomWindow());
+  nfc_proxy_->CancelMakeReadOnly();
 }
 
 void NDEFReader::Trace(Visitor* visitor) const {
+  visitor->Trace(nfc_proxy_);
   visitor->Trace(permission_service_);
   visitor->Trace(scan_resolver_);
   visitor->Trace(scan_signal_);

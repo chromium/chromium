@@ -88,8 +88,6 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   // ExecutionContextLifecycleObserver overrides.
   void ContextDestroyed() override;
 
-  NFCProxy* GetNfcProxy() const;
-
   void ReadAbort(AbortSignal* signal);
   void ReadOnRequestCompleted(device::mojom::blink::NDEFErrorPtr error);
 
@@ -123,6 +121,8 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
       std::unique_ptr<ScopedAbortState> scoped_abort_state,
       const NDEFMakeReadOnlyOptions* options,
       mojom::blink::PermissionStatus status);
+
+  Member<NFCProxy> nfc_proxy_;
 
   // |scan_resolver_| is kept here to handle Mojo connection failures because in
   // that case the callback passed to Watch() won't be called and
