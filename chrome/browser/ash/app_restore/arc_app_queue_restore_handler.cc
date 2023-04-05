@@ -200,10 +200,8 @@ void ArcAppQueueRestoreHandler::OnAppConnectionReady() {
 
   if (!stop_restore_timer_) {
     stop_restore_timer_ = std::make_unique<base::OneShotTimer>();
-    stop_restore_timer_->Start(
-        FROM_HERE, kStopRestoreDelay,
-        base::BindOnce(&ArcAppQueueRestoreHandler::StopRestore,
-                       weak_ptr_factory_.GetWeakPtr()));
+    stop_restore_timer_->Start(FROM_HERE, kStopRestoreDelay, this,
+                               &ArcAppQueueRestoreHandler::StopRestore);
   }
 }
 
@@ -742,10 +740,8 @@ void ArcAppQueueRestoreHandler::MaybeReStartTimer(
 
   current_delay_ = delay;
 
-  app_launch_timer_->Start(
-      FROM_HERE, current_delay_,
-      base::BindRepeating(&ArcAppQueueRestoreHandler::MaybeLaunchApp,
-                          weak_ptr_factory_.GetWeakPtr()));
+  app_launch_timer_->Start(FROM_HERE, current_delay_, this,
+                           &ArcAppQueueRestoreHandler::MaybeLaunchApp);
 }
 
 void ArcAppQueueRestoreHandler::StopRestore() {
@@ -778,10 +774,9 @@ int ArcAppQueueRestoreHandler::GetCpuUsageRate() {
 }
 
 void ArcAppQueueRestoreHandler::StartCpuUsageCount() {
-  cpu_tick_count_timer_.Start(
-      FROM_HERE, base::Seconds(kCpuUsageRefreshIntervalInSeconds),
-      base::BindRepeating(&ArcAppQueueRestoreHandler::UpdateCpuUsage,
-                          weak_ptr_factory_.GetWeakPtr()));
+  cpu_tick_count_timer_.Start(FROM_HERE,
+                              base::Seconds(kCpuUsageRefreshIntervalInSeconds),
+                              this, &ArcAppQueueRestoreHandler::UpdateCpuUsage);
 }
 
 void ArcAppQueueRestoreHandler::StopCpuUsageCount() {
