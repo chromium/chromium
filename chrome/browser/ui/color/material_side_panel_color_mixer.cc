@@ -31,6 +31,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelFilterChipIcon] = {ui::kColorSysPrimary};
   mixer[kColorSidePanelFilterChipIconSelected] = {
       ui::kColorSysOnTonalContainer};
+  mixer[kColorSidePanelFilterChipBackgroundHover] = {
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorSidePanelFilterChipBackgroundSelected] = {
       ui::kColorSysTonalContainer};
 
