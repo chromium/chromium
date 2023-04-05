@@ -133,11 +133,12 @@ class OmniboxPopupMediatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(AutocompleteResultConsumer));
 
     mediator_ = [[OmniboxPopupMediator alloc]
-               initWithFetcher:std::move(mock_image_data_fetcher)
-                 faviconLoader:nil
-        autocompleteController:autocomplete_controller.get()
-                      delegate:&delegate_
-                       tracker:&tracker];
+                 initWithFetcher:std::move(mock_image_data_fetcher)
+                   faviconLoader:nil
+          autocompleteController:autocomplete_controller.get()
+        remoteSuggestionsService:nil
+                        delegate:&delegate_
+                         tracker:&tracker];
     mediator_.consumer = mockResultConsumer_;
 
     // Stubs call to AutocompleteResultConsumer::updateMatches and stores

@@ -45,6 +45,30 @@
       [NSString stringWithFormat:@"Variation IDs:%@", string];
 }
 
+#pragma mark - AutocompleteControllerObserver
+
+- (void)autocompleteController:(AutocompleteController*)controller
+             didStartWithInput:(const AutocompleteInput&)input {
+}
+
+- (void)autocompleteController:(AutocompleteController*)controller
+    didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
+}
+
+#pragma mark - RemoteSuggestionsServiceObserver
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+                 startingRequest:(const network::ResourceRequest*)request
+                uniqueIdentifier:
+                    (const base::UnguessableToken&)requestIdentifier {
+}
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    completedRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                  receivedResponse:(NSString*)response {
+}
+
 #pragma mark - private
 
 - (void)doneButtonPressed {

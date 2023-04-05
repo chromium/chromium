@@ -7,11 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/remote_suggestions_service_observer_bridge.h"
 
 /// View controller used to display omnibox and popup related debug info.
 @interface PopupDebugInfoViewController
-    : UIViewController <PopupDebugInfoConsumer>
+    : UIViewController <PopupDebugInfoConsumer,
+                        RemoteSuggestionsServiceObserver,
+                        AutocompleteControllerObserver>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

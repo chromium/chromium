@@ -12,6 +12,7 @@
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
@@ -98,15 +99,21 @@
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
+  RemoteSuggestionsService* remoteSuggestionsService =
+      RemoteSuggestionsServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState(), /*create_if_necessary=*/true);
+
   self.mediator = [[OmniboxPopupMediator alloc]
-             initWithFetcher:std::move(imageFetcher)
-               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                 self.browser->GetBrowserState())
-      autocompleteController:self.autocompleteController
-                    delegate:_popupView.get()
-                     tracker:feature_engagement::TrackerFactory::
-                                 GetForBrowserState(
-                                     self.browser->GetBrowserState())];
+               initWithFetcher:std::move(imageFetcher)
+                 faviconLoader:IOSChromeFaviconLoaderFactory::
+                                   GetForBrowserState(
+                                       self.browser->GetBrowserState())
+        autocompleteController:self.autocompleteController
+      remoteSuggestionsService:remoteSuggestionsService
+                      delegate:_popupView.get()
+                       tracker:feature_engagement::TrackerFactory::
+                                   GetForBrowserState(
+                                       self.browser->GetBrowserState())];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.mediator.dispatcher =

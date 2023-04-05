@@ -31,6 +31,8 @@ swift_source_set("popup_swift") {
 
 source_set("popup") {
   sources = [
+    "autocomplete_controller_observer_bridge.h",
+    "autocomplete_controller_observer_bridge.mm",
     "omnibox_pedal_annotator.h",
     "omnibox_pedal_annotator.mm",
     "omnibox_popup_container_view.h",
@@ -50,6 +52,11 @@ source_set("popup") {
     "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.h",
     "pedal_suggestion_wrapper.mm",
+    "popup_debug_info_consumer.h",
+    "popup_debug_info_view_controller.h",
+    "popup_debug_info_view_controller.mm",
+    "remote_suggestions_service_observer_bridge.h",
+    "remote_suggestions_service_observer_bridge.mm",
   ]
   deps = [
     ":popup_internal",
@@ -66,6 +73,7 @@ source_set("popup") {
     "//components/strings:components_strings_grit",
     "//components/variations",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/default_browser",
     "//ios/chrome/browser/default_browser:utils",
@@ -143,8 +151,6 @@ source_set("popup_ui") {
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
-    "popup_debug_info_view_controller.h",
-    "popup_debug_info_view_controller.mm",
     "simple_omnibox_icon.h",
     "simple_omnibox_icon.mm",
   ]
@@ -224,7 +230,6 @@ source_set("popup_ui_protocols") {
     "content_providing.h",
     "omnibox_icon.h",
     "omnibox_pedal.h",
-    "popup_debug_info_consumer.h",
     "popup_match_preview_delegate.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
