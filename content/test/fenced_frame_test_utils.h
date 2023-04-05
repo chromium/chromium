@@ -14,6 +14,7 @@
 namespace content {
 
 class FrameTreeNode;
+class RenderFrameHost;
 class MappingResultObserver;
 
 // `node` is expected to be the child FrameTreeNode created in response to a
@@ -117,6 +118,12 @@ class FencedFrameURLMappingTestPeer {
  private:
   raw_ptr<FencedFrameURLMapping> fenced_frame_url_mapping_;
 };
+
+// TODO(xiaochenzh): Once fenced frame size freezing has no time gap, remove
+// this.
+// This function is needed because the freezing only takes effect after layout
+// has happened.
+bool WaitForFencedFrameSizeFreeze(RenderFrameHost* rfh);
 
 }  // namespace content
 

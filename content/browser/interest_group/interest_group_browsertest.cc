@@ -6438,6 +6438,149 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                 ->trusted_params->isolation_info.network_isolation_key());
 }
 
+// Runs auction just like test
+// InterestGroupBrowserTest.RunAdAuctionWithSizeWithWinner, but load the winning
+// ad in a fenced frame and verify the ad size.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithSizeWithWinner) {
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/bidding_logic_with_size.js"))
+              .SetAds(/*ads=*/{{{ad_url, /*size_group=*/"group_1",
+                                 /*metadata=*/absl::nullopt}}})
+              .SetAdSizes(
+                  {{{"size_1",
+                     blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                   50, blink::AdSize::LengthUnit::kPixels)}}})
+              .SetSizeGroups({{{"group_1", {"size_1"}}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+          seller: $1,
+          decisionLogicUrl: $2,
+          interestGroupBuyers: [$1]
+        })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  ASSERT_NO_FATAL_FAILURE(
+      RunAuctionAndNavigateFencedFrame(ad_url, auction_config));
+
+  // Verify the ad is loaded with the size specified in the winning bid.
+  int screen_width = static_cast<int>(display::Screen::GetScreen()
+                                          ->GetPrimaryDisplay()
+                                          .GetSizeInPixel()
+                                          .width());
+  RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  // Wait for 2 requestAnimationFrame calls to make things deterministic.
+  // Without this, the fenced frame may end up with its default size 300px *
+  // 150px. (Width * Height)
+  ASSERT_TRUE(WaitForFencedFrameSizeFreeze(ad_frame));
+  // Force layout.
+  EXPECT_TRUE(
+      ExecJs(ad_frame, "getComputedStyle(document.documentElement).width;"));
+  EXPECT_EQ(EvalJs(ad_frame, "innerWidth").ExtractInt(), screen_width);
+  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), 50);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithAdComponentWithSize) {
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_component_url = https_server_->GetURL(
+      "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/basic.html");
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/url::Origin::Create(test_url),
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/bidding_logic_with_size.js"))
+              .SetAds(/*ads=*/{{{ad_url, /*size_group=*/"group_1",
+                                 /*metadata=*/absl::nullopt}}})
+              .SetAdComponents({{{ad_component_url, /*size_group=*/"group_2",
+                                  /*metadata=*/absl::nullopt}}})
+              .SetAdSizes(
+                  {{{"size_1",
+                     blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
+                                   50, blink::AdSize::LengthUnit::kPixels)},
+                    {"size_2",
+                     blink::AdSize(50, blink::AdSize::LengthUnit::kPixels, 25,
+                                   blink::AdSize::LengthUnit::kPixels)}}})
+              .SetSizeGroups(
+                  {{{"group_1", {"size_1"}}, {"group_2", {"size_2"}}}})
+              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url, JsReplace(
+                  R"({
+                      seller: $1,
+                      decisionLogicUrl: $2,
+                      interestGroupBuyers: [$1]
+                    })",
+                  url::Origin::Create(test_url),
+                  https_server_->GetURL("a.test",
+                                        "/interest_group/decision_logic.js"))));
+
+  RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
+
+  // Verify the ad is loaded with the size specified in the winning bid.
+  int screen_width = static_cast<int>(display::Screen::GetScreen()
+                                          ->GetPrimaryDisplay()
+                                          .GetSizeInPixel()
+                                          .width());
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  // Wait for 2 requestAnimationFrame calls to make things deterministic.
+  // Without this, the fenced frame may end up with its default size 300px *
+  // 150px. (Width * Height)
+  ASSERT_TRUE(WaitForFencedFrameSizeFreeze(ad_frame));
+  // Force layout.
+  EXPECT_TRUE(
+      ExecJs(ad_frame, "getComputedStyle(document.documentElement).width;"));
+  EXPECT_EQ(EvalJs(ad_frame, "innerWidth").ExtractInt(), screen_width);
+  EXPECT_EQ(EvalJs(ad_frame, "innerHeight").ExtractInt(), 50);
+
+  // Get the first component config from the fenced frame. Load it in the
+  // nested fenced frame. The load should succeed.
+  TestFrameNavigationObserver observer(GetFencedFrameRenderFrameHost(ad_frame));
+
+  EXPECT_TRUE(ExecJs(ad_frame, R"(
+        const configs = window.fence.getNestedConfigs();
+        document.querySelector('fencedframe').config = configs[0];
+      )"));
+
+  WaitForFencedFrameNavigation(ad_component_url, ad_frame, observer);
+
+  // Verify the ad component is loaded with the size specified in the winning
+  // bid.
+  RenderFrameHost* ad_component_frame = GetFencedFrameRenderFrameHost(ad_frame);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  // Wait for 2 requestAnimationFrame calls to make things deterministic.
+  // Without this, the fenced frame may end up with its default size 300px *
+  // 150px. (Width * Height)
+  ASSERT_TRUE(WaitForFencedFrameSizeFreeze(ad_component_frame));
+  // Force layout.
+  EXPECT_TRUE(ExecJs(ad_component_frame,
+                     "getComputedStyle(document.documentElement).width;"));
+  EXPECT_EQ(EvalJs(ad_component_frame, "innerWidth").ExtractInt(), 50);
+  EXPECT_EQ(EvalJs(ad_component_frame, "innerHeight").ExtractInt(), 25);
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerReplacedURN) {
   URLLoaderMonitor url_loader_monitor;
