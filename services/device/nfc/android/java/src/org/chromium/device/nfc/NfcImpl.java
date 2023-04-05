@@ -44,6 +44,7 @@ import java.util.List;
 public class NfcImpl implements Nfc {
     private static final String TAG = "NfcImpl";
     private static final String ANY_PATH = "/*";
+    private static final long MIN_TIME_BETWEEN_VIBRATIONS_MS = 1000;
 
     private final int mHostId;
 
@@ -114,6 +115,10 @@ public class NfcImpl implements Nfc {
      * Vibrator. @see android.os.Vibrator
      */
     private Vibrator mVibrator;
+    /**
+     * Last time in milliseconds when a Tag was discovered.
+     */
+    private long mTagDiscoveredLastTimeMs = -1;
 
     public NfcImpl(int hostId, NfcDelegate delegate, InterfaceRequest<Nfc> request) {
         mHostId = hostId;
@@ -669,7 +674,12 @@ public class NfcImpl implements Nfc {
      * Called by ReaderCallbackHandler when NFC tag is in proximity.
      */
     public void onTagDiscovered(Tag tag) {
-        mVibrator.vibrate(200);
+        long now = System.currentTimeMillis();
+        // Ensure that excessive vibration is prevented during consecutive NFC operations.
+        if (now - mTagDiscoveredLastTimeMs > MIN_TIME_BETWEEN_VIBRATIONS_MS) {
+            mVibrator.vibrate(200);
+        }
+        mTagDiscoveredLastTimeMs = now;
         processPendingOperations(NfcTagHandler.create(tag));
     }
 
