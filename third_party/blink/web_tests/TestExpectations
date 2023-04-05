@@ -6690,3 +6690,6 @@ crbug.com/1428795 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-e
 
 crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
+
+# Sheriff 2023-04-05
+crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Failure Pass ]
