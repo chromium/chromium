@@ -74852,6 +74852,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Phone Hub"/>
   <int value="7" label="Clipboard History Zero State"/>
   <int value="8" label="Clipboard History Onboarding"/>
+  <int value="9" label="Long press diacritics"/>
 </enum>
 
 <enum name="NukeProfileResult">

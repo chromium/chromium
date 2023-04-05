@@ -201,7 +201,8 @@ enum class NudgeCatalogName {
   kPhoneHub = 6,
   kClipboardHistoryZeroState = 7,
   kClipboardHistoryOnboarding = 8,
-  kMaxValue = kClipboardHistoryOnboarding,
+  kDisableDiacritics = 9,
+  kMaxValue = kDisableDiacritics,
 };
 
 // A living catalog that registers toasts.
