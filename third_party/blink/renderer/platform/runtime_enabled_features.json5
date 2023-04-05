@@ -1089,7 +1089,7 @@
     // `text-wrap: balance`. crbug.com/1251079
     {
       name: "CSSTextWrap",
-      status: "experimental",
+      status: "stable",
     },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
@@ -1174,7 +1174,7 @@
     // `white-space` as a shorthand. crbug.com/1417543
     {
       name: "CSSWhiteSpaceShorthand",
-      status: "test",
+      status: "stable",
       depends_on: ["CSSTextWrap"],
     },
     {

@@ -420,6 +420,7 @@ textSizeAdjust
 textTransform
 textUnderlineOffset
 textUnderlinePosition
+textWrap
 top
 touchAction
 transform
@@ -594,6 +595,7 @@ webkitUserModify
 webkitUserSelect
 webkitWritingMode
 whiteSpace
+whiteSpaceCollapse
 widows
 width
 willChange
